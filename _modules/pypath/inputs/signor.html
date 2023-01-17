@@ -1,0 +1,1015 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.inputs.signor &#8212; pypath 0.14.34 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/inputs/signor';</script>
+    <link rel="shortcut icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../contents.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-light" alt="Pypath">
+    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath">
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for pypath.inputs.signor</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">bs4</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="kn">import</span> <span class="nn">pypath.inputs.common</span> <span class="k">as</span> <span class="nn">inputs_common</span>
+<span class="kn">import</span> <span class="nn">pypath.share.progress</span> <span class="k">as</span> <span class="nn">progress</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
+<span class="kn">import</span> <span class="nn">pypath.internals.intera</span> <span class="k">as</span> <span class="nn">intera</span>
+<span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+
+
+<div class="viewcode-block" id="signor_interactions"><a class="viewcode-back" href="../../../api/pypath.inputs.signor.signor_interactions.html#pypath.inputs.signor.signor_interactions">[docs]</a><span class="k">def</span> <span class="nf">signor_interactions</span><span class="p">(</span>
+    <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
+    <span class="n">raw_records</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">expand_families</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads the full dataset from SIGNOR (https://signor.uniroma2.it/).</span>
+<span class="sd">    Returns the records with the most important fields.</span>
+<span class="sd">    If ``raw_records`` is `True` it returns the table split to list of</span>
+<span class="sd">    lists but unchanged content.</span>
+
+<span class="sd">    Args</span>
+<span class="sd">        organism (int, str): The NCBI Taxonomy ID or name of the organism.</span>
+<span class="sd">            Human (9606), mouse (10090) and rat (10116) are available.</span>
+<span class="sd">        raw_records (bool): Process the records or return them raw,</span>
+<span class="sd">            as they are.</span>
+<span class="sd">        expand_families (int): Expand protein families up to this size.</span>
+<span class="sd">            Zero or one means no expansion.</span>
+
+<span class="sd">    Return</span>
+<span class="sd">        list: A list with processed records as named tuples or dicts of</span>
+<span class="sd">            raw records if ``raw_records`` is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">process_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+
+        <span class="n">isoform</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">families</span><span class="p">:</span>
+
+            <span class="n">main</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">families</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">families</span><span class="p">[</span><span class="n">name</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">expand_families</span> <span class="k">else</span>
+                <span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">complexes_by_id</span><span class="p">:</span>
+
+            <span class="n">main</span> <span class="o">=</span> <span class="n">complexes_by_id</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">main</span><span class="p">,</span> <span class="n">isoform</span> <span class="o">=</span> <span class="n">inputs_common</span><span class="o">.</span><span class="n">_try_isoform</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">main</span> <span class="o">=</span> <span class="p">(</span><span class="n">main</span><span class="p">,)</span>
+
+        <span class="k">return</span> <span class="n">main</span><span class="p">,</span> <span class="n">isoform</span>
+
+
+    <span class="n">SignorInteraction</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;SignorInteraction&#39;</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;target&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;source_isoform&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;target_isoform&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;source_type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;target_type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;effect&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mechanism&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pubmeds&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;direct&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_residue&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_motif&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">families</span> <span class="o">=</span> <span class="n">signor_protein_families</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+    <span class="n">complexes</span> <span class="o">=</span> <span class="n">signor_complexes</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+
+    <span class="n">complexes_by_id</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">cplex</span> <span class="ow">in</span> <span class="n">complexes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+        <span class="k">for</span> <span class="n">cplex_id</span> <span class="ow">in</span> <span class="n">cplex</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="s1">&#39;SIGNOR&#39;</span><span class="p">]:</span>
+
+            <span class="n">complexes_by_id</span><span class="p">[</span><span class="n">cplex_id</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cplex</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">organism</span> <span class="ow">in</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">taxids</span><span class="p">:</span>
+
+            <span class="n">_organism</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">taxids</span><span class="p">[</span><span class="n">organism</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Unknown organism: `</span><span class="si">%u</span><span class="s1">`.</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">organism</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">_organism</span> <span class="o">=</span> <span class="n">organism</span>
+
+    <span class="k">if</span> <span class="n">_organism</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;human&#39;</span><span class="p">,</span> <span class="s1">&#39;rat&#39;</span><span class="p">,</span> <span class="s1">&#39;mouse&#39;</span><span class="p">}:</span>
+
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">][</span><span class="s1">&#39;all_url_new&#39;</span><span class="p">]</span>
+    <span class="n">binary_data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="sa">b</span><span class="s1">&#39;organism&#39;</span><span class="p">,</span> <span class="n">_organism</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="sa">b</span><span class="s1">&#39;format&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;csv&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">b</span><span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;Download&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">follow</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="mi">180</span><span class="p">,</span>
+        <span class="n">binary_data</span> <span class="o">=</span> <span class="n">binary_data</span><span class="p">,</span>
+        <span class="n">return_headers</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">,</span> <span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">raw_records</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+
+        <span class="n">sources</span><span class="p">,</span> <span class="n">source_isoform</span> <span class="o">=</span> <span class="n">process_name</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;IDA&#39;</span><span class="p">])</span>
+        <span class="n">targets</span><span class="p">,</span> <span class="n">target_isoform</span> <span class="o">=</span> <span class="n">process_name</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;IDB&#39;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
+
+            <span class="n">this_record</span> <span class="o">=</span> <span class="n">SignorInteraction</span><span class="p">(</span>
+                <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="p">,</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="p">,</span>
+                <span class="n">source_isoform</span> <span class="o">=</span> <span class="n">source_isoform</span><span class="p">,</span>
+                <span class="n">target_isoform</span> <span class="o">=</span> <span class="n">target_isoform</span><span class="p">,</span>
+                <span class="n">source_type</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;TYPEA&#39;</span><span class="p">],</span>
+                <span class="n">target_type</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;TYPEB&#39;</span><span class="p">],</span>
+                <span class="n">effect</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;EFFECT&#39;</span><span class="p">],</span>
+                <span class="n">mechanism</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;MECHANISM&#39;</span><span class="p">],</span>
+                <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;TAX_ID&#39;</span><span class="p">],</span>
+                <span class="n">pubmeds</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;PMID&#39;</span><span class="p">],</span>
+                <span class="n">direct</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;DIRECT&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;YES&#39;</span><span class="p">,</span>
+                <span class="n">ptm_type</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;MECHANISM&#39;</span><span class="p">],</span>
+                <span class="n">ptm_residue</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;RESIDUE&#39;</span><span class="p">],</span>
+                <span class="n">ptm_motif</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;SEQUENCE&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_record</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="signor_enzyme_substrate"><a class="viewcode-back" href="../../../api/pypath.inputs.signor.signor_enzyme_substrate.html#pypath.inputs.signor.signor_enzyme_substrate">[docs]</a><span class="k">def</span> <span class="nf">signor_enzyme_substrate</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads and processes Signor PTMs.</span>
+<span class="sd">    Returns dict of dicts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">reres</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([A-Za-z]</span><span class="si">{3}</span><span class="s1">)([0-9]+)&#39;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">aalet</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">v</span><span class="p">)</span>
+                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">aaletters</span><span class="p">))</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">signor_interactions</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+
+        <span class="n">resm</span> <span class="o">=</span> <span class="n">reres</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">ptm_residue</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">resm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">aa</span> <span class="o">=</span> <span class="n">aalet</span><span class="p">[</span><span class="n">resm</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()]</span>
+            <span class="n">aanum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resm</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">ptm_type</span><span class="p">,</span>
+            <span class="n">inst</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">ptm_motif</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;typ&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">ptm_type</span><span class="p">,</span>
+                <span class="s1">&#39;resnum&#39;</span><span class="p">:</span> <span class="n">aanum</span><span class="p">,</span>
+                <span class="s1">&#39;instance&#39;</span><span class="p">:</span> <span class="n">inst</span><span class="p">,</span>
+                <span class="s1">&#39;substrate&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
+                <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">aanum</span> <span class="o">-</span> <span class="mi">7</span><span class="p">,</span>
+                <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">aanum</span> <span class="o">+</span> <span class="mi">7</span><span class="p">,</span>
+                <span class="s1">&#39;kinase&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+                <span class="s1">&#39;resaa&#39;</span><span class="p">:</span> <span class="n">aa</span><span class="p">,</span>
+                <span class="s1">&#39;motif&#39;</span><span class="p">:</span> <span class="n">inst</span><span class="p">,</span>
+                <span class="s1">&#39;enzyme_isoform&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">source_isoform</span><span class="p">,</span>
+                <span class="s1">&#39;substrate_isoform&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">target_isoform</span><span class="p">,</span>
+                <span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">d</span><span class="o">.</span><span class="n">pubmeds</span><span class="p">}</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">pubmeds</span> <span class="o">!=</span> <span class="s1">&#39;Other&#39;</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="signor_pathways"><a class="viewcode-back" href="../../../api/pypath.inputs.signor.signor_pathways.html#pypath.inputs.signor.signor_pathways">[docs]</a><span class="k">def</span> <span class="nf">signor_pathways</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obtains pathway annotations from Signor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">][</span><span class="s1">&#39;list_url&#39;</span><span class="p">]</span>
+    <span class="n">baseurl</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">][</span><span class="s1">&#39;all_url_new&#39;</span><span class="p">]</span>
+
+    <span class="n">proteins_pathways</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">interactions_pathways</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+
+    <span class="n">pathway_names</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">opt</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+            <span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;pathway_list&#39;</span><span class="p">}</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;option&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">pathway_names</span><span class="p">),</span>
+        <span class="s1">&#39;Downloading data from Signor&#39;</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">,</span>
+        <span class="n">percent</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">short</span><span class="p">,</span> <span class="n">full</span> <span class="ow">in</span> <span class="n">pathway_names</span><span class="p">:</span>
+
+        <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">short</span><span class="p">:</span>
+
+            <span class="k">continue</span>
+
+        <span class="n">binary_data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s1">&#39;pathway_list&#39;</span><span class="p">,</span> <span class="n">short</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)),</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;Download&#39;</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">c_pw</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+            <span class="n">baseurl</span><span class="p">,</span>
+            <span class="n">silent</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">binary_data</span> <span class="o">=</span> <span class="n">binary_data</span><span class="p">,</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1">#csv.DictReader(c_pw.result)</span>
+
+        <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;@#@#@&#39;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">inputs_common</span><span class="o">.</span><span class="n">csv_sep_change</span><span class="p">(</span>
+            <span class="n">c_pw</span><span class="o">.</span><span class="n">result</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">sep</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">filter</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">l</span><span class="p">:</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">,</span>
+                <span class="nb">map</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">l</span><span class="p">:</span>
+                        <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">),</span>
+                    <span class="n">lines</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">proteins_pathways</span><span class="p">[</span><span class="n">full</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">interactions_pathways</span><span class="p">[</span><span class="n">full</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">uniprot1</span><span class="p">,</span> <span class="n">uniprot2</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
+                <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">),</span>
+                <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">),</span>
+            <span class="p">):</span>
+
+                <span class="n">proteins_pathways</span><span class="p">[</span><span class="n">full</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uniprot1</span><span class="p">)</span>
+                <span class="n">proteins_pathways</span><span class="p">[</span><span class="n">full</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uniprot2</span><span class="p">)</span>
+
+                <span class="n">interactions_pathways</span><span class="p">[</span><span class="n">full</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">uniprot1</span><span class="p">,</span> <span class="n">uniprot2</span><span class="p">))</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">proteins_pathways</span><span class="p">,</span> <span class="n">interactions_pathways</span></div>
+
+
+<div class="viewcode-block" id="signor_pathway_annotations"><a class="viewcode-back" href="../../../api/pypath.inputs.signor.signor_pathway_annotations.html#pypath.inputs.signor.signor_pathway_annotations">[docs]</a><span class="k">def</span> <span class="nf">signor_pathway_annotations</span><span class="p">():</span>
+
+    <span class="n">SignorPathway</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;SignorPathway&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;pathway&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="n">proteins</span><span class="p">,</span> <span class="n">interactions</span> <span class="o">=</span> <span class="n">signor_pathways</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">pathway</span><span class="p">,</span> <span class="n">uniprots</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">proteins</span><span class="p">):</span>
+
+        <span class="n">record</span> <span class="o">=</span> <span class="n">SignorPathway</span><span class="p">(</span><span class="n">pathway</span> <span class="o">=</span> <span class="n">pathway</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">:</span>
+
+            <span class="n">result</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="signor_protein_families"><a class="viewcode-back" href="../../../api/pypath.inputs.signor.signor_protein_families.html#pypath.inputs.signor.signor_protein_families">[docs]</a><span class="k">def</span> <span class="nf">signor_protein_families</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+    <span class="c1">#TODO: implement organism</span>
+
+    <span class="n">families</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">][</span><span class="s1">&#39;complexes&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">binary_data</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;Download protein family data&#39;</span><span class="p">)],</span>
+        <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+        <span class="n">rec</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\r</span><span class="s1">&quot; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+        <span class="n">families</span><span class="p">[</span><span class="n">rec</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">components</span>
+
+    <span class="k">return</span> <span class="n">families</span></div>
+
+
+<div class="viewcode-block" id="signor_complexes"><a class="viewcode-back" href="../../../api/pypath.inputs.signor.signor_complexes.html#pypath.inputs.signor.signor_complexes">[docs]</a><span class="k">def</span> <span class="nf">signor_complexes</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+    <span class="c1">#TODO: implement organism</span>
+
+
+    <span class="k">def</span> <span class="nf">process_on_hold</span><span class="p">(</span><span class="n">on_hold</span><span class="p">,</span> <span class="n">complexes_by_id</span><span class="p">,</span> <span class="n">complexes</span><span class="p">):</span>
+
+        <span class="n">on_hold_next</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">id_</span> <span class="ow">in</span> <span class="n">on_hold</span><span class="p">:</span>
+
+            <span class="n">components</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">[</span><span class="n">comp</span><span class="o">.</span><span class="n">components</span> <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">complexes_by_id</span><span class="p">[</span><span class="n">comp_id</span><span class="p">]]</span>
+                    <span class="k">if</span> <span class="n">comp_id</span> <span class="ow">in</span> <span class="n">complexes_by_id</span> <span class="k">else</span>
+                <span class="p">((</span><span class="n">comp_id</span><span class="p">,),)</span>
+                <span class="k">for</span> <span class="n">comp_id</span> <span class="ow">in</span> <span class="n">components</span>
+            <span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">components0</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">components</span><span class="p">):</span>
+
+                <span class="n">this_components</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">components0</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="n">comp</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;SIGNOR-C&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">this_components</span>
+                <span class="p">):</span>
+
+                    <span class="n">on_hold_next</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">this_components</span><span class="p">,</span> <span class="n">id_</span><span class="p">))</span>
+
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="n">cplex</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Complex</span><span class="p">(</span>
+                        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                        <span class="n">components</span> <span class="o">=</span> <span class="n">this_components</span><span class="p">,</span>
+                        <span class="n">sources</span> <span class="o">=</span> <span class="s1">&#39;SIGNOR&#39;</span><span class="p">,</span>
+                        <span class="n">ids</span> <span class="o">=</span> <span class="n">id_</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">complexes</span><span class="p">[</span><span class="n">cplex</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()]</span> <span class="o">=</span> <span class="n">cplex</span>
+                    <span class="n">complexes_by_id</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cplex</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">on_hold_next</span><span class="p">,</span> <span class="n">complexes_by_id</span><span class="p">,</span> <span class="n">complexes</span>
+
+
+    <span class="n">complexes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">on_hold</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">families</span> <span class="o">=</span> <span class="n">signor_protein_families</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">][</span><span class="s1">&#39;complexes&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">binary_data</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;Download complex data&#39;</span><span class="p">)],</span>
+        <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="n">complexes_by_id</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+        <span class="n">rec</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\r</span><span class="s1">&quot; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+
+        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">families</span><span class="p">[</span><span class="n">comp</span><span class="p">]</span> <span class="k">if</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">families</span> <span class="k">else</span> <span class="p">[</span><span class="n">comp</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">this_components</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">components</span><span class="p">):</span>
+
+            <span class="c1"># some complex contains other complexes</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;SIGNOR-C&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">this_components</span><span class="p">):</span>
+
+                <span class="n">on_hold</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">this_components</span><span class="p">,</span> <span class="n">rec</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">cplex</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Complex</span><span class="p">(</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                    <span class="n">components</span> <span class="o">=</span> <span class="n">this_components</span><span class="p">,</span>
+                    <span class="n">sources</span> <span class="o">=</span> <span class="s1">&#39;SIGNOR&#39;</span><span class="p">,</span>
+                    <span class="n">ids</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="p">)</span>
+
+                <span class="n">complexes</span><span class="p">[</span><span class="n">cplex</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()]</span> <span class="o">=</span> <span class="n">cplex</span>
+                <span class="n">complexes_by_id</span><span class="p">[</span><span class="n">rec</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cplex</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="c1"># complexes are defined recursively</span>
+        <span class="n">count_on_hold</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">on_hold</span><span class="p">)</span>
+        <span class="n">on_hold</span><span class="p">,</span> <span class="n">complexes_by_id</span><span class="p">,</span> <span class="n">complexes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">process_on_hold</span><span class="p">(</span><span class="n">on_hold</span><span class="p">,</span> <span class="n">complexes_by_id</span><span class="p">,</span> <span class="n">complexes</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">on_hold</span><span class="p">)</span> <span class="o">==</span> <span class="n">count_on_hold</span><span class="p">:</span>
+
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">complexes</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../index.html">
+   Welcome to pypath!
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../webservice.html">
+   Webservice
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../releasehistory.html">
+   Release history
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../reference.html">
+   Reference
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../notebooks/manual.html">
+   The pypath book
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

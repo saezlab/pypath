@@ -1,0 +1,916 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>pypath.omnipath.app.DatabaseManager &#8212; pypath 0.14.34 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.omnipath.app.DatabaseManager';</script>
+    <link rel="shortcut icon" href="../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pypath.omnipath.databases" href="pypath.omnipath.databases.html" />
+    <link rel="prev" title="pypath.omnipath.app" href="pypath.omnipath.app.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../contents.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/img/omnipath-logo.svg" class="logo__image only-light" alt="Pypath">
+    <img src="../_static/img/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath">
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="pypath-omnipath-app-databasemanager">
+<h1>pypath.omnipath.app.DatabaseManager<a class="headerlink" href="#pypath-omnipath-app-databasemanager" title="Permalink to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.omnipath.app.</span></span><span class="sig-name descname"><span class="pre">DatabaseManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypath.share.session.Logger.html#pypath.share.session.Logger" title="pypath.share.session.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a></p>
+<p>Builds and serves the databases in OmniPath such as various networks,
+enzyme-substrate interactions, protein complexes, annotations and
+inter-cellular communication roles. Saves the databases to and loads
+them from pickle dumps on demand.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.__init__" title="Permalink to this definition">§</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.__init__" title="pypath.omnipath.app.DatabaseManager.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([rebuild])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.build" title="pypath.omnipath.app.DatabaseManager.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>()</p></td>
+<td><p>Builds all built-in datasets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.build_dataset" title="pypath.omnipath.app.DatabaseManager.build_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_dataset</span></code></a>(dataset[, ncbi_tax_id])</p></td>
+<td><p>Builds a dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.compile_table" title="pypath.omnipath.app.DatabaseManager.compile_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile_table</span></code></a>(dataset)</p></td>
+<td><p>Compiles the <cite>summaries</cite> table for a dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.compile_tables" title="pypath.omnipath.app.DatabaseManager.compile_tables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile_tables</span></code></a>()</p></td>
+<td><p>Compiles the <cite>summaries</cite> table for all datasets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.dataset_dependencies" title="pypath.omnipath.app.DatabaseManager.dataset_dependencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataset_dependencies</span></code></a>(dataset)</p></td>
+<td><p>Returns the dependencies of a dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.define_dataset" title="pypath.omnipath.app.DatabaseManager.define_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_dataset</span></code></a>(name, module[, args, pickle])</p></td>
+<td><p>Add a new dataset definition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.ensure_dataset" title="pypath.omnipath.app.DatabaseManager.ensure_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_dataset</span></code></a>(dataset[, force_reload, ...])</p></td>
+<td><p>Makes sure a dataset is loaded. It loads only if it's not loaded yet or <a href="#id1"><span class="problematic" id="id2">:py:arg:`force_reload`</span></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>. It only builds if it's not availabe as a pickle dump or <a href="#id3"><span class="problematic" id="id4">:py:arg:`force_rebuild`</span></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.ensure_dirs" title="pypath.omnipath.app.DatabaseManager.ensure_dirs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_dirs</span></code></a>()</p></td>
+<td><p>Checks if the directories for tables, figures and pickles exist and creates them if necessary.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.ensure_module" title="pypath.omnipath.app.DatabaseManager.ensure_module"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_module</span></code></a>(dataset[, reset])</p></td>
+<td><p>Makes sure the module providing a particular dataset is available and has no default database loaded yet (<code class="xref py py-attr docutils literal notranslate"><span class="pre">db</span></code> attribute of the module).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.foreach_dataset" title="pypath.omnipath.app.DatabaseManager.foreach_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">foreach_dataset</span></code></a>(method)</p></td>
+<td><p>Applies a method for each dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.get_args_curated" title="pypath.omnipath.app.DatabaseManager.get_args_curated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_args_curated</span></code></a>()</p></td>
+<td><p>Returns the arguments for building the curated PPI network dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna" title="pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_args_lncrna_mrna</span></code></a>()</p></td>
+<td><p>Returns the arguments for building the lncRNA-mRNA network dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna" title="pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_args_mirna_mrna</span></code></a>()</p></td>
+<td><p>Returns the arguments for building the miRNA-mRNA network dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.get_args_small_molecule" title="pypath.omnipath.app.DatabaseManager.get_args_small_molecule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_args_small_molecule</span></code></a>()</p></td>
+<td><p>Returns the arguments for building the small molecule-protein network dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.get_args_tf_mirna" title="pypath.omnipath.app.DatabaseManager.get_args_tf_mirna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_args_tf_mirna</span></code></a>()</p></td>
+<td><p>Returns the arguments for building the TF-miRNA network dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.get_args_tf_target" title="pypath.omnipath.app.DatabaseManager.get_args_tf_target"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_args_tf_target</span></code></a>()</p></td>
+<td><p>Returns the arguments for building the TF-target network dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.get_build_args" title="pypath.omnipath.app.DatabaseManager.get_build_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_build_args</span></code></a>(dataset)</p></td>
+<td><p>Retrieves the default database build parameters for a dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.get_db" title="pypath.omnipath.app.DatabaseManager.get_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_db</span></code></a>(dataset[, ncbi_tax_id])</p></td>
+<td><p>Returns a dataset object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.get_param" title="pypath.omnipath.app.DatabaseManager.get_param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_param</span></code></a>(key)</p></td>
+<td><p>Retrieves a parameter from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">param</span></code> dict of the current object or from the module settings.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.load_dataset" title="pypath.omnipath.app.DatabaseManager.load_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_dataset</span></code></a>(dataset[, ncbi_tax_id])</p></td>
+<td><p>Loads a dataset, builds it if no pickle dump is available.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.network_df" title="pypath.omnipath.app.DatabaseManager.network_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network_df</span></code></a>(dataset[, by_source])</p></td>
+<td><p>Creates a data frame of a network dataset where rows aggregate information from all resources describing an interaction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.network_df_by_source" title="pypath.omnipath.app.DatabaseManager.network_df_by_source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network_df_by_source</span></code></a>([dataset])</p></td>
+<td><p>Creates a data frame of a network dataset where each row contains information from one resource.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.pickle_exists" title="pypath.omnipath.app.DatabaseManager.pickle_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pickle_exists</span></code></a>(dataset[, ncbi_tax_id])</p></td>
+<td><p>Tells if a pickle dump of a particular dataset exists.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.pickle_path" title="pypath.omnipath.app.DatabaseManager.pickle_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pickle_path</span></code></a>(dataset[, ncbi_tax_id])</p></td>
+<td><p>Returns the path of the pickle dump for a dataset according to the current settings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.reload" title="pypath.omnipath.app.DatabaseManager.reload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code></a>()</p></td>
+<td><p>Reloads the object from the module level.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.reload_module" title="pypath.omnipath.app.DatabaseManager.reload_module"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload_module</span></code></a>(dataset)</p></td>
+<td><p>Reloads the module of the database object of a particular dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.remove_all" title="pypath.omnipath.app.DatabaseManager.remove_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_all</span></code></a>()</p></td>
+<td><p>Removes all loaded datasets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.remove_db" title="pypath.omnipath.app.DatabaseManager.remove_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_db</span></code></a>(dataset[, ncbi_tax_id])</p></td>
+<td><p>Removes a dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.set_network" title="pypath.omnipath.app.DatabaseManager.set_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_network</span></code></a>(dataset[, by_source])</p></td>
+<td><p>Sets dataset as the default</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.omnipath.app.DatabaseManager.table_path" title="pypath.omnipath.app.DatabaseManager.table_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_path</span></code></a>(dataset)</p></td>
+<td><p>Returns the full path for a table (to be exported or imported).</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.build" title="Permalink to this definition">§</a></dt>
+<dd><p>Builds all built-in datasets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.build_dataset">
+<span class="sig-name descname"><span class="pre">build_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.build_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.build_dataset" title="Permalink to this definition">§</a></dt>
+<dd><p>Builds a dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.compile_table">
+<span class="sig-name descname"><span class="pre">compile_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.compile_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.compile_table" title="Permalink to this definition">§</a></dt>
+<dd><p>Compiles the <cite>summaries</cite> table for a dataset. These tables contain
+various quantitative descriptions of the data contents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.compile_tables">
+<span class="sig-name descname"><span class="pre">compile_tables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.compile_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.compile_tables" title="Permalink to this definition">§</a></dt>
+<dd><p>Compiles the <cite>summaries</cite> table for all datasets. These tables contain
+various quantitative descriptions of the data contents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.dataset_dependencies">
+<span class="sig-name descname"><span class="pre">dataset_dependencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.dataset_dependencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.dataset_dependencies" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the dependencies of a dataset. E.g. to build <cite>annotations</cite>
+<cite>complexes</cite> must be loaded hence the former is dependent on the
+latter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.define_dataset">
+<span class="sig-name descname"><span class="pre">define_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'annot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'complex'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'enz_sub'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'intercell'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'network'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.define_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.define_dataset" title="Permalink to this definition">§</a></dt>
+<dd><p>Add a new dataset definition.</p>
+<dl class="simple">
+<dt>Args</dt><dd><dl class="simple">
+<dt>name:</dt><dd><p>Arbitrary name for the dataset.</p>
+</dd>
+<dt>module:</dt><dd><p>A database builder module: this determines the type of the
+dataset.</p>
+</dd>
+<dt>args:</dt><dd><p>Arguments for the database provider method (typically
+called <code class="docutils literal notranslate"><span class="pre">get_db</span></code>) of the above module.</p>
+</dd>
+<dt>pickle:</dt><dd><p>A name for the pickle file, if not provided it will be
+named as “&lt;name&gt;_&lt;module&gt;.pickle”.</p>
+</dd>
+<dt>param:</dt><dd><p>Further parameters, saved directly into the :attr:<code class="docutils literal notranslate"><span class="pre">param</span></code>
+dict of this object, however the three arguments above
+override values provided this way.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.ensure_dataset">
+<span class="sig-name descname"><span class="pre">ensure_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_reload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.ensure_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.ensure_dataset" title="Permalink to this definition">§</a></dt>
+<dd><p>Makes sure a dataset is loaded. It loads only if it’s not loaded
+yet or <a href="#id5"><span class="problematic" id="id6">:py:arg:`force_reload`</span></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>. It only builds if it’s
+not availabe as a pickle dump or <a href="#id7"><span class="problematic" id="id8">:py:arg:`force_rebuild`</span></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>str</em>) – The name of the dataset.</p></li>
+<li><p><strong>ncbi_tax_id</strong> (<em>int</em>) – NCBI Taxonomy ID of the organism. Considered only if the dataset
+builds for one organism and saved to organism specific pickle
+files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.ensure_dirs">
+<span class="sig-name descname"><span class="pre">ensure_dirs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.ensure_dirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.ensure_dirs" title="Permalink to this definition">§</a></dt>
+<dd><p>Checks if the directories for tables, figures and pickles exist and
+creates them if necessary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.ensure_module">
+<span class="sig-name descname"><span class="pre">ensure_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.ensure_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.ensure_module" title="Permalink to this definition">§</a></dt>
+<dd><p>Makes sure the module providing a particular dataset is available
+and has no default database loaded yet (<code class="xref py py-attr docutils literal notranslate"><span class="pre">db</span></code> attribute
+of the module).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.foreach_dataset">
+<span class="sig-name descname"><span class="pre">foreach_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.foreach_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.foreach_dataset" title="Permalink to this definition">§</a></dt>
+<dd><p>Applies a method for each dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_curated">
+<span class="sig-name descname"><span class="pre">get_args_curated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_curated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_curated" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the arguments for building the curated PPI network dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna">
+<span class="sig-name descname"><span class="pre">get_args_lncrna_mrna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_lncrna_mrna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the arguments for building the lncRNA-mRNA network dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna">
+<span class="sig-name descname"><span class="pre">get_args_mirna_mrna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_mirna_mrna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the arguments for building the miRNA-mRNA network dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_small_molecule">
+<span class="sig-name descname"><span class="pre">get_args_small_molecule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_small_molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_small_molecule" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the arguments for building the small molecule-protein
+network dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_tf_mirna">
+<span class="sig-name descname"><span class="pre">get_args_tf_mirna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_tf_mirna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_tf_mirna" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the arguments for building the TF-miRNA network dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_tf_target">
+<span class="sig-name descname"><span class="pre">get_args_tf_target</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_tf_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_tf_target" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the arguments for building the TF-target network dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_build_args">
+<span class="sig-name descname"><span class="pre">get_build_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_build_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_build_args" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves the default database build parameters for a dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_db">
+<span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_db" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a dataset object. Loads and builds the dataset if necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ncbi_tax_id</strong> (<em>int</em>) – NCBI Taxonomy ID of the organism. Considered only if the dataset
+builds for one organism and saved to organism specific pickle
+files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_param">
+<span class="sig-name descname"><span class="pre">get_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_param" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves a parameter from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">param</span></code> dict of the current
+object or from the module settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.load_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.load_dataset" title="Permalink to this definition">§</a></dt>
+<dd><p>Loads a dataset, builds it if no pickle dump is available.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.network_df">
+<span class="sig-name descname"><span class="pre">network_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.network_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.network_df" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a data frame of a network dataset where rows aggregate
+information from all resources describing an interaction.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.network_df_by_source">
+<span class="sig-name descname"><span class="pre">network_df_by_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'omnipath'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.network_df_by_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.network_df_by_source" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a data frame of a network dataset where each row contains
+information from one resource.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.pickle_exists">
+<span class="sig-name descname"><span class="pre">pickle_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.pickle_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.pickle_exists" title="Permalink to this definition">§</a></dt>
+<dd><p>Tells if a pickle dump of a particular dataset exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.pickle_path">
+<span class="sig-name descname"><span class="pre">pickle_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.pickle_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.pickle_path" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the path of the pickle dump for a dataset according to
+the current settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.reload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.reload" title="Permalink to this definition">§</a></dt>
+<dd><p>Reloads the object from the module level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.reload_module">
+<span class="sig-name descname"><span class="pre">reload_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.reload_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.reload_module" title="Permalink to this definition">§</a></dt>
+<dd><p>Reloads the module of the database object of a particular dataset.
+E.g. in case of network datasets the <code class="docutils literal notranslate"><span class="pre">pypath.network</span></code> module
+will be reloaded.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.remove_all">
+<span class="sig-name descname"><span class="pre">remove_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.remove_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.remove_all" title="Permalink to this definition">§</a></dt>
+<dd><p>Removes all loaded datasets. Deletes the references to the objects
+in the module, however if you have references elsewhere in your
+code they remain in the memory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.remove_db">
+<span class="sig-name descname"><span class="pre">remove_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.remove_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.remove_db" title="Permalink to this definition">§</a></dt>
+<dd><p>Removes a dataset. Deletes the references to the object
+in the module, however if you have references elsewhere in your
+code it remains in the memory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.set_network">
+<span class="sig-name descname"><span class="pre">set_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.set_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.set_network" title="Permalink to this definition">§</a></dt>
+<dd><p>Sets dataset as the default</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.table_path">
+<span class="sig-name descname"><span class="pre">table_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.table_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.table_path" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the full path for a table (to be exported or imported).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="pypath.omnipath.app.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">pypath.omnipath.app</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="pypath.omnipath.databases.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">pypath.omnipath.databases</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../index.html">
+   Welcome to pypath!
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../webservice.html">
+   Webservice
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../releasehistory.html">
+   Release history
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../reference.html">
+   Reference
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../notebooks/manual.html">
+   The pypath book
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

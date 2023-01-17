@@ -1,0 +1,1638 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.omnipath.export &#8212; pypath 0.14.34 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/omnipath/export';</script>
+    <link rel="shortcut icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../contents.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-light" alt="Pypath">
+    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath">
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for pypath.omnipath.export</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#  Exports tables for webservice.</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright (c) 2014-2022 - EMBL</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="kn">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="nb">range</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">pypath.share.progress</span> <span class="k">as</span> <span class="nn">progress</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.data_formats</span> <span class="k">as</span> <span class="nn">data_formats</span>
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">pypath.core.entity</span> <span class="k">as</span> <span class="nn">entity</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.network</span> <span class="k">as</span> <span class="nn">netres</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+
+<span class="n">strip_json</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\[\]</span><span class="si">{}</span><span class="s1">\&quot;]&#39;</span><span class="p">)</span>
+<span class="n">simple_types</span> <span class="o">=</span> <span class="p">{</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)}</span>
+
+
+<div class="viewcode-block" id="Export"><a class="viewcode-back" href="../../../api/pypath.omnipath.export.Export.html#pypath.omnipath.export.Export">[docs]</a><span class="k">class</span> <span class="nc">Export</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+
+    <span class="n">default_header_uniquepairs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;UniProt_A&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;GeneSymbol_A&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;UniProt_B&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;GeneSymbol_B&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Databases&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PubMed_IDs&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Undirected&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Direction_A-B&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Direction_B-A&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Stimulatory_A-B&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Inhibitory_A-B&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Stimulatory_B-A&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Inhibitory_B-A&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Category&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">default_dtypes_uniquepairs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;UniProt_A&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;GeneSymbol_A&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;UniProt_B&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;GeneSymbol_B&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Undirected&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Direction_A-B&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Direction_B-A&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Stimulatory_A-B&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Inhibitory_A-B&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Stimulatory_B-A&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Inhibitory_B-A&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Category&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">default_header_bydirs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;source&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;target&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;source_genesymbol&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;target_genesymbol&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;is_directed&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;is_stimulation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;is_inhibition&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;consensus_direction&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;consensus_stimulation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;consensus_inhibition&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sources&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;references&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">default_dtypes_bydirs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;source_genesymbol&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;target_genesymbol&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;is_directed&#39;</span><span class="p">:</span> <span class="s1">&#39;int8&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;is_stimulation&#39;</span><span class="p">:</span> <span class="s1">&#39;int8&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;is_inhibition&#39;</span><span class="p">:</span> <span class="s1">&#39;int8&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;consensus_direction&#39;</span><span class="p">:</span> <span class="s1">&#39;int8&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;consensus_stimulation&#39;</span><span class="p">:</span> <span class="s1">&#39;int8&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;consensus_inhibition&#39;</span><span class="p">:</span> <span class="s1">&#39;int8&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sources&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;curation_effort&#39;</span><span class="p">:</span> <span class="s1">&#39;int16&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;extra_attrs&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;entity_type_source&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;entity_type_target&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="Export.__init__"><a class="viewcode-back" href="../../../api/pypath.omnipath.export.Export.html#pypath.omnipath.export.Export.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">only_sources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">default_vertex_attr_processor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">default_edge_attr_processor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">pa</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+
+        <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;export&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Export object created for network.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="n">extra_node_attrs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="n">extra_edge_attrs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span> <span class="o">=</span> <span class="n">outfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network</span> <span class="ow">or</span> <span class="n">pa</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pa</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">only_sources</span> <span class="o">=</span> <span class="n">only_sources</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">only_sources</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">only_sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">only_sources</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_vertex_attr_processor</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">default_vertex_attr_processor</span> <span class="ow">or</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_vertex_attr_processor</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_edge_attr_processor</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">default_edge_attr_processor</span> <span class="ow">or</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_edge_attr_processor</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_set_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">_get_undirected</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pa</span><span class="p">,</span> <span class="s1">&#39;_get_undirected&#39;</span><span class="p">)</span> <span class="k">else</span>
+            <span class="kc">None</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="Export.make_df"><a class="viewcode-back" href="../../../api/pypath.omnipath.export.Export.html#pypath.omnipath.export.Export.make_df">[docs]</a>    <span class="k">def</span> <span class="nf">make_df</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">unique_pairs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a data frame from the network.</span>
+
+<span class="sd">        By default UniProt IDs, Gene Symbols, source databases, literature</span>
+<span class="sd">        references, directionality and sign information and interaction type</span>
+<span class="sd">        are included.</span>
+
+<span class="sd">        Args</span>
+<span class="sd">        -----</span>
+<span class="sd">        :param bool unique_pairs:</span>
+<span class="sd">            If `True` each line corresponds to a unique pair of molecules,</span>
+<span class="sd">            all directionality and sign information are covered in other</span>
+<span class="sd">            columns. If `False`, order of `A` and `B` IDs corresponds to</span>
+<span class="sd">            the direction while sign covered in further columns.</span>
+<span class="sd">        :param dict extra_node_attrs:</span>
+<span class="sd">            Additional node attributes to be included in the exported table.</span>
+<span class="sd">            Keys are column names used in the header while values are names</span>
+<span class="sd">            of vertex attributes. Values also might be methods which then</span>
+<span class="sd">            will be called then on each vertex. These should return strings</span>
+<span class="sd">            or their result will be converted to string.</span>
+<span class="sd">            In the header `_A` and `_B` suffixes will be appended to the</span>
+<span class="sd">            column names so the values can be assigned to A and B side</span>
+<span class="sd">            interaction partners.</span>
+<span class="sd">        :param dict extra_edge_attrs:</span>
+<span class="sd">            Additional edge attributes to be included in the exported table.</span>
+<span class="sd">            Keys are column names used in the header while values are names</span>
+<span class="sd">            of edge attributes or callables accepting an edge as single</span>
+<span class="sd">            argument.</span>
+<span class="sd">        :param str outfile:</span>
+<span class="sd">            Name of the output file. If `None` a file name</span>
+<span class="sd">            &quot;netrowk-&lt;session id&gt;.tab&quot; is used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Creating data frame of type `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="s1">&#39;unique pairs&#39;</span> <span class="k">if</span> <span class="n">unique_pairs</span> <span class="k">else</span> <span class="s1">&#39;by direction&#39;</span>
+        <span class="p">))</span>
+
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;self&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_make_df_igraph</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_make_df_network</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_make_df_network</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">unique_pairs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See docs at method ``make_df``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Creating data frame from `core.network.Network` object.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">unique_pairs</span><span class="p">:</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Data frame with unique pairs from `core.network.Network` &#39;</span>
+                <span class="s1">&#39;is not implemented yet, only possible to create it from &#39;</span>
+                <span class="s1">&#39;`legacy.main.PyPath` object.&#39;</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="n">extra_node_attrs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_node_attrs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="n">extra_edge_attrs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_edge_attrs</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="n">unique_pairs</span> <span class="o">=</span> <span class="n">unique_pairs</span><span class="p">)</span>
+
+        <span class="n">dtypes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_dtypes_uniquepairs</span>
+                <span class="k">if</span> <span class="n">unique_pairs</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_dtypes_bydirs</span>
+        <span class="p">)</span>
+        <span class="n">dtypes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">header</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">:</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_interaction</span><span class="p">(</span><span class="n">ia</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">process_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ia</span><span class="p">):</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">consensus</span> <span class="o">=</span> <span class="n">ia</span><span class="o">.</span><span class="n">consensus</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;a_b&#39;</span><span class="p">,</span> <span class="s1">&#39;b_a&#39;</span><span class="p">):</span>
+
+            <span class="n">nodes</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ia</span><span class="p">,</span> <span class="n">_dir</span><span class="p">)</span>
+            <span class="n">directed</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ia</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="n">nodes</span><span class="p">])</span>
+            <span class="n">directed_rev</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ia</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">nodes</span><span class="p">))])</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="ow">not</span> <span class="n">directed</span> <span class="ow">and</span>
+                    <span class="p">(</span><span class="n">_dir</span> <span class="o">==</span> <span class="s1">&#39;b_a&#39;</span> <span class="ow">or</span> <span class="n">directed_rev</span><span class="p">)</span>
+                <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                    <span class="n">ia</span><span class="o">.</span><span class="n">is_loop</span><span class="p">()</span> <span class="ow">and</span>
+                    <span class="n">_dir</span> <span class="o">==</span> <span class="s1">&#39;b_a&#39;</span>
+                <span class="p">)</span>
+            <span class="p">):</span>
+
+                <span class="k">continue</span>
+
+            <span class="n">positive</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ia</span><span class="p">,</span> <span class="s1">&#39;positive_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_dir</span><span class="p">)()</span>
+            <span class="n">negative</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ia</span><span class="p">,</span> <span class="s1">&#39;negative_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_dir</span><span class="p">)()</span>
+
+            <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">res</span><span class="p">,</span>
+                        <span class="p">(</span><span class="s1">&#39;_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">via</span><span class="p">)</span> <span class="k">if</span> <span class="n">via</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">res</span><span class="p">,</span> <span class="n">via</span> <span class="ow">in</span>
+                    <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                        <span class="n">ia</span><span class="o">.</span><span class="n">get_resource_names_via</span><span class="p">(</span>
+                            <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">,</span>
+                            <span class="n">via</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="p">),</span>
+                        <span class="n">ia</span><span class="o">.</span><span class="n">get_resource_names_via</span><span class="p">(</span>
+                            <span class="n">direction</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">,</span>
+                            <span class="n">via</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">))</span>
+            <span class="p">)</span>
+
+            <span class="n">references</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">via</span> <span class="ow">or</span> <span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">ref</span><span class="o">.</span><span class="n">pmid</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                        <span class="n">ia</span><span class="o">.</span><span class="n">get_evidences</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">),</span>
+                        <span class="n">ia</span><span class="o">.</span><span class="n">get_evidences</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">),</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">ev</span><span class="o">.</span><span class="n">references</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">via</span>
+                <span class="p">))</span>
+            <span class="p">)</span>
+
+            <span class="n">this_row</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+                <span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+                <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">directed</span><span class="p">),</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">positive</span><span class="p">),</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">negative</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">match_consensus</span><span class="p">(</span>
+                    <span class="n">consensus</span><span class="p">,</span>
+                    <span class="n">nodes</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">match_consensus</span><span class="p">(</span>
+                    <span class="n">consensus</span><span class="p">,</span>
+                    <span class="n">nodes</span><span class="p">,</span>
+                    <span class="s1">&#39;positive&#39;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">match_consensus</span><span class="p">(</span>
+                    <span class="n">consensus</span><span class="p">,</span>
+                    <span class="n">nodes</span><span class="p">,</span>
+                    <span class="s1">&#39;negative&#39;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">resources</span><span class="p">,</span>
+                <span class="n">references</span><span class="p">,</span>
+            <span class="p">]</span>
+
+            <span class="n">this_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_extra_fields</span><span class="p">(</span><span class="n">ia</span><span class="p">,</span> <span class="n">this_row</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_row</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">match_consensus</span><span class="p">(</span><span class="n">consensus</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">effect</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">param</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;directed&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">effect</span><span class="p">:</span>
+
+            <span class="n">param</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">effect</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="nb">any</span><span class="p">(</span>
+                <span class="n">co</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="p">)]</span> <span class="o">==</span> <span class="n">param</span>
+                <span class="k">for</span> <span class="n">co</span> <span class="ow">in</span> <span class="n">consensus</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_make_df_igraph</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">unique_pairs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See docs at method ``make_df``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Creating data frame from `legacy.main.PyPath` object.&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="n">extra_node_attrs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_node_attrs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="n">extra_edge_attrs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_edge_attrs</span>
+
+        <span class="n">dtypes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_dtypes_uniquepairs</span>
+                <span class="k">if</span> <span class="n">unique_pairs</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_dtypes_bydirs</span>
+        <span class="p">)</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="n">unique_pairs</span> <span class="o">=</span> <span class="n">unique_pairs</span><span class="p">)</span>
+
+        <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Creating table&#39;</span><span class="p">,</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="mi">31</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
+
+            <span class="c1"># adding default fields</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_process_edge_uniquepairs_igraph</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">unique_pairs</span> <span class="k">else</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_process_edge_bydirection_igraph</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+            <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Export.get_header"><a class="viewcode-back" href="../../../api/pypath.omnipath.export.Export.html#pypath.omnipath.export.Export.get_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_header</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">unique_pairs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a data frame header (list of field names) according to the</span>
+<span class="sd">        data frame type and the extra fields.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">suffix_a</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span> <span class="k">if</span> <span class="n">unique_pairs</span> <span class="k">else</span> <span class="s1">&#39;source&#39;</span>
+        <span class="n">suffix_b</span> <span class="o">=</span> <span class="s1">&#39;B&#39;</span> <span class="k">if</span> <span class="n">unique_pairs</span> <span class="k">else</span> <span class="s1">&#39;target&#39;</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_header_uniquepairs</span>
+            <span class="k">if</span> <span class="n">unique_pairs</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_header_bydirs</span>
+        <span class="p">)</span>
+        <span class="n">header</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_edge_attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">header</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">suffix_a</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_node_attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="n">header</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">suffix_b</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_node_attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">header</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_process_edge_uniquepairs_igraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a table row representing a network edge with covering all</span>
+<span class="sd">        annotations in a single row: directionality represented by fields</span>
+<span class="sd">        like `Direction_A-B` and `Direction_B-A` effect sign a similar way.</span>
+
+<span class="sd">        Args</span>
+<span class="sd">        -----</span>
+<span class="sd">        :param igraph.Edge e:</span>
+<span class="sd">            An edge from a pypath igraph object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_sources</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_sources</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">vertex_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">]</span>
+        <span class="n">vertex_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">]</span>
+
+        <span class="n">name_a</span><span class="p">,</span> <span class="n">label_a</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="o">.</span><span class="n">igraph_vertex_name_label</span><span class="p">(</span><span class="n">vertex_a</span><span class="p">)</span>
+        <span class="n">name_b</span><span class="p">,</span> <span class="n">label_b</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="o">.</span><span class="n">igraph_vertex_name_label</span><span class="p">(</span><span class="n">vertex_b</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="c1"># uniprots, genesymbols</span>
+                        <span class="n">name_a</span><span class="p">,</span>
+                        <span class="n">label_a</span><span class="p">,</span>
+                        <span class="n">name_b</span><span class="p">,</span>
+                        <span class="n">label_b</span><span class="p">,</span>
+                    <span class="c1"># sources, references</span>
+                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">])),</span>
+                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="nb">sorted</span><span class="p">(</span>
+                                <span class="nb">set</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">pmid</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">]),</span>
+                                <span class="n">key</span> <span class="o">=</span> <span class="nb">int</span>
+                            <span class="p">)</span>
+                        <span class="p">),</span>
+                    <span class="c1"># directions</span>
+                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span>
+                            <span class="s1">&#39;undirected&#39;</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span>
+                            <span class="p">(</span><span class="n">name_a</span><span class="p">,</span> <span class="n">name_b</span><span class="p">),</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span>
+                            <span class="p">(</span><span class="n">name_b</span><span class="p">,</span> <span class="n">name_a</span><span class="p">),</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                <span class="p">),</span>
+                <span class="p">(</span>
+                    <span class="c1"># signs</span>
+                    <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span>
+                    <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                        <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_sign</span><span class="p">((</span><span class="n">name_a</span><span class="p">,</span> <span class="n">name_b</span><span class="p">),</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                        <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_sign</span><span class="p">((</span><span class="n">name_b</span><span class="p">,</span> <span class="n">name_a</span><span class="p">),</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="p">(</span>
+                    <span class="c1"># category</span>
+                    <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]),</span>
+                <span class="p">)</span>
+            <span class="p">))</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_process_edge_bydirection_igraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns one or more table rows representing a network edge a way</span>
+<span class="sd">        that opposite direction connections contained in separate rows.</span>
+<span class="sd">        Directionality and sign information covered in 3 columns:</span>
+<span class="sd">        `is_directed`, `is_inhibition` and `is_stimulation`.</span>
+<span class="sd">        This is the row format used in the webservice.</span>
+
+<span class="sd">        Args</span>
+<span class="sd">        -----</span>
+<span class="sd">        :param igraph.Edge e:</span>
+<span class="sd">            An edge from a pypath igraph object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">consensus_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">consensus_edges</span><span class="p">()))</span>
+        <span class="n">consensus_dir</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">consensus_edges</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;straight&#39;</span><span class="p">,</span> <span class="s1">&#39;reverse&#39;</span><span class="p">]:</span>
+
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">],</span> <span class="n">d</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">uniprots</span><span class="p">]:</span>
+
+                <span class="n">is_stimulation</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_stimulation</span><span class="p">(</span><span class="n">uniprots</span><span class="p">))</span>
+                <span class="n">is_inhibition</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_inhibition</span><span class="p">(</span><span class="n">uniprots</span><span class="p">))</span>
+
+                <span class="n">this_edge</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="o">.</span><span class="n">entity_name_str</span><span class="p">(</span><span class="n">uniprots</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                    <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="o">.</span><span class="n">entity_name_str</span><span class="p">(</span><span class="n">uniprots</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">name_to_label</span><span class="p">(</span><span class="n">uniprots</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">name_to_label</span><span class="p">(</span><span class="n">uniprots</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                    <span class="mi">1</span><span class="p">,</span> <span class="c1"># is_directed</span>
+                    <span class="n">is_stimulation</span><span class="p">,</span>
+                    <span class="n">is_inhibition</span><span class="p">,</span>
+                    <span class="nb">int</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">uniprots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">uniprots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">)</span>
+                        <span class="ow">in</span> <span class="n">consensus_dir</span>
+                    <span class="p">),</span>
+                    <span class="nb">int</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">uniprots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">uniprots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">)</span>
+                        <span class="ow">in</span> <span class="n">consensus_edges</span>
+                    <span class="p">),</span>
+                    <span class="nb">int</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">uniprots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">uniprots</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">)</span>
+                        <span class="ow">in</span> <span class="n">consensus_edges</span>
+                    <span class="p">),</span>
+                <span class="p">]</span>
+
+                <span class="n">dsources</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span><span class="n">uniprots</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">|</span>
+                    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span><span class="s1">&#39;undirected&#39;</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_sources</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dsources</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_sources</span><span class="p">:</span>
+
+                    <span class="k">continue</span>
+
+                <span class="n">this_edge</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                    <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">dsources</span><span class="p">)),</span>
+                    <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">r</span><span class="o">.</span><span class="n">pmid</span>
+                        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+                            <span class="n">rs</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">rs</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;refs_by_source&#39;</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">dsources</span>
+                        <span class="p">))</span>
+                    <span class="p">)</span>
+                <span class="p">])</span>
+
+                <span class="n">this_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_extra_fields</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">this_edge</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">)</span>
+
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_edge</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+
+            <span class="n">this_edge</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="o">.</span><span class="n">entity_name_str</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="o">.</span><span class="n">entity_name_str</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">name_to_label</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">name_to_label</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">])),</span>
+                <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">pmid</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">]]),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dip_urls</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+            <span class="p">]</span>
+
+            <span class="n">this_edge</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_extra_fields_igraph</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">this_edge</span><span class="p">,</span> <span class="s1">&#39;undirected&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_edge</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">lines</span>
+
+
+<div class="viewcode-block" id="Export.add_extra_fields"><a class="viewcode-back" href="../../../api/pypath.omnipath.export.Export.html#pypath.omnipath.export.Export.add_extra_fields">[docs]</a>    <span class="k">def</span> <span class="nf">add_extra_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">dr</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes one table row and using the `igraph.Edge` object and the</span>
+<span class="sd">        direction provided adds the extra node and edge attribute fields</span>
+<span class="sd">        as they are defined in `extra_node_attrs` and `extra_edge_attrs`.</span>
+
+<span class="sd">        Returns the row with extra fields added.</span>
+
+<span class="sd">        Args</span>
+<span class="sd">        -----</span>
+<span class="sd">        :param igraph.Edge e:</span>
+<span class="sd">            One edge.</span>
+<span class="sd">        :param list line:</span>
+<span class="sd">            A table row.</span>
+<span class="sd">        :param tuple,str dr:</span>
+<span class="sd">            Direction key. A tuple of names (most often UniProt IDs) or</span>
+<span class="sd">            `undirected`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># extra edge attributes on demand of the user</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_edge_attrs</span><span class="p">):</span>
+
+            <span class="n">line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generic_attr_processor</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">dr</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">)</span> <span class="k">else</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">default_edge_attr_processor</span><span class="p">(</span>
+                    <span class="n">e</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="ow">and</span>
+                            <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">attributes</span><span class="p">()</span>
+                        <span class="p">)</span> <span class="k">else</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">else</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">attrs</span> <span class="k">else</span>
+                    <span class="kc">None</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># extra vertex attributes</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">])</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">else</span>
+            <span class="n">dr</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_node_attrs</span><span class="p">):</span>
+
+                <span class="n">line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">generic_attr_processor</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">vertex</span><span class="p">,</span> <span class="n">dr</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">)</span> <span class="k">else</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">default_vertex_attr_processor</span><span class="p">(</span>
+                        <span class="n">vertex</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="ow">and</span>
+                                <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">()</span>
+                            <span class="p">)</span> <span class="k">else</span>
+                        <span class="nb">getattr</span><span class="p">(</span><span class="n">vertex</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vertex</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">else</span>
+                        <span class="n">vertex</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vertex</span><span class="o">.</span><span class="n">attrs</span> <span class="k">else</span>
+                        <span class="kc">None</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">line</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">default_vertex_attr_processor</span><span class="p">(</span><span class="n">vattr</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">vattr</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">vattr</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simple_types</span> <span class="k">else</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">strip_json</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                        <span class="n">common</span><span class="o">.</span><span class="n">sets_to_sorted_lists</span><span class="p">(</span><span class="n">vattr</span><span class="p">)</span>
+                    <span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">default_edge_attr_processor</span><span class="p">(</span><span class="n">eattr</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">eattr</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">eattr</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simple_types</span> <span class="k">else</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span>
+                <span class="n">strip_json</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                    <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                        <span class="n">common</span><span class="o">.</span><span class="n">sets_to_sorted_lists</span><span class="p">(</span><span class="n">eattr</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="p">])</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Export.generic_attr_processor"><a class="viewcode-back" href="../../../api/pypath.omnipath.export.Export.html#pypath.omnipath.export.Export.generic_attr_processor">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generic_attr_processor</span><span class="p">(</span><span class="n">proc</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dr</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wraps the attribute processor to handle unknown number of arguments.</span>
+
+<span class="sd">        Not knowing if the attribute processor expects one or two arguments,</span>
+<span class="sd">        have no better way than try: if calling with 2 arguments fails with</span>
+<span class="sd">        `TypeError` we call with one argument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;undirected&#39;</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">dr</span> <span class="ow">and</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;is_directed&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+                <span class="p">)</span> <span class="k">else</span>
+            <span class="n">dr</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">proc</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dr</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="n">proc</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+
+                <span class="k">raise</span> <span class="n">e</span></div>
+
+
+<div class="viewcode-block" id="Export.write_tab"><a class="viewcode-back" href="../../../api/pypath.omnipath.export.Export.html#pypath.omnipath.export.Export.write_tab">[docs]</a>    <span class="k">def</span> <span class="nf">write_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the data frame into a tab separated file.</span>
+
+<span class="sd">        Args</span>
+<span class="sd">        -----</span>
+<span class="sd">        :param **kwargs:</span>
+<span class="sd">            Forwarded to `make_df()`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;df&#39;</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outfile</span> <span class="o">=</span> <span class="n">outfile</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">outfile</span> <span class="o">=</span> <span class="n">outfile</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s1">&#39;network-</span><span class="si">%s</span><span class="s1">.tab&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">session</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">webservice_interactions_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">sources_omnipath</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">omnipath</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">sources_extra_directions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">extra_directions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">sources_kinase_extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">ptm_misc</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">sources_ligrec_extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">ligand_receptor</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">sources_pathway_extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">pathway_noref</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">sources_mirna</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">mirna_target</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">sources_tf_target</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">transcription_onebyone</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">sources_dorothea</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span>
+            <span class="n">unique_pairs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">:</span> <span class="s1">&#39;taxon&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;entity_type&#39;</span><span class="p">:</span> <span class="s1">&#39;entity_type&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;omnipath&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="nb">bool</span><span class="p">(</span>
+                            <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
+                            <span class="n">sources_omnipath</span>
+                        <span class="p">)</span> <span class="ow">or</span>
+                        <span class="p">(</span>
+                            <span class="nb">bool</span><span class="p">(</span>
+                                <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
+                                <span class="n">sources_omnipath</span>
+                            <span class="p">)</span> <span class="ow">and</span>
+                            <span class="nb">bool</span><span class="p">(</span>
+                                <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
+                                <span class="n">sources_extra_directions</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="s1">&#39;post_translational&#39;</span> <span class="ow">in</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;kinaseextra&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
+                        <span class="n">sources_kinase_extra</span>
+                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="s1">&#39;post_translational&#39;</span> <span class="ow">in</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;ligrecextra&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
+                        <span class="n">sources_ligrec_extra</span>
+                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="s1">&#39;post_translational&#39;</span> <span class="ow">in</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;pathwayextra&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
+                        <span class="n">sources_pathway_extra</span>
+                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="s1">&#39;post_translational&#39;</span> <span class="ow">in</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;mirnatarget&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
+                        <span class="n">sources_mirna</span>
+                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="s1">&#39;post_transcriptional&#39;</span> <span class="ow">in</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;dorothea&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_resource_names</span><span class="p">(</span>
+                            <span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">,</span>
+                            <span class="n">interaction_type</span> <span class="o">=</span> <span class="s1">&#39;transcriptional&#39;</span>
+                        <span class="p">)</span> <span class="o">&amp;</span>
+                        <span class="n">sources_dorothea</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;tf_target&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span>
+                            <span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">,</span>
+                            <span class="n">interaction_type</span> <span class="o">=</span> <span class="s1">&#39;transcriptional&#39;</span>
+                        <span class="p">)</span> <span class="o">&amp;</span>
+                        <span class="n">sources_tf_target</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;lncrna_mrna&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s1">&#39;lncrna_post_transcriptional&#39;</span> <span class="ow">in</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;tf_mirna&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s1">&#39;mirna_transcriptional&#39;</span> <span class="ow">in</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;small_molecule&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s1">&#39;small_molecule_protein&#39;</span> <span class="ow">in</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;dorothea_curated&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;curated&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;dorothea_chipseq&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;chipseq&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;dorothea_tfbs&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;tfbs&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;dorothea_coexp&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;coexp&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;dorothea_level&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">dorothea_levels</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;curation_effort&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">count_curation_effort</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">count_curation_effort</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span>
+                        <span class="mi">0</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;extra_attrs&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">serialize_attrs</span><span class="p">(</span><span class="n">d</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">webservice_interactions_df_legacy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">sources_omnipath</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">omnipath</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">sources_extra_directions</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;network_extra_directions&#39;</span><span class="p">)</span>
+        <span class="n">sources_kinase_extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">ptm_misc</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">sources_ligrec_extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">ligand_receptor</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">sources_pathway_extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway_noref</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">sources_mirna</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">mirna_target</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span>
+            <span class="n">unique_pairs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">:</span> <span class="s1">&#39;ncbi_tax_id&#39;</span>
+            <span class="p">},</span>
+            <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;omnipath&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="nb">bool</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">sources_omnipath</span><span class="p">)</span> <span class="ow">or</span>
+                        <span class="p">(</span>
+                            <span class="nb">bool</span><span class="p">(</span>
+                                <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span> <span class="o">&amp;</span>
+                                <span class="n">sources_omnipath</span>
+                            <span class="p">)</span> <span class="ow">and</span>
+                            <span class="nb">bool</span><span class="p">(</span>
+                                <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">&amp;</span>
+                                <span class="n">sources_extra_directions</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span> <span class="ow">and</span>
+                    <span class="s1">&#39;PPI&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;kinaseextra&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">sources_kinase_extra</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="s1">&#39;PPI&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;ligrecextra&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">sources_ligrec_extra</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="s1">&#39;PPI&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;pathwayextra&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">sources_pathway_extra</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="s1">&#39;TF&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;mirnatarget&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">sources_mirna</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="s1">&#39;MTI&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;dorothea&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s1">&#39;TF&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources_by_type&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span>
+                        <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources_by_type&#39;</span><span class="p">][</span><span class="s1">&#39;TF&#39;</span><span class="p">]</span> <span class="o">&amp;</span>
+                        <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;dorothea_curated&#39;</span><span class="p">:</span> <span class="s1">&#39;dorothea_curated&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;dorothea_chipseq&#39;</span><span class="p">:</span> <span class="s1">&#39;dorothea_chipseq&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;dorothea_tfbs&#39;</span><span class="p">:</span>    <span class="s1">&#39;dorothea_tfbs&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;dorothea_coexp&#39;</span><span class="p">:</span>   <span class="s1">&#39;dorothea_coexp&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;dorothea_level&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dorothea_level&#39;</span><span class="p">]))</span> <span class="k">if</span>
+                    <span class="s1">&#39;dorothea_level&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">attributes</span><span class="p">()</span> <span class="ow">and</span>
+                    <span class="s1">&#39;TF&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources_by_type&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span>
+                        <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources_by_type&#39;</span><span class="p">][</span><span class="s1">&#39;TF&#39;</span><span class="p">]</span> <span class="o">&amp;</span>
+                        <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span>
+                    <span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                <span class="c1"># quite wrong (taking only the first one):</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s1">&#39;curation_effort&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">count_curation_effort</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">count_curation_effort</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span>
+                        <span class="mi">0</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Export.sources_table"><a class="viewcode-back" href="../../../api/pypath.omnipath.export.Export.html#pypath.omnipath.export.Export.sources_table">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">sources_table</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">pa</span><span class="p">,</span>
+            <span class="n">only_sources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">unique_pairs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">default_vertex_attr_processor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">default_edge_attr_processor</span>   <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a data frame which contains a column for each source database</span>
+<span class="sd">        with binary values showing presence-absence of interactions across</span>
+<span class="sd">        resources.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">pa</span> <span class="o">=</span> <span class="n">pa</span><span class="p">,</span>
+            <span class="n">only_sources</span> <span class="o">=</span> <span class="n">only_sources</span><span class="p">,</span>
+            <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="n">extra_edge_attrs</span> <span class="ow">or</span> <span class="p">{},</span>
+            <span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="n">extra_node_attrs</span> <span class="ow">or</span> <span class="p">{},</span>
+            <span class="n">outfile</span> <span class="o">=</span> <span class="n">outfile</span><span class="p">,</span>
+            <span class="n">default_vertex_attr_processor</span> <span class="o">=</span> <span class="n">default_vertex_attr_processor</span><span class="p">,</span>
+            <span class="n">default_edge_attr_processor</span>   <span class="o">=</span> <span class="n">default_edge_attr_processor</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">new</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span><span class="n">unique_pairs</span> <span class="o">=</span> <span class="n">unique_pairs</span><span class="p">)</span>
+
+        <span class="n">src_attr</span> <span class="o">=</span> <span class="s1">&#39;Databases&#39;</span> <span class="k">if</span> <span class="n">unique_pairs</span> <span class="k">else</span> <span class="s1">&#39;sources&#39;</span>
+
+        <span class="n">src_all</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">only_sources</span> <span class="ow">or</span> <span class="n">pa</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+
+        <span class="n">src_cols</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">src</span><span class="p">,</span> <span class="p">[])</span> <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">src_all</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">new</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+
+            <span class="n">this_row_src</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">src_attr</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">src_all</span><span class="p">:</span>
+
+                <span class="n">src_cols</span><span class="p">[</span><span class="n">src</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">src</span> <span class="ow">in</span> <span class="n">this_row_src</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">src_all</span><span class="p">:</span>
+
+            <span class="n">new</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                <span class="n">loc</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">src_attr</span><span class="p">),</span>
+                <span class="n">column</span> <span class="o">=</span> <span class="n">src</span><span class="p">,</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">src_cols</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_dip_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+
+        <span class="n">attrs</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">attrs</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">&#39;attrs&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">e</span><span class="o">.</span><span class="n">attributes</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;dip_id&#39;</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+
+            <span class="n">dip_ids</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;dip_id&#39;</span><span class="p">]))</span>
+
+            <span class="k">for</span> <span class="n">dip_id</span> <span class="ow">in</span> <span class="n">dip_ids</span><span class="p">:</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">][</span><span class="s1">&#39;ik&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">dip_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Could not find DIP ID: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">dip_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../index.html">
+   Welcome to pypath!
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../webservice.html">
+   Webservice
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../releasehistory.html">
+   Release history
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../reference.html">
+   Reference
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../notebooks/manual.html">
+   The pypath book
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

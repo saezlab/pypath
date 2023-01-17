@@ -1,0 +1,1881 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.inputs.uniprot &#8212; pypath 0.14.34 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/inputs/uniprot';</script>
+    <link rel="shortcut icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../contents.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-light" alt="Pypath">
+    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath">
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for pypath.inputs.uniprot</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">timeloop</span>
+
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.share.constants</span> <span class="k">as</span> <span class="nn">constants</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;uniprot_input&#39;</span><span class="p">)</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_cleanup_period</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapper_cleanup_interval&#39;</span><span class="p">)</span>
+<span class="n">_lifetime</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">_last_used</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="n">_redatasheet</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([A-Z\s]</span><span class="si">{2}</span><span class="s1">)\s*([^\n\r]+)[\n\r]+&#39;</span><span class="p">)</span>
+
+<span class="c1"># regex for matching UniProt AC format</span>
+<span class="c1"># from https://www.uniprot.org/help/accession_numbers</span>
+<span class="n">reac</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s1">&#39;[OPQ][0-9][A-Z0-9]</span><span class="si">{3}</span><span class="s1">[0-9]|&#39;</span>
+    <span class="sa">r</span><span class="s1">&#39;[A-NR-Z][0-9]([A-Z][A-Z0-9]</span><span class="si">{2}</span><span class="s1">[0-9]){1,2}&#39;</span>
+<span class="p">)</span>
+<span class="n">_rename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Name=([\w\(\)-]+)\W&#39;</span><span class="p">)</span>
+<span class="n">_retaxid</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;=(\d+)[^\d]&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_all_uniprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
+    <span class="n">rev</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39; AND reviewed: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">swissprot</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+    <span class="n">get</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;organism:</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">organism</span><span class="p">),</span> <span class="n">rev</span><span class="p">),</span>
+        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;tab&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">get</span> <span class="o">=</span> <span class="n">get</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">slow</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="all_uniprots"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_uniprots.html#pypath.inputs.uniprot.all_uniprots">[docs]</a><span class="k">def</span> <span class="nf">all_uniprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="all_swissprots"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_swissprots.html#pypath.inputs.uniprot.all_swissprots">[docs]</a><span class="k">def</span> <span class="nf">all_swissprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="all_trembls"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_trembls.html#pypath.inputs.uniprot.all_trembls">[docs]</a><span class="k">def</span> <span class="nf">all_trembls</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="init_db"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.init_db.html#pypath.inputs.uniprot.init_db">[docs]</a><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
+    <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+        <span class="s1">&#39;Loading list of all UniProt IDs for &#39;</span>
+        <span class="s1">&#39;organism `</span><span class="si">%u</span><span class="s1">` (only SwissProt: </span><span class="si">%s</span><span class="s1">).&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">organism</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">swissprot</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span><span class="p">)</span>
+
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_all_uniprots</span><span class="p">(</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.get_db.html#pypath.inputs.uniprot.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]:</span>
+
+        <span class="n">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">)</span>
+
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span></div>
+
+
+<span class="k">def</span> <span class="nf">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="s1">&#39;yes&#39;</span>
+            <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;YES&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">}</span> <span class="k">else</span>
+        <span class="s1">&#39;no&#39;</span>
+            <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;NO&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">}</span> <span class="k">else</span>
+        <span class="kc">None</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="valid_uniprot"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.valid_uniprot.html#pypath.inputs.uniprot.valid_uniprot">[docs]</a><span class="k">def</span> <span class="nf">valid_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if ``name`` fits the format requirements for UniProt accession</span>
+<span class="sd">    numbers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">reac</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="is_uniprot"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_uniprot.html#pypath.inputs.uniprot.is_uniprot">[docs]</a><span class="k">def</span> <span class="nf">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tells if ``name`` is a UniProt ID of ``organism``.</span>
+<span class="sd">    If ``swissprot`` is None then both SwissProt and TrEMBL IDs will be</span>
+<span class="sd">    considered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="is_swissprot"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_swissprot.html#pypath.inputs.uniprot.is_swissprot">[docs]</a><span class="k">def</span> <span class="nf">is_swissprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tells if ``name`` is a SwissProt ID of ``organism``.</span>
+<span class="sd">    For TrEMBL IDs returns False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="is_trembl"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_trembl.html#pypath.inputs.uniprot.is_trembl">[docs]</a><span class="k">def</span> <span class="nf">is_trembl</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tells if ``name`` is a TrEMBL ID of ``organism``.</span>
+<span class="sd">    For SwissProt IDs returns False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></div>
+
+
+<span class="n">_cleanup_timeloop</span> <span class="o">=</span> <span class="n">timeloop</span><span class="o">.</span><span class="n">Timeloop</span><span class="p">()</span>
+<span class="n">_cleanup_timeloop</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="mi">9999</span><span class="p">)</span>
+
+<span class="nd">@_cleanup_timeloop</span><span class="o">.</span><span class="n">job</span><span class="p">(</span>
+    <span class="n">interval</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span>
+        <span class="n">seconds</span> <span class="o">=</span> <span class="n">_cleanup_period</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">_cleanup</span><span class="p">():</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">_lifetime</span><span class="p">:</span>
+
+            <span class="n">_remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<span class="n">_cleanup_timeloop</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">block</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_remove</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]:</span>
+
+        <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Removing UniProt ID list for &#39;</span>
+            <span class="s1">&#39;organism `</span><span class="si">%u</span><span class="s1">` (SwissProt: </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">del</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">]:</span>
+
+        <span class="k">del</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="protein_datasheet"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.protein_datasheet.html#pypath.inputs.uniprot.protein_datasheet">[docs]</a><span class="k">def</span> <span class="nf">protein_datasheet</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;datasheet&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="n">identifier</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="n">datasheet</span> <span class="o">=</span>  <span class="n">_protein_datasheet</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">datasheet</span><span class="p">:</span>
+
+        <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;UniProt ID `</span><span class="si">%s</span><span class="s1">` returns empty response, it might be and an old &#39;</span>
+            <span class="s1">&#39;ID which has been deleted from the database. Attempting to &#39;</span>
+            <span class="s1">&#39;find its history and retrieve either an archived version or &#39;</span>
+            <span class="s1">&#39;the find the new ID which replaced this one.&#39;</span> <span class="o">%</span> <span class="n">identifier</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">uniprot_history_recent_datasheet</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">datasheet</span></div>
+
+
+<div class="viewcode-block" id="deleted_uniprot_genesymbol"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.deleted_uniprot_genesymbol.html#pypath.inputs.uniprot.deleted_uniprot_genesymbol">[docs]</a><span class="k">def</span> <span class="nf">deleted_uniprot_genesymbol</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the archived datasheet for a deleted UniProt ID and returns</span>
+<span class="sd">    the Gene Symbol and the NCBI Taxonomy ID from the datasheet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">datasheet</span> <span class="o">=</span> <span class="n">uniprot_history_recent_datasheet</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="n">genesymbol</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">datasheet</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;GN&#39;</span><span class="p">:</span>
+
+            <span class="n">m</span> <span class="o">=</span> <span class="n">_rename</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+
+                <span class="n">genesymbol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;OX&#39;</span><span class="p">:</span>
+
+            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_retaxid</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">genesymbol</span><span class="p">,</span> <span class="n">ncbi_tax_id</span></div>
+
+
+<span class="k">def</span> <span class="nf">_protein_datasheet</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+
+    <span class="n">cache</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">silent</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">large</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span><span class="p">,</span>
+            <span class="n">connect_timeout</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uniprot_datasheet_connect_timeout&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uniprot_datasheet_timeout&#39;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span> <span class="ow">or</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&lt;!DOCTYPE&#39;</span><span class="p">):</span>
+
+            <span class="n">cache</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+        <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Could not retrieve UniProt datasheet by URL `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">url</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_redatasheet</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span> <span class="k">else</span> <span class="p">[]</span>
+
+
+<div class="viewcode-block" id="uniprot_history_recent_datasheet"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_history_recent_datasheet.html#pypath.inputs.uniprot.uniprot_history_recent_datasheet">[docs]</a><span class="k">def</span> <span class="nf">uniprot_history_recent_datasheet</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+
+    <span class="n">recent_version</span> <span class="o">=</span> <span class="n">uniprot_recent_version</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">recent_version</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">recent_version</span><span class="o">.</span><span class="n">replaced_by</span><span class="p">:</span>
+
+            <span class="n">new</span> <span class="o">=</span> <span class="n">recent_version</span><span class="o">.</span><span class="n">replaced_by</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;datasheet&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="n">new</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;UniProt ID `</span><span class="si">%s</span><span class="s1">` is obsolete, has been replaced by &#39;</span>
+                <span class="s1">&#39;`</span><span class="si">%s</span><span class="s1">`: `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">identifier</span><span class="p">,</span>
+                    <span class="n">new</span><span class="p">,</span>
+                    <span class="n">url</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">protein_datasheet</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">version</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recent_version</span><span class="o">.</span><span class="n">entry_version</span><span class="p">)</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">?version=</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;datasheet&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="n">identifier</span><span class="p">,</span>
+                <span class="n">version</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;UniProt ID `</span><span class="si">%s</span><span class="s1">` is obsolete, downloading archived &#39;</span>
+                <span class="s1">&#39;version </span><span class="si">%u</span><span class="s1">: `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">identifier</span><span class="p">,</span>
+                    <span class="n">version</span><span class="p">,</span>
+                    <span class="n">url</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_protein_datasheet</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<span class="n">UniprotRecordHistory</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+    <span class="s1">&#39;UniprotRecordHistory&#39;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s1">&#39;entry_version&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sequence_version&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;entry_name&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;database&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;number&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;date&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;replaces&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;replaced_by&#39;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="uniprot_history"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_history.html#pypath.inputs.uniprot.uniprot_history">[docs]</a><span class="k">def</span> <span class="nf">uniprot_history</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the history of a record.</span>
+<span class="sd">    Returns a generator iterating over the history from most recent to the</span>
+<span class="sd">    oldest.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">valid_uniprot</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+
+        <span class="n">url_history</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="n">identifier</span>
+        <span class="n">c_history</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+            <span class="n">url_history</span><span class="p">,</span>
+            <span class="n">silent</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">c_history</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+            <span class="n">line0</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c_history</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line0</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&lt;!DOCTYPE&#39;</span><span class="p">):</span>
+
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c_history</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+
+                        <span class="k">yield</span> <span class="n">UniprotRecordHistory</span><span class="p">(</span>
+                            <span class="o">*</span><span class="p">(</span>
+                                <span class="n">field</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="uniprot_recent_version"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_recent_version.html#pypath.inputs.uniprot.uniprot_recent_version">[docs]</a><span class="k">def</span> <span class="nf">uniprot_recent_version</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+
+    <span class="k">for</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">uniprot_history</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">version</span><span class="o">.</span><span class="n">entry_version</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span> <span class="ow">and</span>
+                <span class="n">version</span><span class="o">.</span><span class="n">entry_name</span> <span class="o">!=</span> <span class="s1">&#39;null&#39;</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="n">version</span><span class="o">.</span><span class="n">replaced_by</span>
+        <span class="p">):</span>
+
+            <span class="k">return</span> <span class="n">version</span></div>
+
+
+<div class="viewcode-block" id="uniprot_deleted"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_deleted.html#pypath.inputs.uniprot.uniprot_deleted">[docs]</a><span class="k">def</span> <span class="nf">uniprot_deleted</span><span class="p">(</span><span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">swissprot_deleted</span><span class="p">()</span> <span class="o">|</span> <span class="n">trembl_deleted</span><span class="p">(</span><span class="n">confirm</span> <span class="o">=</span> <span class="n">confirm</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_uniprot_deleted</span><span class="p">(</span><span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">swissprot</span> <span class="ow">and</span> <span class="n">confirm</span><span class="p">:</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+            <span class="s1">&#39;Loading the list of deleted TrEMBL IDs requires &#39;</span>
+            <span class="s1">&#39;&gt;5GB memory. Do you want to proceed [y/n] &#39;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resp</span> <span class="ow">or</span> <span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;deleted_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;sp&#39;</span> <span class="k">if</span> <span class="n">swissprot</span> <span class="k">else</span> <span class="s1">&#39;tr&#39;</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">reac</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<div class="viewcode-block" id="swissprot_deleted"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.swissprot_deleted.html#pypath.inputs.uniprot.swissprot_deleted">[docs]</a><span class="k">def</span> <span class="nf">swissprot_deleted</span><span class="p">():</span>
+
+    <span class="k">return</span> <span class="n">_uniprot_deleted</span><span class="p">(</span><span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="trembl_deleted"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.trembl_deleted.html#pypath.inputs.uniprot.trembl_deleted">[docs]</a><span class="k">def</span> <span class="nf">trembl_deleted</span><span class="p">(</span><span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">_uniprot_deleted</span><span class="p">(</span><span class="n">swissprot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_uniprot_sec"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.get_uniprot_sec.html#pypath.inputs.uniprot.get_uniprot_sec">[docs]</a><span class="k">def</span> <span class="nf">get_uniprot_sec</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads and processes the mapping between secondary and</span>
+<span class="sd">    primary UniProt IDs.</span>
+
+<span class="sd">    Yields pairs of secondary and primary UniProt IDs.</span>
+
+<span class="sd">    :param int organism:</span>
+<span class="sd">        NCBI Taxonomy ID of the organism.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">organism</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span><span class="p">):</span>
+
+        <span class="n">proteome</span> <span class="o">=</span> <span class="n">all_uniprots</span><span class="p">(</span><span class="n">organism</span><span class="o">=</span><span class="n">organism</span><span class="p">)</span>
+        <span class="n">proteome</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">proteome</span><span class="p">)</span>
+
+    <span class="n">sec_pri</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_sec&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span> <span class="o">=</span> <span class="mi">2400</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">line</span><span class="p">:</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span><span class="n">organism</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">proteome</span><span class="p">),</span>
+            <span class="nb">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span>
+                <span class="nb">filter</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">30</span><span class="p">,</span>
+                    <span class="nb">enumerate</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+
+        <span class="k">yield</span> <span class="n">line</span></div>
+
+
+<span class="n">_uniprot_fields</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;function&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(FUNCTION)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;activity_regulation&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(ACTIVITY REGULATION)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;tissue_specificity&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(TISSUE SPECIFICITY)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;developmental_stage&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(DEVELOPMENTAL STAGE)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;induction&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(INDUCTION)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;intramembrane&#39;</span><span class="p">:</span> <span class="s1">&#39;feature(INTRAMEMBRANE)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;signal_peptide&#39;</span><span class="p">:</span> <span class="s1">&#39;feature(SIGNAL)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;subcellular_location&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(SUBCELLULAR LOCATION)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;transmembrane&#39;</span><span class="p">:</span> <span class="s1">&#39;feature(TRANSMEMBRANE)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(MISCELLANEOUS)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;topological_domain&#39;</span><span class="p">:</span> <span class="s1">&#39;feature(TOPOLOGICAL DOMAIN)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;family&#39;</span><span class="p">:</span> <span class="s1">&#39;families&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;interactor&#39;</span><span class="p">:</span> <span class="s1">&#39;interactor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;keywords&#39;</span><span class="p">:</span> <span class="s1">&#39;keywords&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="uniprot_data"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_data.html#pypath.inputs.uniprot.uniprot_data">[docs]</a><span class="k">def</span> <span class="nf">uniprot_data</span><span class="p">(</span>
+        <span class="n">field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">organism</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
+        <span class="n">reviewed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basic client for the legacy, plain UniProt API.</span>
+
+<span class="sd">    Retrieves a field from UniProt for all proteins of one organism, by</span>
+<span class="sd">    default only the reviewed (SwissProt) proteins.</span>
+<span class="sd">    For the available fields refer to the ``_uniprot_fields`` attribute of</span>
+<span class="sd">    this module or the UniProt website:</span>
+<span class="sd">    https://legacy.uniprot.org/help/uniprotkb_column_names</span>
+
+<span class="sd">    Args</span>
+<span class="sd">        field:</span>
+<span class="sd">            One or more UniProt field name. See details.</span>
+<span class="sd">        organism:</span>
+<span class="sd">            Organism name or identifier, e.g. &quot;human&quot;, or &quot;Homo sapiens&quot;,</span>
+<span class="sd">            or 9606.</span>
+<span class="sd">        reviewed:</span>
+<span class="sd">            Restrict the query to SwissProt (True), to TrEMBL (False), or</span>
+<span class="sd">            cover both (None).</span>
+
+<span class="sd">    Return</span>
+<span class="sd">        A dictionary for each ke</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">rev</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39; AND reviewed: yes&#39;</span>
+            <span class="k">if</span> <span class="n">reviewed</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">reviewed</span> <span class="o">==</span> <span class="s1">&#39;yes&#39;</span> <span class="k">else</span>
+        <span class="s1">&#39; AND reviewed: no&#39;</span>
+        <span class="k">if</span> <span class="n">reviewed</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">reviewed</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span> <span class="k">else</span>
+        <span class="s1">&#39;&#39;</span>
+    <span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">organism</span> <span class="o">!=</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span>
+
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
+
+    <span class="n">field</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+    <span class="n">field_qs</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">_uniprot_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">field</span><span class="p">])</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+    <span class="n">get</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;organism:</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">organism</span><span class="p">),</span> <span class="n">rev</span><span class="p">),</span>
+        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;tab&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="n">field_qs</span><span class="p">,</span>
+        <span class="s1">&#39;compress&#39;</span><span class="p">:</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">get</span> <span class="o">=</span> <span class="n">get</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">compr</span> <span class="o">=</span> <span class="s1">&#39;gz&#39;</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+
+
+    <span class="n">_id</span><span class="p">,</span> <span class="o">*</span><span class="n">variables</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+        <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\r</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\r</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="p">))</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">f</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="n">id_value</span> <span class="k">for</span> <span class="n">id_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">id_value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="uniprot_preprocess"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_preprocess.html#pypath.inputs.uniprot.uniprot_preprocess">[docs]</a><span class="k">def</span> <span class="nf">uniprot_preprocess</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">relabel</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[A-Z\s]+:\s&#39;</span><span class="p">)</span>
+    <span class="n">reisoform</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\[[-\w\s]+\]:?\s?&#39;</span><span class="p">)</span>
+    <span class="n">retermsep</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s?[\.,]\s?&#39;</span><span class="p">)</span>
+    <span class="n">reref</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\{[-\w :\|,\.]*\}&#39;</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">uniprot_data</span><span class="p">(</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">reviewed</span> <span class="o">=</span> <span class="n">reviewed</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">raw</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;Note=&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">relabel</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reref</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reisoform</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">retermsep</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Note&#39;</span><span class="p">):</span>
+
+                <span class="k">continue</span>
+
+            <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">elements</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="n">it0</span>
+                <span class="k">for</span> <span class="n">it0</span> <span class="ow">in</span>
+                <span class="p">(</span>
+                    <span class="n">common</span><span class="o">.</span><span class="n">upper0</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; .;,&#39;</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">it0</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">elements</span><span class="p">:</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="uniprot_locations"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_locations.html#pypath.inputs.uniprot.uniprot_locations">[docs]</a><span class="k">def</span> <span class="nf">uniprot_locations</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+
+    <span class="n">UniprotLocation</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;UniprotLocation&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;location&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;features&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">uniprot_preprocess</span><span class="p">(</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="s1">&#39;subcellular_location&#39;</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">reviewed</span> <span class="o">=</span> <span class="n">reviewed</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">locations</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">location</span> <span class="ow">in</span> <span class="n">locations</span><span class="p">:</span>
+
+            <span class="n">result</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">UniprotLocation</span><span class="p">(</span>
+                    <span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">features</span> <span class="o">=</span> <span class="n">location</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="uniprot_keywords"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_keywords.html#pypath.inputs.uniprot.uniprot_keywords">[docs]</a><span class="k">def</span> <span class="nf">uniprot_keywords</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">UniprotKeyword</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;UniprotKeyword&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;keyword&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">uniprot_data</span><span class="p">(</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="s1">&#39;keywords&#39;</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">reviewed</span> <span class="o">=</span> <span class="n">reviewed</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">keywords</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="n">keywords</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">):</span>
+
+            <span class="n">result</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">UniprotKeyword</span><span class="p">(</span>
+                    <span class="n">keyword</span> <span class="o">=</span> <span class="n">keyword</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="uniprot_families"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_families.html#pypath.inputs.uniprot.uniprot_families">[docs]</a><span class="k">def</span> <span class="nf">uniprot_families</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">refamily</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(.+) (?:super)?family(?:, (.*) subfamily)?&#39;</span><span class="p">)</span>
+
+
+    <span class="n">UniprotFamily</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;UniprotFamily&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;family&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;subfamily&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">uniprot_data</span><span class="p">(</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="s1">&#39;family&#39;</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">reviewed</span> <span class="o">=</span> <span class="n">reviewed</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">family</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">family</span><span class="p">:</span>
+
+            <span class="k">continue</span>
+
+        <span class="n">family</span><span class="p">,</span> <span class="n">subfamily</span> <span class="o">=</span> <span class="n">refamily</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">family</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+
+        <span class="n">result</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">UniprotFamily</span><span class="p">(</span>
+                <span class="n">family</span> <span class="o">=</span> <span class="n">family</span><span class="p">,</span>
+                <span class="n">subfamily</span> <span class="o">=</span> <span class="n">subfamily</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="uniprot_topology"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_topology.html#pypath.inputs.uniprot.uniprot_topology">[docs]</a><span class="k">def</span> <span class="nf">uniprot_topology</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">retopo</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;TOPO_DOM (\d+)\.\.(\d+);\s+/note=&quot;(\w+)&quot;&#39;</span><span class="p">)</span>
+    <span class="n">retm</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(TRANSMEM|INTRAMEM) (\d+)\.\.(\d+);&#39;</span><span class="p">)</span>
+
+
+    <span class="n">UniprotTopology</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;UniprotTopology&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;topology&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;start&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;end&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="n">transmem</span> <span class="o">=</span> <span class="n">uniprot_data</span><span class="p">(</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="s1">&#39;transmembrane&#39;</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">reviewed</span> <span class="o">=</span> <span class="n">reviewed</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">intramem</span> <span class="o">=</span> <span class="n">uniprot_data</span><span class="p">(</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="s1">&#39;intramembrane&#39;</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">reviewed</span> <span class="o">=</span> <span class="n">reviewed</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">uniprot_data</span><span class="p">(</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="s1">&#39;signal_peptide&#39;</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">reviewed</span> <span class="o">=</span> <span class="n">reviewed</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">uniprot_data</span><span class="p">(</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="s1">&#39;topological_domain&#39;</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">reviewed</span> <span class="o">=</span> <span class="n">reviewed</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">topo</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">topo_dom</span> <span class="ow">in</span> <span class="n">retopo</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">topo</span><span class="p">):</span>
+
+            <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">topology</span> <span class="o">=</span> <span class="n">topo_dom</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+
+            <span class="n">result</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">UniprotTopology</span><span class="p">(</span>
+                    <span class="n">topology</span> <span class="o">=</span> <span class="n">topology</span><span class="p">,</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">,</span>
+                    <span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">tm</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+        <span class="n">iteritems</span><span class="p">(</span><span class="n">transmem</span><span class="p">),</span>
+        <span class="n">iteritems</span><span class="p">(</span><span class="n">intramem</span><span class="p">),</span>
+        <span class="n">iteritems</span><span class="p">(</span><span class="n">signal</span><span class="p">),</span>
+    <span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">mem</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">retm</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">tm</span><span class="p">):</span>
+
+            <span class="n">topology</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">mem</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span>
+                    <span class="s1">&#39;brane&#39;</span> <span class="k">if</span> <span class="n">mem</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;MEM&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+
+            <span class="n">result</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">UniprotTopology</span><span class="p">(</span>
+                    <span class="n">topology</span> <span class="o">=</span> <span class="n">topology</span><span class="p">,</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">,</span>
+                    <span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="uniprot_tissues"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_tissues.html#pypath.inputs.uniprot.uniprot_tissues">[docs]</a><span class="k">def</span> <span class="nf">uniprot_tissues</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">reref</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s?\{.*\}\s?&#39;</span><span class="p">)</span>
+    <span class="n">resep</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s1">&#39;,?(?:&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; in almost all |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; but also in |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; but also at |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; within the |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39;, in |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; in |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; but |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39;, and |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; and |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; such as |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; \(both |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; as well as |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; as |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; or |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; at the |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; at |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; including |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; during |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; especially |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; to |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; into |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; = |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39; &gt; |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39;; |&#39;</span>
+            <span class="sa">r</span><span class="s1">&#39;, &#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;)(?=[^\d])&#39;</span>
+    <span class="p">)</span>
+    <span class="n">relabel</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^TISSUE SPECIFICITY: &#39;</span><span class="p">)</span>
+    <span class="n">repubmed</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\(?PubMed:?\d+\)?&#39;</span><span class="p">)</span>
+    <span class="n">respeci</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\w+)[-\s]specific&#39;</span><span class="p">)</span>
+    <span class="n">rethe</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s1">&#39;\s?(?:&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Tt]he |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ii]n |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ss]ome|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ii]n the|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ww]ithin the|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ww]ithin|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ii]nto|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ww]ith only|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ww]ith the|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ww]ith an|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ww]ith |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ii]s |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Mm]any  |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Aa] variety of &#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Aa] |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ii]t |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Tt]o |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Oo]n |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Oo]f |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Tt]hose |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Ff]rom |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Aa]lso|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Bb]y |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Pp]articularly|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Pp]articular|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Pp]atients|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;[Aa]n |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;:|&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;/&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;)?(.*)&#39;</span>
+    <span class="p">)</span>
+    <span class="n">reand</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?: and| of| from| or| than)$&#39;</span><span class="p">)</span>
+    <span class="n">replevel</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\(at \w+ levels?\)&#39;</span><span class="p">)</span>
+    <span class="n">reiso</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[Ii]soform \w+&#39;</span><span class="p">)</span>
+    <span class="n">reindef</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s1">&#39;\w&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;(?:&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;ifferent parts of |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;ariety of tissues |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39; variety of tissues |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39; number of |&#39;</span>
+           <span class="sa">r</span><span class="s1">&#39;everal regions of &#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;)&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">level_kw</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;weak&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lesser extent&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;minimal level&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;decrease&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;moderate&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;barely&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;minor level&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;reduced&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lesser&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;down-regulated&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;elevated&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;strong&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;prominent&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;greatest level&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;concentrated&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;predominant&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;increase&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;enrich&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;abundant&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;primarily&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;induced&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;up-regulated&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;up regulated&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;expression is restricted&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;amplified&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;basal l&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;not detected&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;absent&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;expressed&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;detect&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;found&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;present&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;expression&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;localized&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;produced&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;confined&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;transcribed&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;xpressed&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;synthesized&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;secreted&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;seen&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;prevalent&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;released&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;appears&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;varying levels&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;various levels&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;identified&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;observed&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;occurs&#39;</span><span class="p">,</span> <span class="s1">&#39;undefined&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">wide_kw</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;widely&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;wide tissue distribution&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;wide range of tissues&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;wide range of adult tissues&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;wide range of cells&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;wide variety of normal adult tissues&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;widespread&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;ubiquitous&#39;</span><span class="p">,</span> <span class="s1">&#39;ubiquitous&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;variety of tissues&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;many tissues&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;many organs&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;various organs&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;various tissues&#39;</span><span class="p">,</span> <span class="s1">&#39;wide&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">tissue_exclude</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Adult&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;All&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Apparently not&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Areas&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Are likely&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Both&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;By contrast&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Normal cells&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Not only&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;[]: Localized&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Early&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Change from a quiescent&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Central&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Beta&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;This layer&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;With little&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Preferential occurrence&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Stage III&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Take up&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Hardly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Only seen&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Prevalent&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Inner segment&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Memory&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Many fetal&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Tissues&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;0 kb&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;9 kb&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A 2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A 3&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A 5&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A 6&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;1-7&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;1b-1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;2 is widely&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;8 and 4&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Often amplified&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Other&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Others&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Those&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Tissues examined&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Tissues with&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Tissues (e)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Probably shed&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Reports that&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Primitive&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Prolactin&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Overlap&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A smaller 0&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A smaller form&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A smaltissues&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Different levels&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Different amounts&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Disappears&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Digestion&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Very similar&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Vivo&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Contrary&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Contrast&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Not&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Not all&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Has it&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Has little&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;All stages&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Soon&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Specific&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Stage I&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Stage II&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Stages II&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Ends&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A minor degree&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;A much smaller extent&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Lost&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Varies&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Various&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Mostly restricted&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Mostly&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Most probably&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Much more stable&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Naive&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Neither&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Nor&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;None&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">exclude_startswith</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Were&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Where&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Which&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;While&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;When&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;There&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Their&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Then&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;These&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Level&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;This&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Almost&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;If&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Control&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Be &#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Although&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Than&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Addition&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">exclude_in</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;kb transcript&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;compared&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;soform&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;concentration of&#39;</span>
+    <span class="p">)</span>
+
+
+    <span class="n">UniprotTissue</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;UniprotTissue&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;tissue&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;level&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">uniprot_data</span><span class="p">(</span>
+        <span class="s1">&#39;tissue_specificity&#39;</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">reviewed</span> <span class="o">=</span> <span class="n">reviewed</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">raw</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">relabel</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reref</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">replevel</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reiso</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">repubmed</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reindef</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;adult and fetal&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">phrase</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+
+            <span class="n">tokens</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">resep</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">phrase</span><span class="p">))</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+
+                <span class="n">level_token</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">wide_token</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">tissue</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="n">token_lower</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">kw</span><span class="p">,</span> <span class="n">lev</span> <span class="ow">in</span> <span class="n">level_kw</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">token_lower</span><span class="p">:</span>
+
+                        <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span>
+                        <span class="n">level_token</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">level_token</span><span class="p">:</span>
+
+                    <span class="k">for</span> <span class="n">kw</span><span class="p">,</span> <span class="n">wide</span> <span class="ow">in</span> <span class="n">wide_kw</span><span class="p">:</span>
+
+                        <span class="k">if</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">token_lower</span><span class="p">:</span>
+
+                            <span class="n">tissue</span> <span class="o">=</span> <span class="n">wide</span>
+                            <span class="n">wide_token</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">break</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">level_token</span> <span class="ow">or</span> <span class="n">wide_token</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">wide_token</span><span class="p">:</span>
+
+                        <span class="n">specific</span> <span class="o">=</span> <span class="n">respeci</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+                        <span class="n">tissue</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">specific</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">specific</span> <span class="k">else</span>
+                            <span class="n">token</span>
+                        <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">specific</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">level</span><span class="p">:</span>
+
+                            <span class="n">level</span> <span class="o">=</span> <span class="s1">&#39;high&#39;</span>
+
+                    <span class="k">if</span> <span class="n">tissue</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+
+                        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">e</span> <span class="ow">in</span> <span class="n">tissue</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exclude_in</span><span class="p">):</span>
+
+                            <span class="k">continue</span>
+
+                        <span class="n">tissue</span> <span class="o">=</span> <span class="n">rethe</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">tissue</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">tissue</span> <span class="o">=</span> <span class="n">rethe</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">tissue</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">tissue</span> <span class="o">=</span> <span class="n">rethe</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">tissue</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="n">tissue</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">):</span>
+
+                            <span class="n">tissue</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> cells&#39;</span> <span class="o">%</span> <span class="n">tissue</span>
+
+                        <span class="n">tissue</span> <span class="o">=</span> <span class="n">tissue</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;)(.,;- &#39;</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="s1">&#39;(&#39;</span> <span class="ow">in</span> <span class="n">tissue</span> <span class="ow">and</span> <span class="s1">&#39;)&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tissue</span><span class="p">:</span>
+
+                            <span class="n">tissue</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">tissue</span>
+
+                        <span class="n">tissue</span> <span class="o">=</span> <span class="n">reand</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">tissue</span><span class="p">)</span>
+                        <span class="n">tissue</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">upper0</span><span class="p">(</span><span class="n">tissue</span><span class="p">)</span>
+                        <span class="n">tissue</span> <span class="o">=</span> <span class="n">tissue</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;  &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                            <span class="n">tissue</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exclude_startswith</span>
+                        <span class="p">):</span>
+
+                            <span class="k">continue</span>
+
+                        <span class="k">if</span> <span class="n">tissue</span> <span class="ow">in</span> <span class="n">tissue_exclude</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">tissue</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+
+                            <span class="k">continue</span>
+
+                        <span class="n">result</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                            <span class="n">UniprotTissue</span><span class="p">(</span>
+                                <span class="n">tissue</span> <span class="o">=</span> <span class="n">tissue</span><span class="p">,</span>
+                                <span class="n">level</span> <span class="o">=</span> <span class="n">level</span> <span class="ow">or</span> <span class="s1">&#39;undefined&#39;</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="uniprot_taxonomy"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_taxonomy.html#pypath.inputs.uniprot.uniprot_taxonomy">[docs]</a><span class="k">def</span> <span class="nf">uniprot_taxonomy</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dictionary with SwissProt IDs as keys and sets of various taxon</span>
+<span class="sd">    names as values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">rename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\(?(\w[\w\s</span><span class="se">\&#39;</span><span class="s1">,/\.-]+\w)\)?&#39;</span><span class="p">)</span>
+    <span class="n">reac</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*\w+\s+\(([A-Z\d]+)\)\s*,&#39;</span><span class="p">)</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;speindex&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39; &#39;</span><span class="p">:</span>
+
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">rename</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">ac</span> <span class="ow">in</span> <span class="n">reac</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">ac</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<span class="n">Taxon</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+    <span class="s1">&#39;Taxon&#39;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s1">&#39;ncbi_id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;latin&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;english&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;latin_synonym&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">Taxon</span><span class="o">.</span><span class="fm">__new__</span><span class="o">.</span><span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="uniprot_ncbi_taxids"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_ncbi_taxids.html#pypath.inputs.uniprot.uniprot_ncbi_taxids">[docs]</a><span class="k">def</span> <span class="nf">uniprot_ncbi_taxids</span><span class="p">():</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;taxids&#39;</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="n">settings</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">curl_timeout</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">compr</span> <span class="o">=</span> <span class="s1">&#39;gz&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+
+            <span class="n">taxid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="n">result</span><span class="p">[</span><span class="n">taxid</span><span class="p">]</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span>
+                <span class="n">ncbi_id</span> <span class="o">=</span> <span class="n">taxid</span><span class="p">,</span>
+                <span class="n">latin</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">english</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="uniprot_ncbi_taxids_2"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_ncbi_taxids_2.html#pypath.inputs.uniprot.uniprot_ncbi_taxids_2">[docs]</a><span class="k">def</span> <span class="nf">uniprot_ncbi_taxids_2</span><span class="p">():</span>
+
+    <span class="n">reline</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s1">&#39;(?:([A-Z\d]+)\s+)?&#39;</span> <span class="c1"># code</span>
+        <span class="sa">r</span><span class="s1">&#39;(?:([A-Z]))?\s+&#39;</span> <span class="c1"># kingdom</span>
+        <span class="sa">r</span><span class="s1">&#39;(?:(\d+): )?&#39;</span> <span class="c1"># NCBI Taxonomy ID</span>
+        <span class="sa">r</span><span class="s1">&#39;([A-Z])=&#39;</span> <span class="c1"># name type</span>
+        <span class="sa">r</span><span class="s1">&#39;([ \w\(\),/\.</span><span class="se">\&#39;</span><span class="s1">-]+)[\n\r\s]*&#39;</span> <span class="c1"># the name</span>
+    <span class="p">)</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;speclist&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">reline</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+
+            <span class="n">_code</span><span class="p">,</span> <span class="n">_kingdom</span><span class="p">,</span> <span class="n">_taxid</span><span class="p">,</span> <span class="n">_name_type</span><span class="p">,</span> <span class="n">_name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">_taxid</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">entry</span> <span class="ow">and</span> <span class="s1">&#39;ncbi_id&#39;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+
+                    <span class="n">result</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;ncbi_id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="p">)</span>
+
+                <span class="n">entry</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;ncbi_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_taxid</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">_name_type</span> <span class="o">==</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span>
+
+                <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;latin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_name</span>
+
+            <span class="k">elif</span> <span class="n">_name_type</span> <span class="o">==</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span>
+
+                <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;english&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_name</span>
+
+            <span class="k">elif</span> <span class="n">_name_type</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span>
+
+                <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;latin_synonym&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_name</span>
+
+    <span class="k">if</span> <span class="n">entry</span> <span class="ow">and</span> <span class="s1">&#39;ncbi_id&#39;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+
+        <span class="n">result</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;ncbi_id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../index.html">
+   Welcome to pypath!
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../webservice.html">
+   Webservice
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../releasehistory.html">
+   Release history
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../reference.html">
+   Reference
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../../../notebooks/manual.html">
+   The pypath book
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
