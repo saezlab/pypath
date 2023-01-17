@@ -101,6 +101,9 @@ def _ctdbase_download(_type: str) -> list[tuple]:
 
             data[i] = v
 
+        if len(data) != len(fieldnames):
+            continue # some lines have missing fields and cannot be parsed
+
         entry = {}
         for (fieldname, element) in zip(fieldnames, data):
             if element == "":
