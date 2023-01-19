@@ -1610,6 +1610,11 @@ urls = {
         'label': 'Comparative Toxicogenomics Database',
         'url': 'http://ctdbase.org/reports/%s',
     },
+    'trrust': {
+        'label': 'Transcriptional Regulatory Relationships Unraveled by Sentence-based Text mining',
+        'scraping_url': 'https://www.grnpedia.org/trrust/data/search_list.%s.htm',
+        'tsv_url': 'https://www.grnpedia.org/trrust/data/trrust_rawdata.%s.tsv'
+    }
 }
 
 

@@ -3641,9 +3641,6 @@
     "omictools": ["http://omictools.com/pazar-tool"],
     "dateUpdated":"Nov 2016"
   },
-  "TRRUST": {
-    "license": "CC BY-SA 4.0"
-  },
   "HTRIdb": {
     "synonyms": ["HTRI"],
     "full_name": "Human Transcriptional Reference Interactome",
@@ -4702,5 +4699,15 @@
         "https://pubmed.ncbi.nlm.nih.gov/36169237/"
       ]
     }
-  }
+  },
+  "TRRUST": {
+    "full_name": "Transcriptional Regulatory Relationships Unraveled by Sentence-based Text mining",
+    "license": "CC BY-SA 4.0",
+    "urls": {
+      "webpages": ["https://www.grnpedia.org/trrust/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/29087512/"
+      ]
+    }
+  }  
 }
