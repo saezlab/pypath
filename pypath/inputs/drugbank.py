@@ -539,8 +539,8 @@ class DrugbankFull:
         }
 
         # TODO: later process and engage fields below
-        # future_fields: 'salts', 'prices', 'dosages', 'sequences', 'calculated_properties',
-        #               'experimental_properties', 'external_identifiers', 'external_links',
+        # future_fields: 'salts', 'prices', 'dosages', 'sequences',
+        #               'experimental_properties', 'external_links',
         #               'reactions', 'snp_effects', 'snp_adverse_drug_reactions'
             
         fields = fields or basic_fields + list(fields_w_subfields.keys())
@@ -666,6 +666,7 @@ class DrugbankFull:
  
         return result
 
+
     def drugbank_external_ids_full(
             self,
         ) -> dict[str, dict]:
@@ -687,5 +688,30 @@ class DrugbankFull:
                     result[db_id] = {}
 
                 result[db_id][source] = identifier
+
+        return result
+
+
+    def drugbank_properties_full(
+            self,
+        ) -> dict[str, dict]:
+        """
+            Returns a dictionary containing calculated properties of drugs.
+        """
+
+        result = {}
+
+        for drug in self.drugs:
+
+            db_id = [i for i in drug.xpath('db:drugbank-id', namespaces=self.ns) if i.attrib.get('primary') == 'true'][0].text
+
+            for prop in drug.xpath('db:calculated-properties/db:property', namespaces=self.ns):
+                kind = prop.xpath('db:kind', namespaces=self.ns)[0].text
+                identifier = prop.xpath('db:value', namespaces=self.ns)[0].text
+
+                if db_id not in result:
+                    result[db_id] = {}
+
+                result[db_id][kind] = identifier
 
         return result
