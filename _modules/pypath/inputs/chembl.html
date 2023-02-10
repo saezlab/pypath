@@ -500,7 +500,7 @@
             <span class="k">break</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
         <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
         <span class="n">tgt_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
@@ -564,7 +564,7 @@
             <span class="k">break</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
         <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
         <span class="n">assay_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
@@ -603,6 +603,7 @@
 
 
     <span class="n">fields_molecule</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">,</span>
         <span class="s1">&#39;alogp&#39;</span><span class="p">,</span>
         <span class="s1">&#39;canonical_smiles&#39;</span><span class="p">,</span>
         <span class="s1">&#39;chirality&#39;</span><span class="p">,</span>
@@ -646,11 +647,12 @@
             <span class="k">break</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
         <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
         <span class="n">mol_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
             <span class="n">ChemblMolecule</span><span class="p">(</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;pref_name&#39;</span><span class="p">],</span>
                 <span class="n">chirality</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;chirality&#39;</span><span class="p">],</span>
                 <span class="nb">type</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;molecule_type&#39;</span><span class="p">],</span>
                 <span class="n">prodrug</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;prodrug&#39;</span><span class="p">],</span>
@@ -752,7 +754,7 @@
             <span class="k">break</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
         <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
 
@@ -805,18 +807,18 @@
             <span class="k">break</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
         <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;pubmed_id&#39;</span><span class="p">]:</span>
-                <span class="n">document_dict</span><span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;chembl_id&#39;</span><span class="p">]]</span><span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;pubmed_id&#39;</span><span class="p">]</span>
+                <span class="n">document_dict</span><span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;document_chembl_id&#39;</span><span class="p">]]</span><span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;pubmed_id&#39;</span><span class="p">]</span>
     
     <span class="k">return</span> <span class="n">document_dict</span></div>
 
 
 <div class="viewcode-block" id="chembl_drug_indications"><a class="viewcode-back" href="../../../api/pypath.inputs.chembl.chembl_drug_indications.html#pypath.inputs.chembl.chembl_drug_indications">[docs]</a><span class="k">def</span> <span class="nf">chembl_drug_indications</span><span class="p">(</span>
-    <span class="n">max_phase_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_phase_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves drug indications data from ChEMBL.</span>
@@ -866,7 +868,7 @@
             <span class="k">break</span>
         
         <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
         <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
         <span class="n">indication_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
@@ -884,6 +886,68 @@
         <span class="p">)</span>
     
     <span class="k">return</span> <span class="n">indication_lst</span></div>
+
+
+<div class="viewcode-block" id="chembl_mechanisms"><a class="viewcode-back" href="../../../api/pypath.inputs.chembl.chembl_mechanisms.html#pypath.inputs.chembl.chembl_mechanisms">[docs]</a><span class="k">def</span> <span class="nf">chembl_mechanisms</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves mechanism data from ChEMBL.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        List of mechanisms as namedtuples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields_mechanism</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;action_type&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;direct_interaction&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;disease_efficacy&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mechanism_of_action&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;chembl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;target_chembl&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ChemblMechanism</span><span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;ChemblMechanism&#39;</span><span class="p">,</span>
+        <span class="n">fields_mechanism</span><span class="p">,</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields_mechanism</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">mechanism_lst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">page_dct</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">page_dct</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;mechanism&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="n">mechanism_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">ChemblMechanism</span><span class="p">(</span>
+                <span class="n">action_type</span> <span class="o">=</span> <span class="n">mech</span><span class="p">[</span><span class="s1">&#39;action_type&#39;</span><span class="p">],</span>
+                <span class="n">direct_interaction</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">mech</span><span class="p">[</span><span class="s1">&#39;direct_interaction&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="n">disease_efficacy</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">mech</span><span class="p">[</span><span class="s1">&#39;disease_efficacy&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="n">mechanism_of_action</span> <span class="o">=</span> <span class="n">mech</span><span class="p">[</span><span class="s1">&#39;mechanism_of_action&#39;</span><span class="p">],</span>
+                <span class="n">chembl</span> <span class="o">=</span> <span class="n">mech</span><span class="p">[</span><span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">],</span>
+                <span class="n">target_chembl</span> <span class="o">=</span> <span class="n">mech</span><span class="p">[</span><span class="s1">&#39;target_chembl_id&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">mech</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;mechanisms&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">mechanism_lst</span></div>
 </pre></div>
 
             </article>
