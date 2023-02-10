@@ -75,7 +75,7 @@ def chembl_targets() -> list[tuple]:
             break
 
         c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name)
+        fileobj = open(c.fileobj.name, encoding='utf-8')
         page_dct = json.loads(fileobj.read())
 
         tgt_lst.extend(
@@ -139,7 +139,7 @@ def chembl_assays() -> list[tuple] :
             break
 
         c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name)
+        fileobj = open(c.fileobj.name, encoding='utf-8')
         page_dct = json.loads(fileobj.read())
 
         assay_lst.extend(
@@ -178,6 +178,7 @@ def chembl_molecules() -> list[tuple]:
 
 
     fields_molecule = (
+        'name',
         'alogp',
         'canonical_smiles',
         'chirality',
@@ -221,11 +222,12 @@ def chembl_molecules() -> list[tuple]:
             break
 
         c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name)
+        fileobj = open(c.fileobj.name, encoding='utf-8')
         page_dct = json.loads(fileobj.read())
 
         mol_lst.extend(
             ChemblMolecule(
+                name = mol['pref_name'],
                 chirality = mol['chirality'],
                 type = mol['molecule_type'],
                 prodrug = mol['prodrug'],
@@ -327,7 +329,7 @@ def chembl_activities(
             break
 
         c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name)
+        fileobj = open(c.fileobj.name, encoding='utf-8')
         page_dct = json.loads(fileobj.read())
 
 
@@ -380,18 +382,18 @@ def chembl_documents() -> dict[str, str] :
             break
 
         c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name)
+        fileobj = open(c.fileobj.name, encoding='utf-8')
         page_dct = json.loads(fileobj.read())
 
         for doc in page_dct['documents']:
             if doc['pubmed_id']:
-                document_dict[doc['chembl_id']]= doc['pubmed_id']
+                document_dict[doc['document_chembl_id']]= doc['pubmed_id']
     
     return document_dict
 
 
 def chembl_drug_indications(
-    max_phase_threshold: int = 1,
+    max_phase_threshold: int = 0,
     ) -> list[tuple]:
     """
     Retrieves drug indications data from ChEMBL.
@@ -441,7 +443,7 @@ def chembl_drug_indications(
             break
         
         c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name)
+        fileobj = open(c.fileobj.name, encoding='utf-8')
         page_dct = json.loads(fileobj.read())
 
         indication_lst.extend(
@@ -459,3 +461,65 @@ def chembl_drug_indications(
         )
     
     return indication_lst
+
+
+def chembl_mechanisms() -> list[tuple]:
+    """
+    Retrieves mechanism data from ChEMBL.
+
+    Returns
+        List of mechanisms as namedtuples.
+    """
+
+    fields_mechanism = (
+        'action_type',
+        'direct_interaction',
+        'disease_efficacy',
+        'mechanism_of_action',
+        'chembl',
+        'target_chembl',
+    )
+
+    ChemblMechanism= collections.namedtuple(
+        'ChemblMechanism',
+        fields_mechanism,
+        defaults = (None,) * len(fields_mechanism),
+    )
+
+    mechanism_lst = []
+    page_dct = {}
+
+    while True:
+
+        if not page_dct:
+            url = (
+                f"{urls.urls['chembl']['url']}"
+                f"{urls.urls['chembl']['mechanism']}"
+            )
+
+        elif page_dct['page_meta']['next']:
+            url = (
+                f"{urls.urls['chembl']['url']}"
+                f"{page_dct['page_meta']['next']}"
+            )
+
+        else:
+            break
+
+        c = curl.Curl(url, large=True, silent=False)
+        fileobj = open(c.fileobj.name, encoding='utf-8')
+        page_dct = json.loads(fileobj.read())
+
+        mechanism_lst.extend(
+            ChemblMechanism(
+                action_type = mech['action_type'],
+                direct_interaction = True if mech['direct_interaction'] == 1 else False,
+                disease_efficacy = True if mech['disease_efficacy'] == 1 else False,
+                mechanism_of_action = mech['mechanism_of_action'],
+                chembl = mech['molecule_chembl_id'],
+                target_chembl = mech['target_chembl_id'],
+            )
+            for mech in page_dct['mechanisms']
+        )
+    
+    return mechanism_lst

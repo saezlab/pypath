@@ -1576,6 +1576,7 @@ urls = {
         'molecule' : '/chembl/api/data/molecule.json?limit=1000',
         'document' : '/chembl/api/data/document.json?limit=1000',
         'drug_indication' : '/chembl/api/data/drug_indication.json?limit=1000',
+        'mechanism' : '/chembl/api/data/mechanism.json?limit=1000',
     },
     'hpo': {
         'label': 'HPO database',
