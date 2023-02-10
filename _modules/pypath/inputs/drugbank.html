@@ -964,8 +964,8 @@
         <span class="p">}</span>
 
         <span class="c1"># TODO: later process and engage fields below</span>
-        <span class="c1"># future_fields: &#39;salts&#39;, &#39;prices&#39;, &#39;dosages&#39;, &#39;sequences&#39;, &#39;calculated_properties&#39;,</span>
-        <span class="c1">#               &#39;experimental_properties&#39;, &#39;external_identifiers&#39;, &#39;external_links&#39;,</span>
+        <span class="c1"># future_fields: &#39;salts&#39;, &#39;prices&#39;, &#39;dosages&#39;, &#39;sequences&#39;,</span>
+        <span class="c1">#               &#39;experimental_properties&#39;, &#39;external_links&#39;,</span>
         <span class="c1">#               &#39;reactions&#39;, &#39;snp_effects&#39;, &#39;snp_adverse_drug_reactions&#39;</span>
             
         <span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span> <span class="ow">or</span> <span class="n">basic_fields</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">fields_w_subfields</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -1091,6 +1091,7 @@
  
         <span class="k">return</span> <span class="n">result</span></div>
 
+
 <div class="viewcode-block" id="DrugbankFull.drugbank_external_ids_full"><a class="viewcode-back" href="../../../api/pypath.inputs.drugbank.DrugbankFull.html#pypath.inputs.drugbank.DrugbankFull.drugbank_external_ids_full">[docs]</a>    <span class="k">def</span> <span class="nf">drugbank_external_ids_full</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
@@ -1112,6 +1113,31 @@
                     <span class="n">result</span><span class="p">[</span><span class="n">db_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
                 <span class="n">result</span><span class="p">[</span><span class="n">db_id</span><span class="p">][</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">identifier</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="DrugbankFull.drugbank_properties_full"><a class="viewcode-back" href="../../../api/pypath.inputs.drugbank.DrugbankFull.html#pypath.inputs.drugbank.DrugbankFull.drugbank_properties_full">[docs]</a>    <span class="k">def</span> <span class="nf">drugbank_properties_full</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns a dictionary containing calculated properties of drugs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">drug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">drugs</span><span class="p">:</span>
+
+            <span class="n">db_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:drugbank-id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:calculated-properties/db:property&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">):</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:kind&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">identifier</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:value&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+
+                <span class="k">if</span> <span class="n">db_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">db_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">db_id</span><span class="p">][</span><span class="n">kind</span><span class="p">]</span> <span class="o">=</span> <span class="n">identifier</span>
 
         <span class="k">return</span> <span class="n">result</span></div></div>
 </pre></div>
