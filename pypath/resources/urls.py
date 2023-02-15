@@ -1621,6 +1621,20 @@ urls = {
     'humsavar': {
         'label': 'A Database contains all missense variants annotated in UniProtKB/Swiss-Prot human entries',
         'url': 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/docs/humsavar.txt'
+    },
+    'twosides': {
+        'label': 'A comprehensive database drug-drug-effect relationships',
+        'url': 'https://tatonettilab.org/resources/nsides/TWOSIDES.csv.gz'
+    },
+    'offsides': {
+        'label': 'A database of drug side-effects that were found, but are not listed on the official FDA label',
+        'url': 'https://tatonettilab.org/resources/nsides/OFFSIDES.csv.gz'
+    },
+    'adrecs': {
+        'label': 'A comprehensive ADR ontology database that provides both standardization and hierarchical classification of ADR terms.',
+        'url_drug_information': 'http://bioinf.xmu.edu.cn/ADReCS/download/Drug_information.xlsx.gz',
+        'url_terminology': 'http://bioinf.xmu.edu.cn/ADReCS/download/ADR_ontology.xlsx.gz',
+        'url_adrecs_drugs': 'http://bioinf.xmu.edu.cn/ADReCS/download/Drug_ADR.txt.gz'
     }
 }
 

@@ -4715,5 +4715,30 @@
   "Humsavar": {
     "license": "CC BY 4.0",
     "urls": {}
+  },
+  "Twosides": {
+    "license": "",
+    "urls": {
+      "webpages": ["https://tatonettilab.org/offsides/"],
+      "articles": [
+      ]
+    }
+  },
+  "Offsides": {
+    "license": "",
+    "urls": {
+      "webpages": ["https://tatonettilab.org/offsides/"],
+      "articles": [
+      ]
+    }
+  },
+  "Adrecs": {
+    "license": "CC BY-NC 4.0",
+    "urls": {
+      "webpages": ["http://bioinf.xmu.edu.cn/ADReCS/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/25361966/"
+      ]
+    }
   }
 }
