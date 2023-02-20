@@ -1635,6 +1635,12 @@ urls = {
         'url_drug_information': 'http://bioinf.xmu.edu.cn/ADReCS/download/Drug_information.xlsx.gz',
         'url_terminology': 'http://bioinf.xmu.edu.cn/ADReCS/download/ADR_ontology.xlsx.gz',
         'url_adrecs_drugs': 'http://bioinf.xmu.edu.cn/ADReCS/download/Drug_ADR.txt.gz'
+    },
+    'ddinter': {
+        'label': 'DDInter is a comprehensive, professional, and open-access database specific to drug-drug interactions.',
+        'url_source': 'http://ddinter.scbdd.com/ddinter/data-source/',
+        'url_mapping': 'http://ddinter.scbdd.com/ddinter/drug-detail/%s',
+        'url_interaction': 'http://ddinter.scbdd.com/ddinter/grapher-datasource/%s',
     }
 }
 

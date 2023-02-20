@@ -4740,5 +4740,14 @@
         "https://pubmed.ncbi.nlm.nih.gov/25361966/"
       ]
     }
+  },
+  "DDInter": {
+    "license": "CC BY-NC-SA 4.0",
+    "urls": {
+      "webpages": ["http://ddinter.scbdd.com/"],
+      "articles": [
+        "https://academic.oup.com/nar/article/50/D1/D1200/6389535"
+      ]
+    }
   }
 }
