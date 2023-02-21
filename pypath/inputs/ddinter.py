@@ -1,5 +1,4 @@
 from collections import namedtuple
-from tqdm.notebook import tqdm
 
 import json
 import bs4
@@ -60,14 +59,11 @@ def get_mappings(drug):
     links = [link.get('href', '') for link in refs]
     result = set()
     
+    fields = ['drugbank', 'chembl', 'pubchem']
     Mapping = namedtuple(
-        'Mapping',
-        [
-            'drugbank',
-            'chembl',
-            'pubchem'
-        ],
-        defaults=None
+        'DDInterMapping',
+        fields,
+        defaults=(None, ) * len(fields)
     )
     mapping_targets = ["drugbank", "chembl", "pubchem"]
     mapping_dict = {}
@@ -78,6 +74,51 @@ def get_mappings(drug):
                 mapping_dict[target] = link.split("/")[-1]
     
     result.add(Mapping(**mapping_dict))
+                
+    return list(result)
+
+
+def get_all_mappings():
+    '''
+    Retrieves all mappings of  drugs in DDinter to drugbank, chembl, pubchem
+    Returns:
+        list of mapping namedtuples
+    '''
+
+    result = set()
+    fields = ['ddinter_id', 'drugbank', 'chembl', 'pubchem']
+    Mapping = namedtuple(
+        'DDInterMapping',
+        fields,
+        defaults=(None, ) * len(fields)
+    )
+    
+    for index in range(1, get_record_number()+1):
+        ddinter_drug = 'DDInter'+str(index)
+
+        url = urls.urls['ddinter']['url_mapping'] % ddinter_drug
+    
+        c = curl.Curl(
+            url, 
+            silent = False, 
+            large = True, 
+            )
+
+        soup = bs4.BeautifulSoup(c.fileobj, 'html.parser')
+        refs = soup.find_all('a')
+
+        links = [link.get('href', '') for link in refs]
+
+        mapping_targets = ["drugbank", "chembl", "pubchem"]
+        mapping_dict = {}
+
+        mapping_dict["ddinter_id"] = ddinter_drug
+        for link in links:      
+            for target in mapping_targets:
+                if target in link:                
+                    mapping_dict[target] = link.split("/")[-1]                        
+                        
+        result.add(Mapping(**mapping_dict))                                
                 
     return list(result)
 
@@ -98,9 +139,10 @@ def get_interactions(drug):
     '''
     url = urls.urls['ddinter']['url_interaction'] % drug
     c = curl.Curl(url)
-    data = json.loads(c.result)
+    fileobj = open(c.fileobj.name, encoding='utf-8')
+    data = json.loads(fileobj.read())
 
-    result = set() # first decleration is set to prevent recurrency. But at the end it will return as a list 
+    result = set()
     Interaction = namedtuple(
             'DDInterInteraction',
             [
@@ -154,14 +196,15 @@ def get_all_interactions():
             defaults = None
             )
     
-    for index in tqdm(range(1, get_record_number()+1)):
+    for index in range(1, get_record_number()+1):
 
         ddinter_drug = 'DDInter'+str(index)
 
         url = urls.urls['ddinter']['url_interaction'] % ddinter_drug
 
         c = curl.Curl(url)
-        data = json.loads(c.result)
+        fileobj = open(c.fileobj.name, encoding='utf-8')
+        data = json.loads(fileobj.read())
 
         drug1_id = data['info']['id']
         drug1_name = data['info']['Name']
@@ -180,5 +223,4 @@ def get_all_interactions():
             result.add(interaction)
             
     return list(result)
-
 
