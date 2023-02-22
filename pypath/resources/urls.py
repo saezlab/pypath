@@ -1641,6 +1641,13 @@ urls = {
         'url_source': 'http://ddinter.scbdd.com/ddinter/data-source/',
         'url_mapping': 'http://ddinter.scbdd.com/ddinter/drug-detail/%s',
         'url_interaction': 'http://ddinter.scbdd.com/ddinter/grapher-datasource/%s',
+    },
+    'reactome': {
+        'label': 'REACTOME is an open-source, open access, manually curated and peer-reviewed pathway database.',
+        'url_uniprot2all': 'https://reactome.org/download/current/UniProt2Reactome_All_Levels.txt',
+        'url_chebi2all': 'https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt',
+        'url_pathways': 'https://reactome.org/download/current/ReactomePathways.txt',
+        'url_pathway_relations': 'https://reactome.org/download/current/ReactomePathwaysRelation.txt',
     }
 }
 
