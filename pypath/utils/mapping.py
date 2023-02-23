@@ -27,8 +27,6 @@
 Performs mapping between IDs of different consensus systems for
 proteins and genes, miRNAs, and chemical compounds.
 
-Todo:
-    * None
 """
 
 from future.utils import iteritems
