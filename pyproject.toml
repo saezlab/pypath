@@ -76,6 +76,7 @@ bio2bel = { version = "*", optional = true }
 click = { version = "*", optional = true }
 python-igraph = { version = "*", optional = true }
 pysftp = "^0.2.9"
+typing_extensions = "*"
 
 [tool.poetry.extras]
 bel = [
