@@ -24,6 +24,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
