@@ -1574,6 +1574,9 @@ urls = {
         'assay' : '/chembl/api/data/assay.json?limit=1000',
         'activity' : '/chembl/api/data/activity.json?limit=1000',
         'molecule' : '/chembl/api/data/molecule.json?limit=1000',
+        'document' : '/chembl/api/data/document.json?limit=1000',
+        'drug_indication' : '/chembl/api/data/drug_indication.json?limit=1000',
+        'mechanism' : '/chembl/api/data/mechanism.json?limit=1000',
     },
     'hpo': {
         'label': 'HPO database',
@@ -1598,10 +1601,15 @@ urls = {
             'the effect of a single variant or set of variants on phenotype.',
         'url': 'https://ftp.ncbi.nlm.nih.gov/pub/clinvar/'
             'tab_delimited/variant_summary.txt.gz',
+        'url_citations': 'https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/var_citations.txt',
     },
     'pharos_api': {
         'label': 'Pharos GraphQL API Endpoint',
         'url': 'https://pharos-api.ncats.io/graphql',
+    },
+    'ctdbase': {
+        'label': 'Comparative Toxicogenomics Database',
+        'url': 'http://ctdbase.org/reports/%s',
     },
 }
 
