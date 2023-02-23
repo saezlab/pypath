@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.pharos &#8212; pypath 0.14.34 documentation</title>
+    <title>pypath.inputs.pharos &#8212; pypath 0.14.35 documentation</title>
   
   
   
@@ -642,10 +642,19 @@
         <span class="n">diseases</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Query the NIH Pharos database by GraphQL.</span>
+
+<span class="sd">    The queried data is fetched in chunks, by default 100 records each. The</span>
+<span class="sd">    complete data consists of thousands of chunks, the retrieval takes</span>
+<span class="sd">    about half hour.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        chunk_size:</span>
 <span class="sd">            Records in one batch. Better stay 100 because higher numbers</span>
 <span class="sd">            likely to cause timeout errors.</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        Records as a list of dicts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">variables</span> <span class="o">=</span> <span class="p">{</span>
