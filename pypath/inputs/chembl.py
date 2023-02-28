@@ -184,12 +184,14 @@ def chembl_molecules() -> list[tuple]:
         'chirality',
         'full_mwt',
         'heavy_atoms',
-        'std_inchi_key',
         'species',
+        'qed_weighted',
         'type',
+        'structure_type',
         'chembl',
         'parent_chembl',
         'prodrug',
+        'std_inchi_key',
         'std_inchi',
         'xrefs',
     )
@@ -231,6 +233,7 @@ def chembl_molecules() -> list[tuple]:
                 chirality = mol['chirality'],
                 type = mol['molecule_type'],
                 prodrug = mol['prodrug'],
+                structure_type = mol['structure_type'],
 
                 chembl = _get(mol, 'hierarchy', 'molecule_chembl_id'),
                 parent_chembl = _get(mol, 'hierarchy', 'parent_chembl_id'),
@@ -239,6 +242,7 @@ def chembl_molecules() -> list[tuple]:
                 full_mwt = _get(mol, 'properties', 'full_mwt'),
                 heavy_atoms = _get(mol, 'properties', 'heavy_atoms'),
                 species = _get(mol, 'properties', 'molecular_species'),
+                qed_weighted = _get(mol, 'properties', 'qed_weighted'),
 
                 canonical_smiles = _get(mol, 'structures', 'canonical_smiles'),
                 std_inchi_key = _get(mol, 'structures', 'standard_inchi_key'),
@@ -278,8 +282,8 @@ def chembl_activities(
             Which standard relation in needed.
 
     Returns
-        List of activity records as named tuples. `standard_flag` and
-        `standard_units` attributes are not included in the returned records.
+        List of activity records as named tuples. 
+        `standard_units` attribute is not included in the returned records.
         # TODO: then why the data_validity_comment is part of the records?
         Only records without `data_validity_comment` are returned.
     """
@@ -289,6 +293,7 @@ def chembl_activities(
         'data_validity_comment',
         'chembl',
         'pchembl',
+        'standard_flag',
         'standard_relation',
         'standard_value',
         'standard_type',
@@ -339,6 +344,7 @@ def chembl_activities(
                 data_validity_comment = act['data_validity_comment'],
                 chembl = act['molecule_chembl_id'],
                 pchembl = act['pchembl_value'],
+                standard_flag = True if act['standard_flag'] == 1 else False,
                 standard_relation = act['standard_relation'],
                 standard_value = act['standard_value'],
                 standard_type = act['standard_type'],
