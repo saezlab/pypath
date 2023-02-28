@@ -609,12 +609,14 @@
         <span class="s1">&#39;chirality&#39;</span><span class="p">,</span>
         <span class="s1">&#39;full_mwt&#39;</span><span class="p">,</span>
         <span class="s1">&#39;heavy_atoms&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;std_inchi_key&#39;</span><span class="p">,</span>
         <span class="s1">&#39;species&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;qed_weighted&#39;</span><span class="p">,</span>
         <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;structure_type&#39;</span><span class="p">,</span>
         <span class="s1">&#39;chembl&#39;</span><span class="p">,</span>
         <span class="s1">&#39;parent_chembl&#39;</span><span class="p">,</span>
         <span class="s1">&#39;prodrug&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;std_inchi_key&#39;</span><span class="p">,</span>
         <span class="s1">&#39;std_inchi&#39;</span><span class="p">,</span>
         <span class="s1">&#39;xrefs&#39;</span><span class="p">,</span>
     <span class="p">)</span>
@@ -656,6 +658,7 @@
                 <span class="n">chirality</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;chirality&#39;</span><span class="p">],</span>
                 <span class="nb">type</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;molecule_type&#39;</span><span class="p">],</span>
                 <span class="n">prodrug</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;prodrug&#39;</span><span class="p">],</span>
+                <span class="n">structure_type</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;structure_type&#39;</span><span class="p">],</span>
 
                 <span class="n">chembl</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;hierarchy&#39;</span><span class="p">,</span> <span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">),</span>
                 <span class="n">parent_chembl</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;hierarchy&#39;</span><span class="p">,</span> <span class="s1">&#39;parent_chembl_id&#39;</span><span class="p">),</span>
@@ -664,6 +667,7 @@
                 <span class="n">full_mwt</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">,</span> <span class="s1">&#39;full_mwt&#39;</span><span class="p">),</span>
                 <span class="n">heavy_atoms</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">,</span> <span class="s1">&#39;heavy_atoms&#39;</span><span class="p">),</span>
                 <span class="n">species</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">,</span> <span class="s1">&#39;molecular_species&#39;</span><span class="p">),</span>
+                <span class="n">qed_weighted</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">,</span> <span class="s1">&#39;qed_weighted&#39;</span><span class="p">),</span>
 
                 <span class="n">canonical_smiles</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;structures&#39;</span><span class="p">,</span> <span class="s1">&#39;canonical_smiles&#39;</span><span class="p">),</span>
                 <span class="n">std_inchi_key</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;structures&#39;</span><span class="p">,</span> <span class="s1">&#39;standard_inchi_key&#39;</span><span class="p">),</span>
@@ -703,8 +707,8 @@
 <span class="sd">            Which standard relation in needed.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">        List of activity records as named tuples. `standard_flag` and</span>
-<span class="sd">        `standard_units` attributes are not included in the returned records.</span>
+<span class="sd">        List of activity records as named tuples. </span>
+<span class="sd">        `standard_units` attribute is not included in the returned records.</span>
 <span class="sd">        # TODO: then why the data_validity_comment is part of the records?</span>
 <span class="sd">        Only records without `data_validity_comment` are returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -714,6 +718,7 @@
         <span class="s1">&#39;data_validity_comment&#39;</span><span class="p">,</span>
         <span class="s1">&#39;chembl&#39;</span><span class="p">,</span>
         <span class="s1">&#39;pchembl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;standard_flag&#39;</span><span class="p">,</span>
         <span class="s1">&#39;standard_relation&#39;</span><span class="p">,</span>
         <span class="s1">&#39;standard_value&#39;</span><span class="p">,</span>
         <span class="s1">&#39;standard_type&#39;</span><span class="p">,</span>
@@ -764,6 +769,7 @@
                 <span class="n">data_validity_comment</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;data_validity_comment&#39;</span><span class="p">],</span>
                 <span class="n">chembl</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">],</span>
                 <span class="n">pchembl</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;pchembl_value&#39;</span><span class="p">],</span>
+                <span class="n">standard_flag</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;standard_flag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="n">standard_relation</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;standard_relation&#39;</span><span class="p">],</span>
                 <span class="n">standard_value</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;standard_value&#39;</span><span class="p">],</span>
                 <span class="n">standard_type</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;standard_type&#39;</span><span class="p">],</span>
