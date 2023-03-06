@@ -1611,6 +1611,10 @@ urls = {
         'label': 'Comparative Toxicogenomics Database',
         'url': 'http://ctdbase.org/reports/%s',
     },
+    'ramp': {
+        'label': 'RaMP metabolomic pathway and metabolite identifier database',
+        'url': 'https://figshare.com/ndownloader/files/38534654',
+    },
 }
 
 
