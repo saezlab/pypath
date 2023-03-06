@@ -4702,5 +4702,16 @@
         "https://pubmed.ncbi.nlm.nih.gov/36169237/"
       ]
     }
+  },
+  "RaMP": {
+    "full_name": "Relational Database for Metabolomic Pathways",
+    "license": "Unspecified NC-SA",
+    "urls": {
+      "webpages": ["https://rampdb.nih.gov/"],
+      "articles": [
+        "https://academic.oup.com/bioinformatics/article/39/1/btac726/6827287",
+        "https://www.mdpi.com/2218-1989/8/1/16"
+      ]
+    }
   }
 }
