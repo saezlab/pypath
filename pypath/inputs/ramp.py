@@ -45,6 +45,16 @@ import pypath.share.session as session
 _log = session.Logger(name = 'ramp_input')._log
 
 
+def _ramp_sqldump() -> IO:
+    """
+    Download the RaMP metabolomic pathway and metabolite database.
+    """
+
+    url = urls.urls['ramp']['url']
+    c = curl.Curl(url, large = True, silent = False, compr = 'gz')
+    return c._gzfile_mode_r
+
+
 def ramp_raw(tables: list[str] = None) -> dict[str, pd.DataFrame]:
     """
     Retrieve RaMP database contents from raw SQL dump.
@@ -57,10 +67,15 @@ def ramp_raw(tables: list[str] = None) -> dict[str, pd.DataFrame]:
         A dictionary with the table names as keys and pandas dataframes as values.
     """
 
-    url = urls.urls['ramp']['url']
-    c = curl.Curl(url, large = True, silent = False, compr = 'gz')
+    return _sqldump_table(_ramp_sqldump(), tables)
 
-    return _sqldump_table(c.fileobj, tables)
+
+def ramp_tables() -> dict[str, list[str]]:
+    """
+    List the tables of the RaMP database from SQL dump.
+    """
+
+    return _sqldump_list_tables(_ramp_sqldump())
 
 
 def _sqldump_table(
