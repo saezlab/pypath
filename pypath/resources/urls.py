@@ -1648,6 +1648,10 @@ urls = {
         'url_chebi2all': 'https://reactome.org/download/current/ChEBI2Reactome_All_Levels.txt',
         'url_pathways': 'https://reactome.org/download/current/ReactomePathways.txt',
         'url_pathway_relations': 'https://reactome.org/download/current/ReactomePathwaysRelation.txt',
+    },
+    'compath': {
+        'label': 'A database of proposed and accepted mappings by the users/curators between a pair of pathways.',
+        'url': 'https://compath.scai.fraunhofer.de/export_mappings'
     }
 }
 

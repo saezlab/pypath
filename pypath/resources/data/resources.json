@@ -4749,5 +4749,14 @@
         "https://academic.oup.com/nar/article/50/D1/D1200/6389535"
       ]
     }
+  },
+  "Compath": {
+    "license": "CC BY 4.0",
+    "urls": {
+      "webpages": ["https://compath.scai.fraunhofer.de/"],
+      "articles": [
+        "https://www.nature.com/articles/s41540-018-0078-8"
+      ]
+    }
   }
 }
