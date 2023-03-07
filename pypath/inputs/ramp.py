@@ -38,6 +38,9 @@ import sqlparse
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.common as common
+import pypath.share.session as session
+
+_log = session.Logger(name = 'ramp_input')._log
 
 
 def ramp_raw(tables: list[str] = None) -> dict[str, list[tuple]]:
@@ -48,7 +51,6 @@ def ramp_raw(tables: list[str] = None) -> dict[str, list[tuple]]:
     url = urls.urls['ramp']['url']
     c = curl.Curl(url, large = True, silent = False, compr = 'gz')
     c.fileobj
-
 
     return c
 
@@ -64,7 +66,7 @@ def _sqldump_table(
     Args:
         sqldump: SQL dump file. Path or file-like object.
         table: Name of the table.
-        **kwargs: Arguments to pass to `pypath.share.curl.FileOpener`.
+        **kwargs: Passed to `pypath.share.curl.FileOpener`.
 
     Returns:
         Contents of the table.
@@ -79,21 +81,29 @@ def _sqldump_table(
     sqldump.seek(0)
 
     contents = collections.defaultdict(list)
-    headers = []
+    headers = {}
 
     parser = sqlparse.parsestream(sqldump)
 
     for statement in parser:
+
+        if not tables - set(contents.keys()):
+
+            break
 
         if statement.get_type() == 'INSERT':
 
             sublists = statement.get_sublists()
             table_info = next(sublists)
             table_name = table_info.get_name()
+            _log(f'Found table: {table_name}')
 
             if table_name not in tables:
 
+                _log(f'Skipping table {table_name}.')
                 continue
+            
+            _log(f'Processing table: {table_name}')
 
             headers[table_name] = [
                 col.get_name()
