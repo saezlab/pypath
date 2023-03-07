@@ -32,8 +32,10 @@ Access the RaMP metabolomic pathway and metabolite database.
 from typing import IO, Iterable
 import os
 import collections
+import re
 
 import sqlparse
+import pandas as pd
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -43,21 +45,28 @@ import pypath.share.session as session
 _log = session.Logger(name = 'ramp_input')._log
 
 
-def ramp_raw(tables: list[str] = None) -> dict[str, list[tuple]]:
+def ramp_raw(tables: list[str] = None) -> dict[str, pd.DataFrame]:
     """
-    Retrieve raw SQL data.
+    Retrieve RaMP database contents from raw SQL dump.
+
+    Args:
+        tables:
+            One or more tables to retrieve.
+
+    Returns:
+        A dictionary with the table names as keys and pandas dataframes as values.
     """
 
     url = urls.urls['ramp']['url']
     c = curl.Curl(url, large = True, silent = False, compr = 'gz')
-    c.fileobj
 
-    return c
+    return _sqldump_table(c.fileobj, tables)
 
 
 def _sqldump_table(
         sqldump: str | IO,
         tables: str | Iterable[str],
+        return_df: bool = True,
         **kwargs
     ) -> list[tuple]:
     """
@@ -66,19 +75,15 @@ def _sqldump_table(
     Args:
         sqldump: SQL dump file. Path or file-like object.
         table: Name of the table.
+        return_df: If True, return dict of pandas dataframes.
         **kwargs: Passed to `pypath.share.curl.FileOpener`.
 
     Returns:
         Contents of the table.
     """
 
-    if isinstance(sqldump, str) and os.path.exists(sqldump):
-
-        fo = curl.FileOpener(sqldump, large = True, **kwargs)
-        sqldump = fo.fileobj
-
     tables = common.to_set(tables)
-    sqldump.seek(0)
+    sqldump = _sqldump_open(sqldump, **kwargs)
 
     contents = collections.defaultdict(list)
     headers = {}
@@ -117,5 +122,78 @@ def _sqldump_table(
                 )
                 for rec in next(sublists).get_sublists()
             )
+    
+    if return_df:
 
-    return headers, dict(contents)
+        contents = {
+            name: pd.DataFrame.from_records(records, columns = headers[name])
+            for name, records in contents.items()
+        }
+
+        for name, df in contents.items():
+
+            _log(
+                f'Data frame of table {name}: '
+                f'{df.shape[0]} records, {common.df_memory_usage(df)}.'
+            )
+
+        return contents
+
+    else:
+
+        return headers, dict(contents)
+
+
+def _sqldump_list_tables(sqldump: str | IO) -> dict[str, list[str]]:
+    """
+    From a SQL dump, retrieve a list of table names.
+    """
+    
+    recreate = re.compile(r'^CREATE TABLE `(.*)` \($')
+    recol = re.compile(r'^\s*`(.*)`')
+    tables = collections.defaultdict(list)
+    current_table = None
+
+    sqldump = _sqldump_open(sqldump)
+
+    for line in sqldump:
+
+        match = recreate.match(line)
+
+        if match:
+
+            current_table = match.group(1)
+
+        match = recol.match(line)
+
+        if match:
+
+            tables[current_table].append(match.group(1))
+
+        if line.strip() == ')':
+            
+            current_table = None
+
+    return dict(tables)
+
+
+def _sqldump_open(sqldump: str | IO, **kwargs) -> IO:
+    """
+    Open a SQL dump file.
+
+    Args:
+        sqldump: SQL dump file. Path or file-like object.
+
+    Returns:
+        The SQL dump file opened for reading, pointer at zero bytes.
+    """
+
+    if isinstance(sqldump, str) and os.path.exists(sqldump):
+
+        fo = curl.FileOpener(sqldump, large = True, **kwargs)
+        sqldump = fo.fileobj
+
+    sqldump.seek(0)
+
+    return sqldump
+
