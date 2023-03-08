@@ -65,7 +65,8 @@ def ramp_raw(tables: list[str] = None) -> dict[str, pd.DataFrame]:
             One or more tables to retrieve.
 
     Returns:
-        A dictionary with the table names as keys and pandas dataframes as values.
+        A dictionary with the table names as keys and
+        pandas dataframes as values.
     """
 
     return _sqldump_tables(_ramp_sqldump(), tables, return_df = True)
@@ -85,6 +86,7 @@ def _sqldump_tables(
         return_df: bool = True,
         return_sqlite: bool = False,
         con_param: dict | None = None,
+        source_id: str | tuple | None = None,
         **kwargs
     ) -> tuple[dict, dict] | dict[str, pd.DataFrame] | sqlite3.Connection:
     """
@@ -103,14 +105,29 @@ def _sqldump_tables(
         con_param:
             Connection parameters. By default we use an in-memory database,
             but you can also specify a path to a database file.
+        source_id:
+            Unique identifier for the source of the data. Necessary for
+            caching, only if the path can not be determined from the
+            file-like object.
         **kwargs: Passed to `pypath.share.curl.FileOpener`.
 
     Returns:
         Contents of the table.
     """
 
+    source_id = (
+        source_id or
+        (
+            os.path.basename(sqldump)
+                if isinstance(sqldump, str) else
+            getattr(sqldump, 'name', None)
+        )
+    )
+    source_id = common.to_tuple(source_id)
+
     sqldump = _sqldump_open(sqldump, **kwargs)
     tables = common.to_set(tables) or _sqldump_list_tables(sqldump)
+    tables_done = set()
 
     if return_sqlite:
 
@@ -126,23 +143,35 @@ def _sqldump_tables(
     for table in tables:
 
         _sqldump_seek(sqldump, table)
-        the_table = _sqldump_one_table(sqldump, return_df)
+        the_table = _sqldump_one_table(
+            sqldump,
+            return_df,
+            source_id = source_id,
+        )
 
         if return_sqlite:
 
             _log(f'Loading table `{table}` into SQLite database.')
-            the_table.to_sql(table, con, if_exists = 'replace', index = False)
+            the_table.to_sql(
+                table,
+                contents,
+                if_exists = 'replace',
+                index = False,
+            )
 
         else:
 
             contents[table] = the_table if return_df else the_table[1]
             headers[table] = None if return_df else the_table[0]
 
-        if not tables - set(contents.keys()):
+        common.log_memory_usage()
+        tables_done.add(table)
+
+        if not tables - tables_done:
 
             break
 
-    return contents if return_df else headers, contents
+    return contents if return_df or return_sqlite else (headers, contents)
 
 
 def _sqldump_one_table(
@@ -154,7 +183,7 @@ def _sqldump_one_table(
     header = []
     content = []
     inserts = 0
-    table_name = None
+    table_name = the_table_name = None
 
     for statement in parser:
 
@@ -168,7 +197,7 @@ def _sqldump_one_table(
             if inserts == 1:
 
                 the_table_name = table_name
-                _log(f'Processing table: {table_name}')
+                _log(f'Processing table: `{table_name}`')
 
             if table_name != the_table_name:
 
@@ -191,7 +220,7 @@ def _sqldump_one_table(
 
         _log(
             f'Processed {len(content)} records in {inserts} INSERT statements '
-            f'from table {table_name}.'
+            f'from table `{the_table_name}`.'
         )
 
     else:
@@ -204,9 +233,10 @@ def _sqldump_one_table(
         df = pd.DataFrame.from_records(content, columns = header)
 
         _log(
-            f'Data frame of table {table_name}: '
+            f'Data frame of table `{the_table_name}`: '
             f'{df.shape[0]} records, {common.df_memory_usage(df)}.'
         )
+        common.log_memory_usage()
 
         return df
 
@@ -313,3 +343,26 @@ def _sqldump_seek(sqldump: IO, table: str, insert: bool = False) -> None:
     _log(f'Table `{table}` not found in SQL dump.')
     sqldump.seek(0)
     _sqldump_seek(sqldump, table, insert)
+
+
+def _sqlite_list_tables(con: sqlite3.Connection) -> list[str]:
+    """
+    From a SQLite database, retrieve a list of table names.
+    """
+
+    cur = con.cursor()
+    cur.execute('SELECT name FROM sqlite_master WHERE type = "table"')
+
+    return [row[0] for row in cur.fetchall()]
+
+
+def _sqlite_list_columns(con: sqlite3.Connection) -> dict[str, list[str]]:
+    """
+    From a SQLite database, retrieve a list of column names.
+    """
+
+    return {
+        table: [col[1] for col in con.execute(f'PRAGMA table_info({table})')]
+        for table in _sqlite_list_tables(con)
+    }
+
