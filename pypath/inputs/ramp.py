@@ -33,9 +33,9 @@ from typing import IO, Iterable
 import os
 import collections
 import re
+import sqlite3
 
 import sqlparse
-# import pymysql
 import pandas as pd
 
 import pypath.resources.urls as urls
@@ -83,15 +83,26 @@ def _sqldump_tables(
         sqldump: str | IO,
         tables: str | Iterable[str] | None,
         return_df: bool = True,
+        return_sqlite: bool = False,
+        con_param: dict | None = None,
         **kwargs
-    ) -> tuple[dict, dict] | dict[str, pd.DataFrame]:
+    ) -> tuple[dict, dict] | dict[str, pd.DataFrame] | sqlite3.Connection:
     """
     From a SQL dump, retrieve tables as data frames or as lists of tuples.
 
     Args:
-        sqldump: SQL dump file. Path or file-like object.
-        table: Name of the table.
-        return_df: If True, return dict of pandas dataframes.
+        sqldump:
+            SQL dump file. Path or file-like object.
+        table:
+            Name of the table.
+        return_df:
+            If True, return dict of pandas dataframes.
+        return_sqlite:
+            If True, return dict of sqlite3.Connection objects.
+            Has precedence over return_df.
+        con_param:
+            Connection parameters. By default we use an in-memory database,
+            but you can also specify a path to a database file.
         **kwargs: Passed to `pypath.share.curl.FileOpener`.
 
     Returns:
@@ -101,15 +112,31 @@ def _sqldump_tables(
     sqldump = _sqldump_open(sqldump, **kwargs)
     tables = common.to_set(tables) or _sqldump_list_tables(sqldump)
 
-    contents = {}
-    headers = {}
+    if return_sqlite:
+
+        _con_param = {'database': ':memory:'}
+        _con_param.update(con_param or {})
+        contents = sqlite3.connect(**_con_param)
+
+    else:
+
+        contents = {}
+        headers = {}
 
     for table in tables:
 
         _sqldump_seek(sqldump, table)
         the_table = _sqldump_one_table(sqldump, return_df)
-        contents[table] = the_table if return_df else the_table[1]
-        headers[table] = None if return_df else the_table[0]
+
+        if return_sqlite:
+
+            _log(f'Loading table `{table}` into SQLite database.')
+            the_table.to_sql(table, con, if_exists = 'replace', index = False)
+
+        else:
+
+            contents[table] = the_table if return_df else the_table[1]
+            headers[table] = None if return_df else the_table[0]
 
         if not tables - set(contents.keys()):
 
@@ -127,6 +154,7 @@ def _sqldump_one_table(
     header = []
     content = []
     inserts = 0
+    table_name = None
 
     for statement in parser:
 
@@ -138,7 +166,7 @@ def _sqldump_one_table(
             table_name = table_info.get_name()
 
             if inserts == 1:
-                
+
                 the_table_name = table_name
                 _log(f'Processing table: {table_name}')
 
@@ -159,10 +187,17 @@ def _sqldump_one_table(
                 for rec in next(sublists).get_sublists()
             )
 
-    _log(
-        f'Processed {len(content)} records in {inserts} INSERT statements '
-        f'from table {table_name}.'
-    )
+    if table_name:
+
+        _log(
+            f'Processed {len(content)} records in {inserts} INSERT statements '
+            f'from table {table_name}.'
+        )
+
+    else:
+
+        _log('Table not found.')
+        table_name = 'unknown'
 
     if return_df:
 
@@ -180,44 +215,19 @@ def _sqldump_one_table(
         return header, content
 
 
-def _sqldump_table_2(
-        sqldump: str | IO,
-        tables: str | Iterable[str],
-        return_df: bool = True,
-        **kwargs
-    ) -> list[tuple]:
+def _sqldump_endof_statement(line: str) -> bool:
     """
-    From a SQL dump, retrieve a table as list of tuples.
-
-    Args:
-        sqldump: SQL dump file. Path or file-like object.
-        table: Name of the table.
-        return_df: If True, return dict of pandas dataframes.
-        **kwargs: Passed to `pypath.share.curl.FileOpener`.
-
-    Returns:
-        Contents of the table.
+    Check if the current line is the end of a SQL statement.
     """
 
-    tables = common.to_set(tables)
-    sqldump = _sqldump_open(sqldump, **kwargs)
-
-    con = pymysql.connect(
-        
-    )
-
-    contents = collections.defaultdict(list)
-    headers = {}
-
-
-
+    return line.strip().endswith(';')
 
 
 def _sqldump_list_tables(sqldump: str | IO) -> dict[str, list[str]]:
     """
     From a SQL dump, retrieve a list of table names.
     """
-    
+
     recreate = re.compile(r'^CREATE TABLE `(.*)` \($')
     recol = re.compile(r'^\s*`(.*)`')
     tables = collections.defaultdict(list)
@@ -227,6 +237,7 @@ def _sqldump_list_tables(sqldump: str | IO) -> dict[str, list[str]]:
 
     for line in sqldump:
 
+        line = line.strip()
         match = recreate.match(line)
 
         if match:
@@ -239,8 +250,8 @@ def _sqldump_list_tables(sqldump: str | IO) -> dict[str, list[str]]:
 
             tables[current_table].append(match.group(1))
 
-        if line.strip() == ')':
-            
+        if _sqldump_endof_statement(line):
+
             current_table = None
 
     return dict(tables)
@@ -280,7 +291,11 @@ def _sqldump_seek(sqldump: IO, table: str, insert: bool = False) -> None:
             If True, seek to the beginning of the INSERT statement.
     """
 
-    seek_for = f'INSERT INTO `{table}`' if insert else f'DROP TABLE IF EXISTS `{table}`'
+    seek_for = (
+        f'INSERT INTO `{table}`'
+            if insert else
+        f'DROP TABLE IF EXISTS `{table}`'
+    )
     beginning_of_line = 0
 
     line = sqldump.readline()
@@ -295,5 +310,6 @@ def _sqldump_seek(sqldump: IO, table: str, insert: bool = False) -> None:
         beginning_of_line = sqldump.tell()
         line = sqldump.readline()
 
+    _log(f'Table `{table}` not found in SQL dump.')
     sqldump.seek(0)
     _sqldump_seek(sqldump, table, insert)
