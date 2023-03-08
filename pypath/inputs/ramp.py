@@ -34,6 +34,7 @@ import os
 import collections
 import re
 import sqlite3
+import pickle
 
 import sqlparse
 import pandas as pd
@@ -42,6 +43,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.share.session as session
+import pypath.share.cache as cache
 
 _log = session.Logger(name = 'ramp_input')._log
 
@@ -115,16 +117,8 @@ def _sqldump_tables(
         Contents of the table.
     """
 
-    source_id = (
-        source_id or
-        (
-            os.path.basename(sqldump)
-                if isinstance(sqldump, str) else
-            getattr(sqldump, 'name', None)
-        )
-    )
-    source_id = common.to_tuple(source_id)
-
+    common.log_memory_usage()
+    source_id = _sqldump_source_id(sqldump, source_id)
     sqldump = _sqldump_open(sqldump, **kwargs)
     tables = common.to_set(tables) or _sqldump_list_tables(sqldump)
     tables_done = set()
@@ -142,29 +136,43 @@ def _sqldump_tables(
 
     for table in tables:
 
-        _sqldump_seek(sqldump, table)
-        the_table = _sqldump_one_table(
-            sqldump,
-            return_df,
-            source_id = source_id,
-        )
+        header, content = _sqldump_table_from_cache(table, source_id)
+
+        if not content:
+
+            _sqldump_seek(sqldump, table)
+            header, content = _sqldump_one_table(sqldump)
+            _sqldump_table_to_cache(header, content, table, source_id)
+
+            if not content:
+
+                _log(f'Table `{table}` not found.')
+
+        if return_df or return_sqlite:
+
+            content = pd.DataFrame.from_records(content, columns = header)
+            _log(
+                f'Data frame of table `{table}`: '
+                f'{content.shape[0]} records, {common.df_memory_usage(content)}.'
+            )
+            common.log_memory_usage()
 
         if return_sqlite:
 
             _log(f'Loading table `{table}` into SQLite database.')
-            the_table.to_sql(
+            content.to_sql(
                 table,
                 contents,
                 if_exists = 'replace',
                 index = False,
             )
+            common.log_memory_usage()
 
         else:
 
-            contents[table] = the_table if return_df else the_table[1]
-            headers[table] = None if return_df else the_table[0]
+            contents[table] = content
+            headers[table] = None if return_df else header
 
-        common.log_memory_usage()
         tables_done.add(table)
 
         if not tables - tables_done:
@@ -174,10 +182,54 @@ def _sqldump_tables(
     return contents if return_df or return_sqlite else (headers, contents)
 
 
-def _sqldump_one_table(
-        sqldump: IO,
-        return_df: bool = True,
-    ) -> tuple[list[str], list[tuple]] | pd.DataFrame:
+def _sqldump_table_from_cache(
+        table: str,
+        source_id: tuple,
+    ) -> tuple[list, list]:
+    """
+    Retrieve table contents from cache.
+    """
+
+    key = source_id + (table,)
+    cache_path = cache.cache_path(key)
+
+    if os.path.exists(cache_path):
+
+        with open(cache_path, 'rb') as fp:
+
+            _log(
+                f'Loading table `{table}` from cache. '
+                f'Cache path: `{cache_path}`.'
+            )
+
+            return pickle.load(fp)
+
+    return [], []
+
+
+def _sqldump_table_to_cache(
+        header: dict,
+        content: dict,
+        table: str,
+        source_id: tuple,
+    ) -> None:
+    """
+    Save table contents to cache.
+    """
+
+    key = source_id + (table,)
+    cache_path = cache.cache_path(key)
+
+    with open(cache_path, 'wb') as fp:
+
+        _log(f'Saving table `{table}` to cache. Cache path: `{cache_path}`.')
+        pickle.dump((header, content), fp)
+
+
+def _sqldump_one_table(sqldump: IO) -> tuple[list[str], list[tuple]]:
+    """
+    Retrieve one table from a MySQL dump.
+    """
 
     parser = sqlparse.parsestream(sqldump)
     header = []
@@ -223,26 +275,27 @@ def _sqldump_one_table(
             f'from table `{the_table_name}`.'
         )
 
-    else:
+    return header, content
 
-        _log('Table not found.')
-        table_name = 'unknown'
 
-    if return_df:
+def _sqldump_source_id(
+        sqldump: str | IO,
+        source_id: str | tuple | None = None,
+    ) -> tuple:
+    """
+    Attempts to use the file name as source id.
+    """
 
-        df = pd.DataFrame.from_records(content, columns = header)
-
-        _log(
-            f'Data frame of table `{the_table_name}`: '
-            f'{df.shape[0]} records, {common.df_memory_usage(df)}.'
+    source_id = (
+        source_id or
+        (
+            os.path.basename(sqldump)
+                if isinstance(sqldump, str) else
+            getattr(sqldump, 'name', None)
         )
-        common.log_memory_usage()
+    )
 
-        return df
-
-    else:
-
-        return header, content
+    return common.to_tuple(source_id)
 
 
 def _sqldump_endof_statement(line: str) -> bool:
@@ -321,6 +374,7 @@ def _sqldump_seek(sqldump: IO, table: str, insert: bool = False) -> None:
             If True, seek to the beginning of the INSERT statement.
     """
 
+    start_from = sqldump.tell()
     seek_for = (
         f'INSERT INTO `{table}`'
             if insert else
@@ -340,9 +394,14 @@ def _sqldump_seek(sqldump: IO, table: str, insert: bool = False) -> None:
         beginning_of_line = sqldump.tell()
         line = sqldump.readline()
 
-    _log(f'Table `{table}` not found in SQL dump.')
-    sqldump.seek(0)
-    _sqldump_seek(sqldump, table, insert)
+    if start_from != 0:
+
+        sqldump.seek(0)
+        _sqldump_seek(sqldump, table, insert)
+
+    else:
+
+        _log(f'Table `{table}` not found in SQL dump.')
 
 
 def _sqlite_list_tables(con: sqlite3.Connection) -> list[str]:
