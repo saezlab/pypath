@@ -6,7 +6,7 @@
 #  Enables ID translations and mapping
 #
 #  Copyright
-#  2014-2022
+#  2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
@@ -36,7 +36,6 @@ __all__ = [
     'PickleMapping',
     'NetworkInput',
     'ReadList',
-    'Reference',
     'UniprotListMapping',
     'ProMapping',
     'ArrayMapping',
@@ -140,6 +139,16 @@ ARRAY_MAPPING = {
     'phalanx',
 }
 
+RAMP_MAPPING = {
+    'cas': 'CAS',
+    'cas_id': 'CAS',
+    'lipidmaps': 'LIPIDMAPS',
+    'en': 'EN',
+    'enzymatic_nomenclature': 'EN',
+    'genesymbol': 'gene_symbol',
+    'pubchem_compound': 'pubchem',
+    'pubchem_cid': 'pubchem',
+}
 
 class MappingInput(object):
 
@@ -469,10 +478,48 @@ class UnichemMapping(MappingInput):
             id_type_b,
             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
         ):
+        """
+        Paramaters for UniChem based ID translation.
+
+        Args:
+            id_type_a:
+                Custom name for one of the ID types.
+            id_type_b:
+                Custom name for the other ID type.
+        """
 
         MappingInput.__init__(
             self,
             type_ = 'unichem',
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+        )
+
+
+class RampMapping(MappingInput):
+
+    _resource_id_types = RAMP_MAPPING
+
+    def __init__(
+            self,
+            id_type_a,
+            id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+        ):
+        """
+        Paramaters for ID translation tables from the RaMP database.
+
+        Args:
+            id_type_a:
+                Custom name for one of the ID types.
+            id_type_b:
+                Custom name for the other ID type.
+        """
+
+        MappingInput.__init__(
+            self,
+            type_ = 'ramp',
             id_type_a = id_type_a,
             id_type_b = id_type_b,
             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
@@ -528,15 +575,15 @@ class ArrayMapping(MappingInput):
         self.entity_type = 'protein'
 
 
-    @staticmethod
-    def _process_id_type(id_type):
+    @classmethod
+    def _process_id_type(cls, id_type: str):
 
         id_type = id_type.lower()
         id_type = 'affy' if id_type == 'affymetrix' else id_type
         id_type = 'ensg' if id_type == 'ensembl' else id_type
 
         if (
-            id_type not in self._resource_id_types and
+            id_type not in cls._resource_id_types and
             id_type not in {'ensg', 'enst', 'ensp'}
         ):
 
