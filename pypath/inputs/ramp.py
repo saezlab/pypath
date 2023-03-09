@@ -154,7 +154,7 @@ def ramp_mapping(
     if not curies:
 
         df[df.columns] = df[df.columns].apply(
-            lambda y: [x.rsplit(':', maxsplit = 1)[-1] for x in y],
+            lambda y: [x.split(':', maxsplit = 1)[-1] for x in y],
         )
 
     return (
