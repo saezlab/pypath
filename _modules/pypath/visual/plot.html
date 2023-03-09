@@ -1,11 +1,14 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.visual.plot &#8212; pypath 0.14.35 documentation</title>
+    <title>pypath.visual.plot &#8212; pypath 0.14.36 documentation</title>
   
   
   
@@ -15,112 +18,123 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/visual/plot';</script>
-    <link rel="shortcut icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
   <label class="overlay overlay-primary" for="__primary"></label>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
   <label class="overlay overlay-secondary" for="__secondary"></label>
-
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
-      
-<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
+</form></div>
   </div>
-
   
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fa-solid fa-bars"></span>
+    <span class="fa-solid fa-bars"></span>
   </label>
-  <div id="navbar-start">
-    
-    
   
-
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../../../contents.html">
-
   
   
   
   
-  
-  
-  
-
-  
-    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-light" alt="Pypath">
-    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath">
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
   
   
     <p class="title logo__title">Pypath</p>
   
-</a>
+</a></div>
     
   </div>
-
+  
   
   <div class=" navbar-header-items">
-    <div id="navbar-center" class="mr-auto">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../index.html">
                         Welcome to pypath!
@@ -155,32 +169,39 @@
                       </a>
                     </li>
                 
-    </ul>
-</nav>
-      </div>
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-        <div class="navbar-end-item navbar-persistent--container">
+        <div class="navbar-item navbar-persistent--container">
           
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
       
       
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
+  </button>
+`);
+</script></div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -189,7 +210,8 @@
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -200,7 +222,8 @@
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
         <li class="nav-item">
@@ -211,7 +234,8 @@
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
             <label class="sr-only">PyPI</label></a>
         </li>
         <li class="nav-item">
@@ -222,7 +246,8 @@
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
             <label class="sr-only">OmniPath</label></a>
         </li>
         <li class="nav-item">
@@ -233,53 +258,58 @@
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
             <label class="sr-only">Saez Lab</label></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
+    
   </div>
-
-
   
   
     <div class="navbar-persistent--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
     </div>
   
 
   
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
       <span class="fa-solid fa-outdent"></span>
-  </label>
+    </label>
   
-
 </div>
-  </nav>
-  
 
+    </nav>
+  
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
+
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
       <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
         
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../index.html">
                         Welcome to pypath!
@@ -314,27 +344,28 @@
                       </a>
                     </li>
                 
-    </ul>
-</nav>
+  </ul>
+</nav></div>
+        
       </div>
-      
-      </div>
-    
-
     
     
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -343,7 +374,8 @@
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -354,7 +386,8 @@
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
         <li class="nav-item">
@@ -365,7 +398,8 @@
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
             <label class="sr-only">PyPI</label></a>
         </li>
         <li class="nav-item">
@@ -376,7 +410,8 @@
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
             <label class="sr-only">OmniPath</label></a>
         </li>
         <li class="nav-item">
@@ -387,41 +422,71 @@
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
             <label class="sr-only">Saez Lab</label></a>
         </li>
-      </ul>
+</ul></div>
+        
       </div>
-      
-    </div>
     
   </div>
-
   
-
   
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
-
   
   <div id="rtd-footer-container"></div>
 
+
       </div>
+      
       <main id="main-content" class="bd-main">
         
         
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+          <div class="bd-content">
+            <div class="bd-article-container">
               
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../pypath.html" class="nav-link">pypath</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.visual.plot</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <h1>Source code for pypath.visual.plot</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
@@ -494,7 +559,7 @@
 
 
 <div class="viewcode-block" id="is_opentype_cff_font"><a class="viewcode-back" href="../../../api/pypath.visual.plot.is_opentype_cff_font.html#pypath.visual.plot.is_opentype_cff_font">[docs]</a><span class="k">def</span> <span class="nf">is_opentype_cff_font</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is necessary to fix a bug in matplotlib:</span>
 <span class="sd">    https://github.com/matplotlib/matplotlib/pull/6714</span>
 <span class="sd">    Returns True if the given font is a Postscript Compact Font Format</span>
@@ -648,7 +713,7 @@
     
     
 <div class="viewcode-block" id="Plot.finish"><a class="viewcode-back" href="../../../api/pypath.visual.plot.Plot.html#pypath.visual.plot.Plot.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Saves and closes a figure.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         
@@ -700,7 +765,7 @@
                  <span class="n">legloc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                  <span class="n">maketitle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots multiple barplots side-by-side.</span>
 <span class="sd">        Not all options are compatible with each other.</span>
 
@@ -804,7 +869,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.reload"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the module and updates the class instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
@@ -814,7 +879,7 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.plot"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The total workflow of this class.</span>
 <span class="sd">        Calls all methods in the correct order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -823,7 +888,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">post_plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.pre_plot"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.pre_plot">[docs]</a>    <span class="k">def</span> <span class="nf">pre_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes all necessary tasks before plotting in the correct order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_categories</span><span class="p">()</span>
@@ -833,7 +898,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">by_plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.do_plot"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.do_plot">[docs]</a>    <span class="k">def</span> <span class="nf">do_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls the plotting methods in the correct order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_figsize</span><span class="p">()</span>
@@ -845,13 +910,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">groups_legend</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.post_plot"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.post_plot">[docs]</a>    <span class="k">def</span> <span class="nf">post_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves the plot into file, and closes the figure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.set_categories"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.set_categories">[docs]</a>    <span class="k">def</span> <span class="nf">set_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets a list with category indices (integers) of length equal of x,</span>
 <span class="sd">        and sets dicts to translate between category names and indices.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -942,7 +1007,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cats</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.set_colors"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.set_colors">[docs]</a>    <span class="k">def</span> <span class="nf">set_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colseries</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compiles an array of colors equal length of x.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -993,7 +1058,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_colors</span><span class="p">(</span><span class="n">colseries</span><span class="o">=</span><span class="s1">&#39;2&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.plots_order"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.plots_order">[docs]</a>    <span class="k">def</span> <span class="nf">plots_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Defines the order of the subplots.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -1006,7 +1071,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cat_ordr</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cnames</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.by_plot"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.by_plot">[docs]</a>    <span class="k">def</span> <span class="nf">by_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets list of lists with x and y values and colors by category.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -1104,7 +1169,7 @@
     
     
 <div class="viewcode-block" id="MultiBarplot.sort"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds the defined or default order, and</span>
 <span class="sd">        sorts the arrays x, y and col accordingly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1148,7 +1213,7 @@
     
     
 <div class="viewcode-block" id="MultiBarplot.set_figsize"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.set_figsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_figsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts width and height to a tuple which can be used as figsize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -1157,7 +1222,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.init_fig"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.init_fig">[docs]</a>    <span class="k">def</span> <span class="nf">init_fig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a figure using the object oriented matplotlib interface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -1166,7 +1231,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cvs</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">backend_pdf</span><span class="o">.</span><span class="n">FigureCanvasPdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MultiBarplot.set_grid"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.set_grid">[docs]</a>    <span class="k">def</span> <span class="nf">set_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up a grid according to the number of subplots,</span>
 <span class="sd">        with proportions according to the number of elements</span>
 <span class="sd">        in each subplot.</span>
@@ -1185,7 +1250,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
 
 <div class="viewcode-block" id="MultiBarplot.make_plots"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.make_plots">[docs]</a>    <span class="k">def</span> <span class="nf">make_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Does the actual plotting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">original_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bar_args</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span>
@@ -1266,7 +1331,7 @@
                     <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="k">else</span> <span class="mi">0</span><span class="p">):]))</span>
 
 <div class="viewcode-block" id="MultiBarplot.labels"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.labels">[docs]</a>    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets properties of axis labels and ticklabels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">list</span><span class="p">(</span>
@@ -1279,7 +1344,7 @@
         <span class="c1"># self.ax.yaxis.label.set_fontproperties(self)</span>
 
 <div class="viewcode-block" id="MultiBarplot.set_title"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.set_title">[docs]</a>    <span class="k">def</span> <span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the main title.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maketitle</span><span class="p">:</span>
@@ -1329,7 +1394,7 @@
             <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">_autolabelpos</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="MultiBarplot.finish"><a class="viewcode-back" href="../../../api/pypath.visual.plot.MultiBarplot.html#pypath.visual.plot.MultiBarplot.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies tight layout, draws the figure, writes the file and closes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -1380,7 +1445,7 @@
                  <span class="n">context</span><span class="o">=</span><span class="s1">&#39;poster&#39;</span><span class="p">,</span>
                  <span class="n">do_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        y_break : tuple</span>
 <span class="sd">        If not None, the y-axis will have a break. 2 floats in the tuple, &lt; 1.0, </span>
 <span class="sd">        mean the lower and upper proportion of the plot shown. The part between</span>
@@ -1707,7 +1772,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="StackedBarplot.reload"><a class="viewcode-back" href="../../../api/pypath.visual.plot.StackedBarplot.html#pypath.visual.plot.StackedBarplot.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the module and updates the class instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
@@ -1717,7 +1782,7 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StackedBarplot.plot"><a class="viewcode-back" href="../../../api/pypath.visual.plot.StackedBarplot.html#pypath.visual.plot.StackedBarplot.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The total workflow of this class.</span>
 <span class="sd">        Calls all methods in the correct order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1756,14 +1821,14 @@
             <span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">FontProperties</span><span class="p">(</span><span class="o">**</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_font</span><span class="p">))</span>
 
 <div class="viewcode-block" id="StackedBarplot.set_figsize"><a class="viewcode-back" href="../../../api/pypath.visual.plot.StackedBarplot.html#pypath.visual.plot.StackedBarplot.set_figsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_figsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts width and height to a tuple so can be used for figsize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StackedBarplot.init_fig"><a class="viewcode-back" href="../../../api/pypath.visual.plot.StackedBarplot.html#pypath.visual.plot.StackedBarplot.init_fig">[docs]</a>    <span class="k">def</span> <span class="nf">init_fig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a figure using the object oriented matplotlib interface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">backend_pdf</span><span class="o">.</span><span class="n">PdfPages</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
@@ -1833,7 +1898,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">])</span>
 
 <div class="viewcode-block" id="StackedBarplot.set_title"><a class="viewcode-back" href="../../../api/pypath.visual.plot.StackedBarplot.html#pypath.visual.plot.StackedBarplot.set_title">[docs]</a>    <span class="k">def</span> <span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the main title.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
@@ -1857,7 +1922,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">leg</span><span class="o">.</span><span class="n">get_title</span><span class="p">()</span><span class="o">.</span><span class="n">set_fontproperties</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fp_axis_lab</span><span class="p">)</span>
 
 <div class="viewcode-block" id="StackedBarplot.finish"><a class="viewcode-back" href="../../../api/pypath.visual.plot.StackedBarplot.html#pypath.visual.plot.StackedBarplot.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies tight layout, draws the figure, writes the file and closes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -1993,7 +2058,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ScatterPlus.reload"><a class="viewcode-back" href="../../../api/pypath.visual.plot.ScatterPlus.html#pypath.visual.plot.ScatterPlus.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the module and updates the class instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
@@ -2041,14 +2106,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ScatterPlus.set_figsize"><a class="viewcode-back" href="../../../api/pypath.visual.plot.ScatterPlus.html#pypath.visual.plot.ScatterPlus.set_figsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_figsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts width and height to a tuple so can be used for figsize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ScatterPlus.init_fig"><a class="viewcode-back" href="../../../api/pypath.visual.plot.ScatterPlus.html#pypath.visual.plot.ScatterPlus.init_fig">[docs]</a>    <span class="k">def</span> <span class="nf">init_fig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a figure using the object oriented matplotlib interface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">backend_pdf</span><span class="o">.</span><span class="n">PdfPages</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
@@ -2085,7 +2150,7 @@
             <span class="n">mpl</span><span class="o">.</span><span class="n">font_manager</span><span class="o">.</span><span class="n">FontProperties</span><span class="p">(</span><span class="o">**</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annot_font</span><span class="p">))</span>
 
 <div class="viewcode-block" id="ScatterPlus.set_title"><a class="viewcode-back" href="../../../api/pypath.visual.plot.ScatterPlus.html#pypath.visual.plot.ScatterPlus.set_title">[docs]</a>    <span class="k">def</span> <span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the main title.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
@@ -2302,7 +2367,7 @@
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ScatterPlus.values_to_sizes"><a class="viewcode-back" href="../../../api/pypath.visual.plot.ScatterPlus.html#pypath.visual.plot.ScatterPlus.values_to_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">values_to_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transformation converts from size values in data dimension</span>
 <span class="sd">        to dimension of the size graphical parameter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2464,7 +2529,7 @@
                         <span class="k">break</span>
 
 <div class="viewcode-block" id="ScatterPlus.finish"><a class="viewcode-back" href="../../../api/pypath.visual.plot.ScatterPlus.html#pypath.visual.plot.ScatterPlus.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies tight layout, draws the figure, writes the file and closes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -2869,7 +2934,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="SimilarityGraph.sizes_edge"><a class="viewcode-back" href="../../../api/pypath.visual.plot.SimilarityGraph.html#pypath.visual.plot.SimilarityGraph.sizes_edge">[docs]</a>    <span class="k">def</span> <span class="nf">sizes_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the size according to number of edges for each resource.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -3128,17 +3193,17 @@
 
     <span class="k">def</span> <span class="nf">set_latex_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># LaTeX preamble for XeLaTeX</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">latex_header</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;\documentclass[10pt]</span><span class="si">{extarticle}</span><span class="s1"></span>
-<span class="s1">            \usepackage</span><span class="si">{fontspec}</span><span class="s1"></span>
-<span class="s1">            \usepackage</span><span class="si">{xunicode}</span><span class="s1"></span>
-<span class="s1">            \usepackage</span><span class="si">{polyglossia}</span><span class="s1"></span>
-<span class="s1">            \setdefaultlanguage</span><span class="si">{english}</span><span class="s1"></span>
-<span class="s1">            \usepackage</span><span class="si">{xltxtra}</span><span class="s1"></span>
-<span class="s1">            \usepackage</span><span class="si">{microtype}</span><span class="s1"></span>
-<span class="s1">            \usepackage[cm]</span><span class="si">{fullpage}</span><span class="s1"></span>
-<span class="s1">            \usepackage</span><span class="si">{rotating}</span><span class="s1"></span>
-<span class="s1">            \usepackage</span><span class="si">{fullpage}</span><span class="s1"></span>
-<span class="s1">            \usepackage[usenames,dvipsnames,svgnames,table]</span><span class="si">{xcolor}</span><span class="s1"></span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latex_header</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;\documentclass[10pt]</span><span class="si">{extarticle}</span>
+<span class="s1">            \usepackage</span><span class="si">{fontspec}</span>
+<span class="s1">            \usepackage</span><span class="si">{xunicode}</span>
+<span class="s1">            \usepackage</span><span class="si">{polyglossia}</span>
+<span class="s1">            \setdefaultlanguage</span><span class="si">{english}</span>
+<span class="s1">            \usepackage</span><span class="si">{xltxtra}</span>
+<span class="s1">            \usepackage</span><span class="si">{microtype}</span>
+<span class="s1">            \usepackage[cm]</span><span class="si">{fullpage}</span>
+<span class="s1">            \usepackage</span><span class="si">{rotating}</span>
+<span class="s1">            \usepackage</span><span class="si">{fullpage}</span>
+<span class="s1">            \usepackage[usenames,dvipsnames,svgnames,table]</span><span class="si">{xcolor}</span>
 <span class="s1">            \usepackage[</span>
 <span class="s1">                voffset=0cm,</span>
 <span class="s1">                hoffset=0cm,</span>
@@ -3151,22 +3216,22 @@
 <span class="s1">                footskip=0pt,</span>
 <span class="s1">                headheight=0pt,</span>
 <span class="s1">                headsep=0pt</span>
-<span class="s1">                ]</span><span class="si">{geometry}</span><span class="s1"></span>
-<span class="s1">            \usepackage</span><span class="si">{color}</span><span class="s1"></span>
+<span class="s1">                ]</span><span class="si">{geometry}</span>
+<span class="s1">            \usepackage</span><span class="si">{color}</span>
 <span class="s1">            \setmainfont{HelveticaNeueLTStd-LtCn}</span>
-<span class="s1">            \usepackage</span><span class="si">{tikz}</span><span class="s1"></span>
+<span class="s1">            \usepackage</span><span class="si">{tikz}</span>
 <span class="s1">            \definecolor</span><span class="si">{zircon}{RGB}</span><span class="s1">{228, 236, 236}</span>
 <span class="s1">            \definecolor</span><span class="si">{teal}{RGB}</span><span class="s1">{17, 68, 119}</span>
 <span class="s1">            \definecolor</span><span class="si">{twilightblue}{RGB}</span><span class="s1">{227, 238, 248}</span>
-<span class="s1">            \definecolor</span><span class="si">{mantis}{RGB}</span><span class="s1">{119, 204, 204}</span><span class="si">%s</span><span class="s1"></span>
-<span class="s1">            \begin</span><span class="si">{document}</span><span class="s1"></span>
-<span class="s1">            \thispagestyle</span><span class="si">{empty}</span><span class="s1"></span>
-<span class="s1">            \pgfdeclarelayer</span><span class="si">{background}</span><span class="s1"></span>
-<span class="s1">            \pgfdeclarelayer</span><span class="si">{nodes}</span><span class="s1"></span>
-<span class="s1">            \pgfdeclarelayer</span><span class="si">{lines}</span><span class="s1"></span>
-<span class="s1">            \pgfsetlayers{background,lines,nodes}</span><span class="si">%s</span><span class="s1"></span>
-<span class="s1">            \begin</span><span class="si">{tikzpicture}</span><span class="s1"></span>
-<span class="s1">            \begin</span><span class="si">{pgfonlayer}{background}</span><span class="s1"></span>
+<span class="s1">            \definecolor</span><span class="si">{mantis}{RGB}</span><span class="s1">{119, 204, 204}</span><span class="si">%s</span>
+<span class="s1">            \begin</span><span class="si">{document}</span>
+<span class="s1">            \thispagestyle</span><span class="si">{empty}</span>
+<span class="s1">            \pgfdeclarelayer</span><span class="si">{background}</span>
+<span class="s1">            \pgfdeclarelayer</span><span class="si">{nodes}</span>
+<span class="s1">            \pgfdeclarelayer</span><span class="si">{lines}</span>
+<span class="s1">            \pgfsetlayers{background,lines,nodes}</span><span class="si">%s</span>
+<span class="s1">            \begin</span><span class="si">{tikzpicture}</span>
+<span class="s1">            \begin</span><span class="si">{pgfonlayer}{background}</span>
 <span class="s1">        &#39;&#39;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tikzstyles</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">            \begin</span><span class="si">{turn}</span><span class="s1">{-90}&#39;&#39;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
@@ -3187,7 +3252,7 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">years</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">+=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;        \fill[anchor = south west, fill = </span><span class="si">%s</span><span class="s1">, </span>
 <span class="s1">                inner sep = 0pt, outer sep = 0pt] &#39;&#39;&#39;</span>\
-                <span class="sa">r</span><span class="sd">&#39;&#39;&#39;(%f, %f) rectangle (%f, %f);</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39;(%f, %f) rectangle (%f, %f);</span>
 <span class="sd">                \node[anchor = north west, rotate = 90, text width = %fcm, </span>
 <span class="sd">                    fill = %s, inner sep = 0pt, outer sep = 0pt, align = center, </span>
 <span class="sd">                    minimum size = %fcm] at (0.0, %f) {\small{\color{%s}%u}};</span>
@@ -3210,8 +3275,8 @@
 
     <span class="k">def</span> <span class="nf">get_layer_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># new layer for nodes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layer_nodes</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;    \end</span><span class="si">{pgfonlayer}</span><span class="s1"></span>
-<span class="s1">            \begin</span><span class="si">{pgfonlayer}{nodes}</span><span class="s1"></span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_nodes</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;    \end</span><span class="si">{pgfonlayer}</span>
+<span class="s1">            \begin</span><span class="si">{pgfonlayer}{nodes}</span>
 <span class="s1">            &#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">get_timelines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3289,8 +3354,8 @@
 
     <span class="k">def</span> <span class="nf">get_layer_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># new layer for crossing lines showing data transfers:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layer_lines</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;\end</span><span class="si">{pgfonlayer}</span><span class="s1"></span>
-<span class="s1">            \begin</span><span class="si">{pgfonlayer}{lines}</span><span class="s1"></span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_lines</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;\end</span><span class="si">{pgfonlayer}</span>
+<span class="s1">            \begin</span><span class="si">{pgfonlayer}{lines}</span>
 <span class="s1">            &#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">get_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3307,21 +3372,21 @@
 
     <span class="k">def</span> <span class="nf">get_closing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># closing layer, tikzpicture and LaTeX document:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">closing</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;    \end</span><span class="si">{pgfonlayer}</span><span class="s1"></span>
-<span class="s1">            \end</span><span class="si">{tikzpicture}%s</span><span class="s1"></span>
-<span class="s1">            \end</span><span class="si">{document}</span><span class="s1"></span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closing</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;    \end</span><span class="si">{pgfonlayer}</span>
+<span class="s1">            \end</span><span class="si">{tikzpicture}%s</span>
+<span class="s1">            \end</span><span class="si">{document}</span>
 <span class="s1">        &#39;&#39;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">            \end</span><span class="si">{turn}</span><span class="s1">&#39;&#39;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HistoryTree.write_tex"><a class="viewcode-back" href="../../../api/pypath.visual.plot.HistoryTree.html#pypath.visual.plot.HistoryTree.write_tex">[docs]</a>    <span class="k">def</span> <span class="nf">write_tex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the TeX markup to file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tikzfname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tikz</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HistoryTree.run_latex"><a class="viewcode-back" href="../../../api/pypath.visual.plot.HistoryTree.html#pypath.visual.plot.HistoryTree.run_latex">[docs]</a>    <span class="k">def</span> <span class="nf">run_latex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs LaTeX to compile the TeX file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">:</span>
@@ -3497,14 +3562,14 @@
                     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
 <div class="viewcode-block" id="HtpCharacteristics.set_figsize"><a class="viewcode-back" href="../../../api/pypath.visual.plot.HtpCharacteristics.html#pypath.visual.plot.HtpCharacteristics.set_figsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_figsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts width and height to a tuple so can be used for figsize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HtpCharacteristics.init_fig"><a class="viewcode-back" href="../../../api/pypath.visual.plot.HtpCharacteristics.html#pypath.visual.plot.HtpCharacteristics.init_fig">[docs]</a>    <span class="k">def</span> <span class="nf">init_fig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a figure using the object oriented matplotlib interface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">backend_pdf</span><span class="o">.</span><span class="n">PdfPages</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
@@ -3513,7 +3578,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="HtpCharacteristics.set_grid"><a class="viewcode-back" href="../../../api/pypath.visual.plot.HtpCharacteristics.html#pypath.visual.plot.HtpCharacteristics.set_grid">[docs]</a>    <span class="k">def</span> <span class="nf">set_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up a grid according to the number of subplots,</span>
 <span class="sd">        with one additional column of zero width on the left</span>
 <span class="sd">        to have aligned y axis labels.</span>
@@ -3584,7 +3649,7 @@
             <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_verticalalignment</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HtpCharacteristics.set_title"><a class="viewcode-back" href="../../../api/pypath.visual.plot.HtpCharacteristics.html#pypath.visual.plot.HtpCharacteristics.set_title">[docs]</a>    <span class="k">def</span> <span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the main title.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
@@ -3593,7 +3658,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span><span class="o">.</span><span class="n">set_verticalalignment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_valign</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HtpCharacteristics.finish"><a class="viewcode-back" href="../../../api/pypath.visual.plot.HtpCharacteristics.html#pypath.visual.plot.HtpCharacteristics.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies tight layout, draws the figure, writes the file and closes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -3766,14 +3831,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">pp</span><span class="p">,</span> <span class="n">htp_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">htp_threshold</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RefsComposite.set_figsize"><a class="viewcode-back" href="../../../api/pypath.visual.plot.RefsComposite.html#pypath.visual.plot.RefsComposite.set_figsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_figsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts width and height to a tuple so can be used for figsize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RefsComposite.init_fig"><a class="viewcode-back" href="../../../api/pypath.visual.plot.RefsComposite.html#pypath.visual.plot.RefsComposite.init_fig">[docs]</a>    <span class="k">def</span> <span class="nf">init_fig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a figure using the object oriented matplotlib interface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">backend_pdf</span><span class="o">.</span><span class="n">PdfPages</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
@@ -3782,7 +3847,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="RefsComposite.set_grid"><a class="viewcode-back" href="../../../api/pypath.visual.plot.RefsComposite.html#pypath.visual.plot.RefsComposite.set_grid">[docs]</a>    <span class="k">def</span> <span class="nf">set_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up a grid according to the number of subplots,</span>
 <span class="sd">        with one additional column of zero width on the left</span>
 <span class="sd">        to have aligned y axis labels.</span>
@@ -4084,7 +4149,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RefsComposite.set_title"><a class="viewcode-back" href="../../../api/pypath.visual.plot.RefsComposite.html#pypath.visual.plot.RefsComposite.set_title">[docs]</a>    <span class="k">def</span> <span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the main title.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
@@ -4093,7 +4158,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span><span class="o">.</span><span class="n">set_verticalalignment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_valign</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RefsComposite.finish"><a class="viewcode-back" href="../../../api/pypath.visual.plot.RefsComposite.html#pypath.visual.plot.RefsComposite.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies tight layout, draws the figure, writes the file and closes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -4219,14 +4284,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">pp</span><span class="p">,</span> <span class="n">htp_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">htp_threshold</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CurationPlot.set_figsize"><a class="viewcode-back" href="../../../api/pypath.visual.plot.CurationPlot.html#pypath.visual.plot.CurationPlot.set_figsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_figsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts width and height to a tuple so can be used for figsize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CurationPlot.init_fig"><a class="viewcode-back" href="../../../api/pypath.visual.plot.CurationPlot.html#pypath.visual.plot.CurationPlot.init_fig">[docs]</a>    <span class="k">def</span> <span class="nf">init_fig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a figure using the object oriented matplotlib interface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">backend_pdf</span><span class="o">.</span><span class="n">PdfPages</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
@@ -4313,7 +4378,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CurationPlot.finish"><a class="viewcode-back" href="../../../api/pypath.visual.plot.CurationPlot.html#pypath.visual.plot.CurationPlot.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies tight layout, draws the figure, writes the file and closes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -4487,7 +4552,7 @@
                 <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">by</span><span class="p">)</span> <span class="o">==</span> <span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">)))</span>
 
 <div class="viewcode-block" id="BarplotsGrid.set_figsize"><a class="viewcode-back" href="../../../api/pypath.visual.plot.BarplotsGrid.html#pypath.visual.plot.BarplotsGrid.set_figsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_figsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts width and height to a tuple so can be used for figsize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">):</span>
@@ -4508,7 +4573,7 @@
                         <span class="mi">8</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">hoffset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BarplotsGrid.init_fig"><a class="viewcode-back" href="../../../api/pypath.visual.plot.BarplotsGrid.html#pypath.visual.plot.BarplotsGrid.init_fig">[docs]</a>    <span class="k">def</span> <span class="nf">init_fig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a figure using the object oriented matplotlib interface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">backend_pdf</span><span class="o">.</span><span class="n">PdfPages</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
@@ -4517,7 +4582,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="BarplotsGrid.set_grid"><a class="viewcode-back" href="../../../api/pypath.visual.plot.BarplotsGrid.html#pypath.visual.plot.BarplotsGrid.set_grid">[docs]</a>    <span class="k">def</span> <span class="nf">set_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up a grid according to the number of subplots,</span>
 <span class="sd">        with one additional column of zero width on the left</span>
 <span class="sd">        to have aligned y axis labels.</span>
@@ -4646,7 +4711,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BarplotsGrid.set_title"><a class="viewcode-back" href="../../../api/pypath.visual.plot.BarplotsGrid.html#pypath.visual.plot.BarplotsGrid.set_title">[docs]</a>    <span class="k">def</span> <span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the main title.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
@@ -4670,7 +4735,7 @@
                         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">])</span>
 
 <div class="viewcode-block" id="BarplotsGrid.finish"><a class="viewcode-back" href="../../../api/pypath.visual.plot.BarplotsGrid.html#pypath.visual.plot.BarplotsGrid.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies tight layout, draws the figure, writes the file and closes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#self.gs.update(wspace=0.1, hspace=0.1)</span>
@@ -4773,14 +4838,14 @@
                 <span class="o">**</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticklabel_font</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Dendrogram.set_figsize"><a class="viewcode-back" href="../../../api/pypath.visual.plot.Dendrogram.html#pypath.visual.plot.Dendrogram.set_figsize">[docs]</a>    <span class="k">def</span> <span class="nf">set_figsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts width and height to a tuple so can be used for figsize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Dendrogram.init_fig"><a class="viewcode-back" href="../../../api/pypath.visual.plot.Dendrogram.html#pypath.visual.plot.Dendrogram.init_fig">[docs]</a>    <span class="k">def</span> <span class="nf">init_fig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a figure using the object oriented matplotlib interface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">backend_pdf</span><span class="o">.</span><span class="n">PdfPages</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
@@ -4818,7 +4883,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Dendrogram.finish"><a class="viewcode-back" href="../../../api/pypath.visual.plot.Dendrogram.html#pypath.visual.plot.Dendrogram.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies tight layout, draws the figure, writes the file and closes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#self.gs.update(wspace=0.1, hspace=0.1)</span>
@@ -4837,123 +4902,87 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span></div></div>
 </pre></div>
 
-            </article>
-            
-            
-            
-            <footer class="bd-footer-article">
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-</div>
-            </footer>
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+                </article>
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
 </div>
-<nav id="bd-toc-nav" class="page-toc">
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../index.html">
-   Welcome to pypath!
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../webservice.html">
-   Webservice
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../releasehistory.html">
-   Release history
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../reference.html">
-   Reference
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../notebooks/manual.html">
-   The pypath book
-  </a>
- </li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
 </ul>
 
-</nav>
-</div>
+  </nav></div>
 
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-            </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
+</div></div>
+              
             
           </div>
-        </footer>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
         
       </main>
     </div>
   </div>
-
   
-    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
   
-  <div class="footer-item">
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
     
-<p class="copyright">
-
-    &copy; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
-
-</p>
-
-  </div>
-  
-  <div class="footer-item">
-    <p class="theme-version">
-    Built with the
-    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
-        PyData Sphinx Theme
-    </a>
-    0.12.0.
-</p>
-  </div>
-  
-  <div class="footer-item">
+      © Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
     
-<p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
-</p>
-
-  </div>
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 6.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+</p></div>
+      
+    </div>
   
 </div>
+
   </footer>
   </body>
 </html>

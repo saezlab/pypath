@@ -1,11 +1,14 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.core.annot &#8212; pypath 0.14.35 documentation</title>
+    <title>pypath.core.annot &#8212; pypath 0.14.36 documentation</title>
   
   
   
@@ -15,112 +18,123 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/core/annot';</script>
-    <link rel="shortcut icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
   <label class="overlay overlay-primary" for="__primary"></label>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
   <label class="overlay overlay-secondary" for="__secondary"></label>
-
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
-      
-<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
+</form></div>
   </div>
-
   
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fa-solid fa-bars"></span>
+    <span class="fa-solid fa-bars"></span>
   </label>
-  <div id="navbar-start">
-    
-    
   
-
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../../../contents.html">
-
   
   
   
   
-  
-  
-  
-
-  
-    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-light" alt="Pypath">
-    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath">
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
   
   
     <p class="title logo__title">Pypath</p>
   
-</a>
+</a></div>
     
   </div>
-
+  
   
   <div class=" navbar-header-items">
-    <div id="navbar-center" class="mr-auto">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../index.html">
                         Welcome to pypath!
@@ -155,32 +169,39 @@
                       </a>
                     </li>
                 
-    </ul>
-</nav>
-      </div>
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-        <div class="navbar-end-item navbar-persistent--container">
+        <div class="navbar-item navbar-persistent--container">
           
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
       
       
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
+  </button>
+`);
+</script></div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -189,7 +210,8 @@
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -200,7 +222,8 @@
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
         <li class="nav-item">
@@ -211,7 +234,8 @@
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
             <label class="sr-only">PyPI</label></a>
         </li>
         <li class="nav-item">
@@ -222,7 +246,8 @@
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
             <label class="sr-only">OmniPath</label></a>
         </li>
         <li class="nav-item">
@@ -233,53 +258,58 @@
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
             <label class="sr-only">Saez Lab</label></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
+    
   </div>
-
-
   
   
     <div class="navbar-persistent--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
     </div>
   
 
   
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
       <span class="fa-solid fa-outdent"></span>
-  </label>
+    </label>
   
-
 </div>
-  </nav>
-  
 
+    </nav>
+  
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
+
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
       <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
         
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../index.html">
                         Welcome to pypath!
@@ -314,27 +344,28 @@
                       </a>
                     </li>
                 
-    </ul>
-</nav>
+  </ul>
+</nav></div>
+        
       </div>
-      
-      </div>
-    
-
     
     
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -343,7 +374,8 @@
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -354,7 +386,8 @@
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
         <li class="nav-item">
@@ -365,7 +398,8 @@
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
             <label class="sr-only">PyPI</label></a>
         </li>
         <li class="nav-item">
@@ -376,7 +410,8 @@
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
             <label class="sr-only">OmniPath</label></a>
         </li>
         <li class="nav-item">
@@ -387,41 +422,71 @@
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
             <label class="sr-only">Saez Lab</label></a>
         </li>
-      </ul>
+</ul></div>
+        
       </div>
-      
-    </div>
     
   </div>
-
   
-
   
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
-
   
   <div id="rtd-footer-container"></div>
 
+
       </div>
+      
       <main id="main-content" class="bd-main">
         
         
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+          <div class="bd-content">
+            <div class="bd-article-container">
               
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../pypath.html" class="nav-link">pypath</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.core.annot</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <h1>Source code for pypath.core.annot</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
@@ -628,7 +693,7 @@
             <span class="n">annotdb_pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">composite_resource_name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param tuple class_definitions:</span>
 <span class="sd">            A series of annotation class definitions, each represented by</span>
 <span class="sd">            an instance of ``pypath.internals.annot_formats.AnnotDef``.</span>
@@ -676,7 +741,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.reload"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -769,7 +834,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.update_parents"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.update_parents">[docs]</a>    <span class="k">def</span> <span class="nf">update_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a dict :py:attr:``children`` with parent class names as keys</span>
 <span class="sd">        and sets of children class keys as values. Also a dict</span>
 <span class="sd">        :py:attr:``parents`` with children class keys as keys and parent</span>
@@ -807,7 +872,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.populate_classes"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.populate_classes">[docs]</a>    <span class="k">def</span> <span class="nf">populate_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a classification of proteins according to the custom</span>
 <span class="sd">        annotation definitions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -827,7 +892,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.populate_scores"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.populate_scores">[docs]</a>    <span class="k">def</span> <span class="nf">populate_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates the consensus score dictionaries based on the number of</span>
 <span class="sd">        resources annotating an entity for each composite category.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -920,7 +985,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.create_class"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.create_class">[docs]</a>    <span class="k">def</span> <span class="nf">create_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classdef</span><span class="p">,</span> <span class="n">override</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a category of entities by processing a custom definition.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -930,7 +995,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.process_annot"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.process_annot">[docs]</a>    <span class="k">def</span> <span class="nf">process_annot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classdef</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes an annotation definition and returns a set of identifiers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1059,7 +1124,7 @@
 
 
     <span class="k">def</span> <span class="nf">_execute_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotop</span><span class="p">,</span> <span class="n">execute</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes a set operation on anntation sets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1100,7 +1165,7 @@
 
 
     <span class="k">def</span> <span class="nf">_collect_by_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">only_generic</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes the shorthand (single string) notation</span>
 <span class="sd">        `[#name]~parent[~resource]`.</span>
 <span class="sd">        Returns tuple of sets.</span>
@@ -1134,7 +1199,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_process_short_notation</span><span class="p">(</span><span class="n">shortdef</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extracts name, parent and resource froms the shorthand (single string)</span>
 <span class="sd">        notation `[#name]~parent[~resource]`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1212,7 +1277,7 @@
             <span class="n">execute</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a class by its name and loads it if hasn&#39;t been loaded yet</span>
 <span class="sd">        but the name present in the class definitions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1277,7 +1342,7 @@
             <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a class by its name or definition. The definition can be</span>
 <span class="sd">        a class name (string) or a set of entities, or an AnnotDef object</span>
 <span class="sd">        defining the contents based on original resources or an AnnotOp</span>
@@ -1317,7 +1382,7 @@
             <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same as ``select`` but returns a list of labels (more human readable).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1338,7 +1403,7 @@
             <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same as ``select`` but prints a table to the console with basic</span>
 <span class="sd">        information from the UniProt datasheets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1362,7 +1427,7 @@
             <span class="n">top</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Exports a table in tsv format for quality check and browsing purposes.</span>
 <span class="sd">        Each protein represented in one row of this table with basic data</span>
 <span class="sd">        from UniProt and the list of annotation categories from this</span>
@@ -1467,7 +1532,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.get_parents"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.get_parents">[docs]</a>    <span class="k">def</span> <span class="nf">get_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        As names should be unique for resources, a combination of a name and</span>
 <span class="sd">        resource determines the parent category. This method looks up the</span>
 <span class="sd">        parent for a pair of name and resource.</span>
@@ -1506,7 +1571,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.get_resources"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.get_resources">[docs]</a>    <span class="k">def</span> <span class="nf">get_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a set with the names of all resources defining a category</span>
 <span class="sd">        with the given name and parent.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1544,7 +1609,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.get_resource"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.get_resource">[docs]</a>    <span class="k">def</span> <span class="nf">get_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a category name and its parent returns a single resource name.</span>
 <span class="sd">        If a category belonging to the composite database matches the name</span>
 <span class="sd">        and the parent the name of the composite database will be returned,</span>
@@ -1637,7 +1702,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.make_df"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.make_df">[docs]</a>    <span class="k">def</span> <span class="nf">make_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_annotations</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">full_name</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a ``pandas.DataFrame`` where each record assigns a</span>
 <span class="sd">        molecular entity to an annotation category. The data frame will</span>
 <span class="sd">        be assigned to the ``df`` attribute.</span>
@@ -1746,7 +1811,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.get_df"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.get_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the data frame of custom annotations. If it does not exist yet</span>
 <span class="sd">        builds the data frame.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1759,7 +1824,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.counts"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.counts">[docs]</a>    <span class="k">def</span> <span class="nf">counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dict with number of elements in each class.</span>
 
 <span class="sd">        :param bool labels:</span>
@@ -1812,7 +1877,7 @@
 
 <div class="viewcode-block" id="CustomAnnotation.filter_classes"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.filter_classes">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">filter_classes</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of annotation classes filtered by their attributes.</span>
 <span class="sd">        ``kwargs`` contains attributes and values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1830,7 +1895,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.filter"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filters the annotated entities by annotation class attributes and</span>
 <span class="sd">        ``entity_type``. ``kwargs`` passed to ``filter_classes``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1869,7 +1934,7 @@
             <span class="n">undirected_orientation</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">entities_or</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Combines the annotation data frame and a network data frame.</span>
 <span class="sd">        Creates a ``pandas.DataFrame`` where each record is an interaction</span>
 <span class="sd">        between a pair of molecular enitities labeled by their annotations.</span>
@@ -2133,7 +2198,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.set_interclass_network_df"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.set_interclass_network_df">[docs]</a>    <span class="k">def</span> <span class="nf">set_interclass_network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a data frame of the whole inter-class network and keeps it</span>
 <span class="sd">        assigned to the instance in order to make subsequent queries faster.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2144,7 +2209,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.get_interclass_network_df"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.get_interclass_network_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_interclass_network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If the an interclass network is already present the ``network``</span>
 <span class="sd">        and other ``kwargs`` provided not considered. Otherwise these</span>
 <span class="sd">        are passed to ``network_df``.</span>
@@ -2381,7 +2446,7 @@
     <span class="c1">#</span>
 
 <div class="viewcode-block" id="CustomAnnotation.class_to_class_connections"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.class_to_class_connections">[docs]</a>    <span class="k">def</span> <span class="nf">class_to_class_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ``kwargs`` passed to ``filter_interclass_network``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2470,7 +2535,7 @@
             <span class="n">degrees_of</span> <span class="o">=</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        degrees_of : str</span>
 <span class="sd">            Either *source* or *target*. Count the degrees for the source</span>
 <span class="sd">            or the target class.</span>
@@ -2643,7 +2708,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.register_network"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.register_network">[docs]</a>    <span class="k">def</span> <span class="nf">register_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets ``network`` as the default network dataset for the instance.</span>
 <span class="sd">        All methods afterwards will use this network.</span>
 <span class="sd">        Also it discards the interclass network data frame if it present to</span>
@@ -2773,7 +2838,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.classes_by_entity"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.classes_by_entity">[docs]</a>    <span class="k">def</span> <span class="nf">classes_by_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a set of class keys with the classes containing at least</span>
 <span class="sd">        one of the elements.</span>
 
@@ -2911,7 +2976,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.resources_in_category"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.resources_in_category">[docs]</a>    <span class="k">def</span> <span class="nf">resources_in_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of resources contributing to the definition of</span>
 <span class="sd">        a category.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2942,7 +3007,7 @@
 
 
 <div class="viewcode-block" id="CustomAnnotation.browse"><a class="viewcode-back" href="../../../api/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.browse">[docs]</a>    <span class="k">def</span> <span class="nf">browse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print gene information as a table.</span>
 
 <span class="sd">        Presents information about annotation classes as ascii tables printed</span>
@@ -2995,7 +3060,7 @@
             <span class="n">check_ids</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Represents annotations for a set of proteins.</span>
 <span class="sd">        Loads the data from the original resource and provides methods</span>
 <span class="sd">        to query the annotations.</span>
@@ -3047,7 +3112,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.reload"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3059,7 +3124,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.load"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the annotation data by calling the input method.</span>
 <span class="sd">        Infers annotations for complexes in the complex database if</span>
 <span class="sd">        py:attr:``infer_complexes`` is True.</span>
@@ -3130,7 +3195,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.add_complexes_by_inference"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.add_complexes_by_inference">[docs]</a>    <span class="k">def</span> <span class="nf">add_complexes_by_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">complexes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates complex annotations by in silico inference and adds them</span>
 <span class="sd">        to this annotation set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3141,7 +3206,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.complex_inference"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.complex_inference">[docs]</a>    <span class="k">def</span> <span class="nf">complex_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">complexes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Annotates all complexes in `complexes`, by default in the default</span>
 <span class="sd">        complex database (existing in the `complex` module or generated</span>
 <span class="sd">        on demand according to the module&#39;s current settings).</span>
@@ -3182,7 +3247,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.annotate_complex"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.annotate_complex">[docs]</a>    <span class="k">def</span> <span class="nf">annotate_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cplex</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Infers annotations for a single complex.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3272,7 +3337,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.load_proteins"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.load_proteins">[docs]</a>    <span class="k">def</span> <span class="nf">load_proteins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a set of all UniProt IDs to have a base set of the entire</span>
 <span class="sd">        proteome.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3290,7 +3355,7 @@
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
             <span class="n">swissprot_only</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the reference set i.e. the set of all entities which</span>
 <span class="sd">        potentially have annotation in this resource. Typically this is the</span>
 <span class="sd">        proteome of the organism from UniProt optionally with all the protein</span>
@@ -3338,7 +3403,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.set_reference_set"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.set_reference_set">[docs]</a>    <span class="k">def</span> <span class="nf">set_reference_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assigns the reference set to the :py:attr``reference_set`` attribute.</span>
 <span class="sd">        The reference set is the set of all entities which</span>
 <span class="sd">        potentially have annotation in this resource. Typically this is the</span>
@@ -3367,7 +3432,7 @@
 
 
     <span class="k">def</span> <span class="nf">_process_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        By default it converts a set to dict of empty sets in order to make</span>
 <span class="sd">        it compatible with other methods.</span>
 <span class="sd">        Derived classes might override.</span>
@@ -3377,7 +3442,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.select"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a subset by filtering based on ``kwargs``.</span>
 <span class="sd">        Each argument should be a name and a value or set of values.</span>
 <span class="sd">        Elements having the provided values in the annotation will be</span>
@@ -3463,7 +3528,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.labels"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.labels">[docs]</a>    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same as ``select`` but returns a list of labels (more human readable).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3471,7 +3536,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.show"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">table_param</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same as ``select`` but prints a table to the console with basic</span>
 <span class="sd">        information from the UniProt datasheets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3485,7 +3550,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.get_subset_bool_array"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.get_subset_bool_array">[docs]</a>    <span class="k">def</span> <span class="nf">get_subset_bool_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference_set</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a boolean vector with True and False values for each entity</span>
 <span class="sd">        in the reference set. The values represent presence absence data</span>
 <span class="sd">        in the simplest case, but by providing ``kwargs`` any kind of matching</span>
@@ -3504,7 +3569,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.to_bool_array"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.to_bool_array">[docs]</a>    <span class="k">def</span> <span class="nf">to_bool_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference_set</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a presence/absence boolean array for a reference set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3517,7 +3582,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.to_set"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.to_set">[docs]</a>    <span class="k">def</span> <span class="nf">to_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the entities present in this annotation resource as a set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3535,7 +3600,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.all_entities"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.all_entities">[docs]</a>    <span class="k">def</span> <span class="nf">all_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_types</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All entities annotated in this resource.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3548,7 +3613,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.all_proteins"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.all_proteins">[docs]</a>    <span class="k">def</span> <span class="nf">all_proteins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All UniProt IDs annotated in this resource.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3559,7 +3624,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.all_complexes"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.all_complexes">[docs]</a>    <span class="k">def</span> <span class="nf">all_complexes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All protein complexes annotated in this resource.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3571,7 +3636,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.all_mirnas"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.all_mirnas">[docs]</a>    <span class="k">def</span> <span class="nf">all_mirnas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All miRNAs annotated in this resource.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3612,7 +3677,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.numof_records"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.numof_records">[docs]</a>    <span class="k">def</span> <span class="nf">numof_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_types</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The total number of annotation records.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3641,7 +3706,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.numof_entities"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.numof_entities">[docs]</a>    <span class="k">def</span> <span class="nf">numof_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The number of annotated entities in the resource.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3685,7 +3750,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.to_array"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.to_array">[docs]</a>    <span class="k">def</span> <span class="nf">to_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference_set</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_fields</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an entity vs feature array. In case of more complex</span>
 <span class="sd">        annotations this might be huge.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3778,7 +3843,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.make_df"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.make_df">[docs]</a>    <span class="k">def</span> <span class="nf">make_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rebuild</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compiles a ``pandas.DataFrame`` from the annotation data.</span>
 <span class="sd">        The data frame will be assigned to :py:attr``df``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3876,7 +3941,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.coverage"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.coverage">[docs]</a>    <span class="k">def</span> <span class="nf">coverage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the coverage of the annotation i.e. the proportion of</span>
 <span class="sd">        entities having at least one record in this annotation resource</span>
 <span class="sd">        for an arbitrary set of entities.</span>
@@ -3895,7 +3960,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.subset_intersection"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.subset_intersection">[docs]</a>    <span class="k">def</span> <span class="nf">subset_intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universe</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the proportion of entities in a subset occuring in the</span>
 <span class="sd">        set ``universe``. The subset is selected by passing ``kwargs`` to the</span>
 <span class="sd">        ``select`` method.</span>
@@ -3907,7 +3972,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.get_values"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">exclude_none</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the set of all possible values of a field. E.g. if the</span>
 <span class="sd">        records of this annotation have a field ``cell_type`` then calling</span>
 <span class="sd">        this method can tell you that across all records the values of</span>
@@ -3934,7 +3999,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.get_names"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.get_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the list of field names in the records. The annotation</span>
 <span class="sd">        consists of uniform records and each entity might be annotated</span>
 <span class="sd">        with one or more records. Each record is a tuple of fields, for</span>
@@ -4004,7 +4069,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.numof_references"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.numof_references">[docs]</a>    <span class="k">def</span> <span class="nf">numof_references</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Some annotations contain references. The field name for references</span>
 <span class="sd">        is always ``pmid`` (PubMed ID). This method collects and counts the</span>
 <span class="sd">        references across all records.</span>
@@ -4014,7 +4079,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.curation_effort"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.curation_effort">[docs]</a>    <span class="k">def</span> <span class="nf">curation_effort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Counts the reference-record pairs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -4022,7 +4087,7 @@
 
 
 <div class="viewcode-block" id="AnnotationBase.all_refs"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.all_refs">[docs]</a>    <span class="k">def</span> <span class="nf">all_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Some annotations contain references. The field name for references</span>
 <span class="sd">        is always ``pmid`` (PubMed ID). This method collects the references</span>
 <span class="sd">        across all records. Returns *list*.</span>
@@ -4080,7 +4145,7 @@
             <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print gene information as a table.</span>
 
 <span class="sd">        Presents information about annotation categories as ascii tables</span>
@@ -4932,7 +4997,7 @@
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The name of this resource abbreviated as `CSPA`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -4966,7 +5031,7 @@
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The name of this resource abbreviated as `CSPA`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -4996,7 +5061,7 @@
 
 
 <div class="viewcode-block" id="HumanPlasmaMembraneReceptome.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.HumanPlasmaMembraneReceptome.html#pypath.core.annot.HumanPlasmaMembraneReceptome.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The name of this resource abbreviated as `HPMR`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5020,7 +5085,7 @@
 
 
 <div class="viewcode-block" id="Kinasedotcom.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Kinasedotcom.html#pypath.core.annot.Kinasedotcom.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Kinases from `kinase.com`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5046,7 +5111,7 @@
 
 
 <div class="viewcode-block" id="Tfcensus.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Tfcensus.html#pypath.core.annot.Tfcensus.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transcription factors from TF census (Vaquerizas et al 2009).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5072,7 +5137,7 @@
 
 
 <div class="viewcode-block" id="Dgidb.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Dgidb.html#pypath.core.annot.Dgidb.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Druggable proteins from DGIdb (Drug Gene Interaction Database).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5098,7 +5163,7 @@
 
 
 <div class="viewcode-block" id="Phosphatome.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Phosphatome.html#pypath.core.annot.Phosphatome.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The list of phosphatases from Chen et al, Science Signaling (2017)</span>
 <span class="sd">        Table S1.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -5123,7 +5188,7 @@
 
 
 <div class="viewcode-block" id="Matrixdb.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Matrixdb.html#pypath.core.annot.Matrixdb.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Protein annotations from MatrixDB.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5150,7 +5215,7 @@
 
 
 <div class="viewcode-block" id="SignorPathways.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.SignorPathways.html#pypath.core.annot.SignorPathways.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pathway annotations from Signor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5177,7 +5242,7 @@
 
 
 <div class="viewcode-block" id="SignalinkPathways.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.SignalinkPathways.html#pypath.core.annot.SignalinkPathways.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pathway annotations from SignaLink.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5204,7 +5269,7 @@
 
 
 <div class="viewcode-block" id="SignalinkFunctions.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.SignalinkFunctions.html#pypath.core.annot.SignalinkFunctions.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Functional annotations from SignaLink.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5231,7 +5296,7 @@
 
 
 <div class="viewcode-block" id="KeggPathways.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.KeggPathways.html#pypath.core.annot.KeggPathways.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pathway annotations from KEGG.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5258,7 +5323,7 @@
 
 
 <div class="viewcode-block" id="KeggPathwaysPC.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.KeggPathwaysPC.html#pypath.core.annot.KeggPathwaysPC.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pathway annotations from KEGG via PathwayCommons.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5285,7 +5350,7 @@
 
 
 <div class="viewcode-block" id="NetpathPathways.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.NetpathPathways.html#pypath.core.annot.NetpathPathways.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pathway annotations from NetPath.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5356,7 +5421,7 @@
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same as :class:``pypath.go.GOCustomAnnotation``</span>
 <span class="sd">        initialized with the categories defined in</span>
 <span class="sd">        ``pypath.intercell_annot.intercell_categories``.</span>
@@ -5384,7 +5449,7 @@
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Annotation of proteins based on their roles in intercellular</span>
 <span class="sd">        communication from Gene Ontology.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6098,7 +6163,7 @@
 
 
 <div class="viewcode-block" id="UniprotLocations.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.UniprotLocations.html#pypath.core.annot.UniprotLocations.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Subcellular localizations from UniProt.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6129,7 +6194,7 @@
 
 
 <div class="viewcode-block" id="UniprotFamilies.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.UniprotFamilies.html#pypath.core.annot.UniprotFamilies.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Protein families from UniProt.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6160,7 +6225,7 @@
 
 
 <div class="viewcode-block" id="UniprotTissues.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.UniprotTissues.html#pypath.core.annot.UniprotTissues.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tissue expression levels from UniProt.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6191,7 +6256,7 @@
 
 
 <div class="viewcode-block" id="UniprotKeywords.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.UniprotKeywords.html#pypath.core.annot.UniprotKeywords.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tissue expression levels from UniProt.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6222,7 +6287,7 @@
 
 
 <div class="viewcode-block" id="UniprotTopologies.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.UniprotTopologies.html#pypath.core.annot.UniprotTopologies.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Topological domains and transmembrane segments from UniProt.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6253,7 +6318,7 @@
 
 
 <div class="viewcode-block" id="Humancellmap.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Humancellmap.html#pypath.core.annot.Humancellmap.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Protein families from UniProt.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6280,7 +6345,7 @@
 
 
 <div class="viewcode-block" id="Tcdb.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Tcdb.html#pypath.core.annot.Tcdb.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Topological domains and transmembrane segments from UniProt.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6311,7 +6376,7 @@
 
 
 <div class="viewcode-block" id="Mcam.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Mcam.html#pypath.core.annot.Mcam.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of cell adhesion molecules (CAMs) from 10.4137/cin.s341.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6329,7 +6394,7 @@
 
 
 <div class="viewcode-block" id="Gpcrdb.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Gpcrdb.html#pypath.core.annot.Gpcrdb.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        GPCR classification from GPCRdb - https://gpcrdb.org/.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6360,7 +6425,7 @@
 
 
 <div class="viewcode-block" id="Progeny.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Progeny.html#pypath.core.annot.Progeny.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pathway responsive genes: signatures based on transcriptomics data</span>
 <span class="sd">        from PROGENy (https://github.com/saezlab/progeny).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6393,7 +6458,7 @@
 
 
 <div class="viewcode-block" id="Celltypist.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Celltypist.html#pypath.core.annot.Celltypist.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cell type markers from the CellTypist database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6421,7 +6486,7 @@
 
 
 <div class="viewcode-block" id="Cytosig.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Cytosig.html#pypath.core.annot.Cytosig.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cytokine perturbation signatures from the CytoSig database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6449,7 +6514,7 @@
 
 
 <div class="viewcode-block" id="Panglaodb.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Panglaodb.html#pypath.core.annot.Panglaodb.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cell type markers from PanglaoDB</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6478,7 +6543,7 @@
 
 
 <div class="viewcode-block" id="Lambert2018.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Lambert2018.html#pypath.core.annot.Lambert2018.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cell type markers from PanglaoDB</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6508,7 +6573,7 @@
 
 
 <div class="viewcode-block" id="Wang.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Wang.html#pypath.core.annot.Wang.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cytokine perturbation signatures from the CytoSig database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6533,7 +6598,7 @@
 
 
 <div class="viewcode-block" id="Cancerdrugsdb.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.Cancerdrugsdb.html#pypath.core.annot.Cancerdrugsdb.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Approved cancer drugs from the Cancer Drugs Database</span>
 <span class="sd">        (https://www.anticancerfund.org/en/cancerdrugs-db).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6564,7 +6629,7 @@
 
 
 <div class="viewcode-block" id="InterPro.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.InterPro.html#pypath.core.annot.InterPro.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Protein signatures from the InterPro database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6601,7 +6666,7 @@
             <span class="n">load</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Manages a custom set of annotation resources. Loads data and</span>
 <span class="sd">        accepts queries, provides methods for converting the data to</span>
 <span class="sd">        data frame.</span>
@@ -6662,7 +6727,7 @@
 
 
 <div class="viewcode-block" id="AnnotationTable.reload"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationTable.html#pypath.core.annot.AnnotationTable.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -7106,7 +7171,7 @@
 
 
 <div class="viewcode-block" id="AnnotationTable.search"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationTable.html#pypath.core.annot.AnnotationTable.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dictionary with all annotations of a protein. Keys are the</span>
 <span class="sd">        resource names.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -7122,7 +7187,7 @@
 
 
 <div class="viewcode-block" id="AnnotationTable.all_annotations"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationTable.html#pypath.core.annot.AnnotationTable.all_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">all_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns all annotation records for one protein in a single list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -7135,7 +7200,7 @@
 
 
 <div class="viewcode-block" id="AnnotationTable.all_annotations_str"><a class="viewcode-back" href="../../../api/pypath.core.annot.AnnotationTable.html#pypath.core.annot.AnnotationTable.all_annotations_str">[docs]</a>    <span class="k">def</span> <span class="nf">all_annotations_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns all annotation records for one protein serialized.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -7309,7 +7374,7 @@
         <span class="n">use_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initializes or reloads the annotation database.</span>
 <span class="sd">    The database will be assigned to the ``db`` attribute of this module.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -7328,7 +7393,7 @@
         <span class="n">use_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves the current database instance and initializes it if does</span>
 <span class="sd">    not exist yet.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -7349,7 +7414,7 @@
     <span class="n">_eq_fields</span> <span class="o">=</span> <span class="p">()</span>
 
 <div class="viewcode-block" id="HPO.__init__"><a class="viewcode-back" href="../../../api/pypath.core.annot.HPO.html#pypath.core.annot.HPO.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        HPO Gene Annotations from the HPO database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -7369,123 +7434,87 @@
         <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span></div>
 </pre></div>
 
-            </article>
-            
-            
-            
-            <footer class="bd-footer-article">
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-</div>
-            </footer>
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+                </article>
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
 </div>
-<nav id="bd-toc-nav" class="page-toc">
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../index.html">
-   Welcome to pypath!
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../webservice.html">
-   Webservice
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../releasehistory.html">
-   Release history
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../reference.html">
-   Reference
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../notebooks/manual.html">
-   The pypath book
-  </a>
- </li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
 </ul>
 
-</nav>
-</div>
+  </nav></div>
 
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-            </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
+</div></div>
+              
             
           </div>
-        </footer>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
         
       </main>
     </div>
   </div>
-
   
-    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
   
-  <div class="footer-item">
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
     
-<p class="copyright">
-
-    &copy; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
-
-</p>
-
-  </div>
-  
-  <div class="footer-item">
-    <p class="theme-version">
-    Built with the
-    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
-        PyData Sphinx Theme
-    </a>
-    0.12.0.
-</p>
-  </div>
-  
-  <div class="footer-item">
+      © Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
     
-<p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
-</p>
-
-  </div>
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 6.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+</p></div>
+      
+    </div>
   
 </div>
+
   </footer>
   </body>
 </html>

@@ -5,15 +5,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/">
-  <title>The pypath book — pypath 0.14.35 documentation</title>
+  <title>The pypath book — pypath 0.14.36 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script><!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet">
+  <link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet">
+  <link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
   "../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
@@ -24,12 +24,9 @@
   <link rel="stylesheet" type="text/css" href="../_static/copybutton.css">
   <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css">
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d">
   <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-  <script src="../_static/jquery.js"></script>
-  <script src="../_static/underscore.js"></script>
-  <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
   <script src="../_static/doctools.js"></script>
   <script src="../_static/sphinx_highlight.js"></script>
   <script src="../_static/clipboard.min.js"></script>
@@ -43,7 +40,7 @@
   <script>
   DOCUMENTATION_OPTIONS.pagename = 'notebooks/manual';
   </script>
-  <link rel="shortcut icon" href="../_static/omnipath-logo.svg">
+  <link rel="icon" href="../_static/omnipath-logo.svg">
   <link rel="index" title="Index" href="../genindex.html">
   <link rel="search" title="Search" href="../search.html">
   <link rel="prev" title="pypath.visual.plot.StackedBarplot" href="../api/pypath.visual.plot.StackedBarplot.html">
@@ -430,8 +427,61 @@
         text-align: right;
     }
   </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
 </head>
-<body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+<body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%"
+data-default-mode="">
   <a class="skip-link" href="#main-content">Skip to main content</a> <input type="checkbox" class="sidebar-toggle"
   name="__primary" id="__primary"> <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
   <div class="search-button__wrapper">
@@ -444,21 +494,25 @@
       </form>
     </div>
   </div>
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main">
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar">
     <div class="bd-header__inner bd-page-width">
-      <div id="navbar-start">
-        <a class="navbar-brand logo" href="../contents.html"><img src="../_static/img/omnipath-logo.svg" class=
-        "logo__image only-light" alt="Pypath"> <img src="../_static/img/omnipath-logo.svg" class=
-        "logo__image only-dark" alt="Pypath">
-        <p class="title logo__title">Pypath</p></a>
+      <div class="navbar-header-items__start">
+        <div class="navbar-item">
+          <a class="navbar-brand logo" href="../contents.html"><img src="../_static/omnipath-logo.svg" class=
+          "logo__image only-light" alt="Pypath"> 
+          <script>
+          document.write(`<img src="../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);
+          </script>
+          <p class="title logo__title">Pypath</p></a>
+        </div>
       </div>
       <div class="navbar-header-items">
-        <div id="navbar-center" class="mr-auto">
-          <div class="navbar-center-item">
+        <div class="me-auto navbar-header-items__center">
+          <div class="navbar-item">
             <nav class="navbar-nav">
               <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">Site
               Navigation</p>
-              <ul id="navbar-main-elements" class="navbar-nav">
+              <ul class="bd-navbar-elements navbar-nav">
                 <li class="nav-item">
                   <a class="nav-link nav-internal" href="../index.html">Welcome to pypath!</a>
                 </li>
@@ -478,39 +532,62 @@
             </nav>
           </div>
         </div>
-        <div id="navbar-end">
-          <div class="navbar-end-item navbar-persistent--container"></div>
-          <div class="navbar-end-item">
-            <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title=
-            "light/dark" aria-label="light/dark" data-toggle="tooltip"></button>
+        <div class="navbar-header-items__end">
+          <div class="navbar-item navbar-persistent--container">
+            <script>
+            document.write(`
+            <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            `);
+            </script>
           </div>
-          <div class="navbar-end-item">
-            <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+          <div class="navbar-item">
+            <script>
+            document.write(`
+            <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+            <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+            <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+            <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+            </button>
+            `);
+            </script>
+          </div>
+          <div class="navbar-item">
+            <ul class="navbar-icon-links navbar-nav" aria-label="Icon Links">
               <li class="nav-item">
                 <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target=
-                "_blank" data-toggle="tooltip"><label class="sr-only">GitHub</label></a>
+                "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">GitHub</label></a>
               </li>
               <li class="nav-item">
                 <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target=
-                "_blank" data-toggle="tooltip"><label class="sr-only">Twitter</label></a>
+                "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">Twitter</label></a>
               </li>
               <li class="nav-item">
                 <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target=
-                "_blank" data-toggle="tooltip"><label class="sr-only">PyPI</label></a>
+                "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">PyPI</label></a>
               </li>
               <li class="nav-item">
                 <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank"
-                data-toggle="tooltip"><label class="sr-only">OmniPath</label></a>
+                data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">OmniPath</label></a>
               </li>
               <li class="nav-item">
                 <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank"
-                data-toggle="tooltip"><label class="sr-only">Saez Lab</label></a>
+                data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">Saez Lab</label></a>
               </li>
             </ul>
           </div>
         </div>
       </div>
-      <div class="navbar-persistent--mobile"></div>
+      <div class="navbar-persistent--mobile">
+        <script>
+        document.write(`
+        <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        `);
+        </script>
+      </div>
     </div>
   </nav>
   <div class="bd-container">
@@ -518,11 +595,11 @@
       <div class="bd-sidebar-primary bd-sidebar">
         <div class="sidebar-header-items sidebar-primary__section">
           <div class="sidebar-header-items__center">
-            <div class="navbar-center-item">
+            <div class="navbar-item">
               <nav class="navbar-nav">
                 <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">Site
                 Navigation</p>
-                <ul id="navbar-main-elements" class="navbar-nav">
+                <ul class="bd-navbar-elements navbar-nav">
                   <li class="nav-item">
                     <a class="nav-link nav-internal" href="../index.html">Welcome to pypath!</a>
                   </li>
@@ -543,38 +620,48 @@
             </div>
           </div>
           <div class="sidebar-header-items__end">
-            <div class="navbar-end-item">
-              <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title=
-              "light/dark" aria-label="light/dark" data-toggle="tooltip"></button>
+            <div class="navbar-item">
+              <script>
+              document.write(`
+              <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+              <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+              <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+              <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+              </button>
+              `);
+              </script>
             </div>
-            <div class="navbar-end-item">
-              <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+            <div class="navbar-item">
+              <ul class="navbar-icon-links navbar-nav" aria-label="Icon Links">
                 <li class="nav-item">
                   <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target=
-                  "_blank" data-toggle="tooltip"><label class="sr-only">GitHub</label></a>
+                  "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class=
+                  "sr-only">GitHub</label></a>
                 </li>
                 <li class="nav-item">
                   <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target=
-                  "_blank" data-toggle="tooltip"><label class="sr-only">Twitter</label></a>
+                  "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class=
+                  "sr-only">Twitter</label></a>
                 </li>
                 <li class="nav-item">
                   <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener"
-                  target="_blank" data-toggle="tooltip"><label class="sr-only">PyPI</label></a>
+                  target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class=
+                  "sr-only">PyPI</label></a>
                 </li>
                 <li class="nav-item">
                   <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank"
-                  data-toggle="tooltip"><label class="sr-only">OmniPath</label></a>
+                  data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">OmniPath</label></a>
                 </li>
                 <li class="nav-item">
                   <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank"
-                  data-toggle="tooltip"><label class="sr-only">Saez Lab</label></a>
+                  data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">Saez Lab</label></a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-        <div class="sidebar-start-items sidebar-primary__section">
-          <div class="sidebar-start-items__item">
+        <div class="sidebar-primary-items__start sidebar-primary__section">
+          <div class="sidebar-primary-item">
             <div>
               <h3><a href="../contents.html">Table of Contents</a></h3>
               <ul class="current">
@@ -663,6 +750,19 @@
                     <li class="toctree-l2">
                       <a class="reference internal" href="#Data-directly-from-the-original-resources">Data directly
                       from the original resources</a>
+                    </li>
+                    <li class="toctree-l2">
+                      <a class="reference internal" href="#Interesting-resources">Interesting resources</a>
+                      <ul>
+                        <li class="toctree-l3">
+                          <a class="reference internal" href="#RaMP">RaMP</a>
+                          <ul>
+                            <li class="toctree-l4">
+                              <a class="reference internal" href="#TL;DR">TL;DR</a>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
                     </li>
                     <li class="toctree-l2">
                       <a class="reference internal" href="#Download-management">Download management</a>
@@ -999,15 +1099,29 @@
             </div>
           </div>
         </div>
-        <div class="sidebar-end-items sidebar-primary__section">
-          <div class="sidebar-end-items__item"></div>
-        </div>
+        <div class="sidebar-primary-items__end sidebar-primary__section"></div>
         <div id="rtd-footer-container"></div>
       </div>
       <main id="main-content" class="bd-main">
         <div class="bd-content">
           <div class="bd-article-container">
-            <div class="bd-header-article"></div>
+            <div class="bd-header-article">
+              <div class="header-article-items header-article__inner">
+                <div class="header-article-items__start">
+                  <div class="header-article-item">
+                    <nav aria-label="Breadcrumbs">
+                      <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+                        <li class="breadcrumb-item breadcrumb-home">
+                          <a href="../contents.html" class="nav-link" aria-label="Home"></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">The pypath book</li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="searchbox"></div>
             <article class="bd-article" role="main">
               <section id="The-pypath-book">
                 <h1>The pypath book<a class="headerlink" href="#The-pypath-book" title=
@@ -1073,280 +1187,293 @@
                       <p>3&nbsp;&nbsp;Data directly from the original resources</p>
                     </li>
                     <li>
-                      <p>4&nbsp;&nbsp;Download management</p>
+                      <p>4&nbsp;&nbsp;Interesting resources</p>
                       <ul class="toc-item">
                         <li>
-                          <p>4.1&nbsp;&nbsp;Cache management and customization</p>
-                        </li>
-                        <li>
-                          <p>4.2&nbsp;&nbsp;Download failures</p>
+                          <p>4.1&nbsp;&nbsp;RaMP</p>
                           <ul class="toc-item">
                             <li>
-                              <p>4.2.1&nbsp;&nbsp;Corrupted cache content</p>
-                            </li>
-                            <li>
-                              <p>4.2.2&nbsp;&nbsp;Network communication issues: look into the curl debug log</p>
-                            </li>
-                            <li>
-                              <p>4.2.3&nbsp;&nbsp;Timeouts</p>
-                            </li>
-                            <li>
-                              <p>4.2.4&nbsp;&nbsp;Access and inspect the Curl object</p>
-                            </li>
-                            <li>
-                              <p>4.2.5&nbsp;&nbsp;Is it failing only for you?</p>
-                            </li>
-                            <li>
-                              <p>4.2.6&nbsp;&nbsp;Read the log</p>
-                            </li>
-                            <li>
-                              <p>4.2.7&nbsp;&nbsp;TLS (SSL, HTTPS) errors</p>
+                              <p>4.1.1&nbsp;&nbsp;TL;DR</p>
                             </li>
                           </ul>
                         </li>
                       </ul>
                     </li>
                     <li>
-                      <p>5&nbsp;&nbsp;Resources</p>
+                      <p>5&nbsp;&nbsp;Download management</p>
                       <ul class="toc-item">
                         <li>
-                          <p>5.1&nbsp;&nbsp;Licenses</p>
+                          <p>5.1&nbsp;&nbsp;Cache management and customization</p>
                         </li>
                         <li>
-                          <p>5.2&nbsp;&nbsp;Resource information</p>
-                        </li>
-                        <li>
-                          <p>5.3&nbsp;&nbsp;Resource definitions for a certain database or dataset</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>6&nbsp;&nbsp;Building networks</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>6.1&nbsp;&nbsp;Which network datasets are pre-defined in pypath?</p>
-                        </li>
-                        <li>
-                          <p>6.2&nbsp;&nbsp;The Network object</p>
-                        </li>
-                        <li>
-                          <p>6.3&nbsp;&nbsp;Network in pandas.DataFrame</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>7&nbsp;&nbsp;Translating identifiers</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>7.1&nbsp;&nbsp;Pre-defined ID translation tables</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>8&nbsp;&nbsp;Homology translation</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>8.1&nbsp;&nbsp;Homology translation tables as dictionaries</p>
-                        </li>
-                        <li>
-                          <p>8.2&nbsp;&nbsp;Homology translation data frames</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>9&nbsp;&nbsp;Taxonomy</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>9.1&nbsp;&nbsp;Translating to NCBI Taxonomy, scientific names and common names</p>
-                        </li>
-                        <li>
-                          <p>9.2&nbsp;&nbsp;Organism from UniProt ID</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>10&nbsp;&nbsp;UniProt</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>10.1&nbsp;&nbsp;The UniProt input module</p>
+                          <p>5.2&nbsp;&nbsp;Download failures</p>
                           <ul class="toc-item">
                             <li>
-                              <p>10.1.1&nbsp;&nbsp;All UniProt IDs for one organism</p>
+                              <p>5.2.1&nbsp;&nbsp;Corrupted cache content</p>
                             </li>
                             <li>
-                              <p>10.1.2&nbsp;&nbsp;UniProt ID format validation</p>
+                              <p>5.2.2&nbsp;&nbsp;Network communication issues: look into the curl debug log</p>
                             </li>
                             <li>
-                              <p>10.1.3&nbsp;&nbsp;UniProt ID validation</p>
+                              <p>5.2.3&nbsp;&nbsp;Timeouts</p>
                             </li>
                             <li>
-                              <p>10.1.4&nbsp;&nbsp;Single UniProt protein datasheet</p>
+                              <p>5.2.4&nbsp;&nbsp;Access and inspect the Curl object</p>
                             </li>
                             <li>
-                              <p>10.1.5&nbsp;&nbsp;History of UniProt records</p>
+                              <p>5.2.5&nbsp;&nbsp;Is it failing only for you?</p>
                             </li>
                             <li>
-                              <p>10.1.6&nbsp;&nbsp;UniProt legacy API</p>
+                              <p>5.2.6&nbsp;&nbsp;Read the log</p>
                             </li>
                             <li>
-                              <p>10.1.7&nbsp;&nbsp;Processed UniProt annotations</p>
-                            </li>
-                          </ul>
-                        </li>
-                        <li>
-                          <p>10.2&nbsp;&nbsp;The UniProt utils module</p>
-                          <ul class="toc-item">
-                            <li>
-                              <p>10.2.1&nbsp;&nbsp;Datasheets</p>
-                            </li>
-                            <li>
-                              <p>10.2.2&nbsp;&nbsp;Tables</p>
-                            </li>
-                          </ul>
-                        </li>
-                        <li>
-                          <p>10.3&nbsp;&nbsp;Sanitizing UniProt IDs</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>11&nbsp;&nbsp;Enzyme-substrate interactions</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>11.1&nbsp;&nbsp;Enzyme-substrate objects</p>
-                        </li>
-                        <li>
-                          <p>11.2&nbsp;&nbsp;Enzyme-substrate data frame</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>12&nbsp;&nbsp;Protein sequences</p>
-                    </li>
-                    <li>
-                      <p>13&nbsp;&nbsp;Annotations</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>13.1&nbsp;&nbsp;Load a single annotation resource</p>
-                        </li>
-                        <li>
-                          <p>13.2&nbsp;&nbsp;Load the full annotations database by the database manager</p>
-                        </li>
-                        <li>
-                          <p>13.3&nbsp;&nbsp;Load only selected annotations</p>
-                        </li>
-                        <li>
-                          <p>13.4&nbsp;&nbsp;Data frames of annotations</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>14&nbsp;&nbsp;Inter-cellular signaling roles</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>14.1&nbsp;&nbsp;Build an intercellular communication network</p>
-                        </li>
-                        <li>
-                          <p>14.2&nbsp;&nbsp;Quantitative overview of intercell annotations</p>
-                        </li>
-                        <li>
-                          <p>14.3&nbsp;&nbsp;Intercell database as data frame</p>
-                        </li>
-                        <li>
-                          <p>14.4&nbsp;&nbsp;Browse intercell categories</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>15&nbsp;&nbsp;Gene Ontology</p>
-                    </li>
-                    <li>
-                      <p>16&nbsp;&nbsp;Protein complexes</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>16.1&nbsp;&nbsp;Protein complex objects</p>
-                        </li>
-                        <li>
-                          <p>16.2&nbsp;&nbsp;Protein complex data frame</p>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <p>17&nbsp;&nbsp;Saving datasets as pickles</p>
-                    </li>
-                    <li>
-                      <p>18&nbsp;&nbsp;Log messages and sessions</p>
-                      <ul class="toc-item">
-                        <li>
-                          <p>18.1&nbsp;&nbsp;Basic info about the session</p>
-                        </li>
-                        <li>
-                          <p>18.2&nbsp;&nbsp;Read the log file</p>
-                        </li>
-                        <li>
-                          <p>18.3&nbsp;&nbsp;Logging to the console</p>
-                        </li>
-                        <li>
-                          <p>18.4&nbsp;&nbsp;Disable logging</p>
-                        </li>
-                        <li>
-                          <p>18.5&nbsp;&nbsp;Write to the log</p>
-                          <ul class="toc-item">
-                            <li>
-                              <p>18.5.1&nbsp;&nbsp;Sending a single message</p>
-                            </li>
-                            <li>
-                              <p>18.5.2&nbsp;&nbsp;Connect a module or class to the pypath logger</p>
+                              <p>5.2.7&nbsp;&nbsp;TLS (SSL, HTTPS) errors</p>
                             </li>
                           </ul>
                         </li>
                       </ul>
                     </li>
                     <li>
-                      <p>19&nbsp;&nbsp;BEL export</p>
-                    </li>
-                    <li>
-                      <p>20&nbsp;&nbsp;CellPhoneDB export</p>
-                    </li>
-                    <li>
-                      <p>21&nbsp;&nbsp;The legacy igraph-based network object</p>
+                      <p>6&nbsp;&nbsp;Resources</p>
                       <ul class="toc-item">
                         <li>
-                          <p>21.1&nbsp;&nbsp;I just want a network quickly and play around with pypath</p>
+                          <p>6.1&nbsp;&nbsp;Licenses</p>
                         </li>
                         <li>
-                          <p>21.2&nbsp;&nbsp;How do I build networks from any data with pypath?</p>
+                          <p>6.2&nbsp;&nbsp;Resource information</p>
+                        </li>
+                        <li>
+                          <p>6.3&nbsp;&nbsp;Resource definitions for a certain database or dataset</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>7&nbsp;&nbsp;Building networks</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>7.1&nbsp;&nbsp;Which network datasets are pre-defined in pypath?</p>
+                        </li>
+                        <li>
+                          <p>7.2&nbsp;&nbsp;The Network object</p>
+                        </li>
+                        <li>
+                          <p>7.3&nbsp;&nbsp;Network in pandas.DataFrame</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>8&nbsp;&nbsp;Translating identifiers</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>8.1&nbsp;&nbsp;Pre-defined ID translation tables</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>9&nbsp;&nbsp;Homology translation</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>9.1&nbsp;&nbsp;Homology translation tables as dictionaries</p>
+                        </li>
+                        <li>
+                          <p>9.2&nbsp;&nbsp;Homology translation data frames</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>10&nbsp;&nbsp;Taxonomy</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>10.1&nbsp;&nbsp;Translating to NCBI Taxonomy, scientific names and common names</p>
+                        </li>
+                        <li>
+                          <p>10.2&nbsp;&nbsp;Organism from UniProt ID</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>11&nbsp;&nbsp;UniProt</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>11.1&nbsp;&nbsp;The UniProt input module</p>
                           <ul class="toc-item">
                             <li>
-                              <p>21.2.1&nbsp;&nbsp;Defining input formats</p>
+                              <p>11.1.1&nbsp;&nbsp;All UniProt IDs for one organism</p>
                             </li>
                             <li>
-                              <p>21.2.2&nbsp;&nbsp;Creating PyPath object and loading the 2 test files</p>
+                              <p>11.1.2&nbsp;&nbsp;UniProt ID format validation</p>
+                            </li>
+                            <li>
+                              <p>11.1.3&nbsp;&nbsp;UniProt ID validation</p>
+                            </li>
+                            <li>
+                              <p>11.1.4&nbsp;&nbsp;Single UniProt protein datasheet</p>
+                            </li>
+                            <li>
+                              <p>11.1.5&nbsp;&nbsp;History of UniProt records</p>
+                            </li>
+                            <li>
+                              <p>11.1.6&nbsp;&nbsp;UniProt legacy API</p>
+                            </li>
+                            <li>
+                              <p>11.1.7&nbsp;&nbsp;Processed UniProt annotations</p>
                             </li>
                           </ul>
                         </li>
                         <li>
-                          <p>21.3&nbsp;&nbsp;Structure of the legacy network object</p>
+                          <p>11.2&nbsp;&nbsp;The UniProt utils module</p>
                           <ul class="toc-item">
                             <li>
-                              <p>21.3.1&nbsp;&nbsp;Directions and signs</p>
+                              <p>11.2.1&nbsp;&nbsp;Datasheets</p>
                             </li>
                             <li>
-                              <p>21.3.2&nbsp;&nbsp;Accessing nodes in the network</p>
+                              <p>11.2.2&nbsp;&nbsp;Tables</p>
                             </li>
                           </ul>
                         </li>
                         <li>
-                          <p>21.4&nbsp;&nbsp;Querying relationships with our without causality</p>
+                          <p>11.3&nbsp;&nbsp;Sanitizing UniProt IDs</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>12&nbsp;&nbsp;Enzyme-substrate interactions</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>12.1&nbsp;&nbsp;Enzyme-substrate objects</p>
                         </li>
                         <li>
-                          <p>21.5&nbsp;&nbsp;Accessing edges by identifiers</p>
+                          <p>12.2&nbsp;&nbsp;Enzyme-substrate data frame</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>13&nbsp;&nbsp;Protein sequences</p>
+                    </li>
+                    <li>
+                      <p>14&nbsp;&nbsp;Annotations</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>14.1&nbsp;&nbsp;Load a single annotation resource</p>
                         </li>
                         <li>
-                          <p>21.6&nbsp;&nbsp;Literature references</p>
+                          <p>14.2&nbsp;&nbsp;Load the full annotations database by the database manager</p>
                         </li>
                         <li>
-                          <p>21.7&nbsp;&nbsp;Plotting the network with igraph</p>
+                          <p>14.3&nbsp;&nbsp;Load only selected annotations</p>
+                        </li>
+                        <li>
+                          <p>14.4&nbsp;&nbsp;Data frames of annotations</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>15&nbsp;&nbsp;Inter-cellular signaling roles</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>15.1&nbsp;&nbsp;Build an intercellular communication network</p>
+                        </li>
+                        <li>
+                          <p>15.2&nbsp;&nbsp;Quantitative overview of intercell annotations</p>
+                        </li>
+                        <li>
+                          <p>15.3&nbsp;&nbsp;Intercell database as data frame</p>
+                        </li>
+                        <li>
+                          <p>15.4&nbsp;&nbsp;Browse intercell categories</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>16&nbsp;&nbsp;Gene Ontology</p>
+                    </li>
+                    <li>
+                      <p>17&nbsp;&nbsp;Protein complexes</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>17.1&nbsp;&nbsp;Protein complex objects</p>
+                        </li>
+                        <li>
+                          <p>17.2&nbsp;&nbsp;Protein complex data frame</p>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>18&nbsp;&nbsp;Saving datasets as pickles</p>
+                    </li>
+                    <li>
+                      <p>19&nbsp;&nbsp;Log messages and sessions</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>19.1&nbsp;&nbsp;Basic info about the session</p>
+                        </li>
+                        <li>
+                          <p>19.2&nbsp;&nbsp;Read the log file</p>
+                        </li>
+                        <li>
+                          <p>19.3&nbsp;&nbsp;Logging to the console</p>
+                        </li>
+                        <li>
+                          <p>19.4&nbsp;&nbsp;Disable logging</p>
+                        </li>
+                        <li>
+                          <p>19.5&nbsp;&nbsp;Write to the log</p>
+                          <ul class="toc-item">
+                            <li>
+                              <p>19.5.1&nbsp;&nbsp;Sending a single message</p>
+                            </li>
+                            <li>
+                              <p>19.5.2&nbsp;&nbsp;Connect a module or class to the pypath logger</p>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <p>20&nbsp;&nbsp;BEL export</p>
+                    </li>
+                    <li>
+                      <p>21&nbsp;&nbsp;CellPhoneDB export</p>
+                    </li>
+                    <li>
+                      <p>22&nbsp;&nbsp;The legacy igraph-based network object</p>
+                      <ul class="toc-item">
+                        <li>
+                          <p>22.1&nbsp;&nbsp;I just want a network quickly and play around with pypath</p>
+                        </li>
+                        <li>
+                          <p>22.2&nbsp;&nbsp;How do I build networks from any data with pypath?</p>
+                          <ul class="toc-item">
+                            <li>
+                              <p>22.2.1&nbsp;&nbsp;Defining input formats</p>
+                            </li>
+                            <li>
+                              <p>22.2.2&nbsp;&nbsp;Creating PyPath object and loading the 2 test files</p>
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <p>22.3&nbsp;&nbsp;Structure of the legacy network object</p>
+                          <ul class="toc-item">
+                            <li>
+                              <p>22.3.1&nbsp;&nbsp;Directions and signs</p>
+                            </li>
+                            <li>
+                              <p>22.3.2&nbsp;&nbsp;Accessing nodes in the network</p>
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <p>22.4&nbsp;&nbsp;Querying relationships with our without causality</p>
+                        </li>
+                        <li>
+                          <p>22.5&nbsp;&nbsp;Accessing edges by identifiers</p>
+                        </li>
+                        <li>
+                          <p>22.6&nbsp;&nbsp;Literature references</p>
+                        </li>
+                        <li>
+                          <p>22.7&nbsp;&nbsp;Plotting the network with igraph</p>
                         </li>
                       </ul>
                     </li>
@@ -1385,7 +1512,7 @@
                         </div>
                       </div>
                       <div class="timing docutils container">
-                        <p>executed in 0ms, finished 14:11:06 2022-12-03</p>
+                        <p>executed in 0ms, finished 16:49:47 2023-03-09</p>
                       </div>
                     </div>
                   </div>
@@ -1399,7 +1526,7 @@
                     <div class="output_area docutils container">
                       <div class="highlight">
                         <pre>
-'0.14.32'
+'0.14.36'
 </pre>
                       </div>
                     </div>
@@ -2290,6 +2417,1155 @@
                       </div>
                     </div>
                   </div>
+                </section>
+                <section id="Interesting-resources">
+                  <h2>Interesting resources<a class="headerlink" href="#Interesting-resources" title=
+                  "Permalink to this heading">§</a></h2>
+                  <p>Here we showcase a few potentially useful features in <code class=
+                  "docutils literal notranslate"><span class="pre">pypath.inputs</span></code>.</p>
+                  <section id="RaMP">
+                    <h3>RaMP<a class="headerlink" href="#RaMP" title="Permalink to this heading">§</a></h3>
+                    <p><a class="reference external" href="https://rampdb.nih.gov/">RaMP</a> is a human metabolite and
+                    metabolic network database providing ID translation, annotations and enzymatic reactions of
+                    metabolites. Let’s take a closer look first at the full database contents. It is available as a
+                    MySQL database, below we list the tables and their column names:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[6]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
+                            "kn">import</span> <span class="n">ramp</span>
+<span class="n">ramp</span><span class="o">.</span><span class="n">ramp_list_tables</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 2.20s, finished 16:51:14 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[6]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'analyte': ['rampId', 'type'],
+ 'analytehasontology': ['rampCompoundId', 'rampOntologyId'],
+ 'analytehaspathway': ['rampId', 'pathwayRampId', 'pathwaySource'],
+ 'analytesynonym': ['Synonym', 'rampId', 'geneOrCompound', 'source'],
+ 'catalyzed': ['rampCompoundId', 'rampGeneId'],
+ 'chem_props': ['ramp_id',
+  'chem_data_source',
+  'chem_source_id',
+  'iso_smiles',
+  'inchi_key_prefix',
+  'inchi_key',
+  'inchi',
+  'mw',
+  'monoisotop_mass',
+  'common_name',
+  'mol_formula'],
+ 'db_version': ['ramp_version',
+  'load_timestamp',
+  'version_notes',
+  'met_intersects_json',
+  'gene_intersects_json',
+  'met_intersects_json_pw_mapped',
+  'gene_intersects_json_pw_mapped',
+  'db_sql_url'],
+ 'entity_status_info': ['status_category',
+  'entity_source_id',
+  'entity_source_name',
+  'entity_count'],
+ 'metabolite_class': ['ramp_id',
+  'class_source_id',
+  'class_level_name',
+  'class_name',
+  'source'],
+ 'ontology': ['rampOntologyId', 'commonName', 'HMDBOntologyType', 'metCount'],
+ 'pathway': ['pathwayR
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 1368 characters</em>
+                      </div>
+                    </div>
+                    <p>Using the <code class="docutils literal notranslate"><span class="pre">ramp_raw</span></code>
+                    function, we can access these tables either as Python dicts, or <code class=
+                    "docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>s, or loaded into an
+                    <code class="docutils literal notranslate"><span class="pre">SQLite</span></code> database. For
+                    further inspection, the data frames are the most convenient. Most of the ID translation data is
+                    contained in the <code class="docutils literal notranslate"><span class="pre">source</span></code>
+                    table:</p>
+                    <div class="alert alert-block alert-success">
+                      <p>Note: At the very first time, retrieving these tables takes quite some time, not only due to
+                      the large download, but also a performance bottleneck when processing the MySQL dumps. Thanks to
+                      caching, loading the tables subsequently happens much faster.</p>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[8]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">tables</span> <span class="o">=</span> <span class=
+                            "n">ramp</span><span class="o">.</span><span class="n">ramp_raw</span><span class=
+                            "p">([</span><span class="s1">'analytesynonym'</span><span class="p">,</span> <span class=
+                            "s1">'chem_props'</span><span class="p">,</span> <span class=
+                            "s1">'source'</span><span class="p">])</span>
+<span class="n">tables</span><span class="p">[</span><span class="s1">'source'</span><span class="p">]</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 4.25s, finished 16:54:17 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[8]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area rendered_html docutils container">
+                        <div>
+                          <table border="1" class="dataframe">
+                            <thead>
+                              <tr style="text-align: right;">
+                                <th></th>
+                                <th>sourceId</th>
+                                <th>rampId</th>
+                                <th>IDtype</th>
+                                <th>geneOrCompound</th>
+                                <th>commonName</th>
+                                <th>priorityHMDBStatus</th>
+                                <th>dataSource</th>
+                                <th>pathwayCount</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th>0</th>
+                                <td>hmdb:HMDB0000001</td>
+                                <td>RAMP_C_000000001</td>
+                                <td>hmdb</td>
+                                <td>compound</td>
+                                <td>1-Methylhistidine</td>
+                                <td>quantified</td>
+                                <td>hmdb</td>
+                                <td>2</td>
+                              </tr>
+                              <tr>
+                                <th>1</th>
+                                <td>hmdb:HMDB0000479</td>
+                                <td>RAMP_C_000000001</td>
+                                <td>hmdb</td>
+                                <td>compound</td>
+                                <td>3-Methylhistidine</td>
+                                <td>quantified</td>
+                                <td>hmdb</td>
+                                <td>2</td>
+                              </tr>
+                              <tr>
+                                <th>2</th>
+                                <td>chebi:50599</td>
+                                <td>RAMP_C_000000001</td>
+                                <td>chebi</td>
+                                <td>compound</td>
+                                <td>1-Methylhistidine</td>
+                                <td>quantified</td>
+                                <td>hmdb</td>
+                                <td>2</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>chemspider:83153</td>
+                                <td>RAMP_C_000000001</td>
+                                <td>chemspider</td>
+                                <td>compound</td>
+                                <td>1-Methylhistidine</td>
+                                <td>quantified</td>
+                                <td>hmdb</td>
+                                <td>2</td>
+                              </tr>
+                              <tr>
+                                <th>4</th>
+                                <td>kegg:C01152</td>
+                                <td>RAMP_C_000000001</td>
+                                <td>kegg</td>
+                                <td>compound</td>
+                                <td>1-Methylhistidine</td>
+                                <td>quantified</td>
+                                <td>hmdb_kegg</td>
+                                <td>2</td>
+                              </tr>
+                              <tr>
+                                <th>...</th>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                              </tr>
+                              <tr>
+                                <th>756552</th>
+                                <td>uniprot:H0YDB7</td>
+                                <td>RAMP_G_000009307</td>
+                                <td>uniprot</td>
+                                <td>gene</td>
+                                <td>RAB38</td>
+                                <td>NULL</td>
+                                <td>wiki</td>
+                                <td>10</td>
+                              </tr>
+                              <tr>
+                                <th>756553</th>
+                                <td>uniprot:A0A024R191</td>
+                                <td>RAMP_G_000009307</td>
+                                <td>uniprot</td>
+                                <td>gene</td>
+                                <td>RAB38</td>
+                                <td>NULL</td>
+                                <td>wiki</td>
+                                <td>10</td>
+                              </tr>
+                              <tr>
+                                <th>756554</th>
+                                <td>uniprot:H0YEA4</td>
+                                <td>RAMP_G_000009307</td>
+                                <td>uniprot</td>
+                                <td>gene</td>
+                                <td>RAB38</td>
+                                <td>NULL</td>
+                                <td>wiki</td>
+                                <td>10</td>
+                              </tr>
+                              <tr>
+                                <th>756555</th>
+                                <td>entrez:23682</td>
+                                <td>RAMP_G_000009307</td>
+                                <td>entrez</td>
+                                <td>gene</td>
+                                <td>RAB38</td>
+                                <td>NULL</td>
+                                <td>wiki</td>
+                                <td>10</td>
+                              </tr>
+                              <tr>
+                                <th>756556</th>
+                                <td>gene_symbol:RAB38</td>
+                                <td>RAMP_G_000009307</td>
+                                <td>gene_symbol</td>
+                                <td>gene</td>
+                                <td>RAB38</td>
+                                <td>NULL</td>
+                                <td>wiki</td>
+                                <td>10</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <p>756557 rows × 8 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>Structural and physicochemical info is available in the <code class=
+                    "docutils literal notranslate"><span class="pre">chem_props</span></code> table:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[10]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">tables</span><span class="p">[</span><span class=
+                            "s1">'chem_props'</span><span class="p">]</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 17:00:46 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[10]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area rendered_html docutils container">
+                        <div>
+                          <table border="1" class="dataframe">
+                            <thead>
+                              <tr style="text-align: right;">
+                                <th></th>
+                                <th>ramp_id</th>
+                                <th>chem_data_source</th>
+                                <th>chem_source_id</th>
+                                <th>iso_smiles</th>
+                                <th>inchi_key_prefix</th>
+                                <th>inchi_key</th>
+                                <th>inchi</th>
+                                <th>mw</th>
+                                <th>monoisotop_mass</th>
+                                <th>common_name</th>
+                                <th>mol_formula</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th>0</th>
+                                <td>RAMP_C_000000001</td>
+                                <td>hmdb</td>
+                                <td>hmdb:HMDB0000001</td>
+                                <td>[H]OC(=O)[C@@]([H])(N([H])[H])C([H])([H])C1=C(...</td>
+                                <td>BRMWTNUJHUMWMS</td>
+                                <td>BRMWTNUJHUMWMS-LURJTMIESA-N</td>
+                                <td>InChI=1S/C7H11N3O2/c1-10-3-5(9-4-10)2-6(8)7(11...</td>
+                                <td>169.181</td>
+                                <td>169.085</td>
+                                <td>1-Methylhistidine</td>
+                                <td>C7H11N3O2</td>
+                              </tr>
+                              <tr>
+                                <th>1</th>
+                                <td>RAMP_C_000000001</td>
+                                <td>hmdb</td>
+                                <td>hmdb:HMDB0000479</td>
+                                <td>[H][C@](N)(CC1=CN=CN1C)C(O)=O</td>
+                                <td>JDHILDINMRGULE</td>
+                                <td>JDHILDINMRGULE-LURJTMIESA-N</td>
+                                <td>InChI=1S/C7H11N3O2/c1-10-4-9-3-5(10)2-6(8)7(11...</td>
+                                <td>169.181</td>
+                                <td>169.085</td>
+                                <td>3-Methylhistidine</td>
+                                <td>C7H11N3O2</td>
+                              </tr>
+                              <tr>
+                                <th>2</th>
+                                <td>RAMP_C_000000001</td>
+                                <td>chebi</td>
+                                <td>chebi:27596</td>
+                                <td>Cn1cncc1C[C@H](N)C(O)=O</td>
+                                <td>JDHILDINMRGULE</td>
+                                <td>JDHILDINMRGULE-LURJTMIESA-N</td>
+                                <td>InChI=1S/C7H11N3O2/c1-10-4-9-3-5(10)2-6(8)7(11...</td>
+                                <td>NULL</td>
+                                <td>169.085</td>
+                                <td>N(pros)-methyl-L-histidine</td>
+                                <td>C7H11N3O2</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>RAMP_C_000000001</td>
+                                <td>chebi</td>
+                                <td>chebi:50599</td>
+                                <td>Cn1cnc(C[C@H](N)C(O)=O)c1</td>
+                                <td>BRMWTNUJHUMWMS</td>
+                                <td>BRMWTNUJHUMWMS-LURJTMIESA-N</td>
+                                <td>InChI=1S/C7H11N3O2/c1-10-3-5(9-4-10)2-6(8)7(11...</td>
+                                <td>NULL</td>
+                                <td>169.085</td>
+                                <td>N(tele)-methyl-L-histidine</td>
+                                <td>C7H11N3O2</td>
+                              </tr>
+                              <tr>
+                                <th>4</th>
+                                <td>RAMP_C_000000002</td>
+                                <td>hmdb</td>
+                                <td>hmdb:HMDB0000002</td>
+                                <td>NCCCN</td>
+                                <td>XFNJVJPLKCPIBV</td>
+                                <td>XFNJVJPLKCPIBV-UHFFFAOYSA-N</td>
+                                <td>InChI=1S/C3H10N2/c4-2-1-3-5/h1-5H2</td>
+                                <td>74.1249</td>
+                                <td>74.0844</td>
+                                <td>1,3-Diaminopropane</td>
+                                <td>C3H10N2</td>
+                              </tr>
+                              <tr>
+                                <th>...</th>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                              </tr>
+                              <tr>
+                                <th>275898</th>
+                                <td>RAMP_C_000258279</td>
+                                <td>lipidmaps</td>
+                                <td>LIPIDMAPS:LMPK15050003</td>
+                                <td>C1(OC)C(=O)C(C[C@H](OC(C)=O)CCCCCCCCCCCCC)=C(O...</td>
+                                <td>UXLMJHNFDRMGPW</td>
+                                <td>UXLMJHNFDRMGPW-LJQANCHMSA-N</td>
+                                <td>InChI=1S/C24H38O6/c1-4-5-6-7-8-9-10-11-12-13-1...</td>
+                                <td>NULL</td>
+                                <td>422.267</td>
+                                <td>2-hydroxy-5-methoxy-3-(2R-acetoxy-pentadecyl)-...</td>
+                                <td>C24H38O6</td>
+                              </tr>
+                              <tr>
+                                <th>275899</th>
+                                <td>RAMP_C_000258280</td>
+                                <td>lipidmaps</td>
+                                <td>LIPIDMAPS:LMPK15050004</td>
+                                <td>C1(OC)C(=O)C(C[C@H](OC(C)=O)CCCCCCCCCCCCC)=CC(...</td>
+                                <td>CVZNKLNAHBTINT</td>
+                                <td>CVZNKLNAHBTINT-JOCHJYFZSA-N</td>
+                                <td>InChI=1S/C24H38O5/c1-4-5-6-7-8-9-10-11-12-13-1...</td>
+                                <td>NULL</td>
+                                <td>406.272</td>
+                                <td>5-methoxy-3-(2R-acetoxy-pentadecyl)-1,4-benzoq...</td>
+                                <td>C24H38O5</td>
+                              </tr>
+                              <tr>
+                                <th>275900</th>
+                                <td>RAMP_C_000226089</td>
+                                <td>lipidmaps</td>
+                                <td>LIPIDMAPS:LMPK15050005</td>
+                                <td>C1(OC)C(=O)C(C[C@H](OC(C)=O)CCCCCCCCCCC)=CC(=O...</td>
+                                <td>JIUGZSYPFREDLG</td>
+                                <td>JIUGZSYPFREDLG-HXUWFJFHSA-N</td>
+                                <td>InChI=1S/C22H34O5/c1-4-5-6-7-8-9-10-11-12-13-2...</td>
+                                <td>NULL</td>
+                                <td>378.241</td>
+                                <td>5-methoxy-3-(2R-acetoxy-tridecyl)-1,4-benzoqui...</td>
+                                <td>C22H34O5</td>
+                              </tr>
+                              <tr>
+                                <th>275901</th>
+                                <td>RAMP_C_000258283</td>
+                                <td>lipidmaps</td>
+                                <td>LIPIDMAPS:LMPK15050008</td>
+                                <td>C1(O)C(=O)C(CCCCCCCCCCCCCCC)=C(O)C(=O)C=1</td>
+                                <td>GXDURRGUXLDZKN</td>
+                                <td>GXDURRGUXLDZKN-UHFFFAOYSA-N</td>
+                                <td>InChI=1S/C21H34O4/c1-2-3-4-5-6-7-8-9-10-11-12-...</td>
+                                <td>NULL</td>
+                                <td>350.246</td>
+                                <td>Suberonone</td>
+                                <td>C21H34O4</td>
+                              </tr>
+                              <tr>
+                                <th>275902</th>
+                                <td>RAMP_C_000258284</td>
+                                <td>lipidmaps</td>
+                                <td>LIPIDMAPS:LMPK15050009</td>
+                                <td>C1(O)C(=O)C(CCCCCCCCCCCCC)=C(O)C(=O)C=1</td>
+                                <td>AMKNOBHCKRZHIO</td>
+                                <td>AMKNOBHCKRZHIO-UHFFFAOYSA-N</td>
+                                <td>InChI=1S/C19H30O4/c1-2-3-4-5-6-7-8-9-10-11-12-...</td>
+                                <td>NULL</td>
+                                <td>322.214</td>
+                                <td>Rapanone</td>
+                                <td>C19H30O4</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <p>275903 rows × 11 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>Raw RaMP data can be accessed also as an SQLite database. The advantage here is the high
+                    performance and flexibility of operations. Conversion to <code class=
+                    "docutils literal notranslate"><span class="pre">pandas</span></code> and vice versa is really
+                    easy, you can always have the result in a data frame. Below, <code class=
+                    "docutils literal notranslate"><span class="pre">con</span></code> is a database connection ready
+                    to execute your queries. It is an in-memory database, using alternatively an on-disk database is
+                    possible. We use <code class="docutils literal notranslate"><span class=
+                    "pre">pypath.formats.sqlite</span></code> to look into the SQLite database.</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[11]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">con</span> <span class="o">=</span> <span class=
+                            "n">ramp</span><span class="o">.</span><span class="n">ramp_raw</span><span class=
+                            "p">([</span><span class="s1">'source'</span><span class="p">,</span> <span class=
+                            "s1">'chem_props'</span><span class="p">,</span> <span class=
+                            "s1">'analytesynonym'</span><span class="p">],</span> <span class=
+                            "n">sqlite</span> <span class="o">=</span> <span class="kc">True</span><span class=
+                            "p">)</span>
+<span class="n">con</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 10.56s, finished 17:07:00 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[11]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+&lt;sqlite3.Connection at 0x6fa1e9e4e940&gt;
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>Now we have already loaded these 3 big tables both as data frames and as SQLite tables, let’s
+                    see how much memory they use (normally half is enough, and they should stay in the memory only for
+                    short periods):</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[13]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.share</span> <span class=
+                            "kn">import</span> <span class="n">common</span>
+<span class="n">common</span><span class="o">.</span><span class="n">format_bytes</span><span class=
+"p">(</span><span class="n">common</span><span class="o">.</span><span class="n">python_memory_usage</span><span class=
+"p">())</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 17:07:44 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[13]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+'3.7 GB'
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>Looking into the database, we see the 3 tables loaded, and their column names:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[19]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.formats</span> <span class=
+                            "kn">import</span> <span class="n">sqlite</span>
+<span class="n">sqlite</span><span class="o">.</span><span class="n">list_columns</span><span class=
+"p">(</span><span class="n">con</span><span class="p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 17:13:01 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[19]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'source': ['sourceId',
+  'rampId',
+  'IDtype',
+  'geneOrCompound',
+  'commonName',
+  'priorityHMDBStatus',
+  'dataSource',
+  'pathwayCount'],
+ 'analytesynonym': ['Synonym', 'rampId', 'geneOrCompound', 'source'],
+ 'chem_props': ['ramp_id',
+  'chem_data_source',
+  'chem_source_id',
+  'iso_smiles',
+  'inchi_key_prefix',
+  'inchi_key',
+  'inchi',
+  'mw',
+  'monoisotop_mass',
+  'common_name',
+  'mol_formula']}
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>Let’s see how to execute an SQL query and fetch the output into a data frame. This query takes
+                    the <code class="docutils literal notranslate"><span class="pre">source</span></code> table,
+                    selects the records with HMDB and ChEBI IDs in two subqueries, and joins the two by <code class=
+                    "docutils literal notranslate"><span class="pre">rampId</span></code>, in order to obtain a
+                    <code class="docutils literal notranslate"><span class="pre">HMDB</span> <span class=
+                    "pre">←→</span> <span class="pre">ChEBI</span></code> mapping table:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[22]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">import</span> <span class="nn">pandas</span> <span class=
+                            "k">as</span> <span class="nn">pd</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">'SELECT DISTINCT a.sourceId as hmdb, b.sourceId as chebi '</span>
+    <span class="s1">'FROM '</span>
+    <span class="s1">'   (SELECT sourceId, rampId '</span>
+    <span class="s1">'    FROM source '</span>
+    <span class="s1">'   WHERE geneOrCompound = "compound" AND IDtype = "hmdb") a '</span>
+    <span class="s1">'JOIN '</span>
+    <span class="s1">'   (SELECT sourceId, rampId '</span>
+    <span class="s1">'    FROM source '</span>
+    <span class="s1">'   WHERE geneOrCompound = "compound" AND IDtype = "chebi") b '</span>
+    <span class="s1">'ON a.rampId = b.rampId;'</span>
+<span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class=
+"n">read_sql_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class=
+"n">con</span><span class="p">)</span>
+<span class="n">df</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 1ms, finished 17:18:37 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[22]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area rendered_html docutils container">
+                        <div>
+                          <table border="1" class="dataframe">
+                            <thead>
+                              <tr style="text-align: right;">
+                                <th></th>
+                                <th>hmdb</th>
+                                <th>chebi</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th>0</th>
+                                <td>hmdb:HMDB0000001</td>
+                                <td>chebi:27596</td>
+                              </tr>
+                              <tr>
+                                <th>1</th>
+                                <td>hmdb:HMDB0000001</td>
+                                <td>chebi:50599</td>
+                              </tr>
+                              <tr>
+                                <th>2</th>
+                                <td>hmdb:HMDB0000479</td>
+                                <td>chebi:27596</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>hmdb:HMDB0000479</td>
+                                <td>chebi:50599</td>
+                              </tr>
+                              <tr>
+                                <th>4</th>
+                                <td>hmdb:HMDB00001</td>
+                                <td>chebi:27596</td>
+                              </tr>
+                              <tr>
+                                <th>...</th>
+                                <td>...</td>
+                                <td>...</td>
+                              </tr>
+                              <tr>
+                                <th>104129</th>
+                                <td>hmdb:HMDB0126033</td>
+                                <td>chebi:25882</td>
+                              </tr>
+                              <tr>
+                                <th>104130</th>
+                                <td>hmdb:HMDB0141947</td>
+                                <td>chebi:180150</td>
+                              </tr>
+                              <tr>
+                                <th>104131</th>
+                                <td>hmdb:HMDB0128505</td>
+                                <td>chebi:7870</td>
+                              </tr>
+                              <tr>
+                                <th>104132</th>
+                                <td>hmdb:HMDB0130984</td>
+                                <td>chebi:8227</td>
+                              </tr>
+                              <tr>
+                                <th>104133</th>
+                                <td>hmdb:HMDB0130987</td>
+                                <td>chebi:8630</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <p>104134 rows × 2 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>Such mapping tables can be easily accessed for any pairs of identifiers by the <code class=
+                    "docutils literal notranslate"><span class="pre">ramp_mapping</span></code> function. Before that,
+                    let’s see the complete list of supported ID types:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[24]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">ramp</span><span class="o">.</span><span class=
+                            "n">ramp_id_types</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 4.45s, finished 17:23:09 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[24]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'CAS',
+ 'EN',
+ 'LIPIDMAPS',
+ 'brenda',
+ 'chebi',
+ 'chemspider',
+ 'ensembl',
+ 'entrez',
+ 'gene_symbol',
+ 'hmdb',
+ 'kegg',
+ 'kegg_glycan',
+ 'lipidbank',
+ 'ncbiprotein',
+ 'plantfa',
+ 'pubchem',
+ 'swisslipids',
+ 'uniprot',
+ 'wikidata'}
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[31]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">ramp</span><span class="o">.</span><span class=
+                            "n">ramp_mapping</span><span class="p">(</span><span class=
+                            "s1">'LIPIDMAPS'</span><span class="p">,</span> <span class=
+                            "s1">'swisslipids'</span><span class="p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 4.94s, finished 17:29:17 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[31]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'LMFA00000008': {'SLM:000390048'},
+ 'LMFA01010001': {'SLM:000000510'},
+ 'LMFA01010002': {'SLM:000000449'},
+ 'LMFA01010003': {'SLM:000001194'},
+ 'LMFA01010004': {'SLM:000001195'},
+ 'LMFA01010005': {'SLM:000389552'},
+ 'LMFA01010006': {'SLM:000001196'},
+ 'LMFA01010007': {'SLM:000389947'},
+ 'LMFA01010008': {'SLM:000000853'},
+ 'LMFA01010010': {'SLM:000000855'},
+ 'LMFA01010011': {'SLM:000389946'},
+ 'LMFA01010012': {'SLM:000000719'},
+ 'LMFA01010013': {'SLM:000001198'},
+ 'LMFA01010014': {'SLM:000000825'},
+ 'LMFA01010015': {'SLM:000001199'},
+ 'LMFA01010017': {'SLM:000001095'},
+ 'LMFA01010019': {'SLM:000001205'},
+ 'LMFA01010020': {'SLM:000000829'},
+ 'LMFA01010021': {'SLM:000001207'},
+ 'LMFA01010022': {'SLM:000000827'},
+ 'LMFA01010023': {'SLM:000001128'},
+ 'LMFA01010024': {'SLM:000000414'},
+ 'LMFA01010026': {'SLM:000000539'},
+ 'LMFA01010027': {'SLM:000000980'},
+ 'LMFA01010028': {'SLM:000000540'},
+ 'LMFA01010030': {'SLM:000000543'},
+ 'LMFA01010032': {'SLM:000000544'},
+ 'LMFA01010034': {'SLM:00000
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 44684 characters</em>
+                      </div>
+                    </div>
+                    <p>Above we got a dict of sets, alternatively data frames are available:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[32]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">ramp</span><span class="o">.</span><span class=
+                            "n">ramp_mapping</span><span class="p">(</span><span class=
+                            "s1">'LIPIDMAPS'</span><span class="p">,</span> <span class=
+                            "s1">'swisslipids'</span><span class="p">,</span> <span class=
+                            "n">return_df</span> <span class="o">=</span> <span class="kc">True</span><span class=
+                            "p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 4.63s, finished 17:30:27 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[32]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area rendered_html docutils container">
+                        <div>
+                          <table border="1" class="dataframe">
+                            <thead>
+                              <tr style="text-align: right;">
+                                <th></th>
+                                <th>id_type_a</th>
+                                <th>id_type_b</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th>0</th>
+                                <td>LMST02030086</td>
+                                <td>SLM:000485328</td>
+                              </tr>
+                              <tr>
+                                <th>1</th>
+                                <td>LMST02030087</td>
+                                <td>SLM:000485330</td>
+                              </tr>
+                              <tr>
+                                <th>2</th>
+                                <td>LMSP06020013</td>
+                                <td>SLM:000000534</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>LMST02020001</td>
+                                <td>SLM:000001055</td>
+                              </tr>
+                              <tr>
+                                <th>4</th>
+                                <td>LMST02020001</td>
+                                <td>SLM:000485315</td>
+                              </tr>
+                              <tr>
+                                <th>...</th>
+                                <td>...</td>
+                                <td>...</td>
+                              </tr>
+                              <tr>
+                                <th>35218</th>
+                                <td>LMPR0104010007</td>
+                                <td>SLM:000389242</td>
+                              </tr>
+                              <tr>
+                                <th>35219</th>
+                                <td>LMPR0104030005</td>
+                                <td>SLM:000390232</td>
+                              </tr>
+                              <tr>
+                                <th>35220</th>
+                                <td>LMPR0104030006</td>
+                                <td>SLM:000390227</td>
+                              </tr>
+                              <tr>
+                                <th>35221</th>
+                                <td>LMPR01070626</td>
+                                <td>SLM:000000432</td>
+                              </tr>
+                              <tr>
+                                <th>35222</th>
+                                <td>LMPR01090015</td>
+                                <td>SLM:000389419</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <p>35223 rows × 2 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>RaMP ID translation is also integrated into the higher level APIs in <code class=
+                    "docutils literal notranslate"><span class="pre">pypath.utils.mapping</span></code>. Below, we
+                    first look into the available ID types and translation tables:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[34]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.utils</span> <span class=
+                            "kn">import</span> <span class="n">mapping</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class=
+"n">get_mapper</span><span class="p">()</span>
+<span class="n">m</span><span class="o">.</span><span class="n">id_types</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 17:38:25 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[34]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{IdType(pypath='CAS', original='CAS'),
+ IdType(pypath='LIPIDMAPS', original='LIPIDMAPS'),
+ IdType(pypath='MedChemExpress', original='MedChemExpress'),
+ IdType(pypath='actor', original='actor'),
+ IdType(pypath='affy', original='affy'),
+ IdType(pypath='affymetrix', original='affymetrix'),
+ IdType(pypath='agilent', original='agilent'),
+ IdType(pypath='alzforum', original='Alzforum_mut'),
+ IdType(pypath='araport', original='Araport'),
+ IdType(pypath='atlas', original='atlas'),
+ IdType(pypath='bindingdb', original='bindingdb'),
+ IdType(pypath='brenda', original='brenda'),
+ IdType(pypath='carotenoiddb', original='carotenoiddb'),
+ IdType(pypath='cas', original='CAS'),
+ IdType(pypath='cas_id', original='CAS'),
+ IdType(pypath='cgnc', original='CGNC'),
+ IdType(pypath='chebi', original='chebi'),
+ IdType(pypath='chembl', original='chembl'),
+ IdType(pypath='chemicalbook', original='chemicalbook'),
+ IdType(pypath='chemspider', original='chemspider'),
+ IdType(pypath='clinicaltrials', original='clinic
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 7422 characters</em>
+                      </div>
+                    </div>
+                    <p>These are ID types not only from RaMP, but all the supported resources. In the mapping table
+                    definitions, as translation between any two ID types is supported, <code class=
+                    "docutils literal notranslate"><span class="pre">id_type_b</span></code> is always <code class=
+                    "docutils literal notranslate"><span class="pre">None</span></code>:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[35]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="p">[</span><span class="n">t</span> <span class=
+                            "k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class=
+                            "n">m</span><span class="o">.</span><span class="n">mapping_tables</span><span class=
+                            "p">()</span> <span class="k">if</span> <span class="n">t</span><span class=
+                            "o">.</span><span class="n">resource</span> <span class="o">==</span> <span class=
+                            "s1">'ramp'</span><span class="p">]</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 17:46:56 2023-03-09</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[35]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+[MappingTableDefinition(id_type_a='kegg_glycan', id_type_b=None, resource='ramp', input_class='RampMapping', resource_id_type_a='kegg_glycan', resource_id_type_b=None),
+ MappingTableDefinition(id_type_a='hmdb', id_type_b=None, resource='ramp', input_class='RampMapping', resource_id_type_a='hmdb', resource_id_type_b=None),
+ MappingTableDefinition(id_type_a='wikidata', id_type_b=None, resource='ramp', input_class='RampMapping', resource_id_type_a='wikidata', resource_id_type_b=None),
+ MappingTableDefinition(id_type_a='LIPIDMAPS', id_type_b=None, resource='ramp', input_class='RampMapping', resource_id_type_a='LIPIDMAPS', resource_id_type_b=None),
+ MappingTableDefinition(id_type_a='kegg', id_type_b=None, resource='ramp', input_class='RampMapping', resource_id_type_a='kegg', resource_id_type_b=None),
+ MappingTableDefinition(id_type_a='CAS', id_type_b=None, resource='ramp', input_class='RampMapping', resource_id_type_a='CAS', resource_id_type_b=None),
+ MappingTableDefinition(id_type_a='chebi
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 3238 characters</em>
+                      </div>
+                    </div>
+                    <section id="TL;DR">
+                      <h4>TL;DR<a class="headerlink" href="#TL;DR" title="Permalink to this heading">§</a></h4>
+                      <p>Up until this point this section is about extra insights, but what 99% of the users will do
+                      looks like this:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[36]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="kn">from</span> <span class="nn">pypath.utils</span> <span class=
+                              "kn">import</span> <span class="n">mapping</span>
+<span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class=
+"p">(</span><span class="s1">'131431'</span><span class="p">,</span> <span class="s1">'chebi'</span><span class=
+"p">,</span> <span class="s1">'hmdb'</span><span class="p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 17:53:38 2023-03-09</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[36]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+{'HMDB0094709'}
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
                 </section>
                 <section id="Download-management">
                   <h2>Download management<a class="headerlink" href="#Download-management" title=
@@ -12254,9 +13530,8 @@ AKT1 - GSK3B
             </article>
             <footer class="bd-footer-article">
               <!-- Previous / next buttons -->
-              <div class='prev-next-area'>
-                <a class='left-prev' id="prev-link" href="../api/pypath.visual.plot.StackedBarplot.html" title=
-                "previous page">
+              <div class="prev-next-area">
+                <a class="left-prev" href="../api/pypath.visual.plot.StackedBarplot.html" title="previous page">
                 <div class="prev-next-info">
                   <p class="prev-next-subtitle">previous</p>
                   <p class="prev-next-title">pypath.visual.plot.StackedBarplot</p>
@@ -12265,461 +13540,473 @@ AKT1 - GSK3B
             </footer>
           </div>
           <div class="bd-sidebar-secondary bd-toc">
-            <div class="toc-item">
-              <div class="tocsection onthispage">
-                On this page
+            <div class="sidebar-secondary-items sidebar-secondary__inner">
+              <div class="sidebar-secondary-item">
+                <div class="page-toc tocsection onthispage">
+                  On this page
+                </div>
+                <nav class="bd-toc-nav page-toc">
+                  <ul class="current visible nav section-nav flex-column">
+                    <li class="toctree-l1 toc-h1 nav-item toc-entry">
+                      <a class="reference internal nav-link" href="../index.html">Welcome to pypath!</a>
+                    </li>
+                    <li class="toctree-l1 toc-h1 nav-item toc-entry">
+                      <a class="reference internal nav-link" href="../webservice.html">Webservice</a>
+                    </li>
+                    <li class="toctree-l1 toc-h1 nav-item toc-entry">
+                      <a class="reference internal nav-link" href="../releasehistory.html">Release history</a>
+                    </li>
+                    <li class="toctree-l1 toc-h1 nav-item toc-entry">
+                      <a class="reference internal nav-link" href="../reference.html">Reference</a>
+                    </li>
+                    <li class="toctree-l1 current toc-h1 nav-item toc-entry">
+                      <a class="current reference internal nav-link" href="#">The pypath book</a>
+                      <ul class="visible nav section-nav flex-column">
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Introduction">Introduction</a>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Build,-load-and-save-databases">Build, load and
+                          save databases</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#The-OmniPath-app">The OmniPath app</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Built-in-database-definitions">Built-in
+                              database definitions</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Networks">Networks</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Strictly-literature-curated-network">Strictly literature curated network</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#The-OmniPath-network-with-extra-activity-flow,-enzyme-substrate-and-ligand-receptor-interactions">
+                                  The OmniPath network with extra activity flow, enzyme-substrate and ligand-receptor
+                                  interactions</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Transcriptional-regulation-network-from-DoRothEA-and-other-resources">Transcriptional
+                                  regulation network from DoRothEA and other resources</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Literature-curated-miRNA-post-transcriptional-regulation-network">Literature
+                                  curated miRNA post-transcriptional regulation network</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Transcriptional-regulation-of-miRNA">Transcriptional regulation of miRNA</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#lncRNA-mRNA-interactions">lncRNA-mRNA
+                                  interactions</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Small-molecule-protein-interactions">Small molecule-protein interactions</a>
+                                </li>
+                              </ul>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Enzyme-substrate-relationships">Enzyme-substrate relationships</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Protein-complexes">Protein complexes</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Annotations">Annotations</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Inter-cellular-communication-roles">Inter-cellular communication roles</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Data-directly-from-the-original-resources">Data
+                          directly from the original resources</a>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Interesting-resources">Interesting
+                          resources</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#RaMP">RaMP</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#TL;DR">TL;DR</a>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Download-management">Download management</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Cache-management-and-customization">Cache
+                              management and customization</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Download-failures">Download failures</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Corrupted-cache-content">Corrupted
+                                  cache content</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Network-communication-issues:-look-into-the-curl-debug-log">Network communication
+                                  issues: look into the curl debug log</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Timeouts">Timeouts</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Access-and-inspect-the-Curl-object">Access and inspect the <code class=
+                                  "docutils literal notranslate"><span class="pre">Curl</span></code> object</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Is-it-failing-only-for-you?">Is it
+                                  failing only for you?</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Read-the-log">Read the log</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#TLS-(SSL,-HTTPS)-errors">TLS (SSL,
+                                  HTTPS) errors</a>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Resources">Resources</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Licenses">Licenses</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Resource-information">Resource
+                              information</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Resource-definitions-for-a-certain-database-or-dataset">Resource definitions for a
+                              certain database or dataset</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Building-networks">Building networks</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Which-network-datasets-are-pre-defined-in-pypath?">Which network datasets are
+                              pre-defined in pypath?</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#The-Network-object">The <code class=
+                              "docutils literal notranslate"><span class="pre">Network</span></code> object</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Network-in-pandas.DataFrame">Network in
+                              <em>pandas.DataFrame</em></a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Translating-identifiers">Translating
+                          identifiers</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Pre-defined-ID-translation-tables">Pre-defined ID translation tables</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Homology-translation">Homology translation</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Homology-translation-tables-as-dictionaries">Homology translation tables as
+                              dictionaries</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Homology-translation-data-frames">Homology
+                              translation data frames</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Taxonomy">Taxonomy</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Translating-to-NCBI-Taxonomy,-scientific-names-and-common-names">Translating to NCBI
+                              Taxonomy, scientific names and common names</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Organism-from-UniProt-ID">Organism from
+                              UniProt ID</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#UniProt">UniProt</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#The-UniProt-input-module">The UniProt input
+                              module</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#All-UniProt-IDs-for-one-organism">All
+                                  UniProt IDs for one organism</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#UniProt-ID-format-validation">UniProt
+                                  ID format validation</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#UniProt-ID-validation">UniProt ID
+                                  validation</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Single-UniProt-protein-datasheet">Single UniProt protein datasheet</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#History-of-UniProt-records">History of
+                                  UniProt records</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#UniProt-legacy-API">UniProt legacy
+                                  API</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Processed-UniProt-annotations">Processed UniProt annotations</a>
+                                </li>
+                              </ul>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#The-UniProt-utils-module">The UniProt utils
+                              module</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Datasheets">Datasheets</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Tables">Tables</a>
+                                </li>
+                              </ul>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Sanitizing-UniProt-IDs">Sanitizing UniProt
+                              IDs</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Enzyme-substrate-interactions">Enzyme-substrate
+                          interactions</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Enzyme-substrate-objects">Enzyme-substrate
+                              objects</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Enzyme-substrate-data-frame">Enzyme-substrate data frame</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Protein-sequences">Protein sequences</a>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#id1">Annotations</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Load-a-single-annotation-resource">Load a
+                              single annotation resource</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Load-the-full-annotations-database-by-the-database-manager">Load the full annotations
+                              database by the database manager</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Load-only-selected-annotations">Load only
+                              selected annotations</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Data-frames-of-annotations">Data frames of
+                              annotations</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Inter-cellular-signaling-roles">Inter-cellular
+                          signaling roles</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Build-an-intercellular-communication-network">Build an intercellular communication
+                              network</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Quantitative-overview-of-intercell-annotations">Quantitative overview of intercell
+                              annotations</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Intercell-database-as-data-frame">Intercell
+                              database as data frame</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Browse-intercell-categories">Browse
+                              intercell categories</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Gene-Ontology">Gene Ontology</a>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#id2">Protein complexes</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Protein-complex-objects">Protein complex
+                              objects</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Protein-complex-data-frame">Protein complex
+                              data frame</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Saving-datasets-as-pickles">Saving datasets as
+                          pickles</a>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#Log-messages-and-sessions">Log messages and
+                          sessions</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Basic-info-about-the-session">Basic info
+                              about the session</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Read-the-log-file">Read the log file</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Logging-to-the-console">Logging to the
+                              console</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Disable-logging">Disable logging</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Write-to-the-log">Write to the log</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Sending-a-single-message">Sending a
+                                  single message</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Connect-a-module-or-class-to-the-pypath-logger">Connect a module or class to the
+                                  pypath logger</a>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#BEL-export">BEL export</a>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#CellPhoneDB-export">CellPhoneDB export</a>
+                        </li>
+                        <li class="toctree-l2 toc-h2 nav-item toc-entry">
+                          <a class="reference internal nav-link" href="#The-legacy-igraph-based-network-object">The
+                          legacy <em>igraph</em>-based network object</a>
+                          <ul class="visible nav section-nav flex-column">
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#I-just-want-a-network-quickly-and-play-around-with-pypath">I just want a network
+                              quickly and play around with <em>pypath</em></a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#How-do-I-build-networks-from-any-data-with-pypath?">How do I build networks from any
+                              data with <em>pypath</em>?</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Defining-input-formats">Defining input
+                                  formats</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Creating-PyPath-object-and-loading-the-2-test-files">Creating PyPath object and
+                                  loading the 2 test files</a>
+                                </li>
+                              </ul>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Structure-of-the-legacy-network-object">Structure of the legacy network object</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Directions-and-signs">Directions and
+                                  signs</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Accessing-nodes-in-the-network">Accessing nodes in the network</a>
+                                </li>
+                              </ul>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Querying-relationships-with-our-without-causality">Querying relationships with our
+                              without causality</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Accessing-edges-by-identifiers">Accessing
+                              edges by identifiers</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Literature-references">Literature
+                              references</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#Plotting-the-network-with-igraph">Plotting
+                              the network with <em>igraph</em></a>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </nav>
               </div>
-              <nav id="bd-toc-nav" class="page-toc">
-                <ul class="current visible nav section-nav flex-column">
-                  <li class="toctree-l1 toc-h1 nav-item toc-entry">
-                    <a class="reference internal nav-link" href="../index.html">Welcome to pypath!</a>
-                  </li>
-                  <li class="toctree-l1 toc-h1 nav-item toc-entry">
-                    <a class="reference internal nav-link" href="../webservice.html">Webservice</a>
-                  </li>
-                  <li class="toctree-l1 toc-h1 nav-item toc-entry">
-                    <a class="reference internal nav-link" href="../releasehistory.html">Release history</a>
-                  </li>
-                  <li class="toctree-l1 toc-h1 nav-item toc-entry">
-                    <a class="reference internal nav-link" href="../reference.html">Reference</a>
-                  </li>
-                  <li class="toctree-l1 current toc-h1 nav-item toc-entry">
-                    <a class="current reference internal nav-link" href="#">The pypath book</a>
-                    <ul class="visible nav section-nav flex-column">
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Introduction">Introduction</a>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Build,-load-and-save-databases">Build, load and
-                        save databases</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#The-OmniPath-app">The OmniPath app</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Built-in-database-definitions">Built-in
-                            database definitions</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Networks">Networks</a>
-                            <ul class="nav section-nav flex-column">
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#Strictly-literature-curated-network">Strictly literature curated network</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#The-OmniPath-network-with-extra-activity-flow,-enzyme-substrate-and-ligand-receptor-interactions">
-                                The OmniPath network with extra activity flow, enzyme-substrate and ligand-receptor
-                                interactions</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#Transcriptional-regulation-network-from-DoRothEA-and-other-resources">Transcriptional
-                                regulation network from DoRothEA and other resources</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#Literature-curated-miRNA-post-transcriptional-regulation-network">Literature curated
-                                miRNA post-transcriptional regulation network</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#Transcriptional-regulation-of-miRNA">Transcriptional regulation of miRNA</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#lncRNA-mRNA-interactions">lncRNA-mRNA
-                                interactions</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#Small-molecule-protein-interactions">Small molecule-protein interactions</a>
-                              </li>
-                            </ul>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Enzyme-substrate-relationships">Enzyme-substrate relationships</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Protein-complexes">Protein complexes</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Annotations">Annotations</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Inter-cellular-communication-roles">Inter-cellular communication roles</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Data-directly-from-the-original-resources">Data
-                        directly from the original resources</a>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Download-management">Download management</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Cache-management-and-customization">Cache
-                            management and customization</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Download-failures">Download failures</a>
-                            <ul class="nav section-nav flex-column">
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Corrupted-cache-content">Corrupted cache
-                                content</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#Network-communication-issues:-look-into-the-curl-debug-log">Network communication
-                                issues: look into the curl debug log</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Timeouts">Timeouts</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#Access-and-inspect-the-Curl-object">Access and inspect the <code class=
-                                "docutils literal notranslate"><span class="pre">Curl</span></code> object</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Is-it-failing-only-for-you?">Is it
-                                failing only for you?</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Read-the-log">Read the log</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#TLS-(SSL,-HTTPS)-errors">TLS (SSL, HTTPS)
-                                errors</a>
-                              </li>
-                            </ul>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Resources">Resources</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Licenses">Licenses</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Resource-information">Resource
-                            information</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Resource-definitions-for-a-certain-database-or-dataset">Resource definitions for a
-                            certain database or dataset</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Building-networks">Building networks</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Which-network-datasets-are-pre-defined-in-pypath?">Which network datasets are pre-defined
-                            in pypath?</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#The-Network-object">The <code class=
-                            "docutils literal notranslate"><span class="pre">Network</span></code> object</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Network-in-pandas.DataFrame">Network in
-                            <em>pandas.DataFrame</em></a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Translating-identifiers">Translating
-                        identifiers</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Pre-defined-ID-translation-tables">Pre-defined ID translation tables</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Homology-translation">Homology translation</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Homology-translation-tables-as-dictionaries">Homology translation tables as
-                            dictionaries</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Homology-translation-data-frames">Homology
-                            translation data frames</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Taxonomy">Taxonomy</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Translating-to-NCBI-Taxonomy,-scientific-names-and-common-names">Translating to NCBI
-                            Taxonomy, scientific names and common names</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Organism-from-UniProt-ID">Organism from
-                            UniProt ID</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#UniProt">UniProt</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#The-UniProt-input-module">The UniProt input
-                            module</a>
-                            <ul class="nav section-nav flex-column">
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#All-UniProt-IDs-for-one-organism">All
-                                UniProt IDs for one organism</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#UniProt-ID-format-validation">UniProt ID
-                                format validation</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#UniProt-ID-validation">UniProt ID
-                                validation</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Single-UniProt-protein-datasheet">Single
-                                UniProt protein datasheet</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#History-of-UniProt-records">History of
-                                UniProt records</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#UniProt-legacy-API">UniProt legacy
-                                API</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Processed-UniProt-annotations">Processed
-                                UniProt annotations</a>
-                              </li>
-                            </ul>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#The-UniProt-utils-module">The UniProt utils
-                            module</a>
-                            <ul class="nav section-nav flex-column">
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Datasheets">Datasheets</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Tables">Tables</a>
-                              </li>
-                            </ul>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Sanitizing-UniProt-IDs">Sanitizing UniProt
-                            IDs</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Enzyme-substrate-interactions">Enzyme-substrate
-                        interactions</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Enzyme-substrate-objects">Enzyme-substrate
-                            objects</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Enzyme-substrate-data-frame">Enzyme-substrate
-                            data frame</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Protein-sequences">Protein sequences</a>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#id1">Annotations</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Load-a-single-annotation-resource">Load a
-                            single annotation resource</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Load-the-full-annotations-database-by-the-database-manager">Load the full annotations
-                            database by the database manager</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Load-only-selected-annotations">Load only
-                            selected annotations</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Data-frames-of-annotations">Data frames of
-                            annotations</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Inter-cellular-signaling-roles">Inter-cellular
-                        signaling roles</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Build-an-intercellular-communication-network">Build an intercellular communication
-                            network</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Quantitative-overview-of-intercell-annotations">Quantitative overview of intercell
-                            annotations</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Intercell-database-as-data-frame">Intercell
-                            database as data frame</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Browse-intercell-categories">Browse intercell
-                            categories</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Gene-Ontology">Gene Ontology</a>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#id2">Protein complexes</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Protein-complex-objects">Protein complex
-                            objects</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Protein-complex-data-frame">Protein complex
-                            data frame</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Saving-datasets-as-pickles">Saving datasets as
-                        pickles</a>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#Log-messages-and-sessions">Log messages and
-                        sessions</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Basic-info-about-the-session">Basic info
-                            about the session</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Read-the-log-file">Read the log file</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Logging-to-the-console">Logging to the
-                            console</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Disable-logging">Disable logging</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Write-to-the-log">Write to the log</a>
-                            <ul class="nav section-nav flex-column">
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Sending-a-single-message">Sending a
-                                single message</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#Connect-a-module-or-class-to-the-pypath-logger">Connect a module or class to the
-                                pypath logger</a>
-                              </li>
-                            </ul>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#BEL-export">BEL export</a>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#CellPhoneDB-export">CellPhoneDB export</a>
-                      </li>
-                      <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                        <a class="reference internal nav-link" href="#The-legacy-igraph-based-network-object">The
-                        legacy <em>igraph</em> -based network object</a>
-                        <ul class="visible nav section-nav flex-column">
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#I-just-want-a-network-quickly-and-play-around-with-pypath">I just want a network quickly
-                            and play around with <em>pypath</em></a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#How-do-I-build-networks-from-any-data-with-pypath?">How do I build networks from any data
-                            with <em>pypath</em> ?</a>
-                            <ul class="nav section-nav flex-column">
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Defining-input-formats">Defining input
-                                formats</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href=
-                                "#Creating-PyPath-object-and-loading-the-2-test-files">Creating PyPath object and
-                                loading the 2 test files</a>
-                              </li>
-                            </ul>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Structure-of-the-legacy-network-object">Structure of the legacy network object</a>
-                            <ul class="nav section-nav flex-column">
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Directions-and-signs">Directions and
-                                signs</a>
-                              </li>
-                              <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                <a class="reference internal nav-link" href="#Accessing-nodes-in-the-network">Accessing
-                                nodes in the network</a>
-                              </li>
-                            </ul>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href=
-                            "#Querying-relationships-with-our-without-causality">Querying relationships with our
-                            without causality</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Accessing-edges-by-identifiers">Accessing
-                            edges by identifiers</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Literature-references">Literature
-                            references</a>
-                          </li>
-                          <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                            <a class="reference internal nav-link" href="#Plotting-the-network-with-igraph">Plotting
-                            the network with <em>igraph</em></a>
-                          </li>
-                        </ul>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-            <div class="toc-item">
-              <div id="searchbox"></div>
-            </div>
-            <div class="toc-item"></div>
-            <div class="toc-item">
-              <div class="tocsection sourcelink">
-                <a href="../_sources/notebooks/manual.ipynb.txt">Show Source</a>
+              <div class="sidebar-secondary-item">
+                <div class="tocsection sourcelink">
+                  <a href="../_sources/notebooks/manual.ipynb.txt">Show Source</a>
+                </div>
               </div>
             </div>
           </div>
@@ -12730,21 +14017,25 @@ AKT1 - GSK3B
       </main>
     </div>
   </div><!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script> 
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script> 
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
   <footer class="bd-footer">
-    <div class="bd-footer__inner container">
-      <div class="footer-item">
-        <p class="copyright">© Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian
-        Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles
-        Tapley Hoyt.<br></p>
+    <div class="bd-footer__inner bd-page-width">
+      <div class="footer-items__start">
+        <div class="footer-item">
+          <p class="copyright">© Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian
+          Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles
+          Tapley Hoyt.<br></p>
+        </div>
+        <div class="footer-item">
+          <p class="sphinx-version">Created using <a href="https://sphinx-doc.org/">Sphinx</a> 6.1.3.<br></p>
+        </div>
       </div>
-      <div class="footer-item">
-        <p class="theme-version">Built with the <a href=
-        "https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.12.0.</p>
-      </div>
-      <div class="footer-item">
-        <p class="sphinx-version">Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br></p>
+      <div class="footer-items__end">
+        <div class="footer-item">
+          <p class="theme-version">Built with the <a href=
+          "https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.</p>
+        </div>
       </div>
     </div>
   </footer>

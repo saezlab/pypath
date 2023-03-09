@@ -1,11 +1,14 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.utils.mapping &#8212; pypath 0.14.35 documentation</title>
+    <title>pypath.utils.mapping &#8212; pypath 0.14.36 documentation</title>
   
   
   
@@ -15,112 +18,123 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/utils/mapping';</script>
-    <link rel="shortcut icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
   <label class="overlay overlay-primary" for="__primary"></label>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
   <label class="overlay overlay-secondary" for="__secondary"></label>
-
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
-      
-<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
+</form></div>
   </div>
-
   
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fa-solid fa-bars"></span>
+    <span class="fa-solid fa-bars"></span>
   </label>
-  <div id="navbar-start">
-    
-    
   
-
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../../../contents.html">
-
   
   
   
   
-  
-  
-  
-
-  
-    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-light" alt="Pypath">
-    <img src="../../../_static/img/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath">
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
   
   
     <p class="title logo__title">Pypath</p>
   
-</a>
+</a></div>
     
   </div>
-
+  
   
   <div class=" navbar-header-items">
-    <div id="navbar-center" class="mr-auto">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../index.html">
                         Welcome to pypath!
@@ -155,32 +169,39 @@
                       </a>
                     </li>
                 
-    </ul>
-</nav>
-      </div>
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-        <div class="navbar-end-item navbar-persistent--container">
+        <div class="navbar-item navbar-persistent--container">
           
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
       
       
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
+  </button>
+`);
+</script></div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -189,7 +210,8 @@
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -200,7 +222,8 @@
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
         <li class="nav-item">
@@ -211,7 +234,8 @@
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
             <label class="sr-only">PyPI</label></a>
         </li>
         <li class="nav-item">
@@ -222,7 +246,8 @@
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
             <label class="sr-only">OmniPath</label></a>
         </li>
         <li class="nav-item">
@@ -233,53 +258,58 @@
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
             <label class="sr-only">Saez Lab</label></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
+    
   </div>
-
-
   
   
     <div class="navbar-persistent--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
     </div>
   
 
   
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
       <span class="fa-solid fa-outdent"></span>
-  </label>
+    </label>
   
-
 </div>
-  </nav>
-  
 
+    </nav>
+  
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
+
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
       <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
         
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../index.html">
                         Welcome to pypath!
@@ -314,27 +344,28 @@
                       </a>
                     </li>
                 
-    </ul>
-</nav>
+  </ul>
+</nav></div>
+        
       </div>
-      
-      </div>
-    
-
     
     
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -343,7 +374,8 @@
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -354,7 +386,8 @@
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
         <li class="nav-item">
@@ -365,7 +398,8 @@
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
             <label class="sr-only">PyPI</label></a>
         </li>
         <li class="nav-item">
@@ -376,7 +410,8 @@
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
             <label class="sr-only">OmniPath</label></a>
         </li>
         <li class="nav-item">
@@ -387,41 +422,71 @@
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
             <label class="sr-only">Saez Lab</label></a>
         </li>
-      </ul>
+</ul></div>
+        
       </div>
-      
-    </div>
     
   </div>
-
   
-
   
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
-
   
   <div id="rtd-footer-container"></div>
 
+
       </div>
+      
       <main id="main-content" class="bd-main">
         
         
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+          <div class="bd-content">
+            <div class="bd-article-container">
               
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../pypath.html" class="nav-link">pypath</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.utils.mapping</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <h1>Source code for pypath.utils.mapping</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
@@ -430,7 +495,7 @@
 <span class="c1">#  This file is part of the `pypath` python module</span>
 <span class="c1">#</span>
 <span class="c1">#  Copyright</span>
-<span class="c1">#  2014-2022</span>
+<span class="c1">#  2014-2023</span>
 <span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
 <span class="c1">#</span>
 <span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
@@ -455,15 +520,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
-<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="kn">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="kn">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="nb">range</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -498,6 +561,7 @@
 <span class="kn">import</span> <span class="nn">pypath.inputs.pro</span> <span class="k">as</span> <span class="nn">pro_input</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.biomart</span> <span class="k">as</span> <span class="nn">biomart_input</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.unichem</span> <span class="k">as</span> <span class="nn">unichem_input</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.ramp</span> <span class="k">as</span> <span class="nn">ramp_input</span>
 <span class="kn">import</span> <span class="nn">pypath.internals.input_formats</span> <span class="k">as</span> <span class="nn">input_formats</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.reflists</span> <span class="k">as</span> <span class="nn">reflists</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
@@ -548,6 +612,17 @@
         <span class="s1">&#39;unichem&#39;</span><span class="p">,</span>
         <span class="n">input_formats</span><span class="o">.</span><span class="n">UnichemMapping</span><span class="p">,</span>
     <span class="p">),</span>
+    <span class="p">(</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="n">it</span><span class="p">:</span> <span class="n">it</span>
+                <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">ramp_input</span><span class="o">.</span><span class="n">ramp_id_types_2</span><span class="p">(</span><span class="s1">&#39;compound&#39;</span><span class="p">)</span>
+            <span class="p">},</span>
+            <span class="o">**</span><span class="n">input_formats</span><span class="o">.</span><span class="n">RAMP_MAPPING</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;ramp&#39;</span><span class="p">,</span>
+        <span class="n">input_formats</span><span class="o">.</span><span class="n">RampMapping</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>
 
 <span class="n">UNIPROT_ID_TYPES</span> <span class="o">=</span> <span class="p">{</span>
@@ -576,7 +651,7 @@
 
 
 <div class="viewcode-block" id="MapReader"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader">[docs]</a><span class="k">class</span> <span class="nc">MapReader</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads ID translation data and creates ``MappingTable`` instances.</span>
 <span class="sd">    When initializing ID conversion tables for the first time</span>
 <span class="sd">    data is downloaded from UniProt and read into dictionaries.</span>
@@ -594,7 +669,7 @@
             <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">lifetime</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args</span>
 <span class="sd">            param (MappingInput): A mapping table definition, any child of</span>
 <span class="sd">                the `internals.input_formats.MappingInput` class.</span>
@@ -668,7 +743,7 @@
 
 
 <div class="viewcode-block" id="MapReader.load"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The complete process of loading mapping tables. First sets up the</span>
 <span class="sd">        paths of the cache files, then loads the tables from the cache files</span>
 <span class="sd">        or the original sources if necessary. Upon successful loading from an</span>
@@ -695,7 +770,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mapping_table_a_to_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a ``MappingTable`` instance created from the already</span>
 <span class="sd">        loaded data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -705,7 +780,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mapping_table_b_to_a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a ``MappingTable`` instance created from the already</span>
 <span class="sd">        loaded data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -714,7 +789,7 @@
 
 
 <div class="viewcode-block" id="MapReader.id_type_side"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.id_type_side">[docs]</a>    <span class="k">def</span> <span class="nf">id_type_side</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_type</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if an ID type is on the &quot;a&quot; or &quot;b&quot; (source or target) side</span>
 <span class="sd">        in the current mapping table definition.</span>
 
@@ -754,7 +829,7 @@
 
 
 <div class="viewcode-block" id="MapReader.tables_loaded"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.tables_loaded">[docs]</a>    <span class="k">def</span> <span class="nf">tables_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if the requested tables have been created.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -765,7 +840,7 @@
 
 
 <div class="viewcode-block" id="MapReader.write_cache"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.write_cache">[docs]</a>    <span class="k">def</span> <span class="nf">write_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Exports the ID translation data into pickle files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -787,7 +862,7 @@
 
 
 <div class="viewcode-block" id="MapReader.read_cache"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_cache">[docs]</a>    <span class="k">def</span> <span class="nf">read_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the ID translation data from a previously saved pickle file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -835,7 +910,7 @@
 
 
 <div class="viewcode-block" id="MapReader.read"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the ID translation data from the original source.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -847,7 +922,7 @@
 
 
 <div class="viewcode-block" id="MapReader.setup_cache"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.setup_cache">[docs]</a>    <span class="k">def</span> <span class="nf">setup_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructs the cache file path as md5 hash of the parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -874,7 +949,7 @@
 
 
     <span class="k">def</span> <span class="nf">_get_mapping_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an md5 checksum unambigously identifying the mapping table</span>
 <span class="sd">        by the identifiers, the direction of translation, the organism</span>
 <span class="sd">        and other parameters like, for example, the source URL.</span>
@@ -893,7 +968,7 @@
 
 
     <span class="k">def</span> <span class="nf">_cache_files_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if both cache files are either not necessary or exist.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -904,7 +979,7 @@
 
 
     <span class="k">def</span> <span class="nf">_cache_file_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if a cache file is either not necessary or exists.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -925,7 +1000,7 @@
 
 
 <div class="viewcode-block" id="MapReader.read_mapping_file"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads a mapping table from a local file or a function.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -992,7 +1067,7 @@
 
 
 <div class="viewcode-block" id="MapReader.read_mapping_uniprot_list"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_uniprot_list">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_uniprot_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Builds a mapping table by downloading data from UniProt&#39;s</span>
 <span class="sd">        upload lists service.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1046,7 +1121,7 @@
 
 
 <div class="viewcode-block" id="MapReader.set_uniprot_space"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.set_uniprot_space">[docs]</a>    <span class="k">def</span> <span class="nf">set_uniprot_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up a search space of UniProt IDs.</span>
 
 <span class="sd">        Args</span>
@@ -1070,7 +1145,7 @@
             <span class="n">upload_ac_list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">chunk_size</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads a mapping table from UniProt &quot;upload lists&quot; service.</span>
 
 <span class="sd">        Args</span>
@@ -1159,7 +1234,7 @@
 
 
 <div class="viewcode-block" id="MapReader.read_mapping_uniprot"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_uniprot">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Downloads ID mappings directly from UniProt.</span>
 <span class="sd">        See the names of possible identifiers here:</span>
 <span class="sd">        http://www.uniprot.org/help/programmatic_access</span>
@@ -1261,7 +1336,7 @@
 
 
 <div class="viewcode-block" id="MapReader.read_mapping_biomart"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_biomart">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_biomart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a mapping table using BioMart data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1305,7 +1380,7 @@
 
 
 <div class="viewcode-block" id="MapReader.read_mapping_array"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_array">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads mapping table between microarray probe IDs and genes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1369,13 +1444,34 @@
 
 
 <div class="viewcode-block" id="MapReader.read_mapping_unichem"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_unichem">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_unichem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads an ID translation table from UniChem.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">unichem_input</span><span class="o">.</span><span class="n">unichem_mapping</span><span class="p">(</span>
             <span class="n">id_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">target_id_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_b</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_a_to_b</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">a_to_b</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_b_to_a</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">b_to_a</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">swap_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">force_sets</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span></div>
+
+
+<div class="viewcode-block" id="MapReader.read_mapping_ramp"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_ramp">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_ramp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads an ID translation table from RaMP.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ramp_input</span><span class="o">.</span><span class="n">ramp_mapping</span><span class="p">(</span>
+            <span class="n">id_type_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_a</span><span class="p">,</span>
+            <span class="n">id_type_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_b</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_a_to_b</span><span class="p">:</span>
@@ -1406,7 +1502,7 @@
 
 
 <div class="viewcode-block" id="MappingTable"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MappingTable.html#pypath.utils.mapping.MappingTable">[docs]</a><span class="k">class</span> <span class="nc">MappingTable</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the class directly handling ID translation data.</span>
 <span class="sd">    It does not care about loading it or what kind of IDs these</span>
 <span class="sd">    only accepts the translation dictionary.</span>
@@ -1424,7 +1520,7 @@
             <span class="n">ncbi_tax_id</span><span class="p">,</span>
             <span class="n">lifetime</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wrapper around a dictionary of identifier mapping. The dictionary</span>
 <span class="sd">        is located in the `data` attribute, keys are the source identifiers,</span>
 <span class="sd">        values are sets of target identifiers. Most often the mapping is</span>
@@ -1494,7 +1590,7 @@
 
 
 <div class="viewcode-block" id="MappingTable.get_key"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MappingTable.html#pypath.utils.mapping.MappingTable.get_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a mapping table key, a tuple with all the defining properties</span>
 <span class="sd">        of the mapping table.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1555,7 +1651,7 @@
             <span class="n">keep_invalid_uniprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">trembl_swissprot_by_genesymbol</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        cleanup_period : int</span>
 <span class="sd">            Periodically check and remove unused mapping data.</span>
 <span class="sd">            Time in seconds. If `None` tables kept forever.</span>
@@ -1661,7 +1757,7 @@
 
 
 <div class="viewcode-block" id="Mapper.reload"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reload the class from the module level.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1678,7 +1774,7 @@
             <span class="n">target_id_type</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a tuple unambigously identifying a mapping table.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1698,7 +1794,7 @@
             <span class="n">load</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the table which is suitable to convert an ID of</span>
 <span class="sd">        id_type to target_id_type. If no such table have been loaded</span>
 <span class="sd">        yet, it attempts to load from UniProt. If all attempts failed</span>
@@ -1954,7 +2050,7 @@
 
 <div class="viewcode-block" id="Mapper.reverse_mapping"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.reverse_mapping">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reverse_mapping</span><span class="p">(</span><span class="n">mapping_table</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an opposite direction `MappingTable` by swapping the</span>
 <span class="sd">        dictionary inside an existing `MappingTable` object.</span>
 
@@ -1977,7 +2073,7 @@
 
 
 <div class="viewcode-block" id="Mapper.reverse_key"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.reverse_key">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a mapping table key returns a new key with the identifiers</span>
 <span class="sd">        reversed.</span>
 
@@ -1998,7 +2094,7 @@
 
 
 <div class="viewcode-block" id="Mapper.create_reverse"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.create_reverse">[docs]</a>    <span class="k">def</span> <span class="nf">create_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a mapping table with ``id_type`` and ``target_id_type``</span>
 <span class="sd">        (i.e. direction of the ID translation) swapped.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2019,7 +2115,7 @@
             <span class="n">expand_complexes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">uniprot_cleanup</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translates the name and returns only one of the resulted IDs. It</span>
 <span class="sd">        means in case of ambiguous ID translation, a random one of them</span>
 <span class="sd">        will be picked and returned. Recommended to use only if the</span>
@@ -2051,7 +2147,7 @@
             <span class="n">expand_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">uniprot_cleanup</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translates one instance of one ID type to a different one.</span>
 <span class="sd">        Returns set of the target ID type.</span>
 
@@ -2429,7 +2525,7 @@
 
 
 <div class="viewcode-block" id="Mapper.uniprot_cleanup"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.uniprot_cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">uniprot_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We use this function as a standard callback when the target ID</span>
 <span class="sd">        type is UniProt. It checks if the format of the IDs are correct,</span>
 <span class="sd">        if they are part of the organism proteome, attempts to translate</span>
@@ -2490,7 +2586,7 @@
             <span class="n">expand_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">uniprot_cleanup</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same as ``map_name`` but translates multiple IDs at once. These two</span>
 <span class="sd">        functions could be seamlessly implemented as one, still I created</span>
 <span class="sd">        separate functions to always make it explicit if a set of translated</span>
@@ -2550,7 +2646,7 @@
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translate IDs which can not be directly translated in two steps:</span>
 <span class="sd">        from `id_type` to `via_id_type` and from there to `target_id_type`.</span>
 
@@ -2595,7 +2691,7 @@
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">strict</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ID translation adapted to the specialities of RefSeq IDs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2647,7 +2743,7 @@
             <span class="n">target_id_type</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Special ID translation from ENSP (Ensembl peptide IDs).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2688,7 +2784,7 @@
             <span class="n">id_type</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Special ID translation to ENSP (Ensembl peptide IDs).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2730,7 +2826,7 @@
             <span class="n">target_id_type</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Once we have defined the name type and the target name type,</span>
 <span class="sd">        this function looks it up in the most suitable dictionary.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2757,7 +2853,7 @@
             <span class="n">id_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For any kind of entity, either protein, miRNA or protein complex,</span>
 <span class="sd">        returns the preferred human readable label. For proteins this means</span>
 <span class="sd">        Gene Symbols, for miRNAs miRNA names, for complexes a series of</span>
@@ -2853,7 +2949,7 @@
                     <span class="p">]</span>
                 <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a label returns the corresponding primary identifier. The type</span>
 <span class="sd">        of default identifiers is determined by the settings module. Note,</span>
 <span class="sd">        this kind of translation is not always unambigous, one gene symbol</span>
@@ -2937,7 +3033,7 @@
 
 
 <div class="viewcode-block" id="Mapper.guess_type"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.guess_type">[docs]</a>    <span class="k">def</span> <span class="nf">guess_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        From a string, tries to guess the ID type and optionally the entity</span>
 <span class="sd">        type. Returns a tuple of strings: ID type and entity type.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3008,7 +3104,7 @@
 
 
 <div class="viewcode-block" id="Mapper.primary_uniprot"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.primary_uniprot">[docs]</a>    <span class="k">def</span> <span class="nf">primary_uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For an iterable of UniProt IDs returns a set with the secondary IDs</span>
 <span class="sd">        changed to the corresponding primary IDs. Anything what is not a</span>
 <span class="sd">        secondary UniProt ID left intact.</span>
@@ -3039,12 +3135,12 @@
 
 
 <div class="viewcode-block" id="Mapper.trembl_swissprot"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.trembl_swissprot">[docs]</a>    <span class="k">def</span> <span class="nf">trembl_swissprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For an iterable of TrEMBL and SwissProt IDs, returns a set with</span>
 <span class="sd">        only SwissProt, mapping from TrEMBL to gene symbols, and</span>
 <span class="sd">        then back to SwissProt. If this kind of translation is not successful</span>
 <span class="sd">        for any of the IDs it will be kept in the result, no matter if it&#39;s</span>
-<span class="sd">        not a SwissProt ID. If the </span>
+<span class="sd">        not a SwissProt ID. If the</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
@@ -3109,7 +3205,7 @@
             <span class="n">uniprot</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Due to potentially ambiguous translation always returns set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3141,7 +3237,7 @@
 
 
 <div class="viewcode-block" id="Mapper.other_organism_uniprot"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.other_organism_uniprot">[docs]</a>    <span class="k">def</span> <span class="nf">other_organism_uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if ``uniprot`` is an UniProt ID from some other organism than</span>
 <span class="sd">        ``ncbi_tax_id``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3176,7 +3272,7 @@
 
 
 <div class="viewcode-block" id="Mapper.valid_uniprot"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.valid_uniprot">[docs]</a>    <span class="k">def</span> <span class="nf">valid_uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If the UniProt ID ``uniprot`` exist in the proteome of the organism</span>
 <span class="sd">        ``ncbi_tax_id`` returns the ID, otherwise returns None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3189,7 +3285,7 @@
 
 
 <div class="viewcode-block" id="Mapper.only_uniprot_ac"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.only_uniprot_ac">[docs]</a>    <span class="k">def</span> <span class="nf">only_uniprot_ac</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For one or more strings returns only those which match the format</span>
 <span class="sd">        of UniProt accession numbers.</span>
 <span class="sd">        The format is defined here:</span>
@@ -3227,7 +3323,7 @@
 
 <div class="viewcode-block" id="Mapper.mapping_tables"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.mapping_tables">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">mapping_tables</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of mapping tables available to load.</span>
 
 <span class="sd">        Returns</span>
@@ -3297,7 +3393,7 @@
 
 <div class="viewcode-block" id="Mapper.id_types"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.id_types">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">id_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A list of all identifier types that can be handled by any of the</span>
 <span class="sd">        resources.</span>
 
@@ -3333,7 +3429,7 @@
             <span class="n">target_id_type</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if a mapping table is loaded. If it&#39;s loaded, it resets the</span>
 <span class="sd">        expiry timer so the table remains loaded.</span>
 
@@ -3361,7 +3457,7 @@
             <span class="n">resource</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a single mapping table based on input definition in</span>
 <span class="sd">        ``resource``. ``**kwargs`` passed to ``MapReader``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3424,7 +3520,7 @@
 
 
 <div class="viewcode-block" id="Mapper.swissprots"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.swissprots">[docs]</a>    <span class="k">def</span> <span class="nf">swissprots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a dict translating a set of potentially secondary and</span>
 <span class="sd">        non-reviewed UniProt IDs to primary SwissProt IDs (whenever</span>
 <span class="sd">        is possible).</span>
@@ -3445,7 +3541,7 @@
 
 
 <div class="viewcode-block" id="Mapper.load_genesymbol5"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.load_genesymbol5">[docs]</a>    <span class="k">def</span> <span class="nf">load_genesymbol5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a Gene Symbol to UniProt mapping table with the first</span>
 <span class="sd">        5 characters of each Gene Symbol.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3490,7 +3586,7 @@
             <span class="n">keys</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads mapping tables from the huge static mapping file from UniProt.</span>
 <span class="sd">        Takes long to download and process, also requires more memory. This</span>
 <span class="sd">        is the last thing we try if everything else failed.</span>
@@ -3588,7 +3684,7 @@
 
 
 <div class="viewcode-block" id="Mapper.remove_table"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.remove_table">[docs]</a>    <span class="k">def</span> <span class="nf">remove_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">target_id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes the table defined by the ID types and organism.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3602,7 +3698,7 @@
 
 
 <div class="viewcode-block" id="Mapper.remove_key"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.remove_key">[docs]</a>    <span class="k">def</span> <span class="nf">remove_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes the table with key ``key`` if exists.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3619,7 +3715,7 @@
 
 
 <div class="viewcode-block" id="Mapper.remove_expired"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.Mapper.html#pypath.utils.mapping.Mapper.remove_expired">[docs]</a>    <span class="k">def</span> <span class="nf">remove_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes tables last used a longer time ago than their lifetime.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3649,7 +3745,7 @@
 
 
 <div class="viewcode-block" id="init"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.init.html#pypath.utils.mapping.init">[docs]</a><span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new `Mapper` instance under the `mapper` attribute of this</span>
 <span class="sd">    module.</span>
 
@@ -3665,7 +3761,7 @@
 
 
 <div class="viewcode-block" id="get_mapper"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.get_mapper.html#pypath.utils.mapping.get_mapper">[docs]</a><span class="k">def</span> <span class="nf">get_mapper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The module under its `mapper` attribute has an instance of the `Mapper`</span>
 <span class="sd">    object, which manages the ID translations. This function creates the</span>
 <span class="sd">    instance if does not exist and returns it.</span>
@@ -3690,7 +3786,7 @@
         <span class="n">expand_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">uniprot_cleanup</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Translates one instance of one ID type to a different one.</span>
 <span class="sd">    Returns set of the target ID type.</span>
 
@@ -3763,7 +3859,7 @@
         <span class="n">expand_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">uniprot_cleanup</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Translates the name and returns only one of the resulted IDs. It</span>
 <span class="sd">    means in case of ambiguous ID translation, a random one of them</span>
 <span class="sd">    will be picked and returned. Recommended to use only if the</span>
@@ -3794,7 +3890,7 @@
         <span class="n">expand_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">uniprot_cleanup</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Same as ``map_name`` but translates multiple IDs at once. These two</span>
 <span class="sd">    functions could be seamlessly implemented as one, still I created</span>
 <span class="sd">    separate functions to always make it explicit if a set of translated</span>
@@ -3845,7 +3941,7 @@
 
 
 <div class="viewcode-block" id="label"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.label.html#pypath.utils.mapping.label">[docs]</a><span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">id_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For any kind of entity, either protein, miRNA or protein complex,</span>
 <span class="sd">    returns the preferred human readable label. For proteins this means</span>
 <span class="sd">    Gene Symbols, for miRNAs miRNA names, for complexes a series of</span>
@@ -3863,7 +3959,7 @@
 
 
 <div class="viewcode-block" id="guess_type"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.guess_type.html#pypath.utils.mapping.guess_type">[docs]</a><span class="k">def</span> <span class="nf">guess_type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    From a string, tries to guess the ID type and optionally the entity</span>
 <span class="sd">    type. Returns a tuple of strings: ID type and entity type.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3874,7 +3970,7 @@
 
 
 <div class="viewcode-block" id="id_from_label"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.id_from_label.html#pypath.utils.mapping.id_from_label">[docs]</a><span class="k">def</span> <span class="nf">id_from_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">label_id_type</span> <span class="o">=</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a label (e.g. Gene Symbol) returns the corresponding IDs (e.g.</span>
 <span class="sd">    UniProt IDs).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3889,7 +3985,7 @@
 
 
 <div class="viewcode-block" id="id_from_label0"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.id_from_label0.html#pypath.utils.mapping.id_from_label0">[docs]</a><span class="k">def</span> <span class="nf">id_from_label0</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">label_id_type</span> <span class="o">=</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a label (e.g. Gene Symbol) returns a single ID (e.g. UniProt IDs).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -3902,123 +3998,87 @@
     <span class="p">)</span></div>
 </pre></div>
 
-            </article>
-            
-            
-            
-            <footer class="bd-footer-article">
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-</div>
-            </footer>
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+                </article>
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
 </div>
-<nav id="bd-toc-nav" class="page-toc">
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../index.html">
-   Welcome to pypath!
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../webservice.html">
-   Webservice
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../releasehistory.html">
-   Release history
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../reference.html">
-   Reference
-  </a>
- </li>
- <li class="toctree-l1 toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="../../../notebooks/manual.html">
-   The pypath book
-  </a>
- </li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
 </ul>
 
-</nav>
-</div>
+  </nav></div>
 
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-            </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
+</div></div>
+              
             
           </div>
-        </footer>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
         
       </main>
     </div>
   </div>
-
   
-    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
   
-  <div class="footer-item">
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
     
-<p class="copyright">
-
-    &copy; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
-
-</p>
-
-  </div>
-  
-  <div class="footer-item">
-    <p class="theme-version">
-    Built with the
-    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
-        PyData Sphinx Theme
-    </a>
-    0.12.0.
-</p>
-  </div>
-  
-  <div class="footer-item">
+      © Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
     
-<p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
-</p>
-
-  </div>
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 6.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+</p></div>
+      
+    </div>
   
 </div>
+
   </footer>
   </body>
 </html>
