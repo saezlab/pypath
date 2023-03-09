@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 
 import os
 import json
+import pprint
 
 import pandas as pd
 
@@ -101,6 +102,14 @@ def ramp_list_tables() -> dict[str, list[str]]:
     """
 
     return sqldump.list_tables(_ramp_sqldump())
+
+
+def ramp_show_tables() -> None:
+    """
+    Show the tables of the RaMP database from SQL dump.
+    """
+
+    pprint.pprint(ramp_list_tables())
 
 
 def ramp_mapping(
