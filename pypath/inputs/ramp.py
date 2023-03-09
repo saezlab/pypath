@@ -172,10 +172,9 @@ def ramp_id_types(
     """
 
     query = (
-        'SELECT DISTINCT(s.IDtype) as id_type FROM source s ' +
-        f'WHERE geneOrCompound = "{entity_type}";' if entity_type else ';'
+        'SELECT DISTINCT(s.IDtype) as id_type FROM source s' +
+        (f' WHERE geneOrCompound = "{entity_type}";' if entity_type else ';')
     )
-
     con = ramp_raw(tables = 'source', sqlite = True)
     df = pd.read_sql_query(query, con)
 
