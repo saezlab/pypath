@@ -107,6 +107,7 @@ def ramp_mapping(
         id_type_a: str,
         id_type_b: str,
         return_df: bool = False,
+        curies: bool = False,
     ) -> dict[str, set[str]] | pd.DataFrame:
     """
     Retrieve the mapping between two identifiers.
@@ -118,6 +119,8 @@ def ramp_mapping(
             The identifier type of the second identifier.
         return_df:
             Return a pandas DataFrame instead of a dictionary.
+        curies:
+            Do not remove CURIEs from the identifiers.
 
     Returns:
         A dictionary with the mapping between the two identifiers.
@@ -138,6 +141,12 @@ def ramp_mapping(
 
     con = ramp_raw(tables = 'source', sqlite = True)
     df = pd.read_sql_query(query, con)
+
+    if not curies:
+
+        df[df.columns] = df[df.columns].apply(
+            lambda y: [x.rsplit(':', maxsplit = 1)[-1] for x in y],
+        )
 
     return (
         df
