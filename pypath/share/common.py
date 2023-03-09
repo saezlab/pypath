@@ -55,6 +55,7 @@ import inspect
 import textwrap
 import tabulate
 
+import psutil
 import numpy as np
 
 from pypath.share.constants import *
@@ -331,6 +332,15 @@ def to_list(var):
     else:
 
         return [var]
+
+
+def to_tuple(var):
+    """
+    Makes sure `var` is a tuple otherwise creates a single element tuple
+    out of it. If `var` is None returns empty tuple.
+    """
+
+    return var if isinstance(var, tuple) else tuple(to_list(var))
 
 
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
@@ -1782,15 +1792,42 @@ def df_memory_usage(df, deep = True):
 
     mem_usage = df.memory_usage(index = True, deep = deep).sum()
 
+    return format_bytes(mem_usage, size_qualifier)
+
+
+def python_memory_usage() -> float:
+    """
+    Returns the memory usage of the current process in bytes.
+    """
+
+    return psutil.Process(os.getpid()).memory_info().vms
+
+
+def format_bytes(bytes: float, qualifier: str = '') -> str:
+    """
+    Pretty printed bytes with unit.
+    """
+
     for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
 
-        if mem_usage < 1024.0:
+        if bytes < 1024.0:
 
-            return '%3.1f%s %s' % (mem_usage, size_qualifier, unit)
+            return '%3.1f%s %s' % (bytes, qualifier, unit)
 
-        mem_usage /= 1024.0
+        bytes /= 1024.0
 
-    return '%3.1f%s PB' % (mem_usage, size_qualifier)
+    return '%3.1f%s PB' % (bytes, qualifier)
+
+
+def log_memory_usage():
+    """
+    Logs the memory usage of the current process.
+    """
+
+    import pypath
+    pypath.session.log.msg(
+        f'Python memory use: {format_bytes(python_memory_usage())}',
+    )
 
 
 def sum_dicts(*args):
