@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2022
+#  2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
@@ -30,15 +30,13 @@ proteins and genes, miRNAs, and chemical compounds.
 """
 
 from future.utils import iteritems
-from past.builtins import xrange, range, reduce
+from past.builtins import xrange, range
 
 import os
 import sys
 import math
 import re
 import importlib as imp
-import copy
-import itertools
 import collections
 import datetime
 import time
@@ -73,6 +71,7 @@ import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pro as pro_input
 import pypath.inputs.biomart as biomart_input
 import pypath.inputs.unichem as unichem_input
+import pypath.inputs.ramp as ramp_input
 import pypath.internals.input_formats as input_formats
 import pypath.utils.reflists as reflists
 import pypath.utils.taxonomy as taxonomy
@@ -122,6 +121,17 @@ RESOURCES_IMPLICIT = (
         UNICHEM_NAME_TYPES,
         'unichem',
         input_formats.UnichemMapping,
+    ),
+    (
+        dict(
+            **{
+                it: it
+                for it in ramp_input.ramp_id_types_2('compound')
+            },
+            **input_formats.RAMP_MAPPING,
+        ),
+        'ramp',
+        input_formats.RampMapping,
     ),
 )
 
@@ -951,6 +961,27 @@ class MapReader(session_mod.Logger):
         data = unichem_input.unichem_mapping(
             id_type = self.param.id_type_a,
             target_id_type = self.param.id_type_b,
+        )
+
+        if self.load_a_to_b:
+
+            self.a_to_b = data
+
+        if self.load_b_to_a:
+
+            self.b_to_a = common.swap_dict(data, force_sets = True)
+
+        self.ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC
+
+
+    def read_mapping_ramp(self):
+        """
+        Loads an ID translation table from RaMP.
+        """
+
+        data = ramp_input.ramp_mapping(
+            id_type_a = self.param.id_type_a,
+            id_type_b = self.param.id_type_b,
         )
 
         if self.load_a_to_b:
@@ -2619,7 +2650,7 @@ class Mapper(session_mod.Logger):
         only SwissProt, mapping from TrEMBL to gene symbols, and
         then back to SwissProt. If this kind of translation is not successful
         for any of the IDs it will be kept in the result, no matter if it's
-        not a SwissProt ID. If the 
+        not a SwissProt ID. If the
         """
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id

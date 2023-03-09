@@ -1566,7 +1566,7 @@ urls = {
             '5-1-9/downloads/transporter-all-polypeptide-ids',
         'full_database': 'https://go.drugbank.com/releases/5-1-9'
             '/downloads/all-full-database',
-    }, 
+    },
     'chembl': {
         'label': 'ChEMBL database',
         'url': 'https://www.ebi.ac.uk',
@@ -1614,6 +1614,7 @@ urls = {
     'ramp': {
         'label': 'RaMP metabolomic pathway and metabolite identifier database',
         'url': 'https://figshare.com/ndownloader/files/38534654',
+        'api': 'https://rampdb.nih.gov/api/%s',
     },
 }
 

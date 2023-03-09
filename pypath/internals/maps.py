@@ -27,7 +27,7 @@ import os
 import pypath.share.common as common
 import pypath.internals.input_formats as input_formats
 
-__all__ = ['misc', 'uniprot', 'mirbase', 'basic', 'uniprot_old']
+__all__ = ['misc', 'uniprot', 'mirbase', 'basic']
 
 
 misc = {
