@@ -29,21 +29,20 @@ from __future__ import annotations
 Access the RaMP metabolomic pathway and metabolite database.
 """
 
-from typing import IO, Iterable
-import os
-import collections
-import re
-import sqlite3
-import pickle
+from typing import IO, TYPE_CHECKING
 
-import sqlparse
+if TYPE_CHECKING:
+
+    import sqlite3
+
+import os
+
 import pandas as pd
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-import pypath.share.common as common
 import pypath.share.session as session
-import pypath.share.cache as cache
+import pypath.formats.sqldump as sqldump
 
 _log = session.Logger(name = 'ramp_input')._log
 
@@ -55,23 +54,43 @@ def _ramp_sqldump() -> IO:
 
     url = urls.urls['ramp']['url']
     c = curl.Curl(url, large = True, silent = False, compr = 'gz')
+
     return c._gzfile_mode_r
 
 
-def ramp_raw(tables: list[str] = None) -> dict[str, pd.DataFrame]:
+def ramp_raw(
+        tables: list[str] = None,
+        sqlite: bool = False,
+        **kwargs
+    ) -> dict[str, pd.DataFrame, sqlite3.Connection]:
     """
     Retrieve RaMP database contents from raw SQL dump.
 
     Args:
         tables:
-            One or more tables to retrieve.
+            One or more tables to retrieve. If None, all tables are retrieved.
+        sqlite:
+            Return an SQLite database instead of a pandas DataFrame.
+        kwargs:
+            Options for the SQLite database: this way you can point to a new
+            or existing database, while by default, an in-memory, temporary
+            database is used.
 
     Returns:
-        A dictionary with the table names as keys and
-        pandas dataframes as values.
+        Either a dictionary with the table names as keys and  pandas dataframes
+        as values, or an SQLite database connection.
     """
 
-    return _sqldump_tables(_ramp_sqldump(), tables, return_df = True)
+    fp = _ramp_sqldump()
+
+    return sqldump.tables(
+        sqldump = fp,
+        tables = tables,
+        return_df = True,
+        return_sqlite = sqlite,
+        con_param = kwargs,
+        source_id = (fp.name, f'{os.path.getmtime(fp.name):.0f}'),
+    )
 
 
 def ramp_list_tables() -> dict[str, list[str]]:
@@ -79,349 +98,47 @@ def ramp_list_tables() -> dict[str, list[str]]:
     List the tables of the RaMP database from SQL dump.
     """
 
-    return _sqldump_list_tables(_ramp_sqldump())
+    return sqldump.list_tables(_ramp_sqldump())
 
 
-def _sqldump_tables(
-        sqldump: str | IO,
-        tables: str | Iterable[str] | None,
-        return_df: bool = True,
-        return_sqlite: bool = False,
-        con_param: dict | None = None,
-        source_id: str | tuple | None = None,
-        **kwargs
-    ) -> tuple[dict, dict] | dict[str, pd.DataFrame] | sqlite3.Connection:
+def ramp_mapping(
+        id_type_a: str,
+        id_type_b: str,
+        return_df: bool = False,
+    ) -> dict[str, set[str]] | pd.DataFrame:
     """
-    From a SQL dump, retrieve tables as data frames or as lists of tuples.
+    Retrieve the mapping between two identifiers.
 
     Args:
-        sqldump:
-            SQL dump file. Path or file-like object.
-        table:
-            Name of the table.
+        id_type_a:
+            The identifier type of the first identifier.
+        id_type_b:
+            The identifier type of the second identifier.
         return_df:
-            If True, return dict of pandas dataframes.
-        return_sqlite:
-            If True, return dict of sqlite3.Connection objects.
-            Has precedence over return_df.
-        con_param:
-            Connection parameters. By default we use an in-memory database,
-            but you can also specify a path to a database file.
-        source_id:
-            Unique identifier for the source of the data. Necessary for
-            caching, only if the path can not be determined from the
-            file-like object.
-        **kwargs: Passed to `pypath.share.curl.FileOpener`.
+            Return a pandas DataFrame instead of a dictionary.
 
     Returns:
-        Contents of the table.
+        A dictionary with the mapping between the two identifiers.
     """
 
-    common.log_memory_usage()
-    source_id = _sqldump_source_id(sqldump, source_id)
-    sqldump = _sqldump_open(sqldump, **kwargs)
-    tables = common.to_set(tables) or _sqldump_list_tables(sqldump)
-    tables_done = set()
-
-    if return_sqlite:
-
-        _con_param = {'database': ':memory:'}
-        _con_param.update(con_param or {})
-        contents = sqlite3.connect(**_con_param)
-
-    else:
-
-        contents = {}
-        headers = {}
-
-    for table in tables:
-
-        header, content = _sqldump_table_from_cache(table, source_id)
-
-        if not content:
-
-            _sqldump_seek(sqldump, table)
-            header, content = _sqldump_one_table(sqldump)
-            _sqldump_table_to_cache(header, content, table, source_id)
-
-            if not content:
-
-                _log(f'Table `{table}` not found.')
-
-        if return_df or return_sqlite:
-
-            content = pd.DataFrame.from_records(content, columns = header)
-            _log(
-                f'Data frame of table `{table}`: '
-                f'{content.shape[0]} records, {common.df_memory_usage(content)}.'
-            )
-            common.log_memory_usage()
-
-        if return_sqlite:
-
-            _log(f'Loading table `{table}` into SQLite database.')
-            content.to_sql(
-                table,
-                contents,
-                if_exists = 'replace',
-                index = False,
-            )
-            common.log_memory_usage()
-
-        else:
-
-            contents[table] = content
-            headers[table] = None if return_df else header
-
-        tables_done.add(table)
-
-        if not tables - tables_done:
-
-            break
-
-    return contents if return_df or return_sqlite else (headers, contents)
-
-
-def _sqldump_table_from_cache(
-        table: str,
-        source_id: tuple,
-    ) -> tuple[list, list]:
-    """
-    Retrieve table contents from cache.
-    """
-
-    key = source_id + (table,)
-    cache_path = cache.cache_path(key)
-
-    if os.path.exists(cache_path):
-
-        with open(cache_path, 'rb') as fp:
-
-            _log(
-                f'Loading table `{table}` from cache. '
-                f'Cache path: `{cache_path}`.'
-            )
-
-            return pickle.load(fp)
-
-    return [], []
-
-
-def _sqldump_table_to_cache(
-        header: dict,
-        content: dict,
-        table: str,
-        source_id: tuple,
-    ) -> None:
-    """
-    Save table contents to cache.
-    """
-
-    key = source_id + (table,)
-    cache_path = cache.cache_path(key)
-
-    with open(cache_path, 'wb') as fp:
-
-        _log(f'Saving table `{table}` to cache. Cache path: `{cache_path}`.')
-        pickle.dump((header, content), fp)
-
-
-def _sqldump_one_table(sqldump: IO) -> tuple[list[str], list[tuple]]:
-    """
-    Retrieve one table from a MySQL dump.
-    """
-
-    parser = sqlparse.parsestream(sqldump)
-    header = []
-    content = []
-    inserts = 0
-    table_name = the_table_name = None
-
-    for statement in parser:
-
-        if statement.get_type() == 'INSERT':
-
-            inserts += 1
-            sublists = statement.get_sublists()
-            table_info = next(sublists)
-            table_name = table_info.get_name()
-
-            if inserts == 1:
-
-                the_table_name = table_name
-                _log(f'Processing table: `{table_name}`')
-
-            if table_name != the_table_name:
-
-                break
-
-            header = [
-                col.get_name()
-                for col in table_info.get_parameters()
-            ]
-
-            content.extend(
-                tuple(
-                    s.value.strip('"\'')
-                    for s in next(rec.get_sublists()).get_identifiers()
-                )
-                for rec in next(sublists).get_sublists()
-            )
-
-    if table_name:
-
-        _log(
-            f'Processed {len(content)} records in {inserts} INSERT statements '
-            f'from table `{the_table_name}`.'
-        )
-
-    return header, content
-
-
-def _sqldump_source_id(
-        sqldump: str | IO,
-        source_id: str | tuple | None = None,
-    ) -> tuple:
-    """
-    Attempts to use the file name as source id.
-    """
-
-    source_id = (
-        source_id or
-        (
-            os.path.basename(sqldump)
-                if isinstance(sqldump, str) else
-            getattr(sqldump, 'name', None)
-        )
+    query = (
+        'SELECT DISTINCT a.sourceId as id_type_a, b.sourceId as id_type_b '
+        'FROM '
+        '   (SELECT sourceId, rampId '
+        '    FROM source '
+        f'   WHERE geneOrCompound = "compound" AND IDtype = "{id_type_a}") a '
+        'JOIN '
+        '   (SELECT sourceId, rampId '
+        '    FROM source '
+        f'   WHERE geneOrCompound = "compound" AND IDtype = "{id_type_b}") b '
+        'ON a.rampId = b.rampId;'
     )
 
-    return common.to_tuple(source_id)
+    con = ramp_raw(tables = 'source', sqlite = True)
+    df = pd.read_sql_query(query, con)
 
-
-def _sqldump_endof_statement(line: str) -> bool:
-    """
-    Check if the current line is the end of a SQL statement.
-    """
-
-    return line.strip().endswith(';')
-
-
-def _sqldump_list_tables(sqldump: str | IO) -> dict[str, list[str]]:
-    """
-    From a SQL dump, retrieve a list of table names.
-    """
-
-    recreate = re.compile(r'^CREATE TABLE `(.*)` \($')
-    recol = re.compile(r'^\s*`(.*)`')
-    tables = collections.defaultdict(list)
-    current_table = None
-
-    sqldump = _sqldump_open(sqldump)
-
-    for line in sqldump:
-
-        line = line.strip()
-        match = recreate.match(line)
-
-        if match:
-
-            current_table = match.group(1)
-
-        match = recol.match(line)
-
-        if match:
-
-            tables[current_table].append(match.group(1))
-
-        if _sqldump_endof_statement(line):
-
-            current_table = None
-
-    return dict(tables)
-
-
-def _sqldump_open(sqldump: str | IO, **kwargs) -> IO:
-    """
-    Open a SQL dump file.
-
-    Args:
-        sqldump: SQL dump file. Path or file-like object.
-
-    Returns:
-        The SQL dump file opened for reading, pointer at zero bytes.
-    """
-
-    if isinstance(sqldump, str) and os.path.exists(sqldump):
-
-        fo = curl.FileOpener(sqldump, large = True, **kwargs)
-        sqldump = fo.fileobj
-
-    sqldump.seek(0)
-
-    return sqldump
-
-
-def _sqldump_seek(sqldump: IO, table: str, insert: bool = False) -> None:
-    """
-    Seek to a table in a SQL dump file.
-
-    Args:
-        sqldump:
-            SQL dump file.
-        table:
-            Name of the table.
-        insert:
-            If True, seek to the beginning of the INSERT statement.
-    """
-
-    start_from = sqldump.tell()
-    seek_for = (
-        f'INSERT INTO `{table}`'
-            if insert else
-        f'DROP TABLE IF EXISTS `{table}`'
+    return (
+        df
+            if return_df else
+        df.groupby('id_type_a')['id_type_b'].apply(set).to_dict()
     )
-    beginning_of_line = 0
-
-    line = sqldump.readline()
-
-    while line:
-
-        if line.startswith(seek_for):
-
-            sqldump.seek(beginning_of_line)
-            return
-
-        beginning_of_line = sqldump.tell()
-        line = sqldump.readline()
-
-    if start_from != 0:
-
-        sqldump.seek(0)
-        _sqldump_seek(sqldump, table, insert)
-
-    else:
-
-        _log(f'Table `{table}` not found in SQL dump.')
-
-
-def _sqlite_list_tables(con: sqlite3.Connection) -> list[str]:
-    """
-    From a SQLite database, retrieve a list of table names.
-    """
-
-    cur = con.cursor()
-    cur.execute('SELECT name FROM sqlite_master WHERE type = "table"')
-
-    return [row[0] for row in cur.fetchall()]
-
-
-def _sqlite_list_columns(con: sqlite3.Connection) -> dict[str, list[str]]:
-    """
-    From a SQLite database, retrieve a list of column names.
-    """
-
-    return {
-        table: [col[1] for col in con.execute(f'PRAGMA table_info({table})')]
-        for table in _sqlite_list_tables(con)
-    }
-
