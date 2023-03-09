@@ -36,12 +36,14 @@ if TYPE_CHECKING:
     import sqlite3
 
 import os
+import json
 
 import pandas as pd
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.session as session
+import pypath.share.common as common
 import pypath.formats.sqldump as sqldump
 
 _log = session.Logger(name = 'ramp_input')._log
@@ -160,3 +162,31 @@ def ramp_id_types(
     df = pd.read_sql_query(query, con)
 
     return set(df['id_type'])
+
+
+def ramp_id_types_2(
+        entity_type: Literal['gene', 'compound'] | None = None,
+    ) -> set[str]:
+    """
+    List the identifier types of the RaMP database.
+
+    Same output as `ramp_id_types`, but works by the API while the former
+    extracts the data from the MySQL dump. The API means a fast, small
+    download, while the SQL dump is huge and slow to process, but might
+    be already available in the cache.
+    """
+
+    entity_types = {
+        'compound': 'Metabolites',
+        'gene': 'Genes/Proteins',
+    }
+
+    url = urls.urls['ramp']['api'] % 'id-types'
+    c = curl.Curl(url, silent = True, large = False)
+
+    return {
+        id_type.strip()
+        for i in json.loads(c.result)['data']
+        if not entity_type or i['analyteType'] == entity_types[entity_type]
+        for id_type in i['idTypes'].split(',')
+    }
