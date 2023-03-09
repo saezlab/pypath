@@ -36,7 +36,7 @@ import pypath.share.session as session
 _log = session.Logger(name = 'sqlite')._log
 
 
-def _sqlite_list_tables(con: sqlite3.Connection) -> list[str]:
+def list_tables(con: sqlite3.Connection) -> list[str]:
     """
     From a SQLite database, retrieve a list of table names.
     """
@@ -47,12 +47,12 @@ def _sqlite_list_tables(con: sqlite3.Connection) -> list[str]:
     return [row[0] for row in cur.fetchall()]
 
 
-def _sqlite_list_columns(con: sqlite3.Connection) -> dict[str, list[str]]:
+def list_columns(con: sqlite3.Connection) -> dict[str, list[str]]:
     """
     From a SQLite database, retrieve a list of column names.
     """
 
     return {
         table: [col[1] for col in con.execute(f'PRAGMA table_info({table})')]
-        for table in _sqlite_list_tables(con)
+        for table in list_tables(con)
     }
