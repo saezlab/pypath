@@ -29,7 +29,7 @@ from __future__ import annotations
 Access the RaMP metabolomic pathway and metabolite database.
 """
 
-from typing import IO, TYPE_CHECKING
+from typing import IO, Literal, TYPE_CHECKING
 
 if TYPE_CHECKING:
 
@@ -142,3 +142,21 @@ def ramp_mapping(
             if return_df else
         df.groupby('id_type_a')['id_type_b'].apply(set).to_dict()
     )
+
+
+def ramp_id_types(
+        entity_type: Literal['gene', 'compound'] | None = None,
+    ) -> set[str]:
+    """
+    List the identifier types of the RaMP database.
+    """
+
+    query = (
+        'SELECT DISTINCT(s.IDtype) as id_type FROM source s ' +
+        f'WHERE geneOrCompound = "{entity_type}";' if entity_type else ';'
+    )
+
+    con = ramp_raw(tables = 'source', sqlite = True)
+    df = pd.read_sql_query(query, con)
+
+    return set(df['id_type'])
