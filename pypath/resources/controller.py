@@ -322,3 +322,165 @@ class ResourceController(session_mod.Logger):
     def collect_enzyme_substrate(self):
 
         return self.collect('enzyme_substrate')
+
+
+    def collect_network(
+            self,
+            datasets: Iterable[
+                Literal[
+                    'pathway',
+                    'pathway_noref',
+                    'pathway_all',
+                    'activity_flow',
+                    'mirna_target',
+                    'dorothea',
+                    'tfregulons',
+                    'omnipath',
+                    'reaction_pc',
+                    'enzyme_substrate',
+                    'extra_directions',
+                    'small_molecule_protein',
+                    'tf_mirna',
+                    'pathwaycommons',
+                    'pathwaycommons_transcription',
+                    'interaction',
+                    'interaction_htp',
+                    'interaction_misc',
+                    'ligand_receptor',
+                    'lncrna_target',
+                    'transcription_onebyone',
+                    'transcription_dorothea',
+                    'ptm',
+                    'ptm_noref',
+                    'ptm_all',
+                    'reaction',
+                    'reaction_misc',
+                    'negative',
+                ],
+            ] | None = 'pathway',
+            interaction_types: Iterable[
+                Literal[
+                    'post_translational',
+                    'transcriptional',
+                    'small_molecule_protein',
+                    'post_transcriptional',
+                ],
+            ] | None = 'post_translational',
+            data_models: Iterable[
+                Literal[
+                    'activity_flow',
+                    'interaction',
+                    'enzyme_substrate',
+                    'process_description',
+                    'ligand_receptor',
+                    'drug_target',
+                ],
+            ] | None = 'activity_flow',
+            license_purpose: Literal[
+                'academic',
+                'commercial',
+                'for-profit',
+                'non-profit',
+                'ignore',
+            ] = 'ignore',
+            license_sharing: Literal[
+                'alike',
+                'free',
+                'noderiv',
+                'noshare',
+                'share',
+                'deriv',
+                'ignore',
+            ] = 'ignore',
+            license_attrib: Literal[
+                'attrib',
+                'free',
+                'noattrib',
+                'composite',
+                'ignore',
+            ] = 'ignore',
+            **kwargs
+        ) -> dict:
+        """
+        Collect network (interaction) resource definitions.
+
+        Args:
+            interaction_types:
+                Include only these interaction types.
+            data_models:
+                Inclde only these data models.
+            datasets:
+                Process only these datasets. Note: there are many synonyms
+                and overlaps among datasets. In addition, the overlaps might
+                apply slightly different settings for the same resource, e.g.
+                in `pathway`, interactions must have literature references,
+                while in `pathway_noref` the same resources might allow
+                interactions without references. The safest is to process only
+                one dataset at a time and load them into the `Network` object
+                sequentially.
+            license_purpose:
+                Do not include the resources that are not legally compatible
+                with the defined purpose.
+            license_sharing:
+                Include only resources that allow the desired redistribution
+                conditions. E.g. "deriv" means that the resources must allow
+                the sharing of their derivative (altered) versions.
+            license_attrib:
+                Include only resources that allow the desired level of
+                attribution. E.g. "noattrib" means that you can use the
+                resource without even mentioning who created it.
+            kwargs:
+                Custom filters. Names should be attributes of the resource
+                or the `NetworkInput` object. The special key `__resource__`
+                can be used to refer to the whole `NetworkResource` object.
+                For simple values, the test is equality, for arrays incidence,
+                while custom callables can be provided for more flexible
+                filters.
+        """
+
+        interaction_types = common.to_set(interaction_types)
+        data_models = common.to_set(data_models)
+        datasets = common.to_set(datasets)
+
+        kwargs = {
+            k: v if callable(v) else lambda x: x in common.to_set(v)
+            for k, v in kwargs.items()
+        }
+
+        resources = itertools.chain(*(
+            getattr(netres, dset).items()
+            for dset in datasets
+        ))
+
+        resources = {
+            key: res
+            for key, res in resources
+            if (
+                not interaction_types or
+                res.interaction_type in interaction_types
+            ) and
+            (
+                not datasets or
+                res.data_model in data_models
+            ) and
+            all(
+                fltr(
+                    res
+                        if key == '__resource__' else
+                    getattr(res, getattr(res.networkinput, key))
+                )
+                for key, fltr in kwargs.items()
+            )
+        }
+
+        resources = self.license_filter(
+            resources,
+            purpose = license_purpose,
+            sharing = license_sharing,
+            attrib = license_attrib,
+        )
+
+        return resources
+
+    # synonym
+    collect_interaction = collect_network
