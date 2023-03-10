@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.resources.controller &#8212; pypath 0.14.37 documentation</title>
+    <title>pypath.resources.controller &#8212; pypath 0.14.38 documentation</title>
   
   
   
@@ -500,7 +500,7 @@ document.write(`
 <span class="c1">#  This file is part of the `pypath` python module</span>
 <span class="c1">#</span>
 <span class="c1">#  Copyright</span>
-<span class="c1">#  2014-2022</span>
+<span class="c1">#  2014-2023</span>
 <span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
 <span class="c1">#</span>
 <span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
@@ -517,20 +517,27 @@ document.write(`
 <span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
 <span class="c1">#</span>
 
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Highest level resource management API.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Literal</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
 
 <span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
 <span class="kn">import</span> <span class="nn">pypath.internals.resource</span> <span class="k">as</span> <span class="nn">resource_base</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.network</span> <span class="k">as</span> <span class="nn">netres</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">licenses</span> <span class="k">as</span> <span class="n">licenses</span>
-
-
-<span class="n">_logger</span> <span class="o">=</span> <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;resources.controller&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ResourceController"><a class="viewcode-back" href="../../../api/pypath.resources.controller.ResourceController.html#pypath.resources.controller.ResourceController">[docs]</a><span class="k">class</span> <span class="nc">ResourceController</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
@@ -725,6 +732,61 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">licenses</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="ResourceController.license_filter"><a class="viewcode-back" href="../../../api/pypath.resources.controller.ResourceController.html#pypath.resources.controller.ResourceController.license_filter">[docs]</a>    <span class="k">def</span> <span class="nf">license_filter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">resources</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">purpose</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+                <span class="s1">&#39;academic&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;commercial&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;for-profit&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;non-profit&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">sharing</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+                <span class="s1">&#39;alike&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;free&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;noderiv&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;noshare&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;share&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;deriv&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">attrib</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+                <span class="s1">&#39;attrib&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;free&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;noattrib&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;composite&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filters a list of resources by their license.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_resource_attrs</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">compr</span><span class="p">(</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">resources</span><span class="p">,</span>
+            <span class="nb">filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">license</span><span class="o">.</span><span class="n">enables</span><span class="p">(</span><span class="n">purpose</span><span class="p">,</span> <span class="n">sharing</span><span class="p">,</span> <span class="n">attrib</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ResourceController.add_resource_attrs"><a class="viewcode-back" href="../../../api/pypath.resources.controller.ResourceController.html#pypath.resources.controller.ResourceController.add_resource_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">add_resource_attrs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">resources</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">resource_base</span><span class="o">.</span><span class="n">AbstractResource</span><span class="p">],</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds resource attributes to a list of resources.</span>
+
+<span class="sd">        It modifies the instances in-place, returns nothing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">_</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">compr</span><span class="p">(</span>
+            <span class="n">resources</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s1">&#39;resource_attrs&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span>
+        <span class="p">)</span></div>
+
+
     <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">):</span>
 
         <span class="n">resource_cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
@@ -754,7 +816,169 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">collect_enzyme_substrate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ResourceController.collect_network"><a class="viewcode-back" href="../../../api/pypath.resources.controller.ResourceController.html#pypath.resources.controller.ResourceController.collect_network">[docs]</a>    <span class="k">def</span> <span class="nf">collect_network</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">datasets</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span>
+                <span class="n">Literal</span><span class="p">[</span>
+                    <span class="s1">&#39;pathway&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;pathway_noref&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;pathway_all&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;mirna_target&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;dorothea&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;tfregulons&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;omnipath&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;reaction_pc&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;extra_directions&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;small_molecule_protein&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;tf_mirna&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;pathwaycommons&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;pathwaycommons_transcription&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;interaction&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;interaction_htp&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;interaction_misc&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;ligand_receptor&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;lncrna_target&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;transcription_onebyone&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;transcription_dorothea&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;ptm&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;ptm_noref&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;ptm_all&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;reaction&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;reaction_misc&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;negative&#39;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s1">&#39;pathway&#39;</span><span class="p">,</span>
+            <span class="n">interaction_types</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span>
+                <span class="n">Literal</span><span class="p">[</span>
+                    <span class="s1">&#39;post_translational&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;transcriptional&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;small_molecule_protein&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;post_transcriptional&#39;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s1">&#39;post_translational&#39;</span><span class="p">,</span>
+            <span class="n">data_models</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span>
+                <span class="n">Literal</span><span class="p">[</span>
+                    <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;interaction&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;process_description&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;ligand_receptor&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;drug_target&#39;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+            <span class="n">license_purpose</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+                <span class="s1">&#39;academic&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;commercial&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;for-profit&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;non-profit&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+            <span class="n">license_sharing</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+                <span class="s1">&#39;alike&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;free&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;noderiv&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;noshare&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;share&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;deriv&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+            <span class="n">license_attrib</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+                <span class="s1">&#39;attrib&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;free&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;noattrib&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;composite&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect network (interaction) resource definitions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            interaction_types:</span>
+<span class="sd">                Include only these interaction types.</span>
+<span class="sd">            data_models:</span>
+<span class="sd">                Inclde only these data models.</span>
+<span class="sd">            datasets:</span>
+<span class="sd">                Process only these datasets. Note: there are many synonyms</span>
+<span class="sd">                and overlaps among datasets. In addition, the overlaps might</span>
+<span class="sd">                apply slightly different settings for the same resource, e.g.</span>
+<span class="sd">                in `pathway`, interactions must have literature references,</span>
+<span class="sd">                while in `pathway_noref` the same resources might allow</span>
+<span class="sd">                interactions without references. The safest is to process only</span>
+<span class="sd">                one dataset at a time and load them into the `Network` object</span>
+<span class="sd">                sequentially.</span>
+<span class="sd">            license_purpose:</span>
+<span class="sd">                Do not include the resources that are not legally compatible</span>
+<span class="sd">                with the defined purpose.</span>
+<span class="sd">            license_sharing:</span>
+<span class="sd">                Include only resources that allow the desired redistribution</span>
+<span class="sd">                conditions. E.g. &quot;deriv&quot; means that the resources must allow</span>
+<span class="sd">                the sharing of their derivative (altered) versions.</span>
+<span class="sd">            license_attrib:</span>
+<span class="sd">                Include only resources that allow the desired level of</span>
+<span class="sd">                attribution. E.g. &quot;noattrib&quot; means that you can use the</span>
+<span class="sd">                resource without even mentioning who created it.</span>
+<span class="sd">            kwargs:</span>
+<span class="sd">                Custom filters. Names should be attributes of the resource</span>
+<span class="sd">                or the `NetworkInput` object. The special key `__resource__`</span>
+<span class="sd">                can be used to refer to the whole `NetworkResource` object.</span>
+<span class="sd">                For simple values, the test is equality, for arrays incidence,</span>
+<span class="sd">                while custom callables can be provided for more flexible</span>
+<span class="sd">                filters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">interaction_types</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">interaction_types</span><span class="p">)</span>
+        <span class="n">data_models</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">data_models</span><span class="p">)</span>
+        <span class="n">datasets</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="n">resources</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">netres</span><span class="p">,</span> <span class="n">dset</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">datasets</span>
+        <span class="p">))</span>
+
+        <span class="n">resources</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">res</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">resources</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">interaction_types</span> <span class="ow">or</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">interaction_type</span> <span class="ow">in</span> <span class="n">interaction_types</span>
+            <span class="p">)</span> <span class="ow">and</span>
+            <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">datasets</span> <span class="ow">or</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">data_model</span> <span class="ow">in</span> <span class="n">data_models</span>
+            <span class="p">)</span> <span class="ow">and</span>
+            <span class="nb">all</span><span class="p">(</span>
+                <span class="n">fltr</span><span class="p">(</span>
+                    <span class="n">res</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;__resource__&#39;</span> <span class="k">else</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">networkinput</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fltr</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">license_filter</span><span class="p">(</span>
+            <span class="n">resources</span><span class="p">,</span>
+            <span class="n">purpose</span> <span class="o">=</span> <span class="n">license_purpose</span><span class="p">,</span>
+            <span class="n">sharing</span> <span class="o">=</span> <span class="n">license_sharing</span><span class="p">,</span>
+            <span class="n">attrib</span> <span class="o">=</span> <span class="n">license_attrib</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">resources</span></div>
+
+    <span class="c1"># synonym</span>
+    <span class="n">collect_interaction</span> <span class="o">=</span> <span class="n">collect_network</span></div>
 </pre></div>
 
                 </article>

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/">
-  <title>The pypath book — pypath 0.14.37 documentation</title>
+  <title>The pypath book — pypath 0.14.38 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -322,6 +322,32 @@
   div[class*="highlight-"] {
     margin: 0px!important;
   }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
   </style>
   <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -809,6 +835,13 @@ data-default-mode="">
                       <ul>
                         <li class="toctree-l3">
                           <a class="reference internal" href="#Licenses">Licenses</a>
+                          <ul>
+                            <li class="toctree-l4">
+                              <a class="reference internal" href=
+                              "#Example:-build-a-network-for-commercial-use">Example: build a network for commercial
+                              use</a>
+                            </li>
+                          </ul>
                         </li>
                         <li class="toctree-l3">
                           <a class="reference internal" href="#Resource-information">Resource information</a>
@@ -834,6 +867,10 @@ data-default-mode="">
                         <li class="toctree-l3">
                           <a class="reference internal" href="#Network-in-pandas.DataFrame">Network in
                           <em>pandas.DataFrame</em></a>
+                        </li>
+                        <li class="toctree-l3">
+                          <a class="reference internal" href="#Self-interactions-(loop-edges)-in-the-network">Self
+                          interactions (loop edges) in the network</a>
                         </li>
                       </ul>
                     </li>
@@ -1238,6 +1275,11 @@ data-default-mode="">
                       <ul class="toc-item">
                         <li>
                           <p>6.1&nbsp;&nbsp;Licenses</p>
+                          <ul class="toc-item">
+                            <li>
+                              <p>6.1.1&nbsp;&nbsp;Example: build a network for commercial use</p>
+                            </li>
+                          </ul>
                         </li>
                         <li>
                           <p>6.2&nbsp;&nbsp;Resource information</p>
@@ -1258,6 +1300,9 @@ data-default-mode="">
                         </li>
                         <li>
                           <p>7.3&nbsp;&nbsp;Network in pandas.DataFrame</p>
+                        </li>
+                        <li>
+                          <p>7.4&nbsp;&nbsp;Self interactions (loop edges) in the network</p>
                         </li>
                       </ul>
                     </li>
@@ -4023,6 +4068,266 @@ data-default-mode="">
                         </div>
                       </div>
                     </div>
+                    <section id="Example:-build-a-network-for-commercial-use">
+                      <h4>Example: build a network for commercial use<a class="headerlink" href=
+                      "#Example:-build-a-network-for-commercial-use" title="Permalink to this heading">§</a></h4>
+                      <p>For our users, the most important aspect of licenses is whether they allow for-profit use in
+                      companies. In the near future we intend to provide more convenient interface for license options;
+                      until then, see the example below.</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[4]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="kn">from</span> <span class="nn">pypath.core</span> <span class=
+                              "kn">import</span> <span class="n">network</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="kn">import</span> <span class=
+"n">resources</span>
+
+<span class="n">co</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class=
+"n">get_controller</span><span class="p">()</span>
+<span class="n">pw_academic</span> <span class="o">=</span> <span class="n">co</span><span class=
+"o">.</span><span class="n">collect_network</span><span class="p">(</span><span class="s1">'pathway'</span><span class=
+"p">)</span>
+<span class="n">pw_commercial</span> <span class="o">=</span> <span class="n">co</span><span class=
+"o">.</span><span class="n">collect_network</span><span class="p">(</span><span class="s1">'pathway'</span><span class=
+"p">,</span> <span class="n">license_purpose</span> <span class="o">=</span> <span class=
+"s1">'commercial'</span><span class="p">)</span>
+
+<span class="nb">len</span><span class="p">(</span><span class="n">pw_academic</span><span class=
+"p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pw_commercial</span><span class=
+"p">),</span> <span class="nb">set</span><span class="p">(</span><span class="n">pw_academic</span><span class=
+"o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class=
+"nb">set</span><span class="p">(</span><span class="n">pw_commercial</span><span class="o">.</span><span class=
+"n">values</span><span class="p">())</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 18:45:22 2023-03-10</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[4]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+(24,
+ 19,
+ {&lt;NetworkResource: Baccin2019 (post_translational, activity_flow)&gt;,
+  &lt;NetworkResource: Cellinker (post_translational, activity_flow)&gt;,
+  &lt;NetworkResource: HPMR (post_translational, activity_flow)&gt;,
+  &lt;NetworkResource: PDZBase (post_translational, activity_flow)&gt;,
+  &lt;NetworkResource: TRIP (post_translational, activity_flow)&gt;})
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>Above we see that five resources have been disabled by applying the for-profit licensing
+                      restriction. The licenses of those five resources:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[5]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class=
+                              "n">license</span> <span class="k">for</span> <span class="n">r</span> <span class=
+                              "ow">in</span> <span class="nb">set</span><span class="p">(</span><span class=
+                              "n">pw_academic</span><span class="o">.</span><span class="n">values</span><span class=
+                              "p">())</span> <span class="o">-</span> <span class="nb">set</span><span class=
+                              "p">(</span><span class="n">pw_commercial</span><span class="o">.</span><span class=
+                              "n">values</span><span class="p">())]</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 18:48:02 2023-03-10</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[5]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+[&lt;License CC BY-NC-SA 3.0&gt;,
+ &lt;License No license&gt;,
+ &lt;License CC BY-NC 4.0&gt;,
+ &lt;License CC BY-NC 4.0&gt;,
+ &lt;License CC BY-NC 4.0&gt;]
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>The licenses of the resources that allow for profit use:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[6]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class=
+                              "n">license</span> <span class="k">for</span> <span class="n">r</span> <span class=
+                              "ow">in</span> <span class="n">pw_commercial</span><span class="o">.</span><span class=
+                              "n">values</span><span class="p">()]</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 18:50:35 2023-03-10</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[6]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+[&lt;License CC BY 4.0&gt;,
+ &lt;License CC BY-SA 3.0&gt;,
+ &lt;License CC BY-SA 3.0&gt;,
+ &lt;License CC BY 4.0&gt;,
+ &lt;License CC BY-SA 3.0&gt;,
+ &lt;License CC BY-SA 3.0&gt;,
+ &lt;License CC BY 4.0&gt;,
+ &lt;License NAR Open Access&gt;,
+ &lt;License CC BY-SA 4.0&gt;,
+ &lt;License CC BY 4.0&gt;,
+ &lt;License GPLv3&gt;,
+ &lt;License GPLv3&gt;,
+ &lt;License GPLv3&gt;,
+ &lt;License MIT&gt;,
+ &lt;License GPLv3&gt;,
+ &lt;License MIT&gt;,
+ &lt;License MIT&gt;,
+ &lt;License CC BY 4.0&gt;,
+ &lt;License GPLv3&gt;]
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>Taking a closer look at a non-profit license:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[10]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">license</span> <span class="o">=</span> <span class=
+                              "n">pw_academic</span><span class="p">[</span><span class="s1">'trip'</span><span class=
+                              "p">]</span><span class="o">.</span><span class="n">license</span>
+<span class="n">license</span><span class="o">.</span><span class="n">purpose</span><span class=
+"p">,</span> <span class="n">license</span><span class="o">.</span><span class="n">purpose</span><span class=
+"o">.</span><span class="n">enables</span><span class="p">(</span><span class="s1">'for-profit'</span><span class=
+"p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 18:54:45 2023-03-10</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[10]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+(&lt;License purpose: academic&gt;, False)
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>The collected resources can be used directly to build databases, in this case a network
+                      database:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[11]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">net_academic</span> <span class="o">=</span> <span class=
+                              "n">network</span><span class="o">.</span><span class="n">Network</span><span class=
+                              "p">(</span><span class="n">pw_academic</span><span class="p">)</span>
+<span class="n">net_commercial</span> <span class="o">=</span> <span class="n">network</span><span class=
+"o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">pw_commercial</span><span class=
+"p">)</span>
+<span class="n">net_academic</span><span class="p">,</span> <span class="n">net_commercial</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 1m 2.79s, finished 18:57:02 2023-03-10</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[11]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+(&lt;Network: 6833 nodes, 25607 interactions&gt;,
+ &lt;Network: 6429 nodes, 23288 interactions&gt;)
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>As we see, the for-profit usable network is smaller by about 400 nodes and 2,300 edges, and it
+                      might miss even more of the fine grained details, but likely it is suitable for analysis. No
+                      legal expert here, but some thoughts about licenses: even if you work for a company, you might
+                      download and explore data under any license, the restrictions apply if you start to actually use
+                      the resource; even if some resources restrict commercial use, you can always contact the
+                      copyright owners and ask them for permission, or ask your company to pay them licensing fee, so
+                      you can legally use their product.</p>
+                    </section>
                   </section>
                   <section id="Resource-information">
                     <h3>Resource information<a class="headerlink" href="#Resource-information" title=
@@ -5801,6 +6106,719 @@ False
                             </tbody>
                           </table>
                           <p>44038 rows × 10 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>In the <code class="docutils literal notranslate"><span class=
+                    "pre">pypath.omnipath.export</span></code> module independent and more flexible interfaces are
+                    available for building network data frames. These are used also for building the tables used by the
+                    web server.</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[12]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath</span> <span class=
+                            "kn">import</span> <span class="n">omnipath</span>
+<span class="kn">from</span> <span class="nn">pypath.omnipath</span> <span class="kn">import</span> <span class=
+"n">export</span>
+
+<span class="n">cu</span> <span class="o">=</span> <span class="n">omnipath</span><span class="o">.</span><span class=
+"n">db</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class=
+"s1">'curated'</span><span class="p">)</span>
+<span class="n">e</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class=
+"n">Export</span><span class="p">(</span><span class="n">cu</span><span class="p">)</span>
+<span class="n">e</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span><span class=
+"n">unique_pairs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">e</span><span class="o">.</span><span class="n">df</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 22.65s, finished 19:20:12 2023-03-10</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[12]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area rendered_html docutils container">
+                        <div>
+                          <table border="1" class="dataframe">
+                            <thead>
+                              <tr style="text-align: right;">
+                                <th></th>
+                                <th>source</th>
+                                <th>target</th>
+                                <th>source_genesymbol</th>
+                                <th>target_genesymbol</th>
+                                <th>is_directed</th>
+                                <th>is_stimulation</th>
+                                <th>is_inhibition</th>
+                                <th>consensus_direction</th>
+                                <th>consensus_stimulation</th>
+                                <th>consensus_inhibition</th>
+                                <th>sources</th>
+                                <th>references</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th>0</th>
+                                <td>P48995</td>
+                                <td>Q12791</td>
+                                <td>TRPC1</td>
+                                <td>KCNMA1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>TRIP</td>
+                                <td>TRIP:19168436;TRIP:25139746</td>
+                              </tr>
+                              <tr>
+                                <th>1</th>
+                                <td>P48995</td>
+                                <td>Q08209</td>
+                                <td>TRPC1</td>
+                                <td>PPP3CA</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>TRIP</td>
+                                <td>TRIP:23228564</td>
+                              </tr>
+                              <tr>
+                                <th>2</th>
+                                <td>P0DP23</td>
+                                <td>P48995</td>
+                                <td>CALM1</td>
+                                <td>TRPC1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>TRIP</td>
+                                <td>TRIP:11290752;TRIP:11983166;TRIP:12601176</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>P0DP25</td>
+                                <td>P48995</td>
+                                <td>CALM3</td>
+                                <td>TRPC1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>TRIP</td>
+                                <td>TRIP:11290752;TRIP:11983166;TRIP:12601176</td>
+                              </tr>
+                              <tr>
+                                <th>4</th>
+                                <td>P0DP24</td>
+                                <td>P48995</td>
+                                <td>CALM2</td>
+                                <td>TRPC1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>TRIP</td>
+                                <td>TRIP:11290752;TRIP:11983166;TRIP:12601176</td>
+                              </tr>
+                              <tr>
+                                <th>...</th>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                              </tr>
+                              <tr>
+                                <th>36729</th>
+                                <td>Q14289</td>
+                                <td>Q9ULZ3</td>
+                                <td>PTK2B</td>
+                                <td>PYCARD</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>iPTMnet</td>
+                                <td>iPTMnet:27796369</td>
+                              </tr>
+                              <tr>
+                                <th>36730</th>
+                                <td>P54646</td>
+                                <td>Q9Y2I7</td>
+                                <td>PRKAA2</td>
+                                <td>PIKFYVE</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>iPTMnet</td>
+                                <td>iPTMnet:24070423</td>
+                              </tr>
+                              <tr>
+                                <th>36731</th>
+                                <td>Q9BXM7</td>
+                                <td>Q9Y2N7</td>
+                                <td>PINK1</td>
+                                <td>HIF3A</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>iPTMnet</td>
+                                <td>iPTMnet:27551449</td>
+                              </tr>
+                              <tr>
+                                <th>36732</th>
+                                <td>P49137</td>
+                                <td>Q9Y385</td>
+                                <td>MAPKAPK2</td>
+                                <td>UBE2J1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>iPTMnet</td>
+                                <td>iPTMnet:24020373</td>
+                              </tr>
+                              <tr>
+                                <th>36733</th>
+                                <td>Q9UHC7</td>
+                                <td>P04637</td>
+                                <td>MKRN1</td>
+                                <td>TP53</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>iPTMnet</td>
+                                <td>iPTMnet:19536131</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <p>36734 rows × 12 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>The data frame built for the web service includes even more details. Using the <code class=
+                    "docutils literal notranslate"><span class="pre">extra_node_attrs</span></code> and <code class=
+                    "docutils literal notranslate"><span class="pre">extra_edge_attrs</span></code> arguments of the
+                    <code class="docutils literal notranslate"><span class="pre">Export</span></code> object, you can
+                    fully customise these data frames.</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[13]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">e</span><span class="o">.</span><span class=
+                            "n">webservice_interactions_df</span><span class="p">()</span>
+<span class="n">e</span><span class="o">.</span><span class="n">df</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 21.99s, finished 19:22:51 2023-03-10</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[13]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area rendered_html docutils container">
+                        <div>
+                          <table border="1" class="dataframe">
+                            <thead>
+                              <tr style="text-align: right;">
+                                <th></th>
+                                <th>source</th>
+                                <th>target</th>
+                                <th>source_genesymbol</th>
+                                <th>target_genesymbol</th>
+                                <th>is_directed</th>
+                                <th>is_stimulation</th>
+                                <th>is_inhibition</th>
+                                <th>consensus_direction</th>
+                                <th>consensus_stimulation</th>
+                                <th>consensus_inhibition</th>
+                                <th>...</th>
+                                <th>dorothea_tfbs</th>
+                                <th>dorothea_coexp</th>
+                                <th>dorothea_level</th>
+                                <th>type</th>
+                                <th>curation_effort</th>
+                                <th>extra_attrs</th>
+                                <th>ncbi_tax_id_source</th>
+                                <th>entity_type_source</th>
+                                <th>ncbi_tax_id_target</th>
+                                <th>entity_type_target</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th>0</th>
+                                <td>P48995</td>
+                                <td>Q12791</td>
+                                <td>TRPC1</td>
+                                <td>KCNMA1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>2</td>
+                                <td>{"TRIP_method":["Co-immunoprecipitation","Co-i...</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>1</th>
+                                <td>P48995</td>
+                                <td>Q08209</td>
+                                <td>TRPC1</td>
+                                <td>PPP3CA</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>1</td>
+                                <td>{"TRIP_method":["Co-immunoprecipitation"]}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>2</th>
+                                <td>P0DP23</td>
+                                <td>P48995</td>
+                                <td>CALM1</td>
+                                <td>TRPC1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>3</td>
+                                <td>{"TRIP_method":["Fluorescence probe labeling",...</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>P0DP25</td>
+                                <td>P48995</td>
+                                <td>CALM3</td>
+                                <td>TRPC1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>3</td>
+                                <td>{"TRIP_method":["Fluorescence probe labeling",...</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>4</th>
+                                <td>P0DP24</td>
+                                <td>P48995</td>
+                                <td>CALM2</td>
+                                <td>TRPC1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>3</td>
+                                <td>{"TRIP_method":["Fluorescence probe labeling",...</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>...</th>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                              </tr>
+                              <tr>
+                                <th>36729</th>
+                                <td>Q14289</td>
+                                <td>Q9ULZ3</td>
+                                <td>PTK2B</td>
+                                <td>PYCARD</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>36730</th>
+                                <td>P54646</td>
+                                <td>Q9Y2I7</td>
+                                <td>PRKAA2</td>
+                                <td>PIKFYVE</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>36731</th>
+                                <td>Q9BXM7</td>
+                                <td>Q9Y2N7</td>
+                                <td>PINK1</td>
+                                <td>HIF3A</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>36732</th>
+                                <td>P49137</td>
+                                <td>Q9Y385</td>
+                                <td>MAPKAPK2</td>
+                                <td>UBE2J1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>36733</th>
+                                <td>Q9UHC7</td>
+                                <td>P04637</td>
+                                <td>MKRN1</td>
+                                <td>TP53</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>post_translational</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <p>36734 rows × 34 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <section id="Self-interactions-(loop-edges)-in-the-network">
+                    <h3>Self interactions (loop edges) in the network<a class="headerlink" href=
+                    "#Self-interactions-(loop-edges)-in-the-network" title="Permalink to this heading">§</a></h3>
+                    <p>Depending on the downstream application, loops might be beneficial or undesired. By default
+                    loops are disabled, but are enabled for OmniPath and the GRN networks among the built-in network
+                    databases. The <code class="docutils literal notranslate"><span class=
+                    "pre">allow_loops</span></code> parameter can be set at the module level or at the instance level.
+                    If set at the module level, it will be valid for all subsequently created instances:</p>
+                    <div class="nbinput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[14]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.share</span> <span class=
+                            "kn">import</span> <span class="n">settings</span>
+<span class="n">settings</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class=
+"n">network_allow_loops</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:32:52 2023-03-10</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>If set at the instance level, it will be valid for the instance:</p>
+                    <div class="nbinput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[15]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.core</span> <span class=
+                            "kn">import</span> <span class="n">network</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class=
+"n">Network</span><span class="p">(</span><span class="n">allow_loops</span> <span class="o">=</span> <span class=
+"kc">True</span><span class="p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:33:44 2023-03-10</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>If you want keep loops only for certain resources, load first the resources where loops should
+                    be removed, then remove the loops, and load the resources where you wish to keep the loops:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[30]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.core</span> <span class=
+                            "kn">import</span> <span class="n">network</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="kn">import</span> <span class=
+"n">resources</span>
+
+<span class="n">co</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class=
+"n">get_controller</span><span class="p">()</span>
+<span class="n">pw</span> <span class="o">=</span> <span class="n">co</span><span class="o">.</span><span class=
+"n">collect_network</span><span class="p">(</span><span class="s1">'pathway'</span><span class="p">)</span>
+<span class="n">gr</span> <span class="o">=</span> <span class="n">co</span><span class="o">.</span><span class=
+"n">collect_network</span><span class="p">(</span><span class="s1">'dorothea'</span><span class=
+"p">,</span> <span class="n">interaction_types</span> <span class="o">=</span> <span class=
+"s1">'transcriptional'</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class=
+"n">Network</span><span class="p">(</span><span class="n">pw</span><span class="p">,</span> <span class=
+"n">allow_loops</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">n</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class=
+"n">gr</span><span class="p">,</span> <span class="n">allow_loops</span> <span class="o">=</span> <span class=
+"kc">True</span><span class="p">)</span>
+<span class="n">n</span><span class="o">.</span><span class="n">count_loops</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 2m 24.45s, finished 19:56:41 2023-03-10</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[30]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+149
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[32]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">n</span><span class="o">.</span><span class=
+                            "n">count_interactions_by_interaction_type</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 16.50s, finished 19:59:10 2023-03-10</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[32]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'post_translational': 33571, 'transcriptional': 281262}
+</pre>
                         </div>
                       </div>
                     </div>
@@ -13694,6 +14712,13 @@ AKT1 - GSK3B
                           <ul class="visible nav section-nav flex-column">
                             <li class="toctree-l3 toc-h3 nav-item toc-entry">
                               <a class="reference internal nav-link" href="#Licenses">Licenses</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Example:-build-a-network-for-commercial-use">Example: build a network for
+                                  commercial use</a>
+                                </li>
+                              </ul>
                             </li>
                             <li class="toctree-l3 toc-h3 nav-item toc-entry">
                               <a class="reference internal nav-link" href="#Resource-information">Resource
@@ -13721,6 +14746,11 @@ AKT1 - GSK3B
                             <li class="toctree-l3 toc-h3 nav-item toc-entry">
                               <a class="reference internal nav-link" href="#Network-in-pandas.DataFrame">Network in
                               <em>pandas.DataFrame</em></a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Self-interactions-(loop-edges)-in-the-network">Self interactions (loop edges) in the
+                              network</a>
                             </li>
                           </ul>
                         </li>

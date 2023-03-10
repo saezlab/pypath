@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.internals.resource &#8212; pypath 0.14.37 documentation</title>
+    <title>pypath.internals.resource &#8212; pypath 0.14.38 documentation</title>
   
   
   
@@ -512,7 +512,19 @@ document.write(`
 <span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
 <span class="c1">#</span>
 
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Generic objects for representing resources.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+
+    <span class="kn">import</span> <span class="nn">pypath.internals.license</span> <span class="k">as</span> <span class="nn">License</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">collections</span>
@@ -816,7 +828,12 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">data_model</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_model</span> <span class="k">else</span>
             <span class="s1">&#39;Unknown&#39;</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">license</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">license</span><span class="o">.</span><span class="n">License</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;resource_attrs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;license&#39;</span><span class="p">)</span></div>
 
 
 <span class="n">EnzymeSubstrateResourceKey</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
