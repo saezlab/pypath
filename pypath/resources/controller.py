@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2022
+#  2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
@@ -22,20 +22,27 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
+"""
+Highest level resource management API.
+"""
+
 from future.utils import iteritems
+
+from typing import Iterable, Literal
 
 import json
 import os
 import copy
 import importlib as imp
+import itertools
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath.internals.resource as resource_base
+import pypath.resources.network as netres
 from . import licenses as licenses
-
-
-_logger = session_mod.Logger(name = 'resources.controller')
 
 
 class ResourceController(session_mod.Logger):
@@ -228,6 +235,61 @@ class ResourceController(session_mod.Logger):
     def license(self, name):
 
         return self._get(name, dct = self.licenses)
+
+
+    def license_filter(
+            self,
+            resources: list | dict,
+            purpose: Literal[
+                'academic',
+                'commercial',
+                'for-profit',
+                'non-profit',
+                'ignore',
+            ] | None = None,
+            sharing: Literal[
+                'alike',
+                'free',
+                'noderiv',
+                'noshare',
+                'share',
+                'deriv',
+                'ignore',
+            ] | None = None,
+            attrib: Literal[
+                'attrib',
+                'free',
+                'noattrib',
+                'composite',
+                'ignore',
+            ] | None = None,
+        ) -> list | dict:
+        """
+        Filters a list of resources by their license.
+        """
+
+        self.add_resource_attrs(resources)
+
+        return common.compr(
+            obj = resources,
+            filter = lambda r: r.license.enables(purpose, sharing, attrib),
+        )
+
+
+    def add_resource_attrs(
+            self,
+            resources: dict | Iterable[resource_base.AbstractResource],
+        ) -> None:
+        """
+        Adds resource attributes to a list of resources.
+
+        It modifies the instances in-place, returns nothing.
+        """
+
+        _ = common.compr(
+            resources,
+            lambda r: setattr(r, 'resource_attrs', self.resource(r.name)),
+        )
 
 
     def collect(self, data_type):
