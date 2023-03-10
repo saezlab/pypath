@@ -1616,6 +1616,10 @@ urls = {
         'url': 'https://figshare.com/ndownloader/files/38534654',
         'api': 'https://rampdb.nih.gov/api/%s',
     },
+    'expasy': {
+        'label': 'Enzyme nomenclature database',
+        'url': 'https://ftp.expasy.org/databases/enzyme/%s',
+    },
 }
 
 
