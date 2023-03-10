@@ -1616,6 +1616,11 @@ urls = {
         'url': 'https://figshare.com/ndownloader/files/38534654',
         'api': 'https://rampdb.nih.gov/api/%s',
     },
+    'hmdb': {
+        'label': 'Human Metabolome Database',
+        'metabolites': 'https://hmdb.ca/system/downloads/'
+            'current/hmdb_metabolites.zip',
+    },
 }
 
 
