@@ -4838,5 +4838,15 @@
   },
   "Lambert2018": {
     "license": "EUL"
+  },
+  "Open Targets": {
+    "full_name": "Open Targets",
+    "license": "Mixed, see: https://platform-docs.opentargets.org/licence",
+    "urls": {
+      "webpages": ["https://www.opentargets.org/"],
+      "articles": [
+        "https://www.opentargets.org/publications"
+      ]
+    }
   }
 }

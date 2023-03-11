@@ -1738,6 +1738,10 @@ urls = {
         'label': 'A database of lipid structures',
         'sdf': 'https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip',
     },
+    'opentargets': {
+        'label': 'Open Targets',
+        'url': 'http://ftp.ebi.ac.uk/pub/databases/opentargets/platform/22.11/output/etl/json/%s'
+    }
 }
 
 
