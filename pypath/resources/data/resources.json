@@ -4713,5 +4713,15 @@
         "https://www.mdpi.com/2218-1989/8/1/16"
       ]
     }
+  },
+  "Open Targets": {
+    "full_name": "Open Targets",
+    "license": "Mixed, see: https://platform-docs.opentargets.org/licence",
+    "urls": {
+      "webpages": ["https://www.opentargets.org/"],
+      "articles": [
+        "https://www.opentargets.org/publications"
+      ]
+    }
   }
 }

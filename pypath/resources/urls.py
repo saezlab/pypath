@@ -1621,6 +1621,10 @@ urls = {
         'metabolites': 'https://hmdb.ca/system/downloads/'
             'current/hmdb_metabolites.zip',
     },
+    'opentargets': {
+        'label': 'Open Targets',
+        'url': 'http://ftp.ebi.ac.uk/pub/databases/opentargets/platform/22.11/output/etl/json/%s'
+    }
 }
 
 
