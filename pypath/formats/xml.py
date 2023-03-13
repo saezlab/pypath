@@ -35,14 +35,24 @@ expressions and any API call or custom external procedures in the functions
 below.
 """
 
-from typing import Iterable, Iterator
+from typing import Annotated, Iterable, Iterator
 
 import functools
 import collections
+import contextlib
 
 from lxml import etree
 
 import pypath.share.common as common
+import pypath.share.session as session
+
+TRACE: Annotated[
+    bool,
+    'Log trace for debugging. Use it only with small test data.'
+] = False
+
+_log = session.Logger('xml')._log
+_trace = _log if TRACE else common.identity
 
 EtreeMethod = collections.namedtuple(
     'EtreeMethod',
@@ -130,7 +140,8 @@ def fetch(
         )
         return common.compr(path, apply = fetch_ns)
 
-    print(f'processing path: {path}')
+    _trace(f'processing path: {path}')
+
     step_ns = functools.partial(step, namespaces = namespaces)
     result = functools.reduce(step_ns, path, elem)
 
@@ -150,7 +161,7 @@ def step(
     Dispatch the execution of one processing step.
     """
 
-    print(f'calling step, spec: {spec}')
+    _trace(f'calling step, spec: {spec}')
 
     if isinstance(spec, set):
 
@@ -160,36 +171,37 @@ def step(
 
         if isinstance(spec, dict):
 
-            print('applying array of steps on a single element')
+            _trace('Applying array of steps on a single element.')
             result = {
                 key: fetch(elem, path, namespaces, clear = False)
                 for key, path in spec.items()
             }
-            return result
 
         else:
 
-            print(f'calling simple step, spec = {spec}')
+            _trace(f'Calling simple step, spec = {spec}')
             result = simple_step(elem, spec, namespaces)
-            print(f'result: {result}')
-            return result
+            _trace(f'result: {result}')
 
     elif isinstance(elem, common.simple_types):
 
-        return elem
+        result = elem
 
     else:
 
-        print(f'applying step on array, spec = {spec}')
-        print(f'the array: {elem}')
+        _trace(f'Applying step on array, spec = {spec}')
+        _trace(f'The array: {elem}')
+
         this_step = functools.partial(
             step,
             spec = spec,
             namespaces = namespaces,
         )
         result = common.compr(elem, apply = this_step)
-        print(f'result: {result}')
-        return result
+
+    _trace(f'result: {result}')
+
+    return result
 
 
 def simple_step(
@@ -237,3 +249,22 @@ def _array_fields(fields: Iterable[tuple[str, str]]) -> dict[str, tuple]:
     """
 
     return {f[0]: (f[0], (f[1], 'findall'), None) for f in fields}
+
+
+@contextlib.contextmanager
+def trace():
+    """
+    Run functions in this module with log trace enabled.
+    """
+
+    global TRACE
+    original_value = TRACE
+    TRACE = True
+
+    try:
+
+        yield
+
+    finally:
+
+        TRACE = original_value
