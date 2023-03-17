@@ -22,7 +22,19 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
+"""
+Generic objects for representing resources.
+"""
+
 from future.utils import iteritems
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+
+    import pypath.internals.license as License
 
 import os
 import collections
@@ -327,6 +339,11 @@ class NetworkResource(ResourceAttributes):
                 if self.data_model else
             'Unknown'
         )
+
+    @property
+    def license(self) -> license.License | None:
+
+        return getattr(self, 'resource_attrs', None).get('license')
 
 
 EnzymeSubstrateResourceKey = collections.namedtuple(
