@@ -7,9 +7,8 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-
-    <title>pypath.resources.data_formats.transcription_onebyone &#8212; pypath 0.14.38 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.inputs.collectri &#8212; pypath 0.14.38 documentation</title>
   
   
   
@@ -19,36 +18,34 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.resources.data_formats.transcription_onebyone';</script>
-    <link rel="icon" href="../_static/omnipath-logo.svg"/>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.resources.data_formats.collectri" href="pypath.resources.data_formats.collectri.html" />
-    <link rel="prev" title="pypath.resources.data_formats.interaction_htp" href="pypath.resources.data_formats.interaction_htp.html" />
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/inputs/collectri';</script>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -76,7 +73,7 @@
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
-      action="../search.html"
+      action="../../../search.html"
       method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search"
@@ -104,7 +101,7 @@
       <div class="navbar-item">
   
 
-<a class="navbar-brand logo" href="../contents.html">
+<a class="navbar-brand logo" href="../../../contents.html">
   
   
   
@@ -114,8 +111,8 @@
       
     
     
-    <img src="../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
-    <script>document.write(`<img src="../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
   
   
     <p class="title logo__title">Pypath</p>
@@ -139,35 +136,35 @@
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../index.html">
+                      <a class="nav-link nav-internal" href="../../../index.html">
                         Welcome to pypath!
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../webservice.html">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
                         Webservice
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../releasehistory.html">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
                         Release history
                       </a>
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../reference.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
                         Reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../notebooks/manual.html">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
                         The pypath book
                       </a>
                     </li>
@@ -314,35 +311,35 @@ document.write(`
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../index.html">
+                      <a class="nav-link nav-internal" href="../../../index.html">
                         Welcome to pypath!
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../webservice.html">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
                         Webservice
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../releasehistory.html">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
                         Release history
                       </a>
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../reference.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
                         Reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../notebooks/manual.html">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
                         The pypath book
                       </a>
                     </li>
@@ -465,20 +462,20 @@ document.write(`
   <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
     
     <li class="breadcrumb-item breadcrumb-home">
-      <a href="../contents.html" class="nav-link" aria-label="Home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="../reference.html" class="nav-link">Reference</a></li>
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
     
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.resources.data_formats.html" class="nav-link">pypath.resources.data_formats</a></li>
+    <li class="breadcrumb-item"><a href="../inputs.html" class="nav-link">pypath.inputs</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.resources.data_formats.transcription_onebyone</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.collectri</li>
   </ul>
 </nav>
 </div>
@@ -495,31 +492,88 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-resources-data-formats-transcription-onebyone">
-<h1>pypath.resources.data_formats.transcription_onebyone<a class="headerlink" href="#pypath-resources-data-formats-transcription-onebyone" title="Permalink to this heading">§</a></h1>
-<dl class="py data">
-<dt class="sig sig-object py" id="pypath.resources.data_formats.transcription_onebyone">
-<span class="sig-prename descclassname"><span class="pre">pypath.resources.data_formats.</span></span><span class="sig-name descname"><span class="pre">transcription_onebyone</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'abs':</span> <span class="pre">&lt;pypath.internals.input_formats.NetworkInput</span> <span class="pre">object&gt;,</span> <span class="pre">'encode_dist':</span> <span class="pre">&lt;pypath.internals.input_formats.NetworkInput</span> <span class="pre">object&gt;,</span> <span class="pre">'encode_prox':</span> <span class="pre">&lt;pypath.internals.input_formats.NetworkInput</span> <span class="pre">object&gt;,</span> <span class="pre">'htri':</span> <span class="pre">&lt;pypath.internals.input_formats.NetworkInput</span> <span class="pre">object&gt;,</span> <span class="pre">'kegg':</span> <span class="pre">&lt;pypath.internals.input_formats.NetworkInput</span> <span class="pre">object&gt;,</span> <span class="pre">'kegg-medicus':</span> <span class="pre">&lt;pypath.internals.input_formats.NetworkInput</span> <span class="pre">object&gt;,</span> <span class="pre">'oreganno':</span> <span class="pre">&lt;pypath.internals.input_formats.NetworkInput</span> <span class="pre">object&gt;,</span> <span class="pre">'pazar':</span> <span class="pre">&lt;pypath.internals.input_formats.NetworkInput</span> <span class="pre">object&gt;,</span> <span class="pre">'signor':</span> <span class="pre">&lt;pypath.internals.input_formats.NetworkInput</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#pypath.resources.data_formats.transcription_onebyone" title="Permalink to this definition">§</a></dt>
-<dd><p>New default transcription dataset is only TFregulons
-as it is already an integrated resource and
-has sufficient coverage.</p>
-<p class="rubric">Example</p>
-<p>import pypath</p>
-<p># load only <cite>A</cite> confidence level:
-pypath.data_formats.transcription[‘tfregulons’].input_args[‘levels’] = {‘A’}
-pa = pypath.PyPath()
-pa.init_network(pypath.data_formats.transcription)</p>
-<dl class="simple">
-<dt>pypath.data_formats.transcription[‘tfregulons’].input_args[‘levels’] = {</dt><dd><p>‘A’, ‘B’, ‘C’, ‘D’</p>
-</dd>
-</dl>
-<p>}
-pa = pypath.PyPath()
-pa.init_network(pypath.data_formats.transcription)</p>
-</dd></dl>
+  <h1>Source code for pypath.inputs.collectri</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
 
-</section>
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#           Sophia Müller-Dott</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
 
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+
+
+<div class="viewcode-block" id="collectri_interactions"><a class="viewcode-back" href="../../../api/pypath.inputs.collectri.collectri_interactions.html#pypath.inputs.collectri.collectri_interactions">[docs]</a><span class="k">def</span> <span class="nf">collectri_interactions</span><span class="p">(</span><span class="n">int_type</span> <span class="o">=</span> <span class="s1">&#39;gene&#39;</span><span class="p">):</span>
+
+    <span class="n">CollectriInteraction</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;CollectriInteraction&#39;</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="s1">&#39;tf&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;target&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;effect&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;TF_category&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;resources&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pubmed&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;collectri&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">if</span> <span class="n">int_type</span> <span class="o">==</span> <span class="s1">&#39;miRNA&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;^MIR(\d+)$&#39;</span><span class="p">,</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">number</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;hsa-miR-&#39;</span> <span class="o">+</span> <span class="n">number</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">CollectriInteraction</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+                    <span class="p">)</span>
+                
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">if</span> <span class="n">int_type</span> <span class="o">==</span> <span class="s1">&#39;gene&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            
+            
+            <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;source&#39;</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">CollectriInteraction</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+                    <span class="p">)</span>
+                
+        <span class="k">return</span> <span class="n">result</span></div>
+</pre></div>
 
                 </article>
               
@@ -528,24 +582,6 @@ pa.init_network(pypath.data_formats.transcription)</p>
                 <footer class="bd-footer-article">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="pypath.resources.data_formats.interaction_htp.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.resources.data_formats.interaction_htp</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="pypath.resources.data_formats.collectri.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.resources.data_formats.collectri</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
@@ -561,11 +597,11 @@ pa.init_network(pypath.data_formats.transcription)</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../index.html">Welcome to pypath!</a></li>
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../webservice.html">Webservice</a></li>
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../releasehistory.html">Release history</a></li>
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../reference.html">Reference</a></li>
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../notebooks/manual.html">The pypath book</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
 </ul>
 
   </nav></div>
@@ -583,8 +619,8 @@ pa.init_network(pypath.data_formats.transcription)</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">

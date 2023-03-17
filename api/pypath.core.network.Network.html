@@ -534,77 +534,83 @@ from any organism will be allowed.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.add_node" title="pypath.core.network.Network.add_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_node</span></code></a>(entity[, attrs, add])</p></td>
 <td><p>Adds a molecular entity to the py:attr:<code class="docutils literal notranslate"><span class="pre">nodes</span></code> and py:attr:<code class="docutils literal notranslate"><span class="pre">nodes_by_label</span></code> dictionaries.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_loops</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.collectri" title="pypath.core.network.Network.collectri"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collectri</span></code></a>([ncbi_tax_id])</p></td>
+<td><p>Initializes a new <code class="docutils literal notranslate"><span class="pre">Network</span></code> object with loading the transcriptional regulation network from CollecTRI.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_loops</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.count_partners" title="pypath.core.network.Network.count_partners"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_partners</span></code></a>(entity, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.count_partners" title="pypath.core.network.Network.count_partners"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_partners</span></code></a>(entity, **kwargs)</p></td>
 <td><p>Returns the count of the interacting partners for one or more entities according to the specified criteria.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.direction_consistency" title="pypath.core.network.Network.direction_consistency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">direction_consistency</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.direction_consistency" title="pypath.core.network.Network.direction_consistency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">direction_consistency</span></code></a>()</p></td>
 <td><p>Collects statistics about the consistency of interaction directions between resources. * total_directed: number of directed edges * shared_directed: number of directed edges in overlap with other   resources * consistent_edges: number of edges consistent with other resources * inconsistent_edges: number of edges inconsistent with other   resources * total_consistency: sum of consistencies (for all edges and all   resources) * total_inconsistency: sum of inconsistencies (for all edges and all   resources).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.dorothea" title="pypath.core.network.Network.dorothea"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dorothea</span></code></a>([levels, ncbi_tax_id])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.dorothea" title="pypath.core.network.Network.dorothea"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dorothea</span></code></a>([levels, ncbi_tax_id])</p></td>
 <td><p>Initializes a new <code class="docutils literal notranslate"><span class="pre">Network</span></code> object with loading the transcriptional regulation network from DoRothEA.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">entity</span></code>(entity)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">entity</span></code>(entity)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.entity_by_id" title="pypath.core.network.Network.entity_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entity_by_id</span></code></a>(identifier)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.entity_by_id" title="pypath.core.network.Network.entity_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entity_by_id</span></code></a>(identifier)</p></td>
 <td><p>Returns a <code class="docutils literal notranslate"><span class="pre">pypath.entity.Entity</span></code> object representing a molecular entity by looking it up by its identifier.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.entity_by_label" title="pypath.core.network.Network.entity_by_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entity_by_label</span></code></a>(label)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.entity_by_label" title="pypath.core.network.Network.entity_by_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entity_by_label</span></code></a>(label)</p></td>
 <td><p>Returns a <code class="docutils literal notranslate"><span class="pre">pypath.entity.Entity</span></code> object representing a molecular entity by looking it up by its label.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.extra_directions" title="pypath.core.network.Network.extra_directions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extra_directions</span></code></a>([resources, use_laudanna, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.extra_directions" title="pypath.core.network.Network.extra_directions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extra_directions</span></code></a>([resources, use_laudanna, ...])</p></td>
 <td><p>Adds additional direction &amp; effect information from resources having no literature curated references, but giving sufficient evidence about the directionality for interactions already supported by literature evidences from other sources.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_df</span></code>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_df</span></code>(*args, **kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered</span></code>([resource, entity_type, ...])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered</span></code>([resource, entity_type, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.find_paths" title="pypath.core.network.Network.find_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_paths</span></code></a>(start[, end, loops, mode, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.find_paths" title="pypath.core.network.Network.find_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_paths</span></code></a>(start[, end, loops, mode, ...])</p></td>
 <td><p>Find paths or motifs in a network.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.from_igraph" title="pypath.core.network.Network.from_igraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_igraph</span></code></a>(pa, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.from_igraph" title="pypath.core.network.Network.from_igraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_igraph</span></code></a>(pa, **kwargs)</p></td>
 <td><p>Creates an instance from an <code class="docutils literal notranslate"><span class="pre">igraph.Graph</span></code> based <code class="docutils literal notranslate"><span class="pre">pypath.main.PyPath</span></code> object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.from_pickle" title="pypath.core.network.Network.from_pickle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pickle</span></code></a>(pickle_file, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.from_pickle" title="pypath.core.network.Network.from_pickle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pickle</span></code></a>(pickle_file, **kwargs)</p></td>
 <td><p>Initializes a new <code class="docutils literal notranslate"><span class="pre">Network</span></code> object by loading it from a pickle file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_df_records</span></code>([by_source, with_references])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_df_records</span></code>([by_source, with_references])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_df</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_df</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.get_organisms" title="pypath.core.network.Network.get_organisms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_organisms</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.get_organisms" title="pypath.core.network.Network.get_organisms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_organisms</span></code></a>()</p></td>
 <td><p>Returns the set of all NCBI Taxonomy IDs occurring in the network.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">homology_translate</span></code>(taxon[, exclude])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">homology_translate</span></code>(taxon[, exclude])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.htp_interactions" title="pypath.core.network.Network.htp_interactions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">htp_interactions</span></code></a>([threshold, ignore_directed])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.htp_interactions" title="pypath.core.network.Network.htp_interactions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">htp_interactions</span></code></a>([threshold, ignore_directed])</p></td>
 <td><p>Collects the interactions only from high-throughput studies.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.htp_references" title="pypath.core.network.Network.htp_references"><code class="xref py py-obj docutils literal notranslate"><span class="pre">htp_references</span></code></a>([threshold])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.htp_references" title="pypath.core.network.Network.htp_references"><code class="xref py py-obj docutils literal notranslate"><span class="pre">htp_references</span></code></a>([threshold])</p></td>
 <td><p>Collects the high-throughput references i.e. the ones cited at a higher number of interactions than <code class="docutils literal notranslate"><span class="pre">threshold</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.init_network" title="pypath.core.network.Network.init_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_network</span></code></a>([resources, make_df, exclude, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.init_network" title="pypath.core.network.Network.init_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_network</span></code></a>([resources, make_df, exclude, ...])</p></td>
 <td><p>Loads data from a network resource or a collection of resources.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.interaction" title="pypath.core.network.Network.interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interaction</span></code></a>(a, b)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.interaction" title="pypath.core.network.Network.interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interaction</span></code></a>(a, b)</p></td>
 <td><p>Retrieves the interaction <cite>a --&gt; b</cite> if it exists in the network, otherwise <cite>b --&gt; a</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.interaction_by_id" title="pypath.core.network.Network.interaction_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interaction_by_id</span></code></a>(id_a, id_b)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.interaction_by_id" title="pypath.core.network.Network.interaction_by_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interaction_by_id</span></code></a>(id_a, id_b)</p></td>
 <td><p>Returns a <code class="docutils literal notranslate"><span class="pre">pypath.interaction.Interaction</span></code> object by looking it up based on a pair of identifiers.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.interaction_by_label" title="pypath.core.network.Network.interaction_by_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interaction_by_label</span></code></a>(label_a, label_b)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.interaction_by_label" title="pypath.core.network.Network.interaction_by_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interaction_by_label</span></code></a>(label_a, label_b)</p></td>
 <td><p>Returns a <code class="docutils literal notranslate"><span class="pre">pypath.interaction.Interaction</span></code> object by looking it up based on a pair of labels.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.network.Network.load" title="pypath.core.network.Network.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>([resources, make_df, exclude, reread, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.network.Network.load" title="pypath.core.network.Network.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>([resources, make_df, exclude, reread, ...])</p></td>
 <td><p>Loads data from a network resource or a collection of resources.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_collectri</span></code>(**kwargs)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_dorothea</span></code>([levels, expand_levels])</p></td>
 <td><p></p></td>
@@ -3601,6 +3607,18 @@ existing entities otherwise will do nothing.</p></li>
 <dt class="sig sig-object py" id="pypath.core.network.Network.collect_small_molecules">
 <span class="sig-name descname"><span class="pre">collect_small_molecules</span></span><a class="headerlink" href="#pypath.core.network.Network.collect_small_molecules" title="Permalink to this definition">§</a></dt>
 <dd><p>Builds a comprehensive collection of <cite>small_molecules</cite> entities across the network, counts unique and shared objects by resource, data model and interaction types.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.network.Network.collectri">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">collectri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/network.html#Network.collectri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.network.Network.collectri" title="Permalink to this definition">§</a></dt>
+<dd><p>Initializes a new <code class="docutils literal notranslate"><span class="pre">Network</span></code> object with loading the transcriptional
+regulation network from CollecTRI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>levels</strong> (<em>NontType</em><em>,</em><em>set</em>) – The confidence levels to include.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
