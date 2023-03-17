@@ -56,6 +56,7 @@ datasets:
 - intercell
 - tf_target
 - dorothea
+- collectri
 - small_molecule
 - tf_mirna
 - mirna_mrna
@@ -97,6 +98,7 @@ intercell_pickle: intercell.pickle
 enz_sub_pickle: enz_sub_%u.pickle
 tf_target_pickle: tftarget.pickle
 dorothea_pickle: dorothea.pickle
+collectri_pickle: collectri.pickle
 tf_mirna_pickle: tfmirna.pickle
 mirna_mrna_pickle: mirna_mrna.pickle
 lncrna_mrna_pickle: lncrna_mrna.pickle
@@ -179,6 +181,7 @@ mirna_mrna_mod: network
 lncrna_mrna_mod: network
 small_molecule_mod: network
 dorothea_mod: network
+collectri_mod: network
 
 omnipath_args:
   use_omnipath: true
@@ -204,6 +207,11 @@ dorothea_args:
     C: null
     D: null
   allow_loops: true
+
+collectri_args:
+  method: collectri
+  allow_loops: true
+
 
 small_molecule_args:
 

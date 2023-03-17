@@ -4702,5 +4702,53 @@
         "https://pubmed.ncbi.nlm.nih.gov/36169237/"
       ]
     }
+  },
+  "CollecTRI": {
+    "license": "Composite",
+    "components": [
+      "ExTRI",
+      "TFactS",
+      "HTRIdb",
+      "IntAct",
+      "GOA",
+      "TRRUST",
+      "SIGNOR",
+      "CytReg",
+      "GEREDB",
+      "Pavlidis",
+      "DoRothEA_A",
+      "NTNUcuration"
+    ]
+    "urls": {
+      "webpages": ["https://github.com/saezlab/CollecTRI"]
+    }
+  },
+  "ExTRI": {
+    "license": "CC BY 4.0"
+  },
+  "GOA": {
+    "license": "CC BY 4.0"
+   },
+  "CytReg": {
+    "license": "CC BY 4.0"
+  },
+  "GEREDB": {
+    "license": "CC BY 4.0"
+  },
+  "Pavlidis": {
+    "license": "CC BY 4.0"
+   },
+  "DoRothEA_A": {
+    "license": "Composite",
+    "components": [
+      "PAZAR",
+      "ORegAnno",
+      "HTRIdb",
+      "SIGNOR",
+      "DoRothEA-reviews"
+    ]
+  },
+  "NTNUcuration": {
+    "license": "CC BY 4.0"
   }
 }

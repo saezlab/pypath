@@ -1611,6 +1611,10 @@ urls = {
         'label': 'Comparative Toxicogenomics Database',
         'url': 'http://ctdbase.org/reports/%s',
     },
+    'collectri': {
+        'label': 'Comprehensive collection of transcriptional regulatory interactions',
+        'url': 'https://rescued.omnipathdb.org/CollecTRI.csv',
+    },
 }
 
 
