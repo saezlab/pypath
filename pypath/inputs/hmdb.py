@@ -330,6 +330,8 @@ def hmdb_metabolites_raw(schema: dict = None, head: int | None = None) -> list:
 
         yield xml.fetch(met, schema, XMLNS)
 
+        met.clear(keep_tail = True)
+
         if i == head:
 
             break
