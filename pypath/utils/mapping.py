@@ -72,6 +72,7 @@ import pypath.inputs.pro as pro_input
 import pypath.inputs.biomart as biomart_input
 import pypath.inputs.unichem as unichem_input
 import pypath.inputs.ramp as ramp_input
+import pypath.inputs.hmdb as hmdb_input
 import pypath.internals.input_formats as input_formats
 import pypath.utils.reflists as reflists
 import pypath.utils.taxonomy as taxonomy
@@ -132,6 +133,11 @@ RESOURCES_IMPLICIT = (
         ),
         'ramp',
         input_formats.RampMapping,
+    ),
+    (
+        input_formats.HMDB_MAPPING,
+        'hmdb',
+        input_formats.HmdbMapping,
     ),
 )
 
@@ -953,14 +959,16 @@ class MapReader(session_mod.Logger):
             )
 
 
-    def read_mapping_unichem(self):
+    def _read_mapping_smallmolecule(self):
         """
-        Loads an ID translation table from UniChem.
+        Loads a small molecule ID translation table.
         """
 
-        data = unichem_input.unichem_mapping(
-            id_type = self.param.id_type_a,
-            target_id_type = self.param.id_type_b,
+        mod = globals()[f'{self.source_type}_input']
+        method = getattr(mod, f'{self.source_type}_mapping')
+        data = method(
+            id_type_a = self.param.id_type_a,
+            id_type_b = self.param.id_type_b,
         )
 
         if self.load_a_to_b:
@@ -979,20 +987,15 @@ class MapReader(session_mod.Logger):
         Loads an ID translation table from RaMP.
         """
 
-        data = ramp_input.ramp_mapping(
-            id_type_a = self.param.id_type_a,
-            id_type_b = self.param.id_type_b,
-        )
+        self._read_mapping_smallmolecule()
 
-        if self.load_a_to_b:
 
-            self.a_to_b = data
+    def read_mapping_unichem(self):
+        """
+        Loads an ID translation table from UniChem.
+        """
 
-        if self.load_b_to_a:
-
-            self.b_to_a = common.swap_dict(data, force_sets = True)
-
-        self.ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC
+        self._read_mapping_smallmolecule()
 
 
     @staticmethod
