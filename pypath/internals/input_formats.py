@@ -150,6 +150,22 @@ RAMP_MAPPING = {
     'pubchem_cid': 'pubchem',
 }
 
+HMDB_MAPPING = {
+    'hmdb': 'accession',
+    'pubchem_cid': 'pubchem_compound',
+    'pubchem': 'pubchem_compound',
+    'phenolexplorer': 'phenol_explorer_compound',
+    'cas': 'cas_registry_number',
+    'formula': 'chemical_formula',
+    'inchi': 'inchi',
+    'inchikey': 'inchikey',
+    'hmdb_name': 'name',
+    'hmdb_synonym': 'synonyms',
+    'smiles': 'smiles',
+    'iupac': 'traditional_iupac',
+}
+
+
 class MappingInput(object):
 
     _resource_id_types = {}
@@ -520,6 +536,36 @@ class RampMapping(MappingInput):
         MappingInput.__init__(
             self,
             type_ = 'ramp',
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+        )
+
+
+class HmdbMapping(MappingInput):
+
+    _resource_id_types = HMDB_MAPPING
+
+    def __init__(
+            self,
+            id_type_a,
+            id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+        ):
+        """
+        Paramaters for ID translation tables from the
+        Human Metabolome Database.
+
+        Args:
+            id_type_a:
+                Custom name for one of the ID types.
+            id_type_b:
+                Custom name for the other ID type.
+        """
+
+        MappingInput.__init__(
+            self,
+            type_ = 'hmdb',
             id_type_a = id_type_a,
             id_type_b = id_type_b,
             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
