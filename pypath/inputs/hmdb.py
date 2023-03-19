@@ -438,7 +438,7 @@ def hmdb_table(
 
     fields = [Field(d[0], *d) for d in (common.to_tuple(f) for f in fields)]
     fields.extend(Field(n, *f) for n, f in named_fields.items())
-    keys = [f.name for f in fields]
+    keys = [f.d[0] for f in fields]
     schema = {k: SCHEMA[k] for k in keys}
 
     columns = []
@@ -467,6 +467,7 @@ def hmdb_mapping(
         id_type_a: str,
         id_type_b: str,
         return_df: bool = False,
+        head: int | None = None,
     ) -> dict[str, set[str]] | pd.DataFrame:
     """
     ID translation input from HMDB.
@@ -484,12 +485,28 @@ def hmdb_mapping(
             Another identifier type, same options as for `id_type_a`.
         return_df:
             Return a data frame instead of dict of sets.
+        head:
+            Process the first N records only. Useful for peeking into
+            the data.
 
     Return:
         Translation data between two types of identifiers.
     """
 
+    fields = {
+        'id_a': (_id_type(id_type_a), '@'),
+        'id_b': (_id_type(id_type_b), '@'),
+    }
 
+    df = hmdb_table(**fields, head = head)
+
+    if return_df:
+
+        return df
+
+    else:
+
+        return df.groupby('id_a')['id_b'].apply(set).to_dict()
 
 
 def _id_type(id_type: str) -> str:
