@@ -514,4 +514,8 @@ def _id_type(id_type: str) -> str:
     Field name from ID type.
     """
 
-    return SCHEMA.get('id_type', SCHEMA.get(f'{id_type}_id'))
+    for key in (id_type, f'{id_type}_id'):
+
+        if key in SCHEMA:
+
+            return key
