@@ -135,7 +135,13 @@ RESOURCES_IMPLICIT = (
         input_formats.RampMapping,
     ),
     (
-        input_formats.HMDB_MAPPING,
+        dict(
+            **{
+                it: it
+                for it in hmdb_input.ID_FIELDS
+            },
+            **input_formats.HMDB_MAPPING,
+        ),
         'hmdb',
         input_formats.HmdbMapping,
     ),
@@ -184,6 +190,7 @@ class MapReader(session_mod.Logger):
             load_b_to_a = False,
             uniprots = None,
             lifetime = 300,
+            resource_id_types = None,
         ):
         """
         Args
@@ -207,6 +214,8 @@ class MapReader(session_mod.Logger):
             lifetime (int): If this table has not been used for longer than
                 this preiod it is to be removed at next cleanup. Time in
                 seconds. Passed to ``MappingTable``.
+            resource_id_types: Additional mappings between pypath and resource
+                specific identifier type labels.
         """
 
         session_mod.Logger.__init__(self, name = 'mapping')
@@ -245,6 +254,7 @@ class MapReader(session_mod.Logger):
         self.a_to_b = None
         self.b_to_a = None
         self.uniprots = uniprots
+        self._resource_id_types = resource_id_types
 
         self.load()
 
@@ -967,8 +977,8 @@ class MapReader(session_mod.Logger):
         mod = globals()[f'{self.source_type}_input']
         method = getattr(mod, f'{self.source_type}_mapping')
         data = method(
-            id_type_a = self.param.id_type_a,
-            id_type_b = self.param.id_type_b,
+            id_type_a = self.resource_id_type_a,
+            id_type_b = self.resource_id_type_b,
         )
 
         if self.load_a_to_b:
@@ -998,6 +1008,14 @@ class MapReader(session_mod.Logger):
         self._read_mapping_smallmolecule()
 
 
+    def read_mapping_hmdb(self):
+        """
+        Loads an ID translation table from th Human Metabolome Database.
+        """
+
+        self._read_mapping_smallmolecule()
+
+
     @staticmethod
     def _process_protein_name(name):
 
@@ -1012,6 +1030,29 @@ class MapReader(session_mod.Logger):
         names += others
 
         return {x.strip() for x in names}
+
+
+    def resource_id_type(self, side = Literal['a', 'b']) -> str | None:
+        """
+        Resource specific identifier type.
+        """
+
+        return (
+            getattr(self.param, f'resource_id_type_{side}') or
+            self._resource_id_types.get(getattr(self.param, f'id_type_{side}'))
+        )
+
+
+    @property
+    def resource_id_type_a(self) -> str | None:
+
+        return self.resource_id_type('a')
+
+
+    @property
+    def resource_id_type_b(self) -> str | None:
+
+        return self.resource_id_type('b')
 
 
 class MappingTable(session_mod.Logger):
@@ -1429,13 +1470,15 @@ class Mapper(session_mod.Logger):
 
             if tbl is None:
 
+                basic_services = {'hmdb', 'ramp', 'uniprot', 'unichem'}
+
                 for (service_ids, service_id_type, input_cls) in (
                     RESOURCES_IMPLICIT
                 ):
 
                     if (
                         (
-                            service_id_type in {'uniprot', 'unichem'} and (
+                            service_id_type in basic_services and (
                                 id_type in service_ids and
                                 target_id_type in service_ids and
                                 id_type != target_id_type
@@ -1499,7 +1542,7 @@ class Mapper(session_mod.Logger):
                             )
                         )
 
-                        if service_id_type == 'unichem':
+                        if service_id_type in {'hmdb', 'ramp', 'unichem'}:
 
                             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC
                             tbl_key = tbl_key_noorganism
@@ -1520,6 +1563,7 @@ class Mapper(session_mod.Logger):
                             load_b_to_a = load_b_to_a,
                             uniprots = None,
                             lifetime = 300,
+                            resource_id_types = service_ids,
                         )
 
                         self.tables[tbl_key] = getattr(
