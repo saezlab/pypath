@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.internals.input_formats &#8212; pypath 0.14.38 documentation</title>
+    <title>pypath.internals.input_formats &#8212; pypath 0.14.40 documentation</title>
   
   
   
@@ -640,6 +640,22 @@ document.write(`
     <span class="s1">&#39;pubchem_cid&#39;</span><span class="p">:</span> <span class="s1">&#39;pubchem&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
+<span class="n">HMDB_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;hmdb&#39;</span><span class="p">:</span> <span class="s1">&#39;accession&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pubchem_cid&#39;</span><span class="p">:</span> <span class="s1">&#39;pubchem_compound&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pubchem&#39;</span><span class="p">:</span> <span class="s1">&#39;pubchem_compound&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;phenolexplorer&#39;</span><span class="p">:</span> <span class="s1">&#39;phenol_explorer_compound&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;cas&#39;</span><span class="p">:</span> <span class="s1">&#39;cas_registry_number&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;formula&#39;</span><span class="p">:</span> <span class="s1">&#39;chemical_formula&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;inchi&#39;</span><span class="p">:</span> <span class="s1">&#39;inchi&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;inchikey&#39;</span><span class="p">:</span> <span class="s1">&#39;inchikey&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hmdb_name&#39;</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hmdb_synonym&#39;</span><span class="p">:</span> <span class="s1">&#39;synonyms&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;smiles&#39;</span><span class="p">:</span> <span class="s1">&#39;smiles&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;iupac&#39;</span><span class="p">:</span> <span class="s1">&#39;traditional_iupac&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
 <div class="viewcode-block" id="MappingInput"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.MappingInput.html#pypath.internals.input_formats.MappingInput">[docs]</a><span class="k">class</span> <span class="nc">MappingInput</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1010,6 +1026,36 @@ document.write(`
         <span class="n">MappingInput</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">type_</span> <span class="o">=</span> <span class="s1">&#39;ramp&#39;</span><span class="p">,</span>
+            <span class="n">id_type_a</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
+            <span class="n">id_type_b</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="HmdbMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.HmdbMapping.html#pypath.internals.input_formats.HmdbMapping">[docs]</a><span class="k">class</span> <span class="nc">HmdbMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+    <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">HMDB_MAPPING</span>
+
+<div class="viewcode-block" id="HmdbMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.HmdbMapping.html#pypath.internals.input_formats.HmdbMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">id_type_a</span><span class="p">,</span>
+            <span class="n">id_type_b</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span><span class="p">,</span>
+        <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Paramaters for ID translation tables from the</span>
+<span class="sd">        Human Metabolome Database.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id_type_a:</span>
+<span class="sd">                Custom name for one of the ID types.</span>
+<span class="sd">            id_type_b:</span>
+<span class="sd">                Custom name for the other ID type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">MappingInput</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">type_</span> <span class="o">=</span> <span class="s1">&#39;hmdb&#39;</span><span class="p">,</span>
             <span class="n">id_type_a</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span><span class="p">,</span>

@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.utils.mapping &#8212; pypath 0.14.38 documentation</title>
+    <title>pypath.utils.mapping &#8212; pypath 0.14.40 documentation</title>
   
   
   
@@ -562,6 +562,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.inputs.biomart</span> <span class="k">as</span> <span class="nn">biomart_input</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.unichem</span> <span class="k">as</span> <span class="nn">unichem_input</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.ramp</span> <span class="k">as</span> <span class="nn">ramp_input</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.hmdb</span> <span class="k">as</span> <span class="nn">hmdb_input</span>
 <span class="kn">import</span> <span class="nn">pypath.internals.input_formats</span> <span class="k">as</span> <span class="nn">input_formats</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.reflists</span> <span class="k">as</span> <span class="nn">reflists</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
@@ -623,6 +624,17 @@ document.write(`
         <span class="s1">&#39;ramp&#39;</span><span class="p">,</span>
         <span class="n">input_formats</span><span class="o">.</span><span class="n">RampMapping</span><span class="p">,</span>
     <span class="p">),</span>
+    <span class="p">(</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="n">it</span><span class="p">:</span> <span class="n">it</span>
+                <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">hmdb_input</span><span class="o">.</span><span class="n">ID_FIELDS</span>
+            <span class="p">},</span>
+            <span class="o">**</span><span class="n">input_formats</span><span class="o">.</span><span class="n">HMDB_MAPPING</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;hmdb&#39;</span><span class="p">,</span>
+        <span class="n">input_formats</span><span class="o">.</span><span class="n">HmdbMapping</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>
 
 <span class="n">UNIPROT_ID_TYPES</span> <span class="o">=</span> <span class="p">{</span>
@@ -668,6 +680,7 @@ document.write(`
             <span class="n">load_b_to_a</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">lifetime</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+            <span class="n">resource_id_types</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args</span>
@@ -691,6 +704,8 @@ document.write(`
 <span class="sd">            lifetime (int): If this table has not been used for longer than</span>
 <span class="sd">                this preiod it is to be removed at next cleanup. Time in</span>
 <span class="sd">                seconds. Passed to ``MappingTable``.</span>
+<span class="sd">            resource_id_types: Additional mappings between pypath and resource</span>
+<span class="sd">                specific identifier type labels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;mapping&#39;</span><span class="p">)</span>
@@ -729,6 +744,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">a_to_b</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b_to_a</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">resource_id_types</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span></div>
 
@@ -1443,14 +1459,16 @@ document.write(`
             <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MapReader.read_mapping_unichem"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_unichem">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_unichem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_read_mapping_smallmolecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Loads an ID translation table from UniChem.</span>
+<span class="sd">        Loads a small molecule ID translation table.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">data</span> <span class="o">=</span> <span class="n">unichem_input</span><span class="o">.</span><span class="n">unichem_mapping</span><span class="p">(</span>
-            <span class="n">id_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_a</span><span class="p">,</span>
-            <span class="n">target_id_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_b</span><span class="p">,</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_type</span><span class="si">}</span><span class="s1">_input&#39;</span><span class="p">]</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_type</span><span class="si">}</span><span class="s1">_mapping&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span>
+            <span class="n">id_type_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_a</span><span class="p">,</span>
+            <span class="n">id_type_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_b</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_a_to_b</span><span class="p">:</span>
@@ -1461,7 +1479,7 @@ document.write(`
 
             <span class="bp">self</span><span class="o">.</span><span class="n">b_to_a</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">swap_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">force_sets</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span>
 
 
 <div class="viewcode-block" id="MapReader.read_mapping_ramp"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_ramp">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_ramp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1469,20 +1487,23 @@ document.write(`
 <span class="sd">        Loads an ID translation table from RaMP.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">data</span> <span class="o">=</span> <span class="n">ramp_input</span><span class="o">.</span><span class="n">ramp_mapping</span><span class="p">(</span>
-            <span class="n">id_type_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_a</span><span class="p">,</span>
-            <span class="n">id_type_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_b</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_mapping_smallmolecule</span><span class="p">()</span></div>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_a_to_b</span><span class="p">:</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">a_to_b</span> <span class="o">=</span> <span class="n">data</span>
+<div class="viewcode-block" id="MapReader.read_mapping_unichem"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_unichem">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_unichem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads an ID translation table from UniChem.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_b_to_a</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_mapping_smallmolecule</span><span class="p">()</span></div>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">b_to_a</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">swap_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">force_sets</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span></div>
+<div class="viewcode-block" id="MapReader.read_mapping_hmdb"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.read_mapping_hmdb">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_hmdb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads an ID translation table from th Human Metabolome Database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_mapping_smallmolecule</span><span class="p">()</span></div>
 
 
     <span class="nd">@staticmethod</span>
@@ -1498,7 +1519,30 @@ document.write(`
         <span class="n">others</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;(&#39;</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">others</span><span class="p">]</span>
         <span class="n">names</span> <span class="o">+=</span> <span class="n">others</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">names</span><span class="p">}</span></div>
+        <span class="k">return</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">names</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="MapReader.resource_id_type"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MapReader.html#pypath.utils.mapping.MapReader.resource_id_type">[docs]</a>    <span class="k">def</span> <span class="nf">resource_id_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resource specific identifier type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;resource_id_type_</span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;id_type_</span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">resource_id_type_a</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">resource_id_type_b</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MappingTable"><a class="viewcode-back" href="../../../api/pypath.utils.mapping.MappingTable.html#pypath.utils.mapping.MappingTable">[docs]</a><span class="k">class</span> <span class="nc">MappingTable</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
@@ -1916,13 +1960,15 @@ document.write(`
 
             <span class="k">if</span> <span class="n">tbl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 
+                <span class="n">basic_services</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;hmdb&#39;</span><span class="p">,</span> <span class="s1">&#39;ramp&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;unichem&#39;</span><span class="p">}</span>
+
                 <span class="k">for</span> <span class="p">(</span><span class="n">service_ids</span><span class="p">,</span> <span class="n">service_id_type</span><span class="p">,</span> <span class="n">input_cls</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span>
                     <span class="n">RESOURCES_IMPLICIT</span>
                 <span class="p">):</span>
 
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="p">(</span>
-                            <span class="n">service_id_type</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;unichem&#39;</span><span class="p">}</span> <span class="ow">and</span> <span class="p">(</span>
+                            <span class="n">service_id_type</span> <span class="ow">in</span> <span class="n">basic_services</span> <span class="ow">and</span> <span class="p">(</span>
                                 <span class="n">id_type</span> <span class="ow">in</span> <span class="n">service_ids</span> <span class="ow">and</span>
                                 <span class="n">target_id_type</span> <span class="ow">in</span> <span class="n">service_ids</span> <span class="ow">and</span>
                                 <span class="n">id_type</span> <span class="o">!=</span> <span class="n">target_id_type</span>
@@ -1986,7 +2032,7 @@ document.write(`
                             <span class="p">)</span>
                         <span class="p">)</span>
 
-                        <span class="k">if</span> <span class="n">service_id_type</span> <span class="o">==</span> <span class="s1">&#39;unichem&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">service_id_type</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;hmdb&#39;</span><span class="p">,</span> <span class="s1">&#39;ramp&#39;</span><span class="p">,</span> <span class="s1">&#39;unichem&#39;</span><span class="p">}:</span>
 
                             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span>
                             <span class="n">tbl_key</span> <span class="o">=</span> <span class="n">tbl_key_noorganism</span>
@@ -2007,6 +2053,7 @@ document.write(`
                             <span class="n">load_b_to_a</span> <span class="o">=</span> <span class="n">load_b_to_a</span><span class="p">,</span>
                             <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                             <span class="n">lifetime</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+                            <span class="n">resource_id_types</span> <span class="o">=</span> <span class="n">service_ids</span><span class="p">,</span>
                         <span class="p">)</span>
 
                         <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">tbl_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>

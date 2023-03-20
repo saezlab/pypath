@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.unichem &#8212; pypath 0.14.38 documentation</title>
+    <title>pypath.inputs.unichem &#8212; pypath 0.14.40 documentation</title>
   
   
   
@@ -599,42 +599,42 @@ document.write(`
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="unichem_mapping"><a class="viewcode-back" href="../../../api/pypath.inputs.unichem.unichem_mapping.html#pypath.inputs.unichem.unichem_mapping">[docs]</a><span class="k">def</span> <span class="nf">unichem_mapping</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">target_id_type</span><span class="p">):</span>
+<div class="viewcode-block" id="unichem_mapping"><a class="viewcode-back" href="../../../api/pypath.inputs.unichem.unichem_mapping.html#pypath.inputs.unichem.unichem_mapping">[docs]</a><span class="k">def</span> <span class="nf">unichem_mapping</span><span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Identifier translation data from UniChem.</span>
 
 <span class="sd">    Args</span>
-<span class="sd">        id_type (int,str): An ID type in UniChem: either the integer ID or</span>
+<span class="sd">        id_type_a (int,str): An ID type in UniChem: either the integer ID or</span>
 <span class="sd">            the string label of a resource. For a full list see</span>
 <span class="sd">            `unichem_sources`.</span>
-<span class="sd">        target_id_type (int,str): An ID type in UniChem, same way as</span>
-<span class="sd">            `id_type`.</span>
+<span class="sd">        id_type_b (int,str): An ID type in UniChem, same way as</span>
+<span class="sd">            `id_type_a`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">        (dict): A dictionary with ID translation data, keys are IDs of</span>
-<span class="sd">            `id_type`, values are sets of IDs of `target_id_type`.</span>
+<span class="sd">            `id_type_a`, values are sets of IDs of `id_type_b`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="p">(</span>
-        <span class="n">_unichem_mapping</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">target_id_type</span><span class="p">)</span> <span class="ow">or</span>
-        <span class="n">common</span><span class="o">.</span><span class="n">swap_dict</span><span class="p">(</span><span class="n">_unichem_mapping</span><span class="p">(</span><span class="n">target_id_type</span><span class="p">,</span> <span class="n">id_type</span><span class="p">))</span>
+        <span class="n">_unichem_mapping</span><span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span> <span class="ow">or</span>
+        <span class="n">common</span><span class="o">.</span><span class="n">swap_dict</span><span class="p">(</span><span class="n">_unichem_mapping</span><span class="p">(</span><span class="n">id_type_b</span><span class="p">,</span> <span class="n">id_type_a</span><span class="p">))</span>
     <span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_unichem_mapping</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">target_id_type</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_unichem_mapping</span><span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Identifier translation data from UniChem.</span>
 
 <span class="sd">    Args</span>
-<span class="sd">        id_type (int,str): An ID type in UniChem: either the integer ID or</span>
+<span class="sd">        id_type_a (int,str): An ID type in UniChem: either the integer ID or</span>
 <span class="sd">            the string label of a resource. For a full list see</span>
 <span class="sd">            `unichem_sources`.</span>
-<span class="sd">        target_id_type (int,str): An ID type in UniChem, same way as</span>
-<span class="sd">            `id_type`.</span>
+<span class="sd">        id_type_b (int,str): An ID type in UniChem, same way as</span>
+<span class="sd">            `id_type_a`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">        (dict): A dictionary with ID translation data, keys are IDs of</span>
-<span class="sd">            `id_type`, values are sets of IDs of `target_id_type`.</span>
+<span class="sd">            `id_type_a`, values are sets of IDs of `id_type_b`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">src_to_label</span> <span class="o">=</span> <span class="n">unichem_sources</span><span class="p">()</span>
@@ -654,10 +654,10 @@ document.write(`
         <span class="k">return</span> <span class="n">_id_type</span>
 
 
-    <span class="n">id_type</span> <span class="o">=</span> <span class="n">get_src_id</span><span class="p">(</span><span class="n">id_type</span><span class="p">)</span>
-    <span class="n">target_id_type</span> <span class="o">=</span> <span class="n">get_src_id</span><span class="p">(</span><span class="n">target_id_type</span><span class="p">)</span>
+    <span class="n">id_type_a</span> <span class="o">=</span> <span class="n">get_src_id</span><span class="p">(</span><span class="n">id_type_a</span><span class="p">)</span>
+    <span class="n">id_type_b</span> <span class="o">=</span> <span class="n">get_src_id</span><span class="p">(</span><span class="n">id_type_b</span><span class="p">)</span>
 
-    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;unichem&#39;</span><span class="p">][</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">target_id_type</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;unichem&#39;</span><span class="p">][</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
         <span class="n">url</span><span class="p">,</span>
         <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>

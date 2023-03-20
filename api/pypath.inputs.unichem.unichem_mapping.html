@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.unichem.unichem_mapping &#8212; pypath 0.14.38 documentation</title>
+    <title>pypath.inputs.unichem.unichem_mapping &#8212; pypath 0.14.40 documentation</title>
   
   
   
@@ -499,19 +499,19 @@ document.write(`
 <h1>pypath.inputs.unichem.unichem_mapping<a class="headerlink" href="#pypath-inputs-unichem-unichem-mapping" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="pypath.inputs.unichem.unichem_mapping">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.unichem.</span></span><span class="sig-name descname"><span class="pre">unichem_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/unichem.html#unichem_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.unichem.unichem_mapping" title="Permalink to this definition">§</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.unichem.</span></span><span class="sig-name descname"><span class="pre">unichem_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/unichem.html#unichem_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.unichem.unichem_mapping" title="Permalink to this definition">§</a></dt>
 <dd><p>Identifier translation data from UniChem.</p>
 <dl class="simple">
 <dt>Args</dt><dd><dl class="simple">
-<dt>id_type (int,str): An ID type in UniChem: either the integer ID or</dt><dd><p>the string label of a resource. For a full list see
+<dt>id_type_a (int,str): An ID type in UniChem: either the integer ID or</dt><dd><p>the string label of a resource. For a full list see
 <cite>unichem_sources</cite>.</p>
 </dd>
-<dt>target_id_type (int,str): An ID type in UniChem, same way as</dt><dd><p><cite>id_type</cite>.</p>
+<dt>id_type_b (int,str): An ID type in UniChem, same way as</dt><dd><p><cite>id_type_a</cite>.</p>
 </dd>
 </dl>
 </dd>
 <dt>Returns</dt><dd><dl class="simple">
-<dt>(dict): A dictionary with ID translation data, keys are IDs of</dt><dd><p><cite>id_type</cite>, values are sets of IDs of <cite>target_id_type</cite>.</p>
+<dt>(dict): A dictionary with ID translation data, keys are IDs of</dt><dd><p><cite>id_type_a</cite>, values are sets of IDs of <cite>id_type_b</cite>.</p>
 </dd>
 </dl>
 </dd>

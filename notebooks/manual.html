@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/">
-  <title>The pypath book — pypath 0.14.38 documentation</title>
+  <title>The pypath book — pypath 0.14.40 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -505,6 +505,84 @@
         text-align: right;
     }
   </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
 </head>
 <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%"
 data-default-mode="">
@@ -785,6 +863,24 @@ data-default-mode="">
                           <ul>
                             <li class="toctree-l4">
                               <a class="reference internal" href="#TL;DR">TL;DR</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="toctree-l3">
+                          <a class="reference internal" href="#HMDB-(Human-Metabolome-Database)">HMDB (Human Metabolome
+                          Database)</a>
+                          <ul>
+                            <li class="toctree-l4">
+                              <a class="reference internal" href="#Direct-access-to-HMDB-data">Direct access to HMDB
+                              data</a>
+                            </li>
+                            <li class="toctree-l4">
+                              <a class="reference internal" href="#Higher-level-access-to-HMDB-data">Higher level
+                              access to HMDB data</a>
+                            </li>
+                            <li class="toctree-l4">
+                              <a class="reference internal" href="#ID-translation-with-HMDB">ID translation with
+                              HMDB</a>
                             </li>
                           </ul>
                         </li>
@@ -1231,6 +1327,20 @@ data-default-mode="">
                           <ul class="toc-item">
                             <li>
                               <p>4.1.1&nbsp;&nbsp;TL;DR</p>
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <p>4.2&nbsp;&nbsp;HMDB (Human Metabolome Database)</p>
+                          <ul class="toc-item">
+                            <li>
+                              <p>4.2.1&nbsp;&nbsp;Direct access to HMDB data</p>
+                            </li>
+                            <li>
+                              <p>4.2.2&nbsp;&nbsp;Higher level access to HMDB data</p>
+                            </li>
+                            <li>
+                              <p>4.2.3&nbsp;&nbsp;ID translation with HMDB</p>
                             </li>
                           </ul>
                         </li>
@@ -3605,6 +3715,1437 @@ data-default-mode="">
                           <div class="highlight">
                             <pre>
 {'HMDB0094709'}
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="HMDB-(Human-Metabolome-Database)">
+                    <h3>HMDB (Human Metabolome Database)<a class="headerlink" href="#HMDB-(Human-Metabolome-Database)"
+                    title="Permalink to this heading">§</a></h3>
+                    <section id="Direct-access-to-HMDB-data">
+                      <h4>Direct access to HMDB data<a class="headerlink" href="#Direct-access-to-HMDB-data" title=
+                      "Permalink to this heading">§</a></h4>
+                      <p>In the <code class="docutils literal notranslate"><span class="pre">inputs.hmdb</span></code>
+                      module processes metabolite data using <code class="docutils literal notranslate"><span class=
+                      "pre">lxml.etree</span></code> and some minimal utilities from <code class=
+                      "docutils literal notranslate"><span class="pre">formats.xml</span></code>. The metabolite
+                      records are available as <code class="docutils literal notranslate"><span class=
+                      "pre">lxml.etree.Element</span></code> objects, or custom fields can be extracted into dicts, or
+                      into data frames. To iterate through the xml elements, each representing a metabolite:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[4]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
+                              "kn">import</span> <span class="n">hmdb</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">hmdb</span><span class="o">.</span><span class=
+"n">hmdb_iter_metabolites</span><span class="p">())</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 11:27:05 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[4]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+&lt;Element {http://www.hmdb.ca}metabolite at 0x68d5803eef00&gt;
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>On the <code class="docutils literal notranslate"><span class="pre">Element</span></code>
+                      objects you can use directly <code class="docutils literal notranslate"><span class=
+                      "pre">lxml.etree</span></code>’s methods to extract information. An easier and flexible way to
+                      extract information from these XML records is to define a schema with instructions for
+                      <code class="docutils literal notranslate"><span class="pre">lxml</span></code>. A full schema
+                      for HMDB metabolites is available in <code class="docutils literal notranslate"><span class=
+                      "pre">hmdb.SCHEMA</span></code>:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[5]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class="n">SCHEMA</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 11:28:49 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[5]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+{'taxonomy': ('taxonomy',
+  {'description': ('description', None),
+   'direct_parent': ('direct_parent', None),
+   'kingdom': ('kingdom', None),
+   'class': ('class', None),
+   'sub_class': ('sub_class', None),
+   'molecular_framework': ('molecular_framework', None),
+   'alternative_parents': ('alternative_parents',
+    ('alternative_parent', 'findall'),
+    None),
+   'substituents': ('substituents', ('substituent', 'findall'), None)}),
+ 'spectra': ('spectra', ('spectrum', 'findall'), {'spectrum_id', 'type'}),
+ 'biological_properties': ('biological_properties',
+  {'cellular_locations': ('cellular_locations', ('cellular', 'findall'), None),
+   'biospecimen_locations': ('biospecimen_locations',
+    ('biospecimen', 'findall'),
+    None),
+   'tissue_locations': ('tissue_locations', ('tissue', 'findall'), None),
+   'pathways': ('pathways',
+    ('pathway', 'findall'),
+    {'kegg_map_id', 'name', 'smpdb_id'})}),
+ 'experimental_properties': ('experimental_properties',
+  ('property', 'findall')
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt empty docutils container"></div>
+                        <div class="output_area rendered_html docutils container">
+                          <em>Output truncated: showing 1000 of 4017 characters</em>
+                        </div>
+                      </div>
+                      <p>By default the full schema is used by <code class="docutils literal notranslate"><span class=
+                      "pre">hmdb_metabolites_raw</span></code>, but you can pass a smaller dict with only your fields
+                      of interest, largely reducing the processing time. Using the <code class=
+                      "docutils literal notranslate"><span class="pre">head</span></code> argument we peek into the
+                      first N records of the data:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[8]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="nb">list</span><span class="p">(</span><span class=
+                              "n">hmdb</span><span class="o">.</span><span class=
+                              "n">hmdb_metabolites_raw</span><span class="p">(</span><span class=
+                              "n">head</span> <span class="o">=</span> <span class="mi">3</span><span class=
+                              "p">))</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 11:31:45 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[8]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+[{'taxonomy': {'description': ' belongs to the class of organic compounds known as histidine and derivatives. Histidine and derivatives are compounds containing cysteine or a derivative thereof resulting from reaction of cysteine at the amino group or the carboxy group, or from the replacement of any hydrogen of glycine by a heteroatom.',
+   'direct_parent': 'Histidine and derivatives',
+   'kingdom': 'Organic compounds',
+   'class': 'Carboxylic acids and derivatives',
+   'sub_class': 'Amino acids, peptides, and analogues',
+   'molecular_framework': 'Aromatic heteromonocyclic compounds',
+   'alternative_parents': ['Amino acids',
+    'Aralkylamines',
+    'Azacyclic compounds',
+    'Carbonyl compounds',
+    'Carboxylic acids',
+    'Heteroaromatic compounds',
+    'Hydrocarbon derivatives',
+    'Imidazolyl carboxylic acids and derivatives',
+    'L-alpha-amino acids',
+    'Monoalkylamines',
+    'Monocarboxylic acids and derivatives',
+    'N-substituted imidazoles',
+    'Organic oxides',
+
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt empty docutils container"></div>
+                        <div class="output_area rendered_html docutils container">
+                          <em>Output truncated: showing 1000 of 132354 characters</em>
+                        </div>
+                      </div>
+                      <p>The returned nested dict corresponds to the schema. Another example with a schema that
+                      extracts only the accession and name fields:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[10]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="nb">list</span><span class="p">(</span><span class=
+                              "n">hmdb</span><span class="o">.</span><span class=
+                              "n">hmdb_metabolites_raw</span><span class="p">(</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'accession'</span><span class="p">:</span> <span class="n">hmdb</span><span class=
+"o">.</span><span class="n">SCHEMA</span><span class="p">[</span><span class="s1">'accession'</span><span class=
+"p">],</span>
+        <span class="s1">'name'</span><span class="p">:</span> <span class="n">hmdb</span><span class=
+"o">.</span><span class="n">SCHEMA</span><span class="p">[</span><span class="s1">'name'</span><span class=
+"p">],</span>
+    <span class="p">},</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+<span class="p">))</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 11:38:56 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[10]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+[{'accession': 'HMDB0000001', 'name': '1-Methylhistidine'},
+ {'accession': 'HMDB0000002', 'name': '1,3-Diaminopropane'},
+ {'accession': 'HMDB0000005', 'name': '2-Ketobutyric acid'},
+ {'accession': 'HMDB0000008', 'name': '2-Hydroxybutyric acid'},
+ {'accession': 'HMDB0000010', 'name': '2-Methoxyestrone'},
+ {'accession': 'HMDB0000011', 'name': '3-Hydroxybutyric acid'},
+ {'accession': 'HMDB0000012', 'name': 'Deoxyuridine'},
+ {'accession': 'HMDB0000014', 'name': 'Deoxycytidine'},
+ {'accession': 'HMDB0000015', 'name': 'Cortexolone'},
+ {'accession': 'HMDB0000016', 'name': 'Deoxycorticosterone'},
+ {'accession': 'HMDB0000017', 'name': '4-Pyridoxic acid'},
+ {'accession': 'HMDB0000019', 'name': 'alpha-Ketoisovaleric acid'},
+ {'accession': 'HMDB0000020', 'name': 'p-Hydroxyphenylacetic acid'},
+ {'accession': 'HMDB0000021', 'name': 'Iodotyrosine'},
+ {'accession': 'HMDB0000022', 'name': '3-Methoxytyramine'},
+ {'accession': 'HMDB0000023', 'name': '(S)-3-Hydroxyisobutyric acid'},
+ {'accession': 'HMDB00
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt empty docutils container"></div>
+                        <div class="output_area rendered_html docutils container">
+                          <em>Output truncated: showing 1000 of 1291 characters</em>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="Higher-level-access-to-HMDB-data">
+                      <h4>Higher level access to HMDB data<a class="headerlink" href=
+                      "#Higher-level-access-to-HMDB-data" title="Permalink to this heading">§</a></h4>
+                      <p>By the <code class="docutils literal notranslate"><span class="pre">hmdb_table</span></code>
+                      function you can process the records into a <code class=
+                      "docutils literal notranslate"><span class="pre">pandas</span></code> data frame. This function
+                      accepts list of nameless or named arguments using a simple notation (see its documentation).
+                      Instead of the simple notation of tuples, alternatively, <code class=
+                      "docutils literal notranslate"><span class="pre">hmdb.Field</span></code> objects can be used to
+                      define the fields, though the arguments for <code class=
+                      "docutils literal notranslate"><span class="pre">Field</span></code> and the tuples or strings
+                      directly passed to <code class="docutils literal notranslate"><span class=
+                      "pre">hmdb_table</span></code> follow the same format. Let’s extract a data frame with SMILEs,
+                      InChi Keys and HMDB accessions:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[11]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class=
+                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "s1">'accession'</span><span class="p">,</span> <span class=
+                              "s1">'smiles'</span><span class="p">,</span> <span class=
+                              "s1">'inchikey'</span><span class="p">,</span> <span class="n">head</span> <span class=
+                              "o">=</span> <span class="mi">10</span><span class="p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 14:36:29 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[11]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area rendered_html docutils container">
+                          <div>
+                            <table border="1" class="dataframe">
+                              <thead>
+                                <tr style="text-align: right;">
+                                  <th></th>
+                                  <th>accession</th>
+                                  <th>smiles</th>
+                                  <th>inchikey</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <th>0</th>
+                                  <td>HMDB0000001</td>
+                                  <td>CN1C=NC(C[C@H](N)C(O)=O)=C1</td>
+                                  <td>BRMWTNUJHUMWMS-LURJTMIESA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>1</th>
+                                  <td>HMDB0000002</td>
+                                  <td>NCCCN</td>
+                                  <td>XFNJVJPLKCPIBV-UHFFFAOYSA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>2</th>
+                                  <td>HMDB0000005</td>
+                                  <td>CCC(=O)C(O)=O</td>
+                                  <td>TYEYBOSBBBHJIV-UHFFFAOYSA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>3</th>
+                                  <td>HMDB0000008</td>
+                                  <td>CC[C@H](O)C(O)=O</td>
+                                  <td>AFENDNXGAFYKQO-VKHMYHEASA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>4</th>
+                                  <td>HMDB0000010</td>
+                                  <td>[H][C@@]12CCC(=O)[C@@]1(C)CC[C@]1([H])C3=C(CC[...</td>
+                                  <td>WHEUWNKSCXYKBU-QPWUGHHJSA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>5</th>
+                                  <td>HMDB0000011</td>
+                                  <td>C[C@@H](O)CC(O)=O</td>
+                                  <td>WHBMMWSBFZVSSR-GSVOUGTGSA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>6</th>
+                                  <td>HMDB0000012</td>
+                                  <td>OC[C@H]1O[C@H](C[C@@H]1O)N1C=CC(=O)NC1=O</td>
+                                  <td>MXHRCPNRJAMMIM-SHYZEUOFSA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>7</th>
+                                  <td>HMDB0000014</td>
+                                  <td>NC1=NC(=O)N(C=C1)[C@H]1C[C@H](O)[C@@H](CO)O1</td>
+                                  <td>CKTSBUTUHBMZGZ-SHYZEUOFSA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>8</th>
+                                  <td>HMDB0000015</td>
+                                  <td>[H][C@@]12CC[C@](O)(C(=O)CO)[C@@]1(C)CC[C@@]1(...</td>
+                                  <td>WHBHBVVOGNECLV-OBQKJFGGSA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>9</th>
+                                  <td>HMDB0000016</td>
+                                  <td>[H][C@@]12CC[C@H](C(=O)CO)[C@@]1(C)CC[C@@]1([H...</td>
+                                  <td>ZESRJSPZRDMNHY-YFWFAHHUSA-N</td>
+                                </tr>
+                                <tr>
+                                  <th>10</th>
+                                  <td>HMDB0000017</td>
+                                  <td>CC1=NC=C(CO)C(C(O)=O)=C1O</td>
+                                  <td>HXACOUQIXZGNBF-UHFFFAOYSA-N</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <p>The above example is simple, as each field has a simple string value. The <code class=
+                      "docutils literal notranslate"><span class="pre">synonyms</span></code> is an array within each
+                      record, below first we process it as an array column, i.e.&nbsp;each row contains an array:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[12]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class=
+                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "s1">'accession'</span><span class="p">,</span> <span class="s1">'name'</span><span class=
+                              "p">,</span> <span class="s1">'synonyms'</span><span class="p">,</span> <span class=
+                              "n">head</span> <span class="o">=</span> <span class="mi">10</span><span class=
+                              "p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 14:39:00 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[12]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area rendered_html docutils container">
+                          <div>
+                            <table border="1" class="dataframe">
+                              <thead>
+                                <tr style="text-align: right;">
+                                  <th></th>
+                                  <th>accession</th>
+                                  <th>name</th>
+                                  <th>synonyms</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <th>0</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>[(2S)-2-Amino-3-(1-methyl-1H-imidazol-4-yl)pro...</td>
+                                </tr>
+                                <tr>
+                                  <th>1</th>
+                                  <td>HMDB0000002</td>
+                                  <td>1,3-Diaminopropane</td>
+                                  <td>[1,3-Propanediamine, 1,3-Propylenediamine, Pro...</td>
+                                </tr>
+                                <tr>
+                                  <th>2</th>
+                                  <td>HMDB0000005</td>
+                                  <td>2-Ketobutyric acid</td>
+                                  <td>[2-Ketobutanoic acid, 2-Oxobutyric acid, 3-Met...</td>
+                                </tr>
+                                <tr>
+                                  <th>3</th>
+                                  <td>HMDB0000008</td>
+                                  <td>2-Hydroxybutyric acid</td>
+                                  <td>[(S)-2-Hydroxybutanoic acid, 2-Hydroxybutyrate...</td>
+                                </tr>
+                                <tr>
+                                  <th>4</th>
+                                  <td>HMDB0000010</td>
+                                  <td>2-Methoxyestrone</td>
+                                  <td>[2-(8S,9S,13S,14S)-3-Hydroxy-2-methoxy-13-meth...</td>
+                                </tr>
+                                <tr>
+                                  <th>5</th>
+                                  <td>HMDB0000011</td>
+                                  <td>3-Hydroxybutyric acid</td>
+                                  <td>[(R)-(-)-beta-Hydroxybutyric acid, (R)-3-Hydro...</td>
+                                </tr>
+                                <tr>
+                                  <th>6</th>
+                                  <td>HMDB0000012</td>
+                                  <td>Deoxyuridine</td>
+                                  <td>[2-Deoxyuridine, dU, 2'-Deoxyuridine, 1-(2-Deo...</td>
+                                </tr>
+                                <tr>
+                                  <th>7</th>
+                                  <td>HMDB0000014</td>
+                                  <td>Deoxycytidine</td>
+                                  <td>[4-Amino-1-[(2R,4S,5R)-4-hydroxy-5-(hydroxymet...</td>
+                                </tr>
+                                <tr>
+                                  <th>8</th>
+                                  <td>HMDB0000015</td>
+                                  <td>Cortexolone</td>
+                                  <td>[11-Desoxy-17-hydroxycorticosterone, Cortodoxo...</td>
+                                </tr>
+                                <tr>
+                                  <th>9</th>
+                                  <td>HMDB0000016</td>
+                                  <td>Deoxycorticosterone</td>
+                                  <td>[21-Hydroxy-4-pregnene-3,20-dione, 21-Hydroxyp...</td>
+                                </tr>
+                                <tr>
+                                  <th>10</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>[2-Methyl-3-hydroxy-4-carboxy-5-hydroxymethylp...</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <p>Each element in the column is an array:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[13]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb_synonyms</span> <span class="o">=</span> <span class=
+                              "n">hmdb</span><span class="o">.</span><span class="n">hmdb_table</span><span class=
+                              "p">(</span><span class="s1">'accession'</span><span class="p">,</span> <span class=
+                              "s1">'name'</span><span class="p">,</span> <span class="s1">'synonyms'</span><span class=
+                              "p">,</span> <span class="n">head</span> <span class="o">=</span> <span class=
+                              "mi">10</span><span class="p">)</span>
+<span class="n">hmdb_synonyms</span><span class="o">.</span><span class="n">synonyms</span><span class=
+"p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 14:40:01 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[13]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+['(2S)-2-Amino-3-(1-methyl-1H-imidazol-4-yl)propanoic acid',
+ 'Pi-methylhistidine',
+ '(2S)-2-Amino-3-(1-methyl-1H-imidazol-4-yl)propanoate',
+ '1 Methylhistidine',
+ '1-Methyl histidine',
+ '1-Methyl-histidine',
+ '1-Methyl-L-histidine',
+ '1-MHis',
+ '1-N-Methyl-L-histidine',
+ 'L-1-Methylhistidine',
+ 'N1-Methyl-L-histidine',
+ '1-Methylhistidine dihydrochloride',
+ '1-Methylhistidine']
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>Using the <code class="docutils literal notranslate"><span class="pre">@</span></code>
+                      notation, the arrays can be expanded into multiple rows:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[15]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class=
+                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "s1">'accession'</span><span class="p">,</span> <span class="s1">'name'</span><span class=
+                              "p">,</span> <span class="p">(</span><span class="s1">'synonyms'</span><span class=
+                              "p">,</span> <span class="s1">'@'</span><span class="p">),</span> <span class=
+                              "n">head</span> <span class="o">=</span> <span class="mi">10</span><span class=
+                              "p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 14:41:18 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[15]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area rendered_html docutils container">
+                          <div>
+                            <table border="1" class="dataframe">
+                              <thead>
+                                <tr style="text-align: right;">
+                                  <th></th>
+                                  <th>accession</th>
+                                  <th>name</th>
+                                  <th>synonyms</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <th>0</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>(2S)-2-Amino-3-(1-methyl-1H-imidazol-4-yl)prop...</td>
+                                </tr>
+                                <tr>
+                                  <th>1</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>Pi-methylhistidine</td>
+                                </tr>
+                                <tr>
+                                  <th>2</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>(2S)-2-Amino-3-(1-methyl-1H-imidazol-4-yl)prop...</td>
+                                </tr>
+                                <tr>
+                                  <th>3</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>1 Methylhistidine</td>
+                                </tr>
+                                <tr>
+                                  <th>4</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>1-Methyl histidine</td>
+                                </tr>
+                                <tr>
+                                  <th>...</th>
+                                  <td>...</td>
+                                  <td>...</td>
+                                  <td>...</td>
+                                </tr>
+                                <tr>
+                                  <th>291</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>3-Hydroxy-5-hydroxymethyl-2-methyl-isonicotins...</td>
+                                </tr>
+                                <tr>
+                                  <th>292</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>4 Pyridoxinic acid</td>
+                                </tr>
+                                <tr>
+                                  <th>293</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>Pyridoxinecarboxylic acid</td>
+                                </tr>
+                                <tr>
+                                  <th>294</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>4 Pyridoxylic acid</td>
+                                </tr>
+                                <tr>
+                                  <th>295</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>4 Pyridoxic acid</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <p>296 rows × 3 columns</p>
+                          </div>
+                        </div>
+                      </div>
+                      <p>This already resulted almost 300 rows: be careful using <code class=
+                      "docutils literal notranslate"><span class="pre">@</span></code> for multiple columns, as it
+                      yields rows in a combinatorial way, and the resulted data frames can easily grow huge. Another
+                      notation is <code class="docutils literal notranslate"><span class="pre">*</span></code>, it
+                      means extract all elements from a dict into multiple columns. Below we apply it to the
+                      <code class="docutils literal notranslate"><span class="pre">taxonomy</span></code> column which
+                      is a dict of multiple fields:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[19]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class=
+                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "s1">'accession'</span><span class="p">,</span> <span class="s1">'name'</span><span class=
+                              "p">,</span> <span class="p">(</span><span class="s1">'taxonomy'</span><span class=
+                              "p">,</span> <span class="s1">'*'</span><span class="p">),</span> <span class=
+                              "n">head</span> <span class="o">=</span> <span class="mi">10</span><span class=
+                              "p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 14:51:23 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[19]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area rendered_html docutils container">
+                          <div>
+                            <table border="1" class="dataframe">
+                              <thead>
+                                <tr style="text-align: right;">
+                                  <th></th>
+                                  <th>accession</th>
+                                  <th>name</th>
+                                  <th>taxonomy__alternative_parents</th>
+                                  <th>taxonomy__class</th>
+                                  <th>taxonomy__description</th>
+                                  <th>taxonomy__direct_parent</th>
+                                  <th>taxonomy__kingdom</th>
+                                  <th>taxonomy__molecular_framework</th>
+                                  <th>taxonomy__sub_class</th>
+                                  <th>taxonomy__substituents</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <th>0</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>[Amino acids, Aralkylamines, Azacyclic compoun...</td>
+                                  <td>Carboxylic acids and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Histidine and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Amino acids, peptides, and analogues</td>
+                                  <td>[Alpha-amino acid, Amine, Amino acid, Aralkyla...</td>
+                                </tr>
+                                <tr>
+                                  <th>1</th>
+                                  <td>HMDB0000002</td>
+                                  <td>1,3-Diaminopropane</td>
+                                  <td>[Hydrocarbon derivatives, Organopnictogen comp...</td>
+                                  <td>Organonitrogen compounds</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Monoalkylamines</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aliphatic acyclic compounds</td>
+                                  <td>Amines</td>
+                                  <td>[Aliphatic acyclic compound, Hydrocarbon deriv...</td>
+                                </tr>
+                                <tr>
+                                  <th>2</th>
+                                  <td>HMDB0000005</td>
+                                  <td>2-Ketobutyric acid</td>
+                                  <td>[Alpha-hydroxy ketones, Alpha-keto acids and d...</td>
+                                  <td>Keto acids and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Short-chain keto acids and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aliphatic acyclic compounds</td>
+                                  <td>Short-chain keto acids and derivatives</td>
+                                  <td>[Aliphatic acyclic compound, Alpha-hydroxy ket...</td>
+                                </tr>
+                                <tr>
+                                  <th>3</th>
+                                  <td>HMDB0000008</td>
+                                  <td>2-Hydroxybutyric acid</td>
+                                  <td>[Carbonyl compounds, Carboxylic acids, Fatty a...</td>
+                                  <td>Hydroxy acids and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Alpha hydroxy acids and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aliphatic acyclic compounds</td>
+                                  <td>Alpha hydroxy acids and derivatives</td>
+                                  <td>[Alcohol, Aliphatic acyclic compound, Alpha-hy...</td>
+                                </tr>
+                                <tr>
+                                  <th>4</th>
+                                  <td>HMDB0000010</td>
+                                  <td>2-Methoxyestrone</td>
+                                  <td>[1-hydroxy-2-unsubstituted benzenoids, 17-oxos...</td>
+                                  <td>Steroids and steroid derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Estrogens and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic homopolycyclic compounds</td>
+                                  <td>Estrane steroids</td>
+                                  <td>[1-hydroxy-2-unsubstituted benzenoid, 17-oxost...</td>
+                                </tr>
+                                <tr>
+                                  <th>5</th>
+                                  <td>HMDB0000011</td>
+                                  <td>3-Hydroxybutyric acid</td>
+                                  <td>[Carbonyl compounds, Carboxylic acids, Fatty a...</td>
+                                  <td>Hydroxy acids and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Beta hydroxy acids and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aliphatic acyclic compounds</td>
+                                  <td>Beta hydroxy acids and derivatives</td>
+                                  <td>[Alcohol, Aliphatic acyclic compound, Beta-hyd...</td>
+                                </tr>
+                                <tr>
+                                  <th>6</th>
+                                  <td>HMDB0000012</td>
+                                  <td>Deoxyuridine</td>
+                                  <td>[Azacyclic compounds, Heteroaromatic compounds...</td>
+                                  <td>Pyrimidine nucleosides</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Pyrimidine 2'-deoxyribonucleosides</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Pyrimidine 2'-deoxyribonucleosides</td>
+                                  <td>[Alcohol, Aromatic heteromonocyclic compound, ...</td>
+                                </tr>
+                                <tr>
+                                  <th>7</th>
+                                  <td>HMDB0000014</td>
+                                  <td>Deoxycytidine</td>
+                                  <td>[Aminopyrimidines and derivatives, Azacyclic c...</td>
+                                  <td>Pyrimidine nucleosides</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Pyrimidine 2'-deoxyribonucleosides</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Pyrimidine 2'-deoxyribonucleosides</td>
+                                  <td>[Alcohol, Amine, Aminopyrimidine, Aromatic het...</td>
+                                </tr>
+                                <tr>
+                                  <th>8</th>
+                                  <td>HMDB0000015</td>
+                                  <td>Cortexolone</td>
+                                  <td>[17-hydroxysteroids, 20-oxosteroids, 3-oxo del...</td>
+                                  <td>Steroids and steroid derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>21-hydroxysteroids</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aliphatic homopolycyclic compounds</td>
+                                  <td>Hydroxysteroids</td>
+                                  <td>[17-hydroxysteroid, 20-oxosteroid, 21-hydroxys...</td>
+                                </tr>
+                                <tr>
+                                  <th>9</th>
+                                  <td>HMDB0000016</td>
+                                  <td>Deoxycorticosterone</td>
+                                  <td>[20-oxosteroids, 3-oxo delta-4-steroids, Alpha...</td>
+                                  <td>Steroids and steroid derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>21-hydroxysteroids</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aliphatic homopolycyclic compounds</td>
+                                  <td>Hydroxysteroids</td>
+                                  <td>[20-oxosteroid, 21-hydroxysteroid, 3-oxo-delta...</td>
+                                </tr>
+                                <tr>
+                                  <th>10</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>[Aromatic alcohols, Azacyclic compounds, Carbo...</td>
+                                  <td>Pyridines and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Pyridinecarboxylic acids</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Pyridinecarboxylic acids and derivatives</td>
+                                  <td>[Alcohol, Aromatic alcohol, Aromatic heteromon...</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <p>We see <code class="docutils literal notranslate"><span class="pre">taxonomy</span></code>
+                      gave birth to 8 columns. If we expand all those columns, we get a data frame of more than 2,000
+                      rows only from the first 10 records already:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[20]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class=
+                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "s1">'accession'</span><span class="p">,</span> <span class="s1">'name'</span><span class=
+                              "p">,</span> <span class="p">(</span><span class="s1">'taxonomy'</span><span class=
+                              "p">,</span> <span class="s1">'*'</span><span class="p">,</span> <span class=
+                              "s1">'@'</span><span class="p">),</span> <span class="n">head</span> <span class=
+                              "o">=</span> <span class="mi">10</span><span class="p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 14:54:07 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[20]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area rendered_html docutils container">
+                          <div>
+                            <table border="1" class="dataframe">
+                              <thead>
+                                <tr style="text-align: right;">
+                                  <th></th>
+                                  <th>accession</th>
+                                  <th>name</th>
+                                  <th>taxonomy__alternative_parents</th>
+                                  <th>taxonomy__class</th>
+                                  <th>taxonomy__description</th>
+                                  <th>taxonomy__direct_parent</th>
+                                  <th>taxonomy__kingdom</th>
+                                  <th>taxonomy__molecular_framework</th>
+                                  <th>taxonomy__sub_class</th>
+                                  <th>taxonomy__substituents</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <th>0</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>Amino acids</td>
+                                  <td>Carboxylic acids and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Histidine and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Amino acids, peptides, and analogues</td>
+                                  <td>Alpha-amino acid</td>
+                                </tr>
+                                <tr>
+                                  <th>1</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>Amino acids</td>
+                                  <td>Carboxylic acids and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Histidine and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Amino acids, peptides, and analogues</td>
+                                  <td>Amine</td>
+                                </tr>
+                                <tr>
+                                  <th>2</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>Amino acids</td>
+                                  <td>Carboxylic acids and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Histidine and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Amino acids, peptides, and analogues</td>
+                                  <td>Amino acid</td>
+                                </tr>
+                                <tr>
+                                  <th>3</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>Amino acids</td>
+                                  <td>Carboxylic acids and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Histidine and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Amino acids, peptides, and analogues</td>
+                                  <td>Aralkylamine</td>
+                                </tr>
+                                <tr>
+                                  <th>4</th>
+                                  <td>HMDB0000001</td>
+                                  <td>1-Methylhistidine</td>
+                                  <td>Amino acids</td>
+                                  <td>Carboxylic acids and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Histidine and derivatives</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Amino acids, peptides, and analogues</td>
+                                  <td>Aromatic heteromonocyclic compound</td>
+                                </tr>
+                                <tr>
+                                  <th>...</th>
+                                  <td>...</td>
+                                  <td>...</td>
+                                  <td>...</td>
+                                  <td>...</td>
+                                  <td>...</td>
+                                  <td>...</td>
+                                  <td>...</td>
+                                  <td>...</td>
+                                  <td>...</td>
+                                  <td>...</td>
+                                </tr>
+                                <tr>
+                                  <th>2235</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>Vinylogous acids</td>
+                                  <td>Pyridines and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Pyridinecarboxylic acids</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Pyridinecarboxylic acids and derivatives</td>
+                                  <td>Organooxygen compound</td>
+                                </tr>
+                                <tr>
+                                  <th>2236</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>Vinylogous acids</td>
+                                  <td>Pyridines and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Pyridinecarboxylic acids</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Pyridinecarboxylic acids and derivatives</td>
+                                  <td>Organopnictogen compound</td>
+                                </tr>
+                                <tr>
+                                  <th>2237</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>Vinylogous acids</td>
+                                  <td>Pyridines and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Pyridinecarboxylic acids</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Pyridinecarboxylic acids and derivatives</td>
+                                  <td>Primary alcohol</td>
+                                </tr>
+                                <tr>
+                                  <th>2238</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>Vinylogous acids</td>
+                                  <td>Pyridines and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Pyridinecarboxylic acids</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Pyridinecarboxylic acids and derivatives</td>
+                                  <td>Pyridine carboxylic acid</td>
+                                </tr>
+                                <tr>
+                                  <th>2239</th>
+                                  <td>HMDB0000017</td>
+                                  <td>4-Pyridoxic acid</td>
+                                  <td>Vinylogous acids</td>
+                                  <td>Pyridines and derivatives</td>
+                                  <td>belongs to the class of organic compounds kno...</td>
+                                  <td>Pyridinecarboxylic acids</td>
+                                  <td>Organic compounds</td>
+                                  <td>Aromatic heteromonocyclic compounds</td>
+                                  <td>Pyridinecarboxylic acids and derivatives</td>
+                                  <td>Vinylogous acid</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <p>2240 rows × 10 columns</p>
+                          </div>
+                        </div>
+                      </div>
+                      <p>The <code class="docutils literal notranslate"><span class="pre">hmdb_mapping</span></code>
+                      function provides data frames or dicts for translation between a pair of identifier types. For
+                      example, translate KEGG Pathway IDs to SMILES, default output is dict of sets:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[21]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class=
+                              "n">hmdb_mapping</span><span class="p">(</span><span class="s1">'kegg'</span><span class=
+                              "p">,</span> <span class="s1">'smiles'</span><span class="p">,</span> <span class=
+                              "n">head</span> <span class="o">=</span> <span class="mi">10</span><span class=
+                              "p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 14:56:42 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[21]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+{'C00109': {'CCC(=O)C(O)=O'},
+ 'C00526': {'OC[C@H]1O[C@H](C[C@@H]1O)N1C=CC(=O)NC1=O'},
+ 'C00847': {'CC1=NC=C(CO)C(C(O)=O)=C1O'},
+ 'C00881': {'NC1=NC(=O)N(C=C1)[C@H]1C[C@H](O)[C@@H](CO)O1'},
+ 'C00986': {'NCCCN'},
+ 'C01089': {'C[C@@H](O)CC(O)=O'},
+ 'C01152': {'CN1C=NC(C[C@H](N)C(O)=O)=C1'},
+ 'C03205': {'[H][C@@]12CC[C@H](C(=O)CO)[C@@]1(C)CC[C@@]1([H])[C@@]2([H])CCC2=CC(=O)CC[C@]12C'},
+ 'C05299': {'[H][C@@]12CCC(=O)[C@@]1(C)CC[C@]1([H])C3=C(CC[C@@]21[H])C=C(O)C(OC)=C3'},
+ 'C05488': {'[H][C@@]12CC[C@](O)(C(=O)CO)[C@@]1(C)CC[C@@]1([H])[C@@]2([H])CCC2=CC(=O)CC[C@]12C'},
+ 'C05984': {'CC[C@H](O)C(O)=O'}}
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>The same data in a data frame:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[23]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class=
+                              "n">hmdb_mapping</span><span class="p">(</span><span class="s1">'kegg'</span><span class=
+                              "p">,</span> <span class="s1">'smiles'</span><span class="p">,</span> <span class=
+                              "n">head</span> <span class="o">=</span> <span class="mi">10</span><span class=
+                              "p">,</span> <span class="n">return_df</span> <span class="o">=</span> <span class=
+                              "kc">True</span><span class="p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 14:57:27 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[23]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area rendered_html docutils container">
+                          <div>
+                            <table border="1" class="dataframe">
+                              <thead>
+                                <tr style="text-align: right;">
+                                  <th></th>
+                                  <th>id_a</th>
+                                  <th>id_b</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <th>0</th>
+                                  <td>C01152</td>
+                                  <td>CN1C=NC(C[C@H](N)C(O)=O)=C1</td>
+                                </tr>
+                                <tr>
+                                  <th>1</th>
+                                  <td>C00986</td>
+                                  <td>NCCCN</td>
+                                </tr>
+                                <tr>
+                                  <th>2</th>
+                                  <td>C00109</td>
+                                  <td>CCC(=O)C(O)=O</td>
+                                </tr>
+                                <tr>
+                                  <th>3</th>
+                                  <td>C05984</td>
+                                  <td>CC[C@H](O)C(O)=O</td>
+                                </tr>
+                                <tr>
+                                  <th>4</th>
+                                  <td>C05299</td>
+                                  <td>[H][C@@]12CCC(=O)[C@@]1(C)CC[C@]1([H])C3=C(CC[...</td>
+                                </tr>
+                                <tr>
+                                  <th>5</th>
+                                  <td>C01089</td>
+                                  <td>C[C@@H](O)CC(O)=O</td>
+                                </tr>
+                                <tr>
+                                  <th>6</th>
+                                  <td>C00526</td>
+                                  <td>OC[C@H]1O[C@H](C[C@@H]1O)N1C=CC(=O)NC1=O</td>
+                                </tr>
+                                <tr>
+                                  <th>7</th>
+                                  <td>C00881</td>
+                                  <td>NC1=NC(=O)N(C=C1)[C@H]1C[C@H](O)[C@@H](CO)O1</td>
+                                </tr>
+                                <tr>
+                                  <th>8</th>
+                                  <td>C05488</td>
+                                  <td>[H][C@@]12CC[C@](O)(C(=O)CO)[C@@]1(C)CC[C@@]1(...</td>
+                                </tr>
+                                <tr>
+                                  <th>9</th>
+                                  <td>C03205</td>
+                                  <td>[H][C@@]12CC[C@H](C(=O)CO)[C@@]1(C)CC[C@@]1([H...</td>
+                                </tr>
+                                <tr>
+                                  <th>10</th>
+                                  <td>C00847</td>
+                                  <td>CC1=NC=C(CO)C(C(O)=O)=C1O</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="ID-translation-with-HMDB">
+                      <h4>ID translation with HMDB<a class="headerlink" href="#ID-translation-with-HMDB" title=
+                      "Permalink to this heading">§</a></h4>
+                      <p>HMDB is also integrated into the ID translation service. Thanks to the multiple levels of
+                      caching, only the first call takes long time, subsequent calls are pretty fast:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[24]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="kn">from</span> <span class="nn">pypath.utils</span> <span class=
+                              "kn">import</span> <span class="n">mapping</span>
+<span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class=
+"p">(</span><span class="s1">'C01152'</span><span class="p">,</span> <span class="s1">'kegg'</span><span class=
+"p">,</span> <span class="s1">'inchi'</span><span class="p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 15:00:10 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[24]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+{'InChI=1S/C7H11N3O2/c1-10-3-5(9-4-10)2-6(8)7(11)12/h3-4,6H,2,8H2,1H3,(H,11,12)/t6-/m0/s1',
+ 'InChI=1S/C7H11N3O2/c1-10-4-9-3-5(10)2-6(8)7(11)12/h3-4,6H,2,8H2,1H3,(H,11,12)/t6-/m0/s1'}
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>The two InChi Keys correspond to the two constitutional isomers included in the KEGG ID: 1-
+                      and 3-Methylhistidine. A useful feature of HMDB that it has many synonyms and IUPAC names, making
+                      it possible to parse a large variety of metabolite names:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[25]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">mapping</span><span class="o">.</span><span class=
+                              "n">map_name</span><span class="p">(</span><span class="s1">'C01152'</span><span class=
+                              "p">,</span> <span class="s1">'kegg'</span><span class="p">,</span> <span class=
+                              "s1">'hmdb_synonym'</span><span class="p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 15:02:35 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[25]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+{'(2S)-2-Amino-3-(1-methyl-1H-imidazol-4-yl)propanoate',
+ '(2S)-2-Amino-3-(1-methyl-1H-imidazol-4-yl)propanoic acid',
+ '(2S)-2-Amino-3-(1-methyl-1H-imidazol-5-yl)propanoate',
+ '(2S)-2-Amino-3-(1-methyl-1H-imidazol-5-yl)propanoic acid',
+ '1 Methylhistidine',
+ '1-MHis',
+ '1-Methyl histidine',
+ '1-Methyl-L-histidine',
+ '1-Methyl-histidine',
+ '1-Methylhistidine',
+ '1-Methylhistidine dihydrochloride',
+ '1-N-Methyl-L-histidine',
+ '3-Methyl-L-histidine',
+ '3-Methylhistidine',
+ '3-Methylhistidine dihydrochloride',
+ '3-Methylhistidine hydride',
+ '3-N-Methyl-L-histidine',
+ 'L-1-Methylhistidine',
+ 'L-3-Methylhistidine',
+ 'N Tau-methylhistidine',
+ 'N(Tau)-methylhistidine',
+ 'N(pros)-Methyl-L-histidine',
+ 'N-pros-Methyl-L-histidine',
+ 'N1-Methyl-L-histidine',
+ 'N3-Methyl-L-histidine',
+ 'Pi-methylhistidine',
+ 'Tau-methyl-L-histidine',
+ 'Tau-methylhistidine'}
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[26]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">mapping</span><span class="o">.</span><span class=
+                              "n">map_name</span><span class="p">(</span><span class=
+                              "s1">'N(pros)-Methyl-L-histidine'</span><span class="p">,</span> <span class=
+                              "s1">'hmdb_synonym'</span><span class="p">,</span> <span class=
+                              "s1">'inchi'</span><span class="p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 5m 20.72s, finished 15:08:39 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[26]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+{'InChI=1S/C7H11N3O2/c1-10-4-9-3-5(10)2-6(8)7(11)12/h3-4,6H,2,8H2,1H3,(H,11,12)/t6-/m0/s1'}
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>The <code class="docutils literal notranslate"><span class="pre">name</span></code> provided
+                      by HMDB is typically the best human readable name, hence it can be used as labels in figures or
+                      tables:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[27]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">mapping</span><span class="o">.</span><span class=
+                              "n">map_name</span><span class="p">(</span><span class=
+                              "s1">'HMDB0000001'</span><span class="p">,</span> <span class=
+                              "s1">'hmdb'</span><span class="p">,</span> <span class="s1">'hmdb_name'</span><span class=
+                              "p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 3m 10.41s, finished 15:14:46 2023-03-20</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[27]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+{'1-Methylhistidine'}
 </pre>
                           </div>
                         </div>
@@ -14660,6 +16201,24 @@ AKT1 - GSK3B
                               <ul class="nav section-nav flex-column">
                                 <li class="toctree-l4 toc-h4 nav-item toc-entry">
                                   <a class="reference internal nav-link" href="#TL;DR">TL;DR</a>
+                                </li>
+                              </ul>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#HMDB-(Human-Metabolome-Database)">HMDB
+                              (Human Metabolome Database)</a>
+                              <ul class="nav section-nav flex-column">
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#Direct-access-to-HMDB-data">Direct
+                                  access to HMDB data</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href=
+                                  "#Higher-level-access-to-HMDB-data">Higher level access to HMDB data</a>
+                                </li>
+                                <li class="toctree-l4 toc-h4 nav-item toc-entry">
+                                  <a class="reference internal nav-link" href="#ID-translation-with-HMDB">ID
+                                  translation with HMDB</a>
                                 </li>
                               </ul>
                             </li>
