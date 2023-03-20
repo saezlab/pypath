@@ -370,14 +370,14 @@ class Field:
 
                 if d == '*':
 
-                    d = tuple(sorted(value[0].keys()))
+                    d = tuple(sorted(value[0][0].keys()))
 
-                if len(value) > 1:
+                if len(value[0][0]) > 1:
 
                     _log('List of dicts content encountered.')
 
-                value = value[0]
-                value = tuple(tuple(v.get(k) for v in value) for k in d)
+                value = value[0][0]
+                value = tuple((value.get(k),) for k in d)
                 name = tuple(f'{n}__{k}' for n in name for k in d)
 
             elif isinstance(d, str):
