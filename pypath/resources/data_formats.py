@@ -2392,6 +2392,38 @@ transcription = {}
 transcription.update(copy.deepcopy(transcription_onebyone))
 transcription.update(copy.deepcopy(transcription_dorothea))
 
+transcription_collectri = {
+    'collectri': input_formats.NetworkInput(
+        name = 'CollecTRI',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = True,
+        sign = (2, 1, -1),
+        ncbi_tax_id = 9606,
+        input = 'collectri.collectri_interactions',
+        interaction_type = 'transcriptional',
+        resource = (4, ';'),
+        references = (5, ';'),
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {
+            'TF_category': 3
+        },
+        extra_node_attrs_b = {},
+        must_have_references = False,
+        allow_loops = True,
+    ),
+}
+
+# synonyms
+collectri = transcription_collectri
+
+
 """
 Old transctiptional regulation input formats.
 Should not be used.
@@ -2651,6 +2683,34 @@ tf_mirna = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+    ),
+     'collectri': input_formats.NetworkInput(
+        name = 'CollecTRI',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'genesymbol',
+        id_type_b = 'mir-mat-name',
+        entity_type_a = 'protein',
+        entity_type_b = 'mirna',
+        is_directed = True,
+        sign = (2, 1, -1),
+        ncbi_tax_id = 9606,
+        input = 'collectri.collectri_interactions',
+        interaction_type = 'transcriptional',
+        resource = (4, ';'),
+        references = (5, ';'),
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {
+            'TF_category': 3
+        },
+        extra_node_attrs_b = {},
+        must_have_references = False,
+        allow_loops = True,
+        input_args = {
+            'int_type': 'miRNA'
+        }
     ),
 }
 
