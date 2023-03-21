@@ -30,7 +30,11 @@ import pandas as pd
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.session as session
 import pypath.utils.mapping as mapping
+
+
+_log = session.Logger(name = 'cytosig_input')._log
 
 
 def cytosig_df(long: bool = False) -> Union[pd.DataFrame, pd.Series]:
@@ -79,11 +83,21 @@ def cytosig_annotations() -> dict:
         ('cytokine', 'score', 'cytokine_genesymbol', 'target_genesymbol'),
     )
     result = collections.defaultdict(set)
+    unmapped = set()
 
     for (target, cytokine), score in cytosig.items():
 
         u_target = mapping.map_name(target, 'genesymbol', 'uniprot')
         u_cytokine = mapping.map_name(cytokine, 'genesymbol', 'uniprot')
+
+        for genesymbol, uniprots in (
+            (target, u_target),
+            (cytokine, u_cytokine),
+        ):
+
+            if not uniprots:
+
+                unmapped.add(genesymbol)
 
         for u_t, u_c in itertools.product(u_target, u_cytokine):
 
@@ -95,5 +109,12 @@ def cytosig_annotations() -> dict:
                     target_genesymbol = target,
                 )
             )
+
+    if unmapped:
+
+        _log(
+            'Could not translate to UniProt IDs the following cytokines: ' +
+            ', '.join(sorted(unmapped))
+        )
 
     return dict(result)
