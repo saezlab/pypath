@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 """
 Performs mapping between IDs of different consensus systems for
 proteins and genes, miRNAs, and chemical compounds.
@@ -57,6 +59,7 @@ except:
 
 from typing import Iterable, List, Literal, Optional, Set, Union
 
+import pandas as pd
 import timeloop
 
 # from pypath:
@@ -2397,6 +2400,48 @@ class Mapper(session_mod.Logger):
         )
 
         return tbl[name] if tbl else set()
+
+
+    def translation_dict(
+            self,
+            id_type: str,
+            target_id_type: str,
+            ncbi_tax_id: int | None = None,
+        ) -> MappingTable | None:
+        """
+        Translation table as a dict.
+        """
+
+        return self.which_table(
+            id_type,
+            target_id_type,
+            ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id,
+        )
+
+
+    def translation_df(
+            self,
+            id_type: str,
+            target_id_type: str,
+            ncbi_tax_id: int | None = None,
+        ) -> pd.DataFrame | None:
+        """
+        Translation table as a data frame.
+        """
+
+        tbl = self.translation_dict(id_type, target_id_type, ncbi_tax_id)
+
+        if tbl:
+
+            return pd.DataFrame(
+                (
+                    (source_id, target_id)
+                    for source_id, target_ids in tbl.data.items() for
+                    target_id in target_ids
+                ),
+                columns = [id_type, target_id_type],
+            )
+
 
     #
     # ID specific translation methods
