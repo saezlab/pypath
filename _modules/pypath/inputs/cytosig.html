@@ -500,7 +500,7 @@ document.write(`
 <span class="c1">#  This file is part of the `pypath` python module</span>
 <span class="c1">#</span>
 <span class="c1">#  Copyright</span>
-<span class="c1">#  2014-2022</span>
+<span class="c1">#  2014-2023</span>
 <span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
 <span class="c1">#</span>
 <span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
@@ -571,7 +571,7 @@ document.write(`
 
     <span class="n">record</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
         <span class="s1">&#39;CytosigAnnotation&#39;</span><span class="p">,</span>
-        <span class="p">(</span><span class="s1">&#39;cytokine&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;cytokine&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">,</span> <span class="s1">&#39;cytokine_genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;target_genesymbol&#39;</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
 
@@ -586,6 +586,8 @@ document.write(`
                 <span class="n">record</span><span class="p">(</span>
                     <span class="n">cytokine</span> <span class="o">=</span> <span class="n">u_c</span><span class="p">,</span>
                     <span class="n">score</span> <span class="o">=</span> <span class="n">score</span><span class="p">,</span>
+                    <span class="n">cytokine_genesymbol</span> <span class="o">=</span> <span class="n">cytokine</span><span class="p">,</span>
+                    <span class="n">target_genesymbol</span> <span class="o">=</span> <span class="n">target</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
