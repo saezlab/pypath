@@ -1,91 +1,493 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.utils.go &#8212; pypath 0.14.31 documentation</title>
-    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <title>pypath.utils.go &#8212; pypath 0.14.41 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
-    <script defer src="../../../_static/insipid.js"></script>
-    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/utils/go';</script>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-  </head><body>
-    <script type="text/javascript">
-        document.body.classList.add('js');
-    </script>
-    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
-    <label id="overlay" for="sidebar-checkbox"></label>
-    <div class="sidebar-resize-handle"></div>
-    <script type="text/javascript">
-        try {
-            let sidebar = localStorage.getItem('sphinx-sidebar');
-            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
-            if (sidebar_width) {
-                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
-            }
-            // show sidebar on wide screen
-            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
-                sidebar = 'visible';
-                // NB: We don't store the value in localStorage!
-            }
-            if (sidebar === 'visible') {
-                document.getElementById('sidebar-checkbox').checked = true;
-            }
-        } catch(e) {
-            console.info(e);
-        }
-    </script>
-    <header id="topbar-placeholder">
-      <div id="topbar">
-        <div id="titlebar">
-          <div class="buttons">
-            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
-            </label>
-          </div>
-          <div class="title">
-            <a class="parent" href="../../pypath.html" accesskey="U">pypath</a>
-            <a class="top" href="#">pypath.utils.go</a>
-          </div>
-          <div class="buttons">
-            <button id="fullscreen-button" type="button" aria-hidden="true">
-              <span class="enable">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
-              </span>
-              <span class="disable">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
-              </span>
-            </button>
-          </div>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../contents.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
-      </div>
-    </header>
-    <nav>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
     </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
 
-    <nav class="relbar">
-    </nav>  
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-<h1>Source code for pypath.utils.go</h1><div class="highlight"><pre>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../pypath.html" class="nav-link">pypath</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.utils.go</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for pypath.utils.go</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
@@ -155,7 +557,7 @@
 <span class="n">ROOT_ACS</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ROOT_NODES</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="GeneOntology"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology">[docs]</a><span class="k">class</span> <span class="nc">GeneOntology</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<div class="viewcode-block" id="GeneOntology"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology">[docs]</a><span class="k">class</span> <span class="nc">GeneOntology</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 
     <span class="n">all_relations</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;is_a&#39;</span><span class="p">,</span>
@@ -167,7 +569,7 @@
     <span class="p">}</span>
 
 
-<div class="viewcode-block" id="GeneOntology.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="GeneOntology.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">terms</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">ancestors</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -176,7 +578,7 @@
             <span class="n">term</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads data about Gene Ontology terms and their relations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -192,8 +594,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.reload"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Reloads the object from the module level.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.reload"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reloads the object from the module level.&quot;&quot;&quot;</span>
 
         <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
@@ -277,24 +679,24 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="GeneOntology.is_term"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.is_term">[docs]</a>    <span class="k">def</span> <span class="nf">is_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.is_term"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.is_term">[docs]</a>    <span class="k">def</span> <span class="nf">is_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if ``term`` is a GO accession number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.is_name"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.is_name">[docs]</a>    <span class="k">def</span> <span class="nf">is_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.is_name"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.is_name">[docs]</a>    <span class="k">def</span> <span class="nf">is_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if ``name`` is a GO term name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">term</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.get_name"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.get_name"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a GO accession number returns the name of the term.</span>
 <span class="sd">        If ``term`` is already a GO term name returns it unchanged.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -308,8 +710,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.get_term"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_term">[docs]</a>    <span class="k">def</span> <span class="nf">get_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.get_term"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_term">[docs]</a>    <span class="k">def</span> <span class="nf">get_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a GO term name returns its GO accession number.</span>
 <span class="sd">        If ``name`` is a GO accession returns it unchanged.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -329,8 +731,8 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.terms_to_names"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.terms_to_names">[docs]</a>    <span class="k">def</span> <span class="nf">terms_to_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.terms_to_names"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.terms_to_names">[docs]</a>    <span class="k">def</span> <span class="nf">terms_to_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a list of GO names returns a list of tuples with the terms</span>
 <span class="sd">        and their names.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -338,8 +740,8 @@
         <span class="k">return</span> <span class="p">[(</span><span class="n">term</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">term</span><span class="p">))</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.terms_to_names_aspects"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.terms_to_names_aspects">[docs]</a>    <span class="k">def</span> <span class="nf">terms_to_names_aspects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.terms_to_names_aspects"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.terms_to_names_aspects">[docs]</a>    <span class="k">def</span> <span class="nf">terms_to_names_aspects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a list of GO terms returns a list of tuples with the terms,</span>
 <span class="sd">        their names and the ontology aspect.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -350,8 +752,8 @@
         <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.names_to_terms"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.names_to_terms">[docs]</a>    <span class="k">def</span> <span class="nf">names_to_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.names_to_terms"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.names_to_terms">[docs]</a>    <span class="k">def</span> <span class="nf">names_to_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a list of GO terms returns a list of tuples with the terms</span>
 <span class="sd">        and their names.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -359,8 +761,8 @@
         <span class="k">return</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.names_to_terms_aspects"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.names_to_terms_aspects">[docs]</a>    <span class="k">def</span> <span class="nf">names_to_terms_aspects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.names_to_terms_aspects"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.names_to_terms_aspects">[docs]</a>    <span class="k">def</span> <span class="nf">names_to_terms_aspects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a list of GO namess returns a list of tuples with the terms,</span>
 <span class="sd">        their names and ontology aspects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -371,8 +773,8 @@
         <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.aspect_from_name"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.aspect_from_name">[docs]</a>    <span class="k">def</span> <span class="nf">aspect_from_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.aspect_from_name"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.aspect_from_name">[docs]</a>    <span class="k">def</span> <span class="nf">aspect_from_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells about a Gene Ontology term name which aspect does it belong to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -391,14 +793,14 @@
         <span class="k">return</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="GeneOntology.subgraph_nodes"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.subgraph_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">subgraph_nodes</span><span class="p">(</span>
+<div class="viewcode-block" id="GeneOntology.subgraph_nodes"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.subgraph_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">subgraph_nodes</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">direction</span><span class="p">,</span>
             <span class="n">terms</span><span class="p">,</span>
             <span class="n">relations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">include_seed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a set of all nodes either in the subgraph of ancestors</span>
 <span class="sd">        or descendants of a single term or a set of terms.</span>
 
@@ -445,8 +847,8 @@
         <span class="k">return</span> <span class="n">subgraph</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.get_all_ancestors"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_all_ancestors">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="n">relations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">include_seed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.get_all_ancestors"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_all_ancestors">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="n">relations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">include_seed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a set of all ancestors of a single term or a set of terms.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -460,13 +862,13 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.get_all_descendants"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_all_descendants">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_descendants</span><span class="p">(</span>
+<div class="viewcode-block" id="GeneOntology.get_all_descendants"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_all_descendants">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_descendants</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">terms</span><span class="p">,</span>
             <span class="n">relations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">include_seed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a set of all descendants of a single term or a set of terms.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -480,8 +882,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.get_aspect"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_aspect">[docs]</a>    <span class="k">def</span> <span class="nf">get_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.get_aspect"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.get_aspect">[docs]</a>    <span class="k">def</span> <span class="nf">get_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a GO term tells which aspect does it belong to.</span>
 <span class="sd">        Returns `None` if the term is not in the ontology.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -491,8 +893,8 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspect</span><span class="p">[</span><span class="n">term</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.all_from_aspect"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.all_from_aspect">[docs]</a>    <span class="k">def</span> <span class="nf">all_from_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.all_from_aspect"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.all_from_aspect">[docs]</a>    <span class="k">def</span> <span class="nf">all_from_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the set of all GO terms of one aspect.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -503,16 +905,16 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.is_root"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.is_root">[docs]</a>    <span class="k">def</span> <span class="nf">is_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.is_root"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.is_root">[docs]</a>    <span class="k">def</span> <span class="nf">is_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if a term is the root of the graph i.e. it has no ancestors.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="p">[</span><span class="n">term</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.is_leaf"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.is_leaf">[docs]</a>    <span class="k">def</span> <span class="nf">is_leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.is_leaf"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.is_leaf">[docs]</a>    <span class="k">def</span> <span class="nf">is_leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if a term is a leaf of the graph i.e. it has no descendants.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -525,8 +927,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.lowest"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.lowest">[docs]</a>    <span class="k">def</span> <span class="nf">lowest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.lowest"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.lowest">[docs]</a>    <span class="k">def</span> <span class="nf">lowest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        From a set of terms returns the lowest level ones, removing all which</span>
 <span class="sd">        are parents of some others in the set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -534,8 +936,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.highest"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.highest">[docs]</a>    <span class="k">def</span> <span class="nf">highest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.highest"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.highest">[docs]</a>    <span class="k">def</span> <span class="nf">highest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        From a set of terms returns the highest level ones, removing all</span>
 <span class="sd">        which are descendants of some others in the set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -543,8 +945,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">lowest</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.flatten"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.flatten">[docs]</a>    <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">lowest</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.flatten"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.flatten">[docs]</a>    <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">lowest</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a set of terms by removing either all redundant ancestors or</span>
 <span class="sd">        descendants from the provided set terms. By removing the ancestors</span>
 <span class="sd">        you get the lowest level set of terms, by removing the descendants</span>
@@ -574,8 +976,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.set_of_terms"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.set_of_terms">[docs]</a>    <span class="k">def</span> <span class="nf">set_of_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.set_of_terms"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.set_of_terms">[docs]</a>    <span class="k">def</span> <span class="nf">set_of_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts anything to a set of terms. ``terms_names`` can be either a</span>
 <span class="sd">        single term or name or an iterable of terms and names.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -583,8 +985,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_of</span><span class="p">(</span><span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.set_of_names"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.set_of_names">[docs]</a>    <span class="k">def</span> <span class="nf">set_of_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.set_of_names"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.set_of_names">[docs]</a>    <span class="k">def</span> <span class="nf">set_of_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts anything to a set of names. ``terms_names`` can be either a</span>
 <span class="sd">        single term or name or an iterable of terms and names.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -592,8 +994,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_of</span><span class="p">(</span><span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">to_terms</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GeneOntology.set_of"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.set_of">[docs]</a>    <span class="k">def</span> <span class="nf">set_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">to_terms</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GeneOntology.set_of"><a class="viewcode-back" href="../../../api/pypath.utils.go.GeneOntology.html#pypath.utils.go.GeneOntology.set_of">[docs]</a>    <span class="k">def</span> <span class="nf">set_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">to_terms</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts anything to a set of terms or names.</span>
 <span class="sd">        ``terms_names`` can be either a single term or name or an iterable</span>
 <span class="sd">        of terms and names.</span>
@@ -625,19 +1027,19 @@
         <span class="p">}</span></div></div>
 
 
-<div class="viewcode-block" id="GOAnnotation"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation">[docs]</a><span class="k">class</span> <span class="nc">GOAnnotation</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<div class="viewcode-block" id="GOAnnotation"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation">[docs]</a><span class="k">class</span> <span class="nc">GOAnnotation</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 
     <span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GOAnnotation.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="GOAnnotation.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
             <span class="n">ontology</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For one organism loads Gene Ontology annotations, in addition it</span>
 <span class="sd">        accepts or creates a ``GeneOntology`` object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -670,8 +1072,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pickle_cache_save_hook</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.reload"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.reload"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -731,24 +1133,24 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="GOAnnotation.get_name"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.get_name"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a GO accession number returns the name of the term.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">term</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.get_term"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_term">[docs]</a>    <span class="k">def</span> <span class="nf">get_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.get_term"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_term">[docs]</a>    <span class="k">def</span> <span class="nf">get_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a GO term name returns its GO accession number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.get_annot"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_annot">[docs]</a>    <span class="k">def</span> <span class="nf">get_annot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.get_annot"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_annot">[docs]</a>    <span class="k">def</span> <span class="nf">get_annot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a UniProt ID returns its direct annotations from one aspect</span>
 <span class="sd">        of Gene Ontology.</span>
 <span class="sd">        Returns set.</span>
@@ -758,8 +1160,8 @@
         <span class="k">return</span> <span class="n">annot</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">annot</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.get_annots"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_annots">[docs]</a>    <span class="k">def</span> <span class="nf">get_annots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.get_annots"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_annots">[docs]</a>    <span class="k">def</span> <span class="nf">get_annots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a UniProt ID returns its direct annotations from all aspects</span>
 <span class="sd">        of Gene Ontology.</span>
 <span class="sd">        Returns set.</span>
@@ -768,8 +1170,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.get_annot_ancestors"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_annot_ancestors">[docs]</a>    <span class="k">def</span> <span class="nf">get_annot_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.get_annot_ancestors"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_annot_ancestors">[docs]</a>    <span class="k">def</span> <span class="nf">get_annot_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a UniProt ID returns its annotations including lowest level</span>
 <span class="sd">        terms and their ancestors from one aspect of Gene Ontology.</span>
 <span class="sd">        Returns set.</span>
@@ -779,8 +1181,8 @@
         <span class="k">return</span> <span class="n">annot</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">annot</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.get_annots_ancestors"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_annots_ancestors">[docs]</a>    <span class="k">def</span> <span class="nf">get_annots_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.get_annots_ancestors"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.get_annots_ancestors">[docs]</a>    <span class="k">def</span> <span class="nf">get_annots_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a UniProt ID returns its annotations including lowest level</span>
 <span class="sd">        terms and their ancestors from all aspects of Gene Ontology.</span>
 <span class="sd">        Returns set.</span>
@@ -789,24 +1191,24 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.has_term"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.has_term">[docs]</a>    <span class="k">def</span> <span class="nf">has_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.has_term"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.has_term">[docs]</a>    <span class="k">def</span> <span class="nf">has_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if an UniProt ID is annotated with a GO term.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span> <span class="ow">and</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.has_any_term"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.has_any_term">[docs]</a>    <span class="k">def</span> <span class="nf">has_any_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">terms</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.has_any_term"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.has_any_term">[docs]</a>    <span class="k">def</span> <span class="nf">has_any_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">terms</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if an UniProt ID is annotated with any of a set of GO terms.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span> <span class="ow">and</span> <span class="n">term</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.all_uniprots"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.all_uniprots">[docs]</a>    <span class="k">def</span> <span class="nf">all_uniprots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.all_uniprots"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.all_uniprots">[docs]</a>    <span class="k">def</span> <span class="nf">all_uniprots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns all UniProt IDs having annotations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -816,8 +1218,8 @@
         <span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.i_select_by_term"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.i_select_by_term">[docs]</a>    <span class="k">def</span> <span class="nf">i_select_by_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.i_select_by_term"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.i_select_by_term">[docs]</a>    <span class="k">def</span> <span class="nf">i_select_by_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Accepts a list of UniProt IDs and one or more gene ontology terms</span>
 <span class="sd">        and returns a set of indices of those UniProts which are annotated</span>
 <span class="sd">        with any of the terms.</span>
@@ -838,8 +1240,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.select_by_name"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.select_by_name"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Accepts a list of UniProt IDs and one or more gene ontology names</span>
 <span class="sd">        and returns the UniProts which are annotated with any of the names.</span>
 <span class="sd">        If no UniProts given all annotated UniProts returned.</span>
@@ -866,8 +1268,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.select_by_term"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_term">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.select_by_term"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_term">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Accepts a list of UniProt IDs and one or more gene ontology terms</span>
 <span class="sd">        and returns the UniProts which are annotated with any of the terms.</span>
 <span class="sd">        If no UniProts given all annotated UniProts returned.</span>
@@ -885,8 +1287,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.expr_names_to_terms"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.expr_names_to_terms">[docs]</a>    <span class="k">def</span> <span class="nf">expr_names_to_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.expr_names_to_terms"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.expr_names_to_terms">[docs]</a>    <span class="k">def</span> <span class="nf">expr_names_to_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes an expression built by names to expressions of terms.</span>
 
 <span class="sd">        :arg str expr:</span>
@@ -920,13 +1322,13 @@
         <span class="k">return</span> <span class="n">tokens_terms</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.select_by_expr"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_expr">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_expr</span><span class="p">(</span>
+<div class="viewcode-block" id="GOAnnotation.select_by_expr"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_expr">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_expr</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">expr</span><span class="p">,</span>
             <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Selects UniProts based on an expression of Gene Ontology terms.</span>
 <span class="sd">        Operator precedence not considered, please use parentheses.</span>
 <span class="sd">        Return indices of the selected elements in the ``uniprots`` list</span>
@@ -966,13 +1368,13 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.select_by_expr_terms"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_expr_terms">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_expr_terms</span><span class="p">(</span>
+<div class="viewcode-block" id="GOAnnotation.select_by_expr_terms"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_expr_terms">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_expr_terms</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">expr</span><span class="p">,</span>
             <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Selects UniProts based on an expression of Gene Ontology terms.</span>
 <span class="sd">        Operator precedence not considered, please use parentheses.</span>
 <span class="sd">        Return indices of the selected elements in the ``uniprots`` list</span>
@@ -1113,8 +1515,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uniprot_return</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">return_uniprots</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.select"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.select"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the UniProt IDs annotated with any Gene Ontology terms or</span>
 <span class="sd">        their descendants, or evaluates string expression</span>
 <span class="sd">        (see ``select_by_expr``).</span>
@@ -1149,8 +1551,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uniprot_return</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">return_uniprots</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOAnnotation.select_by_all"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_all">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOAnnotation.select_by_all"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOAnnotation.html#pypath.utils.go.GOAnnotation.select_by_all">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Selects the nodes annotated by all GO terms in ``terms``.</span>
 
 <span class="sd">        Returns indices of the selected elements in the ``uniprots`` list</span>
@@ -1287,16 +1689,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Loaded from pickle `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">pickle_file</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOCustomAnnotation"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation">[docs]</a><span class="k">class</span> <span class="nc">GOCustomAnnotation</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<div class="viewcode-block" id="GOCustomAnnotation"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation">[docs]</a><span class="k">class</span> <span class="nc">GOCustomAnnotation</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 
 
-<div class="viewcode-block" id="GOCustomAnnotation.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="GOCustomAnnotation.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">categories</span><span class="p">,</span>
             <span class="n">go_annot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides annotations by a custom set of GO terms or expressions</span>
 <span class="sd">        built from multiple terms.</span>
 
@@ -1318,8 +1720,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">process_categories</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="GOCustomAnnotation.reload"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOCustomAnnotation.reload"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1330,8 +1732,8 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOCustomAnnotation.process_categories"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.process_categories">[docs]</a>    <span class="k">def</span> <span class="nf">process_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOCustomAnnotation.process_categories"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.process_categories">[docs]</a>    <span class="k">def</span> <span class="nf">process_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translates GO term names listed in categories to GO terms ACs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1368,8 +1770,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categories</span></div>
 
 
-<div class="viewcode-block" id="GOCustomAnnotation.get_annotation"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.get_annotation">[docs]</a>    <span class="k">def</span> <span class="nf">get_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOCustomAnnotation.get_annotation"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.get_annotation">[docs]</a>    <span class="k">def</span> <span class="nf">get_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a category name returns a set of UniProt IDs annotated with</span>
 <span class="sd">        the corresponding Gene Ontology terms or expression.</span>
 
@@ -1387,8 +1789,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GOCustomAnnotation.get_annotations"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.get_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GOCustomAnnotation.get_annotations"><a class="viewcode-back" href="../../../api/pypath.utils.go.GOCustomAnnotation.html#pypath.utils.go.GOCustomAnnotation.get_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dict with set of UniProt IDs for each category.</span>
 
 <span class="sd">        :arg set uniprots:</span>
@@ -1405,8 +1807,8 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="annotate"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.annotate.html#pypath.utils.go.annotate">[docs]</a><span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">)):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="annotate"><a class="viewcode-back" href="../../../api/pypath.utils.go.annotate.html#pypath.utils.go.annotate">[docs]</a><span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds Gene Ontology annotations to the nodes of a graph.</span>
 
 <span class="sd">    :param igraph.Graph graph:</span>
@@ -1442,8 +1844,8 @@
 <span class="n">load_go</span> <span class="o">=</span> <span class="n">annotate</span>
 
 
-<div class="viewcode-block" id="init_db"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.init_db.html#pypath.utils.go.init_db">[docs]</a><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="init_db"><a class="viewcode-back" href="../../../api/pypath.utils.go.init_db.html#pypath.utils.go.init_db">[docs]</a><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initializes or reloads the GO annotation database.</span>
 <span class="sd">    The database will be assigned to the ``db`` attribute of this module.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1459,8 +1861,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.go.get_db.html#pypath.utils.go.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../api/pypath.utils.go.get_db.html#pypath.utils.go.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves the current database instance and initializes it if does</span>
 <span class="sd">    not exist yet.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1479,54 +1881,88 @@
 
     <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">organism</span><span class="p">]</span></div>
 </pre></div>
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
 
-          <div class="sidebar-resize-handle"></div>
-
-  <div>
-    <h3><a href="../../../index.html">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release history</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
-</ul>
-
-  </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-<div id="ethical-ad-placement"></div>
-        </div>
-      </div>
-      <div class="clearer"></div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
+        
+      </main>
     </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
-    <nav class="relbar">
-    </nav>
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 6.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+</p></div>
+      
+    </div>
+  
+</div>
 
-    <footer role="contentinfo">
-      &#169; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
-      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
-      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
-    </footer>
+  </footer>
   </body>
 </html>

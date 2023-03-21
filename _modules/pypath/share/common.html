@@ -1,91 +1,493 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.share.common &#8212; pypath 0.14.31 documentation</title>
-    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <title>pypath.share.common &#8212; pypath 0.14.41 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
-    <script defer src="../../../_static/insipid.js"></script>
-    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/share/common';</script>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-  </head><body>
-    <script type="text/javascript">
-        document.body.classList.add('js');
-    </script>
-    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
-    <label id="overlay" for="sidebar-checkbox"></label>
-    <div class="sidebar-resize-handle"></div>
-    <script type="text/javascript">
-        try {
-            let sidebar = localStorage.getItem('sphinx-sidebar');
-            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
-            if (sidebar_width) {
-                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
-            }
-            // show sidebar on wide screen
-            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
-                sidebar = 'visible';
-                // NB: We don't store the value in localStorage!
-            }
-            if (sidebar === 'visible') {
-                document.getElementById('sidebar-checkbox').checked = true;
-            }
-        } catch(e) {
-            console.info(e);
-        }
-    </script>
-    <header id="topbar-placeholder">
-      <div id="topbar">
-        <div id="titlebar">
-          <div class="buttons">
-            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
-            </label>
-          </div>
-          <div class="title">
-            <a class="parent" href="../../pypath.html" accesskey="U">pypath</a>
-            <a class="top" href="#">pypath.share.common</a>
-          </div>
-          <div class="buttons">
-            <button id="fullscreen-button" type="button" aria-hidden="true">
-              <span class="enable">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
-              </span>
-              <span class="disable">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
-              </span>
-            </button>
-          </div>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../contents.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
-      </div>
-    </header>
-    <nav>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
     </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
 
-    <nav class="relbar">
-    </nav>  
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-<h1>Source code for pypath.share.common</h1><div class="highlight"><pre>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../pypath.html" class="nav-link">pypath</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.share.common</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for pypath.share.common</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
@@ -117,6 +519,18 @@
 <span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
 <span class="kn">from</span> <span class="nn">past.builtins</span> <span class="kn">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">reduce</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Mapping</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">KeysView</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">ItemsView</span><span class="p">,</span>
+    <span class="n">ValuesView</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -126,6 +540,7 @@
 <span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
@@ -133,6 +548,7 @@
 <span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">import</span> <span class="nn">tabulate</span>
 
+<span class="kn">import</span> <span class="nn">psutil</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">pypath.share.constants</span> <span class="kn">import</span> <span class="o">*</span>
@@ -141,7 +557,7 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;ROOT&#39;</span><span class="p">,</span>
     <span class="s1">&#39;aacodes&#39;</span><span class="p">,</span> <span class="s1">&#39;aaletters&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;simple_types&#39;</span><span class="p">,</span> <span class="s1">&#39;numeric_types&#39;</span><span class="p">,</span> <span class="s1">&#39;list_like&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;simple_types&#39;</span><span class="p">,</span> <span class="s1">&#39;numeric_types&#39;</span><span class="p">,</span> <span class="s1">&#39;list_like&#39;</span><span class="p">,</span> <span class="s1">&#39;LIST_LIKE&#39;</span><span class="p">,</span>
     <span class="s1">&#39;uniq_list&#39;</span><span class="p">,</span> <span class="s1">&#39;add_to_list&#39;</span><span class="p">,</span> <span class="s1">&#39;add_to_set&#39;</span><span class="p">,</span> <span class="s1">&#39;gen_session_id&#39;</span><span class="p">,</span>
     <span class="s1">&#39;sorensen_index&#39;</span><span class="p">,</span> <span class="s1">&#39;simpson_index&#39;</span><span class="p">,</span> <span class="s1">&#39;simpson_index_counts&#39;</span><span class="p">,</span>
     <span class="s1">&#39;jaccard_index&#39;</span><span class="p">,</span> <span class="s1">&#39;console&#39;</span><span class="p">,</span> <span class="s1">&#39;wcl&#39;</span><span class="p">,</span> <span class="s1">&#39;flat_list&#39;</span><span class="p">,</span> <span class="s1">&#39;char_types&#39;</span><span class="p">,</span>
@@ -170,6 +586,17 @@
 
 <span class="n">non_digit</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^\d.-]+&#39;</span><span class="p">)</span>
 
+<span class="n">LIST_LIKE</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="nb">list</span><span class="p">,</span>
+    <span class="nb">set</span><span class="p">,</span>
+    <span class="nb">tuple</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">ItemsView</span><span class="p">,</span>
+    <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">KeysView</span><span class="p">,</span>
+    <span class="n">Mapping</span><span class="p">,</span>
+    <span class="n">ValuesView</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">default_name_type</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;protein&quot;</span><span class="p">:</span> <span class="s2">&quot;uniprot&quot;</span><span class="p">,</span>
                      <span class="s2">&quot;mirna&quot;</span><span class="p">:</span> <span class="s2">&quot;mirbase&quot;</span><span class="p">,</span>
@@ -294,8 +721,8 @@
 <span class="n">reint</span>   <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*-?\s*[\s\d]+\s*&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="is_float"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.is_float.html#pypath.share.common.is_float">[docs]</a><span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="is_float"><a class="viewcode-back" href="../../../api/pypath.share.common.is_float.html#pypath.share.common.is_float">[docs]</a><span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tells if a string represents a floating point number,</span>
 <span class="sd">    i.e. it can be converted by `float`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -303,8 +730,8 @@
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">refloat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">num</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="is_int"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.is_int.html#pypath.share.common.is_int">[docs]</a><span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="is_int"><a class="viewcode-back" href="../../../api/pypath.share.common.is_int.html#pypath.share.common.is_int">[docs]</a><span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tells if a string represents an integer,</span>
 <span class="sd">    i.e. it can be converted by `int`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -312,8 +739,8 @@
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">reint</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">num</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="float_or_nan"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.float_or_nan.html#pypath.share.common.float_or_nan">[docs]</a><span class="k">def</span> <span class="nf">float_or_nan</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="float_or_nan"><a class="viewcode-back" href="../../../api/pypath.share.common.float_or_nan.html#pypath.share.common.float_or_nan">[docs]</a><span class="k">def</span> <span class="nf">float_or_nan</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns `num` converted from string to float if `num` represents a</span>
 <span class="sd">    float otherwise `numpy.nan`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -321,8 +748,8 @@
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span></div>
 
 
-<div class="viewcode-block" id="try_float"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.try_float.html#pypath.share.common.try_float">[docs]</a><span class="k">def</span> <span class="nf">try_float</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="try_float"><a class="viewcode-back" href="../../../api/pypath.share.common.try_float.html#pypath.share.common.try_float">[docs]</a><span class="k">def</span> <span class="nf">try_float</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns `num` converted from string to float `num` represents a</span>
 <span class="sd">    float otherwise returns the input unchanged.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -336,8 +763,8 @@
         <span class="k">return</span> <span class="n">num</span></div>
 
 
-<div class="viewcode-block" id="try_bool"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.try_bool.html#pypath.share.common.try_bool">[docs]</a><span class="k">def</span> <span class="nf">try_bool</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="try_bool"><a class="viewcode-back" href="../../../api/pypath.share.common.try_bool.html#pypath.share.common.try_bool">[docs]</a><span class="k">def</span> <span class="nf">try_bool</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attempts to convert a value to True or False, returns the input unchanged</span>
 <span class="sd">    upon failure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -353,8 +780,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_set"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.to_set.html#pypath.share.common.to_set">[docs]</a><span class="k">def</span> <span class="nf">to_set</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="to_set"><a class="viewcode-back" href="../../../api/pypath.share.common.to_set.html#pypath.share.common.to_set">[docs]</a><span class="k">def</span> <span class="nf">to_set</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes sure the object `var` is a set, if it is a list converts it to set,</span>
 <span class="sd">    otherwise it creates a single element set out of it.</span>
 <span class="sd">    If `var` is None returns empty set.</span>
@@ -377,8 +804,8 @@
         <span class="k">return</span> <span class="p">{</span><span class="n">var</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="to_list"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.to_list.html#pypath.share.common.to_list">[docs]</a><span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="to_list"><a class="viewcode-back" href="../../../api/pypath.share.common.to_list.html#pypath.share.common.to_list">[docs]</a><span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes sure `var` is a list otherwise creates a single element list</span>
 <span class="sd">    out of it. If `var` is None returns empty list.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -400,9 +827,18 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">var</span><span class="p">]</span></div>
 
 
+<div class="viewcode-block" id="to_tuple"><a class="viewcode-back" href="../../../api/pypath.share.common.to_tuple.html#pypath.share.common.to_tuple">[docs]</a><span class="k">def</span> <span class="nf">to_tuple</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes sure `var` is a tuple otherwise creates a single element tuple</span>
+<span class="sd">    out of it. If `var` is None returns empty tuple.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">var</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">to_list</span><span class="p">(</span><span class="n">var</span><span class="p">))</span></div>
+
+
 <span class="c1"># From http://www.peterbe.com/plog/uniqifiers-benchmark</span>
-<div class="viewcode-block" id="unique_list"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.unique_list.html#pypath.share.common.unique_list">[docs]</a><span class="k">def</span> <span class="nf">unique_list</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Reduces a list to its unique elements.</span>
+<div class="viewcode-block" id="unique_list"><a class="viewcode-back" href="../../../api/pypath.share.common.unique_list.html#pypath.share.common.unique_list">[docs]</a><span class="k">def</span> <span class="nf">unique_list</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reduces a list to its unique elements.</span>
 
 <span class="sd">    Takes any iterable and returns a list of unique elements on it. If</span>
 <span class="sd">    the argument is a dictionary, returns a list of unique keys.</span>
@@ -428,8 +864,8 @@
 <span class="n">uniq_list</span> <span class="o">=</span> <span class="n">unique_list</span>
 
 
-<div class="viewcode-block" id="uniq_list1"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.uniq_list1.html#pypath.share.common.uniq_list1">[docs]</a><span class="k">def</span> <span class="nf">uniq_list1</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="uniq_list1"><a class="viewcode-back" href="../../../api/pypath.share.common.uniq_list1.html#pypath.share.common.uniq_list1">[docs]</a><span class="k">def</span> <span class="nf">uniq_list1</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Not order preserving</span>
 <span class="sd">    From http://www.peterbe.com/plog/uniqifiers-benchmark</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -437,8 +873,8 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="uniq_list2"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.uniq_list2.html#pypath.share.common.uniq_list2">[docs]</a><span class="k">def</span> <span class="nf">uniq_list2</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="uniq_list2"><a class="viewcode-back" href="../../../api/pypath.share.common.uniq_list2.html#pypath.share.common.uniq_list2">[docs]</a><span class="k">def</span> <span class="nf">uniq_list2</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Not order preserving</span>
 <span class="sd">    From http://www.peterbe.com/plog/uniqifiers-benchmark</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -451,8 +887,8 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="flat_list"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.flat_list.html#pypath.share.common.flat_list">[docs]</a><span class="k">def</span> <span class="nf">flat_list</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Coerces the elements of a list of iterables into a single list.</span>
+<div class="viewcode-block" id="flat_list"><a class="viewcode-back" href="../../../api/pypath.share.common.flat_list.html#pypath.share.common.flat_list">[docs]</a><span class="k">def</span> <span class="nf">flat_list</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Coerces the elements of a list of iterables into a single list.</span>
 
 <span class="sd">    :arg lsit lst:</span>
 <span class="sd">        List to be flattened. Its elements can be also lists or any</span>
@@ -471,8 +907,8 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">it</span> <span class="k">for</span> <span class="n">sl</span> <span class="ow">in</span> <span class="n">lst</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">sl</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="del_empty"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.del_empty.html#pypath.share.common.del_empty">[docs]</a><span class="k">def</span> <span class="nf">del_empty</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span> <span class="c1"># XXX: Only used in main.py line: 1278</span>
-    <span class="sd">&quot;&quot;&quot;Removes empty entries of a list.</span>
+<div class="viewcode-block" id="del_empty"><a class="viewcode-back" href="../../../api/pypath.share.common.del_empty.html#pypath.share.common.del_empty">[docs]</a><span class="k">def</span> <span class="nf">del_empty</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span> <span class="c1"># XXX: Only used in main.py line: 1278</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Removes empty entries of a list.</span>
 
 <span class="sd">    It is assumed that elemenst of *lst* are iterables (e.g. [str] or</span>
 <span class="sd">    [list]).</span>
@@ -492,8 +928,8 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))]</span></div>
 
 
-<div class="viewcode-block" id="re_safe_groups"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.re_safe_groups.html#pypath.share.common.re_safe_groups">[docs]</a><span class="k">def</span> <span class="nf">re_safe_groups</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="re_safe_groups"><a class="viewcode-back" href="../../../api/pypath.share.common.re_safe_groups.html#pypath.share.common.re_safe_groups">[docs]</a><span class="k">def</span> <span class="nf">re_safe_groups</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Missing convenience for the built-in `re` module.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -504,8 +940,8 @@
 
 <span class="c1"># Order preserving</span>
 <span class="c1"># From http://www.peterbe.com/plog/uniqifiers-benchmark</span>
-<div class="viewcode-block" id="uniq_ord_list"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.uniq_ord_list.html#pypath.share.common.uniq_ord_list">[docs]</a><span class="k">def</span> <span class="nf">uniq_ord_list</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">idfun</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> <span class="c1"># XXX: Only used in plot.py line: 510</span>
-    <span class="sd">&quot;&quot;&quot;Reduces a list to its unique elements keeping their order.</span>
+<div class="viewcode-block" id="uniq_ord_list"><a class="viewcode-back" href="../../../api/pypath.share.common.uniq_ord_list.html#pypath.share.common.uniq_ord_list">[docs]</a><span class="k">def</span> <span class="nf">uniq_ord_list</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">idfun</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> <span class="c1"># XXX: Only used in plot.py line: 510</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reduces a list to its unique elements keeping their order.</span>
 
 <span class="sd">    Returns a copy of *seq* without repeated elements. Preserves the</span>
 <span class="sd">    order. If any element is repeated, the first instance is kept.</span>
@@ -561,8 +997,8 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="add_to_list"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.add_to_list.html#pypath.share.common.add_to_list">[docs]</a><span class="k">def</span> <span class="nf">add_to_list</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">toadd</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Adds elements to a list.</span>
+<div class="viewcode-block" id="add_to_list"><a class="viewcode-back" href="../../../api/pypath.share.common.add_to_list.html#pypath.share.common.add_to_list">[docs]</a><span class="k">def</span> <span class="nf">add_to_list</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">toadd</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Adds elements to a list.</span>
 
 <span class="sd">    Appends *toadd* to *lst*. Function differs from</span>
 <span class="sd">    :py:func:`list.append` since is capable to handle different data</span>
@@ -619,8 +1055,8 @@
     <span class="k">return</span> <span class="n">uniq_list</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="add_to_set"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.add_to_set.html#pypath.share.common.add_to_set">[docs]</a><span class="k">def</span> <span class="nf">add_to_set</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">toadd</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Adds elements to a set.</span>
+<div class="viewcode-block" id="add_to_set"><a class="viewcode-back" href="../../../api/pypath.share.common.add_to_set.html#pypath.share.common.add_to_set">[docs]</a><span class="k">def</span> <span class="nf">add_to_set</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">toadd</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds elements to a set.</span>
 
 <span class="sd">    Appends *toadd* to *st*. Function is capable to handle different</span>
 <span class="sd">    input data types. This is, if *toadd* is a list, it will be</span>
@@ -655,8 +1091,8 @@
     <span class="k">return</span> <span class="n">st</span></div>
 
 
-<div class="viewcode-block" id="upper0"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.upper0.html#pypath.share.common.upper0">[docs]</a><span class="k">def</span> <span class="nf">upper0</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="upper0"><a class="viewcode-back" href="../../../api/pypath.share.common.upper0.html#pypath.share.common.upper0">[docs]</a><span class="k">def</span> <span class="nf">upper0</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensures the first letter of a string is uppercase, except if the first</span>
 <span class="sd">    word already contains uppercase letters, in order to avoid changing,</span>
 <span class="sd">    for example, miRNA to MiRNA.</span>
@@ -677,8 +1113,8 @@
         <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="first"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.first.html#pypath.share.common.first">[docs]</a><span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="first"><a class="viewcode-back" href="../../../api/pypath.share.common.first.html#pypath.share.common.first">[docs]</a><span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the first element of the iterable ``it`` or the value of</span>
 <span class="sd">    ``default`` if the iterable is empty.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -690,8 +1126,8 @@
     <span class="k">return</span> <span class="n">default</span></div>
 
 
-<div class="viewcode-block" id="sfirst"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.sfirst.html#pypath.share.common.sfirst">[docs]</a><span class="k">def</span> <span class="nf">sfirst</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="sfirst"><a class="viewcode-back" href="../../../api/pypath.share.common.sfirst.html#pypath.share.common.sfirst">[docs]</a><span class="k">def</span> <span class="nf">sfirst</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns ``it`` if it&#39;s a string, its first element if it&#39;s an iterable,</span>
 <span class="sd">    or the value of ``default`` if the iterable is empty.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -699,8 +1135,8 @@
     <span class="k">return</span> <span class="n">it</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">simple_types</span><span class="p">)</span> <span class="k">else</span> <span class="n">first</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="swap_suffix"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.swap_suffix.html#pypath.share.common.swap_suffix">[docs]</a><span class="k">def</span> <span class="nf">swap_suffix</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suffixes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="swap_suffix"><a class="viewcode-back" href="../../../api/pypath.share.common.swap_suffix.html#pypath.share.common.swap_suffix">[docs]</a><span class="k">def</span> <span class="nf">swap_suffix</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">suffixes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Changes the suffix of a string.</span>
 
 <span class="sd">    suffixes : dict</span>
@@ -719,8 +1155,8 @@
 
 
 
-<div class="viewcode-block" id="something"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.something.html#pypath.share.common.something">[docs]</a><span class="k">def</span> <span class="nf">something</span><span class="p">(</span><span class="n">anything</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Checks if argument is empty.</span>
+<div class="viewcode-block" id="something"><a class="viewcode-back" href="../../../api/pypath.share.common.something.html#pypath.share.common.something">[docs]</a><span class="k">def</span> <span class="nf">something</span><span class="p">(</span><span class="n">anything</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if argument is empty.</span>
 
 <span class="sd">    Checks if *anything* is empty or ``None``.</span>
 
@@ -749,8 +1185,8 @@
                     <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">anything</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="gen_session_id"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.gen_session_id.html#pypath.share.common.gen_session_id">[docs]</a><span class="k">def</span> <span class="nf">gen_session_id</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates a random alphanumeric string.</span>
+<div class="viewcode-block" id="gen_session_id"><a class="viewcode-back" href="../../../api/pypath.share.common.gen_session_id.html#pypath.share.common.gen_session_id">[docs]</a><span class="k">def</span> <span class="nf">gen_session_id</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a random alphanumeric string.</span>
 
 <span class="sd">    :arg int length:</span>
 <span class="sd">        Optional, ``5`` by default. Specifies the length of the random</span>
@@ -769,8 +1205,8 @@
 <span class="c1"># Yes this is the formula:</span>
 <span class="c1"># https://proceedings.neurips.cc/paper/2006/file/</span>
 <span class="c1"># a36e841c5230a79c2102036d2e259848-Paper.pdf</span>
-<div class="viewcode-block" id="simpson_index"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.simpson_index.html#pypath.share.common.simpson_index">[docs]</a><span class="k">def</span> <span class="nf">simpson_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="simpson_index"><a class="viewcode-back" href="../../../api/pypath.share.common.simpson_index.html#pypath.share.common.simpson_index">[docs]</a><span class="k">def</span> <span class="nf">simpson_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes Simpson&#39;s similarity index.</span>
 
 <span class="sd">    Given two sets *a* and *b*, returns the Simpson index.</span>
@@ -792,8 +1228,8 @@
 
 
 <span class="c1"># XXX: Related to comment above, what is this exactly?</span>
-<div class="viewcode-block" id="simpson_index_counts"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.simpson_index_counts.html#pypath.share.common.simpson_index_counts">[docs]</a><span class="k">def</span> <span class="nf">simpson_index_counts</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="simpson_index_counts"><a class="viewcode-back" href="../../../api/pypath.share.common.simpson_index_counts.html#pypath.share.common.simpson_index_counts">[docs]</a><span class="k">def</span> <span class="nf">simpson_index_counts</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :arg a:</span>
 <span class="sd">    :arg b:</span>
 <span class="sd">    :arg c:</span>
@@ -805,8 +1241,8 @@
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span> <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span></div>
 
 
-<div class="viewcode-block" id="sorensen_index"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.sorensen_index.html#pypath.share.common.sorensen_index">[docs]</a><span class="k">def</span> <span class="nf">sorensen_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes the Sorensen index.</span>
+<div class="viewcode-block" id="sorensen_index"><a class="viewcode-back" href="../../../api/pypath.share.common.sorensen_index.html#pypath.share.common.sorensen_index">[docs]</a><span class="k">def</span> <span class="nf">sorensen_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the Sorensen index.</span>
 
 <span class="sd">    Computes the Sorensen-Dice coefficient between two sets *a* and *b*.</span>
 
@@ -826,8 +1262,8 @@
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ab</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="jaccard_index"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.jaccard_index.html#pypath.share.common.jaccard_index">[docs]</a><span class="k">def</span> <span class="nf">jaccard_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes the Jaccard index.</span>
+<div class="viewcode-block" id="jaccard_index"><a class="viewcode-back" href="../../../api/pypath.share.common.jaccard_index.html#pypath.share.common.jaccard_index">[docs]</a><span class="k">def</span> <span class="nf">jaccard_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the Jaccard index.</span>
 
 <span class="sd">    Computes the Jaccard index between two sets *a* and *b*.</span>
 
@@ -847,8 +1283,8 @@
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ab</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span> <span class="o">|</span> <span class="n">b</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="console"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.console.html#pypath.share.common.console">[docs]</a><span class="k">def</span> <span class="nf">console</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Prints a message on the terminal.</span>
+<div class="viewcode-block" id="console"><a class="viewcode-back" href="../../../api/pypath.share.common.console.html#pypath.share.common.console">[docs]</a><span class="k">def</span> <span class="nf">console</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints a message on the terminal.</span>
 
 <span class="sd">    Prints a *message* to the standard output (e.g. terminal) formatted</span>
 <span class="sd">    to 80 characters per line plus first-level indentation.</span>
@@ -863,8 +1299,8 @@
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="wcl"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.wcl.html#pypath.share.common.wcl">[docs]</a><span class="k">def</span> <span class="nf">wcl</span><span class="p">(</span><span class="n">f</span><span class="p">):</span> <span class="c1"># XXX: Not used (another function w/ same name defined in curl.py)</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="wcl"><a class="viewcode-back" href="../../../api/pypath.share.common.wcl.html#pypath.share.common.wcl">[docs]</a><span class="k">def</span> <span class="nf">wcl</span><span class="p">(</span><span class="n">f</span><span class="p">):</span> <span class="c1"># XXX: Not used (another function w/ same name defined in curl.py)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -884,8 +1320,8 @@
 
 
 <span class="c1"># XXX: Not very clear to me the purpose of this function.</span>
-<div class="viewcode-block" id="get_args"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.get_args.html#pypath.share.common.get_args">[docs]</a><span class="k">def</span> <span class="nf">get_args</span><span class="p">(</span><span class="n">loc_dict</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="nb">set</span><span class="p">([])):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_args"><a class="viewcode-back" href="../../../api/pypath.share.common.get_args.html#pypath.share.common.get_args">[docs]</a><span class="k">def</span> <span class="nf">get_args</span><span class="p">(</span><span class="n">loc_dict</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="nb">set</span><span class="p">([])):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a dictionary of local variables, returns a copy of it without</span>
 <span class="sd">    ``&#39;self&#39;``, ``&#39;kwargs&#39;`` (in the scope of a :py:obj:`class`) plus</span>
 <span class="sd">    any other specified in the keyword argument *remove*.</span>
@@ -919,8 +1355,8 @@
 
 
 <span class="c1"># From http://stackoverflow.com/a/20024348/854988</span>
-<div class="viewcode-block" id="rotate"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.rotate.html#pypath.share.common.rotate">[docs]</a><span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)):</span> <span class="c1"># XXX: Not used? Wrote the docs before checking XD</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="rotate"><a class="viewcode-back" href="../../../api/pypath.share.common.rotate.html#pypath.share.common.rotate">[docs]</a><span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)):</span> <span class="c1"># XXX: Not used? Wrote the docs before checking XD</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotates a point with respect to a center.</span>
 
 <span class="sd">    Rotates a given *point* around a *center* according to the specified</span>
@@ -953,8 +1389,8 @@
     <span class="k">return</span> <span class="n">temp_point</span></div>
 
 
-<div class="viewcode-block" id="clean_dict"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.clean_dict.html#pypath.share.common.clean_dict">[docs]</a><span class="k">def</span> <span class="nf">clean_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Cleans a dictionary of ``None`` values.</span>
+<div class="viewcode-block" id="clean_dict"><a class="viewcode-back" href="../../../api/pypath.share.common.clean_dict.html#pypath.share.common.clean_dict">[docs]</a><span class="k">def</span> <span class="nf">clean_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cleans a dictionary of ``None`` values.</span>
 
 <span class="sd">    Removes ``None`` values from  a dictionary *dct* and casts all other</span>
 <span class="sd">    values to strings.</span>
@@ -983,8 +1419,8 @@
     <span class="k">return</span> <span class="n">dct</span></div>
 
 
-<div class="viewcode-block" id="md5"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.md5.html#pypath.share.common.md5">[docs]</a><span class="k">def</span> <span class="nf">md5</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="md5"><a class="viewcode-back" href="../../../api/pypath.share.common.md5.html#pypath.share.common.md5">[docs]</a><span class="k">def</span> <span class="nf">md5</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the sum of MD5 hash of a given string *value*.</span>
 
 <span class="sd">    :arg str value:</span>
@@ -1015,8 +1451,8 @@
                                   <span class="s1">&#39;arrow_width&#39;</span><span class="p">]}</span>
 
 
-<div class="viewcode-block" id="merge_dicts"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.merge_dicts.html#pypath.share.common.merge_dicts">[docs]</a><span class="k">def</span> <span class="nf">merge_dicts</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Merges dictionaries recursively.</span>
+<div class="viewcode-block" id="merge_dicts"><a class="viewcode-back" href="../../../api/pypath.share.common.merge_dicts.html#pypath.share.common.merge_dicts">[docs]</a><span class="k">def</span> <span class="nf">merge_dicts</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Merges dictionaries recursively.</span>
 
 <span class="sd">    If a key exists in both dictionaries, the values will be merged.</span>
 
@@ -1049,8 +1485,8 @@
 
 <span class="c1"># XXX: Not 100% clear, correct if I&#39;m mistaken. What do you mean by</span>
 <span class="c1">#      simple heuristic?</span>
-<div class="viewcode-block" id="dict_set_path"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_set_path.html#pypath.share.common.dict_set_path">[docs]</a><span class="k">def</span> <span class="nf">dict_set_path</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dict_set_path"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_set_path.html#pypath.share.common.dict_set_path">[docs]</a><span class="k">def</span> <span class="nf">dict_set_path</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a dictionary of dictionaries *d* looks up the keys according</span>
 <span class="sd">    to *path*, creates new subdicts and keys if those do not exist yet,</span>
 <span class="sd">    and sets/merges the leaf element according to simple heuristic.</span>
@@ -1114,8 +1550,8 @@
     <span class="k">return</span> <span class="n">d</span></div>
 
 
-<div class="viewcode-block" id="dict_diff"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_diff.html#pypath.share.common.dict_diff">[docs]</a><span class="k">def</span> <span class="nf">dict_diff</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compares two dictionaries.</span>
+<div class="viewcode-block" id="dict_diff"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_diff.html#pypath.share.common.dict_diff">[docs]</a><span class="k">def</span> <span class="nf">dict_diff</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compares two dictionaries.</span>
 
 <span class="sd">    Compares two given dictionaries *d1* and *d2* whose values are sets</span>
 <span class="sd">    or dictionaries (in such case the function is called recursively).</span>
@@ -1153,8 +1589,8 @@
     <span class="k">return</span> <span class="n">ldiff</span><span class="p">,</span> <span class="n">rdiff</span></div>
 
 
-<div class="viewcode-block" id="dict_sym_diff"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_sym_diff.html#pypath.share.common.dict_sym_diff">[docs]</a><span class="k">def</span> <span class="nf">dict_sym_diff</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dict_sym_diff"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_sym_diff.html#pypath.share.common.dict_sym_diff">[docs]</a><span class="k">def</span> <span class="nf">dict_sym_diff</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1172,8 +1608,8 @@
     <span class="k">return</span> <span class="n">diff</span></div>
 
 
-<div class="viewcode-block" id="swap_dict"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.swap_dict.html#pypath.share.common.swap_dict">[docs]</a><span class="k">def</span> <span class="nf">swap_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">force_sets</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="swap_dict"><a class="viewcode-back" href="../../../api/pypath.share.common.swap_dict.html#pypath.share.common.swap_dict">[docs]</a><span class="k">def</span> <span class="nf">swap_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">force_sets</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Swaps a dictionary.</span>
 
 <span class="sd">    Interchanges the keys and values of a dictionary. If the values are</span>
@@ -1218,8 +1654,8 @@
     <span class="k">return</span> <span class="n">_d</span></div>
 
 
-<div class="viewcode-block" id="swap_dict_simple"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.swap_dict_simple.html#pypath.share.common.swap_dict_simple">[docs]</a><span class="k">def</span> <span class="nf">swap_dict_simple</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="swap_dict_simple"><a class="viewcode-back" href="../../../api/pypath.share.common.swap_dict_simple.html#pypath.share.common.swap_dict_simple">[docs]</a><span class="k">def</span> <span class="nf">swap_dict_simple</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Swaps a dictionary.</span>
 
 <span class="sd">    Interchanges the keys and values of a dictionary. Assumes the values</span>
@@ -1242,8 +1678,8 @@
 <span class="c1">#      &gt;&gt;&gt; join_dicts(a, b)</span>
 <span class="c1">#      and got an empty dictionary (?)</span>
 
-<div class="viewcode-block" id="join_dicts"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.join_dicts.html#pypath.share.common.join_dicts">[docs]</a><span class="k">def</span> <span class="nf">join_dicts</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">_from</span><span class="o">=</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;values&#39;</span><span class="p">):</span> <span class="c1"># TODO</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="join_dicts"><a class="viewcode-back" href="../../../api/pypath.share.common.join_dicts.html#pypath.share.common.join_dicts">[docs]</a><span class="k">def</span> <span class="nf">join_dicts</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">_from</span><span class="o">=</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;values&#39;</span><span class="p">):</span> <span class="c1"># TODO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Joins a pair of dictionaries.</span>
 
 <span class="sd">    :arg dict d1:</span>
@@ -1428,12 +1864,12 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="silent"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.silent.html#pypath.share.common.silent">[docs]</a><span class="k">class</span> <span class="nc">silent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> <span class="c1"># XXX: Never used</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="silent"><a class="viewcode-back" href="../../../api/pypath.share.common.silent.html#pypath.share.common.silent">[docs]</a><span class="k">class</span> <span class="nc">silent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> <span class="c1"># XXX: Never used</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="silent.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.silent.html#pypath.share.common.silent.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="silent.__init__"><a class="viewcode-back" href="../../../api/pypath.share.common.silent.html#pypath.share.common.silent.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">pass</span></div>
 
@@ -1447,8 +1883,8 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aux</span></div>
 
 
-<div class="viewcode-block" id="paginate"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.paginate.html#pypath.share.common.paginate">[docs]</a><span class="k">def</span> <span class="nf">paginate</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="paginate"><a class="viewcode-back" href="../../../api/pypath.share.common.paginate.html#pypath.share.common.paginate">[docs]</a><span class="k">def</span> <span class="nf">paginate</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Yields sections of length ``size`` from list ``lst``.</span>
 <span class="sd">    The last section might be shorter than ``size``.</span>
 <span class="sd">    Following https://stackoverflow.com/a/3744502/854988.</span>
@@ -1459,8 +1895,8 @@
         <span class="k">yield</span> <span class="n">lst</span><span class="p">[</span><span class="n">size</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="n">size</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span></div>
 
 
-<div class="viewcode-block" id="shared_unique"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.shared_unique.html#pypath.share.common.shared_unique">[docs]</a><span class="k">def</span> <span class="nf">shared_unique</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="shared_unique"><a class="viewcode-back" href="../../../api/pypath.share.common.shared_unique.html#pypath.share.common.shared_unique">[docs]</a><span class="k">def</span> <span class="nf">shared_unique</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s ``by_group`` and a particular key ``group``</span>
 <span class="sd">    returns a *set* of all elements in the *set* belonging to the</span>
 <span class="sd">    key ``group`` which either does or does not occure in any of the sets</span>
@@ -1494,8 +1930,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="shared_elements"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.shared_elements.html#pypath.share.common.shared_elements">[docs]</a><span class="k">def</span> <span class="nf">shared_elements</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="shared_elements"><a class="viewcode-back" href="../../../api/pypath.share.common.shared_elements.html#pypath.share.common.shared_elements">[docs]</a><span class="k">def</span> <span class="nf">shared_elements</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s ``by_group`` and a particular key ``group``</span>
 <span class="sd">    returns a *set* of all elements in the *set* belonging to the</span>
 <span class="sd">    key ``group`` which occure in any of the sets assigned to the other keys.</span>
@@ -1510,8 +1946,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="unique_elements"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.unique_elements.html#pypath.share.common.unique_elements">[docs]</a><span class="k">def</span> <span class="nf">unique_elements</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="unique_elements"><a class="viewcode-back" href="../../../api/pypath.share.common.unique_elements.html#pypath.share.common.unique_elements">[docs]</a><span class="k">def</span> <span class="nf">unique_elements</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s ``by_group`` and a particular key ``group``</span>
 <span class="sd">    returns a *set* of all elements in the *set* belonging to the</span>
 <span class="sd">    key ``group`` which don&#39;t occure in any of the sets assigned to the</span>
@@ -1526,8 +1962,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="n_shared_elements"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.n_shared_elements.html#pypath.share.common.n_shared_elements">[docs]</a><span class="k">def</span> <span class="nf">n_shared_elements</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="n_shared_elements"><a class="viewcode-back" href="../../../api/pypath.share.common.n_shared_elements.html#pypath.share.common.n_shared_elements">[docs]</a><span class="k">def</span> <span class="nf">n_shared_elements</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s ``by_group`` and a particular key ``group``</span>
 <span class="sd">    returns the number of all elements in the *set* belonging to the</span>
 <span class="sd">    key ``group`` which occure in any of the other sets.</span>
@@ -1538,8 +1974,8 @@
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">shared_elements</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="n_unique_elements"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.n_unique_elements.html#pypath.share.common.n_unique_elements">[docs]</a><span class="k">def</span> <span class="nf">n_unique_elements</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="n_unique_elements"><a class="viewcode-back" href="../../../api/pypath.share.common.n_unique_elements.html#pypath.share.common.n_unique_elements">[docs]</a><span class="k">def</span> <span class="nf">n_unique_elements</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s ``by_group`` and a particular key ``group``</span>
 <span class="sd">    returns the number of all elements in the *set* belonging to the</span>
 <span class="sd">    key ``group`` which don&#39;t occure in any of the other sets.</span>
@@ -1550,8 +1986,8 @@
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_elements</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="shared_unique_foreach"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.shared_unique_foreach.html#pypath.share.common.shared_unique_foreach">[docs]</a><span class="k">def</span> <span class="nf">shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="shared_unique_foreach"><a class="viewcode-back" href="../../../api/pypath.share.common.shared_unique_foreach.html#pypath.share.common.shared_unique_foreach">[docs]</a><span class="k">def</span> <span class="nf">shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s ``by_group`` returns a *dict* of *set*s with</span>
 <span class="sd">    either shared or unique elements across all *set*s, depending on</span>
 <span class="sd">    the operation ``op``.</span>
@@ -1570,8 +2006,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="n_shared_unique_foreach"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.n_shared_unique_foreach.html#pypath.share.common.n_shared_unique_foreach">[docs]</a><span class="k">def</span> <span class="nf">n_shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="n_shared_unique_foreach"><a class="viewcode-back" href="../../../api/pypath.share.common.n_shared_unique_foreach.html#pypath.share.common.n_shared_unique_foreach">[docs]</a><span class="k">def</span> <span class="nf">n_shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s ``by_group`` returns a *dict* of numbers with</span>
 <span class="sd">    the counts of either the shared or unique elements across all *set*s,</span>
 <span class="sd">    depending on the operation ``op``.</span>
@@ -1584,36 +2020,36 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="shared_foreach"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.shared_foreach.html#pypath.share.common.shared_foreach">[docs]</a><span class="k">def</span> <span class="nf">shared_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
+<div class="viewcode-block" id="shared_foreach"><a class="viewcode-back" href="../../../api/pypath.share.common.shared_foreach.html#pypath.share.common.shared_foreach">[docs]</a><span class="k">def</span> <span class="nf">shared_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="unique_foreach"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.unique_foreach.html#pypath.share.common.unique_foreach">[docs]</a><span class="k">def</span> <span class="nf">unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
+<div class="viewcode-block" id="unique_foreach"><a class="viewcode-back" href="../../../api/pypath.share.common.unique_foreach.html#pypath.share.common.unique_foreach">[docs]</a><span class="k">def</span> <span class="nf">unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;unique&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="n_shared_foreach"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.n_shared_foreach.html#pypath.share.common.n_shared_foreach">[docs]</a><span class="k">def</span> <span class="nf">n_shared_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
+<div class="viewcode-block" id="n_shared_foreach"><a class="viewcode-back" href="../../../api/pypath.share.common.n_shared_foreach.html#pypath.share.common.n_shared_foreach">[docs]</a><span class="k">def</span> <span class="nf">n_shared_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">n_shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="n_unique_foreach"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.n_unique_foreach.html#pypath.share.common.n_unique_foreach">[docs]</a><span class="k">def</span> <span class="nf">n_unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
+<div class="viewcode-block" id="n_unique_foreach"><a class="viewcode-back" href="../../../api/pypath.share.common.n_unique_foreach.html#pypath.share.common.n_unique_foreach">[docs]</a><span class="k">def</span> <span class="nf">n_unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">n_shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;unique&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dict_union"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_union.html#pypath.share.common.dict_union">[docs]</a><span class="k">def</span> <span class="nf">dict_union</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dict_union"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_union.html#pypath.share.common.dict_union">[docs]</a><span class="k">def</span> <span class="nf">dict_union</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s returns the union of the values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">dict_of_sets</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="n">dict_of_sets</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="dict_counts"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_counts.html#pypath.share.common.dict_counts">[docs]</a><span class="k">def</span> <span class="nf">dict_counts</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dict_counts"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_counts.html#pypath.share.common.dict_counts">[docs]</a><span class="k">def</span> <span class="nf">dict_counts</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s or other values with ``__len__`` returns a</span>
 <span class="sd">    *dict* of numbers with the length of each value in the original *dict*.</span>
 
@@ -1633,8 +2069,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dict_expand_keys"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_expand_keys.html#pypath.share.common.dict_expand_keys">[docs]</a><span class="k">def</span> <span class="nf">dict_expand_keys</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">front</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dict_expand_keys"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_expand_keys.html#pypath.share.common.dict_expand_keys">[docs]</a><span class="k">def</span> <span class="nf">dict_expand_keys</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">front</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    From a *dict* with *tuple* keys builds a dict of dicts.</span>
 
 <span class="sd">    :arg dict dct:</span>
@@ -1694,13 +2130,13 @@
     <span class="k">return</span> <span class="n">new</span></div>
 
 
-<div class="viewcode-block" id="dict_collapse_keys"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_collapse_keys.html#pypath.share.common.dict_collapse_keys">[docs]</a><span class="k">def</span> <span class="nf">dict_collapse_keys</span><span class="p">(</span>
+<div class="viewcode-block" id="dict_collapse_keys"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_collapse_keys.html#pypath.share.common.dict_collapse_keys">[docs]</a><span class="k">def</span> <span class="nf">dict_collapse_keys</span><span class="p">(</span>
         <span class="n">dct</span><span class="p">,</span>
         <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">front</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">expand_tuple_keys</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    From a dict of dicts builds a dict with tuple keys.</span>
 
 <span class="sd">    :arg dict dct:</span>
@@ -1768,7 +2204,7 @@
     <span class="k">return</span> <span class="n">new</span></div>
 
 
-<div class="viewcode-block" id="shared_unique_total"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.shared_unique_total.html#pypath.share.common.shared_unique_total">[docs]</a><span class="k">def</span> <span class="nf">shared_unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="shared_unique_total"><a class="viewcode-back" href="../../../api/pypath.share.common.shared_unique_total.html#pypath.share.common.shared_unique_total">[docs]</a><span class="k">def</span> <span class="nf">shared_unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">):</span>
 
     <span class="n">counts</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">by_group</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
     <span class="n">_op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">eq</span> <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s1">&#39;unique&#39;</span> <span class="k">else</span> <span class="n">operator</span><span class="o">.</span><span class="n">gt</span>
@@ -1776,28 +2212,28 @@
     <span class="k">return</span> <span class="p">{</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="k">if</span> <span class="n">_op</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">1</span><span class="p">)}</span></div>
 
 
-<div class="viewcode-block" id="shared_total"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.shared_total.html#pypath.share.common.shared_total">[docs]</a><span class="k">def</span> <span class="nf">shared_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
+<div class="viewcode-block" id="shared_total"><a class="viewcode-back" href="../../../api/pypath.share.common.shared_total.html#pypath.share.common.shared_total">[docs]</a><span class="k">def</span> <span class="nf">shared_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">shared_unique_total</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="unique_total"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.unique_total.html#pypath.share.common.unique_total">[docs]</a><span class="k">def</span> <span class="nf">unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
+<div class="viewcode-block" id="unique_total"><a class="viewcode-back" href="../../../api/pypath.share.common.unique_total.html#pypath.share.common.unique_total">[docs]</a><span class="k">def</span> <span class="nf">unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">shared_unique_total</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;unique&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="n_shared_total"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.n_shared_total.html#pypath.share.common.n_shared_total">[docs]</a><span class="k">def</span> <span class="nf">n_shared_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
+<div class="viewcode-block" id="n_shared_total"><a class="viewcode-back" href="../../../api/pypath.share.common.n_shared_total.html#pypath.share.common.n_shared_total">[docs]</a><span class="k">def</span> <span class="nf">n_shared_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">shared_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="n_unique_total"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.n_unique_total.html#pypath.share.common.n_unique_total">[docs]</a><span class="k">def</span> <span class="nf">n_unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
+<div class="viewcode-block" id="n_unique_total"><a class="viewcode-back" href="../../../api/pypath.share.common.n_unique_total.html#pypath.share.common.n_unique_total">[docs]</a><span class="k">def</span> <span class="nf">n_unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="dict_subtotals"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_subtotals.html#pypath.share.common.dict_subtotals">[docs]</a><span class="k">def</span> <span class="nf">dict_subtotals</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dict_subtotals"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_subtotals.html#pypath.share.common.dict_subtotals">[docs]</a><span class="k">def</span> <span class="nf">dict_subtotals</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a dict of dicts of sets returns a dict with keys of the outer dict</span>
 <span class="sd">    and values the union of the sets in each of the inner dicts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1811,8 +2247,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dict_percent"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_percent.html#pypath.share.common.dict_percent">[docs]</a><span class="k">def</span> <span class="nf">dict_percent</span><span class="p">(</span><span class="n">dict_of_counts</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dict_percent"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_percent.html#pypath.share.common.dict_percent">[docs]</a><span class="k">def</span> <span class="nf">dict_percent</span><span class="p">(</span><span class="n">dict_of_counts</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of counts and a total count creates a *dict* of percentages.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1822,7 +2258,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dict_set_percent"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_set_percent.html#pypath.share.common.dict_set_percent">[docs]</a><span class="k">def</span> <span class="nf">dict_set_percent</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">):</span>
+<div class="viewcode-block" id="dict_set_percent"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_set_percent.html#pypath.share.common.dict_set_percent">[docs]</a><span class="k">def</span> <span class="nf">dict_set_percent</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">):</span>
 
     <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dict_union</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">))</span>
     <span class="n">counts</span> <span class="o">=</span> <span class="n">dict_counts</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">)</span>
@@ -1830,8 +2266,8 @@
     <span class="k">return</span> <span class="n">dict_percent</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="df_memory_usage"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.df_memory_usage.html#pypath.share.common.df_memory_usage">[docs]</a><span class="k">def</span> <span class="nf">df_memory_usage</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deep</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="df_memory_usage"><a class="viewcode-back" href="../../../api/pypath.share.common.df_memory_usage.html#pypath.share.common.df_memory_usage">[docs]</a><span class="k">def</span> <span class="nf">df_memory_usage</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deep</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the memory usage of a ``pandas.DataFrame`` as a string.</span>
 <span class="sd">    Modified from ``pandas.DataFrame.info``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1849,19 +2285,46 @@
 
     <span class="n">mem_usage</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">index</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">deep</span> <span class="o">=</span> <span class="n">deep</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
+    <span class="k">return</span> <span class="n">format_bytes</span><span class="p">(</span><span class="n">mem_usage</span><span class="p">,</span> <span class="n">size_qualifier</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="python_memory_usage"><a class="viewcode-back" href="../../../api/pypath.share.common.python_memory_usage.html#pypath.share.common.python_memory_usage">[docs]</a><span class="k">def</span> <span class="nf">python_memory_usage</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the memory usage of the current process in bytes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span><span class="o">.</span><span class="n">memory_info</span><span class="p">()</span><span class="o">.</span><span class="n">vms</span></div>
+
+
+<div class="viewcode-block" id="format_bytes"><a class="viewcode-back" href="../../../api/pypath.share.common.format_bytes.html#pypath.share.common.format_bytes">[docs]</a><span class="k">def</span> <span class="nf">format_bytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">qualifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pretty printed bytes with unit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;bytes&#39;</span><span class="p">,</span> <span class="s1">&#39;KB&#39;</span><span class="p">,</span> <span class="s1">&#39;MB&#39;</span><span class="p">,</span> <span class="s1">&#39;GB&#39;</span><span class="p">,</span> <span class="s1">&#39;TB&#39;</span><span class="p">]:</span>
 
-        <span class="k">if</span> <span class="n">mem_usage</span> <span class="o">&lt;</span> <span class="mf">1024.0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">bytes</span> <span class="o">&lt;</span> <span class="mf">1024.0</span><span class="p">:</span>
 
-            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%3.1f%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mem_usage</span><span class="p">,</span> <span class="n">size_qualifier</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%3.1f%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">qualifier</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
 
-        <span class="n">mem_usage</span> <span class="o">/=</span> <span class="mf">1024.0</span>
+        <span class="nb">bytes</span> <span class="o">/=</span> <span class="mf">1024.0</span>
 
-    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%3.1f%s</span><span class="s1"> PB&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mem_usage</span><span class="p">,</span> <span class="n">size_qualifier</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%3.1f%s</span><span class="s1"> PB&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">qualifier</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="sum_dicts"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.sum_dicts.html#pypath.share.common.sum_dicts">[docs]</a><span class="k">def</span> <span class="nf">sum_dicts</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="log_memory_usage"><a class="viewcode-back" href="../../../api/pypath.share.common.log_memory_usage.html#pypath.share.common.log_memory_usage">[docs]</a><span class="k">def</span> <span class="nf">log_memory_usage</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs the memory usage of the current process.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">pypath</span>
+    <span class="n">pypath</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;Python memory use: </span><span class="si">{</span><span class="n">format_bytes</span><span class="p">(</span><span class="n">python_memory_usage</span><span class="p">())</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sum_dicts"><a class="viewcode-back" href="../../../api/pypath.share.common.sum_dicts.html#pypath.share.common.sum_dicts">[docs]</a><span class="k">def</span> <span class="nf">sum_dicts</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For dicts of numbers returns a dict with the sum of the numbers from</span>
 <span class="sd">    all dicts for all keys.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1880,8 +2343,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="combine_attrs"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.combine_attrs.html#pypath.share.common.combine_attrs">[docs]</a><span class="k">def</span> <span class="nf">combine_attrs</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="n">num_method</span> <span class="o">=</span> <span class="nb">max</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="combine_attrs"><a class="viewcode-back" href="../../../api/pypath.share.common.combine_attrs.html#pypath.share.common.combine_attrs">[docs]</a><span class="k">def</span> <span class="nf">combine_attrs</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="n">num_method</span> <span class="o">=</span> <span class="nb">max</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Combines multiple attributes into one. This method attempts</span>
 <span class="sd">    to find out which is the best way to combine attributes.</span>
 
@@ -2034,8 +2497,8 @@
     <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="at_least_in"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.at_least_in.html#pypath.share.common.at_least_in">[docs]</a><span class="k">def</span> <span class="nf">at_least_in</span><span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="at_least_in"><a class="viewcode-back" href="../../../api/pypath.share.common.at_least_in.html#pypath.share.common.at_least_in">[docs]</a><span class="k">def</span> <span class="nf">at_least_in</span><span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a method which is similar to the `intersection` operator on sets</span>
 <span class="sd">    but requires the elements to present at least in ``n`` of the sets</span>
 <span class="sd">    instead of in all of them. If ``n = 1`` it is equivalent with ``union``,</span>
@@ -2061,8 +2524,8 @@
     <span class="k">return</span> <span class="n">_at_least_in</span></div>
 
 
-<div class="viewcode-block" id="eq"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.eq.html#pypath.share.common.eq">[docs]</a><span class="k">def</span> <span class="nf">eq</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="eq"><a class="viewcode-back" href="../../../api/pypath.share.common.eq.html#pypath.share.common.eq">[docs]</a><span class="k">def</span> <span class="nf">eq</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Equality between ``one`` and ``other``. If any of them is type of `set`,</span>
 <span class="sd">    returns True if it contains the other. If both of them are `set`,</span>
 <span class="sd">    returns True if they share any element. Lists, tuples and similar objects</span>
@@ -2091,7 +2554,7 @@
         <span class="k">return</span> <span class="n">one</span> <span class="o">==</span> <span class="n">other</span></div>
 
 
-<div class="viewcode-block" id="dict_str"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.dict_str.html#pypath.share.common.dict_str">[docs]</a><span class="k">def</span> <span class="nf">dict_str</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+<div class="viewcode-block" id="dict_str"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_str.html#pypath.share.common.dict_str">[docs]</a><span class="k">def</span> <span class="nf">dict_str</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
 
@@ -2103,12 +2566,12 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="none_or_len"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.none_or_len.html#pypath.share.common.none_or_len">[docs]</a><span class="k">def</span> <span class="nf">none_or_len</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="none_or_len"><a class="viewcode-back" href="../../../api/pypath.share.common.none_or_len.html#pypath.share.common.none_or_len">[docs]</a><span class="k">def</span> <span class="nf">none_or_len</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;__len__&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="sets_to_sorted_lists"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.sets_to_sorted_lists.html#pypath.share.common.sets_to_sorted_lists">[docs]</a><span class="k">def</span> <span class="nf">sets_to_sorted_lists</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="sets_to_sorted_lists"><a class="viewcode-back" href="../../../api/pypath.share.common.sets_to_sorted_lists.html#pypath.share.common.sets_to_sorted_lists">[docs]</a><span class="k">def</span> <span class="nf">sets_to_sorted_lists</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
 
@@ -2126,15 +2589,15 @@
         <span class="k">return</span> <span class="n">obj</span></div>
 
 
-<div class="viewcode-block" id="is_str"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.is_str.html#pypath.share.common.is_str">[docs]</a><span class="k">def</span> <span class="nf">is_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="is_str"><a class="viewcode-back" href="../../../api/pypath.share.common.is_str.html#pypath.share.common.is_str">[docs]</a><span class="k">def</span> <span class="nf">is_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if ``obj`` is a string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">basestring</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="wrap_truncate"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.wrap_truncate.html#pypath.share.common.wrap_truncate">[docs]</a><span class="k">def</span> <span class="nf">wrap_truncate</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">maxlen</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="wrap_truncate"><a class="viewcode-back" href="../../../api/pypath.share.common.wrap_truncate.html#pypath.share.common.wrap_truncate">[docs]</a><span class="k">def</span> <span class="nf">wrap_truncate</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">maxlen</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">list_like</span><span class="p">):</span>
 
@@ -2155,7 +2618,7 @@
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">list_like</span><span class="p">)</span> <span class="k">else</span> <span class="n">text</span></div>
 
 
-<div class="viewcode-block" id="table_add_row_numbers"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.table_add_row_numbers.html#pypath.share.common.table_add_row_numbers">[docs]</a><span class="k">def</span> <span class="nf">table_add_row_numbers</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="table_add_row_numbers"><a class="viewcode-back" href="../../../api/pypath.share.common.table_add_row_numbers.html#pypath.share.common.table_add_row_numbers">[docs]</a><span class="k">def</span> <span class="nf">table_add_row_numbers</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="n">nrows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">values</span><span class="p">()</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
 
@@ -2167,8 +2630,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="table_textwrap"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.table_textwrap.html#pypath.share.common.table_textwrap">[docs]</a><span class="k">def</span> <span class="nf">table_textwrap</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">maxlen</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="table_textwrap"><a class="viewcode-back" href="../../../api/pypath.share.common.table_textwrap.html#pypath.share.common.table_textwrap">[docs]</a><span class="k">def</span> <span class="nf">table_textwrap</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">maxlen</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wraps and truncates the text content of cells in a table.</span>
 <span class="sd">    The table is an ``OrderedDict`` with column titles as keys and column</span>
 <span class="sd">    contents as lists.</span>
@@ -2209,7 +2672,7 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="table_format"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.table_format.html#pypath.share.common.table_format">[docs]</a><span class="k">def</span> <span class="nf">table_format</span><span class="p">(</span>
+<div class="viewcode-block" id="table_format"><a class="viewcode-back" href="../../../api/pypath.share.common.table_format.html#pypath.share.common.table_format">[docs]</a><span class="k">def</span> <span class="nf">table_format</span><span class="p">(</span>
         <span class="n">tbl</span><span class="p">,</span>
         <span class="n">width</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">maxlen</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2239,7 +2702,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="print_table"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.print_table.html#pypath.share.common.print_table">[docs]</a><span class="k">def</span> <span class="nf">print_table</span><span class="p">(</span>
+<div class="viewcode-block" id="print_table"><a class="viewcode-back" href="../../../api/pypath.share.common.print_table.html#pypath.share.common.print_table">[docs]</a><span class="k">def</span> <span class="nf">print_table</span><span class="p">(</span>
         <span class="n">tbl</span><span class="p">,</span>
         <span class="n">width</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">maxlen</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2264,13 +2727,13 @@
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="tsv_table"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.tsv_table.html#pypath.share.common.tsv_table">[docs]</a><span class="k">def</span> <span class="nf">tsv_table</span><span class="p">(</span>
+<div class="viewcode-block" id="tsv_table"><a class="viewcode-back" href="../../../api/pypath.share.common.tsv_table.html#pypath.share.common.tsv_table">[docs]</a><span class="k">def</span> <span class="nf">tsv_table</span><span class="p">(</span>
         <span class="n">tbl</span><span class="p">,</span>
         <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">maxlen</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    From a table represented by an OrderedDict with column titles as keys</span>
 <span class="sd">    and column contents as lists generates a tab separated string.</span>
 <span class="sd">    If ``path`` provided writes out the tsv into a file, otherwise returns</span>
@@ -2297,7 +2760,7 @@
         <span class="k">return</span> <span class="n">tsv</span></div>
 
 
-<div class="viewcode-block" id="latex_table"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.latex_table.html#pypath.share.common.latex_table">[docs]</a><span class="k">def</span> <span class="nf">latex_table</span><span class="p">(</span>
+<div class="viewcode-block" id="latex_table"><a class="viewcode-back" href="../../../api/pypath.share.common.latex_table.html#pypath.share.common.latex_table">[docs]</a><span class="k">def</span> <span class="nf">latex_table</span><span class="p">(</span>
         <span class="n">tbl</span><span class="p">,</span>
         <span class="n">colformat</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">maxlen</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2310,7 +2773,7 @@
         <span class="n">latex_engine</span> <span class="o">=</span> <span class="s1">&#39;xelatex&#39;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    From a table represented by an OrderedDict with column titles as keys</span>
 <span class="sd">    and column contents as lists generates LaTeX tabular.</span>
 <span class="sd">    If ``path`` provided writes out the table into a file,</span>
@@ -2442,8 +2905,8 @@
         <span class="k">return</span> <span class="n">latex_full</span></div>
 
 
-<div class="viewcode-block" id="get"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.get.html#pypath.share.common.get">[docs]</a><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get"><a class="viewcode-back" href="../../../api/pypath.share.common.get.html#pypath.share.common.get">[docs]</a><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts elements from lists, dicts and tuples in a uniform way.</span>
 
 <span class="sd">    Args</span>
@@ -2473,8 +2936,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="values"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.values.html#pypath.share.common.values">[docs]</a><span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="values"><a class="viewcode-back" href="../../../api/pypath.share.common.values.html#pypath.share.common.values">[docs]</a><span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    All values of a field.</span>
 
 <span class="sd">    Args</span>
@@ -2499,8 +2962,8 @@
     <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="match"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.match.html#pypath.share.common.match">[docs]</a><span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">condition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="match"><a class="viewcode-back" href="../../../api/pypath.share.common.match.html#pypath.share.common.match">[docs]</a><span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">condition</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tests a condition on an object.</span>
 
 <span class="sd">    Args</span>
@@ -2521,8 +2984,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="filtr"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.filtr.html#pypath.share.common.filtr">[docs]</a><span class="k">def</span> <span class="nf">filtr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">and_or</span> <span class="o">=</span> <span class="s1">&#39;AND&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="filtr"><a class="viewcode-back" href="../../../api/pypath.share.common.filtr.html#pypath.share.common.filtr">[docs]</a><span class="k">def</span> <span class="nf">filtr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">and_or</span> <span class="o">=</span> <span class="s1">&#39;AND&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Filters an iterable by simple conditions on one or more fields.</span>
 
 <span class="sd">    Args</span>
@@ -2573,8 +3036,8 @@
             <span class="k">yield</span> <span class="n">it</span></div>
 
 
-<div class="viewcode-block" id="negate"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.negate.html#pypath.share.common.negate">[docs]</a><span class="k">def</span> <span class="nf">negate</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">neg</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="negate"><a class="viewcode-back" href="../../../api/pypath.share.common.negate.html#pypath.share.common.negate">[docs]</a><span class="k">def</span> <span class="nf">negate</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">neg</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Negates a value.</span>
 
 <span class="sd">    Args</span>
@@ -2589,8 +3052,8 @@
     <span class="k">return</span> <span class="ow">not</span> <span class="n">value</span> <span class="k">if</span> <span class="n">neg</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="prefix"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.prefix.html#pypath.share.common.prefix">[docs]</a><span class="k">def</span> <span class="nf">prefix</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">sep</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="prefix"><a class="viewcode-back" href="../../../api/pypath.share.common.prefix.html#pypath.share.common.prefix">[docs]</a><span class="k">def</span> <span class="nf">prefix</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">sep</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts a prefix from a string, splitting by a separator and taking</span>
 <span class="sd">    only the first part.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2598,8 +3061,8 @@
     <span class="k">return</span> <span class="n">first</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="suffix"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.suffix.html#pypath.share.common.suffix">[docs]</a><span class="k">def</span> <span class="nf">suffix</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">sep</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="suffix"><a class="viewcode-back" href="../../../api/pypath.share.common.suffix.html#pypath.share.common.suffix">[docs]</a><span class="k">def</span> <span class="nf">suffix</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">sep</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts a suffix from a string, splitting by a separator and taking</span>
 <span class="sd">    only the last part.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2607,8 +3070,8 @@
     <span class="k">return</span> <span class="n">first</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="n">sep</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="remove_prefix"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.remove_prefix.html#pypath.share.common.remove_prefix">[docs]</a><span class="k">def</span> <span class="nf">remove_prefix</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">sep</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="remove_prefix"><a class="viewcode-back" href="../../../api/pypath.share.common.remove_prefix.html#pypath.share.common.remove_prefix">[docs]</a><span class="k">def</span> <span class="nf">remove_prefix</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">sep</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes a prefix if `string` is a string and contains the separator</span>
 <span class="sd">    `sep`; otherwise returns the original object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2620,8 +3083,8 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="maybe_in_dict"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.maybe_in_dict.html#pypath.share.common.maybe_in_dict">[docs]</a><span class="k">def</span> <span class="nf">maybe_in_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="maybe_in_dict"><a class="viewcode-back" href="../../../api/pypath.share.common.maybe_in_dict.html#pypath.share.common.maybe_in_dict">[docs]</a><span class="k">def</span> <span class="nf">maybe_in_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves a key from a dict if the key is in the dict, otherwise</span>
 <span class="sd">    returns the key itself.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2629,8 +3092,8 @@
     <span class="k">return</span> <span class="n">dct</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dct</span> <span class="k">else</span> <span class="n">key</span></div>
 
 
-<div class="viewcode-block" id="decode"><a class="viewcode-back" href="../../../_autosummary/pypath.share.common.decode.html#pypath.share.common.decode">[docs]</a><span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="decode"><a class="viewcode-back" href="../../../api/pypath.share.common.decode.html#pypath.share.common.decode">[docs]</a><span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decodes a string if it is a byte string, otherwise returns it unchanged.</span>
 
 <span class="sd">    Args</span>
@@ -2648,55 +3111,154 @@
         <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">string</span></div>
+
+
+<div class="viewcode-block" id="identity"><a class="viewcode-back" href="../../../api/pypath.share.common.identity.html#pypath.share.common.identity">[docs]</a><span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Do nothing, returns the object unchanged.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="nest"><a class="viewcode-back" href="../../../api/pypath.share.common.nest.html#pypath.share.common.nest">[docs]</a><span class="k">def</span> <span class="nf">nest</span><span class="p">(</span><span class="o">*</span><span class="n">funcs</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Nest multiple functions into a single function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="p">,)</span> <span class="o">+</span> <span class="n">funcs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="compr"><a class="viewcode-back" href="../../../api/pypath.share.common.compr.html#pypath.share.common.compr">[docs]</a><span class="k">def</span> <span class="nf">compr</span><span class="p">(</span>
+        <span class="n">obj</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">apply</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">filter</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unified interface for list, dict, set and tuple comprehensions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj:</span>
+<span class="sd">            An iterable, a dict or a set or a tuple.</span>
+<span class="sd">        apply:</span>
+<span class="sd">            A function to apply to each element of the iterable or dict.</span>
+<span class="sd">        filter:</span>
+<span class="sd">            A function to filter elements of the iterable or dict.</span>
+<span class="sd">            For filtering by equality or incidence, provide a simple</span>
+<span class="sd">            object or an array.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Same type as the input: a list, a dict or a set or a tuple.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_type</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">dict</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span>
+        <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">)</span> <span class="k">else</span>
+        <span class="nb">list</span>
+    <span class="p">)</span>
+
+    <span class="n">apply</span> <span class="o">=</span> <span class="n">apply</span> <span class="ow">or</span> <span class="n">identity</span>
+    <span class="n">extract</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">_type</span> <span class="o">==</span> <span class="nb">dict</span> <span class="k">else</span> <span class="n">identity</span>
+    <span class="n">process</span> <span class="o">=</span> <span class="n">nest</span><span class="p">(</span><span class="n">extract</span><span class="p">,</span> <span class="n">apply</span><span class="p">)</span>
+    <span class="n">insert</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">process</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span> <span class="k">if</span> <span class="n">_type</span> <span class="o">==</span> <span class="nb">dict</span> <span class="k">else</span> <span class="n">process</span>
+
+    <span class="nb">filter</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">filter</span>
+            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="nb">filter</span><span class="p">)</span> <span class="k">else</span>
+        <span class="n">to_set</span><span class="p">(</span><span class="nb">filter</span><span class="p">)</span><span class="o">.</span><span class="fm">__contains__</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">filter</span><span class="p">,</span> <span class="n">LIST_LIKE</span><span class="p">)</span> <span class="k">else</span>
+        <span class="nb">filter</span><span class="o">.</span><span class="fm">__eq__</span>
+    <span class="p">)</span>
+
+    <span class="nb">filter</span> <span class="o">=</span> <span class="n">nest</span><span class="p">(</span><span class="n">extract</span><span class="p">,</span> <span class="nb">filter</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">_type</span> <span class="o">==</span> <span class="nb">dict</span> <span class="k">else</span> <span class="n">obj</span>
+
+    <span class="k">return</span> <span class="n">_type</span><span class="p">(</span><span class="n">insert</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">obj</span> <span class="k">if</span> <span class="nb">filter</span><span class="p">(</span><span class="n">it</span><span class="p">))</span></div>
 </pre></div>
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
 
-          <div class="sidebar-resize-handle"></div>
-
-  <div>
-    <h3><a href="../../../index.html">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release history</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
-</ul>
-
-  </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-<div id="ethical-ad-placement"></div>
-        </div>
-      </div>
-      <div class="clearer"></div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
+        
+      </main>
     </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
-    <nav class="relbar">
-    </nav>
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 6.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+</p></div>
+      
+    </div>
+  
+</div>
 
-    <footer role="contentinfo">
-      &#169; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
-      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
-      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
-    </footer>
+  </footer>
   </body>
 </html>

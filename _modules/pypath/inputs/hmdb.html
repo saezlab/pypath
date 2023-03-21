@@ -1,0 +1,1102 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.inputs.hmdb &#8212; pypath 0.14.41 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/inputs/hmdb';</script>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../contents.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../inputs.html" class="nav-link">pypath.inputs</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.hmdb</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for pypath.inputs.hmdb</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2023</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Access the Human Metabolome Database.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
+<span class="kn">import</span> <span class="nn">pypath.formats.xml</span> <span class="k">as</span> <span class="nn">xml</span>
+
+<span class="n">_log</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;hmdb_input&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">_log</span>
+
+
+<span class="n">XMLNS</span> <span class="o">=</span> <span class="s1">&#39;{http://www.hmdb.ca}&#39;</span>
+
+
+<div class="viewcode-block" id="hmdb_xml"><a class="viewcode-back" href="../../../api/pypath.inputs.hmdb.hmdb_xml.html#pypath.inputs.hmdb.hmdb_xml">[docs]</a><span class="k">def</span> <span class="nf">hmdb_xml</span><span class="p">(</span><span class="n">dataset</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;metabolites&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">etree</span><span class="o">.</span><span class="n">iterparse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download and open the XML file of a dataset from the HMDB.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;hmdb&#39;</span><span class="p">][</span><span class="n">dataset</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">slow</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">default_mode</span> <span class="o">=</span> <span class="s1">&#39;rb&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">etree</span><span class="o">.</span><span class="n">iterparse</span><span class="p">(</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;hmdb_metabolites.xml&#39;</span><span class="p">],</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">XMLNS</span><span class="si">}</span><span class="s1">metabolite&#39;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="hmdb_iter_metabolites"><a class="viewcode-back" href="../../../api/pypath.inputs.hmdb.hmdb_iter_metabolites.html#pypath.inputs.hmdb.hmdb_iter_metabolites">[docs]</a><span class="k">def</span> <span class="nf">hmdb_iter_metabolites</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Itertate over metabolite records from HMDB.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">hmdb_xml</span><span class="p">(</span><span class="s1">&#39;metabolites&#39;</span><span class="p">):</span>
+
+        <span class="k">yield</span> <span class="n">element</span></div>
+
+
+<span class="k">def</span> <span class="nf">_ref_chunk</span><span class="p">(</span><span class="n">container</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;references&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">container</span><span class="p">,</span>
+        <span class="p">(</span><span class="s1">&#39;reference&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;pubmed_id&#39;</span><span class="p">,</span>
+        <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="n">ONTOLOGY_FIELDS</span> <span class="o">=</span> <span class="n">xml</span><span class="o">.</span><span class="n">_simple_fields</span><span class="p">((</span>
+    <span class="s1">&#39;term&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;definition&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;parent_id&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;level&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+<span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_ontology</span><span class="p">(</span><span class="n">descendant</span><span class="p">:</span> <span class="n">etree</span><span class="o">.</span><span class="n">_Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">ONTOLOGY_FIELDS</span><span class="p">,</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="s1">&#39;descendants&#39;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s1">&#39;descendants&#39;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="s1">&#39;descendant&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+                    <span class="n">_ontology</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xml</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">descendant</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">namespaces</span> <span class="o">=</span> <span class="n">XMLNS</span><span class="p">)</span>
+
+
+<span class="n">ONTOLOGY</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;ontology&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+    <span class="n">_ontology</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">SIMPLE_FIELDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;accession&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;version&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;status&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;description&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;chemical_formula&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;average_molecular_weight&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;monisotopic_molecular_weight&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;iupac_name&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;traditional_iupac&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;cas_registry_number&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;smiles&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;inchi&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;inchikey&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;state&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;synthesis_reference&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">ID_FIELDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;chemspider&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;drugbank&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;foodb&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pubchem_compound&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pdb&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;chebi&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;phenol_explorer_compound&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;knapsack&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;kegg&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;biocyc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;bigg&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;wikipedia&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;metlin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;vmh&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;fbonto&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">SIMPLE_FIELDS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xml</span><span class="o">.</span><span class="n">_simple_fields</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s1">_id&#39;</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ID_FIELDS</span><span class="p">))</span>
+
+<span class="n">ARRAY_FIELDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="s1">&#39;secondary_accessions&#39;</span><span class="p">,</span> <span class="s1">&#39;accession&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;synonyms&#39;</span><span class="p">,</span> <span class="s1">&#39;synonym&#39;</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">TAXONOMY</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;taxonomy&#39;</span><span class="p">,</span>
+    <span class="nb">dict</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">xml</span><span class="o">.</span><span class="n">_simple_fields</span><span class="p">((</span>
+            <span class="s1">&#39;description&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;direct_parent&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kingdom&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;class&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sub_class&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;molecular_framework&#39;</span><span class="p">,</span>
+        <span class="p">)),</span>
+        <span class="o">**</span><span class="n">xml</span><span class="o">.</span><span class="n">_array_fields</span><span class="p">((</span>
+            <span class="p">(</span><span class="s1">&#39;alternative_parents&#39;</span><span class="p">,</span> <span class="s1">&#39;alternative_parent&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;substituents&#39;</span><span class="p">,</span> <span class="s1">&#39;substituent&#39;</span><span class="p">),</span>
+        <span class="p">)),</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">EXPERIMENTAL_PROPERTIES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;experimental_properties&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;property&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+    <span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">PREDICTED_PROPERTIES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;predicted_properties&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;property&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+    <span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">SPECTRA</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;spectra&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;spectrum&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+    <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;spectrum_id&#39;</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">BIOLOGICAL_PROPERTIES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;biological_properties&#39;</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="s1">&#39;cellular_locations&#39;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s1">&#39;cellular_locations&#39;</span><span class="p">,</span>
+            <span class="p">(</span><span class="s1">&#39;cellular&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;biospecimen_locations&#39;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s1">&#39;biospecimen_locations&#39;</span><span class="p">,</span>
+            <span class="p">(</span><span class="s1">&#39;biospecimen&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;tissue_locations&#39;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s1">&#39;tissue_locations&#39;</span><span class="p">,</span>
+            <span class="p">(</span><span class="s1">&#39;tissue&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;pathways&#39;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s1">&#39;pathways&#39;</span><span class="p">,</span>
+            <span class="p">(</span><span class="s1">&#39;pathway&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+            <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;smpdb_id&#39;</span><span class="p">,</span> <span class="s1">&#39;kegg_map_id&#39;</span><span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">NORMAL_CONCENTRATIONS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;normal_concentrations&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;concentration&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+    <span class="nb">dict</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">xml</span><span class="o">.</span><span class="n">_simple_fields</span><span class="p">((</span>
+            <span class="s1">&#39;biospecimen&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;concentration_value&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;concentration_units&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;subject_age&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;subject_sex&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;subject_condition&#39;</span><span class="p">,</span>
+        <span class="p">)),</span>
+        <span class="o">**</span><span class="p">{</span><span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="n">_ref_chunk</span><span class="p">()},</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">ABNORMAL_CONCENTRATIONS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;abnormal_concentrations&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;concentration&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+    <span class="nb">dict</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">xml</span><span class="o">.</span><span class="n">_simple_fields</span><span class="p">((</span>
+            <span class="s1">&#39;biospecimen&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;concentration_value&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;concentration_units&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;patient_age&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;patient_sex&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;patient_information&#39;</span><span class="p">,</span>
+        <span class="p">)),</span>
+        <span class="o">**</span><span class="p">{</span><span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="n">_ref_chunk</span><span class="p">()},</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">DISEASES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;diseases&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;disease&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+    <span class="nb">dict</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">xml</span><span class="o">.</span><span class="n">_simple_fields</span><span class="p">((</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;omim_id&#39;</span><span class="p">,</span>
+        <span class="p">)),</span>
+        <span class="o">**</span><span class="p">{</span><span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="n">_ref_chunk</span><span class="p">()},</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">GENERAL_REFERENCES</span> <span class="o">=</span> <span class="n">_ref_chunk</span><span class="p">(</span><span class="s1">&#39;general_references&#39;</span><span class="p">)</span>
+
+<span class="n">PROTEIN_ASSOCIATIONS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;protein_associations&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="s1">&#39;findall&#39;</span><span class="p">),</span>
+    <span class="p">{</span>
+        <span class="s1">&#39;protein_accession&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;uniprot_id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;gene_name&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;protein_type&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">SCHEMA</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;taxonomy&#39;</span><span class="p">:</span> <span class="n">TAXONOMY</span><span class="p">,</span>
+    <span class="s1">&#39;spectra&#39;</span><span class="p">:</span> <span class="n">SPECTRA</span><span class="p">,</span>
+    <span class="s1">&#39;biological_properties&#39;</span><span class="p">:</span> <span class="n">BIOLOGICAL_PROPERTIES</span><span class="p">,</span>
+    <span class="s1">&#39;experimental_properties&#39;</span><span class="p">:</span> <span class="n">EXPERIMENTAL_PROPERTIES</span><span class="p">,</span>
+    <span class="s1">&#39;predicted_properties&#39;</span><span class="p">:</span> <span class="n">PREDICTED_PROPERTIES</span><span class="p">,</span>
+    <span class="s1">&#39;normal_concentrations&#39;</span><span class="p">:</span> <span class="n">NORMAL_CONCENTRATIONS</span><span class="p">,</span>
+    <span class="s1">&#39;abnormal_concentrations&#39;</span><span class="p">:</span> <span class="n">ABNORMAL_CONCENTRATIONS</span><span class="p">,</span>
+    <span class="s1">&#39;diseases&#39;</span><span class="p">:</span> <span class="n">DISEASES</span><span class="p">,</span>
+    <span class="s1">&#39;general_references&#39;</span><span class="p">:</span> <span class="n">GENERAL_REFERENCES</span><span class="p">,</span>
+    <span class="s1">&#39;protein_associations&#39;</span><span class="p">:</span> <span class="n">PROTEIN_ASSOCIATIONS</span><span class="p">,</span>
+    <span class="s1">&#39;ontology&#39;</span><span class="p">:</span> <span class="n">ONTOLOGY</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">SCHEMA</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xml</span><span class="o">.</span><span class="n">_simple_fields</span><span class="p">(</span><span class="n">SIMPLE_FIELDS</span><span class="p">))</span>
+<span class="n">SCHEMA</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xml</span><span class="o">.</span><span class="n">_array_fields</span><span class="p">(</span><span class="n">ARRAY_FIELDS</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="hmdb_metabolites_raw"><a class="viewcode-back" href="../../../api/pypath.inputs.hmdb.hmdb_metabolites_raw.html#pypath.inputs.hmdb.hmdb_metabolites_raw">[docs]</a><span class="k">def</span> <span class="nf">hmdb_metabolites_raw</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">head</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse metabolite data from HMDB.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        schema:</span>
+<span class="sd">            The schema defines the fields to be parsed. By default, a schema</span>
+<span class="sd">            covering nearly all fields in the HMDB metabolites XML is used.</span>
+<span class="sd">            Likely you don&#39;t need all the fields within one task: in this</span>
+<span class="sd">            case see `pypath.inputs.hmdb.SCHEMA` to see the full schema,</span>
+<span class="sd">            and create your own that is restricted to your fields of interst.</span>
+<span class="sd">        head:</span>
+<span class="sd">            Process the first N records only. Useful for peeking into</span>
+<span class="sd">            the data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of dicts, each dict containing the data extracted from</span>
+<span class="sd">        one metabolite record. These dicts might be deeply nested, and</span>
+<span class="sd">        the structure depends on the schema used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">schema</span> <span class="ow">or</span> <span class="n">SCHEMA</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">met</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hmdb_iter_metabolites</span><span class="p">()):</span>
+
+        <span class="k">yield</span> <span class="n">xml</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">met</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">XMLNS</span><span class="p">)</span>
+
+        <span class="n">met</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">keep_tail</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">head</span><span class="p">:</span>
+
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="Field"><a class="viewcode-back" href="../../../api/pypath.inputs.hmdb.Field.html#pypath.inputs.hmdb.Field">[docs]</a><span class="k">class</span> <span class="nc">Field</span><span class="p">:</span>
+
+<div class="viewcode-block" id="Field.__init__"><a class="viewcode-back" href="../../../api/pypath.inputs.hmdb.Field.html#pypath.inputs.hmdb.Field.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">definition</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Field</span><span class="p">):</span>
+
+            <span class="n">name</span><span class="p">,</span> <span class="n">definition</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="o">.</span><span class="n">definition</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">definition</span> <span class="ow">or</span> <span class="p">(</span><span class="n">name</span><span class="p">,)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="p">((</span><span class="n">record</span><span class="p">,),)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;@&#39;</span><span class="p">:</span>
+
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                    <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="k">else</span> <span class="n">v</span>
+                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span>
+                <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span>
+
+                    <span class="n">d</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+                    <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;List of dicts content encountered.&#39;</span><span class="p">)</span>
+
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">),)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">)</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">__</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">name</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vv</span><span class="p">)</span> <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="hmdb_table"><a class="viewcode-back" href="../../../api/pypath.inputs.hmdb.hmdb_table.html#pypath.inputs.hmdb.hmdb_table">[docs]</a><span class="k">def</span> <span class="nf">hmdb_table</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">named_fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse various simple and nested array fields from HMDB into data frame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fields:</span>
+<span class="sd">            Fields to include in the data frame. These must be keys in the</span>
+<span class="sd">            schema, and will be also used as column names. Alternatively,</span>
+<span class="sd">            tuples of sequetial processing steps can be provided: strings</span>
+<span class="sd">            will be used as keys in nested dicts, tuples will be used as</span>
+<span class="sd">            multiple keys in dicts, each yielding a separate column, the</span>
+<span class="sd">            special symbol &quot;*&quot; means all keys in the sub-dict, while &quot;@&quot;</span>
+<span class="sd">            means expand arrays into multiple rows. Be careful with this</span>
+<span class="sd">            latter option because it is applied in a combinatorial way, i.e.</span>
+<span class="sd">            in case of expanding an array to 5 rowns, and another one to 7</span>
+<span class="sd">            rows results already 35 rows from a single record. This might</span>
+<span class="sd">            result excessive memory use and processing time.</span>
+<span class="sd">        named_fields:</span>
+<span class="sd">            Same as `fields`, but the column name can be different from the</span>
+<span class="sd">            top level key: argument names will be used as column names,</span>
+<span class="sd">            values will be used as processing steps.</span>
+<span class="sd">        head:</span>
+<span class="sd">            Process the first N records only. Useful for peeking into</span>
+<span class="sd">            the data.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        ..code-block:: python</span>
+
+<span class="sd">           from pypath.inputs import hmdb</span>
+<span class="sd">           df = hmdb.hmdb_table(&#39;accession&#39;, &#39;smiles&#39;, &#39;state&#39;, head = 10)</span>
+<span class="sd">           df = hmdb.hmdb_table(&#39;accession&#39;, (&#39;synonyms&#39;, &#39;@&#39;), head = 10)</span>
+<span class="sd">           df = hmdb.hmdb_table(</span>
+<span class="sd">               &#39;accession&#39;,</span>
+<span class="sd">               (&#39;taxonomy&#39;, (&#39;class&#39;, &#39;substituents&#39;)),</span>
+<span class="sd">               head = 10,</span>
+<span class="sd">           )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">Field</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">*</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">to_tuple</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">)]</span>
+    <span class="n">fields</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">Field</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">*</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">named_fields</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">SCHEMA</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
+
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">met</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hmdb_metabolites_raw</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">head</span> <span class="o">=</span> <span class="n">head</span><span class="p">)):</span>
+
+        <span class="n">cols</span><span class="p">,</span> <span class="n">rows</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">met</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">))</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">cols</span><span class="p">))</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">rows</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">result</span><span class="p">,</span> <span class="n">df</span><span class="p">))</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">result</span><span class="p">,</span> <span class="n">df</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="hmdb_mapping"><a class="viewcode-back" href="../../../api/pypath.inputs.hmdb.hmdb_mapping.html#pypath.inputs.hmdb.hmdb_mapping">[docs]</a><span class="k">def</span> <span class="nf">hmdb_mapping</span><span class="p">(</span>
+        <span class="n">id_type_a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">id_type_b</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">return_df</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ID translation input from HMDB.</span>
+
+<span class="sd">    Note: you can use this function for purposes other than ID translation</span>
+<span class="sd">    tables, e.g. you can collect the molecular weights, pathways, etc. Though</span>
+<span class="sd">    not all these options are guaranteed to work or result a meaningful</span>
+<span class="sd">    output.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id_type_a:</span>
+<span class="sd">            An identifier type, see the `ID_FIELDS` set in this module,</span>
+<span class="sd">            and keys in the `SIMPLE_FIELDS` dict.</span>
+<span class="sd">        id_type_b:</span>
+<span class="sd">            Another identifier type, same options as for `id_type_a`.</span>
+<span class="sd">        return_df:</span>
+<span class="sd">            Return a data frame instead of dict of sets.</span>
+<span class="sd">        head:</span>
+<span class="sd">            Process the first N records only. Useful for peeking into</span>
+<span class="sd">            the data.</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        Translation data between two types of identifiers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;id_a&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">_id_type</span><span class="p">(</span><span class="n">id_type_a</span><span class="p">),</span> <span class="s1">&#39;@&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;id_b&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">_id_type</span><span class="p">(</span><span class="n">id_type_b</span><span class="p">),</span> <span class="s1">&#39;@&#39;</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">hmdb_table</span><span class="p">(</span><span class="o">**</span><span class="n">fields</span><span class="p">,</span> <span class="n">head</span> <span class="o">=</span> <span class="n">head</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">return_df</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;id_a&#39;</span><span class="p">)[</span><span class="s1">&#39;id_b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">_id_type</span><span class="p">(</span><span class="n">id_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Field name from ID type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">id_type</span><span class="si">}</span><span class="s1">_id&#39;</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">SCHEMA</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">key</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 6.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

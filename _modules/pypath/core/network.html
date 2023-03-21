@@ -1,91 +1,493 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.core.network &#8212; pypath 0.14.31 documentation</title>
-    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <title>pypath.core.network &#8212; pypath 0.14.41 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
-    <script defer src="../../../_static/insipid.js"></script>
-    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/core/network';</script>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-  </head><body>
-    <script type="text/javascript">
-        document.body.classList.add('js');
-    </script>
-    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
-    <label id="overlay" for="sidebar-checkbox"></label>
-    <div class="sidebar-resize-handle"></div>
-    <script type="text/javascript">
-        try {
-            let sidebar = localStorage.getItem('sphinx-sidebar');
-            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
-            if (sidebar_width) {
-                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
-            }
-            // show sidebar on wide screen
-            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
-                sidebar = 'visible';
-                // NB: We don't store the value in localStorage!
-            }
-            if (sidebar === 'visible') {
-                document.getElementById('sidebar-checkbox').checked = true;
-            }
-        } catch(e) {
-            console.info(e);
-        }
-    </script>
-    <header id="topbar-placeholder">
-      <div id="topbar">
-        <div id="titlebar">
-          <div class="buttons">
-            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
-            </label>
-          </div>
-          <div class="title">
-            <a class="parent" href="../../pypath.html" accesskey="U">pypath</a>
-            <a class="top" href="#">pypath.core.network</a>
-          </div>
-          <div class="buttons">
-            <button id="fullscreen-button" type="button" aria-hidden="true">
-              <span class="enable">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
-              </span>
-              <span class="disable">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
-              </span>
-            </button>
-          </div>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../contents.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
-      </div>
-    </header>
-    <nav>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
     </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
 
-    <nav class="relbar">
-    </nav>  
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-<h1>Source code for pypath.core.network</h1><div class="highlight"><pre>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../pypath.html" class="nav-link">pypath</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.core.network</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for pypath.core.network</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
@@ -175,7 +577,7 @@
 <span class="n">NetworkEntityCollection</span><span class="o">.</span><span class="fm">__new__</span><span class="o">.</span><span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">8</span>
 
 
-<div class="viewcode-block" id="NetworkEntityCollection"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.NetworkEntityCollection.html#pypath.core.network.NetworkEntityCollection">[docs]</a><span class="k">class</span> <span class="nc">NetworkEntityCollection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="NetworkEntityCollection"><a class="viewcode-back" href="../../../api/pypath.core.network.NetworkEntityCollection.html#pypath.core.network.NetworkEntityCollection">[docs]</a><span class="k">class</span> <span class="nc">NetworkEntityCollection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s1">&#39;collection&#39;</span><span class="p">,</span>
@@ -225,7 +627,7 @@
     <span class="p">]</span>
 
 
-<div class="viewcode-block" id="NetworkEntityCollection.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.NetworkEntityCollection.html#pypath.core.network.NetworkEntityCollection.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NetworkEntityCollection.__init__"><a class="viewcode-back" href="../../../api/pypath.core.network.NetworkEntityCollection.html#pypath.core.network.NetworkEntityCollection.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="c1"># we need a copy where we don&#39;t add the totals</span>
@@ -461,8 +863,8 @@
 <span class="n">NetworkStatsRecord</span><span class="o">.</span><span class="fm">__new__</span><span class="o">.</span><span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">11</span>
 
 
-<div class="viewcode-block" id="Network"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network">[docs]</a><span class="k">class</span> <span class="nc">Network</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network">[docs]</a><span class="k">class</span> <span class="nc">Network</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a molecular interaction network. Provides various methods to</span>
 <span class="sd">    query the network and its components. Optionally converts the network</span>
 <span class="sd">    to a ``pandas.DataFrame`` of interactions.</span>
@@ -521,7 +923,7 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.__init__"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">resources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">make_df</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -559,8 +961,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">resources</span> <span class="o">=</span> <span class="n">resources</span><span class="p">,</span> <span class="n">make_df</span> <span class="o">=</span> <span class="n">make_df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.reload"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.reload"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -603,8 +1005,8 @@
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">other</span> <span class="ow">in</span> <span class="n">ia</span> <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="Network.reset"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.reset"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes network data i.e. creates empty interaction and node</span>
 <span class="sd">        dictionaries.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -616,7 +1018,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">interactions_by_nodes</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.load"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.load"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">resources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">make_df</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -631,7 +1033,7 @@
             <span class="n">allow_loops</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">first_n</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads data from a network resource or a collection of resources.</span>
 
 <span class="sd">        :arg str,dict,list,resource.NetworkResource resources:</span>
@@ -725,7 +1127,7 @@
     <span class="n">init_network</span> <span class="o">=</span> <span class="n">load</span>
 
 
-<div class="viewcode-block" id="Network.load_resource"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.load_resource">[docs]</a>    <span class="k">def</span> <span class="nf">load_resource</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.load_resource"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.load_resource">[docs]</a>    <span class="k">def</span> <span class="nf">load_resource</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">resource</span><span class="p">,</span>
             <span class="n">clean</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -737,7 +1139,7 @@
             <span class="n">first_n</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the data from a single resource and attaches it to the</span>
 <span class="sd">        network</span>
 
@@ -814,7 +1216,7 @@
             <span class="n">cache_files</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">first_n</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads interaction data file containing node and edge attributes</span>
 <span class="sd">        that can be read from simple text based files and adds it to the</span>
 <span class="sd">        networkdata. This function works not only with files, but with</span>
@@ -1505,7 +1907,7 @@
 
 
     <span class="k">def</span> <span class="nf">_lookup_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache_files</span><span class="p">,</span> <span class="n">int_cache</span><span class="p">,</span> <span class="n">edges_cache</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks up the cache folder for the files of a given resource.</span>
 <span class="sd">        First checks if *name* is on the *cache_files* dictionary.</span>
 <span class="sd">        If so, loads either the interactions or edges otherwise. If</span>
@@ -1558,7 +1960,7 @@
             <span class="n">positive_filters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">negative_filters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies negative and positive filters on a line (record from an</span>
 <span class="sd">        interaction database). If returns ``True`` the interaction will be</span>
 <span class="sd">        discarded, if ``False`` the interaction will be further processed</span>
@@ -1578,7 +1980,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_process_filters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">filters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">negate</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args</span>
 <span class="sd">            negate (bool): Whether to negate the filter matches. Sorry for</span>
 <span class="sd">                the confusion, but it should be True for positive filters</span>
@@ -1605,7 +2007,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_process_filter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">filtr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return</span>
 <span class="sd">            (bool): True if the filter matches.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1633,7 +2035,7 @@
 
 
     <span class="k">def</span> <span class="nf">_process_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sign_data</span><span class="p">,</span> <span class="n">sign_def</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes the sign of an interaction, used when processing an</span>
 <span class="sd">        input file.</span>
 
@@ -1676,7 +2078,7 @@
 
 
     <span class="k">def</span> <span class="nf">_process_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">dir_col</span><span class="p">,</span> <span class="n">dir_val</span><span class="p">,</span> <span class="n">dir_sep</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes the direction information of an interaction according</span>
 <span class="sd">        to a data file from a source.</span>
 
@@ -1723,7 +2125,7 @@
 
 
     <span class="k">def</span> <span class="nf">_process_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract a value from a line describing an interaction.</span>
 
 <span class="sd">        Args</span>
@@ -1780,7 +2182,7 @@
             <span class="n">single_list</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">expand_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Maps the names from a list of edges or items (molecules).</span>
 
 <span class="sd">        :arg list lst:</span>
@@ -1824,7 +2226,7 @@
 
 
     <span class="k">def</span> <span class="nf">_map_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">expand_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translates the name in *item* representing a molecule. Default</span>
 <span class="sd">        name types are defined in</span>
 <span class="sd">        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping</span>
@@ -1856,7 +2258,7 @@
 
 
     <span class="k">def</span> <span class="nf">_map_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">expand_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translates the identifiers in *edge* representing an edge. Default</span>
 <span class="sd">        name types are defined in</span>
 <span class="sd">        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping</span>
@@ -1916,7 +2318,7 @@
 
 
     <span class="k">def</span> <span class="nf">_process_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">lnum</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extracts the extra (custom, resource specific) attributes from a</span>
 <span class="sd">        line of the input based on the given specification (defined in the</span>
 <span class="sd">        network input definition).</span>
@@ -1959,7 +2361,7 @@
 
 
     <span class="k">def</span> <span class="nf">_process_taxon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tax_dict</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span> <span class="c1"># TODO</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tax_dict</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -2018,7 +2420,7 @@
             <span class="n">only_directions</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">allow_loops</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds edges to the network from *edge_list* obtained from file or</span>
 <span class="sd">        other input method. If none is passed, checks for such data in</span>
 <span class="sd">        :py:attr:`pypath.network.Network.edge_list_mapped`.</span>
@@ -2106,7 +2508,7 @@
             <span class="n">allow_loops</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">only_directions</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a new interaction (edge) or updates the attributes of the edge</span>
 <span class="sd">        if it already exists.</span>
 
@@ -2256,13 +2658,13 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.organisms_check"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.organisms_check">[docs]</a>    <span class="k">def</span> <span class="nf">organisms_check</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.organisms_check"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.organisms_check">[docs]</a>    <span class="k">def</span> <span class="nf">organisms_check</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">organisms</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">remove_mismatches</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">remove_nonspecific</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Scans the network for one or more organisms and removes the nodes</span>
 <span class="sd">        and interactions which belong to any other organism.</span>
 
@@ -2338,8 +2740,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.get_organisms"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.get_organisms">[docs]</a>    <span class="k">def</span> <span class="nf">get_organisms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.get_organisms"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.get_organisms">[docs]</a>    <span class="k">def</span> <span class="nf">get_organisms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the set of all NCBI Taxonomy IDs occurring in the network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2358,7 +2760,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.make_df"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.make_df">[docs]</a>    <span class="k">def</span> <span class="nf">make_df</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.make_df"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.make_df">[docs]</a>    <span class="k">def</span> <span class="nf">make_df</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">records</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">by_source</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2366,7 +2768,7 @@
             <span class="n">columns</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a ``pandas.DataFrame`` from the interactions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2493,9 +2895,9 @@
                 <span class="k">yield</span> <span class="n">rec</span>
 
 
-<div class="viewcode-block" id="Network.from_igraph"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.from_igraph">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Network.from_igraph"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.from_igraph">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_igraph</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pa</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an instance from an ``igraph.Graph`` based</span>
 <span class="sd">        ``pypath.main.PyPath`` object.</span>
 
@@ -2512,13 +2914,13 @@
         <span class="k">return</span> <span class="n">obj</span></div>
 
 
-<div class="viewcode-block" id="Network.add_interaction"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.add_interaction">[docs]</a>    <span class="k">def</span> <span class="nf">add_interaction</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.add_interaction"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.add_interaction">[docs]</a>    <span class="k">def</span> <span class="nf">add_interaction</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">interaction</span><span class="p">,</span>
             <span class="n">attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">only_directions</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a ready ``pypath.interaction.Interaction`` object to the network.</span>
 <span class="sd">        If an interaction between the two endpoints already exists, the</span>
 <span class="sd">        interactions will be merged: this stands for the directions, signs,</span>
@@ -2583,8 +2985,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">interactions_by_nodes</span><span class="p">[</span><span class="n">interaction</span><span class="o">.</span><span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.add_node"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.add_node"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a molecular entity to the py:attr:``nodes`` and</span>
 <span class="sd">        py:attr:``nodes_by_label`` dictionaries.</span>
 
@@ -2612,8 +3014,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">nodes_by_label</span><span class="p">[</span><span class="n">entity</span><span class="o">.</span><span class="n">label</span> <span class="ow">or</span> <span class="n">entity</span><span class="o">.</span><span class="n">identifier</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity</span></div>
 
 
-<div class="viewcode-block" id="Network.remove_node"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.remove_node"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes a node with all its interactions.</span>
 <span class="sd">        If the removal of the interactions leaves any of the partner nodes</span>
 <span class="sd">        without interactions it will be removed too.</span>
@@ -2642,8 +3044,8 @@
             <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions_by_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.remove_interaction"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.remove_interaction">[docs]</a>    <span class="k">def</span> <span class="nf">remove_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_a</span><span class="p">,</span> <span class="n">entity_b</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.remove_interaction"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.remove_interaction">[docs]</a>    <span class="k">def</span> <span class="nf">remove_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_a</span><span class="p">,</span> <span class="n">entity_b</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes the interaction between two nodes if exists.</span>
 
 <span class="sd">        :arg str,Entity entity_a,entity_b:</span>
@@ -2679,8 +3081,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">entity_b</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.remove_zero_degree"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.remove_zero_degree">[docs]</a>    <span class="k">def</span> <span class="nf">remove_zero_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.remove_zero_degree"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.remove_zero_degree">[docs]</a>    <span class="k">def</span> <span class="nf">remove_zero_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes all nodes with no interaction.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2715,8 +3117,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.remove_loops"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.remove_loops">[docs]</a>    <span class="k">def</span> <span class="nf">remove_loops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.remove_loops"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.remove_loops">[docs]</a>    <span class="k">def</span> <span class="nf">remove_loops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes the loop interactions from the network i.e. the ones with</span>
 <span class="sd">        their two endpoints being the same entity.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2738,7 +3140,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a set of all resources.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2747,15 +3149,15 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">resource_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a set of all resource names.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">ia</span><span class="o">.</span><span class="n">get_resource_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="Network.entities_by_resource"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.entities_by_resource">[docs]</a>    <span class="k">def</span> <span class="nf">entities_by_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.entities_by_resource"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.entities_by_resource">[docs]</a>    <span class="k">def</span> <span class="nf">entities_by_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dict of sets with resources as keys and sets of entity IDs</span>
 <span class="sd">        as values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2778,8 +3180,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.entity_by_id"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.entity_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">entity_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.entity_by_id"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.entity_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">entity_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a ``pypath.entity.Entity`` object representing a molecular</span>
 <span class="sd">        entity by looking it up by its identifier. If the molecule does not</span>
 <span class="sd">        present in the current network ``None`` will be returned.</span>
@@ -2795,8 +3197,8 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="Network.entity_by_label"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.entity_by_label">[docs]</a>    <span class="k">def</span> <span class="nf">entity_by_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.entity_by_label"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.entity_by_label">[docs]</a>    <span class="k">def</span> <span class="nf">entity_by_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a ``pypath.entity.Entity`` object representing a molecular</span>
 <span class="sd">        entity by looking it up by its label. If the molecule does not</span>
 <span class="sd">        present in the current network ``None`` will be returned.</span>
@@ -2811,8 +3213,8 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes_by_label</span><span class="p">[</span><span class="n">label</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="Network.interaction"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.interaction">[docs]</a>    <span class="k">def</span> <span class="nf">interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.interaction"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.interaction">[docs]</a>    <span class="k">def</span> <span class="nf">interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the interaction `a --&gt; b` if it exists in the network,</span>
 <span class="sd">        otherwise `b --&gt; a`. If no interaction exist between `a` and `b`</span>
 <span class="sd">        returns `None`.</span>
@@ -2833,8 +3235,8 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">[</span><span class="n">key_ba</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="Network.random_interaction"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.random_interaction">[docs]</a>    <span class="k">def</span> <span class="nf">random_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.random_interaction"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.random_interaction">[docs]</a>    <span class="k">def</span> <span class="nf">random_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Picks a random interaction from the network.</span>
 
 <span class="sd">        Returns</span>
@@ -2888,8 +3290,8 @@
         <span class="k">return</span> <span class="n">entity</span>
 
 
-<div class="viewcode-block" id="Network.interaction_by_id"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.interaction_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">interaction_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_a</span><span class="p">,</span> <span class="n">id_b</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.interaction_by_id"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.interaction_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">interaction_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_a</span><span class="p">,</span> <span class="n">id_b</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a ``pypath.interaction.Interaction`` object by looking it up</span>
 <span class="sd">        based on a pair of identifiers. If the interaction does not exist</span>
 <span class="sd">        in the network ``None`` will be returned.</span>
@@ -2906,8 +3308,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interaction</span><span class="p">(</span><span class="n">id_a</span><span class="p">,</span> <span class="n">id_b</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.interaction_by_label"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.interaction_by_label">[docs]</a>    <span class="k">def</span> <span class="nf">interaction_by_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_a</span><span class="p">,</span> <span class="n">label_b</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.interaction_by_label"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.interaction_by_label">[docs]</a>    <span class="k">def</span> <span class="nf">interaction_by_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_a</span><span class="p">,</span> <span class="n">label_b</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a ``pypath.interaction.Interaction`` object by looking it up</span>
 <span class="sd">        based on a pair of labels. If the interaction does not exist</span>
 <span class="sd">        in the network ``None`` will be returned.</span>
@@ -2924,8 +3326,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interaction</span><span class="p">(</span><span class="n">label_a</span><span class="p">,</span> <span class="n">label_b</span><span class="p">,</span> <span class="n">name_type</span> <span class="o">=</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.to_igraph"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.to_igraph">[docs]</a>    <span class="k">def</span> <span class="nf">to_igraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.to_igraph"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.to_igraph">[docs]</a>    <span class="k">def</span> <span class="nf">to_igraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the network to the legacy ``igraph.Graph`` based ``PyPath``</span>
 <span class="sd">        object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2941,8 +3343,8 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.save_to_pickle"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.save_to_pickle">[docs]</a>    <span class="k">def</span> <span class="nf">save_to_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.save_to_pickle"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.save_to_pickle">[docs]</a>    <span class="k">def</span> <span class="nf">save_to_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves the network to a pickle file.</span>
 
 <span class="sd">        :arg str pickle_file:</span>
@@ -2977,8 +3379,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">interactions_by_nodes</span><span class="p">[</span><span class="n">ia</span><span class="o">.</span><span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.load_from_pickle"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.load_from_pickle">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.load_from_pickle"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.load_from_pickle">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the network to a pickle file.</span>
 
 <span class="sd">        :arg str pickle_file:</span>
@@ -3000,9 +3402,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Loaded from pickle `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">pickle_file</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.from_pickle"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.from_pickle">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Network.from_pickle"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.from_pickle">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_pickle</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a new ``Network`` object by loading it from a pickle</span>
 <span class="sd">        file. Returns a ``Network`` object.</span>
 
@@ -3021,13 +3423,13 @@
         <span class="k">return</span> <span class="n">new</span></div>
 
 
-<div class="viewcode-block" id="Network.extra_directions"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.extra_directions">[docs]</a>    <span class="k">def</span> <span class="nf">extra_directions</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.extra_directions"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.extra_directions">[docs]</a>    <span class="k">def</span> <span class="nf">extra_directions</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">resources</span> <span class="o">=</span> <span class="s1">&#39;extra_directions&#39;</span><span class="p">,</span>
             <span class="n">use_laudanna</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">use_string</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds additional direction &amp; effect information from resources having</span>
 <span class="sd">        no literature curated references, but giving sufficient evidence</span>
 <span class="sd">        about the directionality for interactions already supported by</span>
@@ -3240,8 +3642,8 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.htp_references"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.htp_references">[docs]</a>    <span class="k">def</span> <span class="nf">htp_references</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">50</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.htp_references"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.htp_references">[docs]</a>    <span class="k">def</span> <span class="nf">htp_references</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">50</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collects the high-throughput references i.e. the ones cited at a</span>
 <span class="sd">        higher number of interactions than ``threshold``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3259,8 +3661,8 @@
         <span class="k">return</span> <span class="n">htp_refs</span></div>
 
 
-<div class="viewcode-block" id="Network.htp_interactions"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.htp_interactions">[docs]</a>    <span class="k">def</span> <span class="nf">htp_interactions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">ignore_directed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.htp_interactions"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.htp_interactions">[docs]</a>    <span class="k">def</span> <span class="nf">htp_interactions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">ignore_directed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collects the interactions only from high-throughput studies.</span>
 
 <span class="sd">        :returns:</span>
@@ -3345,8 +3747,8 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.numof_interactions_per_reference"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.numof_interactions_per_reference">[docs]</a>    <span class="k">def</span> <span class="nf">numof_interactions_per_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.numof_interactions_per_reference"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.numof_interactions_per_reference">[docs]</a>    <span class="k">def</span> <span class="nf">numof_interactions_per_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Counts the number of interactions for each literature reference.</span>
 <span class="sd">        Returns a ``collections.Counter`` object (similar to ``dict``).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3361,8 +3763,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.interactions_by_reference"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.interactions_by_reference">[docs]</a>    <span class="k">def</span> <span class="nf">interactions_by_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.interactions_by_reference"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.interactions_by_reference">[docs]</a>    <span class="k">def</span> <span class="nf">interactions_by_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a ``dict`` with literature references as keys and interactions</span>
 <span class="sd">        described by each reference as values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3453,9 +3855,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dorothea</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.dorothea"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.dorothea">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Network.dorothea"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.dorothea">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">dorothea</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a new ``Network`` object with loading the transcriptional</span>
 <span class="sd">        regulation network from DoRothEA.</span>
 
@@ -3468,6 +3870,29 @@
         <span class="n">new</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="n">new</span><span class="o">.</span><span class="n">load_dorothea</span><span class="p">(</span><span class="n">levels</span> <span class="o">=</span> <span class="n">levels</span><span class="p">,</span> <span class="n">make_df</span> <span class="o">=</span> <span class="n">make_df</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new</span></div>
+
+    <span class="k">def</span> <span class="nf">load_collectri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">collectri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Network.collectri"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.collectri">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">collectri</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a new ``Network`` object with loading the transcriptional</span>
+<span class="sd">        regulation network from CollecTRI.</span>
+
+<span class="sd">        :arg NontType,set levels:</span>
+<span class="sd">            The confidence levels to include.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">make_df</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;make_df&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">new</span><span class="o">.</span><span class="n">load_collectri</span><span class="p">(</span><span class="n">make_df</span> <span class="o">=</span> <span class="n">make_df</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">new</span></div>
 
@@ -3516,7 +3941,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="Network.transcription"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.transcription">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Network.transcription"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.transcription">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">transcription</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">dorothea</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -3530,7 +3955,7 @@
             <span class="n">allow_loops</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a new ``Network`` object with loading a transcriptional</span>
 <span class="sd">        regulation network from all databases by default.</span>
 
@@ -3561,7 +3986,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.mirna_target"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.mirna_target">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Network.mirna_target"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.mirna_target">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">mirna_target</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">resources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3572,7 +3997,7 @@
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a new ``Network`` object with loading a miRNA-mRNA</span>
 <span class="sd">        regulation network from all databases by default.</span>
 
@@ -3596,7 +4021,7 @@
     <span class="c1"># Methods for querying partners by node</span>
     <span class="c1">#</span>
 
-<div class="viewcode-block" id="Network.partners"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.partners">[docs]</a>    <span class="k">def</span> <span class="nf">partners</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.partners"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.partners">[docs]</a>    <span class="k">def</span> <span class="nf">partners</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">entity</span><span class="p">,</span>
             <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">,</span>
@@ -3609,7 +4034,7 @@
             <span class="n">references</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">return_interactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg str,Entity,list,set,tuple,EntityList entity:</span>
 <span class="sd">            An identifier or label of a molecular entity or an</span>
 <span class="sd">            :py:class:`Entity` object. Alternatively an iterator with the</span>
@@ -3680,8 +4105,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Network.count_partners"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.count_partners">[docs]</a>    <span class="k">def</span> <span class="nf">count_partners</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.count_partners"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.count_partners">[docs]</a>    <span class="k">def</span> <span class="nf">count_partners</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the count of the interacting partners for one or more</span>
 <span class="sd">        entities according to the specified criteria.</span>
 <span class="sd">        Please refer to the docs of the ``partners`` method.</span>
@@ -3743,7 +4168,7 @@
     <span class="c1"># Methods for selecting paths and motives in the network</span>
     <span class="c1">#</span>
 
-<div class="viewcode-block" id="Network.find_paths"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.find_paths">[docs]</a>    <span class="k">def</span> <span class="nf">find_paths</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.find_paths"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.find_paths">[docs]</a>    <span class="k">def</span> <span class="nf">find_paths</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">start</span><span class="p">:</span> <span class="p">(</span>
                 <span class="nb">str</span> <span class="o">|</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span> <span class="o">|</span> <span class="n">entity</span><span class="o">.</span><span class="n">EntityList</span> <span class="o">|</span>
@@ -3767,7 +4192,7 @@
             <span class="n">references</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find paths or motifs in a network.</span>
 
 <span class="sd">        Finds all paths up to length ``maxlen`` between groups of nodes.</span>
@@ -3966,7 +4391,7 @@
             <span class="n">add_total</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collects the values of an attribute over all interactions in the</span>
 <span class="sd">        network.</span>
 
@@ -4262,13 +4687,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Finished updating summaries.&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.summaries_tab"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.summaries_tab">[docs]</a>    <span class="k">def</span> <span class="nf">summaries_tab</span><span class="p">(</span>
+<div class="viewcode-block" id="Network.summaries_tab"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.summaries_tab">[docs]</a>    <span class="k">def</span> <span class="nf">summaries_tab</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">return_table</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">label_type</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a table from resource vs. entity counts and optionally</span>
 <span class="sd">        writes it to ``outfile`` and returns it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -4446,7 +4871,7 @@
 
 
     <span class="k">def</span> <span class="nf">_allow_loops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_loops</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Integrates settings for the `allow_loops` parameter from the</span>
 <span class="sd">        method, instance and module level settings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -4476,8 +4901,8 @@
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ia</span><span class="o">.</span><span class="n">is_loop</span><span class="p">()</span> <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Network.direction_consistency"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.direction_consistency">[docs]</a>    <span class="k">def</span> <span class="nf">direction_consistency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Network.direction_consistency"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.direction_consistency">[docs]</a>    <span class="k">def</span> <span class="nf">direction_consistency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collects statistics about the consistency of interaction</span>
 <span class="sd">        directions between resources.</span>
 <span class="sd">        * total_directed: number of directed edges</span>
@@ -4790,7 +5215,7 @@
 <span class="n">Network</span><span class="o">.</span><span class="n">_generate_collect_methods</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="init_db"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.init_db.html#pypath.core.network.init_db">[docs]</a><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">use_omnipath</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="init_db"><a class="viewcode-back" href="../../../api/pypath.core.network.init_db.html#pypath.core.network.init_db">[docs]</a><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">use_omnipath</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="n">method_name</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s1">&#39;load_omnipath&#39;</span>
@@ -4803,7 +5228,7 @@
     <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span></div>
 
 
-<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.get_db.html#pypath.core.network.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../api/pypath.core.network.get_db.html#pypath.core.network.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="s1">&#39;db&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
 
@@ -4811,54 +5236,88 @@
 
     <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span></div>
 </pre></div>
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
 
-          <div class="sidebar-resize-handle"></div>
-
-  <div>
-    <h3><a href="../../../index.html">Table of Contents</a></h3>
-    <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release history</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
-</ul>
-
-  </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-<div id="ethical-ad-placement"></div>
-        </div>
-      </div>
-      <div class="clearer"></div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
+        
+      </main>
     </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
-    <nav class="relbar">
-    </nav>
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 6.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+</p></div>
+      
+    </div>
+  
+</div>
 
-    <footer role="contentinfo">
-      &#169; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
-      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
-      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
-    </footer>
+  </footer>
   </body>
 </html>
