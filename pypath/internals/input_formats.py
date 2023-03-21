@@ -214,6 +214,16 @@ class MappingInput(object):
         return override or cls._resource_id_types.get(id_type, None)
 
 
+    def __contains__(self, other: str) -> bool:
+
+        return (
+            self.id_type_a == other or
+            self.id_type_b == other or
+            self._resource_id_type_a == other or
+            self._resource_id_type_b == other
+        )
+
+
 class FileMapping(MappingInput):
 
     def __init__(
