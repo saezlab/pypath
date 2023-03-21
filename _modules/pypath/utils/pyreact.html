@@ -1,493 +1,91 @@
 
-
 <!DOCTYPE html>
 
-
-<html lang="en" >
-
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.utils.pyreact &#8212; pypath 0.14.40 documentation</title>
-  
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-
-  
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
+    <title>pypath.utils.pyreact &#8212; pypath 0.14.31 documentation</title>
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
-  
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/utils/pyreact';</script>
-    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
+    <script defer src="../../../_static/insipid.js"></script>
+    <script defer src="../../../_static/insipid-sidebar.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
-  </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
-  
-  
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
-<form class="bd-search d-flex align-items-center"
-      action="../../../search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search the docs ..."
-         aria-label="Search the docs ..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
-  
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-<div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
-    <span class="fa-solid fa-bars"></span>
-  </label>
-  
-  <div class="navbar-header-items__start">
-    
-      <div class="navbar-item">
-  
-
-<a class="navbar-brand logo" href="../../../contents.html">
-  
-  
-  
-  
-    
-    
-      
-    
-    
-    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
-    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
-  
-  
-    <p class="title logo__title">Pypath</p>
-  
-</a></div>
-    
-  </div>
-  
-  
-  <div class=" navbar-header-items">
-    
-    <div class="me-auto navbar-header-items__center">
-      
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
-  <ul class="bd-navbar-elements navbar-nav">
-    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../index.html">
-                        Welcome to pypath!
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../webservice.html">
-                        Webservice
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
-                        Release history
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../reference.html">
-                        Reference
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
-                        The pypath book
-                      </a>
-                    </li>
-                
-  </ul>
-</nav></div>
-      
-    </div>
-    
-    
-    <div class="navbar-header-items__end">
-      
-        <div class="navbar-item navbar-persistent--container">
-          
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="../../pypath.html" accesskey="U">pypath</a>
+            <a class="top" href="#">pypath.utils.pyreact</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
         </div>
-      
-      
-        <div class="navbar-item">
-<script>
-document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-  </button>
-`);
-</script></div>
-      
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
-    aria-label="Icon Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
-        </li>
-</ul></div>
-      
-    </div>
-    
-  </div>
-  
-  
-    <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
-    </div>
-  
-
-  
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fa-solid fa-outdent"></span>
-    </label>
-  
-</div>
-
+      </div>
+    </header>
+    <nav>
     </nav>
-  
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
-        
 
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-      <div class="sidebar-header-items__center">
-        
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
-  <ul class="bd-navbar-elements navbar-nav">
-    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../index.html">
-                        Welcome to pypath!
-                      </a>
-                    </li>
-                
+    <nav class="relbar">
+    </nav>  
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../webservice.html">
-                        Webservice
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
-                        Release history
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../reference.html">
-                        Reference
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
-                        The pypath book
-                      </a>
-                    </li>
-                
-  </ul>
-</nav></div>
-        
-      </div>
-    
-    
-    
-      <div class="sidebar-header-items__end">
-        
-          <div class="navbar-item">
-<script>
-document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-  </button>
-`);
-</script></div>
-        
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
-    aria-label="Icon Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
-        </li>
-</ul></div>
-        
-      </div>
-    
-  </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
-  </div>
-  
-  <div id="rtd-footer-container"></div>
-
-
-      </div>
-      
-      <main id="main-content" class="bd-main">
-        
-        
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item">
-
-
-
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
-    
-    <li class="breadcrumb-item breadcrumb-home">
-      <a href="../../../contents.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
-      </a>
-    </li>
-    
-    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
-    
-    
-    <li class="breadcrumb-item"><a href="../../pypath.html" class="nav-link">pypath</a></li>
-    
-    <li class="breadcrumb-item active" aria-current="page">pypath.utils.pyreact</li>
-  </ul>
-</nav>
-</div>
-      
-    </div>
-  
-  
-</div>
-</div>
-              
-              
-              
-                
-<div id="searchbox"></div>
-                <article class="bd-article" role="main">
-                  
-  <h1>Source code for pypath.utils.pyreact</h1><div class="highlight"><pre>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.utils.pyreact</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
@@ -547,8 +145,8 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.share.cache</span> <span class="k">as</span> <span class="nn">cache</span>
 
 
-<div class="viewcode-block" id="BioPaxReader"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader">[docs]</a><span class="k">class</span> <span class="nc">BioPaxReader</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader">[docs]</a><span class="k">class</span> <span class="nc">BioPaxReader</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class parses a BioPAX file and exposes its content easily accessible</span>
 <span class="sd">    for further processing. First it opens the file, if necessary it extracts</span>
 <span class="sd">    from the archive. Then an `lxml.etree.iterparse` object is created, so the</span>
@@ -575,7 +173,7 @@ document.write(`
 <span class="sd">    difications.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BioPaxReader.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BioPaxReader.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">biopax</span><span class="p">,</span>
             <span class="n">source</span><span class="p">,</span>
@@ -583,7 +181,7 @@ document.write(`
             <span class="n">file_from_archive</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param str,FileOpener biopax: either a filename, or a FileOpener</span>
 <span class="sd">        object; if string is supplied, the FileOpener will be created in-</span>
 <span class="sd">        ternally</span>
@@ -731,8 +329,8 @@ document.write(`
         <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BioPaxReader.process"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader.process"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method executes the total workflow of BioPax processing.</span>
 
 <span class="sd">        :param bool silent: whether to print status messages and progress bars.</span>
@@ -765,8 +363,8 @@ document.write(`
                 <span class="s1">&#39;Skipping to next file or resource.&#39;</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BioPaxReader.open_biopax"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.open_biopax">[docs]</a>    <span class="k">def</span> <span class="nf">open_biopax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader.open_biopax"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.open_biopax">[docs]</a>    <span class="k">def</span> <span class="nf">open_biopax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens the BioPax file. This method should not be called directly,</span>
 <span class="sd">        ``BioPaxReader.process()`` calls it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -794,8 +392,8 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_biopax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opener</span><span class="o">.</span><span class="n">fileobj</span></div>
 
-<div class="viewcode-block" id="BioPaxReader.biopax_size"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.biopax_size">[docs]</a>    <span class="k">def</span> <span class="nf">biopax_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader.biopax_size"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.biopax_size">[docs]</a>    <span class="k">def</span> <span class="nf">biopax_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the uncompressed size of the BioPax XML. This is needed in</span>
 <span class="sd">        order to have a progress bar. This method should not be called</span>
 <span class="sd">        directly, ``BioPaxReader.process()`` calls it.</span>
@@ -803,8 +401,8 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">bp_filesize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opener</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">file_from_archive</span><span class="p">]</span> \
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opener</span><span class="p">,</span> <span class="s1">&#39;sizes&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">opener</span><span class="o">.</span><span class="n">size</span></div>
 
-<div class="viewcode-block" id="BioPaxReader.extract"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader.extract"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extracts the BioPax file from compressed archive. Creates a</span>
 <span class="sd">        temporary file. This is needed to trace the progress of</span>
 <span class="sd">        processing, which is useful in case of large files.</span>
@@ -849,8 +447,8 @@ document.write(`
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">silent</span><span class="p">:</span>
                 <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="BioPaxReader.init_etree"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.init_etree">[docs]</a>    <span class="k">def</span> <span class="nf">init_etree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader.init_etree"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.init_etree">[docs]</a>    <span class="k">def</span> <span class="nf">init_etree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates the ``lxml.etree.iterparse`` object.</span>
 <span class="sd">        This method should not be called directly,</span>
 <span class="sd">        ``BioPaxReader.process()`` calls it.</span>
@@ -866,8 +464,8 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">used_elements</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="BioPaxReader.set_progress"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.set_progress">[docs]</a>    <span class="k">def</span> <span class="nf">set_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader.set_progress"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.set_progress">[docs]</a>    <span class="k">def</span> <span class="nf">set_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a progress bar.</span>
 <span class="sd">        This method should not be called directly,</span>
 <span class="sd">        ``BioPaxReader.process()`` calls it.</span>
@@ -877,8 +475,8 @@ document.write(`
                                          <span class="s1">&#39;Processing </span><span class="si">%s</span><span class="s1"> from BioPAX XML&#39;</span> <span class="o">%</span>
                                          <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="mi">33</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BioPaxReader.iterate"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.iterate">[docs]</a>    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader.iterate"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.iterate">[docs]</a>    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterates the BioPax XML and calls the appropriate methods</span>
 <span class="sd">        for each element.</span>
 <span class="sd">        This method should not be called directly,</span>
@@ -914,8 +512,8 @@ document.write(`
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">silent</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="BioPaxReader.cleanup_hook"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.cleanup_hook">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader.cleanup_hook"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.cleanup_hook">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes the used elements to free up memory.</span>
 <span class="sd">        This method should not be called directly,</span>
 <span class="sd">        ``BioPaxReader.iterate()`` calls it.</span>
@@ -925,8 +523,8 @@ document.write(`
                 <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">used_elements</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
                 <span class="n">e</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="BioPaxReader.close_biopax"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.close_biopax">[docs]</a>    <span class="k">def</span> <span class="nf">close_biopax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BioPaxReader.close_biopax"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.BioPaxReader.html#pypath.utils.pyreact.BioPaxReader.close_biopax">[docs]</a>    <span class="k">def</span> <span class="nf">close_biopax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deletes the iterator and closes the file object.</span>
 <span class="sd">        This method should not be called directly,</span>
 <span class="sd">        ``BioPaxReader.process()`` calls it.</span>
@@ -1127,8 +725,8 @@ document.write(`
             <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AttributeHandler"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.AttributeHandler.html#pypath.utils.pyreact.AttributeHandler">[docs]</a><span class="k">class</span> <span class="nc">AttributeHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<div class="viewcode-block" id="AttributeHandler.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.AttributeHandler.html#pypath.utils.pyreact.AttributeHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeHandler"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.AttributeHandler.html#pypath.utils.pyreact.AttributeHandler">[docs]</a><span class="k">class</span> <span class="nc">AttributeHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeHandler.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.AttributeHandler.html#pypath.utils.pyreact.AttributeHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
     <span class="k">def</span> <span class="nf">add_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
@@ -1150,7 +748,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">dict_set_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Members or ids of entities should never change, as</span>
 <span class="sd">        these are their unique, hashable and comparable</span>
 <span class="sd">        attributes.</span>
@@ -1163,8 +761,8 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
-<div class="viewcode-block" id="Entity"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Entity.html#pypath.utils.pyreact.Entity">[docs]</a><span class="k">class</span> <span class="nc">Entity</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
-<div class="viewcode-block" id="Entity.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Entity.html#pypath.utils.pyreact.Entity.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[],</span> <span class="n">attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Entity"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Entity.html#pypath.utils.pyreact.Entity">[docs]</a><span class="k">class</span> <span class="nc">Entity</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="Entity.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Entity.html#pypath.utils.pyreact.Entity.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[],</span> <span class="n">attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Entity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">identifier</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span>
@@ -1193,7 +791,7 @@ document.write(`
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_type</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        With this method it is possible to iterate ``Entity`` objects</span>
 <span class="sd">        just like ``EntitySet`` objects.</span>
 
@@ -1202,8 +800,8 @@ document.write(`
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="p">]:</span>
             <span class="k">yield</span> <span class="n">i</span>
 
-<div class="viewcode-block" id="Entity.expand"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Entity.html#pypath.utils.pyreact.Entity.expand">[docs]</a>    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Entity.expand"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Entity.html#pypath.utils.pyreact.Entity.expand">[docs]</a>    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        With this method it is possible to iterate ``Entity`` objects</span>
 <span class="sd">        just like ``EntitySet`` objects.</span>
 
@@ -1217,8 +815,8 @@ document.write(`
             <span class="k">yield</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="p">{})</span></div>
 
 
-<div class="viewcode-block" id="Protein"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Protein.html#pypath.utils.pyreact.Protein">[docs]</a><span class="k">class</span> <span class="nc">Protein</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
-<div class="viewcode-block" id="Protein.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Protein.html#pypath.utils.pyreact.Protein.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">,</span> <span class="n">id_type</span><span class="o">=</span><span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[],</span> <span class="n">attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Protein"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Protein.html#pypath.utils.pyreact.Protein">[docs]</a><span class="k">class</span> <span class="nc">Protein</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
+<div class="viewcode-block" id="Protein.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Protein.html#pypath.utils.pyreact.Protein.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein_id</span><span class="p">,</span> <span class="n">id_type</span><span class="o">=</span><span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[],</span> <span class="n">attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Protein</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">protein_id</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span></div>
@@ -1246,16 +844,16 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proteins</span><span class="p">()</span> <span class="o">-</span> <span class="n">other</span></div>
 
 
-<div class="viewcode-block" id="Reference"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Reference.html#pypath.utils.pyreact.Reference">[docs]</a><span class="k">class</span> <span class="nc">Reference</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
-<div class="viewcode-block" id="Reference.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Reference.html#pypath.utils.pyreact.Reference.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_id</span><span class="p">,</span> <span class="n">id_type</span><span class="o">=</span><span class="s1">&#39;pubmed&#39;</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="Reference"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Reference.html#pypath.utils.pyreact.Reference">[docs]</a><span class="k">class</span> <span class="nc">Reference</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
+<div class="viewcode-block" id="Reference.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Reference.html#pypath.utils.pyreact.Reference.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_id</span><span class="p">,</span> <span class="n">id_type</span><span class="o">=</span><span class="s1">&#39;pubmed&#39;</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[]):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Reference</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ref_id</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">get_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">refs</span><span class="o">.</span><span class="n">Reference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref_id</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="EntitySet"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.EntitySet.html#pypath.utils.pyreact.EntitySet">[docs]</a><span class="k">class</span> <span class="nc">EntitySet</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
-<div class="viewcode-block" id="EntitySet.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.EntitySet.html#pypath.utils.pyreact.EntitySet.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EntitySet"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.EntitySet.html#pypath.utils.pyreact.EntitySet">[docs]</a><span class="k">class</span> <span class="nc">EntitySet</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="EntitySet.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.EntitySet.html#pypath.utils.pyreact.EntitySet.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">EntitySet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">members</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="n">members</span><span class="p">))</span>
@@ -1295,8 +893,8 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 
-<div class="viewcode-block" id="Intersecting"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Intersecting.html#pypath.utils.pyreact.Intersecting">[docs]</a><span class="k">class</span> <span class="nc">Intersecting</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<div class="viewcode-block" id="Intersecting.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Intersecting.html#pypath.utils.pyreact.Intersecting.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Intersecting"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Intersecting.html#pypath.utils.pyreact.Intersecting">[docs]</a><span class="k">class</span> <span class="nc">Intersecting</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Intersecting.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Intersecting.html#pypath.utils.pyreact.Intersecting.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -1304,8 +902,8 @@ document.write(`
             <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">isdisjoint</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">set</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Complex"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Complex.html#pypath.utils.pyreact.Complex">[docs]</a><span class="k">class</span> <span class="nc">Complex</span><span class="p">(</span><span class="n">EntitySet</span><span class="p">):</span>
-<div class="viewcode-block" id="Complex.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Complex.html#pypath.utils.pyreact.Complex.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Complex"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Complex.html#pypath.utils.pyreact.Complex">[docs]</a><span class="k">class</span> <span class="nc">Complex</span><span class="p">(</span><span class="n">EntitySet</span><span class="p">):</span>
+<div class="viewcode-block" id="Complex.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Complex.html#pypath.utils.pyreact.Complex.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Complex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;complex&#39;</span></div>
 
@@ -1362,8 +960,8 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proteins</span><span class="p">()</span> <span class="o">-</span> <span class="n">other</span></div>
 
 
-<div class="viewcode-block" id="ProteinFamily"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.ProteinFamily.html#pypath.utils.pyreact.ProteinFamily">[docs]</a><span class="k">class</span> <span class="nc">ProteinFamily</span><span class="p">(</span><span class="n">Intersecting</span><span class="p">,</span> <span class="n">EntitySet</span><span class="p">):</span>
-<div class="viewcode-block" id="ProteinFamily.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.ProteinFamily.html#pypath.utils.pyreact.ProteinFamily.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ProteinFamily"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.ProteinFamily.html#pypath.utils.pyreact.ProteinFamily">[docs]</a><span class="k">class</span> <span class="nc">ProteinFamily</span><span class="p">(</span><span class="n">Intersecting</span><span class="p">,</span> <span class="n">EntitySet</span><span class="p">):</span>
+<div class="viewcode-block" id="ProteinFamily.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.ProteinFamily.html#pypath.utils.pyreact.ProteinFamily.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">EntitySet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="n">Intersecting</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;pfamily&#39;</span></div>
@@ -1379,7 +977,7 @@ document.write(`
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_itermembers1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterates protein family, yields proteins.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">:</span>
@@ -1437,8 +1035,8 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proteins</span><span class="p">()</span> <span class="o">-</span> <span class="n">other</span></div>
 
 
-<div class="viewcode-block" id="ComplexVariations"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.ComplexVariations.html#pypath.utils.pyreact.ComplexVariations">[docs]</a><span class="k">class</span> <span class="nc">ComplexVariations</span><span class="p">(</span><span class="n">Intersecting</span><span class="p">,</span> <span class="n">EntitySet</span><span class="p">):</span>
-<div class="viewcode-block" id="ComplexVariations.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.ComplexVariations.html#pypath.utils.pyreact.ComplexVariations.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ComplexVariations"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.ComplexVariations.html#pypath.utils.pyreact.ComplexVariations">[docs]</a><span class="k">class</span> <span class="nc">ComplexVariations</span><span class="p">(</span><span class="n">Intersecting</span><span class="p">,</span> <span class="n">EntitySet</span><span class="p">):</span>
+<div class="viewcode-block" id="ComplexVariations.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.ComplexVariations.html#pypath.utils.pyreact.ComplexVariations.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">EntitySet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="n">Intersecting</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;cvariations&#39;</span></div>
@@ -1458,8 +1056,8 @@ document.write(`
             <span class="k">for</span> <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">expand</span><span class="p">():</span>
                 <span class="k">yield</span> <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span>
 
-<div class="viewcode-block" id="ComplexVariations.itermembers"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.ComplexVariations.html#pypath.utils.pyreact.ComplexVariations.itermembers">[docs]</a>    <span class="k">def</span> <span class="nf">itermembers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ComplexVariations.itermembers"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.ComplexVariations.html#pypath.utils.pyreact.ComplexVariations.itermembers">[docs]</a>    <span class="k">def</span> <span class="nf">itermembers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a convenient iterator for the expand methods</span>
 <span class="sd">        of higher classes like ``ReactionSide`` or ``Control``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1514,9 +1112,9 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proteins</span><span class="p">()</span> <span class="o">-</span> <span class="n">other</span></div>
 
 
-<div class="viewcode-block" id="PyReact"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact">[docs]</a><span class="k">class</span> <span class="nc">PyReact</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<div class="viewcode-block" id="PyReact"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact">[docs]</a><span class="k">class</span> <span class="nc">PyReact</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 
-<div class="viewcode-block" id="PyReact.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="PyReact.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ncbi_tax_id</span><span class="o">=</span><span class="mi">9606</span><span class="p">,</span>
         <span class="n">default_id_types</span><span class="o">=</span><span class="p">{},</span>
@@ -2271,8 +1869,8 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">rpfamilies</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="n">pfid</span><span class="p">]</span> <span class="o">=</span> <span class="n">members</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pfamilies_added</span> <span class="o">+=</span> <span class="mi">1</span>
 
-<div class="viewcode-block" id="PyReact.merge_complexes"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.merge_complexes">[docs]</a>    <span class="k">def</span> <span class="nf">merge_complexes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">this_round</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PyReact.merge_complexes"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.merge_complexes">[docs]</a>    <span class="k">def</span> <span class="nf">merge_complexes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">this_round</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merges complexes from the active ``BioPaxReader`` object.</span>
 <span class="sd">        Protein families and subcomplexes are expanded, and all combinations</span>
 <span class="sd">        are created as separate complexes. The complexes from the same ID</span>
@@ -2458,8 +2056,8 @@ document.write(`
 
         <span class="k">return</span> <span class="n">this_round</span></div>
 
-<div class="viewcode-block" id="PyReact.merge_cvariations"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.merge_cvariations">[docs]</a>    <span class="k">def</span> <span class="nf">merge_cvariations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PyReact.merge_cvariations"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.merge_cvariations">[docs]</a>    <span class="k">def</span> <span class="nf">merge_cvariations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This processes those complexes which are in fact a set of complex variations.</span>
 <span class="sd">        As simple complexes also are always extended to complex variations because</span>
 <span class="sd">        they might have not only simple proteins but protein families as members,</span>
@@ -2504,8 +2102,8 @@ document.write(`
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cvariations_added</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="PyReact.gen_cvariations"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.gen_cvariations">[docs]</a>    <span class="k">def</span> <span class="nf">gen_cvariations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PyReact.gen_cvariations"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.gen_cvariations">[docs]</a>    <span class="k">def</span> <span class="nf">gen_cvariations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Because one key from the BioPax file might represent more complexes,</span>
 <span class="sd">        *complexvariations* are created to give a way to represent sets of</span>
 <span class="sd">        combinations. These are created for all complexes, even with only</span>
@@ -2540,7 +2138,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_merge_reactions</span><span class="p">((</span><span class="s1">&#39;cassemblies&#39;</span><span class="p">,</span> <span class="s1">&#39;cassembly&#39;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_merge_reactions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rclass</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merges reaction type entities from the active parser.</span>
 <span class="sd">        Here protein families and complex variations are not expanded.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2876,8 +2474,8 @@ document.write(`
             <span class="p">)</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="PyReact.in_same_component"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.in_same_component">[docs]</a>    <span class="k">def</span> <span class="nf">in_same_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by_source</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PyReact.in_same_component"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.PyReact.html#pypath.utils.pyreact.PyReact.in_same_component">[docs]</a>    <span class="k">def</span> <span class="nf">in_same_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by_source</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For all complexes connects all members of the complex with each other.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
@@ -3115,8 +2713,8 @@ document.write(`
 <span class="c1"># ## ## ## ## ## ##</span>
 
 
-<div class="viewcode-block" id="ReactionSide"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.ReactionSide.html#pypath.utils.pyreact.ReactionSide">[docs]</a><span class="k">class</span> <span class="nc">ReactionSide</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
-<div class="viewcode-block" id="ReactionSide.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.ReactionSide.html#pypath.utils.pyreact.ReactionSide.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="p">[],</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ReactionSide"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.ReactionSide.html#pypath.utils.pyreact.ReactionSide">[docs]</a><span class="k">class</span> <span class="nc">ReactionSide</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="ReactionSide.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.ReactionSide.html#pypath.utils.pyreact.ReactionSide.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="p">[],</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ReactionSide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">members</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">members</span><span class="p">)</span>
@@ -3186,8 +2784,8 @@ document.write(`
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">m</span>
 
-<div class="viewcode-block" id="ReactionSide.expand"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.ReactionSide.html#pypath.utils.pyreact.ReactionSide.expand">[docs]</a>    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ReactionSide.expand"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.ReactionSide.html#pypath.utils.pyreact.ReactionSide.expand">[docs]</a>    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Expands the ``ReactionSide`` by iterating over all combinations</span>
 <span class="sd">        of all ``ComplexVariation`` and ``ProteinFamily`` members, so</span>
 <span class="sd">        yields ``ReactionSide`` objects with only ``Protein`` and ``Complex``</span>
@@ -3312,8 +2910,8 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proteins</span><span class="p">()</span> <span class="o">-</span> <span class="n">other</span></div>
 
 
-<div class="viewcode-block" id="Reaction"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Reaction.html#pypath.utils.pyreact.Reaction">[docs]</a><span class="k">class</span> <span class="nc">Reaction</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
-<div class="viewcode-block" id="Reaction.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Reaction.html#pypath.utils.pyreact.Reaction.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Reaction"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Reaction.html#pypath.utils.pyreact.Reaction">[docs]</a><span class="k">class</span> <span class="nc">Reaction</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="Reaction.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Reaction.html#pypath.utils.pyreact.Reaction.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">left</span><span class="p">,</span>
                  <span class="n">right</span><span class="p">,</span>
                  <span class="n">left_attrs</span><span class="p">,</span>
@@ -3414,8 +3012,8 @@ document.write(`
             <span class="c1"># yield r</span>
 
 
-<div class="viewcode-block" id="Control"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Control.html#pypath.utils.pyreact.Control">[docs]</a><span class="k">class</span> <span class="nc">Control</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
-<div class="viewcode-block" id="Control.__init__"><a class="viewcode-back" href="../../../api/pypath.utils.pyreact.Control.html#pypath.utils.pyreact.Control.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">er</span><span class="p">,</span> <span class="n">ed</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="p">[],</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Control"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Control.html#pypath.utils.pyreact.Control">[docs]</a><span class="k">class</span> <span class="nc">Control</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
+<div class="viewcode-block" id="Control.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.utils.pyreact.Control.html#pypath.utils.pyreact.Control.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">er</span><span class="p">,</span> <span class="n">ed</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="p">[],</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Control</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">er</span>
@@ -3462,88 +3060,54 @@ document.write(`
                     <span class="n">c</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span>
                     <span class="k">yield</span> <span class="n">c</span></div>
 </pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
 
-                </article>
-              
-              
-              
-                <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
-<div class="prev-next-area">
-</div>
-                </footer>
-              
-            </div>
-            
-            
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+          <div class="sidebar-resize-handle"></div>
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
-<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
+  <div>
+    <h3><a href="../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release history</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
 </ul>
 
-  </nav></div>
-
-</div></div>
-              
-            
-          </div>
-          <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
-          </footer>
-        
-      </main>
-    </div>
   </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
-
-  <footer class="bd-footer">
-<div class="bd-footer__inner bd-page-width">
-  
-    <div class="footer-items__start">
-      
-        <div class="footer-item">
-  <p class="copyright">
-    
-      © Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
-      <br/>
-    
-  </p>
-</div>
-      
-        <div class="footer-item">
-  <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 6.1.3.
-    <br/>
-  </p>
-</div>
-      
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
     </div>
-  
-  
-    <div class="footer-items__end">
-      
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
-</p></div>
-      
-    </div>
-  
 </div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
 
-  </footer>
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
   </body>
 </html>

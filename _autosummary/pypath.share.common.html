@@ -1,0 +1,739 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>pypath.share.common &#8212; pypath 0.14.31 documentation</title>
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script defer src="../_static/insipid.js"></script>
+    <script defer src="../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pypath.share.common.add_to_list" href="pypath.share.common.add_to_list.html" />
+    <link rel="prev" title="pypath.share.cache.get_cachedir" href="pypath.share.cache.get_cachedir.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="pypath.share.html" accesskey="U">pypath.share</a>
+            <a class="top" href="#">pypath.share.common</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+      <a href="pypath.share.cache.get_cachedir.html" class="nav-icon previous" title="previous:&#13;pypath.share.cache.get_cachedir" aria-label="Previous topic" accesskey="P" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"/></svg>
+      </a>
+      <a href="pypath.share.common.add_to_list.html" class="nav-icon next" title="next:&#13;pypath.share.common.add_to_list" aria-label="Next topic" accesskey="N" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg>
+      </a>
+    </nav>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.share.cache.get_cachedir.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.share.cache.get_cachedir
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.share.common.add_to_list.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.share.common.add_to_list
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<section id="module-pypath.share.common">
+<span id="pypath-share-common"></span><h1>pypath.share.common<a class="headerlink" href="#module-pypath.share.common" title="Permalink to this heading">§</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">members<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.add_to_list.html#pypath.share.common.add_to_list" title="pypath.share.common.add_to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_to_list</span></code></a>(lst, toadd)</p></td>
+<td><p>Adds elements to a list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.add_to_set.html#pypath.share.common.add_to_set" title="pypath.share.common.add_to_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_to_set</span></code></a>(st, toadd)</p></td>
+<td><p>Adds elements to a set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.at_least_in.html#pypath.share.common.at_least_in" title="pypath.share.common.at_least_in"><code class="xref py py-obj docutils literal notranslate"><span class="pre">at_least_in</span></code></a>([n])</p></td>
+<td><p>Returns a method which is similar to the <cite>intersection</cite> operator on sets but requires the elements to present at least in <code class="docutils literal notranslate"><span class="pre">n</span></code> of the sets instead of in all of them.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.clean_dict.html#pypath.share.common.clean_dict" title="pypath.share.common.clean_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean_dict</span></code></a>(dct)</p></td>
+<td><p>Cleans a dictionary of <code class="docutils literal notranslate"><span class="pre">None</span></code> values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.combine_attrs.html#pypath.share.common.combine_attrs" title="pypath.share.common.combine_attrs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_attrs</span></code></a>(attrs[, num_method])</p></td>
+<td><p>Combines multiple attributes into one.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.console.html#pypath.share.common.console" title="pypath.share.common.console"><code class="xref py py-obj docutils literal notranslate"><span class="pre">console</span></code></a>(message)</p></td>
+<td><p>Prints a message on the terminal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.decode.html#pypath.share.common.decode" title="pypath.share.common.decode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decode</span></code></a>(string, *args, **kwargs)</p></td>
+<td><p>Decodes a string if it is a byte string, otherwise returns it unchanged.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.del_empty.html#pypath.share.common.del_empty" title="pypath.share.common.del_empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">del_empty</span></code></a>(lst)</p></td>
+<td><p>Removes empty entries of a list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.df_memory_usage.html#pypath.share.common.df_memory_usage" title="pypath.share.common.df_memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">df_memory_usage</span></code></a>(df[, deep])</p></td>
+<td><p>Returns the memory usage of a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> as a string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.dict_collapse_keys.html#pypath.share.common.dict_collapse_keys" title="pypath.share.common.dict_collapse_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_collapse_keys</span></code></a>(dct[, depth, front, ...])</p></td>
+<td><p>From a dict of dicts builds a dict with tuple keys.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.dict_counts.html#pypath.share.common.dict_counts" title="pypath.share.common.dict_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_counts</span></code></a>(dict_of_sets)</p></td>
+<td><p>For a <em>dict</em> of <em>set*s or other values with ``__len__`` returns a *dict</em> of numbers with the length of each value in the original <em>dict</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.dict_diff.html#pypath.share.common.dict_diff" title="pypath.share.common.dict_diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_diff</span></code></a>(d1, d2)</p></td>
+<td><p>Compares two dictionaries.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.dict_expand_keys.html#pypath.share.common.dict_expand_keys" title="pypath.share.common.dict_expand_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_expand_keys</span></code></a>(dct[, depth, front])</p></td>
+<td><p>From a <em>dict</em> with <em>tuple</em> keys builds a dict of dicts.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.dict_percent.html#pypath.share.common.dict_percent" title="pypath.share.common.dict_percent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_percent</span></code></a>(dict_of_counts, total)</p></td>
+<td><p>For a <em>dict</em> of counts and a total count creates a <em>dict</em> of percentages.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.dict_set_path.html#pypath.share.common.dict_set_path" title="pypath.share.common.dict_set_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_set_path</span></code></a>(d, path)</p></td>
+<td><p>Given a dictionary of dictionaries <em>d</em> looks up the keys according to <em>path</em>, creates new subdicts and keys if those do not exist yet, and sets/merges the leaf element according to simple heuristic.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.dict_set_percent.html#pypath.share.common.dict_set_percent" title="pypath.share.common.dict_set_percent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_set_percent</span></code></a>(dict_of_sets)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.dict_str.html#pypath.share.common.dict_str" title="pypath.share.common.dict_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_str</span></code></a>(dct)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.dict_subtotals.html#pypath.share.common.dict_subtotals" title="pypath.share.common.dict_subtotals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_subtotals</span></code></a>(dct)</p></td>
+<td><p>For a dict of dicts of sets returns a dict with keys of the outer dict and values the union of the sets in each of the inner dicts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.dict_sym_diff.html#pypath.share.common.dict_sym_diff" title="pypath.share.common.dict_sym_diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_sym_diff</span></code></a>(d1, d2)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.dict_union.html#pypath.share.common.dict_union" title="pypath.share.common.dict_union"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_union</span></code></a>(dict_of_sets)</p></td>
+<td><p>For a <em>dict</em> of <a href="#id1"><span class="problematic" id="id2">*</span></a>set*s returns the union of the values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.eq.html#pypath.share.common.eq" title="pypath.share.common.eq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eq</span></code></a>(one, other)</p></td>
+<td><p>Equality between <code class="docutils literal notranslate"><span class="pre">one</span></code> and <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.filtr.html#pypath.share.common.filtr" title="pypath.share.common.filtr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtr</span></code></a>(obj, *args[, and_or])</p></td>
+<td><p>Filters an iterable by simple conditions on one or more fields.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.first.html#pypath.share.common.first" title="pypath.share.common.first"><code class="xref py py-obj docutils literal notranslate"><span class="pre">first</span></code></a>(it[, default])</p></td>
+<td><p>Returns the first element of the iterable <code class="docutils literal notranslate"><span class="pre">it</span></code> or the value of <code class="docutils literal notranslate"><span class="pre">default</span></code> if the iterable is empty.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.flat_list.html#pypath.share.common.flat_list" title="pypath.share.common.flat_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flat_list</span></code></a>(lst)</p></td>
+<td><p>Coerces the elements of a list of iterables into a single list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.float_or_nan.html#pypath.share.common.float_or_nan" title="pypath.share.common.float_or_nan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float_or_nan</span></code></a>(num)</p></td>
+<td><p>Returns <cite>num</cite> converted from string to float if <cite>num</cite> represents a float otherwise <cite>numpy.nan</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.gen_session_id.html#pypath.share.common.gen_session_id" title="pypath.share.common.gen_session_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_session_id</span></code></a>([length])</p></td>
+<td><p>Generates a random alphanumeric string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.get.html#pypath.share.common.get" title="pypath.share.common.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>(obj, field)</p></td>
+<td><p>Extracts elements from lists, dicts and tuples in a uniform way.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.get_args.html#pypath.share.common.get_args" title="pypath.share.common.get_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_args</span></code></a>(loc_dict[, remove])</p></td>
+<td><p>Given a dictionary of local variables, returns a copy of it without <code class="docutils literal notranslate"><span class="pre">'self'</span></code>, <code class="docutils literal notranslate"><span class="pre">'kwargs'</span></code> (in the scope of a <code class="xref py py-obj docutils literal notranslate"><span class="pre">class</span></code>) plus any other specified in the keyword argument <em>remove</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.is_float.html#pypath.share.common.is_float" title="pypath.share.common.is_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_float</span></code></a>(num)</p></td>
+<td><p>Tells if a string represents a floating point number, i.e. it can be converted by <cite>float</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.is_int.html#pypath.share.common.is_int" title="pypath.share.common.is_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_int</span></code></a>(num)</p></td>
+<td><p>Tells if a string represents an integer, i.e. it can be converted by <cite>int</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.is_str.html#pypath.share.common.is_str" title="pypath.share.common.is_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_str</span></code></a>(obj)</p></td>
+<td><p>Checks if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is a string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.jaccard_index.html#pypath.share.common.jaccard_index" title="pypath.share.common.jaccard_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jaccard_index</span></code></a>(a, b)</p></td>
+<td><p>Computes the Jaccard index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.join_dicts.html#pypath.share.common.join_dicts" title="pypath.share.common.join_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_dicts</span></code></a>(d1, d2[, _from, to])</p></td>
+<td><p>Joins a pair of dictionaries.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.latex_table.html#pypath.share.common.latex_table" title="pypath.share.common.latex_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latex_table</span></code></a>(tbl[, colformat, maxlen, ...])</p></td>
+<td><p>From a table represented by an OrderedDict with column titles as keys and column contents as lists generates LaTeX tabular.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.match.html#pypath.share.common.match" title="pypath.share.common.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>(obj, condition)</p></td>
+<td><p>Tests a condition on an object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.maybe_in_dict.html#pypath.share.common.maybe_in_dict" title="pypath.share.common.maybe_in_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maybe_in_dict</span></code></a>(dct, key)</p></td>
+<td><p>Retrieves a key from a dict if the key is in the dict, otherwise returns the key itself.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.md5.html#pypath.share.common.md5" title="pypath.share.common.md5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">md5</span></code></a>(value)</p></td>
+<td><p>Computes the sum of MD5 hash of a given string <em>value</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.merge_dicts.html#pypath.share.common.merge_dicts" title="pypath.share.common.merge_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_dicts</span></code></a>(d1, d2)</p></td>
+<td><p>Merges dictionaries recursively.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_shared_elements.html#pypath.share.common.n_shared_elements" title="pypath.share.common.n_shared_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_elements</span></code></a>(by_group, group)</p></td>
+<td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns the number of all elements in the *set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which occure in any of the other sets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_shared_foreach.html#pypath.share.common.n_shared_foreach" title="pypath.share.common.n_shared_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_foreach</span></code></a>(by_group)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_shared_total.html#pypath.share.common.n_shared_total" title="pypath.share.common.n_shared_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_total</span></code></a>(by_group)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_shared_unique_foreach.html#pypath.share.common.n_shared_unique_foreach" title="pypath.share.common.n_shared_unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_unique_foreach</span></code></a>(by_group[, op])</p></td>
+<td><p>For a <em>dict</em> of <em>set*s ``by_group`` returns a *dict</em> of numbers with the counts of either the shared or unique elements across all <a href="#id3"><span class="problematic" id="id4">*</span></a>set*s, depending on the operation <code class="docutils literal notranslate"><span class="pre">op</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_unique_elements.html#pypath.share.common.n_unique_elements" title="pypath.share.common.n_unique_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_unique_elements</span></code></a>(by_group, group)</p></td>
+<td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns the number of all elements in the *set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which don't occure in any of the other sets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_unique_foreach.html#pypath.share.common.n_unique_foreach" title="pypath.share.common.n_unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_unique_foreach</span></code></a>(by_group)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_unique_total.html#pypath.share.common.n_unique_total" title="pypath.share.common.n_unique_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_unique_total</span></code></a>(by_group)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.negate.html#pypath.share.common.negate" title="pypath.share.common.negate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">negate</span></code></a>(value[, neg])</p></td>
+<td><p>Negates a value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.none_or_len.html#pypath.share.common.none_or_len" title="pypath.share.common.none_or_len"><code class="xref py py-obj docutils literal notranslate"><span class="pre">none_or_len</span></code></a>(value)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.paginate.html#pypath.share.common.paginate" title="pypath.share.common.paginate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">paginate</span></code></a>(lst[, size])</p></td>
+<td><p>Yields sections of length <code class="docutils literal notranslate"><span class="pre">size</span></code> from list <code class="docutils literal notranslate"><span class="pre">lst</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.prefix.html#pypath.share.common.prefix" title="pypath.share.common.prefix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefix</span></code></a>(string, sep)</p></td>
+<td><p>Extracts a prefix from a string, splitting by a separator and taking only the first part.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.print_table.html#pypath.share.common.print_table" title="pypath.share.common.print_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_table</span></code></a>(tbl[, width, maxlen, tablefmt, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.re_safe_groups.html#pypath.share.common.re_safe_groups" title="pypath.share.common.re_safe_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">re_safe_groups</span></code></a>(pattern, string[, method])</p></td>
+<td><p>Missing convenience for the built-in <cite>re</cite> module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.remove_prefix.html#pypath.share.common.remove_prefix" title="pypath.share.common.remove_prefix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_prefix</span></code></a>(string, sep)</p></td>
+<td><p>Removes a prefix if <cite>string</cite> is a string and contains the separator <cite>sep</cite>; otherwise returns the original object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.rotate.html#pypath.share.common.rotate" title="pypath.share.common.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(point, angle[, center])</p></td>
+<td><p>Rotates a point with respect to a center.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.sets_to_sorted_lists.html#pypath.share.common.sets_to_sorted_lists" title="pypath.share.common.sets_to_sorted_lists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sets_to_sorted_lists</span></code></a>(obj)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.sfirst.html#pypath.share.common.sfirst" title="pypath.share.common.sfirst"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sfirst</span></code></a>(it[, default])</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">it</span></code> if it's a string, its first element if it's an iterable, or the value of <code class="docutils literal notranslate"><span class="pre">default</span></code> if the iterable is empty.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.shared_elements.html#pypath.share.common.shared_elements" title="pypath.share.common.shared_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_elements</span></code></a>(by_group, group)</p></td>
+<td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns a *set</em> of all elements in the <em>set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which occure in any of the sets assigned to the other keys.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.shared_foreach.html#pypath.share.common.shared_foreach" title="pypath.share.common.shared_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_foreach</span></code></a>(by_group)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.shared_total.html#pypath.share.common.shared_total" title="pypath.share.common.shared_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_total</span></code></a>(by_group)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.shared_unique.html#pypath.share.common.shared_unique" title="pypath.share.common.shared_unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_unique</span></code></a>(by_group, group[, op])</p></td>
+<td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns a *set</em> of all elements in the <em>set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which either does or does not occure in any of the sets assigned to the other keys, depending on the operator <code class="docutils literal notranslate"><span class="pre">op</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.shared_unique_foreach.html#pypath.share.common.shared_unique_foreach" title="pypath.share.common.shared_unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_unique_foreach</span></code></a>(by_group[, op, counts])</p></td>
+<td><p>For a <em>dict</em> of <em>set*s ``by_group`` returns a *dict</em> of <a href="#id5"><span class="problematic" id="id6">*</span></a>set*s with either shared or unique elements across all <a href="#id7"><span class="problematic" id="id8">*</span></a>set*s, depending on the operation <code class="docutils literal notranslate"><span class="pre">op</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.shared_unique_total.html#pypath.share.common.shared_unique_total" title="pypath.share.common.shared_unique_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_unique_total</span></code></a>(by_group[, op])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.simpson_index.html#pypath.share.common.simpson_index" title="pypath.share.common.simpson_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpson_index</span></code></a>(a, b)</p></td>
+<td><p>Computes Simpson's similarity index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.simpson_index_counts.html#pypath.share.common.simpson_index_counts" title="pypath.share.common.simpson_index_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpson_index_counts</span></code></a>(a, b, c)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">arg a<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.something.html#pypath.share.common.something" title="pypath.share.common.something"><code class="xref py py-obj docutils literal notranslate"><span class="pre">something</span></code></a>(anything)</p></td>
+<td><p>Checks if argument is empty.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.sorensen_index.html#pypath.share.common.sorensen_index" title="pypath.share.common.sorensen_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sorensen_index</span></code></a>(a, b)</p></td>
+<td><p>Computes the Sorensen index.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.suffix.html#pypath.share.common.suffix" title="pypath.share.common.suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suffix</span></code></a>(string, sep)</p></td>
+<td><p>Extracts a suffix from a string, splitting by a separator and taking only the last part.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.sum_dicts.html#pypath.share.common.sum_dicts" title="pypath.share.common.sum_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum_dicts</span></code></a>(*args)</p></td>
+<td><p>For dicts of numbers returns a dict with the sum of the numbers from all dicts for all keys.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.swap_dict.html#pypath.share.common.swap_dict" title="pypath.share.common.swap_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_dict</span></code></a>(d[, force_sets])</p></td>
+<td><p>Swaps a dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.swap_dict_simple.html#pypath.share.common.swap_dict_simple" title="pypath.share.common.swap_dict_simple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_dict_simple</span></code></a>(d)</p></td>
+<td><p>Swaps a dictionary.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.swap_suffix.html#pypath.share.common.swap_suffix" title="pypath.share.common.swap_suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_suffix</span></code></a>(name[, sep, suffixes])</p></td>
+<td><p>Changes the suffix of a string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.table_add_row_numbers.html#pypath.share.common.table_add_row_numbers" title="pypath.share.common.table_add_row_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_add_row_numbers</span></code></a>(tbl, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.table_format.html#pypath.share.common.table_format" title="pypath.share.common.table_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_format</span></code></a>(tbl[, width, maxlen, tablefmt, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.table_textwrap.html#pypath.share.common.table_textwrap" title="pypath.share.common.table_textwrap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_textwrap</span></code></a>(tbl[, width, maxlen])</p></td>
+<td><p>Wraps and truncates the text content of cells in a table.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.to_list.html#pypath.share.common.to_list" title="pypath.share.common.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a>(var)</p></td>
+<td><p>Makes sure <cite>var</cite> is a list otherwise creates a single element list out of it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.to_set.html#pypath.share.common.to_set" title="pypath.share.common.to_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_set</span></code></a>(var)</p></td>
+<td><p>Makes sure the object <cite>var</cite> is a set, if it is a list converts it to set, otherwise it creates a single element set out of it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.try_bool.html#pypath.share.common.try_bool" title="pypath.share.common.try_bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">try_bool</span></code></a>(val)</p></td>
+<td><p>Attempts to convert a value to True or False, returns the input unchanged upon failure.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.try_float.html#pypath.share.common.try_float" title="pypath.share.common.try_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">try_float</span></code></a>(num)</p></td>
+<td><p>Returns <cite>num</cite> converted from string to float <cite>num</cite> represents a float otherwise returns the input unchanged.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.tsv_table.html#pypath.share.common.tsv_table" title="pypath.share.common.tsv_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tsv_table</span></code></a>(tbl[, path, maxlen])</p></td>
+<td><p>From a table represented by an OrderedDict with column titles as keys and column contents as lists generates a tab separated string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.uniq_list.html#pypath.share.common.uniq_list" title="pypath.share.common.uniq_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_list</span></code></a>(seq)</p></td>
+<td><p>Reduces a list to its unique elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.uniq_list1.html#pypath.share.common.uniq_list1" title="pypath.share.common.uniq_list1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_list1</span></code></a>(seq)</p></td>
+<td><p>Not order preserving From <a class="reference external" href="http://www.peterbe.com/plog/uniqifiers-benchmark">http://www.peterbe.com/plog/uniqifiers-benchmark</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.uniq_list2.html#pypath.share.common.uniq_list2" title="pypath.share.common.uniq_list2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_list2</span></code></a>(seq)</p></td>
+<td><p>Not order preserving From <a class="reference external" href="http://www.peterbe.com/plog/uniqifiers-benchmark">http://www.peterbe.com/plog/uniqifiers-benchmark</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.uniq_ord_list.html#pypath.share.common.uniq_ord_list" title="pypath.share.common.uniq_ord_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_ord_list</span></code></a>(seq[, idfun])</p></td>
+<td><p>Reduces a list to its unique elements keeping their order.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.unique_elements.html#pypath.share.common.unique_elements" title="pypath.share.common.unique_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_elements</span></code></a>(by_group, group)</p></td>
+<td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns a *set</em> of all elements in the <em>set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which don't occure in any of the sets assigned to the other keys.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.unique_foreach.html#pypath.share.common.unique_foreach" title="pypath.share.common.unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_foreach</span></code></a>(by_group)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.unique_list.html#pypath.share.common.unique_list" title="pypath.share.common.unique_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_list</span></code></a>(seq)</p></td>
+<td><p>Reduces a list to its unique elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.unique_total.html#pypath.share.common.unique_total" title="pypath.share.common.unique_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_total</span></code></a>(by_group)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.upper0.html#pypath.share.common.upper0" title="pypath.share.common.upper0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upper0</span></code></a>(string)</p></td>
+<td><p>Ensures the first letter of a string is uppercase, except if the first word already contains uppercase letters, in order to avoid changing, for example, miRNA to MiRNA.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.values.html#pypath.share.common.values" title="pypath.share.common.values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code></a>(obj, field)</p></td>
+<td><p>All values of a field.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.wcl.html#pypath.share.common.wcl" title="pypath.share.common.wcl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wcl</span></code></a>(f)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.wrap_truncate.html#pypath.share.common.wrap_truncate" title="pypath.share.common.wrap_truncate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_truncate</span></code></a>(text[, width, maxlen])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.silent.html#pypath.share.common.silent" title="pypath.share.common.silent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">silent</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#omnipath">OmniPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#do-you-need-pypath">Do you need pypath?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#docs">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#get-help">Get help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#faq">FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#contact">Contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#impressum">Impressum</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#history-and-releases">History and releases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.html">pypath.core</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="pypath.share.html">pypath.share</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="pypath.share.cache.html">pypath.share.cache</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">pypath.share.common</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.add_to_list.html">pypath.share.common.add_to_list</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.add_to_set.html">pypath.share.common.add_to_set</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.at_least_in.html">pypath.share.common.at_least_in</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.clean_dict.html">pypath.share.common.clean_dict</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.combine_attrs.html">pypath.share.common.combine_attrs</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.console.html">pypath.share.common.console</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.decode.html">pypath.share.common.decode</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.del_empty.html">pypath.share.common.del_empty</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.df_memory_usage.html">pypath.share.common.df_memory_usage</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_collapse_keys.html">pypath.share.common.dict_collapse_keys</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_counts.html">pypath.share.common.dict_counts</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_diff.html">pypath.share.common.dict_diff</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_expand_keys.html">pypath.share.common.dict_expand_keys</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_percent.html">pypath.share.common.dict_percent</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_set_path.html">pypath.share.common.dict_set_path</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_set_percent.html">pypath.share.common.dict_set_percent</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_str.html">pypath.share.common.dict_str</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_subtotals.html">pypath.share.common.dict_subtotals</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_sym_diff.html">pypath.share.common.dict_sym_diff</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.dict_union.html">pypath.share.common.dict_union</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.eq.html">pypath.share.common.eq</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.filtr.html">pypath.share.common.filtr</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.first.html">pypath.share.common.first</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.flat_list.html">pypath.share.common.flat_list</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.float_or_nan.html">pypath.share.common.float_or_nan</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.gen_session_id.html">pypath.share.common.gen_session_id</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.get.html">pypath.share.common.get</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.get_args.html">pypath.share.common.get_args</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.is_float.html">pypath.share.common.is_float</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.is_int.html">pypath.share.common.is_int</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.is_str.html">pypath.share.common.is_str</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.jaccard_index.html">pypath.share.common.jaccard_index</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.join_dicts.html">pypath.share.common.join_dicts</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.latex_table.html">pypath.share.common.latex_table</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.match.html">pypath.share.common.match</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.maybe_in_dict.html">pypath.share.common.maybe_in_dict</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.md5.html">pypath.share.common.md5</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.merge_dicts.html">pypath.share.common.merge_dicts</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.n_shared_elements.html">pypath.share.common.n_shared_elements</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.n_shared_foreach.html">pypath.share.common.n_shared_foreach</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.n_shared_total.html">pypath.share.common.n_shared_total</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.n_shared_unique_foreach.html">pypath.share.common.n_shared_unique_foreach</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.n_unique_elements.html">pypath.share.common.n_unique_elements</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.n_unique_foreach.html">pypath.share.common.n_unique_foreach</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.n_unique_total.html">pypath.share.common.n_unique_total</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.negate.html">pypath.share.common.negate</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.none_or_len.html">pypath.share.common.none_or_len</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.paginate.html">pypath.share.common.paginate</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.prefix.html">pypath.share.common.prefix</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.print_table.html">pypath.share.common.print_table</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.re_safe_groups.html">pypath.share.common.re_safe_groups</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.remove_prefix.html">pypath.share.common.remove_prefix</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.rotate.html">pypath.share.common.rotate</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.sets_to_sorted_lists.html">pypath.share.common.sets_to_sorted_lists</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.sfirst.html">pypath.share.common.sfirst</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.shared_elements.html">pypath.share.common.shared_elements</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.shared_foreach.html">pypath.share.common.shared_foreach</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.shared_total.html">pypath.share.common.shared_total</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.shared_unique.html">pypath.share.common.shared_unique</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.shared_unique_foreach.html">pypath.share.common.shared_unique_foreach</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.shared_unique_total.html">pypath.share.common.shared_unique_total</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.simpson_index.html">pypath.share.common.simpson_index</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.simpson_index_counts.html">pypath.share.common.simpson_index_counts</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.something.html">pypath.share.common.something</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.sorensen_index.html">pypath.share.common.sorensen_index</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.suffix.html">pypath.share.common.suffix</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.sum_dicts.html">pypath.share.common.sum_dicts</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.swap_dict.html">pypath.share.common.swap_dict</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.swap_dict_simple.html">pypath.share.common.swap_dict_simple</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.swap_suffix.html">pypath.share.common.swap_suffix</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.table_add_row_numbers.html">pypath.share.common.table_add_row_numbers</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.table_format.html">pypath.share.common.table_format</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.table_textwrap.html">pypath.share.common.table_textwrap</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.to_list.html">pypath.share.common.to_list</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.to_set.html">pypath.share.common.to_set</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.try_bool.html">pypath.share.common.try_bool</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.try_float.html">pypath.share.common.try_float</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.tsv_table.html">pypath.share.common.tsv_table</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.uniq_list.html">pypath.share.common.uniq_list</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.uniq_list1.html">pypath.share.common.uniq_list1</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.uniq_list2.html">pypath.share.common.uniq_list2</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.uniq_ord_list.html">pypath.share.common.uniq_ord_list</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.unique_elements.html">pypath.share.common.unique_elements</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.unique_foreach.html">pypath.share.common.unique_foreach</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.unique_list.html">pypath.share.common.unique_list</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.unique_total.html">pypath.share.common.unique_total</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.upper0.html">pypath.share.common.upper0</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.values.html">pypath.share.common.values</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.wcl.html">pypath.share.common.wcl</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.wrap_truncate.html">pypath.share.common.wrap_truncate</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.share.common.silent.html">pypath.share.common.silent</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.share.constants.html">pypath.share.constants</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.share.curl.html">pypath.share.curl</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.share.log.html">pypath.share.log</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.share.progress.html">pypath.share.progress</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.share.session.html">pypath.share.session</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.share.settings.html">pypath.share.settings</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.core.html">pypath.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pypath.share.html">pypath.share</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pypath.share.cache.html">pypath.share.cache</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pypath.share.common</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.add_to_list.html">pypath.share.common.add_to_list</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.add_to_set.html">pypath.share.common.add_to_set</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.at_least_in.html">pypath.share.common.at_least_in</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.clean_dict.html">pypath.share.common.clean_dict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.combine_attrs.html">pypath.share.common.combine_attrs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.console.html">pypath.share.common.console</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.decode.html">pypath.share.common.decode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.del_empty.html">pypath.share.common.del_empty</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.df_memory_usage.html">pypath.share.common.df_memory_usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_collapse_keys.html">pypath.share.common.dict_collapse_keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_counts.html">pypath.share.common.dict_counts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_diff.html">pypath.share.common.dict_diff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_expand_keys.html">pypath.share.common.dict_expand_keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_percent.html">pypath.share.common.dict_percent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_set_path.html">pypath.share.common.dict_set_path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_set_percent.html">pypath.share.common.dict_set_percent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_str.html">pypath.share.common.dict_str</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_subtotals.html">pypath.share.common.dict_subtotals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_sym_diff.html">pypath.share.common.dict_sym_diff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.dict_union.html">pypath.share.common.dict_union</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.eq.html">pypath.share.common.eq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.filtr.html">pypath.share.common.filtr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.first.html">pypath.share.common.first</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.flat_list.html">pypath.share.common.flat_list</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.float_or_nan.html">pypath.share.common.float_or_nan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.gen_session_id.html">pypath.share.common.gen_session_id</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.get.html">pypath.share.common.get</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.get_args.html">pypath.share.common.get_args</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.is_float.html">pypath.share.common.is_float</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.is_int.html">pypath.share.common.is_int</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.is_str.html">pypath.share.common.is_str</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.jaccard_index.html">pypath.share.common.jaccard_index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.join_dicts.html">pypath.share.common.join_dicts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.latex_table.html">pypath.share.common.latex_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.match.html">pypath.share.common.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.maybe_in_dict.html">pypath.share.common.maybe_in_dict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.md5.html">pypath.share.common.md5</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.merge_dicts.html">pypath.share.common.merge_dicts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.n_shared_elements.html">pypath.share.common.n_shared_elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.n_shared_foreach.html">pypath.share.common.n_shared_foreach</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.n_shared_total.html">pypath.share.common.n_shared_total</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.n_shared_unique_foreach.html">pypath.share.common.n_shared_unique_foreach</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.n_unique_elements.html">pypath.share.common.n_unique_elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.n_unique_foreach.html">pypath.share.common.n_unique_foreach</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.n_unique_total.html">pypath.share.common.n_unique_total</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.negate.html">pypath.share.common.negate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.none_or_len.html">pypath.share.common.none_or_len</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.paginate.html">pypath.share.common.paginate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.prefix.html">pypath.share.common.prefix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.print_table.html">pypath.share.common.print_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.re_safe_groups.html">pypath.share.common.re_safe_groups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.remove_prefix.html">pypath.share.common.remove_prefix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.rotate.html">pypath.share.common.rotate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.sets_to_sorted_lists.html">pypath.share.common.sets_to_sorted_lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.sfirst.html">pypath.share.common.sfirst</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.shared_elements.html">pypath.share.common.shared_elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.shared_foreach.html">pypath.share.common.shared_foreach</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.shared_total.html">pypath.share.common.shared_total</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.shared_unique.html">pypath.share.common.shared_unique</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.shared_unique_foreach.html">pypath.share.common.shared_unique_foreach</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.shared_unique_total.html">pypath.share.common.shared_unique_total</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.simpson_index.html">pypath.share.common.simpson_index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.simpson_index_counts.html">pypath.share.common.simpson_index_counts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.something.html">pypath.share.common.something</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.sorensen_index.html">pypath.share.common.sorensen_index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.suffix.html">pypath.share.common.suffix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.sum_dicts.html">pypath.share.common.sum_dicts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.swap_dict.html">pypath.share.common.swap_dict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.swap_dict_simple.html">pypath.share.common.swap_dict_simple</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.swap_suffix.html">pypath.share.common.swap_suffix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.table_add_row_numbers.html">pypath.share.common.table_add_row_numbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.table_format.html">pypath.share.common.table_format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.table_textwrap.html">pypath.share.common.table_textwrap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.to_list.html">pypath.share.common.to_list</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.to_set.html">pypath.share.common.to_set</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.try_bool.html">pypath.share.common.try_bool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.try_float.html">pypath.share.common.try_float</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.tsv_table.html">pypath.share.common.tsv_table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.uniq_list.html">pypath.share.common.uniq_list</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.uniq_list1.html">pypath.share.common.uniq_list1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.uniq_list2.html">pypath.share.common.uniq_list2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.uniq_ord_list.html">pypath.share.common.uniq_ord_list</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.unique_elements.html">pypath.share.common.unique_elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.unique_foreach.html">pypath.share.common.unique_foreach</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.unique_list.html">pypath.share.common.unique_list</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.unique_total.html">pypath.share.common.unique_total</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.upper0.html">pypath.share.common.upper0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.values.html">pypath.share.common.values</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.wcl.html">pypath.share.common.wcl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.wrap_truncate.html">pypath.share.common.wrap_truncate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.common.silent.html">pypath.share.common.silent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.share.constants.html">pypath.share.constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.share.curl.html">pypath.share.curl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.share.log.html">pypath.share.log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.share.progress.html">pypath.share.progress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.share.session.html">pypath.share.session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.share.settings.html">pypath.share.settings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.share.cache.get_cachedir.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.share.cache.get_cachedir
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.share.common.add_to_list.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.share.common.add_to_list
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

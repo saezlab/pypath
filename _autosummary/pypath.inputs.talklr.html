@@ -1,0 +1,600 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>pypath.inputs.talklr &#8212; pypath 0.14.31 documentation</title>
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script defer src="../_static/insipid.js"></script>
+    <script defer src="../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pypath.inputs.talklr.talklr_annotations" href="pypath.inputs.talklr.talklr_annotations.html" />
+    <link rel="prev" title="pypath.inputs.switches_elm.get_switches_elm" href="pypath.inputs.switches_elm.get_switches_elm.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="pypath.inputs.html" accesskey="U">pypath.inputs</a>
+            <a class="top" href="#">pypath.inputs.talklr</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+      <a href="pypath.inputs.switches_elm.get_switches_elm.html" class="nav-icon previous" title="previous:&#13;pypath.inputs.switches_elm.get_switches_elm" aria-label="Previous topic" accesskey="P" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"/></svg>
+      </a>
+      <a href="pypath.inputs.talklr.talklr_annotations.html" class="nav-icon next" title="next:&#13;pypath.inputs.talklr.talklr_annotations" aria-label="Next topic" accesskey="N" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg>
+      </a>
+    </nav>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.inputs.switches_elm.get_switches_elm.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.inputs.switches_elm.get_switches_elm
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.inputs.talklr.talklr_annotations.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.inputs.talklr.talklr_annotations
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<section id="module-pypath.inputs.talklr">
+<span id="pypath-inputs-talklr"></span><h1>pypath.inputs.talklr<a class="headerlink" href="#module-pypath.inputs.talklr" title="Permalink to this heading">§</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">members<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.inputs.talklr.talklr_annotations.html#pypath.inputs.talklr.talklr_annotations" title="pypath.inputs.talklr.talklr_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">talklr_annotations</span></code></a>([putative])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.inputs.talklr.talklr_interactions.html#pypath.inputs.talklr.talklr_interactions" title="pypath.inputs.talklr.talklr_interactions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">talklr_interactions</span></code></a>([putative])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.inputs.talklr.talklr_raw.html#pypath.inputs.talklr.talklr_raw" title="pypath.inputs.talklr.talklr_raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">talklr_raw</span></code></a>([putative])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#omnipath">OmniPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#do-you-need-pypath">Do you need pypath?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#docs">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#get-help">Get help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#faq">FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#contact">Contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#impressum">Impressum</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#history-and-releases">History and releases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.html">pypath.core</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.get_method.html">pypath.inputs.get_method</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.abs.html">pypath.inputs.abs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.acsn.html">pypath.inputs.acsn</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.adhesome.html">pypath.inputs.adhesome</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.almen2009.html">pypath.inputs.almen2009</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.baccin2019.html">pypath.inputs.baccin2019</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.biogps.html">pypath.inputs.biogps</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.biogrid.html">pypath.inputs.biogrid</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.biomart.html">pypath.inputs.biomart</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.biomodels.html">pypath.inputs.biomodels</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.ca1.html">pypath.inputs.ca1</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cancercellmap.html">pypath.inputs.cancercellmap</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cancerdrugsdb.html">pypath.inputs.cancerdrugsdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cancersea.html">pypath.inputs.cancersea</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cell.html">pypath.inputs.cell</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cellcall.html">pypath.inputs.cellcall</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cellcellinteractions.html">pypath.inputs.cellcellinteractions</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cellchatdb.html">pypath.inputs.cellchatdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cellinker.html">pypath.inputs.cellinker</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cellphonedb.html">pypath.inputs.cellphonedb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.celltalkdb.html">pypath.inputs.celltalkdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.celltypist.html">pypath.inputs.celltypist</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.chembl.html">pypath.inputs.chembl</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.common.html">pypath.inputs.common</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.compleat.html">pypath.inputs.compleat</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.complexportal.html">pypath.inputs.complexportal</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.comppi.html">pypath.inputs.comppi</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.connectomedb.html">pypath.inputs.connectomedb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.corum.html">pypath.inputs.corum</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cosmic.html">pypath.inputs.cosmic</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cpad.html">pypath.inputs.cpad</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cpdb.html">pypath.inputs.cpdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.credentials.html">pypath.inputs.credentials</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.csa.html">pypath.inputs.csa</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cspa.html">pypath.inputs.cspa</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.cytosig.html">pypath.inputs.cytosig</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.dbptm.html">pypath.inputs.dbptm</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.deathdomain.html">pypath.inputs.deathdomain</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.depod.html">pypath.inputs.depod</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.dgidb.html">pypath.inputs.dgidb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.dip.html">pypath.inputs.dip</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.disgenet.html">pypath.inputs.disgenet</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.domino.html">pypath.inputs.domino</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.dorothea.html">pypath.inputs.dorothea</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.drugbank.html">pypath.inputs.drugbank</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.drugcentral.html">pypath.inputs.drugcentral</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.ebi.html">pypath.inputs.ebi</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.elm.html">pypath.inputs.elm</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.embopress.html">pypath.inputs.embopress</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.embrace.html">pypath.inputs.embrace</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.encode.html">pypath.inputs.encode</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.ensembl.html">pypath.inputs.ensembl</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.exocarta.html">pypath.inputs.exocarta</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.genecards.html">pypath.inputs.genecards</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.go.html">pypath.inputs.go</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.gpcrdb.html">pypath.inputs.gpcrdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.graphviz.html">pypath.inputs.graphviz</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.guide2pharma.html">pypath.inputs.guide2pharma</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.havugimana.html">pypath.inputs.havugimana</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.hgnc.html">pypath.inputs.hgnc</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.hippie.html">pypath.inputs.hippie</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.homologene.html">pypath.inputs.homologene</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.hpmr.html">pypath.inputs.hpmr</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.hpo.html">pypath.inputs.hpo</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.hprd.html">pypath.inputs.hprd</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.htri.html">pypath.inputs.htri</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.humancellmap.html">pypath.inputs.humancellmap</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.humap.html">pypath.inputs.humap</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.huri.html">pypath.inputs.huri</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.i3d.html">pypath.inputs.i3d</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.icellnet.html">pypath.inputs.icellnet</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.ielm.html">pypath.inputs.ielm</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.imweb.html">pypath.inputs.imweb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.innatedb.html">pypath.inputs.innatedb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.instruct.html">pypath.inputs.instruct</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.intact.html">pypath.inputs.intact</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.integrins.html">pypath.inputs.integrins</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.interpro.html">pypath.inputs.interpro</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.intogen.html">pypath.inputs.intogen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.ipi.html">pypath.inputs.ipi</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.iptmnet.html">pypath.inputs.iptmnet</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.italk.html">pypath.inputs.italk</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.kea.html">pypath.inputs.kea</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.kegg.html">pypath.inputs.kegg</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.kinasedotcom.html">pypath.inputs.kinasedotcom</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.kirouac2010.html">pypath.inputs.kirouac2010</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.lambert2018.html">pypath.inputs.lambert2018</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.laudanna.html">pypath.inputs.laudanna</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.li2012.html">pypath.inputs.li2012</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.lincs.html">pypath.inputs.lincs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.lmpid.html">pypath.inputs.lmpid</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.lncdisease.html">pypath.inputs.lncdisease</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.lncrnadb.html">pypath.inputs.lncrnadb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.locate.html">pypath.inputs.locate</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.lrdb.html">pypath.inputs.lrdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.macrophage.html">pypath.inputs.macrophage</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.main.html">pypath.inputs.main</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.matrisome.html">pypath.inputs.matrisome</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.matrixdb.html">pypath.inputs.matrixdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.mcam.html">pypath.inputs.mcam</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.membranome.html">pypath.inputs.membranome</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.mimp.html">pypath.inputs.mimp</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.mir2disease.html">pypath.inputs.mir2disease</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.mirbase.html">pypath.inputs.mirbase</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.mirdeathdb.html">pypath.inputs.mirdeathdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.mirecords.html">pypath.inputs.mirecords</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.mirtarbase.html">pypath.inputs.mirtarbase</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.mitab.html">pypath.inputs.mitab</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.mppi.html">pypath.inputs.mppi</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.msigdb.html">pypath.inputs.msigdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.ncrdeathdb.html">pypath.inputs.ncrdeathdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.negatome.html">pypath.inputs.negatome</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.netbiol.html">pypath.inputs.netbiol</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.netpath.html">pypath.inputs.netpath</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.ontology.html">pypath.inputs.ontology</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.opm.html">pypath.inputs.opm</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.oreganno.html">pypath.inputs.oreganno</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.panglaodb.html">pypath.inputs.panglaodb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pathwaycommons.html">pypath.inputs.pathwaycommons</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pazar.html">pypath.inputs.pazar</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pdb.html">pypath.inputs.pdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pdzbase.html">pypath.inputs.pdzbase</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pepcyber.html">pypath.inputs.pepcyber</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pfam.html">pypath.inputs.pfam</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.phobius.html">pypath.inputs.phobius</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.phosphatome.html">pypath.inputs.phosphatome</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.phosphoelm.html">pypath.inputs.phosphoelm</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.phosphonetworks.html">pypath.inputs.phosphonetworks</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.phosphopoint.html">pypath.inputs.phosphopoint</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.phosphosite.html">pypath.inputs.phosphosite</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pisa.html">pypath.inputs.pisa</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pro.html">pypath.inputs.pro</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.progeny.html">pypath.inputs.progeny</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.proteinatlas.html">pypath.inputs.proteinatlas</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.proteins.html">pypath.inputs.proteins</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.protmapper.html">pypath.inputs.protmapper</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pubchem.html">pypath.inputs.pubchem</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.pubmed.html">pypath.inputs.pubmed</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.ramilowski2015.html">pypath.inputs.ramilowski2015</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.rdata.html">pypath.inputs.rdata</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.reaction.html">pypath.inputs.reaction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.scconnect.html">pypath.inputs.scconnect</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.science.html">pypath.inputs.science</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.signalink.html">pypath.inputs.signalink</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.signor.html">pypath.inputs.signor</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.spike.html">pypath.inputs.spike</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.stitch.html">pypath.inputs.stitch</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.string.html">pypath.inputs.string</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.surfaceome.html">pypath.inputs.surfaceome</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.switches_elm.html">pypath.inputs.switches_elm</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">pypath.inputs.talklr</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="pypath.inputs.talklr.talklr_annotations.html">pypath.inputs.talklr.talklr_annotations</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.inputs.talklr.talklr_interactions.html">pypath.inputs.talklr.talklr_interactions</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.inputs.talklr.talklr_raw.html">pypath.inputs.talklr.talklr_raw</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.tcdb.html">pypath.inputs.tcdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.tfcensus.html">pypath.inputs.tfcensus</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.threedcomplex.html">pypath.inputs.threedcomplex</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.threedid.html">pypath.inputs.threedid</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.topdb.html">pypath.inputs.topdb</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.transmir.html">pypath.inputs.transmir</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.trip.html">pypath.inputs.trip</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.unichem.html">pypath.inputs.unichem</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.uniprot.html">pypath.inputs.uniprot</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.wang.html">pypath.inputs.wang</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.wojtowicz2020.html">pypath.inputs.wojtowicz2020</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.inputs.zhong2015.html">pypath.inputs.zhong2015</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.html">pypath.share</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.core.html">pypath.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.get_method.html">pypath.inputs.get_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.abs.html">pypath.inputs.abs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.acsn.html">pypath.inputs.acsn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.adhesome.html">pypath.inputs.adhesome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.almen2009.html">pypath.inputs.almen2009</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.baccin2019.html">pypath.inputs.baccin2019</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.biogps.html">pypath.inputs.biogps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.biogrid.html">pypath.inputs.biogrid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.biomart.html">pypath.inputs.biomart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.biomodels.html">pypath.inputs.biomodels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.ca1.html">pypath.inputs.ca1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cancercellmap.html">pypath.inputs.cancercellmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cancerdrugsdb.html">pypath.inputs.cancerdrugsdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cancersea.html">pypath.inputs.cancersea</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cell.html">pypath.inputs.cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cellcall.html">pypath.inputs.cellcall</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cellcellinteractions.html">pypath.inputs.cellcellinteractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cellchatdb.html">pypath.inputs.cellchatdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cellinker.html">pypath.inputs.cellinker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cellphonedb.html">pypath.inputs.cellphonedb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.celltalkdb.html">pypath.inputs.celltalkdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.celltypist.html">pypath.inputs.celltypist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.chembl.html">pypath.inputs.chembl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.common.html">pypath.inputs.common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.compleat.html">pypath.inputs.compleat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.complexportal.html">pypath.inputs.complexportal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.comppi.html">pypath.inputs.comppi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.connectomedb.html">pypath.inputs.connectomedb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.corum.html">pypath.inputs.corum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cosmic.html">pypath.inputs.cosmic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cpad.html">pypath.inputs.cpad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cpdb.html">pypath.inputs.cpdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.credentials.html">pypath.inputs.credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.csa.html">pypath.inputs.csa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cspa.html">pypath.inputs.cspa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.cytosig.html">pypath.inputs.cytosig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.dbptm.html">pypath.inputs.dbptm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.deathdomain.html">pypath.inputs.deathdomain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.depod.html">pypath.inputs.depod</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.dgidb.html">pypath.inputs.dgidb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.dip.html">pypath.inputs.dip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.disgenet.html">pypath.inputs.disgenet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.domino.html">pypath.inputs.domino</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.dorothea.html">pypath.inputs.dorothea</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.drugbank.html">pypath.inputs.drugbank</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.drugcentral.html">pypath.inputs.drugcentral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.ebi.html">pypath.inputs.ebi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.elm.html">pypath.inputs.elm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.embopress.html">pypath.inputs.embopress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.embrace.html">pypath.inputs.embrace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.encode.html">pypath.inputs.encode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.ensembl.html">pypath.inputs.ensembl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.exocarta.html">pypath.inputs.exocarta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.genecards.html">pypath.inputs.genecards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.go.html">pypath.inputs.go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.gpcrdb.html">pypath.inputs.gpcrdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.graphviz.html">pypath.inputs.graphviz</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.guide2pharma.html">pypath.inputs.guide2pharma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.havugimana.html">pypath.inputs.havugimana</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.hgnc.html">pypath.inputs.hgnc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.hippie.html">pypath.inputs.hippie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.homologene.html">pypath.inputs.homologene</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.hpmr.html">pypath.inputs.hpmr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.hpo.html">pypath.inputs.hpo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.hprd.html">pypath.inputs.hprd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.htri.html">pypath.inputs.htri</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.humancellmap.html">pypath.inputs.humancellmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.humap.html">pypath.inputs.humap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.huri.html">pypath.inputs.huri</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.i3d.html">pypath.inputs.i3d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.icellnet.html">pypath.inputs.icellnet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.ielm.html">pypath.inputs.ielm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.imweb.html">pypath.inputs.imweb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.innatedb.html">pypath.inputs.innatedb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.instruct.html">pypath.inputs.instruct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.intact.html">pypath.inputs.intact</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.integrins.html">pypath.inputs.integrins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.interpro.html">pypath.inputs.interpro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.intogen.html">pypath.inputs.intogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.ipi.html">pypath.inputs.ipi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.iptmnet.html">pypath.inputs.iptmnet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.italk.html">pypath.inputs.italk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.kea.html">pypath.inputs.kea</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.kegg.html">pypath.inputs.kegg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.kinasedotcom.html">pypath.inputs.kinasedotcom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.kirouac2010.html">pypath.inputs.kirouac2010</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.lambert2018.html">pypath.inputs.lambert2018</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.laudanna.html">pypath.inputs.laudanna</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.li2012.html">pypath.inputs.li2012</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.lincs.html">pypath.inputs.lincs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.lmpid.html">pypath.inputs.lmpid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.lncdisease.html">pypath.inputs.lncdisease</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.lncrnadb.html">pypath.inputs.lncrnadb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.locate.html">pypath.inputs.locate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.lrdb.html">pypath.inputs.lrdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.macrophage.html">pypath.inputs.macrophage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.main.html">pypath.inputs.main</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.matrisome.html">pypath.inputs.matrisome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.matrixdb.html">pypath.inputs.matrixdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.mcam.html">pypath.inputs.mcam</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.membranome.html">pypath.inputs.membranome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.mimp.html">pypath.inputs.mimp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.mir2disease.html">pypath.inputs.mir2disease</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.mirbase.html">pypath.inputs.mirbase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.mirdeathdb.html">pypath.inputs.mirdeathdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.mirecords.html">pypath.inputs.mirecords</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.mirtarbase.html">pypath.inputs.mirtarbase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.mitab.html">pypath.inputs.mitab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.mppi.html">pypath.inputs.mppi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.msigdb.html">pypath.inputs.msigdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.ncrdeathdb.html">pypath.inputs.ncrdeathdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.negatome.html">pypath.inputs.negatome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.netbiol.html">pypath.inputs.netbiol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.netpath.html">pypath.inputs.netpath</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.ontology.html">pypath.inputs.ontology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.opm.html">pypath.inputs.opm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.oreganno.html">pypath.inputs.oreganno</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.panglaodb.html">pypath.inputs.panglaodb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pathwaycommons.html">pypath.inputs.pathwaycommons</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pazar.html">pypath.inputs.pazar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pdb.html">pypath.inputs.pdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pdzbase.html">pypath.inputs.pdzbase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pepcyber.html">pypath.inputs.pepcyber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pfam.html">pypath.inputs.pfam</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.phobius.html">pypath.inputs.phobius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.phosphatome.html">pypath.inputs.phosphatome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.phosphoelm.html">pypath.inputs.phosphoelm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.phosphonetworks.html">pypath.inputs.phosphonetworks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.phosphopoint.html">pypath.inputs.phosphopoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.phosphosite.html">pypath.inputs.phosphosite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pisa.html">pypath.inputs.pisa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pro.html">pypath.inputs.pro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.progeny.html">pypath.inputs.progeny</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.proteinatlas.html">pypath.inputs.proteinatlas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.proteins.html">pypath.inputs.proteins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.protmapper.html">pypath.inputs.protmapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pubchem.html">pypath.inputs.pubchem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.pubmed.html">pypath.inputs.pubmed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.ramilowski2015.html">pypath.inputs.ramilowski2015</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.rdata.html">pypath.inputs.rdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.reaction.html">pypath.inputs.reaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.scconnect.html">pypath.inputs.scconnect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.science.html">pypath.inputs.science</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.signalink.html">pypath.inputs.signalink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.signor.html">pypath.inputs.signor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.spike.html">pypath.inputs.spike</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.stitch.html">pypath.inputs.stitch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.string.html">pypath.inputs.string</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.surfaceome.html">pypath.inputs.surfaceome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.switches_elm.html">pypath.inputs.switches_elm</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pypath.inputs.talklr</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pypath.inputs.talklr.talklr_annotations.html">pypath.inputs.talklr.talklr_annotations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.inputs.talklr.talklr_interactions.html">pypath.inputs.talklr.talklr_interactions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.inputs.talklr.talklr_raw.html">pypath.inputs.talklr.talklr_raw</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.tcdb.html">pypath.inputs.tcdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.tfcensus.html">pypath.inputs.tfcensus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.threedcomplex.html">pypath.inputs.threedcomplex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.threedid.html">pypath.inputs.threedid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.topdb.html">pypath.inputs.topdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.transmir.html">pypath.inputs.transmir</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.trip.html">pypath.inputs.trip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.unichem.html">pypath.inputs.unichem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.uniprot.html">pypath.inputs.uniprot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.wang.html">pypath.inputs.wang</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.wojtowicz2020.html">pypath.inputs.wojtowicz2020</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.inputs.zhong2015.html">pypath.inputs.zhong2015</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.share.html">pypath.share</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.inputs.switches_elm.get_switches_elm.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.inputs.switches_elm.get_switches_elm
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.inputs.talklr.talklr_annotations.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.inputs.talklr.talklr_annotations
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

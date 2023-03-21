@@ -1,0 +1,1019 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>pypath.core.annot.AnnotationBase &#8212; pypath 0.14.31 documentation</title>
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script defer src="../_static/insipid.js"></script>
+    <script defer src="../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pypath.core.annot.AnnotationTable" href="pypath.core.annot.AnnotationTable.html" />
+    <link rel="prev" title="pypath.core.annot.Almen2009" href="pypath.core.annot.Almen2009.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="pypath.core.annot.html" accesskey="U">pypath.core.annot</a>
+            <a class="top" href="#">pypath.core.annot.AnnotationBase</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+      <a href="pypath.core.annot.Almen2009.html" class="nav-icon previous" title="previous:&#13;pypath.core.annot.Almen2009" aria-label="Previous topic" accesskey="P" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"/></svg>
+      </a>
+      <a href="pypath.core.annot.AnnotationTable.html" class="nav-icon next" title="next:&#13;pypath.core.annot.AnnotationTable" aria-label="Next topic" accesskey="N" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg>
+      </a>
+    </nav>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.core.annot.Almen2009.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.core.annot.Almen2009
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.core.annot.AnnotationTable.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.core.annot.AnnotationTable
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<section id="pypath-core-annot-annotationbase">
+<h1>pypath.core.annot.AnnotationBase<a class="headerlink" href="#pypath-core-annot-annotationbase" title="Permalink to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.core.annot.</span></span><span class="sig-name descname"><span class="pre">AnnotationBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'protein'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swissprot_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proteins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infer_complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypath.internals.resource.AbstractResource.html#pypath.internals.resource.AbstractResource" title="pypath.internals.resource.AbstractResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractResource</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'protein'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swissprot_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proteins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infer_complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.__init__" title="Permalink to this definition">§</a></dt>
+<dd><p>Represents annotations for a set of proteins.
+Loads the data from the original resource and provides methods
+to query the annotations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – A custom name for the annotation resource.</p></li>
+<li><p><strong>ncbi_tax_id</strong> (<em>int</em>) – NCBI Taxonomy identifier.</p></li>
+<li><p><strong>input_method</strong> (<em>callable</em><em>,</em><em>str</em>) – Either a callable or the name of a method in any submodules of
+the <code class="docutils literal notranslate"><span class="pre">pypath.inputs</span></code>  module. Should return a dict with
+UniProt IDs as keys or an object suitable for <code class="docutils literal notranslate"><span class="pre">process_method</span></code>.</p></li>
+<li><p><strong>input_args</strong> (<em>dict</em>) – Arguments for the <code class="docutils literal notranslate"><span class="pre">input_method</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.__init__" title="pypath.core.annot.AnnotationBase.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(name[, ncbi_tax_id, input_method, ...])</p></td>
+<td><p>Represents annotations for a set of proteins.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.add_complexes_by_inference" title="pypath.core.annot.AnnotationBase.add_complexes_by_inference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_complexes_by_inference</span></code></a>([complexes])</p></td>
+<td><p>Creates complex annotations by in silico inference and adds them to this annotation set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_complexes" title="pypath.core.annot.AnnotationBase.all_complexes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_complexes</span></code></a>()</p></td>
+<td><p>All protein complexes annotated in this resource.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_entities" title="pypath.core.annot.AnnotationBase.all_entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_entities</span></code></a>([entity_types])</p></td>
+<td><p>All entities annotated in this resource.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_mirnas" title="pypath.core.annot.AnnotationBase.all_mirnas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_mirnas</span></code></a>()</p></td>
+<td><p>All miRNAs annotated in this resource.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_proteins" title="pypath.core.annot.AnnotationBase.all_proteins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_proteins</span></code></a>()</p></td>
+<td><p>All UniProt IDs annotated in this resource.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_refs" title="pypath.core.annot.AnnotationBase.all_refs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_refs</span></code></a>()</p></td>
+<td><p>Some annotations contain references.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.annotate_complex" title="pypath.core.annot.AnnotationBase.annotate_complex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">annotate_complex</span></code></a>(cplex)</p></td>
+<td><p>Infers annotations for a single complex.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.browse" title="pypath.core.annot.AnnotationBase.browse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">browse</span></code></a>([field, start])</p></td>
+<td><p>Print gene information as a table.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.complex_inference" title="pypath.core.annot.AnnotationBase.complex_inference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex_inference</span></code></a>([complexes])</p></td>
+<td><p>Annotates all complexes in <cite>complexes</cite>, by default in the default complex database (existing in the <cite>complex</cite> module or generated on demand according to the module's current settings).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.coverage" title="pypath.core.annot.AnnotationBase.coverage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coverage</span></code></a>(other)</p></td>
+<td><p>Calculates the coverage of the annotation i.e. the proportion of entities having at least one record in this annotation resource for an arbitrary set of entities.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.curation_effort" title="pypath.core.annot.AnnotationBase.curation_effort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">curation_effort</span></code></a>()</p></td>
+<td><p>Counts the reference-record pairs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dump</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_type</span></code>(key)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_names" title="pypath.core.annot.AnnotationBase.get_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_names</span></code></a>()</p></td>
+<td><p>Returns the list of field names in the records.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_reference_set" title="pypath.core.annot.AnnotationBase.get_reference_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_reference_set</span></code></a>([proteins, complexes, ...])</p></td>
+<td><p>Retrieves the reference set i.e. the set of all entities which potentially have annotation in this resource.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_subset" title="pypath.core.annot.AnnotationBase.get_subset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_subset</span></code></a>([method, entity_type])</p></td>
+<td><p>Retrieves a subset by filtering based on <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_subset_bool_array" title="pypath.core.annot.AnnotationBase.get_subset_bool_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_subset_bool_array</span></code></a>([reference_set])</p></td>
+<td><p>Returns a boolean vector with True and False values for each entity in the reference set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_values" title="pypath.core.annot.AnnotationBase.get_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_values</span></code></a>(name[, exclude_none])</p></td>
+<td><p>Returns the set of all possible values of a field.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_complexes</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_complex</span></code>(key)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_mirna</span></code>(key)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_protein</span></code>(key)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.labels" title="pypath.core.annot.AnnotationBase.labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">labels</span></code></a>([method])</p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">select</span></code> but returns a list of labels (more human readable).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.load" title="pypath.core.annot.AnnotationBase.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>()</p></td>
+<td><p>Loads the annotation data by calling the input method.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.load_data" title="pypath.core.annot.AnnotationBase.load_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_data</span></code></a>()</p></td>
+<td><p>Loads the data by calling <code class="docutils literal notranslate"><span class="pre">input_method</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.load_proteins" title="pypath.core.annot.AnnotationBase.load_proteins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_proteins</span></code></a>()</p></td>
+<td><p>Retrieves a set of all UniProt IDs to have a base set of the entire proteome.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.make_df" title="pypath.core.annot.AnnotationBase.make_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_df</span></code></a>([rebuild])</p></td>
+<td><p>Compiles a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> from the annotation data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_complex_records</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_complexes</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.numof_entities" title="pypath.core.annot.AnnotationBase.numof_entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_entities</span></code></a>()</p></td>
+<td><p>The number of annotated entities in the resource.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_mirna_records</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_mirnas</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_protein_records</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_proteins</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.numof_records" title="pypath.core.annot.AnnotationBase.numof_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_records</span></code></a>([entity_types])</p></td>
+<td><p>The total number of annotation records.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.numof_references" title="pypath.core.annot.AnnotationBase.numof_references"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_references</span></code></a>()</p></td>
+<td><p>Some annotations contain references.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.process" title="pypath.core.annot.AnnotationBase.process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process</span></code></a>()</p></td>
+<td><p>Calls the <code class="docutils literal notranslate"><span class="pre">_process_method</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">proportion</span></code>(other)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.reload" title="pypath.core.annot.AnnotationBase.reload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code></a>()</p></td>
+<td><p>Reloads the object from the module level.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_to_pickle</span></code>(pickle_file)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.select" title="pypath.core.annot.AnnotationBase.select"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select</span></code></a>([method, entity_type])</p></td>
+<td><p>Retrieves a subset by filtering based on <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.set_method" title="pypath.core.annot.AnnotationBase.set_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_method</span></code></a>()</p></td>
+<td><p>Sets the data input method by looking up in <code class="docutils literal notranslate"><span class="pre">inputs</span></code> module if necessary.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.set_reference_set" title="pypath.core.annot.AnnotationBase.set_reference_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_reference_set</span></code></a>()</p></td>
+<td><p>Assigns the reference set to the :py:attr``reference_set`` attribute.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.show" title="pypath.core.annot.AnnotationBase.show"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show</span></code></a>([method, table_param])</p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">select</span></code> but prints a table to the console with basic information from the UniProt datasheets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.subset_intersection" title="pypath.core.annot.AnnotationBase.subset_intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subset_intersection</span></code></a>(universe, **kwargs)</p></td>
+<td><p>Calculates the proportion of entities in a subset occuring in the set <code class="docutils literal notranslate"><span class="pre">universe</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.to_array" title="pypath.core.annot.AnnotationBase.to_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_array</span></code></a>([reference_set, use_fields])</p></td>
+<td><p>Returns an entity vs feature array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.to_bool_array" title="pypath.core.annot.AnnotationBase.to_bool_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_bool_array</span></code></a>(reference_set)</p></td>
+<td><p>Returns a presence/absence boolean array for a reference set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.AnnotationBase.to_set" title="pypath.core.annot.AnnotationBase.to_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_set</span></code></a>()</p></td>
+<td><p>Returns the entities present in this annotation resource as a set.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_fields</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.add_complexes_by_inference">
+<span class="sig-name descname"><span class="pre">add_complexes_by_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.add_complexes_by_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.add_complexes_by_inference" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates complex annotations by in silico inference and adds them
+to this annotation set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.all_complexes">
+<span class="sig-name descname"><span class="pre">all_complexes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.all_complexes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.all_complexes" title="Permalink to this definition">§</a></dt>
+<dd><p>All protein complexes annotated in this resource.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.all_entities">
+<span class="sig-name descname"><span class="pre">all_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.all_entities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.all_entities" title="Permalink to this definition">§</a></dt>
+<dd><p>All entities annotated in this resource.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.all_mirnas">
+<span class="sig-name descname"><span class="pre">all_mirnas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.all_mirnas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.all_mirnas" title="Permalink to this definition">§</a></dt>
+<dd><p>All miRNAs annotated in this resource.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.all_proteins">
+<span class="sig-name descname"><span class="pre">all_proteins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.all_proteins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.all_proteins" title="Permalink to this definition">§</a></dt>
+<dd><p>All UniProt IDs annotated in this resource.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.all_refs">
+<span class="sig-name descname"><span class="pre">all_refs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.all_refs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.all_refs" title="Permalink to this definition">§</a></dt>
+<dd><p>Some annotations contain references. The field name for references
+is always <code class="docutils literal notranslate"><span class="pre">pmid</span></code> (PubMed ID). This method collects the references
+across all records. Returns <em>list</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.annotate_complex">
+<span class="sig-name descname"><span class="pre">annotate_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cplex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.annotate_complex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.annotate_complex" title="Permalink to this definition">§</a></dt>
+<dd><p>Infers annotations for a single complex.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.browse">
+<span class="sig-name descname"><span class="pre">browse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.browse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.browse" title="Permalink to this definition">§</a></dt>
+<dd><p>Print gene information as a table.</p>
+<p>Presents information about annotation categories as ascii tables
+printed in the terminal. If one category provided, prints one table.
+If multiple categories provided, prints a table for each of them one
+by one proceeding to the next one once you hit return. If no categories
+provided goes through all levels of the primary category.</p>
+<dl class="simple">
+<dt>Args</dt><dd><dl class="simple">
+<dt>field:</dt><dd><p>The field to browse categories by.</p>
+<ul class="simple">
+<li><p>If None the primary field will be selected.
+If this annotation resource doesn’t have fields, all proteins
+will be presented as one single category.</p></li>
+<li><p>If a string it will be considered a field name and it will
+browse through all levels of this field.</p></li>
+<li><p>If a <code class="docutils literal notranslate"><span class="pre">list</span></code>, set or tuple, it will be considered either a
+<code class="docutils literal notranslate"><span class="pre">list</span></code> of field names or a list of values from the primary
+field. In the former case all combinations of the values of
+the fields will be presented, in the latter case the browsing
+will be limited to the levels of the primary field contained
+in <code class="docutils literal notranslate"><span class="pre">field</span></code>.</p></li>
+<li><p>If a <code class="docutils literal notranslate"><span class="pre">dict</span></code>, keys are supposed to be field names and values
+as list of levels. If any of the values are None, all levels
+from that field will be used.</p></li>
+</ul>
+</dd>
+<dt>start:</dt><dd><p>Start browsing from this category. E.g. if there are 500
+categories and start is 250 it will skip everything before the
+250th.</p>
+</dd>
+<dt>kwargs:</dt><dd><p>Passed to <code class="docutils literal notranslate"><span class="pre">pypath.utils.uniprot.info</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.complex_inference">
+<span class="sig-name descname"><span class="pre">complex_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.complex_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.complex_inference" title="Permalink to this definition">§</a></dt>
+<dd><p>Annotates all complexes in <cite>complexes</cite>, by default in the default
+complex database (existing in the <cite>complex</cite> module or generated
+on demand according to the module’s current settings).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>Dict with complexes as keys and sets of annotations as values.</em></p></li>
+<li><p><em>Complexes with no valid information in this annotation resource</em></p></li>
+<li><p><em>won’t be in the dict.</em></p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>complexes</strong> (<em>iterable</em>) – Iterable yielding complexes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.coverage">
+<span class="sig-name descname"><span class="pre">coverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.coverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.coverage" title="Permalink to this definition">§</a></dt>
+<dd><p>Calculates the coverage of the annotation i.e. the proportion of
+entities having at least one record in this annotation resource
+for an arbitrary set of entities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.curation_effort">
+<span class="sig-name descname"><span class="pre">curation_effort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.curation_effort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.curation_effort" title="Permalink to this definition">§</a></dt>
+<dd><p>Counts the reference-record pairs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.get_names">
+<span class="sig-name descname"><span class="pre">get_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.get_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.get_names" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the list of field names in the records. The annotation
+consists of uniform records and each entity might be annotated
+with one or more records. Each record is a tuple of fields, for
+example <code class="docutils literal notranslate"><span class="pre">('cell_type',</span> <span class="pre">'expression_level',</span> <span class="pre">'score')</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.get_reference_set">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_reference_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proteins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swissprot_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.get_reference_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.get_reference_set" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves the reference set i.e. the set of all entities which
+potentially have annotation in this resource. Typically this is the
+proteome of the organism from UniProt optionally with all the protein
+complexes from the complex database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.get_subset">
+<span class="sig-name descname"><span class="pre">get_subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.annot.AnnotationBase.get_subset" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves a subset by filtering based on <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.
+Each argument should be a name and a value or set of values.
+Elements having the provided values in the annotation will be
+returned.
+Returns a set of UniProt IDs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.get_subset_bool_array">
+<span class="sig-name descname"><span class="pre">get_subset_bool_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.get_subset_bool_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.get_subset_bool_array" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a boolean vector with True and False values for each entity
+in the reference set. The values represent presence absence data
+in the simplest case, but by providing <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> any kind of matching
+and filtering is possible. <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are passed to the <code class="docutils literal notranslate"><span class="pre">select</span></code>
+method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.get_values">
+<span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.get_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.get_values" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the set of all possible values of a field. E.g. if the
+records of this annotation have a field <code class="docutils literal notranslate"><span class="pre">cell_type</span></code> then calling
+this method can tell you that across all records the values of
+this field might be <code class="docutils literal notranslate"><span class="pre">{'macrophage',</span> <span class="pre">'epithelial_cell',</span> <span class="pre">...}</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.labels" title="Permalink to this definition">§</a></dt>
+<dd><p>Same as <code class="docutils literal notranslate"><span class="pre">select</span></code> but returns a list of labels (more human readable).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.load" title="Permalink to this definition">§</a></dt>
+<dd><p>Loads the annotation data by calling the input method.
+Infers annotations for complexes in the complex database if
+py:attr:<code class="docutils literal notranslate"><span class="pre">infer_complexes</span></code> is True.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.annot.AnnotationBase.load_data" title="Permalink to this definition">§</a></dt>
+<dd><p>Loads the data by calling <code class="docutils literal notranslate"><span class="pre">input_method</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.load_proteins">
+<span class="sig-name descname"><span class="pre">load_proteins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.load_proteins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.load_proteins" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves a set of all UniProt IDs to have a base set of the entire
+proteome.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.make_df">
+<span class="sig-name descname"><span class="pre">make_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.make_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.make_df" title="Permalink to this definition">§</a></dt>
+<dd><p>Compiles a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> from the annotation data.
+The data frame will be assigned to :py:attr``df``.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.numof_entities">
+<span class="sig-name descname"><span class="pre">numof_entities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.numof_entities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.numof_entities" title="Permalink to this definition">§</a></dt>
+<dd><p>The number of annotated entities in the resource.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.numof_records">
+<span class="sig-name descname"><span class="pre">numof_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.numof_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.numof_records" title="Permalink to this definition">§</a></dt>
+<dd><p>The total number of annotation records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.numof_references">
+<span class="sig-name descname"><span class="pre">numof_references</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.numof_references"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.numof_references" title="Permalink to this definition">§</a></dt>
+<dd><p>Some annotations contain references. The field name for references
+is always <code class="docutils literal notranslate"><span class="pre">pmid</span></code> (PubMed ID). This method collects and counts the
+references across all records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.annot.AnnotationBase.process" title="Permalink to this definition">§</a></dt>
+<dd><p>Calls the <code class="docutils literal notranslate"><span class="pre">_process_method</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.reload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.reload" title="Permalink to this definition">§</a></dt>
+<dd><p>Reloads the object from the module level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.select" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves a subset by filtering based on <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.
+Each argument should be a name and a value or set of values.
+Elements having the provided values in the annotation will be
+returned.
+Returns a set of UniProt IDs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.set_method">
+<span class="sig-name descname"><span class="pre">set_method</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.annot.AnnotationBase.set_method" title="Permalink to this definition">§</a></dt>
+<dd><p>Sets the data input method by looking up in <code class="docutils literal notranslate"><span class="pre">inputs</span></code> module if
+necessary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.set_reference_set">
+<span class="sig-name descname"><span class="pre">set_reference_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.set_reference_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.set_reference_set" title="Permalink to this definition">§</a></dt>
+<dd><p>Assigns the reference set to the :py:attr``reference_set`` attribute.
+The reference set is the set of all entities which
+potentially have annotation in this resource. Typically this is the
+proteome of the organism from UniProt optionally with all the protein
+complexes from the complex database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.show" title="Permalink to this definition">§</a></dt>
+<dd><p>Same as <code class="docutils literal notranslate"><span class="pre">select</span></code> but prints a table to the console with basic
+information from the UniProt datasheets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.subset_intersection">
+<span class="sig-name descname"><span class="pre">subset_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">universe</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.subset_intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.subset_intersection" title="Permalink to this definition">§</a></dt>
+<dd><p>Calculates the proportion of entities in a subset occuring in the
+set <code class="docutils literal notranslate"><span class="pre">universe</span></code>. The subset is selected by passing <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> to the
+<code class="docutils literal notranslate"><span class="pre">select</span></code> method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.to_array">
+<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.to_array" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns an entity vs feature array. In case of more complex
+annotations this might be huge.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.to_bool_array">
+<span class="sig-name descname"><span class="pre">to_bool_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_set</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.to_bool_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.to_bool_array" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a presence/absence boolean array for a reference set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.annot.AnnotationBase.to_set">
+<span class="sig-name descname"><span class="pre">to_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#AnnotationBase.to_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.AnnotationBase.to_set" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the entities present in this annotation resource as a set.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#omnipath">OmniPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#do-you-need-pypath">Do you need pypath?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#docs">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#get-help">Get help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#faq">FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#contact">Contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#impressum">Impressum</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#history-and-releases">History and releases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="pypath.core.html">pypath.core</a><ul class="current">
+<li class="toctree-l5 current"><a class="reference internal" href="pypath.core.annot.html">pypath.core.annot</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.get_db.html">pypath.core.annot.get_db</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.init_db.html">pypath.core.annot.init_db</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Adhesome.html">pypath.core.annot.Adhesome</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Almen2009.html">pypath.core.annot.Almen2009</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">pypath.core.annot.AnnotationBase</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#pypath.core.annot.AnnotationBase"><code class="docutils literal notranslate"><span class="pre">AnnotationBase</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.__init__"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.__init__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.add_complexes_by_inference"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.add_complexes_by_inference()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_complexes"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_complexes()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_entities"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_entities()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_mirnas"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_mirnas()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_proteins"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_proteins()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_refs"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_refs()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.annotate_complex"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.annotate_complex()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.browse"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.browse()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.complex_inference"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.complex_inference()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.coverage"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.coverage()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.curation_effort"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.curation_effort()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_names"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_names()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_reference_set"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_reference_set()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_subset"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_subset()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_subset_bool_array"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_subset_bool_array()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_values"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_values()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.labels"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.labels()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.load"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.load()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.load_data"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.load_data()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.load_proteins"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.load_proteins()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.make_df"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.make_df()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.numof_entities"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.numof_entities()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.numof_records"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.numof_records()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.numof_references"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.numof_references()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.process"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.process()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.reload"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.reload()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.select"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.select()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.set_method"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.set_method()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.set_reference_set"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.set_reference_set()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.show"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.show()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.subset_intersection"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.subset_intersection()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.to_array"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.to_array()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.to_bool_array"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.to_bool_array()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.to_set"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.to_set()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.AnnotationTable.html">pypath.core.annot.AnnotationTable</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Baccin2019.html">pypath.core.annot.Baccin2019</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Biogps.html">pypath.core.annot.Biogps</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CancerGeneCensus.html">pypath.core.annot.CancerGeneCensus</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Cancerdrugsdb.html">pypath.core.annot.Cancerdrugsdb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Cancersea.html">pypath.core.annot.Cancersea</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CellPhoneDB.html">pypath.core.annot.CellPhoneDB</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CellPhoneDBComplex.html">pypath.core.annot.CellPhoneDBComplex</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CellSurfaceProteinAtlas.html">pypath.core.annot.CellSurfaceProteinAtlas</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CellSurfaceProteinAtlasCellType.html">pypath.core.annot.CellSurfaceProteinAtlasCellType</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Cellcall.html">pypath.core.annot.Cellcall</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Cellcellinteractions.html">pypath.core.annot.Cellcellinteractions</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Cellchatdb.html">pypath.core.annot.Cellchatdb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CellchatdbComplex.html">pypath.core.annot.CellchatdbComplex</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Cellinker.html">pypath.core.annot.Cellinker</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CellinkerComplex.html">pypath.core.annot.CellinkerComplex</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Celltalkdb.html">pypath.core.annot.Celltalkdb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Celltypist.html">pypath.core.annot.Celltypist</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Comppi.html">pypath.core.annot.Comppi</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Connectomedb.html">pypath.core.annot.Connectomedb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Corum.html">pypath.core.annot.Corum</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CorumFuncat.html">pypath.core.annot.CorumFuncat</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CorumGO.html">pypath.core.annot.CorumGO</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Cpad.html">pypath.core.annot.Cpad</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.CustomAnnotation.html">pypath.core.annot.CustomAnnotation</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Cytosig.html">pypath.core.annot.Cytosig</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Dgidb.html">pypath.core.annot.Dgidb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Disgenet.html">pypath.core.annot.Disgenet</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Embrace.html">pypath.core.annot.Embrace</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Exocarta.html">pypath.core.annot.Exocarta</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.GOCustomIntercell.html">pypath.core.annot.GOCustomIntercell</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.GOIntercell.html">pypath.core.annot.GOIntercell</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Gpcrdb.html">pypath.core.annot.Gpcrdb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.GuideToPharmacology.html">pypath.core.annot.GuideToPharmacology</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.HPO.html">pypath.core.annot.HPO</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Hgnc.html">pypath.core.annot.Hgnc</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.HpmrComplex.html">pypath.core.annot.HpmrComplex</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.HumanPlasmaMembraneReceptome.html">pypath.core.annot.HumanPlasmaMembraneReceptome</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.HumanProteinAtlas.html">pypath.core.annot.HumanProteinAtlas</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.HumanProteinAtlasSecretome.html">pypath.core.annot.HumanProteinAtlasSecretome</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.HumanProteinAtlasSubcellular.html">pypath.core.annot.HumanProteinAtlasSubcellular</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Humancellmap.html">pypath.core.annot.Humancellmap</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Icellnet.html">pypath.core.annot.Icellnet</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.IcellnetComplex.html">pypath.core.annot.IcellnetComplex</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Integrins.html">pypath.core.annot.Integrins</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.InterPro.html">pypath.core.annot.InterPro</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Intogen.html">pypath.core.annot.Intogen</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Italk.html">pypath.core.annot.Italk</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.KeggPathways.html">pypath.core.annot.KeggPathways</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.KeggPathwaysPC.html">pypath.core.annot.KeggPathwaysPC</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Kinasedotcom.html">pypath.core.annot.Kinasedotcom</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Kirouac2010.html">pypath.core.annot.Kirouac2010</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Lambert2018.html">pypath.core.annot.Lambert2018</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.LigandReceptor.html">pypath.core.annot.LigandReceptor</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Locate.html">pypath.core.annot.Locate</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Lrdb.html">pypath.core.annot.Lrdb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Matrisome.html">pypath.core.annot.Matrisome</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Matrixdb.html">pypath.core.annot.Matrixdb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Mcam.html">pypath.core.annot.Mcam</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Membranome.html">pypath.core.annot.Membranome</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Msigdb.html">pypath.core.annot.Msigdb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.NetpathPathways.html">pypath.core.annot.NetpathPathways</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Opm.html">pypath.core.annot.Opm</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Panglaodb.html">pypath.core.annot.Panglaodb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Phobius.html">pypath.core.annot.Phobius</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Phosphatome.html">pypath.core.annot.Phosphatome</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Progeny.html">pypath.core.annot.Progeny</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Ramilowski2015.html">pypath.core.annot.Ramilowski2015</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Ramilowski2015Location.html">pypath.core.annot.Ramilowski2015Location</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Scconnect.html">pypath.core.annot.Scconnect</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.ScconnectComplex.html">pypath.core.annot.ScconnectComplex</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.SignalinkFunctions.html">pypath.core.annot.SignalinkFunctions</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.SignalinkPathways.html">pypath.core.annot.SignalinkPathways</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.SignorPathways.html">pypath.core.annot.SignorPathways</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Surfaceome.html">pypath.core.annot.Surfaceome</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Talklr.html">pypath.core.annot.Talklr</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Tcdb.html">pypath.core.annot.Tcdb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Tfcensus.html">pypath.core.annot.Tfcensus</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Topdb.html">pypath.core.annot.Topdb</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.UniprotFamilies.html">pypath.core.annot.UniprotFamilies</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.UniprotKeywords.html">pypath.core.annot.UniprotKeywords</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.UniprotLocations.html">pypath.core.annot.UniprotLocations</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.UniprotTissues.html">pypath.core.annot.UniprotTissues</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.UniprotTopologies.html">pypath.core.annot.UniprotTopologies</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Vesiclepedia.html">pypath.core.annot.Vesiclepedia</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Wang.html">pypath.core.annot.Wang</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.annot.Zhong2015.html">pypath.core.annot.Zhong2015</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.attrs.html">pypath.core.attrs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.common.html">pypath.core.common</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.complex.html">pypath.core.complex</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.entity.html">pypath.core.entity</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.enz_sub.html">pypath.core.enz_sub</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.evidence.html">pypath.core.evidence</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.interaction.html">pypath.core.interaction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.intercell.html">pypath.core.intercell</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.intercell_annot.html">pypath.core.intercell_annot</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.network.html">pypath.core.network</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.html">pypath.share</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pypath.core.html">pypath.core</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pypath.core.annot.html">pypath.core.annot</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.get_db.html">pypath.core.annot.get_db</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.init_db.html">pypath.core.annot.init_db</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Adhesome.html">pypath.core.annot.Adhesome</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Almen2009.html">pypath.core.annot.Almen2009</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pypath.core.annot.AnnotationBase</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#pypath.core.annot.AnnotationBase"><code class="docutils literal notranslate"><span class="pre">AnnotationBase</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.__init__"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.__init__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.add_complexes_by_inference"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.add_complexes_by_inference()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_complexes"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_complexes()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_entities"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_entities()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_mirnas"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_mirnas()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_proteins"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_proteins()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.all_refs"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.all_refs()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.annotate_complex"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.annotate_complex()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.browse"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.browse()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.complex_inference"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.complex_inference()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.coverage"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.coverage()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.curation_effort"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.curation_effort()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_names"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_names()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_reference_set"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_reference_set()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_subset"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_subset()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_subset_bool_array"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_subset_bool_array()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.get_values"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.get_values()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.labels"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.labels()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.load"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.load()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.load_data"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.load_data()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.load_proteins"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.load_proteins()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.make_df"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.make_df()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.numof_entities"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.numof_entities()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.numof_records"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.numof_records()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.numof_references"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.numof_references()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.process"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.process()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.reload"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.reload()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.select"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.select()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.set_method"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.set_method()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.set_reference_set"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.set_reference_set()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.show"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.show()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.subset_intersection"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.subset_intersection()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.to_array"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.to_array()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.to_bool_array"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.to_bool_array()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.annot.AnnotationBase.to_set"><code class="docutils literal notranslate"><span class="pre">AnnotationBase.to_set()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.AnnotationTable.html">pypath.core.annot.AnnotationTable</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Baccin2019.html">pypath.core.annot.Baccin2019</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Biogps.html">pypath.core.annot.Biogps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CancerGeneCensus.html">pypath.core.annot.CancerGeneCensus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Cancerdrugsdb.html">pypath.core.annot.Cancerdrugsdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Cancersea.html">pypath.core.annot.Cancersea</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CellPhoneDB.html">pypath.core.annot.CellPhoneDB</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CellPhoneDBComplex.html">pypath.core.annot.CellPhoneDBComplex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CellSurfaceProteinAtlas.html">pypath.core.annot.CellSurfaceProteinAtlas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CellSurfaceProteinAtlasCellType.html">pypath.core.annot.CellSurfaceProteinAtlasCellType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Cellcall.html">pypath.core.annot.Cellcall</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Cellcellinteractions.html">pypath.core.annot.Cellcellinteractions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Cellchatdb.html">pypath.core.annot.Cellchatdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CellchatdbComplex.html">pypath.core.annot.CellchatdbComplex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Cellinker.html">pypath.core.annot.Cellinker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CellinkerComplex.html">pypath.core.annot.CellinkerComplex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Celltalkdb.html">pypath.core.annot.Celltalkdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Celltypist.html">pypath.core.annot.Celltypist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Comppi.html">pypath.core.annot.Comppi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Connectomedb.html">pypath.core.annot.Connectomedb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Corum.html">pypath.core.annot.Corum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CorumFuncat.html">pypath.core.annot.CorumFuncat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CorumGO.html">pypath.core.annot.CorumGO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Cpad.html">pypath.core.annot.Cpad</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.CustomAnnotation.html">pypath.core.annot.CustomAnnotation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Cytosig.html">pypath.core.annot.Cytosig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Dgidb.html">pypath.core.annot.Dgidb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Disgenet.html">pypath.core.annot.Disgenet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Embrace.html">pypath.core.annot.Embrace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Exocarta.html">pypath.core.annot.Exocarta</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.GOCustomIntercell.html">pypath.core.annot.GOCustomIntercell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.GOIntercell.html">pypath.core.annot.GOIntercell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Gpcrdb.html">pypath.core.annot.Gpcrdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.GuideToPharmacology.html">pypath.core.annot.GuideToPharmacology</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.HPO.html">pypath.core.annot.HPO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Hgnc.html">pypath.core.annot.Hgnc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.HpmrComplex.html">pypath.core.annot.HpmrComplex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.HumanPlasmaMembraneReceptome.html">pypath.core.annot.HumanPlasmaMembraneReceptome</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.HumanProteinAtlas.html">pypath.core.annot.HumanProteinAtlas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.HumanProteinAtlasSecretome.html">pypath.core.annot.HumanProteinAtlasSecretome</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.HumanProteinAtlasSubcellular.html">pypath.core.annot.HumanProteinAtlasSubcellular</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Humancellmap.html">pypath.core.annot.Humancellmap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Icellnet.html">pypath.core.annot.Icellnet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.IcellnetComplex.html">pypath.core.annot.IcellnetComplex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Integrins.html">pypath.core.annot.Integrins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.InterPro.html">pypath.core.annot.InterPro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Intogen.html">pypath.core.annot.Intogen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Italk.html">pypath.core.annot.Italk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.KeggPathways.html">pypath.core.annot.KeggPathways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.KeggPathwaysPC.html">pypath.core.annot.KeggPathwaysPC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Kinasedotcom.html">pypath.core.annot.Kinasedotcom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Kirouac2010.html">pypath.core.annot.Kirouac2010</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Lambert2018.html">pypath.core.annot.Lambert2018</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.LigandReceptor.html">pypath.core.annot.LigandReceptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Locate.html">pypath.core.annot.Locate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Lrdb.html">pypath.core.annot.Lrdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Matrisome.html">pypath.core.annot.Matrisome</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Matrixdb.html">pypath.core.annot.Matrixdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Mcam.html">pypath.core.annot.Mcam</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Membranome.html">pypath.core.annot.Membranome</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Msigdb.html">pypath.core.annot.Msigdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.NetpathPathways.html">pypath.core.annot.NetpathPathways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Opm.html">pypath.core.annot.Opm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Panglaodb.html">pypath.core.annot.Panglaodb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Phobius.html">pypath.core.annot.Phobius</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Phosphatome.html">pypath.core.annot.Phosphatome</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Progeny.html">pypath.core.annot.Progeny</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Ramilowski2015.html">pypath.core.annot.Ramilowski2015</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Ramilowski2015Location.html">pypath.core.annot.Ramilowski2015Location</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Scconnect.html">pypath.core.annot.Scconnect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.ScconnectComplex.html">pypath.core.annot.ScconnectComplex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.SignalinkFunctions.html">pypath.core.annot.SignalinkFunctions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.SignalinkPathways.html">pypath.core.annot.SignalinkPathways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.SignorPathways.html">pypath.core.annot.SignorPathways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Surfaceome.html">pypath.core.annot.Surfaceome</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Talklr.html">pypath.core.annot.Talklr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Tcdb.html">pypath.core.annot.Tcdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Tfcensus.html">pypath.core.annot.Tfcensus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Topdb.html">pypath.core.annot.Topdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.UniprotFamilies.html">pypath.core.annot.UniprotFamilies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.UniprotKeywords.html">pypath.core.annot.UniprotKeywords</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.UniprotLocations.html">pypath.core.annot.UniprotLocations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.UniprotTissues.html">pypath.core.annot.UniprotTissues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.UniprotTopologies.html">pypath.core.annot.UniprotTopologies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Vesiclepedia.html">pypath.core.annot.Vesiclepedia</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Wang.html">pypath.core.annot.Wang</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.annot.Zhong2015.html">pypath.core.annot.Zhong2015</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.attrs.html">pypath.core.attrs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.common.html">pypath.core.common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.complex.html">pypath.core.complex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.entity.html">pypath.core.entity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.enz_sub.html">pypath.core.enz_sub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.evidence.html">pypath.core.evidence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.interaction.html">pypath.core.interaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.intercell.html">pypath.core.intercell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.intercell_annot.html">pypath.core.intercell_annot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.network.html">pypath.core.network</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.share.html">pypath.share</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.core.annot.Almen2009.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.core.annot.Almen2009
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.core.annot.AnnotationTable.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.core.annot.AnnotationTable
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

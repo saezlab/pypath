@@ -1,0 +1,1139 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>pypath.core.intercell.IntercellAnnotation &#8212; pypath 0.14.31 documentation</title>
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script defer src="../_static/insipid.js"></script>
+    <script defer src="../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pypath.core.intercell_annot" href="pypath.core.intercell_annot.html" />
+    <link rel="prev" title="pypath.core.intercell.init_db" href="pypath.core.intercell.init_db.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="pypath.core.intercell.html" accesskey="U">pypath.core.intercell</a>
+            <a class="top" href="#">pypath.core.intercell.IntercellAnnotation</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+      <a href="pypath.core.intercell.init_db.html" class="nav-icon previous" title="previous:&#13;pypath.core.intercell.init_db" aria-label="Previous topic" accesskey="P" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"/></svg>
+      </a>
+      <a href="pypath.core.intercell_annot.html" class="nav-icon next" title="next:&#13;pypath.core.intercell_annot" aria-label="Next topic" accesskey="N" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg>
+      </a>
+    </nav>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.core.intercell.init_db.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.core.intercell.init_db
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.core.intercell_annot.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.core.intercell_annot
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<section id="pypath-core-intercell-intercellannotation">
+<h1>pypath.core.intercell.IntercellAnnotation<a class="headerlink" href="#pypath-core-intercell-intercellannotation" title="Permalink to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.core.intercell.</span></span><span class="sig-name descname"><span class="pre">IntercellAnnotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_definitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellphonedb_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baccin_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hpmr_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surfaceome_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpcrdb_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icellnet_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">composite_resource_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/intercell.html#IntercellAnnotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation" title="pypath.core.annot.CustomAnnotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomAnnotation</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_definitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellphonedb_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baccin_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hpmr_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surfaceome_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpcrdb_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icellnet_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">composite_resource_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/intercell.html#IntercellAnnotation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.__init__" title="Permalink to this definition">§</a></dt>
+<dd><p>Builds a database about roles of proteins and complexes in
+intercellular communication. The built-in category definitions
+defining the default contents of this database can be found in the
+<code class="docutils literal notranslate"><span class="pre">pypath.core.intercell_annot</span></code> module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_definitions</strong> (<em>tuple</em>) – A series of annotation class definitions, each represented by
+an instance of <code class="docutils literal notranslate"><span class="pre">pypath.internals.annot_formats.AnnotDef</span></code>.
+These definitions carry the attributes and instructions to
+populate the classes.</p></li>
+<li><p><strong>excludes</strong> (<em>dict</em>) – A dict with parent category names (strings) or category keys
+(tuples) as keys and sets if identifiers as values.
+The identifiers in this dict will be excluded from all the
+respective categories while building the database. E.g. if
+the UniProt ID <cite>P00533</cite> (EGFR) is in the set under the key of
+<cite>adhesion</cite> it will be excluded from the category <cite>adhesion</cite> and
+all it’s direct children.</p></li>
+<li><p><strong>excludes_extra</strong> (<em>dict</em>) – Same kind of dict as <cite>excludes</cite> but it will be added to the
+built-in default. The built in and the provided extra sets
+will be merged. If you want to overwrite or modify the built-in
+sets provide your custom dict as <cite>excludes</cite>.</p></li>
+<li><p><strong>build</strong> (<em>bool</em>) – Execute the build upon instantiation or set up an empty object
+the build can be executed on later.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.__init__" title="pypath.core.intercell.IntercellAnnotation.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([class_definitions, excludes, ...])</p></td>
+<td><p>Builds a database about roles of proteins and complexes in intercellular communication.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_baccin_categories</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_cellphonedb_categories</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_class_definitions</span></code>(class_definitions)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_classes_to_df</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_extra_categories</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_gpcrdb_categories</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_hpmr_categories</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_icellnet_categories</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surfaceome_categories</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_resources</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.browse" title="pypath.core.intercell.IntercellAnnotation.browse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">browse</span></code></a>([start])</p></td>
+<td><p>Print gene information as a table.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.class_to_class_connections" title="pypath.core.intercell.IntercellAnnotation.class_to_class_connections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_to_class_connections</span></code></a>(**kwargs)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> passed to <code class="docutils literal notranslate"><span class="pre">filter_interclass_network</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_to_class_connections_directed</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_to_class_connections_inhibitory</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_to_class_connections_signed</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_to_class_connections_stimulatory</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_to_class_connections_undirected</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.classes_by_entity" title="pypath.core.intercell.IntercellAnnotation.classes_by_entity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">classes_by_entity</span></code></a>(element[, labels])</p></td>
+<td><p>Returns a set of class keys with the classes containing at least one of the elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">collect_classes</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">complexes_by_resource</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">consensus_score</span></code>(name, entity)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">consensus_score_normalized</span></code>(name, entity)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_inter_class_connections</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_inter_class_connections_all</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_inter_class_connections_directed</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_inter_class_connections_inhibitory</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_inter_class_connections_signed</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_inter_class_connections_stimulatory</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_inter_class_connections_undirected</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.counts" title="pypath.core.intercell.IntercellAnnotation.counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">counts</span></code></a>([entity_type, labels])</p></td>
+<td><p>Returns a dict with number of elements in each class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.counts_by_class" title="pypath.core.intercell.IntercellAnnotation.counts_by_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">counts_by_class</span></code></a>([entity_type, labels])</p></td>
+<td><p>Returns a dict with number of elements in each class.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">counts_by_resource</span></code>([entity_types])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">counts_df</span></code>([groupby])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.create_class" title="pypath.core.intercell.IntercellAnnotation.create_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_class</span></code></a>(classdef[, override])</p></td>
+<td><p>Creates a category of entities by processing a custom definition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.degree_inter_class_network" title="pypath.core.intercell.IntercellAnnotation.degree_inter_class_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network</span></code></a>([...])</p></td>
+<td><p>degrees_of : str</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network_2</span></code>([degrees_of, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network_directed</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network_directed_2</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network_inhibitory</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network_inhibitory_2</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network_stimulatory</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network_stimulatory_2</span></code>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network_undirected</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_inter_class_network_undirected_2</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">df_add_causality</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">df_add_locations</span></code>([locations])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">difference</span></code>(*args)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_annotdb</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">entities_by_resource</span></code>([entity_types])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">export</span></code>(fname, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.filter" title="pypath.core.intercell.IntercellAnnotation.filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter</span></code></a>([entity_type])</p></td>
+<td><p>Filters the annotated entities by annotation class attributes and <code class="docutils literal notranslate"><span class="pre">entity_type</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.filter_classes" title="pypath.core.intercell.IntercellAnnotation.filter_classes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_classes</span></code></a>(classes, **kwargs)</p></td>
+<td><p>Returns a list of annotation classes filtered by their attributes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_df</span></code>(annot_df[, category, name, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_entity_type</span></code>(cls[, entity_type])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.filter_interclass_network" title="pypath.core.intercell.IntercellAnnotation.filter_interclass_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_interclass_network</span></code></a>([annot_df, ...])</p></td>
+<td><p>Combines the annotation data frame and a network data frame.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered</span></code>([annot_df, entities])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_aspect</span></code>(name[, parent, resource])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_class" title="pypath.core.intercell.IntercellAnnotation.get_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_class</span></code></a>(definition[, parent, resource, ...])</p></td>
+<td><p>Retrieves a class by its name or definition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_class_label</span></code>(name[, parent, resource])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_class_scope</span></code>(name[, parent, resource])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_complexes</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_df" title="pypath.core.intercell.IntercellAnnotation.get_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_df</span></code></a>()</p></td>
+<td><p>Returns the data frame of custom annotations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entities</span></code>([entity_types])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_interclass_network_df" title="pypath.core.intercell.IntercellAnnotation.get_interclass_network_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interclass_network_df</span></code></a>(**kwargs)</p></td>
+<td><p>If the an interclass network is already present the <code class="docutils literal notranslate"><span class="pre">network</span></code> and other <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> provided not considered.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mirnas</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_parent</span></code>(name[, parent, resource])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_parents" title="pypath.core.intercell.IntercellAnnotation.get_parents"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_parents</span></code></a>(name[, parent, resource])</p></td>
+<td><p>As names should be unique for resources, a combination of a name and resource determines the parent category.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_proteins</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_resource" title="pypath.core.intercell.IntercellAnnotation.get_resource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_resource</span></code></a>(name[, parent])</p></td>
+<td><p>For a category name and its parent returns a single resource name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_resources" title="pypath.core.intercell.IntercellAnnotation.get_resources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_resources</span></code></a>(name[, parent])</p></td>
+<td><p>Returns a set with the names of all resources defining a category with the given name and parent.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_source</span></code>(name[, parent, resource])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inter_class_network</span></code>([annot_args_source, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inter_class_network_directed</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inter_class_network_inhibitory</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inter_class_network_signed</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inter_class_network_stimulatory</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inter_class_network_undirected</span></code>([...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersection</span></code>(*args)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">isdisjoint</span></code>(*args)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter_classes</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.labels" title="pypath.core.intercell.IntercellAnnotation.labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">labels</span></code></a>(name[, parent, resource, entity_type])</p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">select</span></code> but returns a list of labels (more human readable).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_from_pickle</span></code>(pickle_file)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.make_df" title="pypath.core.intercell.IntercellAnnotation.make_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_df</span></code></a>()</p></td>
+<td><p>Creates a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> where each record assigns a molecular entity to an annotation category.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mirnas_by_resource</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.network_df" title="pypath.core.intercell.IntercellAnnotation.network_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network_df</span></code></a>([annot_df, network, combined_df, ...])</p></td>
+<td><p>Combines the annotation data frame and a network data frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_classes</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_complex_records</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_complexes</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_entities</span></code>([entity_types])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_mirna_records</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_mirnas</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_protein_records</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_proteins</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numof_records</span></code>([entity_types])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.populate_classes" title="pypath.core.intercell.IntercellAnnotation.populate_classes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">populate_classes</span></code></a>([update])</p></td>
+<td><p>Creates a classification of proteins according to the custom annotation definitions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.populate_scores" title="pypath.core.intercell.IntercellAnnotation.populate_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">populate_scores</span></code></a>()</p></td>
+<td><p>Creates the consensus score dictionaries based on the number of resources annotating an entity for each composite category.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">post_load</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pre_build</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.process_annot" title="pypath.core.intercell.IntercellAnnotation.process_annot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_annot</span></code></a>(classdef)</p></td>
+<td><p>Processes an annotation definition and returns a set of identifiers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">proteins_by_resource</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.quality_check_table" title="pypath.core.intercell.IntercellAnnotation.quality_check_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quality_check_table</span></code></a>([path, fmt, ...])</p></td>
+<td><p>Exports a table in tsv format for quality check and browsing purposes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.register_network" title="pypath.core.intercell.IntercellAnnotation.register_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_network</span></code></a>(network)</p></td>
+<td><p>Sets <code class="docutils literal notranslate"><span class="pre">network</span></code> as the default network dataset for the instance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.reload" title="pypath.core.intercell.IntercellAnnotation.reload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code></a>()</p></td>
+<td><p>Reloads the object from the module level.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.resources_in_category" title="pypath.core.intercell.IntercellAnnotation.resources_in_category"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resources_in_category</span></code></a>(key)</p></td>
+<td><p>Returns a list of resources contributing to the definition of a category.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_to_pickle</span></code>(pickle_file)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.select" title="pypath.core.intercell.IntercellAnnotation.select"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select</span></code></a>(definition[, parent, resource, ...])</p></td>
+<td><p>Retrieves a class by its name or definition.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_classes</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.set_interclass_network_df" title="pypath.core.intercell.IntercellAnnotation.set_interclass_network_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interclass_network_df</span></code></a>(**kwargs)</p></td>
+<td><p>Creates a data frame of the whole inter-class network and keeps it assigned to the instance in order to make subsequent queries faster.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sets</span></code>(*args)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.show" title="pypath.core.intercell.IntercellAnnotation.show"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show</span></code></a>(name[, parent, resource])</p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">select</span></code> but prints a table to the console with basic information from the UniProt datasheets.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">summaries_tab</span></code>([outfile, return_table])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">symmetric_difference</span></code>(*args)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">union</span></code>(*args)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unset_interclass_network_df</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_excludes</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.update_parents" title="pypath.core.intercell.IntercellAnnotation.update_parents"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_parents</span></code></a>()</p></td>
+<td><p>Creates a dict :py:attr:<code class="docutils literal notranslate"><span class="pre">children</span></code> with parent class names as keys and sets of children class keys as values.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_summaries</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.browse">
+<span class="sig-name descname"><span class="pre">browse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.browse" title="Permalink to this definition">§</a></dt>
+<dd><p>Print gene information as a table.</p>
+<p>Presents information about annotation classes as ascii tables printed
+in the terminal. If one class provided, prints one table. If multiple
+classes provided, prints a table for each of them one by one
+proceeding to the next one once you hit return. If no classes
+provided goes through all classes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> passed to <code class="docutils literal notranslate"><span class="pre">pypath.utils.uniprot.info</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.class_to_class_connections">
+<span class="sig-name descname"><span class="pre">class_to_class_connections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.class_to_class_connections" title="Permalink to this definition">§</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> passed to <code class="docutils literal notranslate"><span class="pre">filter_interclass_network</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.classes_by_entity">
+<span class="sig-name descname"><span class="pre">classes_by_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.classes_by_entity" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a set of class keys with the classes containing at least
+one of the elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<em>str</em><em>,</em><em>set</em>) – One or more element (entity) to search for in the classes.</p></li>
+<li><p><strong>labels</strong> (<em>bool</em>) – Return labels instead of keys.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.counts">
+<span class="sig-name descname"><span class="pre">counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'protein'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.counts" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a dict with number of elements in each class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>labels</strong> (<em>bool</em>) – Use keys or labels as keys in the returned dict.</p>
+</dd>
+</dl>
+<p>All other arguments passed to <code class="docutils literal notranslate"><span class="pre">iter_classes</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.counts_by_class">
+<span class="sig-name descname"><span class="pre">counts_by_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'protein'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.counts_by_class" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a dict with number of elements in each class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>labels</strong> (<em>bool</em>) – Use keys or labels as keys in the returned dict.</p>
+</dd>
+</dl>
+<p>All other arguments passed to <code class="docutils literal notranslate"><span class="pre">iter_classes</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.create_class">
+<span class="sig-name descname"><span class="pre">create_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classdef</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.create_class" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a category of entities by processing a custom definition.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.degree_inter_class_network">
+<span class="sig-name descname"><span class="pre">degree_inter_class_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annot_args_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annot_args_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degrees_of</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'target'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.degree_inter_class_network" title="Permalink to this definition">§</a></dt>
+<dd><dl class="simple">
+<dt>degrees_of<span class="classifier">str</span></dt><dd><p>Either <em>source</em> or <em>target</em>. Count the degrees for the source
+or the target class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.filter" title="Permalink to this definition">§</a></dt>
+<dd><p>Filters the annotated entities by annotation class attributes and
+<code class="docutils literal notranslate"><span class="pre">entity_type</span></code>. <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> passed to <code class="docutils literal notranslate"><span class="pre">filter_classes</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.filter_classes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter_classes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.filter_classes" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a list of annotation classes filtered by their attributes.
+<code class="docutils literal notranslate"><span class="pre">kwargs</span></code> contains attributes and values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.filter_interclass_network">
+<span class="sig-name descname"><span class="pre">filter_interclass_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annot_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combined_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annot_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annot_args_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annot_args_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_directed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_undirected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undirected_orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_effect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_proteins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_undirected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entities_or</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transmitter_receiver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_generic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_composite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_functional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_intracellular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.filter_interclass_network" title="Permalink to this definition">§</a></dt>
+<dd><p>Combines the annotation data frame and a network data frame.
+Creates a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> where each record is an interaction
+between a pair of molecular enitities labeled by their annotations.</p>
+<dl class="simple">
+<dt>network<span class="classifier">pypath.network.Network,pandas.DataFrame</span></dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">pypath.network.Network</span></code> object or a data frame with network
+data.</p>
+</dd>
+<dt>combined_df<span class="classifier">pandas.DataFrame</span></dt><dd><p>Optional, a network data frame already combined with annotations
+for filtering only.</p>
+</dd>
+<dt>resources<span class="classifier">set,None</span></dt><dd><p>Use only these network resources.</p>
+</dd>
+<dt>entities<span class="classifier">set,None</span></dt><dd><p>Limit the network only to these molecular entities.</p>
+</dd>
+<dt>entities_source<span class="classifier">set,None</span></dt><dd><p>Limit the source side of network connections only to these
+molecular entities.</p>
+</dd>
+<dt>entities_target<span class="classifier">set,None</span></dt><dd><p>Limit the target side of network connections only to these
+molecular entities.</p>
+</dd>
+<dt>annot_args<span class="classifier">dict,None</span></dt><dd><p>Parameters for filtering annotation classes; note, the defaults
+might include some filtering, provide an empty dict if you want
+no filtering at all; however this might result in huge data
+frame and consequently memory issues. Passed to the <code class="docutils literal notranslate"><span class="pre">filtered</span></code>
+method.</p>
+</dd>
+<dt>annot_args_source<span class="classifier">dict,None</span></dt><dd><p>Same as <code class="docutils literal notranslate"><span class="pre">annot_args</span></code> but only for the source side of the
+network connections.</p>
+</dd>
+<dt>annot_args_target<span class="classifier">dict,None</span></dt><dd><p>Same as <code class="docutils literal notranslate"><span class="pre">annot_args</span></code> but only for the target side of the
+network connections.</p>
+</dd>
+<dt>only_directed<span class="classifier">bool</span></dt><dd><p>Use only the directed interactions.</p>
+</dd>
+<dt>only_undirected<span class="classifier">bool</span></dt><dd><p>Use only the undirected interactions. Specifically for retrieving
+and counting the interactions without direction information.</p>
+</dd>
+<dt>undirected_orientation<span class="classifier">str,None</span></dt><dd><p>Ignore the direction at all interactions and make sure all of
+them have a uniform orientation. If <cite>id</cite>, all interactions will
+be oriented by the identifiers of the partenrs; if <cite>category</cite>,
+the interactions will be oriented by the categories of the
+partners.</p>
+</dd>
+<dt>only_effect<span class="classifier">int,None</span></dt><dd><p>Use only the interactions with this effect. Either -1 or 1.</p>
+</dd>
+<dt>only_signed<span class="classifier">bool</span></dt><dd><p>Use only the interactions with effect sign.</p>
+</dd>
+<dt>only_proteins<span class="classifier">bool</span></dt><dd><p>Use only the interactions where each of the partners is a protein
+(i.e. not complex, miRNA, small molecule or other kind of entity).</p>
+</dd>
+<dt>transmitter_receiver<span class="classifier">bool</span></dt><dd><p>On the source side only transmitters, on the target side only
+receivers.</p>
+</dd>
+<dt>only_generic<span class="classifier">bool</span></dt><dd><p>Use only the generic classes. If specific classes allowed the
+size of the combined data frame might be huge.</p>
+</dd>
+<dt>only_composite<span class="classifier">bool</span></dt><dd><p>Use only the composite classes. If resource_specific classes
+allowed the size of the combined data frame might be huge.</p>
+</dd>
+<dt>only_functional<span class="classifier">bool</span></dt><dd><p>Use only the functional classes. Locational classes are often
+not relevant and they largely increase the size of the
+combined data frame.</p>
+</dd>
+<dt>exclude_intracellular<span class="classifier">bool</span></dt><dd><p>Remove the intracellular parent class and it’s children. These
+classes are not relevant in intercellular signaling and having
+them largely increases the size of the combined data frame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.get_class">
+<span class="sig-name descname"><span class="pre">get_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.get_class" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves a class by its name or definition. The definition can be
+a class name (string) or a set of entities, or an AnnotDef object
+defining the contents based on original resources or an AnnotOp
+which defines the contents as an operation over other definitions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.get_df">
+<span class="sig-name descname"><span class="pre">get_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.get_df" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the data frame of custom annotations. If it does not exist yet
+builds the data frame.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.get_interclass_network_df">
+<span class="sig-name descname"><span class="pre">get_interclass_network_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.get_interclass_network_df" title="Permalink to this definition">§</a></dt>
+<dd><p>If the an interclass network is already present the <code class="docutils literal notranslate"><span class="pre">network</span></code>
+and other <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> provided not considered. Otherwise these
+are passed to <code class="docutils literal notranslate"><span class="pre">network_df</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.get_parents">
+<span class="sig-name descname"><span class="pre">get_parents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.get_parents" title="Permalink to this definition">§</a></dt>
+<dd><p>As names should be unique for resources, a combination of a name and
+resource determines the parent category. This method looks up the
+parent for a pair of name and resource.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.get_resource">
+<span class="sig-name descname"><span class="pre">get_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.get_resource" title="Permalink to this definition">§</a></dt>
+<dd><p>For a category name and its parent returns a single resource name.
+If a category belonging to the composite database matches the name
+and the parent the name of the composite database will be returned,
+otherwise the resource name first in alphabetic order.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.get_resources">
+<span class="sig-name descname"><span class="pre">get_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.get_resources" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a set with the names of all resources defining a category
+with the given name and parent.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.labels" title="Permalink to this definition">§</a></dt>
+<dd><p>Same as <code class="docutils literal notranslate"><span class="pre">select</span></code> but returns a list of labels (more human readable).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.make_df">
+<span class="sig-name descname"><span class="pre">make_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/intercell.html#IntercellAnnotation.make_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.make_df" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> where each record assigns a
+molecular entity to an annotation category. The data frame will
+be assigned to the <code class="docutils literal notranslate"><span class="pre">df</span></code> attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.network_df">
+<span class="sig-name descname"><span class="pre">network_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annot_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combined_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annot_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annot_args_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annot_args_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_directed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_undirected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undirected_orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_signed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_effect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_proteins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_undirected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entities_or</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transmitter_receiver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_generic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_composite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_functional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_intracellular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/intercell.html#IntercellAnnotation.network_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.network_df" title="Permalink to this definition">§</a></dt>
+<dd><p>Combines the annotation data frame and a network data frame.
+Creates a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> where each record is an interaction
+between a pair of molecular enitities labeled by their annotations.</p>
+<dl class="simple">
+<dt>network<span class="classifier">pypath.network.Network,pandas.DataFrame</span></dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">pypath.network.Network</span></code> object or a data frame with network
+data.</p>
+</dd>
+<dt>combined_df<span class="classifier">pandas.DataFrame</span></dt><dd><p>Optional, a network data frame already combined with annotations
+for filtering only.</p>
+</dd>
+<dt>resources<span class="classifier">set,None</span></dt><dd><p>Use only these network resources.</p>
+</dd>
+<dt>entities<span class="classifier">set,None</span></dt><dd><p>Limit the network only to these molecular entities.</p>
+</dd>
+<dt>entities_source<span class="classifier">set,None</span></dt><dd><p>Limit the source side of network connections only to these
+molecular entities.</p>
+</dd>
+<dt>entities_target<span class="classifier">set,None</span></dt><dd><p>Limit the target side of network connections only to these
+molecular entities.</p>
+</dd>
+<dt>annot_args<span class="classifier">dict,None</span></dt><dd><p>Parameters for filtering annotation classes; note, the defaults
+might include some filtering, provide an empty dict if you want
+no filtering at all; however this might result in huge data
+frame and consequently memory issues. Passed to the <code class="docutils literal notranslate"><span class="pre">filtered</span></code>
+method.</p>
+</dd>
+<dt>annot_args_source<span class="classifier">dict,None</span></dt><dd><p>Same as <code class="docutils literal notranslate"><span class="pre">annot_args</span></code> but only for the source side of the
+network connections.</p>
+</dd>
+<dt>annot_args_target<span class="classifier">dict,None</span></dt><dd><p>Same as <code class="docutils literal notranslate"><span class="pre">annot_args</span></code> but only for the target side of the
+network connections.</p>
+</dd>
+<dt>only_directed<span class="classifier">bool</span></dt><dd><p>Use only the directed interactions.</p>
+</dd>
+<dt>only_undirected<span class="classifier">bool</span></dt><dd><p>Use only the undirected interactions. Specifically for retrieving
+and counting the interactions without direction information.</p>
+</dd>
+<dt>undirected_orientation<span class="classifier">str,None</span></dt><dd><p>Ignore the direction at all interactions and make sure all of
+them have a uniform orientation. If <cite>id</cite>, all interactions will
+be oriented by the identifiers of the partenrs; if <cite>category</cite>,
+the interactions will be oriented by the categories of the
+partners.</p>
+</dd>
+<dt>only_effect<span class="classifier">int,None</span></dt><dd><p>Use only the interactions with this effect. Either -1 or 1.</p>
+</dd>
+<dt>only_signed<span class="classifier">bool</span></dt><dd><p>Use only the interactions with effect sign.</p>
+</dd>
+<dt>only_proteins<span class="classifier">bool</span></dt><dd><p>Use only the interactions where each of the partners is a protein
+(i.e. not complex, miRNA, small molecule or other kind of entity).</p>
+</dd>
+<dt>transmitter_receiver<span class="classifier">bool</span></dt><dd><p>On the source side only transmitters, on the target side only
+receivers.</p>
+</dd>
+<dt>only_generic<span class="classifier">bool</span></dt><dd><p>Use only the generic classes. If specific classes allowed the
+size of the combined data frame might be huge.</p>
+</dd>
+<dt>only_composite<span class="classifier">bool</span></dt><dd><p>Use only the composite classes. If resource_specific classes
+allowed the size of the combined data frame might be huge.</p>
+</dd>
+<dt>only_functional<span class="classifier">bool</span></dt><dd><p>Use only the functional classes. Locational classes are often
+not relevant and they largely increase the size of the
+combined data frame.</p>
+</dd>
+<dt>exclude_intracellular<span class="classifier">bool</span></dt><dd><p>Remove the intracellular parent class and it’s children. These
+classes are not relevant in intercellular signaling and having
+them largely increases the size of the combined data frame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.populate_classes">
+<span class="sig-name descname"><span class="pre">populate_classes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.populate_classes" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a classification of proteins according to the custom
+annotation definitions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.populate_scores">
+<span class="sig-name descname"><span class="pre">populate_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.populate_scores" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates the consensus score dictionaries based on the number of
+resources annotating an entity for each composite category.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.process_annot">
+<span class="sig-name descname"><span class="pre">process_annot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classdef</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.process_annot" title="Permalink to this definition">§</a></dt>
+<dd><p>Processes an annotation definition and returns a set of identifiers.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.quality_check_table">
+<span class="sig-name descname"><span class="pre">quality_check_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tsv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_swissprot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.quality_check_table" title="Permalink to this definition">§</a></dt>
+<dd><p>Exports a table in tsv format for quality check and browsing purposes.
+Each protein represented in one row of this table with basic data
+from UniProt and the list of annotation categories from this
+database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path for the exported file.</p></li>
+<li><p><strong>fmt</strong> (<em>str</em>) – Format: either <cite>tsv</cite> or <cite>latex</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.register_network">
+<span class="sig-name descname"><span class="pre">register_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.register_network" title="Permalink to this definition">§</a></dt>
+<dd><p>Sets <code class="docutils literal notranslate"><span class="pre">network</span></code> as the default network dataset for the instance.
+All methods afterwards will use this network.
+Also it discards the interclass network data frame if it present to
+make sure future queries will address the network registered here.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/intercell.html#IntercellAnnotation.reload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.reload" title="Permalink to this definition">§</a></dt>
+<dd><p>Reloads the object from the module level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.resources_in_category">
+<span class="sig-name descname"><span class="pre">resources_in_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.resources_in_category" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a list of resources contributing to the definition of
+a category.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.select" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves a class by its name or definition. The definition can be
+a class name (string) or a set of entities, or an AnnotDef object
+defining the contents based on original resources or an AnnotOp
+which defines the contents as an operation over other definitions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.set_interclass_network_df">
+<span class="sig-name descname"><span class="pre">set_interclass_network_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.set_interclass_network_df" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a data frame of the whole inter-class network and keeps it
+assigned to the instance in order to make subsequent queries faster.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.show" title="Permalink to this definition">§</a></dt>
+<dd><p>Same as <code class="docutils literal notranslate"><span class="pre">select</span></code> but prints a table to the console with basic
+information from the UniProt datasheets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.intercell.IntercellAnnotation.update_parents">
+<span class="sig-name descname"><span class="pre">update_parents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.intercell.IntercellAnnotation.update_parents" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a dict :py:attr:<code class="docutils literal notranslate"><span class="pre">children</span></code> with parent class names as keys
+and sets of children class keys as values. Also a dict
+:py:attr:<code class="docutils literal notranslate"><span class="pre">parents</span></code> with children class keys as keys and parent
+class keys as values.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#omnipath">OmniPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#do-you-need-pypath">Do you need pypath?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#docs">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#get-help">Get help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#faq">FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#contact">Contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#impressum">Impressum</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#history-and-releases">History and releases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="pypath.core.html">pypath.core</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.annot.html">pypath.core.annot</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.attrs.html">pypath.core.attrs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.common.html">pypath.core.common</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.complex.html">pypath.core.complex</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.entity.html">pypath.core.entity</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.enz_sub.html">pypath.core.enz_sub</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.evidence.html">pypath.core.evidence</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.interaction.html">pypath.core.interaction</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="pypath.core.intercell.html">pypath.core.intercell</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.intercell.get_db.html">pypath.core.intercell.get_db</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pypath.core.intercell.init_db.html">pypath.core.intercell.init_db</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">pypath.core.intercell.IntercellAnnotation</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.__init__"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.__init__()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.browse"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.browse()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.class_to_class_connections"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.class_to_class_connections()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.classes_by_entity"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.classes_by_entity()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.counts"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.counts()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.counts_by_class"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.counts_by_class()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.create_class"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.create_class()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.degree_inter_class_network"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.degree_inter_class_network()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.filter"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.filter()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.filter_classes"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.filter_classes()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.filter_interclass_network"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.filter_interclass_network()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_class"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_class()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_df()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_interclass_network_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_interclass_network_df()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_parents"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_parents()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_resource"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_resource()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_resources"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_resources()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.labels"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.labels()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.make_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.make_df()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.network_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.network_df()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.populate_classes"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.populate_classes()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.populate_scores"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.populate_scores()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.process_annot"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.process_annot()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.quality_check_table"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.quality_check_table()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.register_network"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.register_network()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.reload"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.reload()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.resources_in_category"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.resources_in_category()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.select"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.select()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.set_interclass_network_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.set_interclass_network_df()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.show"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.show()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.update_parents"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.update_parents()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.intercell_annot.html">pypath.core.intercell_annot</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.network.html">pypath.core.network</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.html">pypath.share</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pypath.core.html">pypath.core</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.annot.html">pypath.core.annot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.attrs.html">pypath.core.attrs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.common.html">pypath.core.common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.complex.html">pypath.core.complex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.entity.html">pypath.core.entity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.enz_sub.html">pypath.core.enz_sub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.evidence.html">pypath.core.evidence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.interaction.html">pypath.core.interaction</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pypath.core.intercell.html">pypath.core.intercell</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.intercell.get_db.html">pypath.core.intercell.get_db</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.core.intercell.init_db.html">pypath.core.intercell.init_db</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pypath.core.intercell.IntercellAnnotation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.__init__"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.__init__()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.browse"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.browse()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.class_to_class_connections"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.class_to_class_connections()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.classes_by_entity"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.classes_by_entity()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.counts"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.counts()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.counts_by_class"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.counts_by_class()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.create_class"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.create_class()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.degree_inter_class_network"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.degree_inter_class_network()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.filter"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.filter()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.filter_classes"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.filter_classes()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.filter_interclass_network"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.filter_interclass_network()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_class"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_class()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_df()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_interclass_network_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_interclass_network_df()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_parents"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_parents()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_resource"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_resource()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.get_resources"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.get_resources()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.labels"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.labels()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.make_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.make_df()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.network_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.network_df()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.populate_classes"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.populate_classes()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.populate_scores"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.populate_scores()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.process_annot"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.process_annot()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.quality_check_table"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.quality_check_table()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.register_network"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.register_network()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.reload"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.reload()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.resources_in_category"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.resources_in_category()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.select"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.select()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.set_interclass_network_df"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.set_interclass_network_df()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.show"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.show()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="#pypath.core.intercell.IntercellAnnotation.update_parents"><code class="docutils literal notranslate"><span class="pre">IntercellAnnotation.update_parents()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.intercell_annot.html">pypath.core.intercell_annot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.network.html">pypath.core.network</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.share.html">pypath.share</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.core.intercell.init_db.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.core.intercell.init_db
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.core.intercell_annot.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.core.intercell_annot
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>
