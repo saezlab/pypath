@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2022
+#  2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
@@ -76,7 +76,7 @@ def cytosig_annotations() -> dict:
 
     record = collections.namedtuple(
         'CytosigAnnotation',
-        ('cytokine', 'score'),
+        ('cytokine', 'score', 'cytokine_genesymbol', 'target_genesymbol'),
     )
     result = collections.defaultdict(set)
 
@@ -91,6 +91,8 @@ def cytosig_annotations() -> dict:
                 record(
                     cytokine = u_c,
                     score = score,
+                    cytokine_genesymbol = cytokine,
+                    target_genesymbol = target,
                 )
             )
 
