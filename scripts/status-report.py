@@ -710,7 +710,7 @@ class StatusReport(object):
                 _log('Entering directory `pypath_git`.')
                 os.chdir('pypath_git')
                 _log('Running `poetry install`.')
-                os.config('poetry config installer.modern-installation false')
+                os.system('poetry config installer.modern-installation false')
                 os.system('poetry install')
 
                 poetry_run = f'poetry run {self.spawn_cmd} --poetry'
