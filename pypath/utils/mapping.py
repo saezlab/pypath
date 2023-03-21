@@ -1176,6 +1176,24 @@ class MappingTable(session_mod.Logger):
         )
 
 
+    @property
+    def items(self):
+
+        return self.data.items
+
+
+    @property
+    def keys(self):
+
+        return self.data.keys
+
+
+    @property
+    def values(self):
+
+        return self.data.values
+
+
 class Mapper(session_mod.Logger):
 
     default_name_types = settings.get('default_name_types')
