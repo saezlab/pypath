@@ -3616,3 +3616,58 @@ def id_from_label0(label, label_id_type = 'genesymbol', ncbi_tax_id = None):
         label_id_type = label_id_type,
         ncbi_tax_id = ncbi_tax_id,
     )
+
+
+def translation_dict(
+        id_type: str,
+        target_id_type: str,
+        ncbi_tax_id: int | None = None,
+    ) -> MappingTable | None:
+    """
+    Identifier translation table as a dict of sets.
+    """
+
+    mapper = get_mapper()
+
+    return mapper.translation_dict(
+        id_type = id_type,
+        target_id_type = target_id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )
+
+
+def translation_df(
+        id_type: str,
+        target_id_type: str,
+        ncbi_tax_id: int | None = None,
+    ) -> MappingTable | None:
+    """
+    Identifier translation table as a `pandas.DataFrame`.
+    """
+
+    mapper = get_mapper()
+
+    return mapper.translation_df(
+        id_type = id_type,
+        target_id_type = target_id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )
+
+
+def mapping_tables() -> list[MappingTableDefinition]:
+    """
+    A list of built-in mapping tables.
+
+    If `id_type_b` is `None`, that means translation to all other ID types
+    provided by the same resource is possible.
+    """
+
+    return get_mapper().mapping_tables()
+
+
+def id_types() -> list[IdType]:
+    """
+    Identifier types with their labels.
+    """
+
+    return get_mapper().id_types()
