@@ -45,6 +45,7 @@ keywords = [
     "network",
     "signaling"
 ]
+installer.modern-installation = false
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/saezlab/pypath/issues"
