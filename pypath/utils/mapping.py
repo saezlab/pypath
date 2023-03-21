@@ -800,7 +800,7 @@ class MapReader(session_mod.Logger):
         data = [
             [
                 [xx]
-                    if self.param.field == 'protein names' else
+                    if self.param.field in {'protein names', 'genes'} else
                 [
                     xxx for xxx in resep.split(recolend.sub('', xx.strip()))
                     if len(xxx) > 0
