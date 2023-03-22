@@ -525,7 +525,20 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
+
+
+<span class="n">_log</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;cytosig_input&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">_log</span>
+
+
+<span class="n">CUSTOM_MAPPINGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Activin A&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;P08476&#39;</span><span class="p">,</span> <span class="s1">&#39;INHBA&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;IL12&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;P29459&#39;</span><span class="p">,</span> <span class="s1">&#39;IL12A&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;IL36&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Q9UHA7&#39;</span><span class="p">,</span> <span class="s1">&#39;IL36A&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;MCSF&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;P09603&#39;</span><span class="p">,</span> <span class="s1">&#39;CSF1&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;TWEAK&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;O43508&#39;</span><span class="p">,</span> <span class="s1">&#39;TNFSF12&#39;</span><span class="p">),</span>
+<span class="p">}</span>
 
 
 <div class="viewcode-block" id="cytosig_df"><a class="viewcode-back" href="../../../api/pypath.inputs.cytosig.cytosig_df.html#pypath.inputs.cytosig.cytosig_df">[docs]</a><span class="k">def</span> <span class="nf">cytosig_df</span><span class="p">(</span><span class="n">long</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
@@ -567,6 +580,17 @@ document.write(`
 <span class="sd">        Dict of sets of annotations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="nf">map_to_uniprot</span><span class="p">(</span><span class="n">genesymbol</span><span class="p">):</span>
+
+        <span class="n">uniprots</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">genesymbol</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">uniprots</span> <span class="ow">and</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="n">CUSTOM_MAPPINGS</span><span class="p">:</span>
+
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="p">{</span><span class="n">CUSTOM_MAPPINGS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">genesymbol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]}</span>
+
+        <span class="k">return</span> <span class="n">uniprots</span>
+
+
     <span class="n">cytosig</span> <span class="o">=</span> <span class="n">cytosig_df</span><span class="p">(</span><span class="n">long</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="n">record</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
@@ -574,11 +598,16 @@ document.write(`
         <span class="p">(</span><span class="s1">&#39;cytokine&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">,</span> <span class="s1">&#39;cytokine_genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;target_genesymbol&#39;</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+    <span class="n">unmapped</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">cytokine</span><span class="p">),</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">cytosig</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 
-        <span class="n">u_target</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
-        <span class="n">u_cytokine</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">cytokine</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+        <span class="n">u_target</span> <span class="o">=</span> <span class="n">map_to_uniprot</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">u_cytokine</span> <span class="o">=</span> <span class="n">map_to_uniprot</span><span class="p">(</span><span class="n">cytokine</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">u_cytokine</span><span class="p">:</span>
+
+            <span class="n">unmapped</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cytokine</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">u_t</span><span class="p">,</span> <span class="n">u_c</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">u_target</span><span class="p">,</span> <span class="n">u_cytokine</span><span class="p">):</span>
 
@@ -590,6 +619,13 @@ document.write(`
                     <span class="n">target_genesymbol</span> <span class="o">=</span> <span class="n">target</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">unmapped</span><span class="p">:</span>
+
+        <span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Could not translate to UniProt IDs the following cytokines: &#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unmapped</span><span class="p">))</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 </pre></div>

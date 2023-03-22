@@ -701,7 +701,17 @@ document.write(`
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">resource_id_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">override</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="n">override</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">override</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id_type_a</span> <span class="o">==</span> <span class="n">other</span> <span class="ow">or</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id_type_b</span> <span class="o">==</span> <span class="n">other</span> <span class="ow">or</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_type_a</span> <span class="o">==</span> <span class="n">other</span> <span class="ow">or</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_type_b</span> <span class="o">==</span> <span class="n">other</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FileMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.FileMapping.html#pypath.internals.input_formats.FileMapping">[docs]</a><span class="k">class</span> <span class="nc">FileMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
