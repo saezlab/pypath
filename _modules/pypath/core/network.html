@@ -4885,6 +4885,12 @@ document.write(`
             <span class="c1"># from the current instance</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">allow_loops</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_loops</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="k">else</span>
+            <span class="c1"># resource specific settings</span>
+            <span class="n">resource</span><span class="o">.</span><span class="n">networkinput</span><span class="o">.</span><span class="n">allow_loops</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="s1">&#39;networkinput&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">networkinput</span><span class="o">.</span><span class="n">allow_loops</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+                <span class="p">)</span> <span class="k">else</span>
             <span class="c1"># interaction type specific settings from the module level</span>
             <span class="n">resource</span><span class="o">.</span><span class="n">networkinput</span><span class="o">.</span><span class="n">interaction_type</span> <span class="ow">in</span> <span class="n">default</span>
                 <span class="k">if</span> <span class="p">(</span>
