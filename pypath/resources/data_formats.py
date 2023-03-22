@@ -2412,7 +2412,7 @@ transcription_collectri = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {
-            'TF_category': 3
+            'tf_category': 3
         },
         extra_node_attrs_b = {},
         must_have_references = False,
@@ -2703,13 +2703,14 @@ tf_mirna = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {
-            'TF_category': 3
+            'tf_category': 3
         },
         extra_node_attrs_b = {},
         must_have_references = False,
         allow_loops = True,
         input_args = {
-            'int_type': 'miRNA'
+            'protein_coding': False,
+            'mirna': True,
         }
     ),
 }
