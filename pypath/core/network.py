@@ -4395,6 +4395,12 @@ class Network(session_mod.Logger):
             # from the current instance
             self.allow_loops
                 if isinstance(self.allow_loops, bool) else
+            # resource specific settings
+            resource.networkinput.allow_loops
+                if (
+                    hasattr(resource, 'networkinput') and
+                    isinstance(resource.networkinput.allow_loops, bool)
+                ) else
             # interaction type specific settings from the module level
             resource.networkinput.interaction_type in default
                 if (
