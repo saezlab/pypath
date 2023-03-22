@@ -37,6 +37,15 @@ import pypath.utils.mapping as mapping
 _log = session.Logger(name = 'cytosig_input')._log
 
 
+CUSTOM_MAPPINGS = {
+    'Activin A': ('P08476', 'INHBA'),
+    'IL12': ('P29459', 'IL12A'),
+    'IL36': ('Q9UHA7', 'IL36A'),
+    'MCSF': ('P09603', 'CSF1'),
+    'TWEAK': ('O43508', 'TNFSF12'),
+}
+
+
 def cytosig_df(long: bool = False) -> Union[pd.DataFrame, pd.Series]:
     """
     CytoSig core data is a matrix of cytokines vs. targets. Here this matrix
@@ -76,6 +85,17 @@ def cytosig_annotations() -> dict:
         Dict of sets of annotations.
     """
 
+    def map_to_uniprot(genesymbol):
+
+        uniprots = mapping.map_name(genesymbol, 'genesymbol', 'uniprot')
+
+        if not uniprots and genesymbol in CUSTOM_MAPPINGS:
+
+            uniprots = {CUSTOM_MAPPINGS.get(genesymbol)[0]}
+
+        return uniprots
+
+
     cytosig = cytosig_df(long = True)
 
     record = collections.namedtuple(
@@ -87,17 +107,12 @@ def cytosig_annotations() -> dict:
 
     for (target, cytokine), score in cytosig.items():
 
-        u_target = mapping.map_name(target, 'genesymbol', 'uniprot')
-        u_cytokine = mapping.map_name(cytokine, 'genesymbol', 'uniprot')
+        u_target = map_to_uniprot(target)
+        u_cytokine = map_to_uniprot(cytokine)
 
-        for genesymbol, uniprots in (
-            (target, u_target),
-            (cytokine, u_cytokine),
-        ):
+        if not u_cytokine:
 
-            if not uniprots:
-
-                unmapped.add(genesymbol)
+            unmapped.add(cytokine)
 
         for u_t, u_c in itertools.product(u_target, u_cytokine):
 
