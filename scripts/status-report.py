@@ -72,6 +72,8 @@ EXCLUDE = {
     'get_all_models', # infinite loop bug
     'chembl_assays', # takes about 1 hour
     'chembl_molecules', # takes about 4 hours
+    'hmdb_iter_metabolites',
+    'hmdb_metabolites_raw',
 }
 
 ARGS = {
