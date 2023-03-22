@@ -74,7 +74,10 @@ EXCLUDE = {
     'chembl_molecules', # takes about 4 hours
 }
 
-ARGS = {}
+ARGS = {
+    'hmdb_iter_metabolites': ((), {'head': 10}),
+    'hmdb_metabolites_raw': ((), {'head': 10}),
+}
 
 HTML_TEMPLATE = (
     '''
