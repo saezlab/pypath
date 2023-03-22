@@ -61,7 +61,7 @@ def collectri_interactions(
             'tf',
             'target',
             'effect',
-            'TF_category',
+            'tf_category',
             'resources',
             'pubmed',
             'target_type',
@@ -74,6 +74,7 @@ def collectri_interactions(
         silent = False,
         large = True,
     )
+    _ = next(c.result)
 
     result = []
 
@@ -84,7 +85,7 @@ def collectri_interactions(
 
         if (
             (mmirna and not mirna) or
-            (not mmirna and not protein)
+            (not mmirna and not protein_coding)
         ):
 
             continue
