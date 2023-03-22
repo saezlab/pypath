@@ -716,7 +716,7 @@ class NetworkInput:
             unique_fields = None,
             expand_complexes = None,
             data_model = None,
-            allow_loops = False,
+            allow_loops = None,
             only_default_organism = False,
         ):
         """
