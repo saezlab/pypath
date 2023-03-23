@@ -122,7 +122,7 @@ RESOURCES_IMPLICIT = (
         input_formats.ArrayMapping,
     ),
     (
-        UNICHEM_NAME_TYPES,
+        {n: n for n in UNICHEM_NAME_TYPES},
         'unichem',
         input_formats.UnichemMapping,
     ),
