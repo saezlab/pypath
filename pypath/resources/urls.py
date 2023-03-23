@@ -59,6 +59,8 @@ urls = {
         'http://mips.helmholtz-muenchen.de/genre/proj/corum/allComplexes.csv',
         'url': 'http://mips.helmholtz-muenchen.de/corum/download/'
             'allComplexes.txt.zip',
+        'url_rescued':
+            'https://rescued.omnipathdb.org/CORUM_allComplexes.txt.zip',
     },
     'pfam_pdb': {
         'label': 'PDB-Pfam mapping and names of Pfam domains',
@@ -924,7 +926,8 @@ urls = {
     },
     'mppi': {
         'label': 'MIPS PPI full download',
-        'url': 'http://mips.helmholtz-muenchen.de/proj/ppi/data/mppi.gz'
+        'url': 'http://mips.helmholtz-muenchen.de/proj/ppi/data/mppi.gz',
+        'url_rescued': 'https://rescued.omnipathdb.org/mppi.gz',
     },
     'negatome': {
         'label': 'Negatome manually curated non-interacting protein pairs',
