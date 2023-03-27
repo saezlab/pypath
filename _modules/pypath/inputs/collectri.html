@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.collectri &#8212; pypath 0.14.42 documentation</title>
+    <title>pypath.inputs.collectri &#8212; pypath 0.14.43 documentation</title>
   
   
   
@@ -534,7 +534,9 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
 <span class="kn">import</span> <span class="nn">pypath.internals.intera</span> <span class="k">as</span> <span class="nn">intera</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
 
+<span class="n">_log</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;collectri_input&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">_log</span>
 
 <span class="c1"># Based on literature by Sophia</span>
 <span class="c1"># https://www.sciencedirect.com/science/article/abs/pii/S0304419X19300526</span>
@@ -680,18 +682,38 @@ document.write(`
         <span class="p">),</span>
     <span class="p">)</span>
 
+
+    <span class="k">def</span> <span class="nf">process_complex</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">COMPLEXES</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">uniprots</span><span class="p">):</span>
+
+                <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">uniprots</span><span class="p">)))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">_log</span><span class="p">(</span>
+                    <span class="s1">&#39;Failed to translate all components of &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;complex `</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">` (components: </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">).&#39;</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+
     <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">collectri_raw</span><span class="p">(</span><span class="n">protein_coding</span> <span class="o">=</span> <span class="n">protein_coding</span><span class="p">,</span> <span class="n">mirna</span> <span class="o">=</span> <span class="n">mirna</span><span class="p">):</span>
 
         <span class="n">tf_uniprots</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
-                <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
-                    <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
-                <span class="p">))</span>
-                <span class="k">for</span> <span class="n">components</span> <span class="ow">in</span> <span class="n">COMPLEXES</span><span class="p">[</span><span class="n">rec</span><span class="o">.</span><span class="n">tf</span><span class="p">]</span>
-            <span class="p">)))</span>
-            <span class="k">if</span> <span class="n">rec</span><span class="o">.</span><span class="n">tf</span> <span class="ow">in</span> <span class="n">COMPLEXES</span> <span class="k">else</span>
-                <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">tf</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+            <span class="n">process_complex</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">tf</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">rec</span><span class="o">.</span><span class="n">tf</span> <span class="ow">in</span> <span class="n">COMPLEXES</span> <span class="k">else</span>
+            <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">tf</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">target_uniprots</span> <span class="o">=</span> <span class="p">(</span>
@@ -709,7 +731,7 @@ document.write(`
                     <span class="n">sources</span> <span class="o">=</span> <span class="s1">&#39;CollecTRI&#39;</span><span class="p">,</span>
                 <span class="p">)</span>
 
-                <span class="k">yield</span> <span class="n">CollectriInteraction</span><span class="p">(</span><span class="n">tf_u</span><span class="p">,</span> <span class="n">t_u</span><span class="p">,</span> <span class="o">*</span><span class="n">rec</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span></div>
+            <span class="k">yield</span> <span class="n">CollectriInteraction</span><span class="p">(</span><span class="n">tf_u</span><span class="p">,</span> <span class="n">t_u</span><span class="p">,</span> <span class="o">*</span><span class="n">rec</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span></div>
 
 </pre></div>
 

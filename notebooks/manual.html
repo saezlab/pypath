@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/">
-  <title>The pypath book — pypath 0.14.42 documentation</title>
+  <title>The pypath book — pypath 0.14.43 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -322,6 +322,32 @@
   div[class*="highlight-"] {
     margin: 0px!important;
   }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
   </style>
   <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -981,6 +1007,10 @@ data-default-mode="">
                           <a class="reference internal" href="#Self-interactions-(loop-edges)-in-the-network">Self
                           interactions (loop edges) in the network</a>
                         </li>
+                        <li class="toctree-l3">
+                          <a class="reference internal" href="#Molecular-complexes-in-the-network">Molecular complexes
+                          in the network</a>
+                        </li>
                       </ul>
                     </li>
                     <li class="toctree-l2">
@@ -1430,6 +1460,9 @@ data-default-mode="">
                         </li>
                         <li>
                           <p>7.4&nbsp;&nbsp;Self interactions (loop edges) in the network</p>
+                        </li>
+                        <li>
+                          <p>7.5&nbsp;&nbsp;Molecular complexes in the network</p>
                         </li>
                       </ul>
                     </li>
@@ -8381,6 +8414,914 @@ False
 {'post_translational': 33571, 'transcriptional': 281262}
 </pre>
                         </div>
+                      </div>
+                    </div>
+                  </section>
+                  <section id="Molecular-complexes-in-the-network">
+                    <h3>Molecular complexes in the network<a class="headerlink" href=
+                    "#Molecular-complexes-in-the-network" title="Permalink to this heading">§</a></h3>
+                    <p>Currently <code class="docutils literal notranslate"><span class="pre">pypath</span></code>
+                    supports protein complexes, however, soon other kind of components, such as small molecules,
+                    nucleic acids, will be supported too. Complexes are represented by <code class=
+                    "docutils literal notranslate"><span class="pre">pypath.internals.intera.Complex</span></code>
+                    objects, and can be network nodes. These objects optionally carry information about the defining
+                    resources, references, stoichiometry and custom attributes. Apart from the components and
+                    resources, none of these is mandatory. For more information, see the <em>Protein complexes</em>
+                    section in this notebook. Here we only show how complexes are included in networks. The
+                    <code class="docutils literal notranslate"><span class="pre">Network</span></code> object either
+                    represents each complex as a node (default behaviour), or expands the complex by creating a node
+                    for each of its components and apply all the interactions of the complex to all of its components.
+                    This latter method has adverse effects on network topology, and can be enabled by setting
+                    <code class="docutils literal notranslate"><span class="pre">network_expand_complexes</span></code>
+                    to <code class="docutils literal notranslate"><span class="pre">True</span></code>. Only a few
+                    resources list interactions of protein complexes, for example, SIGNOR, CollecTRI, Guide to
+                    Pharmacology, CellphoneDB, etc. Let’s load such a resource:</p>
+                    <div class="nbinput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[1]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.core</span> <span class=
+                            "kn">import</span> <span class="n">network</span>
+<span class="kn">from</span> <span class="nn">pypath.resources</span> <span class="kn">import</span> <span class=
+"n">network</span> <span class="k">as</span> <span class="n">netres</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class=
+"n">Network</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class=
+"n">collectri</span><span class="p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 38.12s, finished 20:35:23 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>We can retrieve various information about the complexes in the network, e.g.&nbsp;count
+                    them:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[2]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">n</span><span class="o">.</span><span class=
+                            "n">count_complexes</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 1.45s, finished 20:37:11 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[2]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+33
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>Or list them:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[3]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">n</span><span class="o">.</span><span class=
+                            "n">get_complexes</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 1.50s, finished 20:37:34 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[3]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{&lt;Entity: FOS_JUN&gt;,
+ &lt;Entity: FOS_JUNB&gt;,
+ &lt;Entity: FOS_JUND&gt;,
+ &lt;Entity: JUN&gt;,
+ &lt;Entity: FOSL1_JUN&gt;,
+ &lt;Entity: FOSL2_JUN&gt;,
+ &lt;Entity: JUN_JUNB&gt;,
+ &lt;Entity: JUN_JUND&gt;,
+ &lt;Entity: FOSB_JUN&gt;,
+ &lt;Entity: FOSL1_JUNB&gt;,
+ &lt;Entity: FOSL1_JUND&gt;,
+ &lt;Entity: FOSL2_JUNB&gt;,
+ &lt;Entity: FOSL2_JUND&gt;,
+ &lt;Entity: JUNB&gt;,
+ &lt;Entity: JUNB_JUND&gt;,
+ &lt;Entity: FOSB_JUNB&gt;,
+ &lt;Entity: JUND&gt;,
+ &lt;Entity: FOSB_JUND&gt;,
+ &lt;Entity: NFKB1&gt;,
+ &lt;Entity: NFKB1_NFKB2&gt;,
+ &lt;Entity: NFKB1_RELB&gt;,
+ &lt;Entity: NFKB1_RELA&gt;,
+ &lt;Entity: NFKB1_REL&gt;,
+ &lt;Entity: NFKB2&gt;,
+ &lt;Entity: NFKB2_RELB&gt;,
+ &lt;Entity: NFKB2_RELA&gt;,
+ &lt;Entity: NFKB2_REL&gt;,
+ &lt;Entity: RELB&gt;,
+ &lt;Entity: RELA_RELB&gt;,
+ &lt;Entity: REL_RELB&gt;,
+ &lt;Entity: RELA&gt;,
+ &lt;Entity: REL_RELA&gt;,
+ &lt;Entity: REL&gt;}
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>In the network, these are <code class="docutils literal notranslate"><span class=
+                    "pre">Entity</span></code> objects, and their <code class=
+                    "docutils literal notranslate"><span class="pre">identifier</span></code> attribute is the
+                    <code class="docutils literal notranslate"><span class="pre">Complex</span></code> object:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[4]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">cplex_entity</span> <span class="o">=</span> <span class=
+                            "nb">list</span><span class="p">(</span><span class="n">n</span><span class=
+                            "o">.</span><span class="n">get_complexes</span><span class="p">())[</span><span class=
+                            "mi">0</span><span class="p">]</span>
+<span class="n">cplex_entity</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 1.40s, finished 20:39:53 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[4]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+&lt;Entity: REL_RELA&gt;
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[6]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">cplex</span> <span class="o">=</span> <span class=
+                            "n">cplex_entity</span><span class="o">.</span><span class="n">identifier</span>
+<span class="n">cplex</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 20:40:32 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[6]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+Complex: COMPLEX:Q04206_Q04864
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>When creating a data frame, the complex objects are added to the identifier cells, where we used
+                    to have UniProt IDs for single proteins. The labels are the gene symbols of the components,
+                    separated by underscore by default.</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[8]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.omnipath</span> <span class=
+                            "kn">import</span> <span class="n">export</span>
+<span class="kn">from</span> <span class="nn">pypath.internals</span> <span class="kn">import</span> <span class=
+"n">intera</span>
+
+<span class="n">e</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class=
+"n">Export</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">e</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span><span class=
+"n">unique_pairs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">e</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class=
+"nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class=
+"n">intera</span><span class="o">.</span><span class="n">Complex</span><span class="p">)</span> <span class=
+"k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">e</span><span class=
+"o">.</span><span class="n">df</span><span class="o">.</span><span class="n">source</span><span class="p">]]</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 9.65s, finished 20:44:06 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[8]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area rendered_html docutils container">
+                        <div>
+                          <table border="1" class="dataframe">
+                            <thead>
+                              <tr style="text-align: right;">
+                                <th></th>
+                                <th>source</th>
+                                <th>target</th>
+                                <th>source_genesymbol</th>
+                                <th>target_genesymbol</th>
+                                <th>is_directed</th>
+                                <th>is_stimulation</th>
+                                <th>is_inhibition</th>
+                                <th>consensus_direction</th>
+                                <th>consensus_stimulation</th>
+                                <th>consensus_inhibition</th>
+                                <th>sources</th>
+                                <th>references</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th>1</th>
+                                <td>(P17535, P15407)</td>
+                                <td>P04040</td>
+                                <td>FOSL1_JUND</td>
+                                <td>CAT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:10022519;CollecTRI:10329043;CollecTR...</td>
+                              </tr>
+                              <tr>
+                                <th>2</th>
+                                <td>(P05412, P15408)</td>
+                                <td>P04040</td>
+                                <td>FOSL2_JUN</td>
+                                <td>CAT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:10022519;CollecTRI:10329043;CollecTR...</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>(P05412, P15407)</td>
+                                <td>P04040</td>
+                                <td>FOSL1_JUN</td>
+                                <td>CAT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:10022519;CollecTRI:10329043;CollecTR...</td>
+                              </tr>
+                              <tr>
+                                <th>4</th>
+                                <td>(P05412, P17275)</td>
+                                <td>P04040</td>
+                                <td>JUN_JUNB</td>
+                                <td>CAT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:10022519;CollecTRI:10329043;CollecTR...</td>
+                              </tr>
+                              <tr>
+                                <th>5</th>
+                                <td>(P17275, P17535)</td>
+                                <td>P04040</td>
+                                <td>JUNB_JUND</td>
+                                <td>CAT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:10022519;CollecTRI:10329043;CollecTR...</td>
+                              </tr>
+                              <tr>
+                                <th>...</th>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                              </tr>
+                              <tr>
+                                <th>54980</th>
+                                <td>(P17535, P01100)</td>
+                                <td>P01270</td>
+                                <td>FOS_JUND</td>
+                                <td>PTH</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:9989817</td>
+                              </tr>
+                              <tr>
+                                <th>54981</th>
+                                <td>(P17275, P15408)</td>
+                                <td>P01270</td>
+                                <td>FOSL2_JUNB</td>
+                                <td>PTH</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:9989817</td>
+                              </tr>
+                              <tr>
+                                <th>54982</th>
+                                <td>(P05412, P53539)</td>
+                                <td>P01270</td>
+                                <td>FOSB_JUN</td>
+                                <td>PTH</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:9989817</td>
+                              </tr>
+                              <tr>
+                                <th>54983</th>
+                                <td>(P17275, P15407)</td>
+                                <td>P01270</td>
+                                <td>FOSL1_JUNB</td>
+                                <td>PTH</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:9989817</td>
+                              </tr>
+                              <tr>
+                                <th>54984</th>
+                                <td>(P17275)</td>
+                                <td>P01270</td>
+                                <td>JUNB</td>
+                                <td>PTH</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>CollecTRI;ExTRI_CollecTRI</td>
+                                <td>CollecTRI:9989817</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <p>23235 rows × 12 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>For some reason, <code class="docutils literal notranslate"><span class=
+                    "pre">pandas</span></code> show the <code class="docutils literal notranslate"><span class=
+                    "pre">Complex</span></code> objects as tuples.</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[10]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">e</span><span class="o">.</span><span class="n">df</span><span class=
+                            "p">[[</span><span class="nb">isinstance</span><span class="p">(</span><span class=
+                            "n">s</span><span class="p">,</span> <span class="n">intera</span><span class=
+                            "o">.</span><span class="n">Complex</span><span class="p">)</span> <span class=
+                            "k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class=
+                            "n">e</span><span class="o">.</span><span class="n">df</span><span class=
+                            "o">.</span><span class="n">source</span><span class="p">]]</span><span class=
+                            "o">.</span><span class="n">source</span><span class="o">.</span><span class=
+                            "n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 20:45:07 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[10]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+Complex: COMPLEX:P15407_P17535
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[12]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">e</span><span class="o">.</span><span class=
+                            "n">webservice_interactions_df</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 41.08s, finished 20:48:51 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[13]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">e</span><span class="o">.</span><span class="n">df</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 20:50:14 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[13]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area rendered_html docutils container">
+                        <div>
+                          <table border="1" class="dataframe">
+                            <thead>
+                              <tr style="text-align: right;">
+                                <th></th>
+                                <th>source</th>
+                                <th>target</th>
+                                <th>source_genesymbol</th>
+                                <th>target_genesymbol</th>
+                                <th>is_directed</th>
+                                <th>is_stimulation</th>
+                                <th>is_inhibition</th>
+                                <th>consensus_direction</th>
+                                <th>consensus_stimulation</th>
+                                <th>consensus_inhibition</th>
+                                <th>...</th>
+                                <th>dorothea_tfbs</th>
+                                <th>dorothea_coexp</th>
+                                <th>dorothea_level</th>
+                                <th>type</th>
+                                <th>curation_effort</th>
+                                <th>extra_attrs</th>
+                                <th>ncbi_tax_id_source</th>
+                                <th>entity_type_source</th>
+                                <th>ncbi_tax_id_target</th>
+                                <th>entity_type_target</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th>0</th>
+                                <td>P01106</td>
+                                <td>O14746</td>
+                                <td>MYC</td>
+                                <td>TERT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>75</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>1</th>
+                                <td>(P17535, P15407)</td>
+                                <td>P04040</td>
+                                <td>FOSL1_JUND</td>
+                                <td>CAT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>14</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>complex</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>2</th>
+                                <td>(P05412, P15408)</td>
+                                <td>P04040</td>
+                                <td>FOSL2_JUN</td>
+                                <td>CAT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>14</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>complex</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>(P05412, P15407)</td>
+                                <td>P04040</td>
+                                <td>FOSL1_JUN</td>
+                                <td>CAT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>14</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>complex</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>4</th>
+                                <td>(P05412, P17275)</td>
+                                <td>P04040</td>
+                                <td>JUN_JUNB</td>
+                                <td>CAT</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>14</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>complex</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>...</th>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                              </tr>
+                              <tr>
+                                <th>67945</th>
+                                <td>Q01196</td>
+                                <td>Q13094</td>
+                                <td>RUNX1</td>
+                                <td>LCP2</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>67946</th>
+                                <td>Q01196</td>
+                                <td>Q6MZQ0</td>
+                                <td>RUNX1</td>
+                                <td>PRR5L</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>67947</th>
+                                <td>Q15672</td>
+                                <td>P08151</td>
+                                <td>TWIST1</td>
+                                <td>GLI1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>67948</th>
+                                <td>P22415</td>
+                                <td>Q5SRE5</td>
+                                <td>USF1</td>
+                                <td>NUP188</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                              <tr>
+                                <th>67949</th>
+                                <td>Q9UQR1</td>
+                                <td>Q5VYX0</td>
+                                <td>ZNF148</td>
+                                <td>RNLS</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>...</td>
+                                <td>None</td>
+                                <td>None</td>
+                                <td></td>
+                                <td>transcriptional</td>
+                                <td>1</td>
+                                <td>{}</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                                <td>9606</td>
+                                <td>protein</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <p>67950 rows × 34 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>When we export to CSV, the <code class="docutils literal notranslate"><span class=
+                    "pre">Complex</span></code> objects are converted to the string notation familiar from the OmniPath
+                    web service. See for example <code class="docutils literal notranslate"><span class=
+                    "pre">COMPLEX:P15407_P17535</span></code> below, and its human readable label <code class=
+                    "docutils literal notranslate"><span class="pre">FOSL1_JUND</span></code> in the gene symbols
+                    column:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[15]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">e</span><span class="o">.</span><span class="n">df</span><span class=
+                            "p">[[</span><span class="n">ets</span> <span class="o">==</span> <span class=
+                            "s1">'complex'</span> <span class="k">for</span> <span class="n">ets</span> <span class=
+                            "ow">in</span> <span class="n">e</span><span class="o">.</span><span class=
+                            "n">df</span><span class="o">.</span><span class="n">entity_type_source</span><span class=
+                            "p">]]</span><span class="o">.</span><span class="n">to_csv</span><span class=
+                            "p">(</span><span class="n">index</span> <span class="o">=</span> <span class=
+                            "kc">False</span><span class="p">)[:</span><span class="mi">1000</span><span class=
+                            "p">]</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 20:55:26 2023-03-27</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[15]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+'source,target,source_genesymbol,target_genesymbol,is_directed,is_stimulation,is_inhibition,consensus_direction,consensus_stimulation,consensus_inhibition,sources,references,omnipath,kinaseextra,ligrecextra,pathwayextra,mirnatarget,dorothea,tf_target,lncrna_mrna,tf_mirna,small_molecule,dorothea_curated,dorothea_chipseq,dorothea_tfbs,dorothea_coexp,dorothea_level,type,curation_effort,extra_attrs,ncbi_tax_id_source,entity_type_source,ncbi_tax_id_target,entity_type_target\nCOMPLEX:P15407_P17535,P04040,FOSL1_JUND,CAT,1,1,0,1,1,0,CollecTRI;ExTRI_CollecTRI,CollecTRI:10022519;CollecTRI:10329043;CollecTRI:12036993;CollecTRI:12538496;CollecTRI:17935786;CollecTRI:7489329;CollecTRI:7651432;CollecTRI:7818486;CollecTRI:8867782;CollecTRI:9030359;CollecTRI:9136992;CollecTRI:9142914;CollecTRI:9168892;CollecTRI:9687385,False,False,False,False,False,False,False,False,False,False,,,,,,transcriptional,14,{},9606,complex,9606,protein\nCOMPLEX:P05412_P15408,P04040,FOSL2_JUN,CAT,1,1,0,1,1,0,CollecTRI;ExTRI_C
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 1004 characters</em>
                       </div>
                     </div>
                   </section>
@@ -16631,6 +17572,10 @@ AKT1 - GSK3B
                               <a class="reference internal nav-link" href=
                               "#Self-interactions-(loop-edges)-in-the-network">Self interactions (loop edges) in the
                               network</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href=
+                              "#Molecular-complexes-in-the-network">Molecular complexes in the network</a>
                             </li>
                           </ul>
                         </li>

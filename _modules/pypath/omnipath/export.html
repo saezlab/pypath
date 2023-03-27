@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.omnipath.export &#8212; pypath 0.14.42 documentation</title>
+    <title>pypath.omnipath.export &#8212; pypath 0.14.43 documentation</title>
   
   
   
@@ -1295,6 +1295,7 @@ document.write(`
         <span class="n">sources_mirna</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">mirna_target</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="n">sources_tf_target</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">transcription_onebyone</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="n">sources_dorothea</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">}</span>
+        <span class="n">sources_collectri</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CollecTRI&#39;</span><span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span>
             <span class="n">unique_pairs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1367,6 +1368,15 @@ document.write(`
                             <span class="n">interaction_type</span> <span class="o">=</span> <span class="s1">&#39;transcriptional&#39;</span>
                         <span class="p">)</span> <span class="o">&amp;</span>
                         <span class="n">sources_dorothea</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="s1">&#39;collectri&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">get_resource_names</span><span class="p">(</span>
+                            <span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">,</span>
+                            <span class="n">interaction_type</span> <span class="o">=</span> <span class="s1">&#39;transcriptional&#39;</span>
+                        <span class="p">)</span> <span class="o">&amp;</span>
+                        <span class="n">sources_collectri</span>
                     <span class="p">)</span>
                 <span class="p">),</span>
                 <span class="s1">&#39;tf_target&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>

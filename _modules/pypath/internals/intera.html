@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.internals.intera &#8212; pypath 0.14.42 documentation</title>
+    <title>pypath.internals.intera &#8212; pypath 0.14.43 documentation</title>
   
   
   
@@ -1706,15 +1706,15 @@ document.write(`
 
 <span class="c1">#TODO this class does not belong here, find a better place</span>
 <div class="viewcode-block" id="Complex"><a class="viewcode-back" href="../../../api/pypath.internals.intera.Complex.html#pypath.internals.intera.Complex">[docs]</a><span class="k">class</span> <span class="nc">Complex</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
+
     <span class="n">have_stoichiometry</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;PDB&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Compleat&#39;</span><span class="p">,</span>
         <span class="s1">&#39;ComplexPortal&#39;</span><span class="p">,</span>
         <span class="s1">&#39;CellPhoneDB&#39;</span><span class="p">,</span>
     <span class="p">}</span>
-    
-    
+
+
 <div class="viewcode-block" id="Complex.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.intera.Complex.html#pypath.internals.intera.Complex.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">components</span><span class="p">,</span>
@@ -1729,7 +1729,7 @@ document.write(`
         <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Represents a molecular complex.</span>
-<span class="sd">        </span>
+
 <span class="sd">        components : list,dict</span>
 <span class="sd">            Either a list of identifiers or a dict with identifiers as keys</span>
 <span class="sd">            and stoichiometric coefficients as values. List of identifiers</span>
@@ -1755,17 +1755,17 @@ document.write(`
 <span class="sd">        proteins : list,dict</span>
 <span class="sd">            Synonym for `components`, kept for compatibility.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">components</span> <span class="o">=</span> <span class="n">components</span> <span class="ow">or</span> <span class="n">proteins</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">components</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">components</span><span class="p">))</span>
-            
+
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">proteins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ids</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
@@ -1776,83 +1776,83 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="o">=</span> <span class="n">interactions</span></div>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
         <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
         <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;COMPLEX:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="n">COMPLEX_SEP</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;Complex</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="s1">&#39; </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">(),</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
-    
-    
+
+
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
-    
-    
+
+
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
-    
-    
+
+
     <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span>
-    
-    
+
+
     <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">other</span>
-    
-    
+
+
     <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">other</span>
 
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">)</span>
-    
-    
+
+
 <div class="viewcode-block" id="Complex.merge"><a class="viewcode-back" href="../../../api/pypath.internals.intera.Complex.html#pypath.internals.intera.Complex.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds the annotations (sources, references, attrs) of the other</span>
 <span class="sd">        ``Complex`` instance to this one. If the other ``Complex`` has</span>
 <span class="sd">        different components it does nothing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span> <span class="o">!=</span> <span class="n">other</span><span class="p">:</span>
-            
+
             <span class="k">return</span>
-        
+
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="mi">1</span><span class="p">}</span> <span class="ow">and</span>
             <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">!=</span> <span class="p">{</span><span class="mi">1</span><span class="p">}</span>
@@ -1860,91 +1860,91 @@ document.write(`
             <span class="c1"># this complex has no stoichiometry information</span>
             <span class="c1"># but the other has</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">components</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">references</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">add_ids</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">ids</span><span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">attrs</span><span class="p">):</span>
-            
+
             <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-                
+
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">add_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            
+
             <span class="n">ids</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> <span class="ow">and</span> <span class="n">source</span><span class="p">:</span>
-            
+
             <span class="n">source</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-            
+
             <span class="n">ids</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">s</span><span class="p">,</span> <span class="n">ids</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            
+
             <span class="k">for</span> <span class="n">this_source</span><span class="p">,</span> <span class="n">this_ids</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
-                
+
                 <span class="n">this_ids</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">this_ids</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="n">this_source</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">this_ids</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component1</span><span class="p">,</span> <span class="n">component2</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_interaction</span><span class="p">(</span><span class="n">component1</span><span class="p">,</span> <span class="n">component2</span><span class="p">):</span>
-            
+
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">[(</span><span class="n">component1</span><span class="p">,</span> <span class="n">component2</span><span class="p">)]</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">set_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component1</span><span class="p">,</span> <span class="n">component2</span><span class="p">,</span> <span class="n">interaction</span><span class="p">):</span>
-        
+
         <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">component1</span><span class="p">,</span> <span class="n">component2</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">interaction</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">has_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component1</span><span class="p">,</span> <span class="n">component2</span><span class="p">):</span>
-        
+
         <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">component1</span><span class="p">,</span> <span class="n">component2</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">add_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">iter_proteins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">proteins</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            
+
             <span class="k">yield</span> <span class="n">protein</span>
-    
-    
+
+
     <span class="fm">__iter__</span> <span class="o">=</span> <span class="n">iter_proteins</span>
-    
-    
+
+
 <div class="viewcode-block" id="Complex.add_attr"><a class="viewcode-back" href="../../../api/pypath.internals.intera.Complex.html#pypath.internals.intera.Complex.add_attr">[docs]</a>    <span class="k">def</span> <span class="nf">add_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attributes can store annotations for complexes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span></div>
-    
-    
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">stoichiometry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="s1">&#39;</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
                 <span class="n">cnt</span>
@@ -1957,11 +1957,11 @@ document.write(`
                 <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">id_cnt</span><span class="p">:</span> <span class="n">id_cnt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">stoichiometry_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">comp</span><span class="p">,)</span> <span class="o">*</span> <span class="n">cnt</span>
@@ -1972,11 +1972,11 @@ document.write(`
                 <span class="p">)</span>
             <span class="p">))</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">stoichiometry_str_genesymbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -1996,11 +1996,11 @@ document.write(`
                 <span class="p">)</span>
             <span class="p">))</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">genesymbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">mapping</span><span class="o">.</span><span class="n">map_name0</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">)</span> <span class="ow">or</span>
@@ -2008,16 +2008,16 @@ document.write(`
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">genesymbol_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">COMPLEX_SEP</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genesymbols</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Interface"><a class="viewcode-back" href="../../../api/pypath.internals.intera.Interface.html#pypath.internals.intera.Interface">[docs]</a><span class="k">class</span> <span class="nc">Interface</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
+
 
 <div class="viewcode-block" id="Interface.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.intera.Interface.html#pypath.internals.intera.Interface.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">id_a</span><span class="p">,</span>
