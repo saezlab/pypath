@@ -39,7 +39,9 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.internals.intera as intera
 import pypath.utils.mapping as mapping
+import pypath.share.session as session
 
+_log = session.Logger(name = 'collectri_input')._log
 
 # Based on literature by Sophia
 # https://www.sciencedirect.com/science/article/abs/pii/S0304419X19300526
@@ -185,18 +187,38 @@ def collectri_interactions(
         ),
     )
 
+
+    def process_complex(name):
+
+        result = []
+
+        for var in COMPLEXES[name]:
+
+            uniprots = [
+                mapping.map_name(comp, 'genesymbol', 'uniprot')
+                for comp in var.split('-')
+            ]
+
+            if all(uniprots):
+
+                result.extend(list(itertools.product(*uniprots)))
+
+            else:
+
+                _log(
+                    'Failed to translate all components of '
+                    f'complex `{name}` (components: {var}).'
+                )
+
+        return set(result)
+
+
     for rec in collectri_raw(protein_coding = protein_coding, mirna = mirna):
 
         tf_uniprots = (
-            set(itertools.chain(*(
-                itertools.product(*(
-                    mapping.map_name(comp, 'genesymbol', 'uniprot')
-                    for comp in components.split('-')
-                ))
-                for components in COMPLEXES[rec.tf]
-            )))
-            if rec.tf in COMPLEXES else
-                mapping.map_name(rec.tf, 'genesymbol', 'uniprot')
+            process_complex(rec.tf)
+                if rec.tf in COMPLEXES else
+            mapping.map_name(rec.tf, 'genesymbol', 'uniprot')
         )
 
         target_uniprots = (
@@ -214,5 +236,5 @@ def collectri_interactions(
                     sources = 'CollecTRI',
                 )
 
-                yield CollectriInteraction(tf_u, t_u, *rec[2:])
+            yield CollectriInteraction(tf_u, t_u, *rec[2:])
 
