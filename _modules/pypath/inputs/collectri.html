@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.collectri &#8212; pypath 0.14.41 documentation</title>
+    <title>pypath.inputs.collectri &#8212; pypath 0.14.42 documentation</title>
   
   
   
@@ -528,12 +528,59 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
 
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.internals.intera</span> <span class="k">as</span> <span class="nn">intera</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
 
 
-<div class="viewcode-block" id="collectri_interactions"><a class="viewcode-back" href="../../../api/pypath.inputs.collectri.collectri_interactions.html#pypath.inputs.collectri.collectri_interactions">[docs]</a><span class="k">def</span> <span class="nf">collectri_interactions</span><span class="p">(</span>
+<span class="c1"># Based on literature by Sophia</span>
+<span class="c1"># https://www.sciencedirect.com/science/article/abs/pii/S0304419X19300526</span>
+<span class="c1"># https://www.nature.com/articles/1209933</span>
+<span class="n">COMPLEXES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;AP1&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;JUN-FOS&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUNB-FOS&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUND-FOS&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUN-FOSB&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUNB-FOSB&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUND-FOSB&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUN-FOSL1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUNB-FOSL1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUND-FOSL1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUN-FOSL2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUNB-FOSL2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUND-FOSL2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUN-JUN&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUN-JUNB&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUN-JUND&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUNB-JUNB&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUNB-JUND&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JUND-JUND&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;NFKB&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;RELA-RELA&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;RELA-REL&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;RELA-RELB&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;RELA-NFKB1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;RELA-NFKB2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;REL-REL&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;REL-RELB&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;REL-NFKB1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;REL-NFKB2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;RELB-RELB&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;RELB-NFKB1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;RELB-NFKB2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NFKB1-NFKB1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NFKB1-NFKB2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NFKB2-NFKB2&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="collectri_raw"><a class="viewcode-back" href="../../../api/pypath.inputs.collectri.collectri_raw.html#pypath.inputs.collectri.collectri_raw">[docs]</a><span class="k">def</span> <span class="nf">collectri_raw</span><span class="p">(</span>
         <span class="n">protein_coding</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">mirna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
@@ -550,8 +597,8 @@ document.write(`
 
     <span class="n">remirna</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^MIR(\d+)$&#39;</span><span class="p">)</span>
 
-    <span class="n">CollectriInteraction</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
-        <span class="s1">&#39;CollectriInteraction&#39;</span><span class="p">,</span>
+    <span class="n">CollectriRecord</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;CollectriRecord&#39;</span><span class="p">,</span>
         <span class="p">(</span>
             <span class="s1">&#39;tf&#39;</span><span class="p">,</span>
             <span class="s1">&#39;target&#39;</span><span class="p">,</span>
@@ -588,7 +635,7 @@ document.write(`
         <span class="n">target_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;hsa-miR-</span><span class="si">{</span><span class="n">mmirna</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">mmirna</span> <span class="k">else</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">CollectriInteraction</span><span class="p">(</span>
+            <span class="n">CollectriRecord</span><span class="p">(</span>
                 <span class="n">tf</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="n">target</span> <span class="o">=</span> <span class="n">target_id</span><span class="p">,</span>
                 <span class="n">effect</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
@@ -600,6 +647,70 @@ document.write(`
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="collectri_interactions"><a class="viewcode-back" href="../../../api/pypath.inputs.collectri.collectri_interactions.html#pypath.inputs.collectri.collectri_interactions">[docs]</a><span class="k">def</span> <span class="nf">collectri_interactions</span><span class="p">(</span>
+        <span class="n">protein_coding</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">mirna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TF-target interactions from the CollecTRI database.</span>
+
+<span class="sd">    While `collectri_raw` returns the records in the same format as in the</span>
+<span class="sd">    original data, here we translate identifiers to UniProt IDs, and use</span>
+<span class="sd">    `Complex` objects to represent protein complexes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        protein_coding:</span>
+<span class="sd">            Include regulation of protein coding genes.</span>
+<span class="sd">        mirna:</span>
+<span class="sd">            Include regulation of miRNA coding genes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">CollectriInteraction</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;CollectriInteraction&#39;</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="s1">&#39;tf&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;target&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;effect&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;tf_category&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;resources&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pubmed&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;target_type&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">collectri_raw</span><span class="p">(</span><span class="n">protein_coding</span> <span class="o">=</span> <span class="n">protein_coding</span><span class="p">,</span> <span class="n">mirna</span> <span class="o">=</span> <span class="n">mirna</span><span class="p">):</span>
+
+        <span class="n">tf_uniprots</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+                <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+                    <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+                <span class="p">))</span>
+                <span class="k">for</span> <span class="n">components</span> <span class="ow">in</span> <span class="n">COMPLEXES</span><span class="p">[</span><span class="n">rec</span><span class="o">.</span><span class="n">tf</span><span class="p">]</span>
+            <span class="p">)))</span>
+            <span class="k">if</span> <span class="n">rec</span><span class="o">.</span><span class="n">tf</span> <span class="ow">in</span> <span class="n">COMPLEXES</span> <span class="k">else</span>
+                <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">tf</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">target_uniprots</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">target</span><span class="p">,)</span>
+                <span class="k">if</span> <span class="n">rec</span><span class="o">.</span><span class="n">target_type</span> <span class="o">==</span> <span class="s1">&#39;mirna&#39;</span> <span class="k">else</span>
+            <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">tf_u</span><span class="p">,</span> <span class="n">t_u</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">tf_uniprots</span><span class="p">,</span> <span class="n">target_uniprots</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tf_u</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+
+                <span class="n">tf_u</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Complex</span><span class="p">(</span>
+                    <span class="n">components</span> <span class="o">=</span> <span class="n">tf_u</span><span class="p">,</span>
+                    <span class="n">sources</span> <span class="o">=</span> <span class="s1">&#39;CollecTRI&#39;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="k">yield</span> <span class="n">CollectriInteraction</span><span class="p">(</span><span class="n">tf_u</span><span class="p">,</span> <span class="n">t_u</span><span class="p">,</span> <span class="o">*</span><span class="n">rec</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span></div>
+
 </pre></div>
 
                 </article>
