@@ -2387,11 +2387,6 @@ transcription_dorothea = {
 dorothea = transcription_dorothea
 tfregulons = transcription_dorothea
 
-# all transcriptional regulation resources
-transcription = {}
-transcription.update(copy.deepcopy(transcription_onebyone))
-transcription.update(copy.deepcopy(transcription_dorothea))
-
 transcription_collectri = {
     'collectri': input_formats.NetworkInput(
         name = 'CollecTRI',
@@ -2423,6 +2418,11 @@ transcription_collectri = {
 # synonyms
 collectri = transcription_collectri
 
+# all transcriptional regulation resources
+transcription = {}
+transcription.update(copy.deepcopy(transcription_onebyone))
+transcription.update(copy.deepcopy(transcription_dorothea))
+transcription.update(copy.deepcopy(transcription_collectri))
 
 """
 Old transctiptional regulation input formats.
