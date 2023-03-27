@@ -800,6 +800,7 @@ class Export(session.Logger):
         sources_mirna = set(netres.mirna_target.values())
         sources_tf_target = set(netres.transcription_onebyone.values())
         sources_dorothea = {'DoRothEA'}
+        sources_collectri = {'CollecTRI'}
 
         self.make_df(
             unique_pairs = False,
@@ -872,6 +873,15 @@ class Export(session.Logger):
                             interaction_type = 'transcriptional'
                         ) &
                         sources_dorothea
+                    )
+                ),
+                'collectri': lambda e, d: (
+                    bool(
+                        e.get_resource_names(
+                            direction = d,
+                            interaction_type = 'transcriptional'
+                        ) &
+                        sources_collectri
                     )
                 ),
                 'tf_target': lambda e, d: (
