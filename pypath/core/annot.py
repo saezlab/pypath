@@ -6135,7 +6135,7 @@ class Cancerdrugsdb(AnnotationBase):
 
 class InterPro(AnnotationBase):
 
-    _eq_fields = ('interpro_acc', 'locations')
+    _eq_fields = ('interpro_id', 'start', 'end')
 
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
