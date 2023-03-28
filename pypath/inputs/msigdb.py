@@ -273,14 +273,6 @@ def msigdb_download_collections(
         strings in this tuple. By default `c5` (Gene Ontology) is excluded.
     """
 
-    MsigdbAnnotation = collections.namedtuple(
-        'MsigdbAnnotation',
-        [
-            'collection',
-            'geneset',
-        ],
-    )
-
     collection_data = {}
 
     organisms = {9606: 0, 10090: 1}
