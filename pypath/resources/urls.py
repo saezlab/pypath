@@ -1516,7 +1516,7 @@ urls = {
     'celltypist': {
         'label': 'Immune cell type marker genes',
         'url': 'https://raw.githubusercontent.com/Teichlab/celltypist_wiki/'
-            'main/atlases/Pan_Immune_CellTypist/encyclopedia/'
+            'main/atlases/Pan_Immune_CellTypist/v2/encyclopedia/'
             'encyclopedia_table.xlsx',
     },
     'panglaodb': {
