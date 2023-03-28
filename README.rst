@@ -266,7 +266,7 @@ other groups:
 .. _`R package`: https://r.omnipathdb.org
 .. _`Cytoscape app`: https://apps.cytoscape.org/apps/omnipath
 .. _`Fabian Theis`: https://www.helmholtz-munich.de/en/icb/research-groups/theis-lab/
-.. _`Korcsmaros Group`: https://korcsmaroslab.org/
+.. _`Korcsmaros Lab`: https://korcsmaroslab.org/
 
 History and releases
 ====================
