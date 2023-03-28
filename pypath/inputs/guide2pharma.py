@@ -35,29 +35,38 @@ import pypath.internals.intera as intera
 
 
 def guide2pharma_download(
-        organism = 'human',
-        endogenous = True,
-        process_interactions = True,
-        process_complexes = True,
-    ):
+        organism: str | int = 'human',
+        endogenous: bool = True,
+        process_interactions: bool = True,
+        process_complexes: bool = True,
+    ) -> tuple[list, dict]:
     """
     Downloads and processes Guide to Pharmacology data.
     Returns list of dicts.
 
-    @organism : str
-        Name of the organism, e.g. `human`.
-    @endogenous : bool
-        Whether to include only endogenous ligands interactions.
+    Args:
+        organism
+            Name of the organism, e.g. `human`.
+        endogenous
+            Whether to include only endogenous ligands interactions.
     """
 
-    get_taxid = taxonomy.taxid_from_common_name
+    get_taxid = taxonomy.ensure_ncbi_tax_id
+    organism_ = None
+    ncbi_tax_id = None
 
     if isinstance(organism, common.basestring):
+
+        ncbi_tax_id = get_taxid(organism)
+
         try:
-            organism = taxonomy.taxid_from_common_name(organism)
+
+            organism_ = taxonomy.ensure_common_name(ncbi_tax_id)
+            organism_ = organism_.capitalize() if organism_ else None
 
         except KeyError:
-            organism = None
+
+            pass  # no organism specified
 
     positives = {
         'agonist', 'activator', 'potentiation', 'partial agonist',
@@ -104,86 +113,91 @@ def guide2pharma_download(
 
     line0 = next(c.result)
 
-    if line0[0] != '#':
+    if line0[:2] != '"#':
 
         c.fileobj.seek(0)
 
     data = csv.DictReader(c.result)
 
-    if organism is not None:
+    if organism_ is not None:
 
         data = [
             d for d in data
             if (
-                get_taxid(d['target_species']) == organism and
-                organism in set(
+                get_taxid(d['Target Species']) == ncbi_tax_id and
+                ncbi_tax_id in set(
                     get_taxid(t)
-                    for t in d['ligand_species'].split('|')
+                    for t in d['Ligand Species'].split('|')
                 )
             )
         ]
 
     if endogenous:
-        data = [d for d in data if d['endogenous'].strip() == 't']
+
+        data = [d for d in data if d['Endogenous'].strip() == 'true']
 
     for d in data:
-        if is_positive(d['type']) or is_positive(d['action']):
+
+        if is_positive(d['Type']) or is_positive(d['Action']):
             effect = 1
 
-        elif is_negative(d['type']) or is_negative(d['action']):
+        elif is_negative(d['Type']) or is_negative(d['Action']):
             effect = -1
 
         else:
             effect = 0
 
-        for ligand_taxon in d['ligand_species'].split('|'):
-            ligand_taxid = get_taxid(ligand_taxon)
+        ligands = d['Ligand Gene Symbol'] or d['Ligand PubChem SID']
+        ligands = ligands.split('|')
+        ligand_taxons = [get_taxid(l) for l in d['Ligand Species'].split('|')]
 
-            ligands = d['ligand_gene_symbol'] or d['ligand_pubchem_sid']
-            ligands = ligands.split('|')
+        for ligand_taxon in zip(ligands, ligand_taxons):
+
             targets = (
-                d['target_uniprot'] or
-                d['target_ligand_uniprot'] or
-                d['target_ligand_pubchem_sid']
+                d['Target UniProt ID'] or
+                d['Target Ligand UniProt ID'] or
+                d['Target Ligand PubChem SID']
             )
             targets = targets.split('|')
-            references = d['pubmed_id'].split('|') if d['pubmed_id'] else []
+            references = d['PubMed ID'].split('|') if d['PubMed ID'] else []
 
             if process_interactions:
+
                 for ligand, target in itertools.product(ligands, targets):
+
                     interactions.append(
                         GuideToPharmacologyInteraction(
                             ligand = ligand,
                             ligand_id_type = (
                                 'genesymbol'
-                                    if d['ligand_gene_symbol'] else
+                                    if d['Ligand Gene Symbol'] else
                                 'pubchem_sid'
-                                    if d['ligand_pubchem_sid'] else
+                                    if d['Ligand PubChem SID'] else
                                 None
                             ),
                             target = target,
                             target_id_type = (
                                 'uniprot'
                                     if (
-                                        d['target_uniprot'] or
-                                        d['target_ligand_uniprot']
+                                        d['Target UniProt ID'] or
+                                        d['Target Ligand UniProt ID']
                                     ) else
                                 'pubchem_sid'
-                                    if d['target_ligand_pubchem_sid'] else
+                                    if d['Target Ligand PubChem SID'] else
                                 None
                             ),
-                            target_is_ligand = bool(d['target_ligand']),
-                            ligand_organism = ligand_taxid,
-                            target_organism = get_taxid(d['target_species']),
+                            target_is_ligand = bool(d['Target Ligand']),
+                            ligand_organism = ligand_taxon,
+                            target_organism = get_taxid(d['Target Species']),
                             effect = effect,
                             ligand_location = (
-                                d['ligand_context'].strip().lower() or None
+                                d['Ligand Context'].strip().lower() or None
                             ),
                             target_type = (
-                                d['receptor_site'].strip().lower() or None
+                                d['Receptor Site'].strip().lower() or None
                             ),
                             ligand_endogenous = (
-                                d['endogenous'].strip() == 't'
+                                d['Endogenous'].strip() == 't'
                             ),
                             pubmed_ids = references,
                         )
@@ -192,8 +206,8 @@ def guide2pharma_download(
             if process_complexes:
                 if (
                     len(targets) > 1 and (
-                        d['target_uniprot'] or
-                        d['target_ligand_uniprot']
+                        d['Target UniProt ID'] or
+                        d['Target Ligand UniProt ID']
                     )
                 ):
                     cplex = intera.Complex(
@@ -211,7 +225,7 @@ def guide2pharma_download(
 
                 if (
                     len(ligands) > 1 and
-                    d['ligand_gene_symbol']
+                    d['Ligand Gene Symbol']
                 ):
                     ligand_uniprots = [
                         mapping.map_name0(ligand, 'genesymbol', 'uniprot')
