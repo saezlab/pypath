@@ -41,7 +41,7 @@ _log = _logger._log
 ALL_COLLECTIONS = {
     'hallmark': ('h.all', 'mh.all'),
     'positional': ('c1.all', 'm1.all'),
-    'chemical_and_genetic_perturbations': ('m2.cgp', 'm2.cgp'),
+    'chemical_and_genetic_perturbations': ('c2.cgp', 'm2.cgp'),
     'biocarta_pathways': ('c2.cp.biocarta', 'm2.cp.biocarta'),
     'kegg_pathways': ('c2.cp.kegg', None),
     'pid_pathways': ('c2.cp.pid', None),
