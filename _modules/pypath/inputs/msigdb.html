@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.msigdb &#8212; pypath 0.14.43 documentation</title>
+    <title>pypath.inputs.msigdb &#8212; pypath 0.14.44 documentation</title>
   
   
   
@@ -536,7 +536,7 @@ document.write(`
 <span class="n">ALL_COLLECTIONS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;hallmark&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;h.all&#39;</span><span class="p">,</span> <span class="s1">&#39;mh.all&#39;</span><span class="p">),</span>
     <span class="s1">&#39;positional&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c1.all&#39;</span><span class="p">,</span> <span class="s1">&#39;m1.all&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;chemical_and_genetic_perturbations&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;m2.cgp&#39;</span><span class="p">,</span> <span class="s1">&#39;m2.cgp&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;chemical_and_genetic_perturbations&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cgp&#39;</span><span class="p">,</span> <span class="s1">&#39;m2.cgp&#39;</span><span class="p">),</span>
     <span class="s1">&#39;biocarta_pathways&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cp.biocarta&#39;</span><span class="p">,</span> <span class="s1">&#39;m2.cp.biocarta&#39;</span><span class="p">),</span>
     <span class="s1">&#39;kegg_pathways&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cp.kegg&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
     <span class="s1">&#39;pid_pathways&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cp.pid&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
@@ -767,14 +767,6 @@ document.write(`
 <span class="sd">        Exclude the collections having their name starting with any of the</span>
 <span class="sd">        strings in this tuple. By default `c5` (Gene Ontology) is excluded.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">MsigdbAnnotation</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
-        <span class="s1">&#39;MsigdbAnnotation&#39;</span><span class="p">,</span>
-        <span class="p">[</span>
-            <span class="s1">&#39;collection&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;geneset&#39;</span><span class="p">,</span>
-        <span class="p">],</span>
-    <span class="p">)</span>
 
     <span class="n">collection_data</span> <span class="o">=</span> <span class="p">{}</span>
 

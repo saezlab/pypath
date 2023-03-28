@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.guide2pharma &#8212; pypath 0.14.43 documentation</title>
+    <title>pypath.inputs.guide2pharma &#8212; pypath 0.14.44 documentation</title>
   
   
   
@@ -530,29 +530,38 @@ document.write(`
 
 
 <div class="viewcode-block" id="guide2pharma_download"><a class="viewcode-back" href="../../../api/pypath.inputs.guide2pharma.guide2pharma_download.html#pypath.inputs.guide2pharma.guide2pharma_download">[docs]</a><span class="k">def</span> <span class="nf">guide2pharma_download</span><span class="p">(</span>
-        <span class="n">organism</span> <span class="o">=</span> <span class="s1">&#39;human&#39;</span><span class="p">,</span>
-        <span class="n">endogenous</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">process_interactions</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">process_complexes</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">organism</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="s1">&#39;human&#39;</span><span class="p">,</span>
+        <span class="n">endogenous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">process_interactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">process_complexes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Downloads and processes Guide to Pharmacology data.</span>
 <span class="sd">    Returns list of dicts.</span>
 
-<span class="sd">    @organism : str</span>
-<span class="sd">        Name of the organism, e.g. `human`.</span>
-<span class="sd">    @endogenous : bool</span>
-<span class="sd">        Whether to include only endogenous ligands interactions.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        organism</span>
+<span class="sd">            Name of the organism, e.g. `human`.</span>
+<span class="sd">        endogenous</span>
+<span class="sd">            Whether to include only endogenous ligands interactions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">get_taxid</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">taxid_from_common_name</span>
+    <span class="n">get_taxid</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span>
+    <span class="n">organism_</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+
+        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">get_taxid</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">organism</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">taxid_from_common_name</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
+
+            <span class="n">organism_</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_common_name</span><span class="p">(</span><span class="n">ncbi_tax_id</span><span class="p">)</span>
+            <span class="n">organism_</span> <span class="o">=</span> <span class="n">organism_</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">if</span> <span class="n">organism_</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="n">organism</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">pass</span>  <span class="c1"># no organism specified</span>
 
     <span class="n">positives</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;agonist&#39;</span><span class="p">,</span> <span class="s1">&#39;activator&#39;</span><span class="p">,</span> <span class="s1">&#39;potentiation&#39;</span><span class="p">,</span> <span class="s1">&#39;partial agonist&#39;</span><span class="p">,</span>
@@ -599,86 +608,91 @@ document.write(`
 
     <span class="n">line0</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">line0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;#&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">line0</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&quot;#&#39;</span><span class="p">:</span>
 
         <span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">organism</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">organism_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">get_taxid</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_species&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">organism</span> <span class="ow">and</span>
-                <span class="n">organism</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span>
+                <span class="n">get_taxid</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target Species&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">ncbi_tax_id</span> <span class="ow">and</span>
+                <span class="n">ncbi_tax_id</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span>
                     <span class="n">get_taxid</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;ligand_species&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Ligand Species&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="p">]</span>
 
     <span class="k">if</span> <span class="n">endogenous</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;endogenous&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;t&#39;</span><span class="p">]</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Endogenous&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">is_positive</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="n">is_positive</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]):</span>
+
+        <span class="k">if</span> <span class="n">is_positive</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;Type&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="n">is_positive</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;Action&#39;</span><span class="p">]):</span>
             <span class="n">effect</span> <span class="o">=</span> <span class="mi">1</span>
 
-        <span class="k">elif</span> <span class="n">is_negative</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="n">is_negative</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]):</span>
+        <span class="k">elif</span> <span class="n">is_negative</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;Type&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="n">is_negative</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;Action&#39;</span><span class="p">]):</span>
             <span class="n">effect</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">effect</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="k">for</span> <span class="n">ligand_taxon</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;ligand_species&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
-            <span class="n">ligand_taxid</span> <span class="o">=</span> <span class="n">get_taxid</span><span class="p">(</span><span class="n">ligand_taxon</span><span class="p">)</span>
+        <span class="n">ligands</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Ligand Gene Symbol&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Ligand PubChem SID&#39;</span><span class="p">]</span>
+        <span class="n">ligands</span> <span class="o">=</span> <span class="n">ligands</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+        <span class="n">ligand_taxons</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_taxid</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Ligand Species&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)]</span>
 
-            <span class="n">ligands</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;ligand_gene_symbol&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;ligand_pubchem_sid&#39;</span><span class="p">]</span>
-            <span class="n">ligands</span> <span class="o">=</span> <span class="n">ligands</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ligand_taxon</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ligands</span><span class="p">,</span> <span class="n">ligand_taxons</span><span class="p">):</span>
+
             <span class="n">targets</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_uniprot&#39;</span><span class="p">]</span> <span class="ow">or</span>
-                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_ligand_uniprot&#39;</span><span class="p">]</span> <span class="ow">or</span>
-                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_ligand_pubchem_sid&#39;</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target UniProt ID&#39;</span><span class="p">]</span> <span class="ow">or</span>
+                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target Ligand UniProt ID&#39;</span><span class="p">]</span> <span class="ow">or</span>
+                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target Ligand PubChem SID&#39;</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="n">targets</span> <span class="o">=</span> <span class="n">targets</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
-            <span class="n">references</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;pubmed_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;pubmed_id&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="n">references</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;PubMed ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;PubMed ID&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[]</span>
 
             <span class="k">if</span> <span class="n">process_interactions</span><span class="p">:</span>
+
                 <span class="k">for</span> <span class="n">ligand</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">ligands</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
+
                     <span class="n">interactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">GuideToPharmacologyInteraction</span><span class="p">(</span>
                             <span class="n">ligand</span> <span class="o">=</span> <span class="n">ligand</span><span class="p">,</span>
                             <span class="n">ligand_id_type</span> <span class="o">=</span> <span class="p">(</span>
                                 <span class="s1">&#39;genesymbol&#39;</span>
-                                    <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;ligand_gene_symbol&#39;</span><span class="p">]</span> <span class="k">else</span>
+                                    <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Ligand Gene Symbol&#39;</span><span class="p">]</span> <span class="k">else</span>
                                 <span class="s1">&#39;pubchem_sid&#39;</span>
-                                    <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;ligand_pubchem_sid&#39;</span><span class="p">]</span> <span class="k">else</span>
+                                    <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Ligand PubChem SID&#39;</span><span class="p">]</span> <span class="k">else</span>
                                 <span class="kc">None</span>
                             <span class="p">),</span>
                             <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="p">,</span>
                             <span class="n">target_id_type</span> <span class="o">=</span> <span class="p">(</span>
                                 <span class="s1">&#39;uniprot&#39;</span>
                                     <span class="k">if</span> <span class="p">(</span>
-                                        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_uniprot&#39;</span><span class="p">]</span> <span class="ow">or</span>
-                                        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_ligand_uniprot&#39;</span><span class="p">]</span>
+                                        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target UniProt ID&#39;</span><span class="p">]</span> <span class="ow">or</span>
+                                        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target Ligand UniProt ID&#39;</span><span class="p">]</span>
                                     <span class="p">)</span> <span class="k">else</span>
                                 <span class="s1">&#39;pubchem_sid&#39;</span>
-                                    <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_ligand_pubchem_sid&#39;</span><span class="p">]</span> <span class="k">else</span>
+                                    <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target Ligand PubChem SID&#39;</span><span class="p">]</span> <span class="k">else</span>
                                 <span class="kc">None</span>
                             <span class="p">),</span>
-                            <span class="n">target_is_ligand</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_ligand&#39;</span><span class="p">]),</span>
-                            <span class="n">ligand_organism</span> <span class="o">=</span> <span class="n">ligand_taxid</span><span class="p">,</span>
-                            <span class="n">target_organism</span> <span class="o">=</span> <span class="n">get_taxid</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_species&#39;</span><span class="p">]),</span>
+                            <span class="n">target_is_ligand</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target Ligand&#39;</span><span class="p">]),</span>
+                            <span class="n">ligand_organism</span> <span class="o">=</span> <span class="n">ligand_taxon</span><span class="p">,</span>
+                            <span class="n">target_organism</span> <span class="o">=</span> <span class="n">get_taxid</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target Species&#39;</span><span class="p">]),</span>
                             <span class="n">effect</span> <span class="o">=</span> <span class="n">effect</span><span class="p">,</span>
                             <span class="n">ligand_location</span> <span class="o">=</span> <span class="p">(</span>
-                                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;ligand_context&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">None</span>
+                                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Ligand Context&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">None</span>
                             <span class="p">),</span>
                             <span class="n">target_type</span> <span class="o">=</span> <span class="p">(</span>
-                                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;receptor_site&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">None</span>
+                                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Receptor Site&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">None</span>
                             <span class="p">),</span>
                             <span class="n">ligand_endogenous</span> <span class="o">=</span> <span class="p">(</span>
-                                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;endogenous&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;t&#39;</span>
+                                <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Endogenous&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;t&#39;</span>
                             <span class="p">),</span>
                             <span class="n">pubmed_ids</span> <span class="o">=</span> <span class="n">references</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -687,8 +701,8 @@ document.write(`
             <span class="k">if</span> <span class="n">process_complexes</span><span class="p">:</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span>
-                        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_uniprot&#39;</span><span class="p">]</span> <span class="ow">or</span>
-                        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;target_ligand_uniprot&#39;</span><span class="p">]</span>
+                        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target UniProt ID&#39;</span><span class="p">]</span> <span class="ow">or</span>
+                        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Target Ligand UniProt ID&#39;</span><span class="p">]</span>
                     <span class="p">)</span>
                 <span class="p">):</span>
                     <span class="n">cplex</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Complex</span><span class="p">(</span>
@@ -706,7 +720,7 @@ document.write(`
 
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="nb">len</span><span class="p">(</span><span class="n">ligands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span>
-                    <span class="n">d</span><span class="p">[</span><span class="s1">&#39;ligand_gene_symbol&#39;</span><span class="p">]</span>
+                    <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Ligand Gene Symbol&#39;</span><span class="p">]</span>
                 <span class="p">):</span>
                     <span class="n">ligand_uniprots</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="n">mapping</span><span class="o">.</span><span class="n">map_name0</span><span class="p">(</span><span class="n">ligand</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>

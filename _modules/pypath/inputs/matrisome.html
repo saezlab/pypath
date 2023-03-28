@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.matrisome &#8212; pypath 0.14.43 documentation</title>
+    <title>pypath.inputs.matrisome &#8212; pypath 0.14.44 documentation</title>
   
   
   
@@ -500,7 +500,7 @@ document.write(`
 <span class="c1">#  This file is part of the `pypath` python module</span>
 <span class="c1">#</span>
 <span class="c1">#  Copyright</span>
-<span class="c1">#  2014-2022</span>
+<span class="c1">#  2014-2023</span>
 <span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
 <span class="c1">#</span>
 <span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
@@ -543,7 +543,7 @@ document.write(`
         <span class="mi">9606</span><span class="p">:</span>  <span class="p">(</span><span class="s1">&#39;Human&#39;</span><span class="p">,</span>  <span class="s1">&#39;hs&#39;</span><span class="p">),</span>
     <span class="p">}</span>
 
-    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;matrisome&#39;</span><span class="p">][</span><span class="s1">&#39;url_xls&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="n">tax_names</span><span class="p">[</span><span class="n">organism</span><span class="p">]</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;matrisome&#39;</span><span class="p">][</span><span class="s1">&#39;url_rescued&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="n">tax_names</span><span class="p">[</span><span class="n">organism</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
     <span class="n">xlsname</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fname</span>
     <span class="k">del</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>

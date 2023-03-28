@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.interpro &#8212; pypath 0.14.43 documentation</title>
+    <title>pypath.inputs.interpro &#8212; pypath 0.14.44 documentation</title>
   
   
   
@@ -543,7 +543,7 @@ document.write(`
 
 <span class="sd">    Returns</span>
 <span class="sd">        A list of named tuples, each representing information about</span>
-<span class="sd">        one InterPro entry. </span>
+<span class="sd">        one InterPro entry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">InterproEntry</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
@@ -562,7 +562,7 @@ document.write(`
         <span class="p">)</span>
 
     <span class="n">result</span><span class="o">=</span><span class="p">[]</span>
-    
+
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;interpro&#39;</span><span class="p">][</span><span class="s1">&#39;entries&#39;</span><span class="p">]</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
         <span class="n">url</span><span class="p">,</span>
@@ -572,7 +572,7 @@ document.write(`
     <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_in</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.gz&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_out</span><span class="p">:</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">f_in</span><span class="p">,</span> <span class="n">f_out</span><span class="p">)</span>
-    
+
     <span class="n">parser</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">iterparse</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.gz&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">events</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,),</span> <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;interpro&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">ev</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">parser</span><span class="p">:</span>
@@ -590,23 +590,23 @@ document.write(`
             <span class="n">pubs</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
 
         <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;parent_list&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="n">parent_ids</span><span class="o">=</span><span class="p">[]</span>
-            
+
             <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;parent_list&#39;</span><span class="p">):</span>
-                
+
                 <span class="n">parent_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;ipr_ref&#39;</span><span class="p">])</span>
 
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="n">parent_ids</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
 
         <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;child_list&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="n">child_ids</span><span class="o">=</span><span class="p">[]</span>
-            
+
             <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;child_list&#39;</span><span class="p">):</span>
-                
+
                 <span class="n">child_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;ipr_ref&#39;</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
 
@@ -618,9 +618,9 @@ document.write(`
             <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">member_ids</span><span class="p">:</span>
 
                 <span class="n">member_ids</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;dbkey&#39;</span><span class="p">])</span>
-            
+
             <span class="k">else</span><span class="p">:</span>
-                
+
                 <span class="n">member_ids</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]]</span><span class="o">=</span><span class="p">[]</span>
                 <span class="n">member_ids</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;dbkey&#39;</span><span class="p">])</span>
 
@@ -656,7 +656,7 @@ document.write(`
 <span class="sd">    Returns</span>
 <span class="sd">        A dictionary; keys are InterPro IDs.</span>
 <span class="sd">            If &#39;db_type&#39; is &#39;go&#39;, values are list of GO terms related to the InterPro entry.</span>
-<span class="sd">            Otherwise values are dictionaries, where keys are database names </span>
+<span class="sd">            Otherwise values are dictionaries, where keys are database names</span>
 <span class="sd">            and the values are list of cross references related to the InterPro entry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -706,7 +706,7 @@ document.write(`
                     <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">other_db_keys</span><span class="p">:</span>
 
                         <span class="n">other_db_keys</span><span class="p">[</span><span class="n">link</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;dbkey&#39;</span><span class="p">])</span>
-                    
+
                     <span class="k">else</span><span class="p">:</span>
 
                         <span class="n">other_db_keys</span><span class="p">[</span><span class="n">link</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]]</span><span class="o">=</span><span class="p">[]</span>
@@ -718,8 +718,8 @@ document.write(`
 
 
 <div class="viewcode-block" id="interpro_annotations"><a class="viewcode-back" href="../../../api/pypath.inputs.interpro.interpro_annotations.html#pypath.inputs.interpro.interpro_annotations">[docs]</a><span class="k">def</span> <span class="nf">interpro_annotations</span><span class="p">(</span>
-        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> 
-        <span class="n">reviewed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">reviewed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">tax_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span>  <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -734,13 +734,14 @@ document.write(`
 <span class="sd">        A dictionary. Keys are Uniprot IDs, values are sets of annotations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    
+
     <span class="n">InterproAnnotation</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
         <span class="s1">&#39;InterproAnnotation&#39;</span><span class="p">,</span>
         <span class="p">(</span>
             <span class="s1">&#39;interpro_id&#39;</span><span class="p">,</span>
             <span class="s1">&#39;organism&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;locations&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;start&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;end&#39;</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
@@ -751,13 +752,15 @@ document.write(`
             <span class="k">if</span> <span class="n">reviewed</span> <span class="k">else</span>
         <span class="s1">&#39;uniprot&#39;</span>
     <span class="p">)</span>
-    <span class="n">base_url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;interpro&#39;</span><span class="p">][</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="p">(</span><span class="n">proteins</span><span class="p">,</span> <span class="n">tax_id</span><span class="p">,</span> <span class="n">page_size</span><span class="p">)</span>
-    <span class="nb">next</span> <span class="o">=</span> <span class="n">base_url</span>
+    <span class="n">base_url</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;interpro&#39;</span><span class="p">][</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="p">(</span><span class="n">proteins</span><span class="p">,</span> <span class="n">tax_id</span><span class="p">,</span> <span class="n">page_size</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">next_page_url</span> <span class="o">=</span> <span class="n">base_url</span>
 
-    <span class="k">while</span> <span class="nb">next</span><span class="p">:</span>
+    <span class="k">while</span> <span class="n">next_page_url</span><span class="p">:</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
-            <span class="nb">next</span><span class="p">,</span>
+            <span class="n">next_page_url</span><span class="p">,</span>
             <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">large</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="p">)</span>
@@ -780,32 +783,24 @@ document.write(`
 
             <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;protein_subset&#39;</span><span class="p">]:</span>
 
-                <span class="n">start_end_list</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">locations</span> <span class="o">=</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;entry_protein_locations&#39;</span><span class="p">]</span>
 
                 <span class="k">for</span> <span class="n">location</span> <span class="ow">in</span> <span class="n">locations</span><span class="p">:</span>
 
                     <span class="k">for</span> <span class="n">fragment</span> <span class="ow">in</span> <span class="n">location</span><span class="p">[</span><span class="s1">&#39;fragments&#39;</span><span class="p">]:</span>
 
-                        <span class="n">start_end_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fragment</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fragment</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]))</span>
-
-                <span class="n">uniprot_id</span> <span class="o">=</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;accession&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-                <span class="n">annotations</span><span class="p">[</span><span class="n">uniprot_id</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                        <span class="n">InterproAnnotation</span><span class="p">(</span>
-                            <span class="n">interpro_id</span> <span class="o">=</span> <span class="n">entry_info</span><span class="p">[</span><span class="s1">&#39;accession&#39;</span><span class="p">],</span>
-                            <span class="n">organism</span> <span class="o">=</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;organism&#39;</span><span class="p">],</span>
-                            <span class="n">locations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">start_end_list</span><span class="p">),</span>
+                        <span class="n">uniprot_id</span> <span class="o">=</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;accession&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="n">annotations</span><span class="p">[</span><span class="n">uniprot_id</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                            <span class="n">InterproAnnotation</span><span class="p">(</span>
+                                <span class="n">interpro_id</span> <span class="o">=</span> <span class="n">entry_info</span><span class="p">[</span><span class="s1">&#39;accession&#39;</span><span class="p">],</span>
+                                <span class="n">organism</span> <span class="o">=</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;organism&#39;</span><span class="p">],</span>
+                                <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fragment</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]),</span>
+                                <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fragment</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]),</span>
+                            <span class="p">)</span>
                         <span class="p">)</span>
-                    <span class="p">)</span>
-    
-        <span class="k">if</span> <span class="s1">&#39;next&#39;</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
 
-            <span class="nb">next</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;next&#39;</span><span class="p">]</span>
-            <span class="n">page</span> <span class="o">=</span> <span class="n">page</span> <span class="o">+</span> <span class="mi">1</span>
-
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="nb">next</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">next_page_url</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;next&#39;</span><span class="p">)</span>
+        <span class="n">page</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="k">return</span> <span class="n">annotations</span></div>
 
@@ -844,9 +839,9 @@ document.write(`
                 <span class="n">Interpro2GOAnnotation</span><span class="p">(</span>
                     <span class="n">go_term_id</span> <span class="o">=</span> <span class="n">go_term_id</span><span class="p">,</span>
                     <span class="n">go_term_name</span> <span class="o">=</span> <span class="n">go_term_name</span>
-                    <span class="p">)</span>
                 <span class="p">)</span>
-    
+            <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">annotations</span></div>
 </pre></div>
 
