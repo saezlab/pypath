@@ -514,7 +514,10 @@ urls = {
     'goa': {
         'label': 'UniProt GO annotations from GOA',
         'go_url': 'http://geneontology.org/gene-associations/goa_%s.gaf.gz',
-        'ebi_url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/goa_%s.gaf.gz'
+        'ebi_url_old': 'ftp://ftp.ebi.ac.uk/pub/'
+            'databases/GO/goa/%s/goa_%s.gaf.gz',
+        'ebi_url': 'https://ftp.ebi.ac.uk/pub/databases/GO/'
+            'goa/%s/goa_%s.gaf.gz',
     },
     'quickgo_old': {
         'label': 'UniProt GO annotations from QuickGO',
