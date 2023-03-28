@@ -123,7 +123,7 @@ curl_retries: 3
 user_agent: 'User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:54.0) Gecko/20110304
   Firefox/54.0'
 msigdb_email: omnipathdb@gmail.com
-msigdb_version: '2022.1'
+msigdb_version: '2023.1'
 
 # Module settings
 network_expand_complexes: false
@@ -223,7 +223,7 @@ dependencies:
   - annotations
   annotations: !!python/tuple
   - complex
-  
+
 homology_ensembl_hc: true
 homology_ensembl_types: one2one
 homology_ensembl: true
