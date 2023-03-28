@@ -1066,7 +1066,7 @@ class Curl(FileOpener):
 
         if self.url != url_raw:
 
-            self._log('Quoted URL: `%s`.' % self.url)
+            self._log('Quoted URL: `%s`.' % self.url[:200])
 
 
     def set_title(self):
