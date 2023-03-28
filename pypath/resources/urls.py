@@ -1069,7 +1069,7 @@ urls = {
             'Kirouac et al 2010',
         'url_old': 'http://msb.embopress.org/content/msb/6/1/417/DC3/embed/'\
             'inline-supplementary-material-3.xls?download=true',
-        'init_url': 'https://www.embopress.org/doi/10.1038/msb.2010.71',
+        'init_url': 'https://www.embopress.org/doi/full/10.1038/msb.2010.71',
         'url': r'https://www.embopress.org/action/downloadSupplement?doi='\
             r'10.1038%2Fmsb.2010.71&file=msb201071-sup-0003.xls'
     },
