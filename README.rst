@@ -245,6 +245,8 @@ other groups:
   and with various case studies and tutorials;
 * Michael Klein from the group of `Fabian Theis`_ developed the
   `Python client`_ for the OmniPath web service;
+* Charles Tapley Hoyt and Daniel Domingo-Fernández added the BEL export
+  module.
 * From the `Saez Lab`_, Olga Ivanova introduced the resource manager in
   `pypath`, Sophia Müller-Dott added the CollecTRI gene regulatory network,
   while Nicolàs Palacio, Sebastian Lobentanzer and Ahmet Rifaioglu
