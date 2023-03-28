@@ -238,7 +238,7 @@ other groups:
 * Erva Ulusoy, Melih Darcan, Ömer Kaan Vural, Tennur Kılıç, Elif Çevrim,
   Bünyamin Şen and Atabey Ünlü in the
   `HU Biological Data Science Lab (PI: Tunca Doğan)`_ created many new input
-  in `pypath`;
+  modules in `pypath`;
 * Leila Gul, Dezső Módos, Márton Ölbei and Tamás Korcsmáros in the
   `Korcsmaros Lab`_ contributed to the overall design of OmniPath, the
   design and implementation of the intercellular communication database,
