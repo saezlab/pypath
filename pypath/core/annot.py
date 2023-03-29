@@ -6475,6 +6475,7 @@ class AnnotationTable(session_mod.Logger):
                         f'Successfully loaded resource `{cls.__name__}` '
                         f'({annot.name}).'
                     )
+                    break
 
                 except Exception as e:
 
