@@ -542,7 +542,7 @@ document.write(`
         <span class="p">),</span>
     <span class="p">)</span>
 
-    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;mirecords&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;mirecords&#39;</span><span class="p">][</span><span class="s1">&#39;url_rescued&#39;</span><span class="p">]</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="n">tbl</span> <span class="o">=</span> <span class="n">inputs_common</span><span class="o">.</span><span class="n">read_xls</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>

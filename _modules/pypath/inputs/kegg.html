@@ -775,6 +775,7 @@ document.write(`
         <span class="s1">&#39;=|&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;transcriptional&#39;</span><span class="p">,</span> <span class="s1">&#39;inhibition&#39;</span><span class="p">),</span>
         <span class="s1">&#39;--&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;post_translational&#39;</span><span class="p">,</span> <span class="s1">&#39;undirected&#39;</span><span class="p">),</span>
         <span class="s1">&#39;&gt;&gt;&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;post_translational&#39;</span><span class="p">,</span> <span class="s1">&#39;enzyme_enzyme&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;==&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;post_translational&#39;</span><span class="p">,</span> <span class="s1">&#39;missing&#39;</span><span class="p">),</span>
     <span class="p">}</span>
 
 
@@ -982,7 +983,8 @@ document.write(`
 
 
     <span class="n">recollect</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(GENE|PERTURBANT|VARIANT|METABOLITE)&#39;</span><span class="p">)</span>
-    <span class="n">recon</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(-&gt;|--|//|-\||=&gt;|&gt;&gt;|=\|)&#39;</span><span class="p">)</span>
+    <span class="n">recon</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(-&gt;|--|//|-\||=&gt;|&gt;&gt;|=\||==)&#39;</span><span class="p">)</span>
+    <span class="n">rewrongspace</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+) (?=\d+)&#39;</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;kegg_pws&#39;</span><span class="p">][</span><span class="s1">&#39;medicus&#39;</span><span class="p">]</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
@@ -1050,6 +1052,7 @@ document.write(`
 
             <span class="n">connections</span> <span class="o">=</span> <span class="n">renetref</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
             <span class="n">connections</span> <span class="o">=</span> <span class="n">recon</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39; \g&lt;1&gt; &#39;</span><span class="p">,</span> <span class="n">connections</span><span class="p">)</span>
+            <span class="n">connections</span> <span class="o">=</span> <span class="n">rewrongspace</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;\g&lt;1&gt;,&#39;</span><span class="p">,</span> <span class="n">connections</span><span class="p">)</span>
             <span class="n">connections</span> <span class="o">=</span> <span class="n">connections</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
 
         <span class="k">elif</span> <span class="n">row</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;///&#39;</span><span class="p">):</span>

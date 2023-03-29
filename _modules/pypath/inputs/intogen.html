@@ -525,6 +525,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
 
 
@@ -547,13 +548,15 @@ document.write(`
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;intogen&#39;</span><span class="p">][</span><span class="s1">&#39;db2014_2&#39;</span><span class="p">]</span>
 
-    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
-        <span class="n">url</span><span class="p">,</span>
-        <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">files_needed</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Drivers_type_role.tsv&#39;</span><span class="p">],</span>
-        <span class="n">compr</span> <span class="o">=</span> <span class="s1">&#39;zip&#39;</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">settings</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">curl_connect_timeout</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">files_needed</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Drivers_type_role.tsv&#39;</span><span class="p">],</span>
+            <span class="n">compr</span> <span class="o">=</span> <span class="s1">&#39;zip&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
 

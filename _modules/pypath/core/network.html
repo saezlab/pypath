@@ -1173,15 +1173,56 @@ document.write(`
 <span class="sd">            Load only the first n interactions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Loading network data from resource `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">total_attempts</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;network_load_resource_attempts&#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_read_resource</span><span class="p">(</span>
-            <span class="n">resource</span><span class="p">,</span>
-            <span class="n">reread</span> <span class="o">=</span> <span class="n">reread</span><span class="p">,</span>
-            <span class="n">redownload</span> <span class="o">=</span> <span class="n">redownload</span><span class="p">,</span>
-            <span class="n">keep_raw</span> <span class="o">=</span> <span class="n">keep_raw</span><span class="p">,</span>
-            <span class="n">first_n</span> <span class="o">=</span> <span class="n">first_n</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_attempts</span><span class="p">):</span>
+
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Loading network data from resource `</span><span class="si">{</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">`; &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1"> of </span><span class="si">{</span><span class="n">total_attempts</span><span class="si">}</span><span class="s1">.&#39;</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_read_resource</span><span class="p">(</span>
+                    <span class="n">resource</span><span class="p">,</span>
+                    <span class="n">reread</span> <span class="o">=</span> <span class="n">reread</span><span class="p">,</span>
+                    <span class="n">redownload</span> <span class="o">=</span> <span class="n">redownload</span><span class="p">,</span>
+                    <span class="n">keep_raw</span> <span class="o">=</span> <span class="n">keep_raw</span><span class="p">,</span>
+                    <span class="n">first_n</span> <span class="o">=</span> <span class="n">first_n</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="s1">&#39;Successfully read interactions &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;from resource `</span><span class="si">{</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">`.&#39;</span>
+                <span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+                <span class="n">exc</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="s1">&#39;Failed to read interactions &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;from resource `</span><span class="si">{</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">`:&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
+
+                <span class="k">try</span><span class="p">:</span>
+
+                    <span class="n">traceback</span><span class="o">.</span><span class="n">print_tb</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">,</span> <span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+
+                <span class="k">except</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Failed to handle exception.&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">total_attempts</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;Not loading `</span><span class="si">{</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">`: giving up after &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">total_attempts</span><span class="si">}</span><span class="s1"> attempts.&#39;</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span>
 
         <span class="n">allow_loops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allow_loops</span><span class="p">(</span>
             <span class="n">allow_loops</span> <span class="o">=</span> <span class="n">allow_loops</span><span class="p">,</span>
@@ -1292,6 +1333,7 @@ document.write(`
 
         <span class="n">edge_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">edge_list_mapped</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_list_mapped</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">infile</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">_name</span> <span class="o">=</span> <span class="n">networkinput</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
@@ -1434,33 +1476,22 @@ document.write(`
 
                         <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">redownload</span>
 
-                    <span class="c1"># this try-except needs to be removed</span>
-                    <span class="c1"># once correct exception handling will</span>
-                    <span class="c1"># be implemented in every input function</span>
                     <span class="k">try</span><span class="p">:</span>
+
                         <span class="n">infile</span> <span class="o">=</span> <span class="n">input_func</span><span class="p">(</span><span class="o">**</span><span class="n">networkinput</span><span class="o">.</span><span class="n">input_args</span><span class="p">)</span>
 
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
                         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-                            <span class="s1">&#39;Error in method `</span><span class="si">%s</span><span class="s1">` of the &#39;</span>
+                            <span class="sa">f</span><span class="s1">&#39;Error in method `</span><span class="si">{</span><span class="n">input_func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">` of the &#39;</span>
                             <span class="s1">&#39;pypath.inputs module. &#39;</span>
-                            <span class="s1">&#39;Skipping to next resource. &#39;</span>
-                            <span class="s1">&#39;See below the traceback.&#39;</span> <span class="o">%</span> <span class="n">input_func</span><span class="o">.</span><span class="vm">__name__</span>
                         <span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
 
-                        <span class="k">try</span><span class="p">:</span>
-                            <span class="n">traceback</span><span class="o">.</span><span class="n">print_tb</span><span class="p">(</span>
-                                <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">,</span>
-                                <span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
-                            <span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">e</span>
 
-                        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">finally</span><span class="p">:</span>
 
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Failed handling exception.&#39;</span><span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
-
-                    <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span> <span class="o">=</span> <span class="n">_store_cache</span>
+                        <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span> <span class="o">=</span> <span class="n">_store_cache</span>
 
                 <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">networkinput</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
 
@@ -1583,7 +1614,7 @@ document.write(`
                             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span>
                         <span class="p">]</span>
 
-                    <span class="c1">## 1) filters</span>
+                    <span class="c1"># 1) filters</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="p">(</span>
                         <span class="n">line</span><span class="p">,</span>
                         <span class="n">networkinput</span><span class="o">.</span><span class="n">positive_filters</span><span class="p">,</span>
@@ -1593,7 +1624,7 @@ document.write(`
                         <span class="n">input_filtered</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="k">continue</span>
 
-                    <span class="c1">## 2) direction</span>
+                    <span class="c1"># 2) direction</span>
                     <span class="c1"># reading names and attributes:</span>
                     <span class="k">if</span> <span class="n">is_directed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">is_directed</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
 
@@ -1608,7 +1639,7 @@ document.write(`
                             <span class="n">dir_sep</span><span class="p">,</span>
                         <span class="p">)</span>
 
-                    <span class="c1">## 3) references</span>
+                    <span class="c1"># 3) references</span>
                     <span class="n">refs</span> <span class="o">=</span> <span class="p">[]</span>
 
                     <span class="k">if</span> <span class="n">ref_col</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1631,14 +1662,16 @@ document.write(`
 
                         <span class="n">refs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">del_empty</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">refs</span><span class="p">)))</span>
 
-                    <span class="n">refs</span> <span class="o">=</span> <span class="n">pubmed_input</span><span class="o">.</span><span class="n">only_pmids</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">])</span>
+                    <span class="n">refs</span> <span class="o">=</span> <span class="n">pubmed_input</span><span class="o">.</span><span class="n">only_pmids</span><span class="p">(</span>
+                        <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">]</span>
+                    <span class="p">)</span>
 
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">must_have_references</span><span class="p">:</span>
 
                         <span class="n">ref_filtered</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="k">continue</span>
 
-                    <span class="c1">## 4) entity types</span>
+                    <span class="c1"># 4) entity types</span>
                     <span class="n">entity_type_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_field</span><span class="p">(</span>
                         <span class="n">networkinput</span><span class="o">.</span><span class="n">entity_type_a</span><span class="p">,</span>
                         <span class="n">line</span><span class="p">,</span>
@@ -1648,11 +1681,11 @@ document.write(`
                         <span class="n">line</span><span class="p">,</span>
                     <span class="p">)</span>
 
-                    <span class="c1">## 5) ID types</span>
+                    <span class="c1"># 5) ID types</span>
                     <span class="n">id_type_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_field</span><span class="p">(</span><span class="n">networkinput</span><span class="o">.</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                     <span class="n">id_type_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_field</span><span class="p">(</span><span class="n">networkinput</span><span class="o">.</span><span class="n">id_type_b</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 
-                    <span class="c1">## 6) organisms</span>
+                    <span class="c1"># 6) organisms</span>
                     <span class="c1"># to give an easy way for input definition:</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">networkinput</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
 
@@ -1718,7 +1751,7 @@ document.write(`
                         <span class="n">taxon_filtered</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="k">continue</span>
 
-                    <span class="c1">## 7) effect (sign)</span>
+                    <span class="c1"># 7) effect (sign)</span>
                     <span class="n">positive</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="n">negative</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -1728,7 +1761,7 @@ document.write(`
                             <span class="bp">self</span><span class="o">.</span><span class="n">_process_sign</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">sign</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">sign</span><span class="p">)</span>
                         <span class="p">)</span>
 
-                    <span class="c1">## 8) resources (source databases)</span>
+                    <span class="c1"># 8) resources (source databases)</span>
                     <span class="n">resource</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">line</span><span class="p">[</span><span class="n">networkinput</span><span class="o">.</span><span class="n">resource</span><span class="p">]</span>
                             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">networkinput</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span>
@@ -1759,11 +1792,11 @@ document.write(`
 
                     <span class="n">resource</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">networkinput</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-                    <span class="c1">## 9) interacting partners</span>
+                    <span class="c1"># 9) interacting partners</span>
                     <span class="n">id_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_partner</span><span class="p">(</span><span class="n">networkinput</span><span class="o">.</span><span class="n">id_col_a</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                     <span class="n">id_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_partner</span><span class="p">(</span><span class="n">networkinput</span><span class="o">.</span><span class="n">id_col_b</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 
-                    <span class="c1">## 10) further attributes</span>
+                    <span class="c1"># 10) further attributes</span>
                     <span class="c1"># getting additional edge and node attributes</span>
                     <span class="n">attrs_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_attrs</span><span class="p">(</span>
                         <span class="n">line</span><span class="p">,</span>
@@ -1781,7 +1814,7 @@ document.write(`
                         <span class="n">lnum</span><span class="p">,</span>
                     <span class="p">)</span>
 
-                    <span class="c1">## 11) creating the Evidence object</span>
+                    <span class="c1"># 11) creating the Evidence object</span>
                     <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidence</span><span class="o">.</span><span class="n">Evidences</span><span class="p">(</span>
                         <span class="n">evidences</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="n">evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span>
@@ -1794,8 +1827,8 @@ document.write(`
                         <span class="p">)</span>
                     <span class="p">)</span>
 
-                    <span class="c1">## 12) node attributes that</span>
-                    <span class="c1">##     depend on the interaction direction</span>
+                    <span class="c1"># 12) node attributes that</span>
+                    <span class="c1">#     depend on the interaction direction</span>
                     <span class="k">if</span> <span class="n">networkinput</span><span class="o">.</span><span class="n">mark_source</span><span class="p">:</span>
 
                         <span class="n">attrs_node_a</span><span class="p">[</span><span class="n">networkinput</span><span class="o">.</span><span class="n">mark_source</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_edge_dir</span>
@@ -1804,7 +1837,7 @@ document.write(`
 
                         <span class="n">attrs_node_b</span><span class="p">[</span><span class="n">networkinput</span><span class="o">.</span><span class="n">mark_target</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_edge_dir</span>
 
-                    <span class="c1">## 13) all interaction data goes into a dict</span>
+                    <span class="c1"># 13) all interaction data goes into a dict</span>
                     <span class="n">new_edge</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="s1">&#39;id_a&#39;</span><span class="p">:</span> <span class="n">id_a</span><span class="p">,</span>
                         <span class="s1">&#39;id_b&#39;</span><span class="p">:</span> <span class="n">id_b</span><span class="p">,</span>
@@ -1845,27 +1878,14 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                     <span class="s1">&#39;Error at loading resource `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">networkinput</span><span class="o">.</span><span class="n">name</span>
                 <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
 
-                <span class="k">try</span><span class="p">:</span>
-
-                    <span class="n">traceback</span><span class="o">.</span><span class="n">print_tb</span><span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">,</span>
-                        <span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
-                    <span class="p">)</span>
-
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Failed handling exception.&#39;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
-
-                <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">raise</span> <span class="n">e</span>
 
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">):</span>
 
                 <span class="n">infile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-            <span class="c1">## 14) ID translation of edges</span>
+            <span class="c1"># 14) ID translation of edges</span>
             <span class="n">edge_list_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_list</span><span class="p">(</span>
                 <span class="n">edge_list</span><span class="p">,</span>
                 <span class="n">expand_complexes</span> <span class="o">=</span> <span class="n">expand_complexes</span><span class="p">,</span>
