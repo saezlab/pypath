@@ -3072,8 +3072,20 @@ small_molecule_protein = {
             (10, True), # only direct interactions
             lambda line: line[4] == 'chemical' or line[5] == 'chemical',
         ],
-        entity_type_a = (4, {'chemical': 'small_molecule'}),
-        entity_type_b = (5, {'chemical': 'small_molecule'}),
+        entity_type_a = (
+            4,
+            {
+                'chemical': 'small_molecule',
+                'smallmolecule': 'small_molecule',
+            }
+        ),
+        entity_type_b = (
+            5,
+            {
+                'chemical': 'small_molecule',
+                'smallmolecule': 'small_molecule',
+            }
+        ),
         is_directed = (
             6,
             [
