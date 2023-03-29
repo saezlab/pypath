@@ -155,6 +155,10 @@ annot_load_resource_attempts: 3
   # number of attempts to load a resource
   # when building the Annotations database
 
+complex_load_resource_attempts: 3
+  # number of attempts to load a resource
+  # when building the Complexes database
+
 # load small, specific categories from CellPhoneDB
   # in the intercell database
 intercell_cellphonedb_categories: true
