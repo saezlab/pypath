@@ -717,6 +717,15 @@ class Network(session_mod.Logger):
                 )
                 self._log_traceback()
 
+                try:
+
+                    traceback.print_tb(e.__traceback__, file = sys.stdout)
+
+                except:
+
+                    self._log('Failed to handle exception.')
+                    self._log_traceback()
+
                 if attempt == total_attempts - 1:
 
                     self._log(
@@ -987,18 +996,6 @@ class Network(session_mod.Logger):
                             f'Error in method `{input_func.__name__}` of the '
                             'pypath.inputs module. '
                         )
-                        self._log_traceback()
-
-                        try:
-                            traceback.print_tb(
-                                e.__traceback__,
-                                file = sys.stdout
-                            )
-
-                        except Exception:
-
-                            self._log('Failed handling exception.')
-                            self._log_traceback()
 
                         raise e
 
@@ -1391,19 +1388,6 @@ class Network(session_mod.Logger):
                 self._log(
                     'Error at loading resource `%s`.' % networkinput.name
                 )
-                self._log_traceback()
-
-                try:
-
-                    traceback.print_tb(
-                        e.__traceback__,
-                        file = sys.stdout
-                    )
-
-                except Exception:
-
-                    self._log('Failed handling exception.')
-                    self._log_traceback()
 
                 raise e
 
