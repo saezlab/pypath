@@ -738,6 +738,7 @@ class MapReader(session_mod.Logger):
                         large = True,
                         silent = False,
                         cache = False,
+                        slow = True,
                     )
 
                     if c.result is not None:
