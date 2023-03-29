@@ -151,6 +151,9 @@ annot_infer_complexes: true
 annot_composite_database_name: OmniPath
   # the resource name for annotation categories
   # combined from multiple original resources
+annot_load_resource_attempts: 3
+  # number of attempts to load a resource
+  # when building the Annotations database
 
 # load small, specific categories from CellPhoneDB
   # in the intercell database
