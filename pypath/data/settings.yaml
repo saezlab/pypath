@@ -130,6 +130,7 @@ network_expand_complexes: false
 network_allow_loops: false
 network_keep_original_names: true
 network_pickle_cache: true
+network_load_resource_attempts: 3
 go_pickle_cache: true
 network_extra_directions: !!set
   PhosphoSite_noref: null

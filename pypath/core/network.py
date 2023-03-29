@@ -683,15 +683,47 @@ class Network(session_mod.Logger):
             Load only the first n interactions.
         """
 
-        self._log('Loading network data from resource `%s`.' % resource.name)
+        total_attempts = settings.get('network_load_resource_attempts')
 
-        self._read_resource(
-            resource,
-            reread = reread,
-            redownload = redownload,
-            keep_raw = keep_raw,
-            first_n = first_n,
-        )
+        for attempt in range(total_attempts):
+
+            try:
+
+                self._log(
+                    f'Loading network data from resource `{resource.name}`; '
+                    f'attempt {attempt + 1} of {total_attempts}.'
+                )
+
+                self._read_resource(
+                    resource,
+                    reread = reread,
+                    redownload = redownload,
+                    keep_raw = keep_raw,
+                    first_n = first_n,
+                )
+
+                self._log(
+                    'Successfully read interactions '
+                    f'from resource `{resource.name}`.'
+                )
+                break
+
+            except Exception as e:
+
+                exc = sys.exc_info()
+                self._log(
+                    'Failed to read interactions '
+                    f'from resource `{resource.name}`:'
+                )
+                self._log_traceback()
+
+                if attempt == total_attempts - 1:
+
+                    self._log(
+                        f'Not loading `{resource.name}`: giving up after '
+                        f'{total_attempts} attempts.'
+                    )
+                    return
 
         allow_loops = self._allow_loops(
             allow_loops = allow_loops,
@@ -802,6 +834,7 @@ class Network(session_mod.Logger):
 
         edge_list = []
         edge_list_mapped = []
+        self.edge_list_mapped = []
         infile = None
         _name = networkinput.name.lower()
 
@@ -944,18 +977,15 @@ class Network(session_mod.Logger):
 
                         curl.CACHE = not redownload
 
-                    # this try-except needs to be removed
-                    # once correct exception handling will
-                    # be implemented in every input function
                     try:
+
                         infile = input_func(**networkinput.input_args)
 
                     except Exception as e:
+
                         self._log(
-                            'Error in method `%s` of the '
+                            f'Error in method `{input_func.__name__}` of the '
                             'pypath.inputs module. '
-                            'Skipping to next resource. '
-                            'See below the traceback.' % input_func.__name__
                         )
                         self._log_traceback()
 
@@ -965,12 +995,16 @@ class Network(session_mod.Logger):
                                 file = sys.stdout
                             )
 
-                        except Exception as e:
+                        except Exception:
 
                             self._log('Failed handling exception.')
                             self._log_traceback()
 
-                    curl.CACHE = _store_cache
+                        raise e
+
+                    finally:
+
+                        curl.CACHE = _store_cache
 
                 elif os.path.isfile(networkinput.input):
 
@@ -1093,7 +1127,7 @@ class Network(session_mod.Logger):
                             for x in line
                         ]
 
-                    ## 1) filters
+                    # 1) filters
                     if self._filters(
                         line,
                         networkinput.positive_filters,
@@ -1103,7 +1137,7 @@ class Network(session_mod.Logger):
                         input_filtered += 1
                         continue
 
-                    ## 2) direction
+                    # 2) direction
                     # reading names and attributes:
                     if is_directed and not isinstance(is_directed, tuple):
 
@@ -1118,7 +1152,7 @@ class Network(session_mod.Logger):
                             dir_sep,
                         )
 
-                    ## 3) references
+                    # 3) references
                     refs = []
 
                     if ref_col is not None:
@@ -1141,14 +1175,16 @@ class Network(session_mod.Logger):
 
                         refs = common.del_empty(list(set(refs)))
 
-                    refs = pubmed_input.only_pmids([str(r).strip() for r in refs])
+                    refs = pubmed_input.only_pmids(
+                        [str(r).strip() for r in refs]
+                    )
 
                     if len(refs) == 0 and must_have_references:
 
                         ref_filtered += 1
                         continue
 
-                    ## 4) entity types
+                    # 4) entity types
                     entity_type_a = self._process_field(
                         networkinput.entity_type_a,
                         line,
@@ -1158,11 +1194,11 @@ class Network(session_mod.Logger):
                         line,
                     )
 
-                    ## 5) ID types
+                    # 5) ID types
                     id_type_a = self._process_field(networkinput.id_type_a, line)
                     id_type_b = self._process_field(networkinput.id_type_b, line)
 
-                    ## 6) organisms
+                    # 6) organisms
                     # to give an easy way for input definition:
                     if isinstance(networkinput.ncbi_tax_id, int):
 
@@ -1228,7 +1264,7 @@ class Network(session_mod.Logger):
                         taxon_filtered += 1
                         continue
 
-                    ## 7) effect (sign)
+                    # 7) effect (sign)
                     positive = False
                     negative = False
 
@@ -1238,7 +1274,7 @@ class Network(session_mod.Logger):
                             self._process_sign(line[sign[0]], sign)
                         )
 
-                    ## 8) resources (source databases)
+                    # 8) resources (source databases)
                     resource = (
                         line[networkinput.resource]
                             if isinstance(networkinput.resource, int) else
@@ -1269,11 +1305,11 @@ class Network(session_mod.Logger):
 
                     resource.add(networkinput.name)
 
-                    ## 9) interacting partners
+                    # 9) interacting partners
                     id_a = self._process_partner(networkinput.id_col_a, line)
                     id_b = self._process_partner(networkinput.id_col_b, line)
 
-                    ## 10) further attributes
+                    # 10) further attributes
                     # getting additional edge and node attributes
                     attrs_edge = self._process_attrs(
                         line,
@@ -1291,7 +1327,7 @@ class Network(session_mod.Logger):
                         lnum,
                     )
 
-                    ## 11) creating the Evidence object
+                    # 11) creating the Evidence object
                     evidences = evidence.Evidences(
                         evidences = (
                             evidence.Evidence(
@@ -1304,8 +1340,8 @@ class Network(session_mod.Logger):
                         )
                     )
 
-                    ## 12) node attributes that
-                    ##     depend on the interaction direction
+                    # 12) node attributes that
+                    #     depend on the interaction direction
                     if networkinput.mark_source:
 
                         attrs_node_a[networkinput.mark_source] = this_edge_dir
@@ -1314,7 +1350,7 @@ class Network(session_mod.Logger):
 
                         attrs_node_b[networkinput.mark_target] = this_edge_dir
 
-                    ## 13) all interaction data goes into a dict
+                    # 13) all interaction data goes into a dict
                     new_edge = {
                         'id_a': id_a,
                         'id_b': id_b,
@@ -1364,18 +1400,18 @@ class Network(session_mod.Logger):
                         file = sys.stdout
                     )
 
-                except Exception as e:
+                except Exception:
 
                     self._log('Failed handling exception.')
                     self._log_traceback()
 
-                return None
+                raise e
 
             if hasattr(infile, 'close'):
 
                 infile.close()
 
-            ## 14) ID translation of edges
+            # 14) ID translation of edges
             edge_list_mapped = self._map_list(
                 edge_list,
                 expand_complexes = expand_complexes,
