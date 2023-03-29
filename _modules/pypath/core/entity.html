@@ -705,8 +705,6 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon</span>
 
 
-
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">entity_name_str</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
 
@@ -834,51 +832,51 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filters an iterable of entities or identifiers keeping only the ones</span>
 <span class="sd">        of type(s) in ``entity_type``.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param iterable entities:</span>
 <span class="sd">            A list, set, tuple or other iterable yielding entities or</span>
 <span class="sd">            identifiers.</span>
 <span class="sd">        :param str,set entity_type:</span>
 <span class="sd">            One or more entity types e.g. ``{&#39;protein&#39;, &#39;mirna&#39;}``.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :returns:</span>
 <span class="sd">            Same type of object as ``entities`` if the type of the object is</span>
 <span class="sd">            list, set or tuple, otherwise a generator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">entity_type</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">entities</span><span class="p">:</span>
-            
+
             <span class="k">return</span> <span class="n">entities</span>
-        
+
         <span class="n">entity_type</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">entity_type</span><span class="p">)</span>
         <span class="n">obj_type</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">list_like</span><span class="p">)</span> <span class="k">else</span>
             <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
         <span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">obj_type</span><span class="p">(</span>
             <span class="n">e</span>
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span>
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_entity_type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">in</span> <span class="n">entity_type</span>
         <span class="p">)</span></div>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">only_proteins</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">filter_entity_type</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span><span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">only_complexes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">filter_entity_type</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;complex&#39;</span><span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">only_mirnas</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">filter_entity_type</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;mirna&#39;</span><span class="p">)</span>
 
 
@@ -887,23 +885,23 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Counts elements in an iterable of entities or identifiers of type(s)</span>
 <span class="sd">        in ``entity_type``.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param iterable entities:</span>
 <span class="sd">            A list, set, tuple or other iterable yielding entities or</span>
 <span class="sd">            identifiers.</span>
 <span class="sd">        :param str,set entity_type:</span>
 <span class="sd">            One or more entity types e.g. ``{&#39;protein&#39;, &#39;mirna&#39;}``.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :returns:</span>
 <span class="sd">            int</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">entities</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">entities</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">list_like</span><span class="p">)</span> <span class="k">else</span>
             <span class="nb">list</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span>
         <span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">filter_entity_type</span><span class="p">(</span>
                 <span class="n">entities</span><span class="p">,</span>

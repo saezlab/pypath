@@ -3893,9 +3893,10 @@ document.write(`
 
         <span class="k">return</span> <span class="n">new</span></div>
 
+
     <span class="k">def</span> <span class="nf">load_collectri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">collectri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">network_resources</span><span class="o">.</span><span class="n">collectri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Network.collectri"><a class="viewcode-back" href="../../../api/pypath.core.network.Network.html#pypath.core.network.Network.collectri">[docs]</a>    <span class="nd">@classmethod</span>
@@ -3903,9 +3904,6 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a new ``Network`` object with loading the transcriptional</span>
 <span class="sd">        regulation network from CollecTRI.</span>
-
-<span class="sd">        :arg NontType,set levels:</span>
-<span class="sd">            The confidence levels to include.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">make_df</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;make_df&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -3919,6 +3917,7 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">load_transcription</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
+            <span class="n">collectri</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">dorothea</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">original_resources</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">dorothea_levels</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3930,6 +3929,14 @@ document.write(`
         <span class="p">):</span>
 
         <span class="n">make_df</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;make_df&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">collectri</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_collectri</span><span class="p">(</span>
+                <span class="n">reread</span> <span class="o">=</span> <span class="n">reread</span><span class="p">,</span>
+                <span class="n">redownload</span> <span class="o">=</span> <span class="n">redownload</span><span class="p">,</span>
+                <span class="n">allow_loops</span> <span class="o">=</span> <span class="n">allow_loops</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dorothea</span><span class="p">:</span>
 
