@@ -3403,9 +3403,10 @@ class Network(session_mod.Logger):
 
         return new
 
+
     def load_collectri(self, **kwargs):
 
-        self.load(netres.collectri, **kwargs)
+        self.load(network_resources.collectri, **kwargs)
 
 
     @classmethod
@@ -3413,9 +3414,6 @@ class Network(session_mod.Logger):
         """
         Initializes a new ``Network`` object with loading the transcriptional
         regulation network from CollecTRI.
-
-        :arg NontType,set levels:
-            The confidence levels to include.
         """
 
         make_df = kwargs.pop('make_df', False)
@@ -3429,6 +3427,7 @@ class Network(session_mod.Logger):
 
     def load_transcription(
             self,
+            collectri = True,
             dorothea = True,
             original_resources = True,
             dorothea_levels = None,
@@ -3440,6 +3439,14 @@ class Network(session_mod.Logger):
         ):
 
         make_df = kwargs.pop('make_df', None)
+
+        if collectri:
+
+            self.load_collectri(
+                reread = reread,
+                redownload = redownload,
+                allow_loops = allow_loops,
+            )
 
         if dorothea:
 
