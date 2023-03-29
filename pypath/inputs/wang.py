@@ -52,7 +52,7 @@ ca1_interactions = ca1.ca1_interactions
 
 
 def hsn_interactions(
-        source: Literal['rescued', 'researchgate'] = 'researchgate',
+        source: Literal['rescued', 'researchgate'] = 'rescued',
     ) -> List[tuple]:
     """
     Downloads and processes HumanSignalingNetwork version 6
