@@ -1009,7 +1009,8 @@ urls = {
     'mirecords': {
         'label': 'miRecords experimentally validated'\
             'miRNA-target interactions',
-        'url': 'http://c1.accurascience.com/miRecords/download_data.php?v=4'
+        'url': 'http://c1.accurascience.com/miRecords/download_data.php?v=4',
+        'url_rescued': 'http://rescued.omnipathdb.org/miRecords_v4.xls',
     },
     'mirtarbase': {
         'label': 'miRTarBase experimentally validated'\
