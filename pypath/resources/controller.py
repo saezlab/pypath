@@ -37,6 +37,7 @@ import os
 import copy
 import importlib as imp
 import itertools
+import functools
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
@@ -204,11 +205,26 @@ class ResourceController(session_mod.Logger):
         return name
 
 
-    def secondary_resources(self, name):
+    @functools.cache
+    def secondary_resources(self, name, postfix = False):
+        """
+        Args:
+            name:
+                Name of a composite resource.
+            postfix:
+                Append the name of the primary resource to the secondary,
+                separated by an underscore, e.g. "TFactS_CollecTRI".
+        """
 
         name = self.name(name)
 
-        return self.secondary[name] if name in self.secondary else set()
+        secondary = self.secondary.get(name, set())
+
+        if postfix:
+
+            secondary = {f'{sec}_{name}' for sec in secondary}
+
+        return secondary
 
 
     def _get(self, name, dct):
