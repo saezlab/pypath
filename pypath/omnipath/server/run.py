@@ -40,7 +40,7 @@ _log = _logger._log
 try:
     import twisted.web.resource
     import twisted.web.server
-    import twisted.internet
+    import twisted.internet.reactor
     TwistedWebResource = twisted.web.resource.Resource
     TwistedWebSite = twisted.web.server.Site
     TWISTED_NOT_DONE_YET = twisted.web.server.NOT_DONE_YET
