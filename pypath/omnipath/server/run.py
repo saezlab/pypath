@@ -2766,7 +2766,7 @@ class TableServer(BaseServer):
                 composite_to_remove = {
                     comp_res
                     for comp_res in composite
-                    if not res_ctrl.secondary_resources(comp_res) & res
+                    if not res_ctrl.secondary_resources(comp_res, True) & res
                 }
 
                 res = res - composite_to_remove
