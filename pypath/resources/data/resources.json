@@ -4749,6 +4749,7 @@
     ]
   },
   "NTNUcuration": {
+    "synonyms": ["NTNU.Curated"],
     "license": "CC BY 4.0"
   },
   "RaMP": {
