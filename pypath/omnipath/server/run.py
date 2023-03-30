@@ -42,7 +42,7 @@ try:
     import twisted.web.server
     import twisted.internet
     TwistedWebResource = twisted.web.resource.Resource
-    TwistedWebSite = Twisted.web.server.Site
+    TwistedWebSite = twisted.web.server.Site
     TWISTED_NOT_DONE_YET = twisted.web.server.NOT_DONE_YET
     twisted_listen_tcp = twisted.internet.reactor.listenTCP
     twisted_run = twisted.internet.reactor.run
