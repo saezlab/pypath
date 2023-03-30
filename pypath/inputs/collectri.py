@@ -147,7 +147,7 @@ def collectri_raw(
                 target = target_id,
                 effect = int(l[2]),
                 tf_category = l[3],
-                resources = l[4],
+                resources = l[4].replace('DoRothEA_A', 'DoRothEA-A'),
                 pubmed = l[5],
                 target_type = 'mirna' if mmirna else 'protein',
             )

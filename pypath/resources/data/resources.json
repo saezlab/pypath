@@ -4739,7 +4739,7 @@
     "synonyms": ["Pavlidis2021"],
     "license": "CC BY 4.0"
    },
-  "DoRothEA_A": {
+  "DoRothEA-A": {
     "license": "Composite",
     "components": [
       "PAZAR",
