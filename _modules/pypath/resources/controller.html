@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.resources.controller &#8212; pypath 0.14.45 documentation</title>
+    <title>pypath.resources.controller &#8212; pypath 0.14.46 documentation</title>
   
   
   
@@ -532,6 +532,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 
 <span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
@@ -699,11 +700,26 @@ document.write(`
         <span class="k">return</span> <span class="n">name</span>
 
 
-    <span class="k">def</span> <span class="nf">secondary_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="ResourceController.secondary_resources"><a class="viewcode-back" href="../../../api/pypath.resources.controller.ResourceController.html#pypath.resources.controller.ResourceController.secondary_resources">[docs]</a>    <span class="nd">@functools</span><span class="o">.</span><span class="n">cache</span>
+    <span class="k">def</span> <span class="nf">secondary_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">postfix</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            name:</span>
+<span class="sd">                Name of a composite resource.</span>
+<span class="sd">            postfix:</span>
+<span class="sd">                Append the name of the primary resource to the secondary,</span>
+<span class="sd">                separated by an underscore, e.g. &quot;TFactS_CollecTRI&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">secondary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">postfix</span><span class="p">:</span>
+
+            <span class="n">secondary</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sec</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">secondary</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">secondary</span></div>
 
 
     <span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>

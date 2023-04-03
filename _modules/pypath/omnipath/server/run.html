@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.omnipath.server.run &#8212; pypath 0.14.45 documentation</title>
+    <title>pypath.omnipath.server.run &#8212; pypath 0.14.46 documentation</title>
   
   
   
@@ -3261,7 +3261,7 @@ document.write(`
                 <span class="n">composite_to_remove</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="n">comp_res</span>
                     <span class="k">for</span> <span class="n">comp_res</span> <span class="ow">in</span> <span class="n">composite</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">res_ctrl</span><span class="o">.</span><span class="n">secondary_resources</span><span class="p">(</span><span class="n">comp_res</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">res</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">res_ctrl</span><span class="o">.</span><span class="n">secondary_resources</span><span class="p">(</span><span class="n">comp_res</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">res</span>
                 <span class="p">}</span>
 
                 <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">-</span> <span class="n">composite_to_remove</span>
