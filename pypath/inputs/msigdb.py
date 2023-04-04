@@ -53,9 +53,9 @@ ALL_COLLECTIONS = {
     'tf_targets_legacy': ('c3.tft.tft_legacy', None),
     'cancer_gene_neighborhoods': ('c4.cgn', None),
     'cancer_modules': ('c4.cm', None),
-    'go_biological_process': ('c5.bp', 'm5.bp'),
-    'go_molecular_function': ('c5.mf', 'm5.mf'),
-    'go_cellular_component': ('c5.cc', 'm5.cc'),
+    'go_biological_process': ('c5.go.bp', 'm5.go.bp'),
+    'go_molecular_function': ('c5.go.mf', 'm5.go.mf'),
+    'go_cellular_component': ('c5.go.cc', 'm5.go.cc'),
     'human_phenotype_ontology': ('c5.hpo', None),
     'mouse_phenotype_ontology': (None, 'm5.mpt'),
     'oncogenic_signatures': ('c6.all', None),
@@ -266,11 +266,12 @@ def msigdb_download_collections(
         from ``pypath.settings`` will be used.
     :arg set,NoneType only_collections:
         Limit the annotations only to these collections. For available
-        collections e.g. ``{'h.all', 'c2cgp'}`` refer to the MSigDB webpage:
+        collections e.g. ``{'h.all', 'c2.cgp'}`` refer to the MSigDB webpage:
         http://software.broadinstitute.org/gsea/downloads.jsp#msigdb
     :arg tuple exclude:
         Exclude the collections having their name starting with any of the
-        strings in this tuple. By default `c5` (Gene Ontology) is excluded.
+        strings in this tuple. By default `c5` and `m5` (Gene Ontology and
+        Human/Mouse Phenotype Ontology) is excluded.
     """
 
     collection_data = {}
