@@ -509,10 +509,11 @@ lower level keys are geneset names and values are molecular identifiers.</p>
 <li><p><strong>registered_email</strong> (<em>str</em><em>,</em><em>NoneType</em>) – An email address registered at MSigDB. If <cite>None</cite> the <cite>msigdb_email</cite>
 from <code class="docutils literal notranslate"><span class="pre">pypath.settings</span></code> will be used.</p></li>
 <li><p><strong>only_collections</strong> (<em>set</em><em>,</em><em>NoneType</em>) – Limit the annotations only to these collections. For available
-collections e.g. <code class="docutils literal notranslate"><span class="pre">{'h.all',</span> <span class="pre">'c2cgp'}</span></code> refer to the MSigDB webpage:
+collections e.g. <code class="docutils literal notranslate"><span class="pre">{'h.all',</span> <span class="pre">'c2.cgp'}</span></code> refer to the MSigDB webpage:
 <a class="reference external" href="http://software.broadinstitute.org/gsea/downloads.jsp#msigdb">http://software.broadinstitute.org/gsea/downloads.jsp#msigdb</a></p></li>
 <li><p><strong>exclude</strong> (<em>tuple</em>) – Exclude the collections having their name starting with any of the
-strings in this tuple. By default <cite>c5</cite> (Gene Ontology) is excluded.</p></li>
+strings in this tuple. By default <cite>c5</cite> and <cite>m5</cite> (Gene Ontology and
+Human/Mouse Phenotype Ontology) is excluded.</p></li>
 </ul>
 </dd>
 </dl>
