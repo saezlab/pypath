@@ -1300,6 +1300,9 @@ class TableServer(BaseServer):
 
                 continue
 
+            fname_gz = f'{fname}.gz'
+            fname = fname_gz if os.path.exists(fname_gz) else fname
+
             self._log('Loading dataset `%s` from file `%s`.' % (name, fname))
 
             if not os.path.exists(fname):
