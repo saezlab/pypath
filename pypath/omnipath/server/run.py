@@ -31,6 +31,7 @@ import copy
 import collections
 import itertools
 import hashlib
+import warnings
 
 from pypath.share import session as session_mod
 
@@ -1381,12 +1382,21 @@ class TableServer(BaseServer):
 
         self._log('Preprocessing complexes.')
         tbl = self.data['complexes']
-        tbl['set_sources'] = pd.Series(
-            [set(s.split(';')) for s in tbl.sources]
-        )
-        tbl['set_proteins'] = pd.Series(
-            [set(c.split('_')) for c in tbl.components]
-        )
+
+        tbl = tbl[~tbl.components.isna()]
+
+        with warnings.catch_warnings():
+
+            warnings.simplefilter('ignore', pd.errors.SettingWithCopyWarning)
+
+            tbl['set_sources'] = pd.Series(
+                [set(s.split(';')) for s in tbl.sources]
+            )
+            tbl['set_proteins'] = pd.Series(
+                [set(c.split('_')) for c in tbl.components]
+            )
+
+        self.data['complexes'] = tbl
 
 
     def _preprocess_annotations_old(self):
