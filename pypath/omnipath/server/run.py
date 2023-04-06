@@ -32,6 +32,7 @@ import collections
 import itertools
 import hashlib
 import warnings
+import contextlib
 
 from pypath.share import session as session_mod
 
@@ -84,6 +85,22 @@ LICENSE_IGNORE = 'ignore'
 def stop_server():
 
     reactor.removeAll()
+
+
+@contextlib.contextmanager
+def ignore_pandas_copywarn():
+
+    try:
+
+        with warnings.catch_warnings():
+
+            warnings.simplefilter('ignore', pd.errors.SettingWithCopyWarning)
+
+            yield
+
+    finally:
+
+        pass
 
 
 class BaseServer(TwistedWebResource, session_mod.Logger):
@@ -1385,9 +1402,7 @@ class TableServer(BaseServer):
 
         tbl = tbl[~tbl.components.isna()]
 
-        with warnings.catch_warnings():
-
-            warnings.simplefilter('ignore', pd.errors.SettingWithCopyWarning)
+        with ignore_pandas_copywarn():
 
             tbl['set_sources'] = [set(s.split(';')) for s in tbl.sources]
             tbl['set_proteins'] = [set(c.split('_')) for c in tbl.components]
@@ -2806,10 +2821,13 @@ class TableServer(BaseServer):
                 filter_resources(ress)
                 for ress in _set_res_col
             ]
-            tbl[res_col] = [
-                ';'.join(sorted(ress))
-                for ress in _res_to_keep
-            ]
+
+            with ignore_pandas_copywarn():
+
+                tbl[res_col] = [
+                    ';'.join(sorted(ress))
+                    for ress in _res_to_keep
+                ]
 
             if prefix_col:
 
@@ -2833,7 +2851,9 @@ class TableServer(BaseServer):
                     for i, pref_ress in enumerate(_prefix_col)
                 ]
 
-                tbl[prefix_col] = _new_prefix_col
+                with ignore_pandas_copywarn():
+
+                    tbl[prefix_col] = _new_prefix_col
 
             bool_idx = [bool(res) for res in tbl[res_col]]
 
