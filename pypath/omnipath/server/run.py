@@ -1389,12 +1389,8 @@ class TableServer(BaseServer):
 
             warnings.simplefilter('ignore', pd.errors.SettingWithCopyWarning)
 
-            tbl['set_sources'] = pd.Series(
-                [set(s.split(';')) for s in tbl.sources]
-            )
-            tbl['set_proteins'] = pd.Series(
-                [set(c.split('_')) for c in tbl.components]
-            )
+            tbl['set_sources'] = [set(s.split(';')) for s in tbl.sources]
+            tbl['set_proteins'] = [set(c.split('_')) for c in tbl.components]
 
         self.data['complexes'] = tbl
 
