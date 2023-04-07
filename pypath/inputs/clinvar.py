@@ -32,14 +32,13 @@ from __future__ import annotations
 
 import io
 import csv
-import sys
+import ctypes
 import collections
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
-csv.field_size_limit(sys.maxsize)
-
+csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 
 def clinvar_raw() -> list[tuple]:
     """
