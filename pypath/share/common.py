@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 #TODO requires cleaning, check what functions are not used and may be removed.
 #Some parts can go to jsons.
 
