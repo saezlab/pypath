@@ -951,13 +951,13 @@ document.write(`
             <span class="n">ChemblIndication</span><span class="p">(</span>
                 <span class="n">efo_id</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;efo_id&#39;</span><span class="p">],</span>
                 <span class="n">efo_term</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;efo_term&#39;</span><span class="p">],</span>
-                <span class="n">max_phase</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="p">[</span><span class="s1">&#39;max_phase_for_ind&#39;</span><span class="p">]),</span>
+                <span class="n">max_phase</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ind</span><span class="p">[</span><span class="s1">&#39;max_phase_for_ind&#39;</span><span class="p">]),</span>
                 <span class="n">mesh_heading</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;mesh_heading&#39;</span><span class="p">],</span>
                 <span class="n">mesh_id</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;mesh_id&#39;</span><span class="p">],</span>
                 <span class="n">molecule_chembl</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;drug_indications&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="p">[</span><span class="s1">&#39;max_phase_for_ind&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">max_phase_threshold</span> <span class="ow">and</span> <span class="n">max_phase_threshold</span> <span class="o">!=</span> <span class="mi">0</span> \
+            <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">ind</span><span class="p">[</span><span class="s1">&#39;max_phase_for_ind&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">max_phase_threshold</span> <span class="ow">and</span> <span class="n">max_phase_threshold</span> <span class="o">!=</span> <span class="mi">0</span> \
                 <span class="ow">or</span> <span class="n">max_phase_threshold</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="p">)</span>
     
