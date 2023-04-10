@@ -456,13 +456,13 @@ def chembl_drug_indications(
             ChemblIndication(
                 efo_id = ind['efo_id'],
                 efo_term = ind['efo_term'],
-                max_phase = int(ind['max_phase_for_ind']),
+                max_phase = float(ind['max_phase_for_ind']),
                 mesh_heading = ind['mesh_heading'],
                 mesh_id = ind['mesh_id'],
                 molecule_chembl = ind['molecule_chembl_id'],
             )
             for ind in page_dct['drug_indications']
-            if int(ind['max_phase_for_ind']) > max_phase_threshold and max_phase_threshold != 0 \
+            if float(ind['max_phase_for_ind']) > max_phase_threshold and max_phase_threshold != 0 \
                 or max_phase_threshold == 0
         )
     
