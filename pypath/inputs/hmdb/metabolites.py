@@ -36,10 +36,9 @@ import pandas as pd
 import pypath.inputs.hmdb.common as hmdb_common
 from pypath.inputs.hmdb.schema.common import XMLNS, Field
 from pypath.inputs.hmdb.schema.metabolites import SCHEMA
+from pypath.inputs.hmdb import _log
 import pypath.share.common as common
 import pypath.formats.xml as xml
-
-_log = hmdb_common._log
 
 
 def hmdb_iter_metabolites():

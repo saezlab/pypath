@@ -30,10 +30,6 @@ import lxml.etree as etree
 from pypath.inputs.hmdb.schema.common import XMLNS
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-import pypath.share.session as session
-
-
-_log = session.Logger(name = 'hmdb_input')._log
 
 
 def hmdb_xml(dataset: Literal['metabolites']) -> etree.iterparse:
@@ -59,4 +55,3 @@ def hmdb_xml(dataset: Literal['metabolites']) -> etree.iterparse:
         c.result[f'hmdb_{dataset}.xml'],
         tag = f'{XMLNS}{RECORD_TAGNAMES[dataset]}',
     )
-

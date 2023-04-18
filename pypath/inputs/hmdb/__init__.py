@@ -23,7 +23,13 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from metabolites import (
+import pypath.share.session as session
+
+
+_log = session.Logger(name = 'hmdb_input')._log
+
+
+from .metabolites import (
     hmdb_iter_metabolites,
     hmdb_metabolites_raw,
 )

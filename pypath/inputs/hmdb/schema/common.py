@@ -26,10 +26,37 @@
 from typing import Any
 
 import pypath.share.common as common
-from pypath.inputs.hmdb.common import _log
+from pypath.inputs.hmdb import _log
 
 
 XMLNS = '{http://www.hmdb.ca}'
+
+SIMPLE_FIELDS = {
+    'accession',
+    'name',
+    'version',
+}
+
+ARRAY_FIELDS = {
+    ('secondary_accessions', 'accession'),
+    ('synonyms', 'synonym'),
+}
+
+PATHWAYS = (
+    'pathways',
+    ('pathway', 'findall'),
+    {'name', 'smpdb_id', 'kegg_map_id'},
+)
+
+
+def _ref_chunk(container: str = 'references') -> tuple:
+
+    return (
+        container,
+        ('reference', 'findall'),
+        'pubmed_id',
+        None,
+    )
 
 
 class Field:

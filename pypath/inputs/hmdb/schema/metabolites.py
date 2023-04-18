@@ -26,17 +26,13 @@
 import lxml.etree as etree
 
 import pypath.formats.xml as xml
-from pypath.inputs.hmdb.schema.common import XMLNS
-
-
-def _ref_chunk(container: str = 'references') -> tuple:
-
-    return (
-        container,
-        ('reference', 'findall'),
-        'pubmed_id',
-        None,
-    )
+from pypath.inputs.hmdb.schema.common import (
+    XMLNS,
+    SIMPLE_FIELDS,
+    ARRAY_FIELDS,
+    PATHWAYS,
+    _ref_chunk,
+)
 
 
 ONTOLOGY_FIELDS = xml._simple_fields((
@@ -72,7 +68,8 @@ ONTOLOGY = (
     _ontology,
 )
 
-SIMPLE_FIELDS = {
+SIMPLE_FIELDS = SIMPLE_FIELDS.copy()
+SIMPLE_FIELDS.update({
     'accession',
     'name',
     'version',
@@ -89,7 +86,7 @@ SIMPLE_FIELDS = {
     'inchikey',
     'state',
     'synthesis_reference',
-}
+})
 
 ID_FIELDS = {
     'chemspider',
@@ -110,11 +107,7 @@ ID_FIELDS = {
 }
 
 SIMPLE_FIELDS.update(xml._simple_fields(f'{f}_id' for f in ID_FIELDS))
-
-ARRAY_FIELDS = {
-    ('secondary_accessions', 'accession'),
-    ('synonyms', 'synonym'),
-}
+ARRAY_FIELDS = ARRAY_FIELDS.copy()
 
 TAXONOMY = (
     'taxonomy',
@@ -170,12 +163,8 @@ BIOLOGICAL_PROPERTIES = (
             ('tissue', 'findall'),
             None,
         ),
-        'pathways': (
-            'pathways',
-            ('pathway', 'findall'),
-            {'name', 'smpdb_id', 'kegg_map_id'},
-        ),
-    }
+        'pathways': PATHWAYS,
+    },
 )
 
 NORMAL_CONCENTRATIONS = (
@@ -251,4 +240,3 @@ SCHEMA = {
 }
 SCHEMA.update(xml._simple_fields(SIMPLE_FIELDS))
 SCHEMA.update(xml._array_fields(ARRAY_FIELDS))
-
