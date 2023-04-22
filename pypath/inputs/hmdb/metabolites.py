@@ -33,7 +33,7 @@ import itertools
 
 import pandas as pd
 
-import pypath.inputs.hmdb.common as hmdb_common
+import pypath.inputs.hmdb.xml as hmdb_xml
 from pypath.inputs.hmdb.schema.common import XMLNS, Field
 from pypath.inputs.hmdb.schema.metabolites import SCHEMA
 from pypath.inputs.hmdb import _log
@@ -46,7 +46,7 @@ def hmdb_iter_metabolites():
     Itertate over metabolite records from HMDB.
     """
 
-    for _, element in hmdb_common.hmdb_xml('metabolites'):
+    for _, element in hmdb_xml.hmdb_xml('metabolites'):
 
         yield element
 

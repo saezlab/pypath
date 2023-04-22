@@ -27,7 +27,7 @@
 Protein data from the Human Metabolome Database.
 """
 
-import pypath.inputs.hmdb.common as hmdb_common
+import pypath.inputs.hmdb.xml as hmdb_xml
 
 
 def hmdb_iter_proteins():
@@ -35,7 +35,7 @@ def hmdb_iter_proteins():
     Iterate over protein records from HMDB.
     """
 
-    for _, element in hmdb_common.hmdb_xml('proteins'):
+    for _, element in hmdb_xml.hmdb_xml('proteins'):
 
         yield element
 
