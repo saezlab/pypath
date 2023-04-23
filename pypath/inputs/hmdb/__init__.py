@@ -30,6 +30,8 @@ _log = session.Logger(name = 'hmdb_input')._log
 
 
 from .metabolites import (
-    hmdb_iter_metabolites,
-    hmdb_metabolites_raw,
-)
+    iter as iter_metabolites,
+    raw as metabolites_raw,
+    table as metabolites_table,
+    mapping as metabolites_mapping,
+)  # noqa: F401

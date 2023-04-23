@@ -26,50 +26,41 @@
 from __future__ import annotations
 
 """
-Access the Human Metabolome Database.
+Preprocessed metabolite data from the Human Metabolome Database.
 """
 
-from typing import Literal
+from typing import TYPE_CHECKING
 
-import itertools
+if TYPE_CHECKING:
 
-import pandas as pd
+    import pandas as pd
 
-import pypath.inputs.hmdb.xml as hmdb_xml
-from pypath.inputs.hmdb.schema.common import XMLNS, Field
-from pypath.inputs.hmdb.schema.metabolites import SCHEMA as METABOLITES_SCHEMA
-from pypath.inputs.hmdb.schema.proteins import SCHEMA as PROTEIN_SCHEMA
-import pypath.share.common as common
-import pypath.formats.xml as xml
+import pypath.inputs.hmdb.common as hmdb_common
 
 
-def iter(dataset: Literal['metabolites', 'proteins']):
+
+
+def iter():
     """
-    Itertate over records from HMDB.
+    Itertate over metabolite records from HMDB.
     """
 
-    for _, element in hmdb_xml.hmdb_xml(dataset):
-
-        yield element
+    return hmdb_common.iter(dataset = 'metabolites')
 
 
 def raw(
-        dataset: Literal['metabolites', 'proteins'],
         schema: dict = None,
         head: int | None = None,
     ) -> list[dict]:
     """
-    Parse data from HMDB XML files.
+    Parse metabolite data from HMDB.
 
     Args:
-        dataset:
-            Either "metabolites" or "proteins".
         schema:
             The schema defines the fields to be parsed. By default, a schema
-            covering nearly all fields in the HMDB XML is used.
+            covering nearly all fields in the HMDB metabolites XML is used.
             Likely you don't need all the fields within one task: in this
-            case see `pypath.inputs.hmdb.METABOLITE_SCHEMA` or
-            `pypath.inputs.hmdb.PROTEINS_SCHEMA` to see the full
+            case see `pypath.inputs.hmdb.METABOLITE_SCHEMA` to see the full
             schema, and create your own that is restricted to your fields of
             interest.
         head:
@@ -78,29 +69,19 @@ def raw(
 
     Returns:
         A list of dicts, each dict containing the data extracted from
-        one record. These dicts might be deeply nested, and the structure
-        depends on the schema used.
+        one metabolite record. These dicts might be deeply nested, and
+        the structure depends on the schema used.
     """
 
-    result = []
-    schema = schema or globals()[f'{dataset.upper()}_SCHEMA']
-
-    for i, record in enumerate(iter(dataset)):
-
-        yield xml.fetch(record, schema, XMLNS)
-
-        record.clear(keep_tail = True)
-
-        if i == head:
-
-            break
-
-    return result
+    return hmdb_common.raw(
+        dataset = 'metabolites',
+        schema = schema,
+        head = head,
+    )
 
 
 def table(
         *fields: str | tuple,
-        dataset: Literal['metabolites', 'proteins'],
         head: int | None = None,
         **named_fields: str | tuple,
     ) -> pd.DataFrame:
@@ -127,44 +108,42 @@ def table(
         head:
             Process the first N records only. Useful for peeking into
             the data.
+
+    Examples:
+
+        ..code-block:: python
+
+           from pypath.inputs import hmdb
+           df = hmdb.hmdb_metabolites_table(
+               'accession',
+               'smiles',
+               'state',
+               head = 10,
+           )
+           df = hmdb.hmdb_metabolites_table(
+               'accession',
+               ('synonyms', '@'),
+               head = 10,
+           )
+           df = hmdb.hmdb_metabolites_table(
+               'accession',
+               ('taxonomy', ('class', 'substituents')),
+               head = 10,
+           )
+
     """
 
-    SCHEMA = globals()[f'{dataset.upper()}_SCHEMA']
-    fields = [Field(d[0], *d) for d in (common.to_tuple(f) for f in fields)]
-    fields.extend(Field(n, *f) for n, f in named_fields.items())
-    keys = [f.d[0] for f in fields]
-    schema = {k: SCHEMA[k] for k in keys}
-
-    if not fields:
-
-        raise ValueError('At least one field must be provided.')
-
-    columns = []
-    data = []
-    result = pd.DataFrame()
-
-    for i, record in enumerate(raw(dataset, schema, head = head)):
-
-        cols, rows = zip(*(f.process(record) for f in fields))
-        columns = columns or list(itertools.chain(*cols))
-        data.extend(itertools.product(*itertools.chain(*rows)))
-
-        if (i + 1) % 100 == 0:
-
-            df = pd.DataFrame.from_records(data, columns = columns)
-            result = pd.concat((result, df))
-            data = []
-
-    df = pd.DataFrame.from_records(data, columns = columns)
-    result = pd.concat((result, df))
-
-    return result
+    return hmdb_common.table(
+        *fields,
+        dataset = 'metabolites',
+        head = head,
+        **named_fields,
+    )
 
 
 def mapping(
         id_type_a: str,
         id_type_b: str,
-        dataset: Literal['metabolites', 'proteins'],
         return_df: bool = False,
         head: int | None = None,
     ) -> dict[str, set[str]] | pd.DataFrame:
@@ -192,29 +171,10 @@ def mapping(
         Translation data between two types of identifiers.
     """
 
-    fields = {
-        'id_a': (_id_type(id_type_a), '@'),
-        'id_b': (_id_type(id_type_b), '@'),
-    }
-
-    df = table(**fields, dataset = dataset, head = head)
-
-    if return_df:
-
-        return df
-
-    else:
-
-        return df.groupby('id_a')['id_b'].apply(set).to_dict()
-
-
-def _id_type(id_type: str) -> str:
-    """
-    Field name from ID type.
-    """
-
-    for key in (id_type, f'{id_type}_id'):
-
-        if key in METABOLITES_SCHEMA:
-
-            return key
+    return hmdb_common.mapping(
+        id_type_a = id_type_a,
+        id_type_b = id_type_b,
+        dataset = 'metabolites',
+        return_df = return_df,
+        head = head,
+    )
