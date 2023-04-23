@@ -44,3 +44,8 @@ from .proteins import (
     table as proteins_table,
     mapping as proteins_mapping,
 )  # noqa: F401
+
+from .visual import (
+    open_structure,
+    structure_svg,
+)
