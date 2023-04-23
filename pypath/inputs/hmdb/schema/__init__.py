@@ -23,17 +23,5 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import pypath.share.session as session
-
-
-_log = session.Logger(name = 'hmdb_input')._log
-
-
-from .schema import METABOLITES_SCHEMA, PROTEINS_SCHEMA
-
-from .metabolites import (
-    iter as iter_metabolites,
-    raw as metabolites_raw,
-    table as metabolites_table,
-    mapping as metabolites_mapping,
-)  # noqa: F401
+from .metabolites import SCHEMA as METABOLITES_SCHEMA
+from .proteins import SCHEMA as PROTEINS_SCHEMA
