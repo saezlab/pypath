@@ -60,7 +60,7 @@ def raw(
             The schema defines the fields to be parsed. By default, a schema
             covering nearly all fields in the HMDB metabolites XML is used.
             Likely you don't need all the fields within one task: in this
-            case see `pypath.inputs.hmdb.METABOLITE_SCHEMA` to see the full
+            case see `pypath.inputs.hmdb.METABOLITES_SCHEMA` to see the full
             schema, and create your own that is restricted to your fields of
             interest.
         head:

@@ -37,3 +37,10 @@ from .metabolites import (
     table as metabolites_table,
     mapping as metabolites_mapping,
 )  # noqa: F401
+
+from .proteins import (
+    iter as iter_proteins,
+    raw as proteins_raw,
+    table as proteins_table,
+    mapping as proteins_mapping,
+)  # noqa: F401

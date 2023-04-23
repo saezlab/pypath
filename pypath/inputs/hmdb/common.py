@@ -38,7 +38,7 @@ import pandas as pd
 import pypath.inputs.hmdb.xml as hmdb_xml
 from pypath.inputs.hmdb.schema.common import XMLNS, Field
 from pypath.inputs.hmdb.schema.metabolites import SCHEMA as METABOLITES_SCHEMA
-from pypath.inputs.hmdb.schema.proteins import SCHEMA as PROTEIN_SCHEMA
+from pypath.inputs.hmdb.schema.proteins import SCHEMA as PROTEINS_SCHEMA
 import pypath.share.common as common
 import pypath.formats.xml as xml
 
