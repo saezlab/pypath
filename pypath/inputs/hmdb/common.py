@@ -29,33 +29,41 @@ from __future__ import annotations
 Access the Human Metabolome Database.
 """
 
+from typing import Literal
+
 import itertools
 
 import pandas as pd
 
 import pypath.inputs.hmdb.xml as hmdb_xml
 from pypath.inputs.hmdb.schema.common import XMLNS, Field
-from pypath.inputs.hmdb.schema.metabolites import SCHEMA
-from pypath.inputs.hmdb import _log
+from pypath.inputs.hmdb.schema.metabolites import SCHEMA as METABOLITES_SCHEMA
+from pypath.inputs.hmdb.schema.protein import SCHEMA as PROTEIN_SCHEMA
 import pypath.share.common as common
 import pypath.formats.xml as xml
 
 
-def hmdb_iter_metabolites():
+def hmdb_iter(dataset: Literal['metabolites', 'proteins']):
     """
-    Itertate over metabolite records from HMDB.
+    Itertate over records from HMDB.
     """
 
-    for _, element in hmdb_xml.hmdb_xml('metabolites'):
+    for _, element in hmdb_xml.hmdb_xml(dataset):
 
         yield element
 
 
-def hmdb_metabolites_raw(schema: dict = None, head: int | None = None) -> list:
+def hmdb_raw(
+        dataset: Literal['metabolites', 'proteins'],
+        schema: dict = None,
+        head: int | None = None,
+    ) -> list[dict]:
     """
     Parse metabolite data from HMDB.
 
     Args:
+        dataset:
+            Either "metabolites" or "proteins".
         schema:
             The schema defines the fields to be parsed. By default, a schema
             covering nearly all fields in the HMDB metabolites XML is used.
@@ -74,13 +82,13 @@ def hmdb_metabolites_raw(schema: dict = None, head: int | None = None) -> list:
     """
 
     result = []
-    schema = schema or SCHEMA
+    schema = schema or globals()[f'{dataset.upper()}_SCHEMA']
 
-    for i, met in enumerate(hmdb_iter_metabolites()):
+    for i, record in enumerate(hmdb_iter(dataset)):
 
-        yield xml.fetch(met, schema, XMLNS)
+        yield xml.fetch(record, schema, XMLNS)
 
-        met.clear(keep_tail = True)
+        record.clear(keep_tail = True)
 
         if i == head:
 
@@ -90,6 +98,7 @@ def hmdb_metabolites_raw(schema: dict = None, head: int | None = None) -> list:
 
 
 def hmdb_table(
+        dataset: Literal['metabolites', 'proteins'],
         *fields: str | tuple,
         head: int | None = None,
         **named_fields: str | tuple,
@@ -133,6 +142,7 @@ def hmdb_table(
 
     """
 
+    SCHEMA = globals()[f'{dataset.upper()}_SCHEMA']
     fields = [Field(d[0], *d) for d in (common.to_tuple(f) for f in fields)]
     fields.extend(Field(n, *f) for n, f in named_fields.items())
     keys = [f.d[0] for f in fields]
@@ -142,9 +152,9 @@ def hmdb_table(
     data = []
     result = pd.DataFrame()
 
-    for i, met in enumerate(hmdb_metabolites_raw(schema, head = head)):
+    for i, record in enumerate(hmdb_raw(dataset, schema, head = head)):
 
-        cols, rows = zip(*(f.process(met) for f in fields))
+        cols, rows = zip(*(f.process(record) for f in fields))
         columns = columns or list(itertools.chain(*cols))
         data.extend(itertools.product(*itertools.chain(*rows)))
 
@@ -213,6 +223,6 @@ def _id_type(id_type: str) -> str:
 
     for key in (id_type, f'{id_type}_id'):
 
-        if key in SCHEMA:
+        if key in METABOLITES_SCHEMA:
 
             return key
