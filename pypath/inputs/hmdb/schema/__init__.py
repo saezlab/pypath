@@ -23,5 +23,5 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from .metabolites import SCHEMA as METABOLITES_SCHEMA
+from .metabolites import SCHEMA as METABOLITES_SCHEMA, ID_FIELDS
 from .proteins import SCHEMA as PROTEINS_SCHEMA

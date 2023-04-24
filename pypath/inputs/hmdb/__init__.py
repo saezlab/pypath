@@ -29,7 +29,7 @@ import pypath.share.session as session
 _log = session.Logger(name = 'hmdb_input')._log
 
 
-from .schema import METABOLITES_SCHEMA, PROTEINS_SCHEMA
+from .schema import METABOLITES_SCHEMA, PROTEINS_SCHEMA, ID_FIELDS
 
 from .metabolites import (
     iter as iter_metabolites,
@@ -46,6 +46,6 @@ from .proteins import (
 )  # noqa: F401
 
 from .visual import (
-    open_structure,
+    show_structure,
     structure_svg,
 )
