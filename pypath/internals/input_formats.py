@@ -178,6 +178,7 @@ class MappingInput(object):
             ncbi_tax_id = None,
             resource_id_type_a = None,
             resource_id_type_b = None,
+            input_method = None,
         ):
 
         self.type = type_
@@ -186,6 +187,7 @@ class MappingInput(object):
         self.resource_id_type_a = resource_id_type_a
         self.resource_id_type_b = resource_id_type_b
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
+        self.input_method = input_method
 
 
     def _resource_id_type(self, side):
@@ -579,6 +581,7 @@ class HmdbMapping(MappingInput):
             id_type_a = id_type_a,
             id_type_b = id_type_b,
             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            input_method = 'hmdb.metabolites_mapping',
         )
 
 
