@@ -984,8 +984,15 @@ class MapReader(session_mod.Logger):
         Loads a small molecule ID translation table.
         """
 
-        mod = globals()[f'{self.source_type}_input']
-        method = getattr(mod, f'{self.source_type}_mapping')
+        if self.param.input_method:
+
+            method = inputs.get_method(self.param.input_method)
+
+        else:
+
+            mod = globals()[f'{self.source_type}_input']
+            method = getattr(mod, f'{self.source_type}_mapping')
+
         data = method(
             id_type_a = self.resource_id_type_a,
             id_type_b = self.resource_id_type_b,
