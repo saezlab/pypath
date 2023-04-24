@@ -1635,6 +1635,8 @@ urls = {
             'current/hmdb_metabolites.zip',
         'proteins': 'https://hmdb.ca/system/downloads/'
             'current/hmdb_proteins.zip',
+        'svg': 'https://hmdb.ca/structures/%s/image.svg',
+        'sdf': 'https://hmdb.ca/system/downloads/current/structures.zip',
     },
 }
 
