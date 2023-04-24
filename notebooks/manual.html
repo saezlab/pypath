@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/">
-  <title>The pypath book — pypath 0.14.49 documentation</title>
+  <title>The pypath book — pypath 0.14.50 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -3781,16 +3781,17 @@ data-default-mode="">
                       <h4>Direct access to HMDB data<a class="headerlink" href="#Direct-access-to-HMDB-data" title=
                       "Permalink to this heading">§</a></h4>
                       <p>In the <code class="docutils literal notranslate"><span class="pre">inputs.hmdb</span></code>
-                      module processes metabolite data using <code class="docutils literal notranslate"><span class=
-                      "pre">lxml.etree</span></code> and some minimal utilities from <code class=
-                      "docutils literal notranslate"><span class="pre">formats.xml</span></code>. The metabolite
-                      records are available as <code class="docutils literal notranslate"><span class=
-                      "pre">lxml.etree.Element</span></code> objects, or custom fields can be extracted into dicts, or
-                      into data frames. To iterate through the xml elements, each representing a metabolite:</p>
+                      module processes metabolite and protein data using <code class=
+                      "docutils literal notranslate"><span class="pre">lxml.etree</span></code> and some minimal
+                      utilities from <code class="docutils literal notranslate"><span class=
+                      "pre">formats.xml</span></code>. The metabolite or protein records are available as <code class=
+                      "docutils literal notranslate"><span class="pre">lxml.etree.Element</span></code> objects, or
+                      custom fields can be extracted into dicts, or into data frames. To iterate through the xml
+                      elements, each representing a metabolite:</p>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[4]:
+                            <pre>[1]:
 </pre>
                           </div>
                         </div>
@@ -3800,26 +3801,26 @@ data-default-mode="">
                               <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
                               "kn">import</span> <span class="n">hmdb</span>
 <span class="nb">next</span><span class="p">(</span><span class="n">hmdb</span><span class="o">.</span><span class=
-"n">hmdb_iter_metabolites</span><span class="p">())</span>
+"n">iter_metabolites</span><span class="p">())</span>
 </pre>
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 11:27:05 2023-03-20</p>
+                            <p>executed in 1ms, finished 12:23:11 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[4]:
+                            <pre>[1]:
 </pre>
                           </div>
                         </div>
                         <div class="output_area docutils container">
                           <div class="highlight">
                             <pre>
-&lt;Element {http://www.hmdb.ca}metabolite at 0x68d5803eef00&gt;
+&lt;Element {http://www.hmdb.ca}metabolite at 0x60b1846262c0&gt;
 </pre>
                           </div>
                         </div>
@@ -3834,26 +3835,27 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[5]:
+                            <pre>[2]:
 </pre>
                           </div>
                         </div>
                         <div class="input_area docutils container">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
-                              <pre><span class="n">hmdb</span><span class="o">.</span><span class="n">SCHEMA</span>
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class=
+                              "n">METABOLITES_SCHEMA</span>
 </pre>
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 11:28:49 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:24:03 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[5]:
+                            <pre>[2]:
 </pre>
                           </div>
                         </div>
@@ -3890,18 +3892,84 @@ data-default-mode="">
                       <div class="nboutput nblast docutils container">
                         <div class="prompt empty docutils container"></div>
                         <div class="output_area rendered_html docutils container">
-                          <em>Output truncated: showing 1000 of 4017 characters</em>
+                          <em>Output truncated: showing 1000 of 4037 characters</em>
                         </div>
                       </div>
-                      <p>By default the full schema is used by <code class="docutils literal notranslate"><span class=
-                      "pre">hmdb_metabolites_raw</span></code>, but you can pass a smaller dict with only your fields
-                      of interest, largely reducing the processing time. Using the <code class=
-                      "docutils literal notranslate"><span class="pre">head</span></code> argument we peek into the
-                      first N records of the data:</p>
+                      <p>The schema for proteins is different:</p>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[8]:
+                            <pre>[3]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">hmdb</span><span class="o">.</span><span class=
+                              "n">PROTEINS_SCHEMA</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 12:24:52 2023-04-24</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[3]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+{'gene_properties': ('gene_properties',
+  {'chromosome_location': ('chromosome_location', None),
+   'locus': ('locus', None),
+   'gene_sequence': ('gene_sequence', None)}),
+ 'protein_properties': ('protein_properties',
+  {'residue_number': ('residue_number', None),
+   'molecular_weight': ('molecular_weight', None),
+   'theoretical_pi': ('theoretical_pi', None),
+   'polypeptide_sequence': ('polypeptide_sequence', None),
+   'transmembrane_regions': ('transmembrane_regions',
+    ('region', 'findall'),
+    None),
+   'signal_regions': ('signal_regions', ('region', 'findall'), None)}),
+ 'pfams': ('pfams', ('pfam', 'findall'), {'name', 'pfam_id'}),
+ 'metabolite_associations': ('metabolite_associations',
+  ('metabolite', 'findall'),
+  {'accession', 'name'}),
+ 'go_classifications': ('go_classifications',
+  ('go_class', 'findall'),
+  {'category', 'description', 'go_id'}),
+ 'pathways': ('pathways',
+  ('pathway', 'findall'),
+  {'kegg_map_id', 'name', 'smpdb_id'}),
+ 'general_references': ('general_
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt empty docutils container"></div>
+                        <div class="output_area rendered_html docutils container">
+                          <em>Output truncated: showing 1000 of 2072 characters</em>
+                        </div>
+                      </div>
+                      <p>By default the full schema is used by <code class="docutils literal notranslate"><span class=
+                      "pre">hmdb.metabolites_raw</span></code> and <code class=
+                      "docutils literal notranslate"><span class="pre">hmdb.proteins_raw</span></code>, but you can
+                      pass a smaller dict with only your fields of interest, largely reducing the processing time.
+                      Using the <code class="docutils literal notranslate"><span class="pre">head</span></code>
+                      argument we peek into the first N records of the data:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[4]:
 </pre>
                           </div>
                         </div>
@@ -3909,22 +3977,21 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="nb">list</span><span class="p">(</span><span class=
-                              "n">hmdb</span><span class="o">.</span><span class=
-                              "n">hmdb_metabolites_raw</span><span class="p">(</span><span class=
-                              "n">head</span> <span class="o">=</span> <span class="mi">3</span><span class=
-                              "p">))</span>
+                              "n">hmdb</span><span class="o">.</span><span class="n">metabolites_raw</span><span class=
+                              "p">(</span><span class="n">head</span> <span class="o">=</span> <span class=
+                              "mi">3</span><span class="p">))</span>
 </pre>
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 11:31:45 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:25:31 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[8]:
+                            <pre>[4]:
 </pre>
                           </div>
                         </div>
@@ -3966,7 +4033,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[10]:
+                            <pre>[6]:
 </pre>
                           </div>
                         </div>
@@ -3974,14 +4041,14 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="nb">list</span><span class="p">(</span><span class=
-                              "n">hmdb</span><span class="o">.</span><span class=
-                              "n">hmdb_metabolites_raw</span><span class="p">(</span>
+                              "n">hmdb</span><span class="o">.</span><span class="n">metabolites_raw</span><span class=
+                              "p">(</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">'accession'</span><span class="p">:</span> <span class="n">hmdb</span><span class=
-"o">.</span><span class="n">SCHEMA</span><span class="p">[</span><span class="s1">'accession'</span><span class=
-"p">],</span>
+"o">.</span><span class="n">METABOLITES_SCHEMA</span><span class="p">[</span><span class=
+"s1">'accession'</span><span class="p">],</span>
         <span class="s1">'name'</span><span class="p">:</span> <span class="n">hmdb</span><span class=
-"o">.</span><span class="n">SCHEMA</span><span class="p">[</span><span class="s1">'name'</span><span class=
+"o">.</span><span class="n">METABOLITES_SCHEMA</span><span class="p">[</span><span class="s1">'name'</span><span class=
 "p">],</span>
     <span class="p">},</span>
     <span class="n">head</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
@@ -3990,14 +4057,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 11:38:56 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:25:55 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[10]:
+                            <pre>[6]:
 </pre>
                           </div>
                         </div>
@@ -4031,25 +4098,96 @@ data-default-mode="">
                           <em>Output truncated: showing 1000 of 1291 characters</em>
                         </div>
                       </div>
+                      <p>It works a similar way for proteins:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[7]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="nb">list</span><span class="p">(</span><span class=
+                              "n">hmdb</span><span class="o">.</span><span class="n">proteins_raw</span><span class=
+                              "p">(</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'name'</span><span class="p">:</span> <span class="n">hmdb</span><span class=
+"o">.</span><span class="n">PROTEINS_SCHEMA</span><span class="p">[</span><span class="s1">'name'</span><span class=
+"p">],</span>
+        <span class="s1">'genesymbol'</span><span class="p">:</span> <span class="n">hmdb</span><span class=
+"o">.</span><span class="n">PROTEINS_SCHEMA</span><span class="p">[</span><span class=
+"s1">'gene_name'</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+<span class="p">))</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 12:29:23 2023-04-24</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[7]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+[{'name': "5'-nucleotidase", 'genesymbol': 'NT5E'},
+ {'name': 'Deoxycytidylate deaminase', 'genesymbol': 'DCTD'},
+ {'name': 'UMP-CMP kinase', 'genesymbol': 'CMPK1'},
+ {'name': "Cytosolic 5'-nucleotidase 1B", 'genesymbol': 'NT5C1B'},
+ {'name': "Cytosolic 5'-nucleotidase 1A", 'genesymbol': 'NT5C1A'},
+ {'name': "5'(3')-deoxyribonucleotidase, cytosolic type",
+  'genesymbol': 'NT5C'},
+ {'name': 'Deoxycytidine kinase', 'genesymbol': 'DCK'},
+ {'name': "5'(3')-deoxyribonucleotidase, mitochondrial", 'genesymbol': 'NT5M'},
+ {'name': 'Hydroxymethylglutaryl-CoA lyase, mitochondrial',
+  'genesymbol': 'HMGCL'},
+ {'name': 'ATP-citrate synthase', 'genesymbol': 'ACLY'},
+ {'name': 'Histone acetyltransferase p300', 'genesymbol': 'EP300'},
+ {'name': 'Pyruvate dehydrogenase E1 component subunit beta, mitochondrial',
+  'genesymbol': 'PDHB'},
+ {'name': 'Acetyl-CoA acetyltransferase, cytosolic', 'genesymbol': 'ACAT2'},
+ {'name': 'CREB-binding protein', 'genesymbol': 'CREBBP'},
+ {'name': 'Diamine acetyltransfe
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt empty docutils container"></div>
+                        <div class="output_area rendered_html docutils container">
+                          <em>Output truncated: showing 1000 of 1478 characters</em>
+                        </div>
+                      </div>
                     </section>
                     <section id="Higher-level-access-to-HMDB-data">
                       <h4>Higher level access to HMDB data<a class="headerlink" href=
                       "#Higher-level-access-to-HMDB-data" title="Permalink to this heading">§</a></h4>
-                      <p>By the <code class="docutils literal notranslate"><span class="pre">hmdb_table</span></code>
-                      function you can process the records into a <code class=
-                      "docutils literal notranslate"><span class="pre">pandas</span></code> data frame. This function
-                      accepts list of nameless or named arguments using a simple notation (see its documentation).
-                      Instead of the simple notation of tuples, alternatively, <code class=
-                      "docutils literal notranslate"><span class="pre">hmdb.Field</span></code> objects can be used to
-                      define the fields, though the arguments for <code class=
-                      "docutils literal notranslate"><span class="pre">Field</span></code> and the tuples or strings
-                      directly passed to <code class="docutils literal notranslate"><span class=
-                      "pre">hmdb_table</span></code> follow the same format. Let’s extract a data frame with SMILEs,
+                      <p>By the <code class="docutils literal notranslate"><span class=
+                      "pre">hmdb.metabolites_table</span></code> and <code class=
+                      "docutils literal notranslate"><span class="pre">hmdb.proteins_table</span></code> functions you
+                      can process the records into a <code class="docutils literal notranslate"><span class=
+                      "pre">pandas</span></code> data frame. This function accepts list of nameless or named arguments
+                      using a simple notation (see its documentation). Instead of the simple notation of tuples,
+                      alternatively, <code class="docutils literal notranslate"><span class=
+                      "pre">hmdb.Field</span></code> objects can be used to define the fields, though the arguments for
+                      <code class="docutils literal notranslate"><span class="pre">Field</span></code> and the tuples
+                      or strings directly passed to <code class="docutils literal notranslate"><span class=
+                      "pre">hmdb.*_table</span></code> follow the same format. Let’s extract a data frame with SMILEs,
                       InChi Keys and HMDB accessions:</p>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[11]:
+                            <pre>[8]:
 </pre>
                           </div>
                         </div>
@@ -4057,7 +4195,7 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="n">hmdb</span><span class="o">.</span><span class=
-                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "n">metabolites_table</span><span class="p">(</span><span class=
                               "s1">'accession'</span><span class="p">,</span> <span class=
                               "s1">'smiles'</span><span class="p">,</span> <span class=
                               "s1">'inchikey'</span><span class="p">,</span> <span class="n">head</span> <span class=
@@ -4066,14 +4204,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 14:36:29 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:32:01 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[11]:
+                            <pre>[8]:
 </pre>
                           </div>
                         </div>
@@ -4166,7 +4304,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[12]:
+                            <pre>[9]:
 </pre>
                           </div>
                         </div>
@@ -4174,7 +4312,7 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="n">hmdb</span><span class="o">.</span><span class=
-                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "n">metabolites_table</span><span class="p">(</span><span class=
                               "s1">'accession'</span><span class="p">,</span> <span class="s1">'name'</span><span class=
                               "p">,</span> <span class="s1">'synonyms'</span><span class="p">,</span> <span class=
                               "n">head</span> <span class="o">=</span> <span class="mi">10</span><span class=
@@ -4183,14 +4321,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 14:39:00 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:32:13 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[12]:
+                            <pre>[9]:
 </pre>
                           </div>
                         </div>
@@ -4281,7 +4419,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[13]:
+                            <pre>[10]:
 </pre>
                           </div>
                         </div>
@@ -4289,25 +4427,26 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="n">hmdb_synonyms</span> <span class="o">=</span> <span class=
-                              "n">hmdb</span><span class="o">.</span><span class="n">hmdb_table</span><span class=
-                              "p">(</span><span class="s1">'accession'</span><span class="p">,</span> <span class=
-                              "s1">'name'</span><span class="p">,</span> <span class="s1">'synonyms'</span><span class=
-                              "p">,</span> <span class="n">head</span> <span class="o">=</span> <span class=
-                              "mi">10</span><span class="p">)</span>
+                              "n">hmdb</span><span class="o">.</span><span class=
+                              "n">metabolites_table</span><span class="p">(</span><span class=
+                              "s1">'accession'</span><span class="p">,</span> <span class="s1">'name'</span><span class=
+                              "p">,</span> <span class="s1">'synonyms'</span><span class="p">,</span> <span class=
+                              "n">head</span> <span class="o">=</span> <span class="mi">10</span><span class=
+                              "p">)</span>
 <span class="n">hmdb_synonyms</span><span class="o">.</span><span class="n">synonyms</span><span class=
 "p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre>
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 14:40:01 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:32:19 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[13]:
+                            <pre>[10]:
 </pre>
                           </div>
                         </div>
@@ -4336,7 +4475,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[15]:
+                            <pre>[11]:
 </pre>
                           </div>
                         </div>
@@ -4344,7 +4483,7 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="n">hmdb</span><span class="o">.</span><span class=
-                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "n">metabolites_table</span><span class="p">(</span><span class=
                               "s1">'accession'</span><span class="p">,</span> <span class="s1">'name'</span><span class=
                               "p">,</span> <span class="p">(</span><span class="s1">'synonyms'</span><span class=
                               "p">,</span> <span class="s1">'@'</span><span class="p">),</span> <span class=
@@ -4354,14 +4493,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 14:41:18 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:32:25 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[15]:
+                            <pre>[11]:
 </pre>
                           </div>
                         </div>
@@ -4459,7 +4598,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[19]:
+                            <pre>[12]:
 </pre>
                           </div>
                         </div>
@@ -4467,7 +4606,7 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="n">hmdb</span><span class="o">.</span><span class=
-                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "n">metabolites_table</span><span class="p">(</span><span class=
                               "s1">'accession'</span><span class="p">,</span> <span class="s1">'name'</span><span class=
                               "p">,</span> <span class="p">(</span><span class="s1">'taxonomy'</span><span class=
                               "p">,</span> <span class="s1">'*'</span><span class="p">),</span> <span class=
@@ -4477,14 +4616,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 14:51:23 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:32:30 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[19]:
+                            <pre>[12]:
 </pre>
                           </div>
                         </div>
@@ -4661,7 +4800,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[20]:
+                            <pre>[13]:
 </pre>
                           </div>
                         </div>
@@ -4669,7 +4808,7 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="n">hmdb</span><span class="o">.</span><span class=
-                              "n">hmdb_table</span><span class="p">(</span><span class=
+                              "n">metabolites_table</span><span class="p">(</span><span class=
                               "s1">'accession'</span><span class="p">,</span> <span class="s1">'name'</span><span class=
                               "p">,</span> <span class="p">(</span><span class="s1">'taxonomy'</span><span class=
                               "p">,</span> <span class="s1">'*'</span><span class="p">,</span> <span class=
@@ -4679,14 +4818,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 14:54:07 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:32:37 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[20]:
+                            <pre>[13]:
 </pre>
                           </div>
                         </div>
@@ -4858,13 +4997,15 @@ data-default-mode="">
                           </div>
                         </div>
                       </div>
-                      <p>The <code class="docutils literal notranslate"><span class="pre">hmdb_mapping</span></code>
-                      function provides data frames or dicts for translation between a pair of identifier types. For
-                      example, translate KEGG Pathway IDs to SMILES, default output is dict of sets:</p>
+                      <p>The <code class="docutils literal notranslate"><span class=
+                      "pre">hmdb.metabolites_mapping</span></code> and <code class=
+                      "docutils literal notranslate"><span class="pre">hmdb.proteins_mapping</span></code> function
+                      provides data frames or dicts for translation between a pair of identifier types. For example,
+                      translate KEGG Pathway IDs to SMILES, default output is dict of sets:</p>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[21]:
+                            <pre>[14]:
 </pre>
                           </div>
                         </div>
@@ -4872,22 +5013,22 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="n">hmdb</span><span class="o">.</span><span class=
-                              "n">hmdb_mapping</span><span class="p">(</span><span class="s1">'kegg'</span><span class=
-                              "p">,</span> <span class="s1">'smiles'</span><span class="p">,</span> <span class=
-                              "n">head</span> <span class="o">=</span> <span class="mi">10</span><span class=
-                              "p">)</span>
+                              "n">metabolites_mapping</span><span class="p">(</span><span class=
+                              "s1">'kegg'</span><span class="p">,</span> <span class="s1">'smiles'</span><span class=
+                              "p">,</span> <span class="n">head</span> <span class="o">=</span> <span class=
+                              "mi">10</span><span class="p">)</span>
 </pre>
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 14:56:42 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:33:27 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[21]:
+                            <pre>[14]:
 </pre>
                           </div>
                         </div>
@@ -4913,7 +5054,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[23]:
+                            <pre>[15]:
 </pre>
                           </div>
                         </div>
@@ -4921,23 +5062,23 @@ data-default-mode="">
                           <div class="highlight-ipython3 notranslate">
                             <div class="highlight">
                               <pre><span class="n">hmdb</span><span class="o">.</span><span class=
-                              "n">hmdb_mapping</span><span class="p">(</span><span class="s1">'kegg'</span><span class=
-                              "p">,</span> <span class="s1">'smiles'</span><span class="p">,</span> <span class=
-                              "n">head</span> <span class="o">=</span> <span class="mi">10</span><span class=
-                              "p">,</span> <span class="n">return_df</span> <span class="o">=</span> <span class=
-                              "kc">True</span><span class="p">)</span>
+                              "n">metabolites_mapping</span><span class="p">(</span><span class=
+                              "s1">'kegg'</span><span class="p">,</span> <span class="s1">'smiles'</span><span class=
+                              "p">,</span> <span class="n">head</span> <span class="o">=</span> <span class=
+                              "mi">10</span><span class="p">,</span> <span class="n">return_df</span> <span class=
+                              "o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre>
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 14:57:27 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:33:31 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[23]:
+                            <pre>[15]:
 </pre>
                           </div>
                         </div>
@@ -5021,7 +5162,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[24]:
+                            <pre>[16]:
 </pre>
                           </div>
                         </div>
@@ -5037,14 +5178,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 15:00:10 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:33:39 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[24]:
+                            <pre>[16]:
 </pre>
                           </div>
                         </div>
@@ -5063,7 +5204,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[25]:
+                            <pre>[17]:
 </pre>
                           </div>
                         </div>
@@ -5078,14 +5219,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 0ms, finished 15:02:35 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:33:41 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[25]:
+                            <pre>[17]:
 </pre>
                           </div>
                         </div>
@@ -5127,7 +5268,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[26]:
+                            <pre>[18]:
 </pre>
                           </div>
                         </div>
@@ -5143,14 +5284,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 5m 20.72s, finished 15:08:39 2023-03-20</p>
+                            <p>executed in 1.81s, finished 12:33:46 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[26]:
+                            <pre>[18]:
 </pre>
                           </div>
                         </div>
@@ -5168,7 +5309,7 @@ data-default-mode="">
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[27]:
+                            <pre>[19]:
 </pre>
                           </div>
                         </div>
@@ -5184,14 +5325,14 @@ data-default-mode="">
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 3m 10.41s, finished 15:14:46 2023-03-20</p>
+                            <p>executed in 0ms, finished 12:33:47 2023-04-24</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[27]:
+                            <pre>[19]:
 </pre>
                           </div>
                         </div>

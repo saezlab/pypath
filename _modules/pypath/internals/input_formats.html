@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.internals.input_formats &#8212; pypath 0.14.49 documentation</title>
+    <title>pypath.internals.input_formats &#8212; pypath 0.14.50 documentation</title>
   
   
   
@@ -668,6 +668,7 @@ document.write(`
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">resource_id_type_a</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">resource_id_type_b</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">input_method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_</span>
@@ -675,7 +676,8 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">id_type_b</span> <span class="o">=</span> <span class="n">id_type_b</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_a</span> <span class="o">=</span> <span class="n">resource_id_type_a</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_b</span> <span class="o">=</span> <span class="n">resource_id_type_b</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_organism&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_organism&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span> <span class="o">=</span> <span class="n">input_method</span></div>
 
 
     <span class="k">def</span> <span class="nf">_resource_id_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">):</span>
@@ -1069,6 +1071,7 @@ document.write(`
             <span class="n">id_type_a</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span><span class="p">,</span>
+            <span class="n">input_method</span> <span class="o">=</span> <span class="s1">&#39;hmdb.metabolites_mapping&#39;</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
 
