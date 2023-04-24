@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.clinvar &#8212; pypath 0.14.48 documentation</title>
+    <title>pypath.inputs.clinvar &#8212; pypath 0.14.49 documentation</title>
   
   
   
@@ -552,16 +552,11 @@ document.write(`
                 <span class="s1">&#39;entrez&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;clinical_significance&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;review_status&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;rs&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;phenotype_ids&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;phenotypes&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;otherids&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;origin&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;variation_id&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;assembly&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;chromosome&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;chromosome_accession&#39;</span><span class="p">,</span>
             <span class="p">],</span>
             <span class="n">defaults</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="p">)</span>
@@ -579,9 +574,8 @@ document.write(`
 
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
 
-        <span class="n">phenotype_ids</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;PhenotypeIDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">))</span>
-        <span class="n">phenotypes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;PhenotypeList&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">))</span>
-        <span class="n">otherids</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;OtherIDs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">))</span>
+        <span class="n">phenotype_ids</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;PhenotypeIDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">))</span>
+        <span class="n">phenotypes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;PhenotypeList&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">))</span>
 
         <span class="n">variant</span> <span class="o">=</span> <span class="n">Variant</span><span class="p">(</span>
             <span class="n">allele</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;AlleleID&#39;</span><span class="p">],</span>
@@ -590,16 +584,11 @@ document.write(`
             <span class="n">entrez</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;GeneID&#39;</span><span class="p">],</span>
             <span class="n">genesymbol</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;GeneSymbol&#39;</span><span class="p">],</span>
             <span class="n">clinical_significance</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;ClinicalSignificance&#39;</span><span class="p">],</span>
-            <span class="n">review_status</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;ReviewStatus&#39;</span><span class="p">],</span>
             <span class="n">rs</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;RS# (dbSNP)&#39;</span><span class="p">],</span>
             <span class="n">phenotype_ids</span> <span class="o">=</span> <span class="n">phenotype_ids</span><span class="p">,</span>
             <span class="n">phenotypes</span> <span class="o">=</span> <span class="n">phenotypes</span><span class="p">,</span>
-            <span class="n">otherids</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">otherids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span> <span class="k">else</span> <span class="n">otherids</span><span class="p">,</span>
             <span class="n">origin</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;OriginSimple&#39;</span><span class="p">],</span>
-            <span class="n">variation_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;VariationID&#39;</span><span class="p">],</span>
-            <span class="n">assembly</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Assembly&#39;</span><span class="p">],</span>
-            <span class="n">chromosome</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Chromosome&#39;</span><span class="p">],</span>
-            <span class="n">chromosome_accession</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;ChromosomeAccession&#39;</span><span class="p">],</span>
+            <span class="n">variation_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;VariationID&#39;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
 

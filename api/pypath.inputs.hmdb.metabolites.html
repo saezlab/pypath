@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.hmdb.hmdb_xml &#8212; pypath 0.14.48 documentation</title>
+    <title>pypath.inputs.hmdb.metabolites &#8212; pypath 0.14.49 documentation</title>
   
   
   
@@ -43,12 +43,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.hmdb.hmdb_xml';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.hmdb.metabolites';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.hmdb.Field" href="pypath.inputs.hmdb.Field.html" />
-    <link rel="prev" title="pypath.inputs.hmdb.hmdb_table" href="pypath.inputs.hmdb.hmdb_table.html" />
+    <link rel="next" title="pypath.inputs.hmdb.metabolites.iter" href="pypath.inputs.hmdb.metabolites.iter.html" />
+    <link rel="prev" title="pypath.inputs.hmdb.common.table" href="pypath.inputs.hmdb.common.table.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -478,7 +478,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="pypath.inputs.hmdb.html" class="nav-link">pypath.inputs.hmdb</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.hmdb.hmdb_xml</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.hmdb.metabolites</li>
   </ul>
 </nav>
 </div>
@@ -495,14 +495,29 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-inputs-hmdb-hmdb-xml">
-<h1>pypath.inputs.hmdb.hmdb_xml<a class="headerlink" href="#pypath-inputs-hmdb-hmdb-xml" title="Permalink to this heading">§</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.hmdb.hmdb_xml">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.hmdb.</span></span><span class="sig-name descname"><span class="pre">hmdb_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'metabolites'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">iterparse</span></span></span><a class="reference internal" href="../_modules/pypath/inputs/hmdb.html#hmdb_xml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.hmdb.hmdb_xml" title="Permalink to this definition">§</a></dt>
-<dd><p>Download and open the XML file of a dataset from the HMDB.</p>
-</dd></dl>
-
+  <section id="module-pypath.inputs.hmdb.metabolites">
+<span id="pypath-inputs-hmdb-metabolites"></span><h1>pypath.inputs.hmdb.metabolites<a class="headerlink" href="#module-pypath.inputs.hmdb.metabolites" title="Permalink to this heading">§</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">members<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.inputs.hmdb.metabolites.iter.html#pypath.inputs.hmdb.metabolites.iter" title="pypath.inputs.hmdb.metabolites.iter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter</span></code></a>()</p></td>
+<td><p>Itertate over metabolite records from HMDB.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.inputs.hmdb.metabolites.mapping.html#pypath.inputs.hmdb.metabolites.mapping" title="pypath.inputs.hmdb.metabolites.mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mapping</span></code></a>(id_type_a, id_type_b[, return_df, head])</p></td>
+<td><p>ID translation input from HMDB.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.inputs.hmdb.metabolites.raw.html#pypath.inputs.hmdb.metabolites.raw" title="pypath.inputs.hmdb.metabolites.raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">raw</span></code></a>([schema, head])</p></td>
+<td><p>Parse metabolite data from HMDB.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.inputs.hmdb.metabolites.table.html#pypath.inputs.hmdb.metabolites.table" title="pypath.inputs.hmdb.metabolites.table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table</span></code></a>(*fields[, head])</p></td>
+<td><p>Parse various simple and nested array fields from HMDB into data frame.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 
@@ -517,20 +532,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.inputs.hmdb.hmdb_table.html"
+       href="pypath.inputs.hmdb.common.table.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.inputs.hmdb.hmdb_table</p>
+        <p class="prev-next-title">pypath.inputs.hmdb.common.table</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.inputs.hmdb.Field.html"
+       href="pypath.inputs.hmdb.metabolites.iter.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.inputs.hmdb.Field</p>
+        <p class="prev-next-title">pypath.inputs.hmdb.metabolites.iter</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

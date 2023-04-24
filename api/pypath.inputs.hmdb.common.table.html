@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.hmdb.hmdb_mapping &#8212; pypath 0.14.48 documentation</title>
+    <title>pypath.inputs.hmdb.common.table &#8212; pypath 0.14.49 documentation</title>
   
   
   
@@ -43,12 +43,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.hmdb.hmdb_mapping';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.hmdb.common.table';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.hmdb.hmdb_metabolites_raw" href="pypath.inputs.hmdb.hmdb_metabolites_raw.html" />
-    <link rel="prev" title="pypath.inputs.hmdb.hmdb_iter_metabolites" href="pypath.inputs.hmdb.hmdb_iter_metabolites.html" />
+    <link rel="next" title="pypath.inputs.hmdb.metabolites" href="pypath.inputs.hmdb.metabolites.html" />
+    <link rel="prev" title="pypath.inputs.hmdb.common.raw" href="pypath.inputs.hmdb.common.raw.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -476,9 +476,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.inputs.hmdb.html" class="nav-link">pypath.inputs.hmdb</a></li>
+    <li class="breadcrumb-item"><a href="pypath.inputs.hmdb.common.html" class="nav-link">pypath.inputs.hmdb.common</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.hmdb.hmdb_mapping</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.hmdb.common.table</li>
   </ul>
 </nav>
 </div>
@@ -495,29 +495,32 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-inputs-hmdb-hmdb-mapping">
-<h1>pypath.inputs.hmdb.hmdb_mapping<a class="headerlink" href="#pypath-inputs-hmdb-hmdb-mapping" title="Permalink to this heading">§</a></h1>
+  <section id="pypath-inputs-hmdb-common-table">
+<h1>pypath.inputs.hmdb.common.table<a class="headerlink" href="#pypath-inputs-hmdb-common-table" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.hmdb.hmdb_mapping">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.hmdb.</span></span><span class="sig-name descname"><span class="pre">hmdb_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type_a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pypath/inputs/hmdb.html#hmdb_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.hmdb.hmdb_mapping" title="Permalink to this definition">§</a></dt>
-<dd><p>ID translation input from HMDB.</p>
-<p>Note: you can use this function for purposes other than ID translation
-tables, e.g. you can collect the molecular weights, pathways, etc. Though
-not all these options are guaranteed to work or result a meaningful
-output.</p>
+<dt class="sig sig-object py" id="pypath.inputs.hmdb.common.table">
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.hmdb.common.</span></span><span class="sig-name descname"><span class="pre">table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'metabolites'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'proteins'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">named_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pypath/inputs/hmdb/common.html#table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.hmdb.common.table" title="Permalink to this definition">§</a></dt>
+<dd><p>Parse various simple and nested array fields from HMDB into data frame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id_type_a</strong> – An identifier type, see the <cite>ID_FIELDS</cite> set in this module,
-and keys in the <cite>SIMPLE_FIELDS</cite> dict.</p></li>
-<li><p><strong>id_type_b</strong> – Another identifier type, same options as for <cite>id_type_a</cite>.</p></li>
-<li><p><strong>return_df</strong> – Return a data frame instead of dict of sets.</p></li>
+<li><p><strong>fields</strong> – Fields to include in the data frame. These must be keys in the
+schema, and will be also used as column names. Alternatively,
+tuples of sequetial processing steps can be provided: strings
+will be used as keys in nested dicts, tuples will be used as
+multiple keys in dicts, each yielding a separate column, the
+special symbol “*” means all keys in the sub-dict, while “&#64;”
+means expand arrays into multiple rows. Be careful with this
+latter option because it is applied in a combinatorial way, i.e.
+in case of expanding an array to 5 rowns, and another one to 7
+rows results already 35 rows from a single record. This might
+result excessive memory use and processing time.</p></li>
+<li><p><strong>named_fields</strong> – Same as <cite>fields</cite>, but the column name can be different from the
+top level key: argument names will be used as column names,
+values will be used as processing steps.</p></li>
 <li><p><strong>head</strong> – Process the first N records only. Useful for peeking into
 the data.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Translation data between two types of identifiers.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -536,20 +539,20 @@ the data.</p></li>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.inputs.hmdb.hmdb_iter_metabolites.html"
+       href="pypath.inputs.hmdb.common.raw.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.inputs.hmdb.hmdb_iter_metabolites</p>
+        <p class="prev-next-title">pypath.inputs.hmdb.common.raw</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.inputs.hmdb.hmdb_metabolites_raw.html"
+       href="pypath.inputs.hmdb.metabolites.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.inputs.hmdb.hmdb_metabolites_raw</p>
+        <p class="prev-next-title">pypath.inputs.hmdb.metabolites</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
