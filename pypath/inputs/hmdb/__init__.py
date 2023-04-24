@@ -30,6 +30,7 @@ _log = session.Logger(name = 'hmdb_input')._log
 
 
 from .schema import METABOLITES_SCHEMA, PROTEINS_SCHEMA, ID_FIELDS
+from .schema.common import Field
 
 from .metabolites import (
     iter as iter_metabolites,
