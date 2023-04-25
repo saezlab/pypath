@@ -1638,6 +1638,10 @@ urls = {
         'svg': 'https://hmdb.ca/structures/%s/image.svg',
         'sdf': 'https://hmdb.ca/system/downloads/current/structures.zip',
     },
+    'lipidmaps': {
+        'label': 'A database of lipid structures',
+        'sdf': 'https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip',
+    },
 }
 
 
