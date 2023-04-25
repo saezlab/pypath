@@ -40,6 +40,7 @@ import math
 import re
 import importlib as imp
 import collections
+import functools
 import datetime
 import time
 
@@ -1729,6 +1730,7 @@ class Mapper(session_mod.Logger):
         return list(names)[0] if names else None
 
 
+    @functools.lru_cache(maxsize = int(1e5))
     def map_name(
             self,
             name,
