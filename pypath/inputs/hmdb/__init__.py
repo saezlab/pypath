@@ -46,6 +46,8 @@ from .proteins import (
     mapping as proteins_mapping,
 )  # noqa: F401
 
+from .structures import sdf
+
 from .visual import (
     show_structure,
     structure_svg,
