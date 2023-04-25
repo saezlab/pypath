@@ -201,7 +201,7 @@ class SdfReader(session.Logger):
         this_offset = None
         offset = 0
         name = {}
-        data = {}
+        annot = {}
         namekey = None
 
         for l in self.fp:
@@ -223,7 +223,7 @@ class SdfReader(session.Logger):
 
                 if namekey and (not self.fields or namekey in self.fields):
 
-                    data[namekey] = sl
+                    annot[namekey] = sl
                     namekey = None
 
                 if sl[:3] == '> <':
@@ -285,7 +285,7 @@ class SdfReader(session.Logger):
                         'comment': comment,
                         'mol': mol,
                         'name': name,
-                        'annot': annot
+                        'annot': annot,
                     }
 
                 # this is indexing: we build dicts of names
@@ -373,7 +373,7 @@ class SdfReader(session.Logger):
                         'comment': comment,
                         'mol': mol,
                         'name': name,
-                        'data': data,
+                        'annot': annot,
                     }
 
             offset += llen
