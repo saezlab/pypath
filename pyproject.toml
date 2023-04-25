@@ -77,6 +77,10 @@ pybel = { version = "*", optional = true }
 bio2bel = { version = "*", optional = true }
 click = { version = "*", optional = true }
 python-igraph = { version = "*", optional = true }
+sparqlwrapper = { version = "*", optional = true }
+openbabel = { version = "*", optional = true }
+rdkit = { version = "*", optional = true }
+"epam.indigo" = { version = "*", optional = true }
 pysftp = "^0.2.9"
 typing_extensions = "*"
 
@@ -91,6 +95,11 @@ graph = [
 ]
 pathophenodb = [
     "sparqlwrapper",
+]
+metabo = [
+    "epam.indigo",
+    "openbabel",
+    "rdkit",
 ]
 
 [tool.poetry.dev-dependencies]
