@@ -23,10 +23,18 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import sys
+sys.path.append('/home/exdeval/.stuff/biolab/star/pypath/pypath')
+
 from pypath.share import curl
 from collections import namedtuple
-from pypath.resources.urls import urls
+from resources.urls import urls
 
+to_numeric = {
+    'z_score',
+    'confidence_score',
+    'confidence_score'
+}
 
 def diseases_general(query, filtered=False):
 
@@ -99,6 +107,14 @@ def diseases_general(query, filtered=False):
             fieldname: element if element != "" else None
             for (fieldname, element) in zip(fieldnames, data)
         }
+        
+        for key, value in data.items():
+            if key in to_numeric:
+                data[key] = str_to_num(value)
+            elif key == 'source_score':
+                new_value = value.split('=')[1]
+                new_value = str_to_num(new_value)
+                data[key] = new_value
 
         interactions.append(Interaction(**data))
 
@@ -127,3 +143,10 @@ def experiments_full():
 
 def experiments_filtered():
     return diseases_general('experiments', filtered=True)
+
+
+def str_to_num(string):
+    try:
+        return int(string)
+    except ValueError:
+        return float(string)
