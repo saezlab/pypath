@@ -1798,8 +1798,64 @@ class DisgenetApi:
 
         return result
 
-    def _list_to_str(self, list_obj: List[str], name: str, limit: Optional[int]=None) -> List[str]:
-        '''
+    def _get_evidences(
+        self,
+        of: "gda" | "vda",
+        by: "gene" | "disease" | "variant",
+        gene: str | [str] = None,
+        disease: str | List[str] = None,
+        variant: str | List[str] = None,
+        source: str = None,
+        min_year: int = None,
+        max_year: int = None,
+        min_score: float = None,
+        max_score: float = None,
+        limit: int = None,
+        offset: int = None,
+    ):
+        url = f"{self._api_url}/{of}/evidences/{by}/"
+        get_params = dict()
+        
+        if by == "gene" and gene != None:
+            url += gene
+            
+        elif by == "variant" and gene != None:
+            url += variant
+        
+        elif by == "disease" and disease != None:
+            url += disease
+        
+        else:
+            print("Problem in function call. Check arguments.")
+            return None
+        
+        if source != None:
+            get_params["source"] = source
+        
+        if min_year != None:
+            get_params["min_year"] = str(min_year)
+
+        if max_year != None:
+            get_params["max_year"] = str(max_year)
+
+        if min_score != None:
+            get_params["min_score"] = str(min_score)
+
+        if max_score != None:
+            get_params["max_score"] = str(max_score)
+
+        if limit != None:
+            get_params["limit"] = str(max(1, limit))
+            
+        if offset != None:
+            get_params["offset"] = offset
+        
+        result = self._retrieve_data(url, get_params)
+
+    def _list_to_str(
+        self, list_obj: List[str], name: str, limit: Optional[int] = None
+    ) -> List[str]:
+        """
         Joins the list object and returns a string
 
         @list_obj : List[str]
