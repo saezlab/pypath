@@ -28,7 +28,7 @@ import csv
 import json
 from getpass import getpass
 
-from typing import List, Union, NamedTuple, Dict, Tuple, Optional
+from typing import List, Union, NamedTuple, Dict, Tuple, Optional, Literal
 
 import pypath.share.curl as curl
 import pypath.share.session as session
@@ -1120,6 +1120,150 @@ class DisgenetApi:
             max_pli=max_pli,
             limit=limit,
         )
+        
+    def get_vda_evidences_by_variant(
+        variant,
+        gene=None,
+        disease=None,
+        source: str = None,
+        min_year: int = None,
+        max_year: int = None,
+        min_score: float = None,
+        max_score: float = None,
+        limit: int = None,
+        offset: int = None,
+        get_all: bool = True
+    ):
+        
+        variant = self._list_to_str(variant, "variant ID", limit=100)
+        
+        if disease != None:
+            disease = self._list_to_str(disease, "disease ID", limit=100)
+        
+        if gene != None:
+            gene = self._list_to_str(gene, "gene ID")
+        
+        return _get_evidences(
+            of="vda",
+            by="variant",
+            gene = gene,
+            disease = disease,
+            variant = variant,
+            source = source,
+            min_year = min_year,
+            max_year = max_year,
+            min_score = min_score,
+            max_score = max_score,
+            limit = limit,
+            offset = offset,
+            get_all = get_all
+        )
+    
+    def get_vda_evidences_by_disease(
+        disease,
+        variant=None,
+        gene=None,
+        source: str = None,
+        min_year: int = None,
+        max_year: int = None,
+        min_score: float = None,
+        max_score: float = None,
+        limit: int = None,
+        offset: int = None,
+        get_all: bool = True
+    ):
+        
+        disease = self._list_to_str(disease, "disease ID", limit=100)
+        
+        if variant != None:
+            variant = self._list_to_str(variant, "variant ID", limit=100)
+        
+        if gene != None:
+            gene = self._list_to_str(gene, "gene ID")
+        
+        return _get_evidences(
+            of="vda",
+            by="disease",
+            gene = gene,
+            disease = disease,
+            variant = variant,
+            source = source,
+            min_year = min_year,
+            max_year = max_year,
+            min_score = min_score,
+            max_score = max_score,
+            limit = limit,
+            offset = offset,
+            get_all = get_all
+        )
+    
+    def get_gda_evidences_by_gene(
+        gene,
+        disease=None,
+        source: str = None,
+        min_year: int = None,
+        max_year: int = None,
+        min_score: float = None,
+        max_score: float = None,
+        limit: int = None,
+        offset: int = None,
+        get_all: bool = True
+    ):
+        
+        gene = self._list_to_str(gene, "gene ID", limit=100)
+        
+        if disease != None:
+            disease = self._list_to_str(disease, "disease ID", limit=100)
+        
+        return _get_evidences(
+            of="gda",
+            by="gene",
+            gene = gene,
+            disease = disease,
+            variant = None,
+            source = source,
+            min_year = min_year,
+            max_year = max_year,
+            min_score = min_score,
+            max_score = max_score,
+            limit = limit,
+            offset = offset,
+            get_all = get_all
+        )
+    
+    def get_gda_evidences_by_disease(
+        disease,
+        gene=None,
+        source: str = None,
+        min_year: int = None,
+        max_year: int = None,
+        min_score: float = None,
+        max_score: float = None,
+        limit: int = None,
+        offset: int = None,
+        get_all: bool = True
+    ):
+        
+        disease = self._list_to_str(disease, "disease ID", limit=100)
+        
+        if gene != None:
+            gene = self._list_to_str(gene, "gene ID", limit=100)
+        
+        return _get_evidences(
+            of="vda",
+            by="disease",
+            gene = gene,
+            disease = disease,
+            variant = None,
+            source = source,
+            min_year = min_year,
+            max_year = max_year,
+            min_score = min_score,
+            max_score = max_score,
+            limit = limit,
+            offset = offset,
+            get_all = get_all
+        )
 
     def _get_ddas(
         self,
@@ -1725,11 +1869,11 @@ class DisgenetApi:
 
     def _get_evidences(
         self,
-        of: "gda" | "vda",
-        by: "gene" | "disease" | "variant",
-        gene: str | [str] = None,
-        disease: str | List[str] = None,
-        variant: str | List[str] = None,
+        of: ["gda" ,"vda"],
+        by: ["gene", "disease", "variant"],
+        gene: [str, [str]] = None,
+        disease: [str, [str]] = None,
+        variant: [str, [str]] = None,
         source: str = None,
         min_year: int = None,
         max_year: int = None,
@@ -1737,18 +1881,34 @@ class DisgenetApi:
         max_score: float = None,
         limit: int = None,
         offset: int = None,
+        get_all: bool = True
     ):
         url = f"{self._api_url}/{of}/evidences/{by}/"
         get_params = dict()
         
-        if by == "gene" and gene != None:
+        if of == "gda" and by == "gene" and gene != None:
             url += gene
             
-        elif by == "variant" and gene != None:
+            if disease != None:
+                get_params["diasease"] = disease
+            
+        elif of == "vda" and by == "variant" and gene != None:
             url += variant
+            
+            if gene != None:
+                get_params["gene"] = gene
+            
+            if disease != None:
+                get_params["disease"] = disease
         
-        elif by == "disease" and disease != None:
+        elif  by == "disease" and disease != None:
             url += disease
+            
+            if gene != None:
+                get_params["gene"] = gene
+            
+            if of == "vda" and variant != None:
+                get_params["variant"] = variant
         
         else:
             print("Problem in function call. Check arguments.")
@@ -1775,7 +1935,17 @@ class DisgenetApi:
         if offset != None:
             get_params["offset"] = offset
         
-        result = self._retrieve_data(url, get_params)
+        result = []
+        
+        while True:
+            data = self._retrieve_data(url, get_params)
+            result.extend(data["results"])
+            url = data["next"]
+            
+            if not get_all or url == None:
+                break
+
+        return result
 
     def _list_to_str(
         self, list_obj: List[str], name: str, limit: Optional[int] = None
