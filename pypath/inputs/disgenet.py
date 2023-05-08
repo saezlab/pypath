@@ -35,84 +35,75 @@ import pypath.share.session as session
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 
-_logger = session.Logger(name='disgenet_input')
+_logger = session.Logger(name="disgenet_input")
 _log = _logger._log
 
 
 class DisgenetApi:
-
-    _name = 'DisGeNET'
-    _api_url = urls.urls['disgenet']['api_url']
+    _name = "DisGeNET"
+    _api_url = urls.urls["disgenet"]["api_url"]
     _authenticated: bool = False
     _api_key: str = None
 
     def authenticate(self) -> bool:
-        '''
+        """
         Starts an authorization process in DisGeNET API.
         Returns a boolean which is success of authentication.
-        '''
+        """
 
         if self._authenticated and self._api_key != None:
-
             return True
 
-        print(f'Authorizing in {self._name} API...')
-        e_mail: str = input('E-mail: ')
-        password: str = getpass('Password: ')
+        print(f"Authorizing in {self._name} API...")
+        e_mail: str = input("E-mail: ")
+        password: str = getpass("Password: ")
 
-        url: str = f'{self._api_url}/auth/'
-        post_params: dict[str, str] = {'email': e_mail, 'password': password}
+        url: str = f"{self._api_url}/auth/"
+        post_params: dict[str, str] = {"email": e_mail, "password": password}
         headers: dict[str, str] = {
-            'accept: */*',
-            'Content-Type: application/x-www-form-urlencoded',
+            "accept: */*",
+            "Content-Type: application/x-www-form-urlencoded",
         }
 
         c = curl.Curl(url=url, post=post_params, req_headers=headers)
         response: int = c.status
 
         if response == 200 or response == 0:
-
             result: dict[str, str] = json.loads(c.result)
             self._authenticated = True
-            self._api_key = result['token']
-            print('Authorization successful.')
+            self._api_key = result["token"]
+            print("Authorization successful.")
 
         elif response == 404:
-
             self._authenticated = False
             self._api_key = None
 
         return self._authenticated and (self._api_key != None)
 
     def _if_authenticated(f):
-        '''
+        """
         Simple wrapper to get rid of the burden of
         checking authentication status and authenticating
         if already haven't.
-        '''
+        """
 
         def wrapper(self, *args, **kwargs):
-
             if self.authenticate():
-
                 return f(self, *args, **kwargs)
 
             else:
-
-                print('Failure in authorization, check your credentials.')
+                print("Failure in authorization, check your credentials.")
 
         return wrapper
 
     def _delete_cache(f):
-        '''
+        """
         A necessary wrapper as databases may be updated
         after the initial download of a particular data.
-        '''
+        """
 
         def wrapper(*args, **kwargs):
-
             with curl.cache_delete_on():
-
                 return f(*args, **kwargs)
 
         return wrapper
@@ -125,29 +116,29 @@ class DisgenetApi:
         p_value: float = None,
         limit: int = 10,
     ) -> NamedTuple(
-        'DiseaseDiseaseAssociation',
+        "DiseaseDiseaseAssociation",
         [
-            ('disease1_name', str),
-            ('disease2_name', str),
-            ('disease1_ngenes', int),
-            ('disease2_ngenes', int),
-            ('disease1_disease_class', Tuple[str]),
-            ('disease2_disease_class', Tuple[str]),
-            ('disease1_disease_class_name', Tuple[str]),
-            ('disease2_disease_class_name', Tuple[str]),
-            ('jaccard_genes', float),
-            ('pvalue_jaccard_genes', float),
-            ('source', str),
-            ('ngenes1', int),
-            ('ngenes2', int),
-            ('ngenes', int),
-            ('nvariants1', int),
-            ('nvariants2', int),
-            ('diseaseid1', str),
-            ('diseaseid2', str),
+            ("disease1_name", str),
+            ("disease2_name", str),
+            ("disease1_ngenes", int),
+            ("disease2_ngenes", int),
+            ("disease1_disease_class", Tuple[str]),
+            ("disease2_disease_class", Tuple[str]),
+            ("disease1_disease_class_name", Tuple[str]),
+            ("disease2_disease_class_name", Tuple[str]),
+            ("jaccard_genes", float),
+            ("pvalue_jaccard_genes", float),
+            ("source", str),
+            ("ngenes1", int),
+            ("ngenes2", int),
+            ("ngenes", int),
+            ("nvariants1", int),
+            ("nvariants2", int),
+            ("diseaseid1", str),
+            ("diseaseid2", str),
         ],
     ):
-        '''
+        """
         Returns Disease-Disease Associations with given query.
 
         @disease: Union[str, List[str]]
@@ -170,11 +161,11 @@ class DisgenetApi:
         @limit: int
             Number of associated diseases to retrieve.
             Default value : 10
-        '''
+        """
 
         return self._get_ddas(
             disease=disease,
-            share='genes',
+            share="genes",
             vocabulary=vocabulary,
             source=source,
             p_value=p_value,
@@ -189,29 +180,29 @@ class DisgenetApi:
         p_value: float = None,
         limit: int = 10,
     ) -> NamedTuple(
-        'DiseaseDiseaseAssociation',
+        "DiseaseDiseaseAssociation",
         [
-            ('disease1_name', str),
-            ('disease2_name', str),
-            ('disease1_nvariants', int),
-            ('disease2_nvariants', int),
-            ('disease1_disease_class', Tuple[str]),
-            ('disease2_disease_class', Tuple[str]),
-            ('disease1_disease_class_name', Tuple[str]),
-            ('disease2_disease_class_name', Tuple[str]),
-            ('jaccard_variants', float),
-            ('pvalue_jaccard_variants', float),
-            ('source', str),
-            ('ngenes1', int),
-            ('ngenes2', int),
-            ('nvariants', int),
-            ('nvariants1', int),
-            ('nvariants2', int),
-            ('diseaseid1', str),
-            ('diseaseid2', str),
+            ("disease1_name", str),
+            ("disease2_name", str),
+            ("disease1_nvariants", int),
+            ("disease2_nvariants", int),
+            ("disease1_disease_class", Tuple[str]),
+            ("disease2_disease_class", Tuple[str]),
+            ("disease1_disease_class_name", Tuple[str]),
+            ("disease2_disease_class_name", Tuple[str]),
+            ("jaccard_variants", float),
+            ("pvalue_jaccard_variants", float),
+            ("source", str),
+            ("ngenes1", int),
+            ("ngenes2", int),
+            ("nvariants", int),
+            ("nvariants1", int),
+            ("nvariants2", int),
+            ("diseaseid1", str),
+            ("diseaseid2", str),
         ],
     ):
-        '''
+        """
         Returns Disease-Disease Associations with given query.
 
         @disease: Union[str, List[str]]
@@ -234,11 +225,11 @@ class DisgenetApi:
         @limit: int
             Number of associated diseases to retrieve.
             Default value : 10
-        '''
+        """
 
         return self._get_ddas(
             disease=disease,
-            share='variants',
+            share="variants",
             vocabulary=vocabulary,
             source=source,
             p_value=p_value,
@@ -263,27 +254,27 @@ class DisgenetApi:
         max_dpi: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'VariantDiseaseAssociation',
+        "VariantDiseaseAssociation",
         [
-            ('variantid', str),
-            ('gene_symbol', str),
-            ('variant_dsi', float),
-            ('variant_dpi', float),
-            ('variant_consequence_type', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("variantid", str),
+            ("gene_symbol", str),
+            ("variant_dsi", float),
+            ("variant_dpi", float),
+            ("variant_consequence_type", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
-    ): 
-        '''
+    ):
+        """
         Returns Variant-Disease Associations by variant(s).
 
         @variant: Union[str, List[str]]
@@ -325,18 +316,18 @@ class DisgenetApi:
             Max value of the DPI range for the variant.
         @limit: int
             Number of VDAs to retrieve.
-        '''
+        """
 
-        gene = self._list_to_str(gene, 'Gene ID')
-        disease = self._list_to_str(disease, 'Disease ID')
-        variant = self._list_to_str(variant, 'Variant ID', limit=100)
+        gene = self._list_to_str(gene, "Gene ID")
+        disease = self._list_to_str(disease, "Disease ID")
+        variant = self._list_to_str(variant, "Variant ID", limit=100)
 
         return self._get_vdas(
             gene=gene,
             disease=disease,
             variant=variant,
             vocabulary=None,
-            by='variant',
+            by="variant",
             source=source,
             min_score=min_score,
             max_score=max_score,
@@ -369,27 +360,27 @@ class DisgenetApi:
         max_dpi: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'VariantDiseaseAssociation',
+        "VariantDiseaseAssociation",
         [
-            ('variantid', str),
-            ('gene_symbol', str),
-            ('variant_dsi', float),
-            ('variant_dpi', float),
-            ('variant_consequence_type', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("variantid", str),
+            ("gene_symbol", str),
+            ("variant_dsi", float),
+            ("variant_dpi", float),
+            ("variant_consequence_type", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
     ):
-        '''
+        """
         Returns Variant-Disease Associations by gene(s).
 
         @gene: Union[str, List[str]]
@@ -431,18 +422,18 @@ class DisgenetApi:
             Max value of the DPI range for the variant.
         @limit: int
             Number of VDAs to retrieve.
-        '''
+        """
 
-        gene = self._list_to_str(gene, 'Gene ID', limit=100)
-        disease = self._list_to_str(disease, 'Disease ID')
-        variant = self._list_to_str(variant, 'Variant ID')
+        gene = self._list_to_str(gene, "Gene ID", limit=100)
+        disease = self._list_to_str(disease, "Disease ID")
+        variant = self._list_to_str(variant, "Variant ID")
 
         return self._get_vdas(
             gene=gene,
             disease=disease,
             variant=variant,
             vocabulary=None,
-            by='gene',
+            by="gene",
             source=source,
             min_score=min_score,
             max_score=max_score,
@@ -476,27 +467,27 @@ class DisgenetApi:
         max_dpi: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'VariantDiseaseAssociation',
+        "VariantDiseaseAssociation",
         [
-            ('variantid', str),
-            ('gene_symbol', str),
-            ('variant_dsi', float),
-            ('variant_dpi', float),
-            ('variant_consequence_type', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("variantid", str),
+            ("gene_symbol", str),
+            ("variant_dsi", float),
+            ("variant_dpi", float),
+            ("variant_consequence_type", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
     ):
-        '''
+        """
         Returns Variant-Disease Associations disease(s).
 
         @disease: Union[str, List[str]]
@@ -541,18 +532,18 @@ class DisgenetApi:
             Max value of the DPI range for the variant.
         @limit: int
             Number of VDAs to retrieve.
-        '''
+        """
 
-        gene = self._list_to_str(gene, 'Gene ID')
-        disease = self._list_to_str(disease, 'Disease ID', limit=100)
-        variant = self._list_to_str(variant, 'Variant ID')
+        gene = self._list_to_str(gene, "Gene ID")
+        disease = self._list_to_str(disease, "Disease ID", limit=100)
+        variant = self._list_to_str(variant, "Variant ID")
 
         return self._get_vdas(
             gene=gene,
             disease=disease,
             variant=variant,
             vocabulary=vocabulary,
-            by='disease',
+            by="disease",
             source=source,
             min_score=min_score,
             max_score=max_score,
@@ -587,27 +578,27 @@ class DisgenetApi:
         max_dpi: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'VariantDiseaseAssociation',
+        "VariantDiseaseAssociation",
         [
-            ('variantid', str),
-            ('gene_symbol', str),
-            ('variant_dsi', float),
-            ('variant_dpi', float),
-            ('variant_consequence_type', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("variantid", str),
+            ("gene_symbol", str),
+            ("variant_dsi", float),
+            ("variant_dpi", float),
+            ("variant_consequence_type", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
     ):
-        '''
+        """
         Returns Variant-Disease Associations by source.
 
         @source: str
@@ -645,19 +636,18 @@ class DisgenetApi:
             Max value of the DPI range for the variant.
         @limit: int
             Number of VDAs to retrieve.
-        '''
+        """
 
-
-        disease = self._list_to_str(disease, 'Disease ID')
-        variant = self._list_to_str(variant, 'Variant ID')
-        gene = self._list_to_str(gene, 'Gene ID')
+        disease = self._list_to_str(disease, "Disease ID")
+        variant = self._list_to_str(variant, "Variant ID")
+        gene = self._list_to_str(gene, "Gene ID")
 
         return self._get_vdas(
             gene=gene,
             disease=disease,
             variant=variant,
             vocabulary=vocabulary,
-            by='source',
+            by="source",
             source=source,
             min_score=min_score,
             max_score=max_score,
@@ -691,31 +681,31 @@ class DisgenetApi:
         max_pli: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'GeneDiseaseAssociation',
+        "GeneDiseaseAssociation",
         [
-            ('geneid', int),
-            ('gene_symbol', str),
-            ('uniprotid', str),
-            ('gene_dsi', float),
-            ('gene_dpi', float),
-            ('gene_pli', float),
-            ('protein_class', str),
-            ('protein_class_name', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('el', str),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("geneid", int),
+            ("gene_symbol", str),
+            ("uniprotid", str),
+            ("gene_dsi", float),
+            ("gene_dpi", float),
+            ("gene_pli", float),
+            ("protein_class", str),
+            ("protein_class_name", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("el", str),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
     ):
-        '''
+        """
         Returns Gene-Disease Associations by gene(s).
 
         @gene: Union[str, List[str]]
@@ -757,17 +747,17 @@ class DisgenetApi:
             Max value of the pLI range.
         @limit: int
             Number of GDAs to retrieve.
-        '''
+        """
 
-        gene = self._list_to_str(gene, 'Gene ID', limit=100)
-        disease = self._list_to_str(disease, 'Disease ID', limit=100)
+        gene = self._list_to_str(gene, "Gene ID", limit=100)
+        disease = self._list_to_str(disease, "Disease ID", limit=100)
 
         return self._get_gdas(
             gene=gene,
             disease=disease,
             uniprot=None,
             vocabulary=None,
-            by='gene',
+            by="gene",
             source=source,
             min_score=min_score,
             max_score=max_score,
@@ -804,31 +794,31 @@ class DisgenetApi:
         max_pli: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'GeneDiseaseAssociation',
+        "GeneDiseaseAssociation",
         [
-            ('geneid', int),
-            ('gene_symbol', str),
-            ('uniprotid', str),
-            ('gene_dsi', float),
-            ('gene_dpi', float),
-            ('gene_pli', float),
-            ('protein_class', str),
-            ('protein_class_name', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('el', str),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("geneid", int),
+            ("gene_symbol", str),
+            ("uniprotid", str),
+            ("gene_dsi", float),
+            ("gene_dpi", float),
+            ("gene_pli", float),
+            ("protein_class", str),
+            ("protein_class_name", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("el", str),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
     ):
-        '''
+        """
         Returns Gene-Disease Associations by disease(s).
 
         @disease: Union[str, List[str]]
@@ -880,17 +870,17 @@ class DisgenetApi:
             Max value of the pLI range.
         @limit: int
             Number of GDAs to retrieve.
-        '''
+        """
 
-        gene = self._list_to_str(gene, 'Gene ID')
-        disease = self._list_to_str(disease, 'Disease ID', limit=100)
+        gene = self._list_to_str(gene, "Gene ID")
+        disease = self._list_to_str(disease, "Disease ID", limit=100)
 
         return self._get_gdas(
             gene=gene,
             disease=disease,
             uniprot=None,
             vocabulary=vocabulary,
-            by='disease',
+            by="disease",
             source=source,
             min_score=min_score,
             max_score=max_score,
@@ -926,31 +916,31 @@ class DisgenetApi:
         max_pli: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'GeneDiseaseAssociation',
+        "GeneDiseaseAssociation",
         [
-            ('geneid', int),
-            ('gene_symbol', str),
-            ('uniprotid', str),
-            ('gene_dsi', float),
-            ('gene_dpi', float),
-            ('gene_pli', float),
-            ('protein_class', str),
-            ('protein_class_name', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('el', str),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("geneid", int),
+            ("gene_symbol", str),
+            ("uniprotid", str),
+            ("gene_dsi", float),
+            ("gene_dpi", float),
+            ("gene_pli", float),
+            ("protein_class", str),
+            ("protein_class_name", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("el", str),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
     ):
-        '''
+        """
         Returns Gene-Disease Associations by UniProt Accession(s).
 
         @uniprot: Union[str, List[str]]
@@ -992,17 +982,17 @@ class DisgenetApi:
             Max value of the pLI range.
         @limit: int
             Number of GDAs to retrieve.
-        '''
+        """
 
-        uniprot = self._list_to_str(uniprot, 'Uniprot ID', limit=100)
-        disease = self._list_to_str(disease, 'Disease ID')
+        uniprot = self._list_to_str(uniprot, "Uniprot ID", limit=100)
+        disease = self._list_to_str(disease, "Disease ID")
 
         return self._get_gdas(
             gene=None,
             disease=disease,
             uniprot=uniprot,
             vocabulary=None,
-            by='uniprot',
+            by="uniprot",
             source=source,
             min_score=min_score,
             max_score=max_score,
@@ -1038,31 +1028,31 @@ class DisgenetApi:
         max_pli: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'GeneDiseaseAssociation',
+        "GeneDiseaseAssociation",
         [
-            ('geneid', int),
-            ('gene_symbol', str),
-            ('uniprotid', str),
-            ('gene_dsi', float),
-            ('gene_dpi', float),
-            ('gene_pli', float),
-            ('protein_class', str),
-            ('protein_class_name', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('el', str),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("geneid", int),
+            ("gene_symbol", str),
+            ("uniprotid", str),
+            ("gene_dsi", float),
+            ("gene_dpi", float),
+            ("gene_pli", float),
+            ("protein_class", str),
+            ("protein_class_name", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("el", str),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
     ):
-        '''
+        """
         Returns Gene-Disease Associations by source.
 
         @source: str
@@ -1104,17 +1094,17 @@ class DisgenetApi:
             Max value of the pLI range.
         @limit: int
             Number of GDAs to retrieve.
-        '''
+        """
 
-        gene = self._list_to_str(gene, 'Gene ID')
-        disease = self._list_to_str(disease, 'Disease ID')
+        gene = self._list_to_str(gene, "Gene ID")
+        disease = self._list_to_str(disease, "Disease ID")
 
         return self._get_gdas(
             gene=gene,
             disease=disease,
             uniprot=None,
             vocabulary=None,
-            by='source',
+            by="source",
             source=source,
             min_score=min_score,
             max_score=max_score,
@@ -1140,29 +1130,29 @@ class DisgenetApi:
         p_value: float = None,
         limit: int = 10,
     ) -> NamedTuple(
-        'DiseaseDiseaseAssociation',
+        "DiseaseDiseaseAssociation",
         [
-            ('disease1_name', str),
-            ('disease2_name', str),
-            ('disease1_nshare', int),
-            ('disease2_nshare', int),
-            ('disease1_disease_class', Tuple[str]),
-            ('disease2_disease_class', Tuple[str]),
-            ('disease1_disease_class_name', Tuple[str]),
-            ('disease2_disease_class_name', Tuple[str]),
-            ('jaccard_share', float),
-            ('pvalue_jaccard_share', float),
-            ('source', str),
-            ('ngenes1', int),
-            ('ngenes2', int),
-            ('nshare', int),
-            ('nvariants1', int),
-            ('nvariants2', int),
-            ('diseaseid1', str),
-            ('diseaseid2', str),
+            ("disease1_name", str),
+            ("disease2_name", str),
+            ("disease1_nshare", int),
+            ("disease2_nshare", int),
+            ("disease1_disease_class", Tuple[str]),
+            ("disease2_disease_class", Tuple[str]),
+            ("disease1_disease_class_name", Tuple[str]),
+            ("disease2_disease_class_name", Tuple[str]),
+            ("jaccard_share", float),
+            ("pvalue_jaccard_share", float),
+            ("source", str),
+            ("ngenes1", int),
+            ("ngenes2", int),
+            ("nshare", int),
+            ("nvariants1", int),
+            ("nvariants2", int),
+            ("diseaseid1", str),
+            ("diseaseid2", str),
         ],
     ):
-        '''
+        """
         Returns Disease-Disease Associations with given query.
 
         @disease: Union[str, List[str]]
@@ -1188,81 +1178,76 @@ class DisgenetApi:
         @limit: int
             Number of associated diseases to retrieve.
             Default value : 10
-        '''
+        """
 
-        disease = self._list_to_str(disease, 'disease ID', limit=100)
+        disease = self._list_to_str(disease, "disease ID", limit=100)
 
-        url = f'{self._api_url}/dda/{share}/disease/'
+        url = f"{self._api_url}/dda/{share}/disease/"
 
         if vocabulary != None:
-
-            url += f'{vocabulary}/'
+            url += f"{vocabulary}/"
 
         url += disease
         get_params = dict()
         # headers = dict()
 
         if source != None:
-
-            get_params['source'] = source
+            get_params["source"] = source
 
         if p_value != None:
+            get_params["pvalue"] = str(p_value)
 
-            get_params['pvalue'] = str(p_value)
-
-        get_params['limit'] = str(max(1, min(limit, 100)))
+        get_params["limit"] = str(max(1, min(limit, 100)))
 
         result = self._retrieve_data(url, get_params)
 
         if result == None:
-
             return None
 
         DiseaseDiseaseAssociation = collections.namedtuple(
-            'DiseaseDiseaseAssociation',
+            "DiseaseDiseaseAssociation",
             [
-                'disease1_name',
-                'disease2_name',
-                f'disease1_n{share}',
-                f'disease2_n{share}',
-                'disease1_disease_class',
-                'disease2_disease_class',
-                'disease1_disease_class_name',
-                'disease2_disease_class_name',
-                f'jaccard_{share}',
-                f'pvalue_jaccard_{share}',
-                'source',
-                'ngenes1',
-                'ngenes2',
-                f'n{share}',
-                'nvariants1',
-                'nvariants2',
-                'diseaseid1',
-                'diseaseid2',
+                "disease1_name",
+                "disease2_name",
+                f"disease1_n{share}",
+                f"disease2_n{share}",
+                "disease1_disease_class",
+                "disease2_disease_class",
+                "disease1_disease_class_name",
+                "disease2_disease_class_name",
+                f"jaccard_{share}",
+                f"pvalue_jaccard_{share}",
+                "source",
+                "ngenes1",
+                "ngenes2",
+                f"n{share}",
+                "nvariants1",
+                "nvariants2",
+                "diseaseid1",
+                "diseaseid2",
             ],
         )
 
         for index, entry in enumerate(result):
-
             result[index] = DiseaseDiseaseAssociation(
-                self._get_string(entry['disease1_name']),
-                self._get_string(entry['disease2_name']),
-                self._get_int(entry[f'disease1_n{share}']),
-                self._get_int(entry[f'disease2_n{share}']),
-                self._get_tuple(entry['disease1_disease_class'], ';'),
-                self._get_tuple(entry['disease2_disease_class'], ';'),
-                self._get_tuple(entry['disease1_disease_class_name'], ';'),
-                self._get_tuple(entry['disease2_disease_class_name'], ';'),
-                self._get_float(entry[f'jaccard_{share}']),
-                self._get_float(entry[f'pvalue_jaccard_{share}']),
-                self._get_string(entry['source']),
-                self._get_int(entry['ngenes1']),
-                self._get_int(entry['ngenes2']),
-                self._get_int(entry[f'n{share}']),
-                self._get_int(entry['nvariants1']),
-                self._get_int(entry['nvariants2']),
-                self._get_string(entry['diseaseid1']),
-                self._get_string(entry['diseaseid2']),
+                self._get_string(entry["disease1_name"]),
+                self._get_string(entry["disease2_name"]),
+                self._get_int(entry[f"disease1_n{share}"]),
+                self._get_int(entry[f"disease2_n{share}"]),
+                self._get_tuple(entry["disease1_disease_class"], ";"),
+                self._get_tuple(entry["disease2_disease_class"], ";"),
+                self._get_tuple(entry["disease1_disease_class_name"], ";"),
+                self._get_tuple(entry["disease2_disease_class_name"], ";"),
+                self._get_float(entry[f"jaccard_{share}"]),
+                self._get_float(entry[f"pvalue_jaccard_{share}"]),
+                self._get_string(entry["source"]),
+                self._get_int(entry["ngenes1"]),
+                self._get_int(entry["ngenes2"]),
+                self._get_int(entry[f"n{share}"]),
+                self._get_int(entry["nvariants1"]),
+                self._get_int(entry["nvariants2"]),
+                self._get_string(entry["diseaseid1"]),
+                self._get_string(entry["diseaseid2"]),
             )
 
         return result
@@ -1287,27 +1272,27 @@ class DisgenetApi:
         max_dpi: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'VariantDiseaseAssociation',
+        "VariantDiseaseAssociation",
         [
-            ('variantid', str),
-            ('gene_symbol', str),
-            ('variant_dsi', float),
-            ('variant_dpi', float),
-            ('variant_consequence_type', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("variantid", str),
+            ("gene_symbol", str),
+            ("variant_dsi", float),
+            ("variant_dpi", float),
+            ("variant_consequence_type", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
     ):
-        '''
+        """
         Returns Variant-Disease Associations with given query.
 
         @gene: Union[str, List[str]]
@@ -1355,173 +1340,142 @@ class DisgenetApi:
             Max value of the DPI range for the variant.
         @limit: int
             Number of VDAs to retrieve.
-        '''
+        """
 
-        url = f'{self._api_url}/vda/'
+        url = f"{self._api_url}/vda/"
         get_params = dict()
 
-        if by == 'gene' and gene != None:
-
-            url += f'gene/{gene}'
+        if by == "gene" and gene != None:
+            url += f"gene/{gene}"
 
             if disease != None:
-
-                get_params['disease'] = disease
+                get_params["disease"] = disease
 
             if variant != None:
+                get_params["variant"] = variant
 
-                get_params['variant'] = variant
-
-        elif by == 'disease' and disease != None:
-
+        elif by == "disease" and disease != None:
             if vocabulary != None:
-
-                url += f'disease/{vocabulary}/{disease}'
+                url += f"disease/{vocabulary}/{disease}"
 
             else:
-
-                url += f'disease/{disease}'
+                url += f"disease/{disease}"
 
             if gene != None:
-
-                get_params['gene'] = gene
+                get_params["gene"] = gene
 
             if variant != None:
+                get_params["variant"] = variant
 
-                get_params['variant'] = variant
-
-        elif by == 'variant' and variant != None:
-
-            url += f'variant/{variant}'
+        elif by == "variant" and variant != None:
+            url += f"variant/{variant}"
 
             if disease != None:
-
-                get_params['disease'] = disease
+                get_params["disease"] = disease
 
             if gene != None:
+                get_params["gene"] = gene
 
-                get_params['gene'] = gene
-
-        elif by == 'source':
-
-            url += f'source/{source}'
+        elif by == "source":
+            url += f"source/{source}"
 
             if disease != None:
-
-                get_params['disease'] = disease
+                get_params["disease"] = disease
 
             if variant != None:
-
-                get_params['variant'] = variant
+                get_params["variant"] = variant
 
             if gene != None:
-
-                get_params['gene'] = gene
+                get_params["gene"] = gene
         else:
-
-            print('Problem in function call. Check arguments.')
+            print("Problem in function call. Check arguments.")
 
             return None
 
         if source != None:
-
-            get_params['source'] = source
+            get_params["source"] = source
 
         if min_score != None:
-
-            get_params['min_score'] = str(min_score)
+            get_params["min_score"] = str(min_score)
 
         if max_score != None:
-
-            get_params['max_score'] = str(max_score)
+            get_params["max_score"] = str(max_score)
 
         if min_ei != None:
-
-            get_params['min_ei'] = str(min_ei)
+            get_params["min_ei"] = str(min_ei)
 
         if max_ei != None:
-
-            get_params['max_ei'] = str(max_ei)
+            get_params["max_ei"] = str(max_ei)
 
         if min_score != None:
-
-            get_params['min_score'] = str(min_score)
+            get_params["min_score"] = str(min_score)
 
         if disease_type != None:
-
-            get_params['type'] = disease_type
+            get_params["type"] = disease_type
 
         if disease_class != None:
-
-            get_params['disease_class'] = disease_class
+            get_params["disease_class"] = disease_class
 
         if min_dsi != None:
-
-            get_params['min_dsi'] = str(min_dsi)
+            get_params["min_dsi"] = str(min_dsi)
 
         if max_dsi != None:
-
-            get_params['max_dsi'] = str(max_dsi)
+            get_params["max_dsi"] = str(max_dsi)
 
         if min_dpi != None:
-
-            get_params['min_dpi'] = str(min_dpi)
+            get_params["min_dpi"] = str(min_dpi)
 
         if max_dpi != None:
-
-            get_params['max_dpi'] = str(max_dpi)
+            get_params["max_dpi"] = str(max_dpi)
 
         if limit != None:
-
-            get_params['limit'] = str(max(1, limit))
+            get_params["limit"] = str(max(1, limit))
 
         result = self._retrieve_data(url, get_params)
 
         if result == None:
-
             return None
 
         VariantDiseaseAssociation = collections.namedtuple(
-            'VariantDiseaseAssociation',
+            "VariantDiseaseAssociation",
             [
-                'variantid',
-                'gene_symbol',
-                'variant_dsi',
-                'variant_dpi',
-                'variant_consequence_type',
-                'diseaseid',
-                'disease_name',
-                'disease_class',
-                'disease_class_name',
-                'disease_type',
-                'disease_semantic_type',
-                'score',
-                'ei',
-                'year_initial',
-                'year_final',
-                'source',
+                "variantid",
+                "gene_symbol",
+                "variant_dsi",
+                "variant_dpi",
+                "variant_consequence_type",
+                "diseaseid",
+                "disease_name",
+                "disease_class",
+                "disease_class_name",
+                "disease_type",
+                "disease_semantic_type",
+                "score",
+                "ei",
+                "year_initial",
+                "year_final",
+                "source",
             ],
         )
 
         for index, entry in enumerate(result):
-
             result[index] = VariantDiseaseAssociation(
-                self._get_string(entry['variantid']),
-                self._get_string(entry['gene_symbol']),
-                self._get_float(entry['variant_dsi']),
-                self._get_float(entry['variant_dpi']),
-                self._get_string(entry['variant_consequence_type']),
-                self._get_string(entry['diseaseid']),
-                self._get_string(entry['disease_name']),
-                self._get_tuple(entry['disease_class'], ';'),
-                self._get_tuple(entry['disease_class_name'], ';'),
-                self._get_string(entry['disease_type']),
-                self._get_string(entry['disease_semantic_type']),
-                self._get_float(entry['score']),
-                self._get_float(entry['ei']),
-                self._get_int(entry['year_initial']),
-                self._get_int(entry['year_final']),
-                self._get_string(entry['source']),
+                self._get_string(entry["variantid"]),
+                self._get_string(entry["gene_symbol"]),
+                self._get_float(entry["variant_dsi"]),
+                self._get_float(entry["variant_dpi"]),
+                self._get_string(entry["variant_consequence_type"]),
+                self._get_string(entry["diseaseid"]),
+                self._get_string(entry["disease_name"]),
+                self._get_tuple(entry["disease_class"], ";"),
+                self._get_tuple(entry["disease_class_name"], ";"),
+                self._get_string(entry["disease_type"]),
+                self._get_string(entry["disease_semantic_type"]),
+                self._get_float(entry["score"]),
+                self._get_float(entry["ei"]),
+                self._get_int(entry["year_initial"]),
+                self._get_int(entry["year_final"]),
+                self._get_string(entry["source"]),
             )
 
         return result
@@ -1548,31 +1502,31 @@ class DisgenetApi:
         max_pli: float = None,
         limit: int = None,
     ) -> NamedTuple(
-        'GeneDiseaseAssociation',
+        "GeneDiseaseAssociation",
         [
-            ('geneid', int),
-            ('gene_symbol', str),
-            ('uniprotid', str),
-            ('gene_dsi', float),
-            ('gene_dpi', float),
-            ('gene_pli', float),
-            ('protein_class', str),
-            ('protein_class_name', str),
-            ('diseaseid', str),
-            ('disease_name', str),
-            ('disease_class', Tuple[str]),
-            ('disease_class_name', Tuple[str]),
-            ('disease_type', str),
-            ('disease_semantic_type', str),
-            ('score', float),
-            ('ei', float),
-            ('el', str),
-            ('year_initial', int),
-            ('year_final', int),
-            ('source', str),
+            ("geneid", int),
+            ("gene_symbol", str),
+            ("uniprotid", str),
+            ("gene_dsi", float),
+            ("gene_dpi", float),
+            ("gene_pli", float),
+            ("protein_class", str),
+            ("protein_class_name", str),
+            ("diseaseid", str),
+            ("disease_name", str),
+            ("disease_class", Tuple[str]),
+            ("disease_class_name", Tuple[str]),
+            ("disease_type", str),
+            ("disease_semantic_type", str),
+            ("score", float),
+            ("ei", float),
+            ("el", str),
+            ("year_initial", int),
+            ("year_final", int),
+            ("source", str),
         ],
     ):
-        '''
+        """
         Returns Gene-Disease Associations with given query.
 
         @gene: Union[str, List[str]]
@@ -1626,174 +1580,145 @@ class DisgenetApi:
             Max value of the pLI range.
         @limit: int
             Number of GDAs to retrieve.
-        '''
+        """
 
-        url = f'{self._api_url}/gda/'
+        url = f"{self._api_url}/gda/"
         get_params = dict()
 
-        if by == 'gene' and gene != None:
-
-            url += f'gene/{gene}'
+        if by == "gene" and gene != None:
+            url += f"gene/{gene}"
 
             if disease != None:
+                get_params["disease"] = disease
 
-                get_params['disease'] = disease
-
-        elif by == 'disease' and disease != None:
-
+        elif by == "disease" and disease != None:
             if vocabulary != None:
-
-                url += f'disease/{vocabulary}/{disease}'
+                url += f"disease/{vocabulary}/{disease}"
 
             else:
-
-                url += f'disease/{disease}'
-
-            if gene != None:
-
-                get_params['gene'] = gene
-
-        elif by == 'uniprot' and uniprot != None:
-
-            url += f'gene/uniprot/{uniprot}'
-
-            if disease != None:
-
-                get_params['disease'] = disease
-
-        elif by == 'source' and source != None:
-
-            url += f'source/{source}'
+                url += f"disease/{disease}"
 
             if gene != None:
+                get_params["gene"] = gene
 
-                get_params['gene'] = gene
+        elif by == "uniprot" and uniprot != None:
+            url += f"gene/uniprot/{uniprot}"
 
             if disease != None:
+                get_params["disease"] = disease
 
-                get_params['disease'] = disease
+        elif by == "source" and source != None:
+            url += f"source/{source}"
+
+            if gene != None:
+                get_params["gene"] = gene
+
+            if disease != None:
+                get_params["disease"] = disease
 
         else:
-
-            print('Problem in function call. Check arguments.')
+            print("Problem in function call. Check arguments.")
 
             return None
 
-        if by != 'source' and source != None:
-
-            get_params['source'] = source
+        if by != "source" and source != None:
+            get_params["source"] = source
 
         if min_score != None:
-
-            get_params['min_score'] = str(min_score)
+            get_params["min_score"] = str(min_score)
 
         if max_score != None:
-
-            get_params['max_score'] = str(max_score)
+            get_params["max_score"] = str(max_score)
 
         if min_ei != None:
-
-            get_params['min_ei'] = str(min_ei)
+            get_params["min_ei"] = str(min_ei)
 
         if max_ei != None:
-
-            get_params['max_ei'] = str(max_ei)
+            get_params["max_ei"] = str(max_ei)
 
         if min_score != None:
-
-            get_params['min_score'] = str(min_score)
+            get_params["min_score"] = str(min_score)
 
         if disease_type != None:
-
-            get_params['type'] = disease_type
+            get_params["type"] = disease_type
 
         if disease_class != None:
-
-            get_params['disease_class'] = disease_class
+            get_params["disease_class"] = disease_class
 
         if min_dsi != None:
-
-            get_params['min_dsi'] = str(min_dsi)
+            get_params["min_dsi"] = str(min_dsi)
 
         if max_dsi != None:
-
-            get_params['max_dsi'] = str(max_dsi)
+            get_params["max_dsi"] = str(max_dsi)
 
         if min_dpi != None:
-
-            get_params['min_dpi'] = str(min_dpi)
+            get_params["min_dpi"] = str(min_dpi)
 
         if max_dpi != None:
-
-            get_params['max_dpi'] = str(max_dpi)
+            get_params["max_dpi"] = str(max_dpi)
 
         if min_pli != None:
-
-            get_params['min_pli'] = str(min_pli)
+            get_params["min_pli"] = str(min_pli)
 
         if max_pli != None:
-
-            get_params['max_pli'] = str(max_pli)
+            get_params["max_pli"] = str(max_pli)
 
         if limit != None:
-
-            get_params['limit'] = str(max(1, limit))
+            get_params["limit"] = str(max(1, limit))
 
         result = self._retrieve_data(url, get_params)
 
         if result == None:
-
             return None
 
         GeneDiseaseAssociation = collections.namedtuple(
-            'GeneDiseaseAssociation',
+            "GeneDiseaseAssociation",
             [
-                'geneid',
-                'gene_symbol',
-                'uniprotid',
-                'gene_dsi',
-                'gene_dpi',
-                'gene_pli',
-                'protein_class',
-                'protein_class_name',
-                'diseaseid',
-                'disease_name',
-                'disease_class',
-                'disease_class_name',
-                'disease_type',
-                'disease_semantic_type',
-                'score',
-                'ei',
-                'el',
-                'year_initial',
-                'year_final',
-                'source',
+                "geneid",
+                "gene_symbol",
+                "uniprotid",
+                "gene_dsi",
+                "gene_dpi",
+                "gene_pli",
+                "protein_class",
+                "protein_class_name",
+                "diseaseid",
+                "disease_name",
+                "disease_class",
+                "disease_class_name",
+                "disease_type",
+                "disease_semantic_type",
+                "score",
+                "ei",
+                "el",
+                "year_initial",
+                "year_final",
+                "source",
             ],
         )
 
         for index, entry in enumerate(result):
-
             result[index] = GeneDiseaseAssociation(
-                self._get_int(entry['geneid']),
-                self._get_string(entry['gene_symbol']),
-                self._get_string(entry['uniprotid']),
-                self._get_float(entry['gene_dsi']),
-                self._get_float(entry['gene_dpi']),
-                self._get_float(entry['gene_pli']),
-                self._get_string(entry['protein_class']),
-                self._get_string(entry['protein_class_name']),
-                self._get_string(entry['diseaseid']),
-                self._get_string(entry['disease_name']),
-                self._get_tuple(entry['disease_class'], ';'),
-                self._get_tuple(entry['disease_class_name'], ';'),
-                self._get_string(entry['disease_type']),
-                self._get_string(entry['disease_semantic_type']),
-                self._get_float(entry['score']),
-                self._get_float(entry['ei']),
-                self._get_string(entry['el']),
-                self._get_int(entry['year_initial']),
-                self._get_int(entry['year_final']),
-                self._get_string(entry['source']),
+                self._get_int(entry["geneid"]),
+                self._get_string(entry["gene_symbol"]),
+                self._get_string(entry["uniprotid"]),
+                self._get_float(entry["gene_dsi"]),
+                self._get_float(entry["gene_dpi"]),
+                self._get_float(entry["gene_pli"]),
+                self._get_string(entry["protein_class"]),
+                self._get_string(entry["protein_class_name"]),
+                self._get_string(entry["diseaseid"]),
+                self._get_string(entry["disease_name"]),
+                self._get_tuple(entry["disease_class"], ";"),
+                self._get_tuple(entry["disease_class_name"], ";"),
+                self._get_string(entry["disease_type"]),
+                self._get_string(entry["disease_semantic_type"]),
+                self._get_float(entry["score"]),
+                self._get_float(entry["ei"]),
+                self._get_string(entry["el"]),
+                self._get_int(entry["year_initial"]),
+                self._get_int(entry["year_final"]),
+                self._get_string(entry["source"]),
             )
 
         return result
@@ -1864,296 +1789,285 @@ class DisgenetApi:
             Name of items, like Gene ID or something
         @limit: Optional[int]
             Maximum number of list items
-        '''
+        """
 
         if isinstance(list_obj, list):
-
             if limit != None and len(list_obj) > limit:
+                print(f"Maximum length of {name}'s are {limit}.")
+                print(f"First {limit} {name}'s will be used.")
 
-                print(f'Maximum length of {name}\'s are {limit}.')
-                print(f'First {limit} {name}\'s will be used.')
+                return ",".join(list_obj[:limit])
 
-                return ','.join(list_obj[:limit])
-
-            return ','.join(list_obj)
+            return ",".join(list_obj)
 
         return list_obj
 
     @_if_authenticated
     @_delete_cache
-    def _retrieve_data(self, url: str, get_params: Union[List[str], Dict[str, str]]) -> List[Dict[str, str]]:
-        '''
+    def _retrieve_data(
+        self, url: str, get_params: Union[List[str], Dict[str, str]]
+    ) -> List[Dict[str, str]]:
+        """
         Retrieves the data with given request body
 
         @url : str
             Query url
         @get_params: Union[List[str], Dict[str, str]]
             GET request parameters
-        '''
+        """
 
-        headers = ['accept: */*', f'Authorization: Bearer {self._api_key}']
+        headers = ["accept: */*", f"Authorization: Bearer {self._api_key}"]
 
         get_params_extend = list()
 
         try:
-
-            if isinstance(get_params['disease_class'], list):
-
+            if isinstance(get_params["disease_class"], list):
                 get_params_extend = [
-                    f'disease_class={value}' for value in get_params['disease_class']
+                    f"disease_class={value}" for value in get_params["disease_class"]
                 ]
 
-                del get_params['disease_class']
+                del get_params["disease_class"]
 
         except KeyError:
-
             pass
 
-        get_params['format'] = 'json'
-        get_params = [f'{key}={value}' for key, value in get_params.items()]
+        get_params["format"] = "json"
+        get_params = [f"{key}={value}" for key, value in get_params.items()]
 
         if get_params_extend:
-
             get_params.extend(get_params_extend)
 
         c = curl.Curl(url=url, get=get_params, req_headers=headers)
 
         if c.status == 0 or c.status == 200:
-
             result = c.result
             result = json.loads(result)
 
             return result
 
-        print(f'An error occurred with the code {c.status}')
+        print(f"An error occurred with the code {c.status}")
 
     def _get_int(self, str_obj) -> int:
-        '''
+        """
         Returns an int if the object is not None
 
         @str_obj : str
             String to be processed
-        '''
+        """
 
         if str_obj != None and not isinstance(str_obj, int):
-
             return int(str_obj)
 
         return str_obj
 
     def _get_float(self, str_obj) -> float:
-        '''
+        """
         Returns a float if the object is not None
 
         @str_obj : str
             String to be processed
-        '''
+        """
 
         if str_obj != None and not isinstance(str_obj, float):
-
             return float(str_obj)
 
         return str_obj
 
     def _get_string(self, obj) -> str:
-        '''
+        """
         Returns a string if the object is not None
 
         @obj : object
             Object to be processed
-        '''
+        """
 
         if obj != None and not isinstance(obj, str):
-
             return str(obj).strip()
 
         return obj
 
     def _get_tuple(self, str_obj: str, delim: str) -> Tuple[str]:
-        '''
+        """
         Returns a splitted tuple with given delimiter
 
         @str_obj : str
             String object to be processed
         @delim : str
             Char to split the str_obj
-        '''
+        """
 
         if str_obj != None and not isinstance(str_obj, tuple):
-
             return tuple([item.strip() for item in str_obj.split(delim)])
 
         return str_obj
 
 
 @DisgenetApi._delete_cache
-def variant_gene_mappings() -> Dict[str, NamedTuple(
-    'VariantGeneMapping',
-    [
-        ('geneId', str),
-        ('geneSymbol', str),
-        ('sourceIds', Tuple[str]),
-    ],
-    )
-    ]:
-    '''
+def variant_gene_mappings() -> (
+    Dict[
+        str,
+        NamedTuple(
+            "VariantGeneMapping",
+            [
+                ("geneId", str),
+                ("geneSymbol", str),
+                ("sourceIds", Tuple[str]),
+            ],
+        ),
+    ]
+):
+    """
     Downloads and processes variant-gene mappings.
     Returns a dict where the \'snpId\' is the key.
-    '''
+    """
 
-    url = urls.urls['disgenet']['variant_gene_mappings']
+    url = urls.urls["disgenet"]["variant_gene_mappings"]
     c = curl.Curl(
         url,
         silent=False,
         large=True,
-        encoding='utf-8',
-        default_mode='r',
+        encoding="utf-8",
+        default_mode="r",
     )
-    reader = csv.DictReader(c.result, delimiter='\t')
+    reader = csv.DictReader(c.result, delimiter="\t")
     mapping = dict()
 
     for rec in reader:
-
-        snpId = rec.pop('snpId')
+        snpId = rec.pop("snpId")
 
         try:
-
             match = False
 
             for index, entry in enumerate(mapping[snpId]):
-
                 if (
-                    rec['geneId'] == entry['geneId']
-                    and rec['geneSymbol'] == entry['geneSymbol']
+                    rec["geneId"] == entry["geneId"]
+                    and rec["geneSymbol"] == entry["geneSymbol"]
                 ):
-
                     match = True
 
-                    if isinstance(mapping[snpId][index]['sourceId'], list):
-
-                        mapping[snpId][index]['sourceId'].append(rec['sourceId'])
+                    if isinstance(mapping[snpId][index]["sourceId"], list):
+                        mapping[snpId][index]["sourceId"].append(rec["sourceId"])
 
                     else:
-
-                        mapping[snpId][index]['sourceId'] = [
-                            mapping[snpId][index]['sourceId'],
-                            rec['sourceId'],
+                        mapping[snpId][index]["sourceId"] = [
+                            mapping[snpId][index]["sourceId"],
+                            rec["sourceId"],
                         ]
 
                     break
 
             if not match:
-
                 mapping[snpId].append(rec)
 
         except KeyError:
-
             mapping[snpId] = [rec]
 
     VariantGeneMapping = collections.namedtuple(
-        'VariantGeneMapping',
+        "VariantGeneMapping",
         [
-            'geneId',
-            'geneSymbol',
-            'sourceIds',
+            "geneId",
+            "geneSymbol",
+            "sourceIds",
         ],
     )
 
     for key, values in mapping.items():
-
         for index, value in enumerate(values):
-
             mapping[key][index] = VariantGeneMapping(
-                value['geneId'],
-                value['geneSymbol'],
-                tuple(value['sourceId']),
+                value["geneId"],
+                value["geneSymbol"],
+                tuple(value["sourceId"]),
             )
 
     return mapping
 
 
 @DisgenetApi._delete_cache
-def disease_id_mappings() -> dict[str, NamedTuple(
-        'DiseaseIdMapping',
-        [
-            ('name', str),
-            ('vocabularies', Tuple[NamedTuple(
-                            'Vocabulary',
+def disease_id_mappings() -> (
+    dict[
+        str,
+        NamedTuple(
+            "DiseaseIdMapping",
+            [
+                ("name", str),
+                (
+                    "vocabularies",
+                    Tuple[
+                        NamedTuple(
+                            "Vocabulary",
                             [
-                                ('vocabulary', str),
-                                ('code', str),
-                                ('vocabularyName', str),
+                                ("vocabulary", str),
+                                ("code", str),
+                                ("vocabularyName", str),
                             ],
                         )
-                    ]
+                    ],
                 ),
             ],
         ),
-    ]:
-    '''
+    ]
+):
+    """
     Downloads and processes disease-id mappings.
     Returns a dict where the \'diseaseId\' is the key.
-    '''
+    """
 
-    url = urls.urls['disgenet']['disease_id_mappings']
+    url = urls.urls["disgenet"]["disease_id_mappings"]
     c = curl.Curl(
         url,
         silent=False,
         large=True,
-        encoding='utf-8',
-        default_mode='r',
+        encoding="utf-8",
+        default_mode="r",
     )
-    reader = csv.DictReader(c.result, delimiter='\t')
+    reader = csv.DictReader(c.result, delimiter="\t")
     mapping = dict()
 
     Vocabulary = collections.namedtuple(
-        'Vocabulary',
+        "Vocabulary",
         [
-            'vocabulary',
-            'code',
-            'vocabularyName',
+            "vocabulary",
+            "code",
+            "vocabularyName",
         ],
     )
 
     for rec in reader:
-
-        diseaseId = rec.pop('diseaseId')
-        name = rec.pop('name')
+        diseaseId = rec.pop("diseaseId")
+        name = rec.pop("name")
         rec = Vocabulary(
-            rec['vocabulary'],
-            rec['code'],
-            rec['vocabularyName'],
+            rec["vocabulary"],
+            rec["code"],
+            rec["vocabularyName"],
         )
         try:
-
-            mapping[diseaseId]['vocabularies'].append(rec)
+            mapping[diseaseId]["vocabularies"].append(rec)
 
         except KeyError:
             mapping[diseaseId] = dict()
-            mapping[diseaseId]['name'] = name
-            mapping[diseaseId]['vocabularies'] = [rec]
+            mapping[diseaseId]["name"] = name
+            mapping[diseaseId]["vocabularies"] = [rec]
 
     DiseaseIdMapping = collections.namedtuple(
-        'DiseaseIdMapping',
+        "DiseaseIdMapping",
         [
-            'name',
-            'vocabularies',
+            "name",
+            "vocabularies",
         ],
     )
 
     for key, value in mapping.items():
-
         mapping[key] = DiseaseIdMapping(
-            value['name'],
-            tuple(value['vocabularies']),
+            value["name"],
+            tuple(value["vocabularies"]),
         )
 
     return mapping
 
 
 @DisgenetApi._delete_cache
-def disgenet_annotations(dataset='curated'):
-    '''
+def disgenet_annotations(dataset="curated"):
+    """
     Downloads and processes the list of all human disease related proteins
     from DisGeNet.
     Returns dict of dicts.
@@ -2161,58 +2075,56 @@ def disgenet_annotations(dataset='curated'):
     @dataset : str
         Name of DisGeNet dataset to be obtained:
         `curated`, `literature`, `befree` or `all`.
-    '''
+    """
 
     DisGeNetAnnotation = collections.namedtuple(
-        'DisGeNetAnnotation',
+        "DisGeNetAnnotation",
         [
-            'disease',
-            'type',
-            'score',
-            'dsi',
-            'dpi',
-            'nof_pmids',
-            'nof_snps',
-            'source',
+            "disease",
+            "type",
+            "score",
+            "dsi",
+            "dpi",
+            "nof_pmids",
+            "nof_snps",
+            "source",
         ],
     )
 
-    url = urls.urls['disgenet']['annotations'] % dataset
+    url = urls.urls["disgenet"]["annotations"] % dataset
     c = curl.Curl(
         url,
         silent=False,
         large=True,
-        encoding='utf-8',
-        default_mode='r',
+        encoding="utf-8",
+        default_mode="r",
     )
-    reader = csv.DictReader(c.result, delimiter='\t')
+    reader = csv.DictReader(c.result, delimiter="\t")
     data = collections.defaultdict(set)
 
     for rec in reader:
-
         uniprots = mapping.map_name(
-            rec['geneSymbol'],
-            'genesymbol',
-            'uniprot',
+            rec["geneSymbol"],
+            "genesymbol",
+            "uniprot",
         )
 
         if not uniprots:
-
             continue
 
         for uniprot in uniprots:
-
             data[uniprot].add(
                 DisGeNetAnnotation(
-                    disease=rec['diseaseName'],
-                    type=rec['diseaseType'],
-                    score=float(rec['score']),
-                    dsi=float(rec['DSI']) if rec['DSI'] else None,
-                    dpi=float(rec['DPI']) if rec['DPI'] else None,
-                    nof_pmids=int(rec['NofPmids']),
-                    nof_snps=int(rec['NofSnps']),
-                    source=tuple(x.strip() for x in rec['source'].split(';')),
+                    disease=rec["diseaseName"],
+                    type=rec["diseaseType"],
+                    score=float(rec["score"]),
+                    dsi=float(rec["DSI"]) if rec["DSI"] else None,
+                    dpi=float(rec["DPI"]) if rec["DPI"] else None,
+                    nof_pmids=int(rec["NofPmids"]),
+                    nof_snps=int(rec["NofSnps"]),
+                    source=tuple(x.strip() for x in rec["source"].split(";")),
                 )
             )
 
     return dict(data)
+
