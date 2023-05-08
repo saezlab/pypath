@@ -112,6 +112,7 @@ class Export(session.Logger):
         'references': 'category',
         'curation_effort': 'int16',
         'extra_attrs': 'category',
+        'evidences': 'category',
         'entity_type_source': 'category',
         'entity_type_target': 'category',
     }
@@ -931,6 +932,7 @@ class Export(session.Logger):
                     )
                 ),
                 'extra_attrs': lambda e, d: e.serialize_attrs(d),
+                'evidences': lambda e, d: e.serialize_evidences(),
             }
         )
 

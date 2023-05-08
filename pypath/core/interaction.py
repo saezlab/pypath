@@ -3220,6 +3220,11 @@ class Interaction(attrs_mod.AttributeHandler):
         return evs.serialize_attrs()
 
 
+    def serialize_evidences(self):
+
+        return self.evidences.serialize()
+
+
     def _get_attr(self, resource, key, direction):
 
         if resource in self.direction[direction]:
