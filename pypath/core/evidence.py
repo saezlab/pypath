@@ -116,7 +116,12 @@ class Evidence(attrs_mod.AttributeHandler):
             self.resource == other or
             (
                 hasattr(other, 'resource') and
-                self.resource == other.resource
+                self.resource == other.resource and
+                self.dataset == other.dataset and
+                (
+                    self.resource.interaction_type ==
+                    self.resource.interaction_type
+                )
             )
         )
 
@@ -163,9 +168,7 @@ class Evidence(attrs_mod.AttributeHandler):
     @property
     def dataset(self):
 
-        networkinput = getattr(self.resource, 'networkinput', None)
-
-        return getattr(networkinput, 'dataset', None)
+        return getattr(self.resource, 'dataset', None)
 
 
     def merge(self, other):
@@ -311,7 +314,7 @@ class Evidence(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = False,
             references = None,
-            dataset = None,
+            datasets = None,
         ):
 
         def _match(attr, value):
@@ -383,7 +386,7 @@ class Evidence(attrs_mod.AttributeHandler):
             ) and
             (
                 dataset is None or
-                self.dataset == dataset
+                _match('dataset', datasets)
             )
         )
 
@@ -727,6 +730,15 @@ class Evidences(object):
         return {ev.resource.data_model for ev in self.filter(**kwargs)}
 
 
+    def get_datasets(self, **kwargs):
+
+        return {
+            ds for ds in
+            (ev.dataset for ev in self.filter(**kwargs))
+            if ds
+        }
+
+
     def __isub__(self, other):
 
         if isinstance(other, self.__class__):
@@ -764,6 +776,7 @@ class Evidences(object):
             interaction_type = None,
             via = False,
             references = None,
+            datasets = None,
         ):
 
         return (
@@ -774,6 +787,7 @@ class Evidences(object):
                 interaction_type = interaction_type,
                 via = via,
                 references = references,
+                datasets = datasets,
             )
         )
 
@@ -785,6 +799,7 @@ class Evidences(object):
             interaction_type = None,
             via = False,
             references = None,
+            datasets = None,
         ):
 
         return bool(
@@ -795,6 +810,7 @@ class Evidences(object):
                     interaction_type = interaction_type,
                     via = via,
                     references = references,
+                    datasets = datasets,
                 )
             )
         )

@@ -231,6 +231,7 @@ class NetworkResourceKey(
                 'interaction_type',
                 'data_model',
                 'via',
+                'dataset',
             ]
         )
     ):
@@ -306,6 +307,7 @@ class NetworkResource(ResourceAttributes):
             interaction_type = self.interaction_type,
             data_model = self.data_model,
             via = self.via,
+            dataset = self.dataset,
         )
 
 
@@ -345,6 +347,14 @@ class NetworkResource(ResourceAttributes):
     def license(self) -> license.License | None:
 
         return getattr(self, 'resource_attrs', None).get('license')
+
+
+    @property
+    def dataset(self) -> str | None:
+
+        networkinput = getattr(self, 'networkinput', None)
+
+        return getattr(networkinput, 'dataset', None)
 
 
 class NetworkDataset(collections.abc.MutableMapping):
@@ -470,6 +480,22 @@ class NetworkDataset(collections.abc.MutableMapping):
             resource.networkinput.dataset = name
 
         self._name = name
+
+
+    def __copy__(self):
+
+        return self.__class__(
+            name = self.name,
+            resources = self._resources,
+        )
+
+
+    def rename(self, name: str):
+
+        new = copy.copy(self)
+        new.name = name
+
+        return new
 
 
 EnzymeSubstrateResourceKey = collections.namedtuple(
