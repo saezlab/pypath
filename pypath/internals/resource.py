@@ -363,7 +363,7 @@ class NetworkDataset(collections.abc.MutableMapping):
         of the datasets and resources within.
         """
 
-        self.name = name
+        self._name = name
         self.add(resources)
 
         self._resources = {}
@@ -446,6 +446,22 @@ class NetworkDataset(collections.abc.MutableMapping):
 
 
     update = add
+
+
+    @property
+    def name(self):
+
+        return self._name
+
+
+    @name.setter
+    def name(self, name):
+
+        for resource in self.values():
+
+            resource.networkinput.dataset = name
+
+        self._name = name
 
 
 EnzymeSubstrateResourceKey = collections.namedtuple(
