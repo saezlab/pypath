@@ -415,6 +415,14 @@ class NetworkDataset(collections.abc.MutableMapping):
         )
 
 
+    def __eq__(self, other):
+
+        return (
+            self._name == other or
+            self._name == getattr(other, '_name', None)
+        )
+
+
     def items(self):
 
         return self._resources.items()
