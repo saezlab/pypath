@@ -26,6 +26,8 @@ from __future__ import annotations
 
 from future.utils import iteritems
 
+from typing import Mapping
+
 import importlib as imp
 import re
 import os
@@ -582,9 +584,9 @@ class Network(session_mod.Logger):
 
         resources = (
             (resources,)
-                if not isinstance(resources, (list, dict, tuple, set)) else
+                if not isinstance(resources, (list, Mapping, tuple, set)) else
             resources.values()
-                if isinstance(resources, dict) else
+                if isinstance(resources, Mapping) else
             resources
         )
 
