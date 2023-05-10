@@ -160,6 +160,14 @@ class Evidence(attrs_mod.AttributeHandler):
         return self.resource.key
 
 
+    @property
+    def dataset(self):
+
+        networkinput = getattr(self.resource, 'networkinput', None)
+
+        return getattr(networkinput, 'dataset', None)
+
+
     def merge(self, other):
         """
         Merges two evidences. Returns set of either one or two evidences
@@ -303,6 +311,7 @@ class Evidence(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = False,
             references = None,
+            dataset = None,
         ):
 
         def _match(attr, value):
@@ -371,6 +380,10 @@ class Evidence(attrs_mod.AttributeHandler):
             (
                 not data_model or
                 _match('data_model', data_model)
+            ) and
+            (
+                dataset is None or
+                self.dataset == dataset
             )
         )
 
