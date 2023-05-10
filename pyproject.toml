@@ -73,9 +73,9 @@ timeloop = "*"
 toml = "*"
 tqdm = "*"
 xlrd = "*"
-pybel = { version = "*", optional = true }
-bio2bel = { version = "*", optional = true }
-click = { version = "*", optional = true }
+# pybel = { version = "*", optional = true, extras = [] }
+# bio2bel = { version = "*", optional = true, extras = [] }
+# click = { version = "*", optional = true }
 python-igraph = { version = "*", optional = true }
 sparqlwrapper = { version = "*", optional = true }
 openbabel = { version = "*", optional = true }
@@ -85,11 +85,11 @@ pysftp = "^0.2.9"
 typing_extensions = "*"
 
 [tool.poetry.extras]
-bel = [
-    "pybel",
-    "bio2bel",
-    "click",
-]
+# bel = [
+#     "pybel",
+#     "bio2bel",
+#     "click",
+# ]
 graph = [
     "python-igraph",
 ]
