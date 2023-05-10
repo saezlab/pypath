@@ -721,6 +721,7 @@ class NetworkInput:
             data_model = None,
             allow_loops = None,
             only_default_organism = False,
+            dataset = None,
         ):
         """
         :param str mark_source:
@@ -765,6 +766,7 @@ class NetworkInput:
         self.data_model = data_model
         self.allow_loops = allow_loops
         self.only_default_organism = only_default_organism
+        self.dataset = dataset
 
 
     def _field(self, value, cls):
