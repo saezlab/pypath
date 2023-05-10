@@ -30,7 +30,7 @@ Generic objects for representing resources.
 
 from future.utils import iteritems
 
-from typing import TYPE_CHECKING
+from typing import Mapping, TYPE_CHECKING
 
 if TYPE_CHECKING:
 
@@ -38,6 +38,7 @@ if TYPE_CHECKING:
 
 import os
 import collections
+import copy
 
 try:
     import cPickle as pickle
@@ -344,6 +345,107 @@ class NetworkResource(ResourceAttributes):
     def license(self) -> license.License | None:
 
         return getattr(self, 'resource_attrs', None).get('license')
+
+
+class NetworkDataset(collections.abc.MutableMapping):
+
+
+    def __init__(
+            self,
+            name: str,
+            resources: dict | None = None,
+        ):
+        """
+        A set of network resources.
+
+        Formerly the network datasets were represented by dicts. This is
+        only a thin wrapper around that solution to better organise metadata
+        of the datasets and resources within.
+        """
+
+        self.name = name
+        self.add(resources)
+
+        self._resources = {}
+
+
+    def __repr__(self):
+
+        it = ', '.join(self.interaction_types)
+
+        return f'<NetworkDataset: {self.name} ({len(self)} resources; {it})>'
+
+
+    def __iter__(self):
+
+        return (r for r in self._resources.values())
+
+
+    def __len__(self):
+
+        return len(self._resources)
+
+
+    @property
+    def interaction_types(self):
+
+        return sorted({r.interaction_type for r in self})
+
+
+    def __setitem__(self, key, value):
+
+        self.add(value, key)
+
+
+    def __getitem__(self, key):
+
+        return self._resources[key]
+
+
+    def __delitem__(self, key):
+
+        del self._resources[key]
+
+
+    def __contains__(self, key):
+
+        return (
+            key in self._resources or
+            any(r.name == key for r in self._resources.values())
+        )
+
+
+    def items(self):
+
+        return self._resources.items()
+
+
+    def values(self):
+
+        return self._resources.values()
+
+
+    def keys(self):
+
+        return self._resources.keys()
+
+
+    def add(self, value, key = None):
+
+        if isinstance(value, Mapping):
+
+            for k, v in value.items():
+
+                self.add(v, k)
+
+        elif hasattr(value, 'networkinput'):
+
+            resource = copy.deepcopy(value)
+            resource.networkinput.dataset = self.name
+            self._resources[key or resource.name] = resource
+
+
+    update = add
 
 
 EnzymeSubstrateResourceKey = collections.namedtuple(
