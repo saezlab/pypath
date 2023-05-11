@@ -30,7 +30,7 @@ Generic objects for representing resources.
 
 from future.utils import iteritems
 
-from typing import Mapping, TYPE_CHECKING
+from typing import Iterable, Mapping, TYPE_CHECKING
 
 if TYPE_CHECKING:
 
@@ -363,7 +363,7 @@ class NetworkDataset(collections.abc.MutableMapping):
     def __init__(
             self,
             name: str,
-            resources: dict | None = None,
+            resources: dict | list | None = None,
         ):
         """
         A set of network resources.
@@ -452,9 +452,15 @@ class NetworkDataset(collections.abc.MutableMapping):
 
         if isinstance(value, Mapping):
 
-            for k, v in value.items():
+            for label, resource in value.items():
 
-                self.add(v, k)
+                self.add(resource, label)
+
+        elif isinstance(value, Iterable):
+
+            for resource in value:
+
+                self.add(resource)
 
         elif hasattr(value, 'networkinput'):
 
