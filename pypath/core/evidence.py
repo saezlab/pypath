@@ -385,7 +385,7 @@ class Evidence(attrs_mod.AttributeHandler):
                 _match('data_model', data_model)
             ) and
             (
-                dataset is None or
+                datasets is None or
                 _match('dataset', datasets)
             )
         )
