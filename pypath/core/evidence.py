@@ -66,12 +66,14 @@ class Evidence(attrs_mod.AttributeHandler):
     __slots__ = [
         'resource',
         'references',
+        'dataset',
     ]
 
 
     def __init__(self, resource, references = None, attrs = None):
 
         self.resource = resource
+        self.dataset = getattr(resource, 'dataset', None)
         self.references = self._process_references(references)
         attrs_mod.AttributeHandler.__init__(self, attrs)
 
@@ -116,8 +118,7 @@ class Evidence(attrs_mod.AttributeHandler):
             self.resource == other or
             (
                 hasattr(other, 'resource') and
-                self.resource == other.resource and
-                self.dataset == other.dataset and
+                self.resource == other.resource
                 (
                     self.resource.interaction_type ==
                     self.resource.interaction_type
@@ -134,6 +135,10 @@ class Evidence(attrs_mod.AttributeHandler):
 
         if self == other:
 
+            if not self.references and other.references:
+
+                self.dataset = other.dataset
+
             self.references.update(other.references)
             attrs_mod.AttributeHandler.__iadd__(other)
 
@@ -149,10 +154,13 @@ class Evidence(attrs_mod.AttributeHandler):
 
     def __add__(self, other):
 
+        dataset = self.dataset if self.references else other.dataset
+
         new = self.__class__(
             resource = self.resource,
             references = self.references | other.references,
         )
+        new.dataset = dataset
         new.update_attrs(self.attrs.copy())
         new.update_attrs(other.attrs.copy())
 
@@ -163,12 +171,6 @@ class Evidence(attrs_mod.AttributeHandler):
     def key(self):
 
         return self.resource.key
-
-
-    @property
-    def dataset(self):
-
-        return getattr(self.resource, 'dataset', None)
 
 
     def merge(self, other):
