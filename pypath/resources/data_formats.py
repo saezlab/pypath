@@ -502,6 +502,7 @@ pathway = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {'g2p_ligand_location': 8},
         extra_node_attrs_b = {'g2p_target_type': 9},
+        data_model = 'ligand_receptor',
     ),
     'ca1': input_formats.NetworkInput(
         name = 'CA1',
@@ -738,6 +739,7 @@ pathway = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
     ),
     'celltalkdb': input_formats.NetworkInput(
         name = 'CellTalkDB',
@@ -757,6 +759,7 @@ pathway = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
     ),
     'cellchatdb': input_formats.NetworkInput(
         name = 'CellChatDB',
@@ -779,6 +782,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
     ),
     'connectomedb': input_formats.NetworkInput(
         name = 'connectomeDB2020',
@@ -794,6 +798,7 @@ pathway = {
         input = 'connectomedb.connectomedb_interactions',
         references = 3,
         header = False,
+        data_model = 'ligand_receptor',
     ),
     'talklr': input_formats.NetworkInput(
         name = 'talklr',
@@ -813,6 +818,7 @@ pathway = {
         extra_edge_attrs = {
             'putative': 4,
         },
+        data_model = 'ligand_receptor',
     ),
     'cellinker': input_formats.NetworkInput(
         name = 'Cellinker',
@@ -832,6 +838,7 @@ pathway = {
         extra_edge_attrs = {
             'type': 6,
         },
+        data_model = 'ligand_receptor',
     ),
     'scconnect': input_formats.NetworkInput(
         name = 'scConnect',
@@ -884,6 +891,7 @@ pathway = {
         input = 'scconnect.scconnect_interactions',
         references = (7, '|'),
         header = False,
+        data_model = 'ligand_receptor',
     ),
 }
 
@@ -1011,6 +1019,9 @@ pathway_noref = {
     ),
 }
 
+
+# synonym
+pathwayextra = pathway_noref
 
 pathway_all = dict(copy.deepcopy(pathway), **copy.deepcopy(pathway_noref))
 
@@ -1619,6 +1630,7 @@ ptm_misc = {
 
 # synonym
 ptm_noref = ptm_misc
+kinaseextra = ptm_misc
 
 ptm_all = copy.deepcopy(ptm_misc)
 ptm_all.update(ptm)
@@ -3048,6 +3060,11 @@ ligand_receptor = {
     ),
 }
 
+
+# synonym
+ligrecextra = ligand_receptor
+
+
 small_molecule_protein = {
     'signor': input_formats.NetworkInput(
         name = 'SIGNOR',
@@ -3165,45 +3182,32 @@ small_molecule_protein = {
 }
 
 ligand_receptor['guide2pharma'] = copy.deepcopy(pathway['guide2pharma'])
-ligand_receptor['guide2pharma'].data_model = 'ligand_receptor'
 ligand_receptor['guide2pharma'].must_have_references = False
 ligand_receptor['icellnet'] = copy.deepcopy(pathway['icellnet'])
 ligand_receptor['icellnet'].must_have_references = False
-ligand_receptor['icellnet'].data_model = 'ligand_receptor'
 ligand_receptor['celltalkdb'] = copy.deepcopy(pathway['celltalkdb'])
 ligand_receptor['celltalkdb'].must_have_references = False
-ligand_receptor['celltalkdb'].data_model = 'ligand_receptor'
 ligand_receptor['cellchatdb'] = copy.deepcopy(pathway['cellchatdb'])
 ligand_receptor['cellchatdb'].must_have_references = False
-ligand_receptor['cellchatdb'].data_model = 'ligand_receptor'
 ligand_receptor['connectomedb'] = copy.deepcopy(pathway['connectomedb'])
 ligand_receptor['connectomedb'].must_have_references = False
-ligand_receptor['connectomedb'].data_model = 'ligand_receptor'
 ligand_receptor['talklr'] = copy.deepcopy(pathway['talklr'])
 ligand_receptor['talklr'].must_have_references = False
-ligand_receptor['talklr'].data_model = 'ligand_receptor'
 ligand_receptor['cellinker'] = copy.deepcopy(pathway['cellinker'])
 ligand_receptor['cellinker'].must_have_references = False
-ligand_receptor['cellinker'].data_model = 'ligand_receptor'
 ligand_receptor['scconnect'] = copy.deepcopy(pathway['scconnect'])
 ligand_receptor['scconnect'].must_have_references = False
-ligand_receptor['scconnect'].data_model = 'ligand_receptor'
 
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
-pathway['hpmr'].data_model = 'activity_flow'
 pathway['hpmr'].must_have_references = True
 pathway['hpmr'].positive_filters = []
 pathway['cellphonedb'] = copy.deepcopy(ligand_receptor['cellphonedb'])
 pathway['cellphonedb'].must_have_references = True
-pathway['cellphonedb'].data_model = 'activity_flow'
 pathway['ramilowski2015'] = copy.deepcopy(ligand_receptor['ramilowski2015'])
 pathway['ramilowski2015'].must_have_references = True
-pathway['ramilowski2015'].data_model = 'activity_flow'
 pathway['lrdb'] = copy.deepcopy(ligand_receptor['lrdb'])
-pathway['lrdb'].data_model = 'activity_flow'
 pathway['lrdb'].must_have_references = True
 pathway['baccin2019'] = copy.deepcopy(ligand_receptor['baccin2019'])
-pathway['baccin2019'].data_model = 'activity_flow'
 pathway['baccin2019'].must_have_references = True
 
 """
