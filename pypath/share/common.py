@@ -2688,3 +2688,30 @@ def compr(
     obj = obj.items() if _type == dict else obj
 
     return _type(insert(it) for it in obj if filter(it))
+
+
+def ignore_unhashable(func):
+    """
+    Decorator to ignore unhashable values.
+
+    This is useful when using `lru_cache` on functions with optionally
+    unhashable arguments.
+
+    Based on https://stackoverflow.com/a/64111268/854988.
+    """
+
+    uncached = func.__wrapped__
+    attributes = functools.WRAPPER_ASSIGNMENTS + ('cache_info', 'cache_clear')
+    @functools.wraps(func, assigned=attributes)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except TypeError as error:
+            if 'unhashable type' in str(error):
+                return uncached(*args, **kwargs)
+            raise
+
+    wrapper.__uncached__ = uncached
+
+    return wrapper
+
