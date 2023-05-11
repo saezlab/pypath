@@ -503,6 +503,24 @@ class NetworkDataset(collections.abc.MutableMapping):
         return new
 
 
+    def remove(self, remove: str | set | None):
+
+        remove = common.to_set(remove)
+
+        self._resources = {
+            k: v for k, v in self.items()
+            if k not in remove and v.name not in remove
+        }
+
+
+    def without(self, exclude: str | set | None):
+
+        new = copy.copy(self)
+        new.remove(exclude)
+
+        return new
+
+
 EnzymeSubstrateResourceKey = collections.namedtuple(
     'EnzymeSubstrateResourceKey',
     [
