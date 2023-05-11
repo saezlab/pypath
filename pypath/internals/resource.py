@@ -374,9 +374,8 @@ class NetworkDataset(collections.abc.MutableMapping):
         """
 
         self._name = name
-        self.add(resources)
-
         self._resources = {}
+        self.add(resources)
 
 
     def __repr__(self):
