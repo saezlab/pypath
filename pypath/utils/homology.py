@@ -233,6 +233,7 @@ class HomologyManager(session.Logger):
         )
 
 
+    @common.ignore_unhashable
     @functools.lru_cache(maxsize = int(1e5))
     def translate(
             self,

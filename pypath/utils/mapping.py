@@ -1730,6 +1730,7 @@ class Mapper(session_mod.Logger):
         return list(names)[0] if names else None
 
 
+    @common.ignore_unhashable
     @functools.lru_cache(maxsize = int(1e5))
     def map_name(
             self,
