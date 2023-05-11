@@ -231,7 +231,6 @@ class NetworkResourceKey(
                 'interaction_type',
                 'data_model',
                 'via',
-                'dataset',
             ]
         )
     ):
@@ -307,7 +306,6 @@ class NetworkResource(ResourceAttributes):
             interaction_type = self.interaction_type,
             data_model = self.data_model,
             via = self.via,
-            dataset = self.dataset,
         )
 
 
