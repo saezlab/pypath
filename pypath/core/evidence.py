@@ -876,3 +876,12 @@ class Evidences(object):
             top_key_prefix = top_key_prefix,
             default = lambda obj: obj.serialize(),
         )
+
+
+    @property
+    def datasets(self) -> set:
+        """
+        Datasets in this evidence set.
+        """
+
+        return {ev.dataset for ev in self}
