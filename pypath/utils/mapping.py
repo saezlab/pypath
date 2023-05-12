@@ -408,10 +408,14 @@ class MapReader(session_mod.Logger):
 
             if os.path.exists(cachefile):
 
+                with open(cachefile, 'rb') as fp:
+
+                    from_cache = pickle.load(fp)
+
                 setattr(
                     self,
                     '%s_to_%s' % args,
-                    pickle.load(open(cachefile, 'rb')),
+                    from_cache,
                 )
                 self._log(
                     'Loading `%s` to `%s` mapping table '
@@ -3252,7 +3256,9 @@ class Mapper(session_mod.Logger):
 
             if os.path.exists(cachefile):
 
-                data[key] = pickle.load(open(cachefile, 'rb'))
+                with open(cachefile, 'rb') as fp:
+
+                    data[key] = pickle.load(fp)
 
             else:
 
