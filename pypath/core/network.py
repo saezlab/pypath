@@ -58,6 +58,7 @@ import pypath.utils.mapping as mapping
 import pypath.inputs.pubmed as pubmed_input
 import pypath.share.curl as curl
 import pypath.internals.refs as refs_mod
+import pypath.internals.resource as resource_mod
 import pypath.utils.reflists as reflists
 import pypath.resources.network as network_resources
 import pypath.inputs as inputs
@@ -2960,6 +2961,7 @@ class Network(session_mod.Logger):
             resources = 'extra_directions',
             use_laudanna = False,
             use_string = False,
+            dataset = 'omnipath',
         ):
         """
         Adds additional direction & effect information from resources having
@@ -2987,6 +2989,11 @@ class Network(session_mod.Logger):
 
             pass
 
+        resources = resource_mod.NetworkDataset(
+            name = dataset,
+            resources = resources,
+        )
+
         self.load(resources = resources, only_directions = True)
 
 
@@ -2998,10 +3005,12 @@ class Network(session_mod.Logger):
             pathway_extra = False,
             old_omnipath_resources = False,
             exclude = None,
-        ):
+        ) -> list[network_resoruces.resource.NetworkResource]:
 
 
-        def reference_constraints(resources, data_model, relax):
+        def reference_constraints(resources, data_model, relax = True):
+
+            result = []
 
             resources = (
                 resources.values()
@@ -3009,11 +3018,16 @@ class Network(session_mod.Logger):
                 resources
             )
 
+            resources = copy_mod.deepcopy(resources)
+
             for res in resources:
 
                 if res.data_model == data_model:
 
                     res.networkinput.must_have_references = not relax
+                    result.append(res)
+
+            return result
 
 
         omnipath = omnipath or copy_mod.deepcopy(network_resources.omnipath)
@@ -3037,27 +3051,27 @@ class Network(session_mod.Logger):
                 network_resources.interaction_misc['huri']
             )
 
-        reference_constraints(
-            omnipath,
-            'activity_flow',
-            pathway_extra,
-        )
-        reference_constraints(
-            omnipath,
-            'ligand_receptor',
-            ligand_receptor_extra,
-        )
-        reference_constraints(
-            omnipath,
-            'enzyme_substrate',
-            kinase_substrate_extra,
-        )
+        omnipath = list(omnipath.without(exclude))
 
-        omnipath = dict(
-            (key, resource)
-            for key, resource in iteritems(omnipath)
-            if resource.name not in exclude
-        )
+        for dataset, data_model, enabled in (
+            ('pathwayextra', 'activity_flow', pathway_extra),
+            ('ligrecextra', 'ligand_receptor', ligand_receptor_extra),
+            ('kinaseextra', 'enzyme_substrate', kinase_substrate_extra),
+        ):
+
+            if enabled:
+
+                extra = list(
+                    resource_mod.NetworkDataset(
+                        name = dataset,
+                        resources = reference_constraints(
+                            omnipath,
+                            data_model,
+                        ),
+                    )
+                )
+
+                omnipath.extend(extra)
 
         return omnipath
 
@@ -3099,23 +3113,21 @@ class Network(session_mod.Logger):
 
         self.load(omnipath, exclude = exclude, allow_loops = allow_loops)
 
-        if kinase_substrate_extra:
 
-            self._log('Loading extra enzyme-substrate interactions.')
+        for dataset, label, enabled in (
+            ('pathwayextra', 'activity flow', pathway_extra),
+            ('ligrecextra', 'ligand-receptor', ligand_receptor_extra),
+            ('kinaseextra', 'enzyme-PTM', kinase_substrate_extra),
+        ):
 
-            self.load(network_resources.ptm_misc, exclude = exclude)
+            if enabled:
 
-        if ligand_receptor_extra:
+                self._log(f'Loading extra {label} interactions.')
 
-            self._log('Loading extra ligand-receptor interactions.')
-
-            self.load(network_resources.ligand_receptor, exclude = exclude)
-
-        if pathway_extra:
-
-            self._log('Loading extra activity flow interactions.')
-
-            self.load(network_resources.pathway_noref, exclude = exclude)
+                self.load(
+                    getattr(network_resources, dataset).rename(dataset),
+                    exclude = exclude,
+                )
 
         if extra_directions:
 
@@ -3359,7 +3371,8 @@ class Network(session_mod.Logger):
         return new
 
 
-    def load_dorothea(self, levels = None, expand_levels = None, **kwargs):
+    @staticmethod
+    def dorothea_resources(levels = None, expand_levels = None):
 
         expand_levels = (
             expand_levels
@@ -3367,21 +3380,28 @@ class Network(session_mod.Logger):
             settings.get('dorothea_expand_levels')
         )
 
-        dorothea_resource = copy_mod.deepcopy(
-            network_resources.transcription_dorothea['dorothea']
-        )
+        dorothea = copy_mod.deepcopy(network_resources.transcription_dorothea)
 
         if levels:
 
-            dorothea_resource.networkinput.input_args['levels'] = levels
+            dorothea['dorothea'].networkinput.input_args['levels'] = levels
 
         dorothea = (
-            network_resources.dorothea_expand_levels(
-                dorothea_resource,
-                levels = levels,
-            )
+            network_resources.dorothea_expand_levels(dorothea, levels = levels)
                 if expand_levels else
-            dorothea_resource
+            dorothea
+        )
+
+        dorothea = dorothea.rename('dorothea')
+
+        return dorothea
+
+
+    def load_dorothea(self, levels = None, expand_levels = None, **kwargs):
+
+        dorothea = self.dorothea_resources(
+            levels = levels,
+            expand_levels = expand_levels,
         )
 
         self.load(dorothea, **kwargs)
@@ -3464,7 +3484,7 @@ class Network(session_mod.Logger):
             transcription = (
                 original_resources
                     if not isinstance(original_resources, bool) else
-                network_resources.transcription_onebyone
+                network_resources.transcription_onebyone.rename('tf_target')
             )
 
             self.load(
@@ -3520,7 +3540,9 @@ class Network(session_mod.Logger):
 
         if 'resources' not in kwargs:
 
-            kwargs['resources'] = network_resources.mirna_target
+            kwargs['resources'] = (
+                network_resources.mirna_target.rename('mirnatarget')
+            )
 
         self.load(**kwargs)
 
