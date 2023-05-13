@@ -196,12 +196,14 @@ class ResourceAttributes(object):
             name,
             data_type,
             evidence_types = None,
+            dataset = None,
             **kwargs
         ):
 
         self.name = name
         self.data_type = data_type
         self.evidence_types = evidence_types or set()
+        self._dataset = dataset
 
         for attr, value in iteritems(kwargs):
 
@@ -220,6 +222,26 @@ class ResourceAttributes(object):
     def __str__(self):
 
         return self.name
+
+
+    @property
+    def dataset(self):
+
+        return self._dataset
+
+
+    @dataset.setter
+    def dataset(self, dataset):
+
+        self._dataset = dataset
+
+        networkinput = getattr(self, 'networkinput', None)
+
+        if hasattr(self, 'networkinput'):
+
+            netinput_new = copy.deepcopy(self.networkinput)
+            netinput_new.dataset = dataset
+            self.networkinput = netinput_new
 
 
 class NetworkResourceKey(
@@ -277,8 +299,13 @@ class NetworkResource(ResourceAttributes):
             data_model = None,
             evidence_types = None,
             via = None,
+            dataset = None,
             **kwargs
         ):
+
+        if not dataset and 'networkinput' in kwargs:
+
+            dataset = kwargs['networkinput'].dataset
 
         ResourceAttributes.__init__(
             self,
@@ -288,6 +315,7 @@ class NetworkResource(ResourceAttributes):
             evidence_types = evidence_types,
             data_model = data_model,
             via = via,
+            dataset = dataset,
             **kwargs
         )
 
@@ -345,14 +373,6 @@ class NetworkResource(ResourceAttributes):
     def license(self) -> license.License | None:
 
         return getattr(self, 'resource_attrs', None).get('license')
-
-
-    @property
-    def dataset(self) -> str | None:
-
-        networkinput = getattr(self, 'networkinput', None)
-
-        return getattr(networkinput, 'dataset', None)
 
 
 class NetworkDataset(collections.abc.MutableMapping):
@@ -459,10 +479,10 @@ class NetworkDataset(collections.abc.MutableMapping):
 
                 self.add(resource)
 
-        elif hasattr(value, 'networkinput'):
+        elif isinstance(value, NetworkResource):
 
             resource = copy.deepcopy(value)
-            resource.networkinput.dataset = self.name
+            resource.dataset = self.name
             self._resources[key or resource.name] = resource
 
 
