@@ -122,6 +122,7 @@ class Interaction(attrs_mod.AttributeHandler):
     ]
 
     _get_methods = {
+        'datasets',
         'entities',
         'evidences',
         'references',
@@ -153,6 +154,7 @@ class Interaction(attrs_mod.AttributeHandler):
         'resource_names_via',
         'data_models',
         'interaction_types',
+        'datasets',
     )
 
     _by_methods = (
@@ -2084,6 +2086,7 @@ class Interaction(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = None,
             references = None,
+            datasets = None,
         ):
 
         effect = self._effect_synonyms(effect)
@@ -2139,6 +2142,7 @@ class Interaction(attrs_mod.AttributeHandler):
                     via = via,
                     data_model = data_model,
                     references = references,
+                    datasets = datasets,
                 )
             )
         )
@@ -2154,6 +2158,7 @@ class Interaction(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = None,
             references = None,
+            datasets = None,
             return_type = None,
         ):
         """
@@ -2300,6 +2305,7 @@ class Interaction(attrs_mod.AttributeHandler):
             entity_type = None,
             source_entity_type = None,
             target_entity_type = None,
+            datasets = None,
         ):
         """
         Returns one or two tuples of the interacting partners: one if only
@@ -2381,6 +2387,7 @@ class Interaction(attrs_mod.AttributeHandler):
                     interaction_type = interaction_type,
                     via = via,
                     references = references,
+                    datasets = datasets,
                 )
             )
 
@@ -2397,6 +2404,7 @@ class Interaction(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = None,
             references = None,
+            datasets = None,
         ):
         """
         Selects the evidence collections matching the direction and effect
@@ -2420,6 +2428,7 @@ class Interaction(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = None,
             references = None,
+            datasets = None,
         ):
         """
         Selects the evidence collections matching the direction and effect
@@ -2438,6 +2447,7 @@ class Interaction(attrs_mod.AttributeHandler):
                 interaction_type = interaction_type,
                 via = via,
                 references = references,
+                datasets = datasets,
             ):
 
                 yield evs
