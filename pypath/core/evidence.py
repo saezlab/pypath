@@ -118,7 +118,7 @@ class Evidence(attrs_mod.AttributeHandler):
             self.resource == other or
             (
                 hasattr(other, 'resource') and
-                self.resource == other.resource
+                self.resource == other.resource and
                 (
                     self.resource.interaction_type ==
                     self.resource.interaction_type
