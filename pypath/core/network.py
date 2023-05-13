@@ -1333,11 +1333,7 @@ class Network(session_mod.Logger):
                         evidences = (
                             evidence.Evidence(
                                 resource = _res,
-                                references = (
-                                    refs
-                                        if _res.name == _resource.name else
-                                    None
-                                ),
+                                references = None if _res.via else refs,
                                 attrs = attrs_edge,
                             )
                             for _res in
