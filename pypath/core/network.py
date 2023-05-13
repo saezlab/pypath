@@ -1298,6 +1298,7 @@ class Network(session_mod.Logger):
                             interaction_type = _resource.interaction_type,
                             data_model = _resource.data_model,
                             via = _resource.name,
+                            dataset = _resource.dataset,
                         )
                         for sec_res in resource
                         if sec_res != _resource.name
