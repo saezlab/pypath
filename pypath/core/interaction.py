@@ -624,6 +624,20 @@ class Interaction(attrs_mod.AttributeHandler):
         }
 
 
+    def has_dataset(
+            self,
+            dataset: str,
+            direction: str | tuple = None,
+            effect: Literal['positive', 'negative']: None,
+            **kwargs,
+        ) -> bool:
+
+        return (
+            self.get_evidences(direction = direction, effect = effect).
+            has_dataset(dataset, **kwargs)
+        )
+
+
     def get_direction(
             self,
             direction,

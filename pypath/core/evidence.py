@@ -739,6 +739,20 @@ class Evidences(object):
         }
 
 
+    def has_dataset(self, dataset: str, **kwargs) -> bool:
+        """
+        Contains evidence(s) from a given dataset meeting the criteria.
+
+        Args:
+            dataset:
+                Name of the dataset.
+            kwargs:
+                Filtering criteria for evidences.
+        """
+
+        return dataset in self.get_datasets(**kwargs)
+
+
     def __isub__(self, other):
 
         if isinstance(other, self.__class__):
