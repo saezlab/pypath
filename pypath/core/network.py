@@ -2963,7 +2963,7 @@ class Network(session_mod.Logger):
             resources = 'extra_directions',
             use_laudanna = False,
             use_string = False,
-            dataset = 'omnipath',
+            dataset = 'directionextra',
         ):
         """
         Adds additional direction & effect information from resources having
