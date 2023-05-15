@@ -693,7 +693,8 @@ class Network(session_mod.Logger):
             try:
 
                 self._log(
-                    f'Loading network data from resource `{resource.name}`; '
+                    f'Loading network data from resource `{resource.name}`'
+                    f' (dataset: {resource.dataset}); '
                     f'attempt {attempt + 1} of {total_attempts}.'
                 )
 
