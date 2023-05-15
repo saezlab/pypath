@@ -793,15 +793,24 @@ class Export(session.Logger):
 
     def webservice_interactions_df(self):
 
-        sources_omnipath = set(netres.omnipath.values())
-        sources_extra_directions = set(netres.extra_directions.values())
-        sources_kinase_extra = set(netres.ptm_misc.values())
-        sources_ligrec_extra = set(netres.ligand_receptor.values())
-        sources_pathway_extra = set(netres.pathway_noref.values())
-        sources_mirna = set(netres.mirna_target.values())
-        sources_tf_target = set(netres.transcription_onebyone.values())
-        sources_dorothea = {'DoRothEA'}
-        sources_collectri = {'CollecTRI'}
+        datasets = (
+            'omnipath',
+            'kinaseextra',
+            'ligrecextra',
+            'pathwayextra',
+            'mirnatarget',
+            'dorothea',
+            'collectri',
+            'tf_target',
+            'lncrna_mrna',
+            'tf_mirna',
+            'small_molecule',
+        )
+
+        dataset_args = {
+            dataset: lambda e, d: e.has_dataset(dataset, direction = d)
+            for dataset in datasets
+        }
 
         self.make_df(
             unique_pairs = False,
@@ -809,103 +818,7 @@ class Export(session.Logger):
                 'ncbi_tax_id': 'taxon',
                 'entity_type': 'entity_type',
             },
-            extra_edge_attrs = {
-                'omnipath': lambda e, d: (
-                    (
-                        bool(
-                            e.get_resources(direction = d) &
-                            sources_omnipath
-                        ) or
-                        (
-                            bool(
-                                e.get_resources(direction = 'undirected') &
-                                sources_omnipath
-                            ) and
-                            bool(
-                                e.get_resources(direction = d) &
-                                sources_extra_directions
-                            )
-                        )
-                    ) and (
-                        'post_translational' in
-                        e.get_interaction_types(direction = d)
-                    )
-                ),
-                'kinaseextra': lambda e, d: (
-                    bool(
-                        e.get_resources(direction = d) &
-                        sources_kinase_extra
-                    ) and (
-                        'post_translational' in
-                        e.get_interaction_types(direction = d)
-                    )
-                ),
-                'ligrecextra': lambda e, d: (
-                    bool(
-                        e.get_resources(direction = d) &
-                        sources_ligrec_extra
-                    ) and (
-                        'post_translational' in
-                        e.get_interaction_types(direction = d)
-                    )
-                ),
-                'pathwayextra': lambda e, d: (
-                    bool(
-                        e.get_resources(direction = d) &
-                        sources_pathway_extra
-                    ) and (
-                        'post_translational' in
-                        e.get_interaction_types(direction = d)
-                    )
-                ),
-                'mirnatarget': lambda e, d: (
-                    bool(
-                        e.get_resources(direction = d) &
-                        sources_mirna
-                    ) and (
-                        'post_transcriptional' in
-                        e.get_interaction_types(direction = d)
-                    )
-                ),
-                'dorothea': lambda e, d: (
-                    bool(
-                        e.get_resource_names(
-                            direction = d,
-                            interaction_type = 'transcriptional'
-                        ) &
-                        sources_dorothea
-                    )
-                ),
-                'collectri': lambda e, d: (
-                    bool(
-                        e.get_resource_names(
-                            direction = d,
-                            interaction_type = 'transcriptional'
-                        ) &
-                        sources_collectri
-                    )
-                ),
-                'tf_target': lambda e, d: (
-                    bool(
-                        e.get_resources(
-                            direction = d,
-                            interaction_type = 'transcriptional'
-                        ) &
-                        sources_tf_target
-                    )
-                ),
-                'lncrna_mrna': lambda e, d: (
-                    'lncrna_post_transcriptional' in
-                    e.get_interaction_types(direction = d)
-                ),
-                'tf_mirna': lambda e, d: (
-                    'mirna_transcriptional' in
-                    e.get_interaction_types(direction = d)
-                ),
-                'small_molecule': lambda e, d: (
-                    'small_molecule_protein' in
-                    e.get_interaction_types(direction = d)
-                ),
+            extra_edge_attrs = dataset_args + {
                 'dorothea_curated': lambda e, d: (
                     e._get_attr('DoRothEA', 'curated', d)
                 ),
