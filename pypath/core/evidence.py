@@ -883,8 +883,3 @@ class Evidences(object):
         """
 
         return {ev.dataset for ev in self}
-
-
-    def get_datasets(self) -> set:
-
-        return self.datasets
