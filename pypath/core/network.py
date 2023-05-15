@@ -719,16 +719,7 @@ class Network(session_mod.Logger):
                     'Failed to read interactions '
                     f'from resource `{resource.name}`:'
                 )
-                self._log_traceback()
-
-                try:
-
-                    traceback.print_tb(e.__traceback__, file = sys.stdout)
-
-                except:
-
-                    self._log('Failed to handle exception.')
-                    self._log_traceback()
+                self._log_traceback(console = True)
 
                 if attempt == total_attempts - 1:
 
