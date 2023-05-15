@@ -203,11 +203,12 @@ class ResourceAttributes(object):
         self.name = name
         self.data_type = data_type
         self.evidence_types = evidence_types or set()
-        self._dataset = dataset
 
         for attr, value in iteritems(kwargs):
 
             setattr(self, attr, value)
+
+        self.dataset = dataset
 
 
     def __eq__(self, other):
@@ -515,8 +516,8 @@ class NetworkDataset(collections.abc.MutableMapping):
 
     def rename(self, name: str):
 
-        new = copy.copy(self)
-        new.name = name
+        new = self.__class__(name = name)
+        new.add(self)
 
         return new
 
