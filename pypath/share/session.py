@@ -112,7 +112,7 @@ class Logger(object):
         self._logger.console(msg = msg, label = self._log_name)
 
 
-    def _log_traceback(self):
+    def _log_traceback(self, console: bool = False):
         """
         Includes a traceback into the log.
         """
@@ -152,11 +152,13 @@ class Logger(object):
 
         trc_list = trc_list[stack_top:]
 
-        self._log(trc.strip())
+        write = self._console if console else self._log
+
+        write(trc.strip())
 
         for traceline in trc_list:
 
-            self._log(traceline)
+            write(traceline)
 
 
 def get_session():
