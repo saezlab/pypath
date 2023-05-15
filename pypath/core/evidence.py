@@ -43,6 +43,7 @@ import pypath.share.common as common
 import pypath.share.session as session_mod
 import pypath.core.entity as entity
 import pypath.core.attrs as attrs_mod
+import pypath.resources.network as netres
 
 _logger = session_mod.Logger(name = 'evidence')
 _log = _logger._log
@@ -135,10 +136,7 @@ class Evidence(attrs_mod.AttributeHandler):
 
         if self == other:
 
-            if not self.references and other.references:
-
-                self.dataset = other.dataset
-
+            self.dataset = netres.choose_dataset(self.dataset, other.dataset)
             self.references.update(other.references)
             attrs_mod.AttributeHandler.__iadd__(other)
 
@@ -154,7 +152,7 @@ class Evidence(attrs_mod.AttributeHandler):
 
     def __add__(self, other):
 
-        dataset = self.dataset if self.references else other.dataset
+        dataset = netres.choose_dataset(self.dataset, other.dataset)
 
         new = self.__class__(
             resource = self.resource,

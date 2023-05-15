@@ -71,6 +71,26 @@ _data_models = {
 }
 
 
+DATASET_PRIORITIES = {
+    'omnipath': 0,
+    'directionextra': 100,
+}
+
+
+
+def dataset_priority(dataset: str, default: int = 50) -> int:
+
+    return DATASET_PRIORITIES.get(dataset, default)
+
+
+def choose_dataset(dataset_a: str, dataset_b: str) -> str:
+
+    priority_a = dataset_priority(dataset_a)
+    priority_b = dataset_priority(dataset_b)
+
+    return dataset_a if priority_a < priority_b else dataset_b
+
+
 def _networkinput_to_networkresource(networkinput, data_model = None):
 
     return resource.NetworkResource(
