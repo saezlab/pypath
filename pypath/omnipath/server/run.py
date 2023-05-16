@@ -723,6 +723,7 @@ class TableServer(BaseServer):
                 'curation_effort',
                 'datasets',
                 'extra_attrs',
+                'evidences',
             },
             'tfregulons_levels':  {'A', 'B', 'C', 'D', 'E'},
             'tfregulons_methods': {
@@ -1098,7 +1099,7 @@ class TableServer(BaseServer):
         'tfregulons_chipseq', 'tfregulons_tfbs', 'tfregulons_coexp',
         'type', 'ncbi_tax_id', 'databases', 'organism',
         'curation_effort', 'resources', 'entity_type',
-        'datasets', 'extra_attrs',
+        'datasets', 'extra_attrs', 'evidences',
     }
     enzsub_fields = {
         'references', 'sources', 'databases',
@@ -1139,6 +1140,7 @@ class TableServer(BaseServer):
             'entity_type_target': 'category',
             'curation_effort': 'int16',
             'extra_attrs': 'category',
+            'evidences': 'category',
         },
         annotations = {
             'uniprot': 'category',
