@@ -818,7 +818,7 @@ class Export(session.Logger):
                 'ncbi_tax_id': 'taxon',
                 'entity_type': 'entity_type',
             },
-            extra_edge_attrs = dataset_args + {
+            extra_edge_attrs = {**dataset_args, **{
                 'dorothea_curated': lambda e, d: (
                     e._get_attr('DoRothEA', 'curated', d)
                 ),
