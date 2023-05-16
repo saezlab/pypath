@@ -3284,12 +3284,12 @@ class Interaction(attrs_mod.AttributeHandler):
         return evs.serialize_attrs()
 
 
-    def serialize(self, direction: tuple) -> str:
+    def serialize_evidences(self, direction: tuple) -> str:
         """
         Serialize the evidences into a JSON string.
         """
 
-        return json.dumps(self.asdict(direction = direction))
+        return self._serialize(self.asdict(direction = direction))
 
 
     def _get_attr(self, resource, key, direction):

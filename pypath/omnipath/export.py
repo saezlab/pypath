@@ -845,8 +845,8 @@ class Export(session.Logger):
                     )
                 ),
                 'extra_attrs': lambda e, d: e.serialize_attrs(d),
-                'evidences': lambda e, d: e.serialize(d),
-            }
+                'evidences': lambda e, d: e.serialize_evidences(d),
+            }}
         )
 
 
