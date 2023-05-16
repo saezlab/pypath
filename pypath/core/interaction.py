@@ -41,6 +41,7 @@ import collections
 import operator
 import itertools
 import functools
+import json
 
 import pypath.core.evidence as pypath_evidence
 import pypath.internals.resource as pypath_resource
@@ -313,6 +314,7 @@ class Interaction(attrs_mod.AttributeHandler):
             self.direction.values(),
             self.positive.values(),
             self.negative.values(),
+            self.unknown_effect.values(),
         ):
 
             evs.__class__ = evsnew
@@ -3255,16 +3257,39 @@ class Interaction(attrs_mod.AttributeHandler):
                         )
 
 
-    def serialize_attrs(self, direction = None):
+    def asdict(self, direction: tuple) -> dict:
+        """
+        Dictionary representation of the evidences.
+        """
+
+        direction = self.a_b if self.a_b == direction else self.b_a
+
+        return {
+            'id_a': direction[0].identifier,
+            'id_b': direction[1].identifier,
+            'positive': self.positive[direction].asdict(),
+            'negative': self.negative[direction].asdict(),
+            'directed': self.unknown_effect[direction].asdict(),
+            'undirected': self.direction['undirected'].asdict(),
+        }
+
+
+    def serialize_attrs(self, direction: tuple | str | None = None) -> str:
+        """
+        Serialize the resource specific attributes into a JSON string.
+        """
 
         evs = self.evidences if not direction else self.direction[direction]
 
         return evs.serialize_attrs()
 
 
-    def serialize_evidences(self):
+    def serialize(self, direction: tuple) -> str:
+        """
+        Serialize the evidences into a JSON string.
+        """
 
-        return self.evidences.serialize()
+        return json.dumps(self.asdict(direction = direction))
 
 
     def _get_attr(self, resource, key, direction):
