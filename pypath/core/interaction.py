@@ -3265,8 +3265,8 @@ class Interaction(attrs_mod.AttributeHandler):
         direction = self.a_b if self.a_b == direction else self.b_a
 
         return {
-            'id_a': direction[0].identifier,
-            'id_b': direction[1].identifier,
+            'id_a': str(direction[0].identifier),
+            'id_b': str(direction[1].identifier),
             'positive': self.positive[direction].asdict(),
             'negative': self.negative[direction].asdict(),
             'directed': self.unknown_effect[direction].asdict(),
