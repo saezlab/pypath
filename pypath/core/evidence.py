@@ -925,3 +925,11 @@ class Evidences(object):
         """
 
         return {ev.dataset for ev in self}
+
+
+    def asdict(self) -> list[dict]:
+        """
+        Evidence set as a list of dictionaries.
+        """
+
+        return [ev.asdict() for ev in self]
