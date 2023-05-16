@@ -2177,6 +2177,14 @@ class Network(session_mod.Logger):
                 effect = -1,
             )
 
+        if not positive and not negative:
+
+            interaction.add_evidence(
+                evidence = evidences,
+                direction = (entity_a, entity_b),
+                effect = 0,
+            )
+
         self.add_interaction(
             interaction,
             attrs = extra_attrs,

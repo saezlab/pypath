@@ -34,12 +34,13 @@ from __future__ import annotations
 
 from future.utils import iteritems
 
+from typing import Literal
+
 import importlib as imp
 import collections
 import operator
 import itertools
 import functools
-from typing_extensions import Literal
 
 import pypath.core.evidence as pypath_evidence
 import pypath.internals.resource as pypath_resource
@@ -119,6 +120,7 @@ class Interaction(attrs_mod.AttributeHandler):
         'direction',
         'positive',
         'negative',
+        'unknown_effect',
     ]
 
     _get_methods = {
@@ -278,6 +280,10 @@ class Interaction(attrs_mod.AttributeHandler):
             self.a_b: pypath_evidence.Evidences(),
             self.b_a: pypath_evidence.Evidences(),
         }
+        self.unknown_effect = {
+            self.a_b: pypath_evidence.Evidences(),
+            self.b_a: pypath_evidence.Evidences(),
+        }
 
         attrs_mod.AttributeHandler.__init__(self, attrs)
 
@@ -430,7 +436,7 @@ class Interaction(attrs_mod.AttributeHandler):
             self,
             evidence,
             direction = 'undirected',
-            effect = 0,
+            effect = None,
             references = None,
             attrs = None,
         ):
@@ -498,6 +504,10 @@ class Interaction(attrs_mod.AttributeHandler):
             elif effect in {-1, 'negative', 'inhibition'}:
 
                 self.negative[direction] += evidence
+
+            elif effect in {0, 'unknown'}:
+
+                self.unknown_effect[direction] += evidence
 
 
     def __hash__(self):
@@ -570,6 +580,10 @@ class Interaction(attrs_mod.AttributeHandler):
 
             one.negative[eff_key] += other.negative[eff_key]
 
+        for eff_key in one.unknown_effect.keys():
+
+            one.unknown_effect[eff_key] += other.unknown_effect[eff_key]
+
 
     def __repr__(self):
 
@@ -628,7 +642,7 @@ class Interaction(attrs_mod.AttributeHandler):
             self,
             dataset: str,
             direction: str | tuple = None,
-            effect: Literal['positive', 'negative']: None,
+            effect: Literal['positive', 'negative'] = None,
             **kwargs,
         ) -> bool:
 
@@ -852,6 +866,10 @@ class Interaction(attrs_mod.AttributeHandler):
 
             return 'negative'
 
+        if effect in {'unknown'}:
+
+            return 'unknown'
+
 
     def _resources_set(self, resources = None):
 
@@ -889,7 +907,7 @@ class Interaction(attrs_mod.AttributeHandler):
             attrs = (
                 (self._effect_synonyms(only_sign),)
                     if only_sign else
-                ('direction', 'positive', 'negative')
+                ('direction', 'positive', 'negative', 'unknown_effect')
             )
             resource = resource or source
 
