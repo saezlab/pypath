@@ -391,6 +391,34 @@ class Evidence(attrs_mod.AttributeHandler):
         )
 
 
+    def __str__(self):
+
+        return self.resource.name
+
+
+    @property
+    def pubmeds(self) -> list[str]:
+        """
+        PubMed IDs of the references supporting this evidence.
+        """
+
+        return [r.pmid for r in self.references]
+
+
+    def asdict(self) -> dict:
+        """
+        Dictionary representation of the evidence.
+        """
+
+        return {
+            'resource': self.resource.name,
+            'references': self.pubmeds,
+            'dataset': self.dataset,
+            'via': self.resource.via,
+            'attrs': self.attrs,
+        }
+
+
 class Evidences(object):
     """
     A collection of evidences. All evidences supporting a relationship such
