@@ -2177,7 +2177,7 @@ class Network(session_mod.Logger):
                 effect = -1,
             )
 
-        if not positive and not negative:
+        if is_directed and not positive and not negative:
 
             interaction.add_evidence(
                 evidence = evidences,
