@@ -807,8 +807,17 @@ class Export(session.Logger):
             'small_molecule',
         )
 
+        def get_dataset_callback(dataset: str) -> callable:
+
+            def has_dataset(e, d) -> bool:
+
+                return e.has_dataset(dataset, direction = d)
+
+            return has_dataset
+
+
         dataset_args = {
-            dataset: lambda e, d: e.has_dataset(dataset, direction = d)
+            dataset: get_dataset_callback(dataset)
             for dataset in datasets
         }
 
