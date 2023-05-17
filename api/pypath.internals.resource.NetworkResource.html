@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -9,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.internals.resource.NetworkResource &#8212; pypath 0.14.50 documentation</title>
+    <title>pypath.internals.resource.NetworkResource &#8212; pypath 0.15.1 documentation</title>
   
   
   
@@ -48,7 +47,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pypath.internals.resource.NetworkResourceKey" href="pypath.internals.resource.NetworkResourceKey.html" />
-    <link rel="prev" title="pypath.internals.resource.EnzymeSubstrateResourceKey" href="pypath.internals.resource.EnzymeSubstrateResourceKey.html" />
+    <link rel="prev" title="pypath.internals.resource.NetworkDataset" href="pypath.internals.resource.NetworkDataset.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -499,11 +498,11 @@ document.write(`
 <h1>pypath.internals.resource.NetworkResource<a class="headerlink" href="#pypath-internals-resource-networkresource" title="Permalink to this heading">§</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pypath.internals.resource.NetworkResource">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.internals.resource.</span></span><span class="sig-name descname"><span class="pre">NetworkResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interaction_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPI'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evidence_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">via</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/internals/resource.html#NetworkResource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.internals.resource.NetworkResource" title="Permalink to this definition">§</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.internals.resource.</span></span><span class="sig-name descname"><span class="pre">NetworkResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interaction_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPI'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evidence_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">via</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/internals/resource.html#NetworkResource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.internals.resource.NetworkResource" title="Permalink to this definition">§</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypath.internals.resource.ResourceAttributes.html#pypath.internals.resource.ResourceAttributes" title="pypath.internals.resource.ResourceAttributes"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceAttributes</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.internals.resource.NetworkResource.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interaction_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPI'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evidence_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">via</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/internals/resource.html#NetworkResource.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.internals.resource.NetworkResource.__init__" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interaction_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPI'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evidence_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">via</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/internals/resource.html#NetworkResource.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.internals.resource.NetworkResource.__init__" title="Permalink to this definition">§</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
@@ -523,10 +522,13 @@ document.write(`
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_model_label</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">key</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataset</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">license</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">key</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">license</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -547,12 +549,12 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.internals.resource.EnzymeSubstrateResourceKey.html"
+       href="pypath.internals.resource.NetworkDataset.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.internals.resource.EnzymeSubstrateResourceKey</p>
+        <p class="prev-next-title">pypath.internals.resource.NetworkDataset</p>
       </div>
     </a>
     <a class="right-next"
@@ -623,7 +625,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
     <br/>
   </p>
 </div>

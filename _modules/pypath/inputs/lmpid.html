@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -8,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.lmpid &#8212; pypath 0.14.50 documentation</title>
+    <title>pypath.inputs.lmpid &#8212; pypath 0.15.1 documentation</title>
   
   
   
@@ -540,7 +539,7 @@ document.write(`
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;lmpid&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">,</span> <span class="n">features</span> <span class="o">=</span> <span class="s1">&#39;xml&#39;</span><span class="p">)</span>
     <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprot_input</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
         <span class="nb">len</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;record&#39;</span><span class="p">)),</span>
@@ -672,7 +671,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
     <br/>
   </p>
 </div>

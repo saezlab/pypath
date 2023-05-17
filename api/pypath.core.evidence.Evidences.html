@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -9,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.core.evidence.Evidences &#8212; pypath 0.14.50 documentation</title>
+    <title>pypath.core.evidence.Evidences &#8212; pypath 0.15.1 documentation</title>
   
   
   
@@ -523,28 +522,34 @@ show this way that certain relationship has no supporting evidences.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.__init__" title="pypath.core.evidence.Evidences.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([evidences])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_database</span></code>(database, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.asdict" title="pypath.core.evidence.Evidences.asdict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asdict</span></code></a>()</p></td>
+<td><p>Evidence set as a list of dictionaries.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_database</span></code>(database, **kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_reference</span></code>(reference, **kwargs)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_reference</span></code>(reference, **kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_curation_effort</span></code>(**kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_curation_effort</span></code>(**kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_references</span></code>(**kwargs)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_references</span></code>(**kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_resources</span></code>(**kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_resources</span></code>(**kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter</span></code>([resource, data_model, ...])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter</span></code>([resource, data_model, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_curation_effort</span></code>(**kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_curation_effort</span></code>(**kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_models</span></code>(**kwargs)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_models</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code>(**kwargs)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interaction_types</span></code>(**kwargs)</p></td>
@@ -571,28 +576,31 @@ show this way that certain relationship has no supporting evidences.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_database_via</span></code>(database, via, **kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.has_interaction_type" title="pypath.core.evidence.Evidences.has_interaction_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_interaction_type</span></code></a>(interaction_type[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.has_dataset" title="pypath.core.evidence.Evidences.has_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_dataset</span></code></a>(dataset, **kwargs)</p></td>
+<td><p>Contains evidence(s) from a given dataset meeting the criteria.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.has_interaction_type" title="pypath.core.evidence.Evidences.has_interaction_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_interaction_type</span></code></a>(interaction_type[, ...])</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">via</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will be ignored, otherwise if <code class="docutils literal notranslate"><span class="pre">None</span></code> only primary resources are considered.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersection</span></code>(other)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersection</span></code>(other)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.items" title="pypath.core.evidence.Evidences.items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.items" title="pypath.core.evidence.Evidences.items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code></a>()</p></td>
 <td><p>Returns</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.keys" title="pypath.core.evidence.Evidences.keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.keys" title="pypath.core.evidence.Evidences.keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code></a>()</p></td>
 <td><p>Returns</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code>([resource, data_model, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code>([resource, data_model, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.reload" title="pypath.core.evidence.Evidences.reload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.reload" title="pypath.core.evidence.Evidences.reload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code></a>()</p></td>
 <td><p>Reloads the object from the module level.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove</span></code>([resource, interaction_type, via])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove</span></code>([resource, interaction_type, via])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.serialize_attrs" title="pypath.core.evidence.Evidences.serialize_attrs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialize_attrs</span></code></a>([top_key_prefix])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.serialize_attrs" title="pypath.core.evidence.Evidences.serialize_attrs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialize_attrs</span></code></a>([top_key_prefix])</p></td>
 <td><p>Serialize the extra attributes of the evidences as a JSON string.</p></td>
 </tr>
 </tbody>
@@ -603,11 +611,40 @@ show this way that certain relationship has no supporting evidences.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evidences</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.simple_dict" title="pypath.core.evidence.Evidences.simple_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_dict</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.datasets" title="pypath.core.evidence.Evidences.datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets</span></code></a></p></td>
+<td><p>Datasets in this evidence set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.simple_dict" title="pypath.core.evidence.Evidences.simple_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_dict</span></code></a></p></td>
 <td><p>Returns Keys are resource labels, values are <code class="docutils literal notranslate"><span class="pre">Evidence</span></code> objects.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.evidence.Evidences.asdict">
+<span class="sig-name descname"><span class="pre">asdict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/core/evidence.html#Evidences.asdict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.evidence.Evidences.asdict" title="Permalink to this definition">§</a></dt>
+<dd><p>Evidence set as a list of dictionaries.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pypath.core.evidence.Evidences.datasets">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">datasets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span></em><a class="headerlink" href="#pypath.core.evidence.Evidences.datasets" title="Permalink to this definition">§</a></dt>
+<dd><p>Datasets in this evidence set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.core.evidence.Evidences.has_dataset">
+<span class="sig-name descname"><span class="pre">has_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/pypath/core/evidence.html#Evidences.has_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.evidence.Evidences.has_dataset" title="Permalink to this definition">§</a></dt>
+<dd><p>Contains evidence(s) from a given dataset meeting the criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> – Name of the dataset.</p></li>
+<li><p><strong>kwargs</strong> – Filtering criteria for evidences.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.core.evidence.Evidences.has_interaction_type">
 <span class="sig-name descname"><span class="pre">has_interaction_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">via</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/evidence.html#Evidences.has_interaction_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.evidence.Evidences.has_interaction_type" title="Permalink to this definition">§</a></dt>
@@ -757,7 +794,7 @@ Keys are resource labels, values are <code class="docutils literal notranslate">
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
     <br/>
   </p>
 </div>

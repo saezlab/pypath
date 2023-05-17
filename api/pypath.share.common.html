@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -9,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.share.common &#8212; pypath 0.14.50 documentation</title>
+    <title>pypath.share.common &#8212; pypath 0.15.1 documentation</title>
   
   
   
@@ -597,206 +596,209 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.identity.html#pypath.share.common.identity" title="pypath.share.common.identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identity</span></code></a>(obj)</p></td>
 <td><p>Do nothing, returns the object unchanged.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.is_float.html#pypath.share.common.is_float" title="pypath.share.common.is_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_float</span></code></a>(num)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.ignore_unhashable.html#pypath.share.common.ignore_unhashable" title="pypath.share.common.ignore_unhashable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ignore_unhashable</span></code></a>(func)</p></td>
+<td><p>Decorator to ignore unhashable values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.is_float.html#pypath.share.common.is_float" title="pypath.share.common.is_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_float</span></code></a>(num)</p></td>
 <td><p>Tells if a string represents a floating point number, i.e. it can be converted by <cite>float</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.is_int.html#pypath.share.common.is_int" title="pypath.share.common.is_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_int</span></code></a>(num)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.is_int.html#pypath.share.common.is_int" title="pypath.share.common.is_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_int</span></code></a>(num)</p></td>
 <td><p>Tells if a string represents an integer, i.e. it can be converted by <cite>int</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.is_str.html#pypath.share.common.is_str" title="pypath.share.common.is_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_str</span></code></a>(obj)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.is_str.html#pypath.share.common.is_str" title="pypath.share.common.is_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_str</span></code></a>(obj)</p></td>
 <td><p>Checks if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is a string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.jaccard_index.html#pypath.share.common.jaccard_index" title="pypath.share.common.jaccard_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jaccard_index</span></code></a>(a, b)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.jaccard_index.html#pypath.share.common.jaccard_index" title="pypath.share.common.jaccard_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jaccard_index</span></code></a>(a, b)</p></td>
 <td><p>Computes the Jaccard index.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.join_dicts.html#pypath.share.common.join_dicts" title="pypath.share.common.join_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_dicts</span></code></a>(d1, d2[, _from, to])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.join_dicts.html#pypath.share.common.join_dicts" title="pypath.share.common.join_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_dicts</span></code></a>(d1, d2[, _from, to])</p></td>
 <td><p>Joins a pair of dictionaries.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.latex_table.html#pypath.share.common.latex_table" title="pypath.share.common.latex_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latex_table</span></code></a>(tbl[, colformat, maxlen, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.latex_table.html#pypath.share.common.latex_table" title="pypath.share.common.latex_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latex_table</span></code></a>(tbl[, colformat, maxlen, ...])</p></td>
 <td><p>From a table represented by an OrderedDict with column titles as keys and column contents as lists generates LaTeX tabular.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.log_memory_usage.html#pypath.share.common.log_memory_usage" title="pypath.share.common.log_memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_memory_usage</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.log_memory_usage.html#pypath.share.common.log_memory_usage" title="pypath.share.common.log_memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_memory_usage</span></code></a>()</p></td>
 <td><p>Logs the memory usage of the current process.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.match.html#pypath.share.common.match" title="pypath.share.common.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>(obj, condition)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.match.html#pypath.share.common.match" title="pypath.share.common.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>(obj, condition)</p></td>
 <td><p>Tests a condition on an object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.maybe_in_dict.html#pypath.share.common.maybe_in_dict" title="pypath.share.common.maybe_in_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maybe_in_dict</span></code></a>(dct, key)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.maybe_in_dict.html#pypath.share.common.maybe_in_dict" title="pypath.share.common.maybe_in_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maybe_in_dict</span></code></a>(dct, key)</p></td>
 <td><p>Retrieves a key from a dict if the key is in the dict, otherwise returns the key itself.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.md5.html#pypath.share.common.md5" title="pypath.share.common.md5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">md5</span></code></a>(value)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.md5.html#pypath.share.common.md5" title="pypath.share.common.md5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">md5</span></code></a>(value)</p></td>
 <td><p>Computes the sum of MD5 hash of a given string <em>value</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.merge_dicts.html#pypath.share.common.merge_dicts" title="pypath.share.common.merge_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_dicts</span></code></a>(d1, d2)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.merge_dicts.html#pypath.share.common.merge_dicts" title="pypath.share.common.merge_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_dicts</span></code></a>(d1, d2)</p></td>
 <td><p>Merges dictionaries recursively.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_shared_elements.html#pypath.share.common.n_shared_elements" title="pypath.share.common.n_shared_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_elements</span></code></a>(by_group, group)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_shared_elements.html#pypath.share.common.n_shared_elements" title="pypath.share.common.n_shared_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_elements</span></code></a>(by_group, group)</p></td>
 <td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns the number of all elements in the *set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which occure in any of the other sets.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_shared_foreach.html#pypath.share.common.n_shared_foreach" title="pypath.share.common.n_shared_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_foreach</span></code></a>(by_group)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_shared_foreach.html#pypath.share.common.n_shared_foreach" title="pypath.share.common.n_shared_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_foreach</span></code></a>(by_group)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_shared_total.html#pypath.share.common.n_shared_total" title="pypath.share.common.n_shared_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_total</span></code></a>(by_group)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_shared_total.html#pypath.share.common.n_shared_total" title="pypath.share.common.n_shared_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_total</span></code></a>(by_group)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_shared_unique_foreach.html#pypath.share.common.n_shared_unique_foreach" title="pypath.share.common.n_shared_unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_unique_foreach</span></code></a>(by_group[, op])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_shared_unique_foreach.html#pypath.share.common.n_shared_unique_foreach" title="pypath.share.common.n_shared_unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_shared_unique_foreach</span></code></a>(by_group[, op])</p></td>
 <td><p>For a <em>dict</em> of <em>set*s ``by_group`` returns a *dict</em> of numbers with the counts of either the shared or unique elements across all <a href="#id3"><span class="problematic" id="id4">*</span></a>set*s, depending on the operation <code class="docutils literal notranslate"><span class="pre">op</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_unique_elements.html#pypath.share.common.n_unique_elements" title="pypath.share.common.n_unique_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_unique_elements</span></code></a>(by_group, group)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_unique_elements.html#pypath.share.common.n_unique_elements" title="pypath.share.common.n_unique_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_unique_elements</span></code></a>(by_group, group)</p></td>
 <td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns the number of all elements in the *set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which don't occure in any of the other sets.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_unique_foreach.html#pypath.share.common.n_unique_foreach" title="pypath.share.common.n_unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_unique_foreach</span></code></a>(by_group)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_unique_foreach.html#pypath.share.common.n_unique_foreach" title="pypath.share.common.n_unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_unique_foreach</span></code></a>(by_group)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.n_unique_total.html#pypath.share.common.n_unique_total" title="pypath.share.common.n_unique_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_unique_total</span></code></a>(by_group)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.n_unique_total.html#pypath.share.common.n_unique_total" title="pypath.share.common.n_unique_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_unique_total</span></code></a>(by_group)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.negate.html#pypath.share.common.negate" title="pypath.share.common.negate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">negate</span></code></a>(value[, neg])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.negate.html#pypath.share.common.negate" title="pypath.share.common.negate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">negate</span></code></a>(value[, neg])</p></td>
 <td><p>Negates a value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.nest.html#pypath.share.common.nest" title="pypath.share.common.nest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nest</span></code></a>(*funcs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.nest.html#pypath.share.common.nest" title="pypath.share.common.nest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nest</span></code></a>(*funcs)</p></td>
 <td><p>Nest multiple functions into a single function.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.none_or_len.html#pypath.share.common.none_or_len" title="pypath.share.common.none_or_len"><code class="xref py py-obj docutils literal notranslate"><span class="pre">none_or_len</span></code></a>(value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.none_or_len.html#pypath.share.common.none_or_len" title="pypath.share.common.none_or_len"><code class="xref py py-obj docutils literal notranslate"><span class="pre">none_or_len</span></code></a>(value)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.paginate.html#pypath.share.common.paginate" title="pypath.share.common.paginate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">paginate</span></code></a>(lst[, size])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.paginate.html#pypath.share.common.paginate" title="pypath.share.common.paginate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">paginate</span></code></a>(lst[, size])</p></td>
 <td><p>Yields sections of length <code class="docutils literal notranslate"><span class="pre">size</span></code> from list <code class="docutils literal notranslate"><span class="pre">lst</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.prefix.html#pypath.share.common.prefix" title="pypath.share.common.prefix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefix</span></code></a>(string, sep)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.prefix.html#pypath.share.common.prefix" title="pypath.share.common.prefix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefix</span></code></a>(string, sep)</p></td>
 <td><p>Extracts a prefix from a string, splitting by a separator and taking only the first part.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.print_table.html#pypath.share.common.print_table" title="pypath.share.common.print_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_table</span></code></a>(tbl[, width, maxlen, tablefmt, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.print_table.html#pypath.share.common.print_table" title="pypath.share.common.print_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_table</span></code></a>(tbl[, width, maxlen, tablefmt, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.python_memory_usage.html#pypath.share.common.python_memory_usage" title="pypath.share.common.python_memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">python_memory_usage</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.python_memory_usage.html#pypath.share.common.python_memory_usage" title="pypath.share.common.python_memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">python_memory_usage</span></code></a>()</p></td>
 <td><p>Returns the memory usage of the current process in bytes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.re_safe_groups.html#pypath.share.common.re_safe_groups" title="pypath.share.common.re_safe_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">re_safe_groups</span></code></a>(pattern, string[, method])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.re_safe_groups.html#pypath.share.common.re_safe_groups" title="pypath.share.common.re_safe_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">re_safe_groups</span></code></a>(pattern, string[, method])</p></td>
 <td><p>Missing convenience for the built-in <cite>re</cite> module.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.remove_prefix.html#pypath.share.common.remove_prefix" title="pypath.share.common.remove_prefix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_prefix</span></code></a>(string, sep)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.remove_prefix.html#pypath.share.common.remove_prefix" title="pypath.share.common.remove_prefix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_prefix</span></code></a>(string, sep)</p></td>
 <td><p>Removes a prefix if <cite>string</cite> is a string and contains the separator <cite>sep</cite>; otherwise returns the original object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.rotate.html#pypath.share.common.rotate" title="pypath.share.common.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(point, angle[, center])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.rotate.html#pypath.share.common.rotate" title="pypath.share.common.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(point, angle[, center])</p></td>
 <td><p>Rotates a point with respect to a center.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.sets_to_sorted_lists.html#pypath.share.common.sets_to_sorted_lists" title="pypath.share.common.sets_to_sorted_lists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sets_to_sorted_lists</span></code></a>(obj)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.sets_to_sorted_lists.html#pypath.share.common.sets_to_sorted_lists" title="pypath.share.common.sets_to_sorted_lists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sets_to_sorted_lists</span></code></a>(obj)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.sfirst.html#pypath.share.common.sfirst" title="pypath.share.common.sfirst"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sfirst</span></code></a>(it[, default])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.sfirst.html#pypath.share.common.sfirst" title="pypath.share.common.sfirst"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sfirst</span></code></a>(it[, default])</p></td>
 <td><p>Returns <code class="docutils literal notranslate"><span class="pre">it</span></code> if it's a string, its first element if it's an iterable, or the value of <code class="docutils literal notranslate"><span class="pre">default</span></code> if the iterable is empty.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.shared_elements.html#pypath.share.common.shared_elements" title="pypath.share.common.shared_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_elements</span></code></a>(by_group, group)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.shared_elements.html#pypath.share.common.shared_elements" title="pypath.share.common.shared_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_elements</span></code></a>(by_group, group)</p></td>
 <td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns a *set</em> of all elements in the <em>set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which occure in any of the sets assigned to the other keys.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.shared_foreach.html#pypath.share.common.shared_foreach" title="pypath.share.common.shared_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_foreach</span></code></a>(by_group)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.shared_foreach.html#pypath.share.common.shared_foreach" title="pypath.share.common.shared_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_foreach</span></code></a>(by_group)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.shared_total.html#pypath.share.common.shared_total" title="pypath.share.common.shared_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_total</span></code></a>(by_group)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.shared_total.html#pypath.share.common.shared_total" title="pypath.share.common.shared_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_total</span></code></a>(by_group)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.shared_unique.html#pypath.share.common.shared_unique" title="pypath.share.common.shared_unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_unique</span></code></a>(by_group, group[, op])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.shared_unique.html#pypath.share.common.shared_unique" title="pypath.share.common.shared_unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_unique</span></code></a>(by_group, group[, op])</p></td>
 <td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns a *set</em> of all elements in the <em>set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which either does or does not occure in any of the sets assigned to the other keys, depending on the operator <code class="docutils literal notranslate"><span class="pre">op</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.shared_unique_foreach.html#pypath.share.common.shared_unique_foreach" title="pypath.share.common.shared_unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_unique_foreach</span></code></a>(by_group[, op, counts])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.shared_unique_foreach.html#pypath.share.common.shared_unique_foreach" title="pypath.share.common.shared_unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_unique_foreach</span></code></a>(by_group[, op, counts])</p></td>
 <td><p>For a <em>dict</em> of <em>set*s ``by_group`` returns a *dict</em> of <a href="#id5"><span class="problematic" id="id6">*</span></a>set*s with either shared or unique elements across all <a href="#id7"><span class="problematic" id="id8">*</span></a>set*s, depending on the operation <code class="docutils literal notranslate"><span class="pre">op</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.shared_unique_total.html#pypath.share.common.shared_unique_total" title="pypath.share.common.shared_unique_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_unique_total</span></code></a>(by_group[, op])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.shared_unique_total.html#pypath.share.common.shared_unique_total" title="pypath.share.common.shared_unique_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_unique_total</span></code></a>(by_group[, op])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.simpson_index.html#pypath.share.common.simpson_index" title="pypath.share.common.simpson_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpson_index</span></code></a>(a, b)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.simpson_index.html#pypath.share.common.simpson_index" title="pypath.share.common.simpson_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpson_index</span></code></a>(a, b)</p></td>
 <td><p>Computes Simpson's similarity index.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.simpson_index_counts.html#pypath.share.common.simpson_index_counts" title="pypath.share.common.simpson_index_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpson_index_counts</span></code></a>(a, b, c)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.simpson_index_counts.html#pypath.share.common.simpson_index_counts" title="pypath.share.common.simpson_index_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpson_index_counts</span></code></a>(a, b, c)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">arg a<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.something.html#pypath.share.common.something" title="pypath.share.common.something"><code class="xref py py-obj docutils literal notranslate"><span class="pre">something</span></code></a>(anything)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.something.html#pypath.share.common.something" title="pypath.share.common.something"><code class="xref py py-obj docutils literal notranslate"><span class="pre">something</span></code></a>(anything)</p></td>
 <td><p>Checks if argument is empty.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.sorensen_index.html#pypath.share.common.sorensen_index" title="pypath.share.common.sorensen_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sorensen_index</span></code></a>(a, b)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.sorensen_index.html#pypath.share.common.sorensen_index" title="pypath.share.common.sorensen_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sorensen_index</span></code></a>(a, b)</p></td>
 <td><p>Computes the Sorensen index.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.suffix.html#pypath.share.common.suffix" title="pypath.share.common.suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suffix</span></code></a>(string, sep)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.suffix.html#pypath.share.common.suffix" title="pypath.share.common.suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suffix</span></code></a>(string, sep)</p></td>
 <td><p>Extracts a suffix from a string, splitting by a separator and taking only the last part.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.sum_dicts.html#pypath.share.common.sum_dicts" title="pypath.share.common.sum_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum_dicts</span></code></a>(*args)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.sum_dicts.html#pypath.share.common.sum_dicts" title="pypath.share.common.sum_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum_dicts</span></code></a>(*args)</p></td>
 <td><p>For dicts of numbers returns a dict with the sum of the numbers from all dicts for all keys.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.swap_dict.html#pypath.share.common.swap_dict" title="pypath.share.common.swap_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_dict</span></code></a>(d[, force_sets])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.swap_dict.html#pypath.share.common.swap_dict" title="pypath.share.common.swap_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_dict</span></code></a>(d[, force_sets])</p></td>
 <td><p>Swaps a dictionary.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.swap_dict_simple.html#pypath.share.common.swap_dict_simple" title="pypath.share.common.swap_dict_simple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_dict_simple</span></code></a>(d)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.swap_dict_simple.html#pypath.share.common.swap_dict_simple" title="pypath.share.common.swap_dict_simple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_dict_simple</span></code></a>(d)</p></td>
 <td><p>Swaps a dictionary.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.swap_suffix.html#pypath.share.common.swap_suffix" title="pypath.share.common.swap_suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_suffix</span></code></a>(name[, sep, suffixes])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.swap_suffix.html#pypath.share.common.swap_suffix" title="pypath.share.common.swap_suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swap_suffix</span></code></a>(name[, sep, suffixes])</p></td>
 <td><p>Changes the suffix of a string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.table_add_row_numbers.html#pypath.share.common.table_add_row_numbers" title="pypath.share.common.table_add_row_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_add_row_numbers</span></code></a>(tbl, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.table_add_row_numbers.html#pypath.share.common.table_add_row_numbers" title="pypath.share.common.table_add_row_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_add_row_numbers</span></code></a>(tbl, **kwargs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.table_format.html#pypath.share.common.table_format" title="pypath.share.common.table_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_format</span></code></a>(tbl[, width, maxlen, tablefmt, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.table_format.html#pypath.share.common.table_format" title="pypath.share.common.table_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_format</span></code></a>(tbl[, width, maxlen, tablefmt, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.table_textwrap.html#pypath.share.common.table_textwrap" title="pypath.share.common.table_textwrap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_textwrap</span></code></a>(tbl[, width, maxlen])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.table_textwrap.html#pypath.share.common.table_textwrap" title="pypath.share.common.table_textwrap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_textwrap</span></code></a>(tbl[, width, maxlen])</p></td>
 <td><p>Wraps and truncates the text content of cells in a table.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.to_list.html#pypath.share.common.to_list" title="pypath.share.common.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a>(var)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.to_list.html#pypath.share.common.to_list" title="pypath.share.common.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a>(var)</p></td>
 <td><p>Makes sure <cite>var</cite> is a list otherwise creates a single element list out of it.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.to_set.html#pypath.share.common.to_set" title="pypath.share.common.to_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_set</span></code></a>(var)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.to_set.html#pypath.share.common.to_set" title="pypath.share.common.to_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_set</span></code></a>(var)</p></td>
 <td><p>Makes sure the object <cite>var</cite> is a set, if it is a list converts it to set, otherwise it creates a single element set out of it.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.to_tuple.html#pypath.share.common.to_tuple" title="pypath.share.common.to_tuple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_tuple</span></code></a>(var)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.to_tuple.html#pypath.share.common.to_tuple" title="pypath.share.common.to_tuple"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_tuple</span></code></a>(var)</p></td>
 <td><p>Makes sure <cite>var</cite> is a tuple otherwise creates a single element tuple out of it.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.try_bool.html#pypath.share.common.try_bool" title="pypath.share.common.try_bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">try_bool</span></code></a>(val)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.try_bool.html#pypath.share.common.try_bool" title="pypath.share.common.try_bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">try_bool</span></code></a>(val)</p></td>
 <td><p>Attempts to convert a value to True or False, returns the input unchanged upon failure.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.try_float.html#pypath.share.common.try_float" title="pypath.share.common.try_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">try_float</span></code></a>(num)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.try_float.html#pypath.share.common.try_float" title="pypath.share.common.try_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">try_float</span></code></a>(num)</p></td>
 <td><p>Returns <cite>num</cite> converted from string to float <cite>num</cite> represents a float otherwise returns the input unchanged.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.tsv_table.html#pypath.share.common.tsv_table" title="pypath.share.common.tsv_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tsv_table</span></code></a>(tbl[, path, maxlen])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.tsv_table.html#pypath.share.common.tsv_table" title="pypath.share.common.tsv_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tsv_table</span></code></a>(tbl[, path, maxlen])</p></td>
 <td><p>From a table represented by an OrderedDict with column titles as keys and column contents as lists generates a tab separated string.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.uniq_list.html#pypath.share.common.uniq_list" title="pypath.share.common.uniq_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_list</span></code></a>(seq)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.uniq_list.html#pypath.share.common.uniq_list" title="pypath.share.common.uniq_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_list</span></code></a>(seq)</p></td>
 <td><p>Reduces a list to its unique elements.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.uniq_list1.html#pypath.share.common.uniq_list1" title="pypath.share.common.uniq_list1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_list1</span></code></a>(seq)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.uniq_list1.html#pypath.share.common.uniq_list1" title="pypath.share.common.uniq_list1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_list1</span></code></a>(seq)</p></td>
 <td><p>Not order preserving From <a class="reference external" href="http://www.peterbe.com/plog/uniqifiers-benchmark">http://www.peterbe.com/plog/uniqifiers-benchmark</a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.uniq_list2.html#pypath.share.common.uniq_list2" title="pypath.share.common.uniq_list2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_list2</span></code></a>(seq)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.uniq_list2.html#pypath.share.common.uniq_list2" title="pypath.share.common.uniq_list2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_list2</span></code></a>(seq)</p></td>
 <td><p>Not order preserving From <a class="reference external" href="http://www.peterbe.com/plog/uniqifiers-benchmark">http://www.peterbe.com/plog/uniqifiers-benchmark</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.uniq_ord_list.html#pypath.share.common.uniq_ord_list" title="pypath.share.common.uniq_ord_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_ord_list</span></code></a>(seq[, idfun])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.uniq_ord_list.html#pypath.share.common.uniq_ord_list" title="pypath.share.common.uniq_ord_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniq_ord_list</span></code></a>(seq[, idfun])</p></td>
 <td><p>Reduces a list to its unique elements keeping their order.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.unique_elements.html#pypath.share.common.unique_elements" title="pypath.share.common.unique_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_elements</span></code></a>(by_group, group)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.unique_elements.html#pypath.share.common.unique_elements" title="pypath.share.common.unique_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_elements</span></code></a>(by_group, group)</p></td>
 <td><p>For a <em>dict</em> of <em>set*s ``by_group`` and a particular key ``group`` returns a *set</em> of all elements in the <em>set</em> belonging to the key <code class="docutils literal notranslate"><span class="pre">group</span></code> which don't occure in any of the sets assigned to the other keys.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.unique_foreach.html#pypath.share.common.unique_foreach" title="pypath.share.common.unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_foreach</span></code></a>(by_group)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.unique_foreach.html#pypath.share.common.unique_foreach" title="pypath.share.common.unique_foreach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_foreach</span></code></a>(by_group)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.unique_list.html#pypath.share.common.unique_list" title="pypath.share.common.unique_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_list</span></code></a>(seq)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.unique_list.html#pypath.share.common.unique_list" title="pypath.share.common.unique_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_list</span></code></a>(seq)</p></td>
 <td><p>Reduces a list to its unique elements.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.unique_total.html#pypath.share.common.unique_total" title="pypath.share.common.unique_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_total</span></code></a>(by_group)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.unique_total.html#pypath.share.common.unique_total" title="pypath.share.common.unique_total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_total</span></code></a>(by_group)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.upper0.html#pypath.share.common.upper0" title="pypath.share.common.upper0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upper0</span></code></a>(string)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.upper0.html#pypath.share.common.upper0" title="pypath.share.common.upper0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upper0</span></code></a>(string)</p></td>
 <td><p>Ensures the first letter of a string is uppercase, except if the first word already contains uppercase letters, in order to avoid changing, for example, miRNA to MiRNA.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.values.html#pypath.share.common.values" title="pypath.share.common.values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code></a>(obj, field)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.values.html#pypath.share.common.values" title="pypath.share.common.values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code></a>(obj, field)</p></td>
 <td><p>All values of a field.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.wcl.html#pypath.share.common.wcl" title="pypath.share.common.wcl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wcl</span></code></a>(f)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.wcl.html#pypath.share.common.wcl" title="pypath.share.common.wcl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wcl</span></code></a>(f)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.common.wrap_truncate.html#pypath.share.common.wrap_truncate" title="pypath.share.common.wrap_truncate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_truncate</span></code></a>(text[, width, maxlen])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.common.wrap_truncate.html#pypath.share.common.wrap_truncate" title="pypath.share.common.wrap_truncate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_truncate</span></code></a>(text[, width, maxlen])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -899,7 +901,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
     <br/>
   </p>
 </div>

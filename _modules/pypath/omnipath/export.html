@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -8,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.omnipath.export &#8212; pypath 0.14.50 documentation</title>
+    <title>pypath.omnipath.export &#8212; pypath 0.15.1 documentation</title>
   
   
   
@@ -607,6 +606,7 @@ document.write(`
         <span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
         <span class="s1">&#39;curation_effort&#39;</span><span class="p">:</span> <span class="s1">&#39;int16&#39;</span><span class="p">,</span>
         <span class="s1">&#39;extra_attrs&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;evidences&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
         <span class="s1">&#39;entity_type_source&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
         <span class="s1">&#39;entity_type_target&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
     <span class="p">}</span>
@@ -1287,15 +1287,33 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">webservice_interactions_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="n">sources_omnipath</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">omnipath</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">sources_extra_directions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">extra_directions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">sources_kinase_extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">ptm_misc</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">sources_ligrec_extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">ligand_receptor</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">sources_pathway_extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">pathway_noref</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">sources_mirna</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">mirna_target</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">sources_tf_target</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">transcription_onebyone</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">sources_dorothea</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">}</span>
-        <span class="n">sources_collectri</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CollecTRI&#39;</span><span class="p">}</span>
+        <span class="n">datasets</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;omnipath&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kinaseextra&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ligrecextra&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pathwayextra&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mirnatarget&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;dorothea&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;collectri&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;tf_target&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lncrna_mrna&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;tf_mirna&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;small_molecule&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">get_dataset_callback</span><span class="p">(</span><span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">callable</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">has_dataset</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">has_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">has_dataset</span>
+
+
+        <span class="n">dataset_args</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">dataset</span><span class="p">:</span> <span class="n">get_dataset_callback</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">datasets</span>
+        <span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span>
             <span class="n">unique_pairs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1304,129 +1322,37 @@ document.write(`
                 <span class="s1">&#39;entity_type&#39;</span><span class="p">:</span> <span class="s1">&#39;entity_type&#39;</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;omnipath&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="p">(</span>
-                        <span class="nb">bool</span><span class="p">(</span>
-                            <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
-                            <span class="n">sources_omnipath</span>
-                        <span class="p">)</span> <span class="ow">or</span>
-                        <span class="p">(</span>
-                            <span class="nb">bool</span><span class="p">(</span>
-                                <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
-                                <span class="n">sources_omnipath</span>
-                            <span class="p">)</span> <span class="ow">and</span>
-                            <span class="nb">bool</span><span class="p">(</span>
-                                <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
-                                <span class="n">sources_extra_directions</span>
-                            <span class="p">)</span>
+                <span class="o">**</span><span class="n">dataset_args</span><span class="p">,</span>
+                <span class="o">**</span><span class="p">{</span>
+                    <span class="s1">&#39;dorothea_curated&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;curated&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+                    <span class="p">),</span>
+                    <span class="s1">&#39;dorothea_chipseq&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;chipseq&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+                    <span class="p">),</span>
+                    <span class="s1">&#39;dorothea_tfbs&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;tfbs&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+                    <span class="p">),</span>
+                    <span class="s1">&#39;dorothea_coexp&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;coexp&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+                    <span class="p">),</span>
+                    <span class="s1">&#39;dorothea_level&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">dorothea_levels</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+                    <span class="p">),</span>
+                    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="p">),</span>
+                    <span class="s1">&#39;curation_effort&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">count_curation_effort</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span>
+                            <span class="n">e</span><span class="o">.</span><span class="n">count_curation_effort</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span>
+                            <span class="mi">0</span>
                         <span class="p">)</span>
-                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                        <span class="s1">&#39;post_translational&#39;</span> <span class="ow">in</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;kinaseextra&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="nb">bool</span><span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
-                        <span class="n">sources_kinase_extra</span>
-                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                        <span class="s1">&#39;post_translational&#39;</span> <span class="ow">in</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;ligrecextra&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="nb">bool</span><span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
-                        <span class="n">sources_ligrec_extra</span>
-                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                        <span class="s1">&#39;post_translational&#39;</span> <span class="ow">in</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;pathwayextra&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="nb">bool</span><span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
-                        <span class="n">sources_pathway_extra</span>
-                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                        <span class="s1">&#39;post_translational&#39;</span> <span class="ow">in</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;mirnatarget&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="nb">bool</span><span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span>
-                        <span class="n">sources_mirna</span>
-                    <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                        <span class="s1">&#39;post_transcriptional&#39;</span> <span class="ow">in</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;dorothea&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="nb">bool</span><span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_resource_names</span><span class="p">(</span>
-                            <span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">,</span>
-                            <span class="n">interaction_type</span> <span class="o">=</span> <span class="s1">&#39;transcriptional&#39;</span>
-                        <span class="p">)</span> <span class="o">&amp;</span>
-                        <span class="n">sources_dorothea</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;collectri&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="nb">bool</span><span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_resource_names</span><span class="p">(</span>
-                            <span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">,</span>
-                            <span class="n">interaction_type</span> <span class="o">=</span> <span class="s1">&#39;transcriptional&#39;</span>
-                        <span class="p">)</span> <span class="o">&amp;</span>
-                        <span class="n">sources_collectri</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;tf_target&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="nb">bool</span><span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">get_resources</span><span class="p">(</span>
-                            <span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">,</span>
-                            <span class="n">interaction_type</span> <span class="o">=</span> <span class="s1">&#39;transcriptional&#39;</span>
-                        <span class="p">)</span> <span class="o">&amp;</span>
-                        <span class="n">sources_tf_target</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;lncrna_mrna&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="s1">&#39;lncrna_post_transcriptional&#39;</span> <span class="ow">in</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;tf_mirna&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="s1">&#39;mirna_transcriptional&#39;</span> <span class="ow">in</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;small_molecule&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="s1">&#39;small_molecule_protein&#39;</span> <span class="ow">in</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;dorothea_curated&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;curated&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;dorothea_chipseq&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;chipseq&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;dorothea_tfbs&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;tfbs&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;dorothea_coexp&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="s1">&#39;DoRothEA&#39;</span><span class="p">,</span> <span class="s1">&#39;coexp&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;dorothea_level&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">dorothea_levels</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;curation_effort&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">count_curation_effort</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span>
-                        <span class="n">e</span><span class="o">.</span><span class="n">count_curation_effort</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span>
-                        <span class="mi">0</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="s1">&#39;extra_attrs&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">serialize_attrs</span><span class="p">(</span><span class="n">d</span><span class="p">),</span>
-            <span class="p">}</span>
+                    <span class="p">),</span>
+                    <span class="s1">&#39;extra_attrs&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">serialize_attrs</span><span class="p">(</span><span class="n">d</span><span class="p">),</span>
+                    <span class="s1">&#39;evidences&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">serialize_evidences</span><span class="p">(</span><span class="n">d</span><span class="p">),</span>
+                <span class="p">},</span>
+            <span class="p">},</span>
         <span class="p">)</span>
 
 
@@ -1665,7 +1591,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
     <br/>
   </p>
 </div>

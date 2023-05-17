@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -8,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.iptmnet &#8212; pypath 0.14.50 documentation</title>
+    <title>pypath.inputs.iptmnet &#8212; pypath 0.15.1 documentation</title>
   
   
   
@@ -522,6 +521,7 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.share.constants</span> <span class="k">as</span> <span class="nn">constants</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.common</span> <span class="k">as</span> <span class="nn">inputs_common</span>
@@ -547,35 +547,35 @@ document.write(`
 
 
 <div class="viewcode-block" id="iptmnet_interactions"><a class="viewcode-back" href="../../../api/pypath.inputs.iptmnet.iptmnet_interactions.html#pypath.inputs.iptmnet.iptmnet_interactions">[docs]</a><span class="k">def</span> <span class="nf">iptmnet_interactions</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
-    
+
     <span class="n">ptm_url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;iptmnet&#39;</span><span class="p">][</span><span class="s1">&#39;ptms&#39;</span><span class="p">]</span>
     <span class="n">score_url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;iptmnet&#39;</span><span class="p">][</span><span class="s1">&#39;scores&#39;</span><span class="p">]</span>
-    
+
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">score_url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-    
+
     <span class="n">scores</span> <span class="o">=</span> <span class="p">{}</span>
-    
+
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
-        
+
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\r</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
-            
+
             <span class="k">continue</span>
-        
+
         <span class="n">site</span> <span class="o">=</span> <span class="n">resite</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">site</span><span class="p">:</span>
-            
+
             <span class="k">continue</span>
-        
+
         <span class="n">resaa</span><span class="p">,</span> <span class="n">resnum</span> <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
-        
+
         <span class="n">resnum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resnum</span><span class="p">)</span>
         <span class="n">score</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
         <span class="n">substrate</span><span class="p">,</span> <span class="n">isoform</span> <span class="o">=</span> <span class="n">inputs_common</span><span class="o">.</span><span class="n">_try_isoform</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">enzyme</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        
+
         <span class="n">key</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">enzyme</span><span class="p">,</span>
             <span class="n">substrate</span><span class="p">,</span>
@@ -584,30 +584,35 @@ document.write(`
             <span class="n">resaa</span><span class="p">,</span>
             <span class="n">resnum</span><span class="p">,</span>
         <span class="p">)</span>
-        
+
         <span class="n">scores</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">score</span>
-    
+
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">ptm_url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-    
+
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
-        
+
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\r</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span>
-            
+
             <span class="k">continue</span>
-        
-        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-        
+
+        <span class="n">organism_</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span><span class="p">(</span><span class="n">organism_</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">organism_</span> <span class="k">else</span>
+            <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span>
+        <span class="p">)</span>
+
         <span class="k">if</span> <span class="n">organism</span> <span class="ow">and</span> <span class="n">ncbi_tax_id</span> <span class="o">!=</span> <span class="n">organism</span><span class="p">:</span>
-            
+
             <span class="k">continue</span>
-        
+
         <span class="n">substrate</span><span class="p">,</span> <span class="n">s_isoform</span> <span class="o">=</span> <span class="n">inputs_common</span><span class="o">.</span><span class="n">_try_isoform</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="n">ptm_type</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        
+
         <span class="n">enzyme</span><span class="p">,</span> <span class="n">e_isoform</span> <span class="o">=</span> <span class="n">inputs_common</span><span class="o">.</span><span class="n">_try_isoform</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
-        
+
         <span class="n">enzyme_ids</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
                 <span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
@@ -618,10 +623,10 @@ document.write(`
                 <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;PR:&#39;</span><span class="p">)</span> <span class="k">else</span>
             <span class="p">(</span><span class="n">enzyme</span><span class="p">,)</span>
         <span class="p">)</span>
-        
+
         <span class="n">refs</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
         <span class="n">resnum</span><span class="p">,</span> <span class="n">resaa</span> <span class="o">=</span> <span class="n">resite</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
-        
+
         <span class="n">key</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
             <span class="n">substrate</span><span class="p">,</span>
@@ -630,11 +635,11 @@ document.write(`
             <span class="n">resaa</span><span class="p">,</span>
             <span class="n">resnum</span><span class="p">,</span>
         <span class="p">)</span>
-        
+
         <span class="n">score</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">scores</span> <span class="k">else</span> <span class="kc">None</span>
-        
+
         <span class="k">for</span> <span class="n">_enzyme</span> <span class="ow">in</span> <span class="n">enzyme_ids</span><span class="p">:</span>
-            
+
             <span class="k">yield</span> <span class="n">IptmnetInteraction</span><span class="p">(</span>
                 <span class="n">enzyme</span> <span class="o">=</span> <span class="n">_enzyme</span><span class="p">,</span>
                 <span class="n">substrate</span> <span class="o">=</span> <span class="n">substrate</span><span class="p">,</span>
@@ -717,7 +722,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
     <br/>
   </p>
 </div>
