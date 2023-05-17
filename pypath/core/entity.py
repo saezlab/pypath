@@ -501,6 +501,11 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
         self.entity_info(self.identifier)
 
 
+    def __bool__(self):
+
+        return bool(self.identifier)
+
+
 class EntityList(object):
 
 
