@@ -2500,7 +2500,9 @@ transcription_collectri = {
         resource = (4, ';'),
         references = (5, ';'),
         header = False,
-        extra_edge_attrs = {},
+        extra_edge_attrs = {
+            'tf_category': 3
+        },
         extra_node_attrs_a = {
             'tf_category': 3
         },
