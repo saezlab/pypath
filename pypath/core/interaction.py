@@ -589,7 +589,15 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def __repr__(self):
 
-        return '<Interaction: %s %s=%s=%s=%s %s [%s]>' % (
+        return '<Interaction: %s [%s]>' % (
+            self.__str__(),
+            self.evidences.__repr__().strip('<>'),
+        )
+
+
+    def __str__(self):
+
+        return '%s %s=%s=%s=%s %s' % (
             self.a.label or self.a.identifier,
             '<' if self.direction[self.b_a] else '=',
             (
@@ -612,9 +620,7 @@ class Interaction(attrs_mod.AttributeHandler):
             ),
             '>' if self.direction[self.a_b] else '=',
             self.b.label or self.b.identifier,
-            self.evidences.__repr__().strip('<>'),
         )
-
 
     def __contains__(self, other):
 
