@@ -827,35 +827,38 @@ class Export(session.Logger):
                 'ncbi_tax_id': 'taxon',
                 'entity_type': 'entity_type',
             },
-            extra_edge_attrs = {**dataset_args, **{
-                'dorothea_curated': lambda e, d: (
-                    e._get_attr('DoRothEA', 'curated', d)
-                ),
-                'dorothea_chipseq': lambda e, d: (
-                    e._get_attr('DoRothEA', 'chipseq', d)
-                ),
-                'dorothea_tfbs': lambda e, d: (
-                    e._get_attr('DoRothEA', 'tfbs', d)
-                ),
-                'dorothea_coexp': lambda e, d: (
-                    e._get_attr('DoRothEA', 'coexp', d)
-                ),
-                'dorothea_level': lambda e, d: (
-                    ';'.join(e.dorothea_levels(d))
-                ),
-                'type': lambda e, d: (
-                    list(e.get_interaction_types(direction = d))[0]
-                ),
-                'curation_effort': lambda e, d: (
-                    e.count_curation_effort(direction = d) + (
-                        e.count_curation_effort(direction = 'undirected')
-                            if isinstance(d, tuple) else
-                        0
-                    )
-                ),
-                'extra_attrs': lambda e, d: e.serialize_attrs(d),
-                'evidences': lambda e, d: e.serialize_evidences(d),
-            }}
+            extra_edge_attrs = {
+                **dataset_args,
+                **{
+                    'dorothea_curated': lambda e, d: (
+                        e._get_attr('DoRothEA', 'curated', d)
+                    ),
+                    'dorothea_chipseq': lambda e, d: (
+                        e._get_attr('DoRothEA', 'chipseq', d)
+                    ),
+                    'dorothea_tfbs': lambda e, d: (
+                        e._get_attr('DoRothEA', 'tfbs', d)
+                    ),
+                    'dorothea_coexp': lambda e, d: (
+                        e._get_attr('DoRothEA', 'coexp', d)
+                    ),
+                    'dorothea_level': lambda e, d: (
+                        ';'.join(e.dorothea_levels(d))
+                    ),
+                    'type': lambda e, d: (
+                        list(e.get_interaction_types(direction = d))[0]
+                    ),
+                    'curation_effort': lambda e, d: (
+                        e.count_curation_effort(direction = d) + (
+                            e.count_curation_effort(direction = 'undirected')
+                                if isinstance(d, tuple) else
+                            0
+                        )
+                    ),
+                    'extra_attrs': lambda e, d: e.serialize_attrs(d),
+                    'evidences': lambda e, d: e.serialize_evidences(d),
+                },
+            },
         )
 
 
