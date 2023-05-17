@@ -196,6 +196,11 @@ class Evidence(attrs_mod.AttributeHandler):
         )
 
 
+    def __str__(self):
+
+        return self.resource.name
+
+
     def __copy__(self):
 
         return self.__class__(
