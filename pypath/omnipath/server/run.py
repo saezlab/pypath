@@ -701,6 +701,8 @@ class TableServer(BaseServer):
             'targets':  None,
             'partners': None,
             'genesymbols': constants.BOOLEAN_VALUES,
+            'evidences': None,
+            'extra_attrs': None,
             'fields': {
                 'entity_type',
                 'references',
@@ -2072,41 +2074,47 @@ class TableServer(BaseServer):
                 tbl.target.astype('string')
             ]
 
-        if req.args[b'fields']:
+        req.args[b'fields'] = req.args[b'fields'] or [b'']
 
-            _fields = [
-                f for f in
-                req.args[b'fields'][0].decode('utf-8').split(',')
-                if f in self.interaction_fields
-            ]
+        _fields = [
+            f for f in
+            req.args[b'fields'][0].decode('utf-8').split(',')
+            if f in self.interaction_fields
+        ]
 
-            for f in _fields:
+        for f in (b'evidences', b'extra_attrs'):
 
-                if f == 'ncbi_tax_id' or f == 'organism':
+            if f in req.uri and f not in req.args[b'fields']:
 
-                    hdr.append('ncbi_tax_id_source')
-                    hdr.append('ncbi_tax_id_target')
+                _fields.append(f.decode('utf-8'))
 
-                elif f == 'entity_type':
+        for f in _fields:
 
-                    hdr.append('entity_type_source')
-                    hdr.append('entity_type_target')
+            if f == 'ncbi_tax_id' or f == 'organism':
 
-                elif f in {'databases', 'resources'}:
+                hdr.append('ncbi_tax_id_source')
+                hdr.append('ncbi_tax_id_target')
 
-                    hdr.append('sources')
+            elif f == 'entity_type':
 
-                elif f == 'datasets':
+                hdr.append('entity_type_source')
+                hdr.append('entity_type_target')
 
-                    hdr.extend(
-                        set(tbl.columns) &
-                        self.args_reference['interactions']['datasets'] &
-                        args['datasets']
-                    )
+            elif f in {'databases', 'resources'}:
 
-                else:
+                hdr.append('sources')
 
-                    hdr.append(f)
+            elif f == 'datasets':
+
+                hdr.extend(
+                    set(tbl.columns) &
+                    self.args_reference['interactions']['datasets'] &
+                    args['datasets']
+                )
+
+            else:
+
+                hdr.append(f)
 
         license = self._get_license(req)
 
