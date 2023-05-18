@@ -2084,7 +2084,7 @@ class TableServer(BaseServer):
 
         for f in (b'evidences', b'extra_attrs'):
 
-            if f in req.uri and f not in req.args[b'fields']:
+            if f in req.uri and f not in req.args[b'fields'][0]:
 
                 _fields.append(f.decode('utf-8'))
 
