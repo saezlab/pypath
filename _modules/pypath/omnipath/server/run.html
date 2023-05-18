@@ -2578,7 +2578,7 @@ document.write(`
 
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">b</span><span class="s1">&#39;evidences&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;extra_attrs&#39;</span><span class="p">):</span>
 
-            <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">uri</span> <span class="ow">and</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;fields&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">uri</span> <span class="ow">and</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;fields&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
 
                 <span class="n">_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
 
