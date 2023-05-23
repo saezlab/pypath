@@ -2501,7 +2501,8 @@ transcription_collectri = {
         references = (5, ';'),
         header = False,
         extra_edge_attrs = {
-            'tf_category': 3
+            'tf_category': 3,
+            'sign_decision': 6
         },
         extra_node_attrs_a = {
             'tf_category': 3
@@ -2807,7 +2808,10 @@ tf_mirna = {
         resource = (4, ';'),
         references = (5, ';'),
         header = False,
-        extra_edge_attrs = {},
+        extra_edge_attrs = {
+            'tf_category': 3,
+            'sign_decision': 6
+        },
         extra_node_attrs_a = {
             'tf_category': 3
         },
