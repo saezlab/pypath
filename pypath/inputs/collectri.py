@@ -113,6 +113,7 @@ def collectri_raw(
             'tf_category',
             'resources',
             'pubmed',
+            'sign_decision',
             'target_type',
         ),
     )
@@ -149,6 +150,7 @@ def collectri_raw(
                 tf_category = l[3],
                 resources = l[4].replace('DoRothEA_A', 'DoRothEA-A'),
                 pubmed = l[5],
+                sign_decision = l[6],
                 target_type = 'mirna' if mmirna else 'protein',
             )
         )
@@ -183,6 +185,7 @@ def collectri_interactions(
             'tf_category',
             'resources',
             'pubmed',
+            'sign_decision',
             'target_type',
         ),
     )
