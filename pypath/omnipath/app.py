@@ -434,7 +434,7 @@ class DatabaseManager(session_mod.Logger):
         Returns the arguments for building the miRNA-mRNA network dataset.
         """
 
-        return {'resources': netres.mirna_target}
+        return {'resources': netres.mirnatarget}
 
 
     def get_args_lncrna_mrna(self):
@@ -442,7 +442,7 @@ class DatabaseManager(session_mod.Logger):
         Returns the arguments for building the lncRNA-mRNA network dataset.
         """
 
-        return {'resources': netres.lncrna_target}
+        return {'resources': netres.lncrna_mrna}
 
 
     def get_args_small_molecule(self):
@@ -451,7 +451,7 @@ class DatabaseManager(session_mod.Logger):
         network dataset.
         """
 
-        return {'resources': netres.small_molecule_protein}
+        return {'resources': netres.small_molecule}
 
 
     def compile_tables(self):

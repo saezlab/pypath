@@ -2747,6 +2747,10 @@ mirna_target = {
     ),
 }
 
+# synonym
+mirnatarget = mirna_target
+
+
 tf_mirna = {
     'transmir': input_formats.NetworkInput(
         name = 'TransmiR',
@@ -2911,6 +2915,9 @@ lncrna_target = {
         data_model = 'activity_flow',
     ),
 }
+
+# synonym
+lncrna_mrna = lncrna_target
 
 ligand_receptor = {
     'ramilowski2015': input_formats.NetworkInput(
@@ -3278,6 +3285,10 @@ small_molecule_protein = {
         interaction_type = 'small_molecule_protein',
     ),
 }
+
+# synonym
+small_molecule = small_molecule_protein
+
 
 ligand_receptor['guide2pharma'] = copy.deepcopy(pathway['guide2pharma'])
 ligand_receptor['guide2pharma'].must_have_references = False
