@@ -932,6 +932,15 @@ class Evidences(object):
         return {ev.dataset for ev in self}
 
 
+    @property
+    def attrs(self) -> dict:
+        """
+        Combines the custom attributes from all evidences within this set.
+        """
+
+        return common.combine_attrs([ev.attrs for ev in self])
+
+
     def asdict(self) -> list[dict]:
         """
         Evidence set as a list of dictionaries.
