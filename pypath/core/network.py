@@ -4795,10 +4795,11 @@ def init_db(use_omnipath = False, method = None, **kwargs):
             if use_omnipath else
         (method or 'load')
     )
-    n = Network()
-    getattr(n, method_name)(**kwargs)
 
-    globals()['db'] = n
+    new_network = Network()
+    maybe_network = getattr(new_network, method_name)(**kwargs)
+
+    globals()['db'] = maybe_network or new_network
 
 
 def get_db(**kwargs):
