@@ -506,6 +506,11 @@ class Network(session_mod.Logger):
         return len(self.interactions)
 
 
+    def __bool__(self):
+
+        return bool(self.interactions)
+
+
     def __iter__(self):
 
         for ia in self.interactions.values():
