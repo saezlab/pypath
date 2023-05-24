@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.core.evidence.Evidences &#8212; pypath 0.15.1 documentation</title>
+    <title>pypath.core.evidence.Evidences &#8212; pypath 0.15.2 documentation</title>
   
   
   
@@ -611,10 +611,13 @@ show this way that certain relationship has no supporting evidences.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evidences</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.datasets" title="pypath.core.evidence.Evidences.datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.attrs" title="pypath.core.evidence.Evidences.attrs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attrs</span></code></a></p></td>
+<td><p>Combines the custom attributes from all evidences within this set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.datasets" title="pypath.core.evidence.Evidences.datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets</span></code></a></p></td>
 <td><p>Datasets in this evidence set.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.simple_dict" title="pypath.core.evidence.Evidences.simple_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_dict</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.simple_dict" title="pypath.core.evidence.Evidences.simple_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_dict</span></code></a></p></td>
 <td><p>Returns Keys are resource labels, values are <code class="docutils literal notranslate"><span class="pre">Evidence</span></code> objects.</p></td>
 </tr>
 </tbody>
@@ -623,6 +626,12 @@ show this way that certain relationship has no supporting evidences.</p>
 <dt class="sig sig-object py" id="pypath.core.evidence.Evidences.asdict">
 <span class="sig-name descname"><span class="pre">asdict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/core/evidence.html#Evidences.asdict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.evidence.Evidences.asdict" title="Permalink to this definition">§</a></dt>
 <dd><p>Evidence set as a list of dictionaries.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pypath.core.evidence.Evidences.attrs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attrs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#pypath.core.evidence.Evidences.attrs" title="Permalink to this definition">§</a></dt>
+<dd><p>Combines the custom attributes from all evidences within this set.</p>
 </dd></dl>
 
 <dl class="py property">

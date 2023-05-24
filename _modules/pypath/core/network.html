@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.core.network &#8212; pypath 0.15.1 documentation</title>
+    <title>pypath.core.network &#8212; pypath 0.15.2 documentation</title>
   
   
   
@@ -993,6 +993,11 @@ document.write(`
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -5279,10 +5284,11 @@ document.write(`
             <span class="k">if</span> <span class="n">use_omnipath</span> <span class="k">else</span>
         <span class="p">(</span><span class="n">method</span> <span class="ow">or</span> <span class="s1">&#39;load&#39;</span><span class="p">)</span>
     <span class="p">)</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="n">Network</span><span class="p">()</span>
-    <span class="nb">getattr</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span></div>
+    <span class="n">new_network</span> <span class="o">=</span> <span class="n">Network</span><span class="p">()</span>
+    <span class="n">maybe_network</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_network</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">maybe_network</span> <span class="ow">or</span> <span class="n">new_network</span></div>
 
 
 <div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../api/pypath.core.network.get_db.html#pypath.core.network.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
