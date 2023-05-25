@@ -70,10 +70,13 @@ def _all_uniprots(organism = 9606, swissprot = None):
     rev = '' if swissprot is None else ' AND reviewed: %s' % swissprot
     url = urls.urls['uniprot_basic']['url']
     get = {
-        'query': 'organism:%s%s' % (str(organism), rev),
-        'format': 'tab',
-        'columns': 'id',
+        'query': 'organism_id:%s%s' % (str(organism), rev),
+        'format': 'tsv',
+        'fields': 'accession',
     }
+
+    if organism == '*':
+        get['query'] = rev.strip(' AND ')
 
     c = curl.Curl(url, get = get, silent = False, slow = True)
     data = c.result
@@ -135,9 +138,9 @@ def get_db(organism = 9606, swissprot = None):
 def _swissprot_param(swissprot):
 
     return (
-        'yes'
+        'true'
             if swissprot in {'yes', 'YES', True} else
-        'no'
+        'false'
             if swissprot in {'no', 'NO', False} else
         None
     )
@@ -487,20 +490,20 @@ def get_uniprot_sec(organism = 9606):
 
 
 _uniprot_fields = {
-    'function': 'comment(FUNCTION)',
-    'activity_regulation': 'comment(ACTIVITY REGULATION)',
-    'tissue_specificity': 'comment(TISSUE SPECIFICITY)',
-    'developmental_stage': 'comment(DEVELOPMENTAL STAGE)',
-    'induction': 'comment(INDUCTION)',
-    'intramembrane': 'feature(INTRAMEMBRANE)',
-    'signal_peptide': 'feature(SIGNAL)',
-    'subcellular_location': 'comment(SUBCELLULAR LOCATION)',
-    'transmembrane': 'feature(TRANSMEMBRANE)',
-    'comment': 'comment(MISCELLANEOUS)',
-    'topological_domain': 'feature(TOPOLOGICAL DOMAIN)',
-    'family': 'families',
-    'interactor': 'interactor',
-    'keywords': 'keywords',
+    'function': 'cc_function',
+    'activity_regulation': 'cc_activity_regulation',
+    'tissue_specificity': 'cc_tissue_specificity',
+    'developmental_stage': 'cc_developmental_stage',
+    'induction': 'cc_induction',
+    'intramembrane': 'ft_intramem',
+    'signal_peptide': 'ft_signal',
+    'subcellular_location': 'cc_subcellular_location',
+    'transmembrane': 'ft_transmem',
+    'comment': 'cc_miscellaneous',
+    'topological_domain': 'ft_topo_dom',
+    'family': 'protein_families',
+    'interactor': 'cc_interaction',
+    'keywords': 'keyword',
 }
 
 
@@ -516,7 +519,7 @@ def uniprot_data(
     default only the reviewed (SwissProt) proteins.
     For the available fields refer to the ``_uniprot_fields`` attribute of
     this module or the UniProt website:
-    https://legacy.uniprot.org/help/uniprotkb_column_names
+    https://www.uniprot.org/help/return_fields
 
     Args
         field:
@@ -529,13 +532,13 @@ def uniprot_data(
             cover both (None).
 
     Return
-        A dictionary for each ke
+        A dictionary for each key
     """
 
     rev = (
-        ' AND reviewed: yes'
+        ' AND reviewed: true'
             if reviewed == True or reviewed == 'yes' else
-        ' AND reviewed: no'
+        ' AND reviewed: false'
         if reviewed == False or reviewed == 'no' else
         ''
     )
@@ -546,15 +549,18 @@ def uniprot_data(
         organism = taxonomy.ensure_ncbi_tax_id(organism)
 
     field = common.to_list(field)
-    field_qs = ','.join(['id'] + [_uniprot_fields.get(f, f) for f in field])
+    field_qs = ','.join(['accession'] + [_uniprot_fields.get(f, f) for f in field])
 
     url = urls.urls['uniprot_basic']['url']
     get = {
-        'query': 'organism:%s%s' % (str(organism), rev),
-        'format': 'tab',
-        'columns': field_qs,
-        'compress': 'yes',
+        'query': 'organism_id:%s%s' % (str(organism), rev),
+        'format': 'tsv',
+        'fields': field_qs,
+        'compressed': 'true',
     }
+
+    if organism == '*':
+        get['query'] = rev.strip(' AND ')
 
     c = curl.Curl(url, get = get, silent = False, large = True, compr = 'gz')
     _ = next(c.result)
