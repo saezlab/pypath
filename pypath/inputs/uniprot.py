@@ -103,7 +103,7 @@ def all_trembls(organism = 9606):
 
 def init_db(organism = 9606, swissprot = None):
 
-    swissprot = _swissprot_param(swissprot)
+    _swissprot = _swissprot_param(swissprot)
     _logger._log(
         'Loading list of all UniProt IDs for '
         'organism `%u` (only SwissProt: %s).' % (
@@ -112,7 +112,7 @@ def init_db(organism = 9606, swissprot = None):
         )
     )
 
-    key = (organism, swissprot)
+    key = (organism, _swissprot)
 
     globals()['db'][key] = _all_uniprots(
         organism = organism,
@@ -123,8 +123,8 @@ def init_db(organism = 9606, swissprot = None):
 
 def get_db(organism = 9606, swissprot = None):
 
-    swissprot = _swissprot_param(swissprot)
-    key = (organism, swissprot)
+    _swissprot = _swissprot_param(swissprot)
+    key = (organism, _swissprot)
 
     if key not in globals()['db']:
 
@@ -139,9 +139,9 @@ def _swissprot_param(swissprot):
 
     return (
         'true'
-            if swissprot in {'yes', 'YES', True} else
+            if swissprot in {'true', 'True', 'yes', 'YES', True} else
         'false'
-            if swissprot in {'no', 'NO', False} else
+            if swissprot in {'false', 'False', 'no', 'NO', False} else
         None
     )
 
