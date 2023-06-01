@@ -37,8 +37,8 @@ urls = {
         'label': 'URL for UniProt queries',
         'url': 'https://rest.uniprot.org/uniprotkb/stream',
         'lists': 'https://legacy.uniprot.org/uploadlists/',
-        'datasheet': 'https://legacy.uniprot.org/uniprot/%s.txt',
-        'history': 'https://legacy.uniprot.org/uniprot/%s.tab?version=*',
+        'datasheet': 'https://rest.uniprot.org/uniprotkb/%s.txt',
+        'history': 'https://rest.uniprot.org/uniprot/%s?format=tsv&version=*',
         'deleted_sp': 'ftp://ftp.expasy.org/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/delac_sp.txt',
         'deleted_tr': 'ftp://ftp.expasy.org/databases/uniprot/'
