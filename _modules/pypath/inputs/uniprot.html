@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.uniprot &#8212; pypath 0.15.2 documentation</title>
+    <title>pypath.inputs.uniprot &#8212; pypath 0.15.3 documentation</title>
   
   
   
@@ -564,10 +564,13 @@ document.write(`
     <span class="n">rev</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39; AND reviewed: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">swissprot</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
     <span class="n">get</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;organism:</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">organism</span><span class="p">),</span> <span class="n">rev</span><span class="p">),</span>
-        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;tab&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;organism_id:</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">organism</span><span class="p">),</span> <span class="n">rev</span><span class="p">),</span>
+        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;tsv&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="s1">&#39;accession&#39;</span><span class="p">,</span>
     <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">organism</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span>
+        <span class="n">get</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rev</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; AND &#39;</span><span class="p">)</span>
 
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">get</span> <span class="o">=</span> <span class="n">get</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">slow</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span>
@@ -594,7 +597,7 @@ document.write(`
 
 <div class="viewcode-block" id="init_db"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.init_db.html#pypath.inputs.uniprot.init_db">[docs]</a><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
-    <span class="n">swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
+    <span class="n">_swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
     <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
         <span class="s1">&#39;Loading list of all UniProt IDs for &#39;</span>
         <span class="s1">&#39;organism `</span><span class="si">%u</span><span class="s1">` (only SwissProt: </span><span class="si">%s</span><span class="s1">).&#39;</span> <span class="o">%</span> <span class="p">(</span>
@@ -603,7 +606,7 @@ document.write(`
         <span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">_swissprot</span><span class="p">)</span>
 
     <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_all_uniprots</span><span class="p">(</span>
         <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
@@ -614,8 +617,8 @@ document.write(`
 
 <div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.get_db.html#pypath.inputs.uniprot.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
-    <span class="n">swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span><span class="p">)</span>
+    <span class="n">_swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">_swissprot</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]:</span>
 
@@ -629,10 +632,10 @@ document.write(`
 <span class="k">def</span> <span class="nf">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="p">(</span>
-        <span class="s1">&#39;yes&#39;</span>
-            <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;YES&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">}</span> <span class="k">else</span>
-        <span class="s1">&#39;no&#39;</span>
-            <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;NO&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">}</span> <span class="k">else</span>
+        <span class="s1">&#39;true&#39;</span>
+            <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;YES&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">}</span> <span class="k">else</span>
+        <span class="s1">&#39;false&#39;</span>
+            <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;NO&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">}</span> <span class="k">else</span>
         <span class="kc">None</span>
     <span class="p">)</span>
 
@@ -981,20 +984,20 @@ document.write(`
 
 
 <span class="n">_uniprot_fields</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;function&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(FUNCTION)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;activity_regulation&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(ACTIVITY REGULATION)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;tissue_specificity&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(TISSUE SPECIFICITY)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;developmental_stage&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(DEVELOPMENTAL STAGE)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;induction&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(INDUCTION)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;intramembrane&#39;</span><span class="p">:</span> <span class="s1">&#39;feature(INTRAMEMBRANE)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;signal_peptide&#39;</span><span class="p">:</span> <span class="s1">&#39;feature(SIGNAL)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;subcellular_location&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(SUBCELLULAR LOCATION)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;transmembrane&#39;</span><span class="p">:</span> <span class="s1">&#39;feature(TRANSMEMBRANE)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;comment(MISCELLANEOUS)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;topological_domain&#39;</span><span class="p">:</span> <span class="s1">&#39;feature(TOPOLOGICAL DOMAIN)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;family&#39;</span><span class="p">:</span> <span class="s1">&#39;families&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;interactor&#39;</span><span class="p">:</span> <span class="s1">&#39;interactor&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;keywords&#39;</span><span class="p">:</span> <span class="s1">&#39;keywords&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;function&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_function&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;activity_regulation&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_activity_regulation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;tissue_specificity&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_tissue_specificity&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;developmental_stage&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_developmental_stage&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;induction&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_induction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;intramembrane&#39;</span><span class="p">:</span> <span class="s1">&#39;ft_intramem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;signal_peptide&#39;</span><span class="p">:</span> <span class="s1">&#39;ft_signal&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;subcellular_location&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_subcellular_location&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;transmembrane&#39;</span><span class="p">:</span> <span class="s1">&#39;ft_transmem&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_miscellaneous&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;topological_domain&#39;</span><span class="p">:</span> <span class="s1">&#39;ft_topo_dom&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;family&#39;</span><span class="p">:</span> <span class="s1">&#39;protein_families&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;interactor&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_interaction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;keywords&#39;</span><span class="p">:</span> <span class="s1">&#39;keyword&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -1004,13 +1007,13 @@ document.write(`
         <span class="n">reviewed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Basic client for the legacy, plain UniProt API.</span>
+<span class="sd">    Basic client for the main UniProt API.</span>
 
 <span class="sd">    Retrieves a field from UniProt for all proteins of one organism, by</span>
 <span class="sd">    default only the reviewed (SwissProt) proteins.</span>
 <span class="sd">    For the available fields refer to the ``_uniprot_fields`` attribute of</span>
 <span class="sd">    this module or the UniProt website:</span>
-<span class="sd">    https://legacy.uniprot.org/help/uniprotkb_column_names</span>
+<span class="sd">    https://www.uniprot.org/help/return_fields</span>
 
 <span class="sd">    Args</span>
 <span class="sd">        field:</span>
@@ -1023,13 +1026,13 @@ document.write(`
 <span class="sd">            cover both (None).</span>
 
 <span class="sd">    Return</span>
-<span class="sd">        A dictionary for each ke</span>
+<span class="sd">        A dictionary for each key</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">rev</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39; AND reviewed: yes&#39;</span>
+        <span class="s1">&#39; AND reviewed: true&#39;</span>
             <span class="k">if</span> <span class="n">reviewed</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">reviewed</span> <span class="o">==</span> <span class="s1">&#39;yes&#39;</span> <span class="k">else</span>
-        <span class="s1">&#39; AND reviewed: no&#39;</span>
+        <span class="s1">&#39; AND reviewed: false&#39;</span>
         <span class="k">if</span> <span class="n">reviewed</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">reviewed</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span> <span class="k">else</span>
         <span class="s1">&#39;&#39;</span>
     <span class="p">)</span>
@@ -1040,15 +1043,18 @@ document.write(`
         <span class="n">organism</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
 
     <span class="n">field</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
-    <span class="n">field_qs</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">_uniprot_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">field</span><span class="p">])</span>
+    <span class="n">field_qs</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;accession&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">_uniprot_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">field</span><span class="p">])</span>
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
     <span class="n">get</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;organism:</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">organism</span><span class="p">),</span> <span class="n">rev</span><span class="p">),</span>
-        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;tab&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="n">field_qs</span><span class="p">,</span>
-        <span class="s1">&#39;compress&#39;</span><span class="p">:</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;organism_id:</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">organism</span><span class="p">),</span> <span class="n">rev</span><span class="p">),</span>
+        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;tsv&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="n">field_qs</span><span class="p">,</span>
+        <span class="s1">&#39;compressed&#39;</span><span class="p">:</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span>
     <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">organism</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span>
+        <span class="n">get</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rev</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; AND &#39;</span><span class="p">)</span>
 
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">get</span> <span class="o">=</span> <span class="n">get</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">compr</span> <span class="o">=</span> <span class="s1">&#39;gz&#39;</span><span class="p">)</span>
     <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
@@ -1763,14 +1769,14 @@ document.write(`
 
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
 
             <span class="n">taxid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
             <span class="n">result</span><span class="p">[</span><span class="n">taxid</span><span class="p">]</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span>
                 <span class="n">ncbi_id</span> <span class="o">=</span> <span class="n">taxid</span><span class="p">,</span>
                 <span class="n">latin</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                <span class="n">english</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                <span class="n">english</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
