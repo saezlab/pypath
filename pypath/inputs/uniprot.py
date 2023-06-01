@@ -513,7 +513,7 @@ def uniprot_data(
         reviewed: bool = True,
     ) -> dict[str, str] | dict[str, dict[str, str]]:
     """
-    Basic client for the legacy, plain UniProt API.
+    Basic client for the main UniProt API.
 
     Retrieves a field from UniProt for all proteins of one organism, by
     default only the reviewed (SwissProt) proteins.
@@ -1275,14 +1275,14 @@ def uniprot_ncbi_taxids():
 
         line = line.split('\t')
 
-        if line[0].isdigit() and len(line) > 3:
+        if line[0].isdigit() and len(line) > 2:
 
             taxid = int(line[0])
 
             result[taxid] = Taxon(
                 ncbi_id = taxid,
                 latin = line[2],
-                english = line[3],
+                english = line[1] or None,
             )
 
     return result
