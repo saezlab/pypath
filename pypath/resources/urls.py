@@ -39,16 +39,19 @@ urls = {
         'lists': 'https://legacy.uniprot.org/uploadlists/',
         'datasheet': 'https://rest.uniprot.org/uniprotkb/%s.txt',
         'history': 'https://rest.uniprot.org/uniprot/%s?format=tsv&version=*',
-        'deleted_sp': 'ftp://ftp.expasy.org/databases/uniprot/'
+        'deleted_sp': 'https://ftp.expasy.org/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/delac_sp.txt',
-        'deleted_tr': 'ftp://ftp.expasy.org/databases/uniprot/'
+        'deleted_tr': 'https://ftp.expasy.org/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/delac_tr.txt.gz',
         'speindex_old': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
             'knowledgebase/docs/speindex.txt',
-        'speindex': 'ftp://ftp.expasy.org/databases/uniprot/current_release/'
+        'speindex': 'https://ftp.expasy.org/databases/uniprot/current_release/'
             'knowledgebase/complete/docs/speindex.txt',
-        'taxids': 'https://www.uniprot.org/taxonomy/?query='
+        'taxids_old': 'https://www.uniprot.org/taxonomy/?query='
             '*&format=tab&force=true&columns=id&compress=yes',
+        'taxids': 'https://rest.uniprot.org/taxonomy/stream?compressed=true'
+            '&fields=id%2Ccommon_name%2Cscientific_name'
+            '&format=tsv&query=%28%2A%29',
         'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/speclist.txt',
     },
