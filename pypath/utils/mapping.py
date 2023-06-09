@@ -787,13 +787,13 @@ class MapReader(session_mod.Logger):
                 if not self.param.swissprot else
             ' AND reviewed:%s' % self.param.swissprot
         )
-        query = 'organism:%u%s' % (int(self.ncbi_tax_id), rev)
+        query = 'organism_id:%u%s' % (int(self.ncbi_tax_id), rev)
 
         url = urls.urls['uniprot_basic']['url']
         post = {
             'query': query,
-            'format': 'tab',
-            'columns': 'id,%s' % self.param._resource_id_type_a,
+            'format': 'tsv',
+            'fields': 'accession,%s' % self.param._resource_id_type_a,
         }
 
         url = '%s?%s' % (url, urllib.urlencode(post))

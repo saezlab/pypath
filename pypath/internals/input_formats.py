@@ -44,16 +44,17 @@ __all__ = [
 
 
 AC_QUERY = {
-    'genesymbol': ('genes', 'PREFERRED'),
-    'genesymbol-syn': ('genes', 'ALTERNATIVE'),
-    'hgnc': ('database', 'HGNC'),
-    'embl': ('database', 'embl'),
-    'entrez': ('database', 'geneid'),
-    'refseqp': ('database', 'refseq'),
-    'enst': ('database', 'ensembl'),
-    'uniprot-entry': ('entry name', None),
-    'protein-name': ('protein names', None),
-    'ec': ('ec', None),
+    'genesymbol': 'gene_primary',
+    'genesymbol-syn': 'gene_synonym',
+    'hgnc': 'xref_hgnc',
+    'embl': 'xref_embl',
+    'entrez': 'xref_geneid',
+    'geneid': 'xref_geneid',
+    'refseqp': 'xref_refseq',
+    'enst': 'xref_ensembl',
+    'uniprot-entry': 'id',
+    'protein-name': 'protein_name',
+    'ec': 'ec',
 }
 
 AC_MAPPING = {
@@ -272,14 +273,14 @@ class FileMapping(MappingInput):
 
 class UniprotMapping(MappingInput):
 
-    _resource_id_type_b = 'id'
+    _resource_id_type_b = 'accession'
 
     def __init__(
             self,
             id_type_a,
             id_type_b = 'uniprot',
             ncbi_tax_id = 9606,
-            swissprot = 'yes',
+            swissprot = 'true',
         ):
         """
         Defines an ID conversion table to retrieve from UniProt.
@@ -348,8 +349,7 @@ class UniprotMapping(MappingInput):
                 label is not known.
         """
 
-        id_type = AC_QUERY.get(id_type, (None, None))
-        id_type = '%s(%s)' % id_type if id_type[1] else id_type[0]
+        id_type = AC_QUERY.get(id_type, id_type)
 
         return id_type
 
