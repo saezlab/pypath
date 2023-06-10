@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.share.curl &#8212; pypath 0.15.3 documentation</title>
+    <title>pypath.share.curl &#8212; pypath 0.15.4 documentation</title>
   
   
   
@@ -1424,6 +1424,7 @@ document.write(`
         <span class="k">if</span> <span class="n">CACHEDEL</span><span class="p">:</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">delete_cache_file</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_cache</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">DRYRUN</span><span class="p">:</span>
 
@@ -2133,6 +2134,21 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">replace_forbidden</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">urlmd5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
             <span class="p">)</span>
         <span class="p">)</span>
+
+
+<div class="viewcode-block" id="Curl.cache_path"><a class="viewcode-back" href="../../../api/pypath.share.curl.Curl.html#pypath.share.curl.Curl.cache_path">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">cache_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the cache path without performing download or creating file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kwargs:</span>
+<span class="sd">                Arguments to `Curl`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;setup&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;call&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;process&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">Curl</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">cache_file_name</span></div>
 
 
 <div class="viewcode-block" id="Curl.replace_forbidden"><a class="viewcode-back" href="../../../api/pypath.share.curl.Curl.html#pypath.share.curl.Curl.replace_forbidden">[docs]</a>    <span class="nd">@classmethod</span>

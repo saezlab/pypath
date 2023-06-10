@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.internals.input_formats &#8212; pypath 0.15.3 documentation</title>
+    <title>pypath.internals.input_formats &#8212; pypath 0.15.4 documentation</title>
   
   
   
@@ -533,36 +533,38 @@ document.write(`
 
 
 <span class="n">AC_QUERY</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;genesymbol&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;genes&#39;</span><span class="p">,</span> <span class="s1">&#39;PREFERRED&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;genesymbol-syn&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;genes&#39;</span><span class="p">,</span> <span class="s1">&#39;ALTERNATIVE&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;hgnc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="s1">&#39;HGNC&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;embl&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="s1">&#39;embl&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;entrez&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="s1">&#39;geneid&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;refseqp&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="s1">&#39;refseq&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;enst&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="s1">&#39;ensembl&#39;</span><span class="p">),</span>
-    <span class="s1">&#39;uniprot-entry&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;entry name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-    <span class="s1">&#39;protein-name&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;protein names&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-    <span class="s1">&#39;ec&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ec&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;genesymbol&#39;</span><span class="p">:</span> <span class="s1">&#39;gene_primary&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;genesymbol-syn&#39;</span><span class="p">:</span> <span class="s1">&#39;gene_synonym&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hgnc&#39;</span><span class="p">:</span> <span class="s1">&#39;xref_hgnc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;embl&#39;</span><span class="p">:</span> <span class="s1">&#39;xref_embl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;entrez&#39;</span><span class="p">:</span> <span class="s1">&#39;xref_geneid&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;geneid&#39;</span><span class="p">:</span> <span class="s1">&#39;xref_geneid&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;refseqp&#39;</span><span class="p">:</span> <span class="s1">&#39;xref_refseq&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;enst&#39;</span><span class="p">:</span> <span class="s1">&#39;xref_ensembl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;uniprot-entry&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;protein-name&#39;</span><span class="p">:</span> <span class="s1">&#39;protein_name&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ec&#39;</span><span class="p">:</span> <span class="s1">&#39;ec&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">AC_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span> <span class="s1">&#39;ACC&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;uniprot_id&#39;</span><span class="p">:</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;embl&#39;</span><span class="p">:</span> <span class="s1">&#39;EMBL&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;embl_id&#39;</span><span class="p">:</span> <span class="s1">&#39;EMBL_ID&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;uniprot-entry&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;embl&#39;</span><span class="p">:</span> <span class="s1">&#39;EMBL-GeneBank-DDBJ&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;embl_id&#39;</span><span class="p">:</span> <span class="s1">&#39;EMBL-GeneBank-DDBJ_CDS&#39;</span><span class="p">,</span>
     <span class="s1">&#39;pir&#39;</span><span class="p">:</span> <span class="s1">&#39;PIR&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;entrez&#39;</span><span class="p">:</span> <span class="s1">&#39;P_ENTREZGENEID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;gi&#39;</span><span class="p">:</span> <span class="s1">&#39;P_GI&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;refseqp&#39;</span><span class="p">:</span> <span class="s1">&#39;P_REFSEQ_AC&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;refseqn&#39;</span><span class="p">:</span> <span class="s1">&#39;REFSEQ_NT_ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ensembl&#39;</span><span class="p">:</span> <span class="s1">&#39;ENSEMBL_ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ensp&#39;</span><span class="p">:</span> <span class="s1">&#39;ENSEMBL_PRO_ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;enst&#39;</span><span class="p">:</span> <span class="s1">&#39;ENSEMBL_TRS_ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ensg&#39;</span><span class="p">:</span> <span class="s1">&#39;ENSEMBLGENOME_ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ensgp&#39;</span><span class="p">:</span> <span class="s1">&#39;ENSEMBLGENOME_PRO_ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ensgt&#39;</span><span class="p">:</span> <span class="s1">&#39;ENSEMBLGENOME_TRS_ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;hgnc&#39;</span><span class="p">:</span> <span class="s1">&#39;HGNC_ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ensp_string&#39;</span><span class="p">:</span> <span class="s1">&#39;STRING_ID&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;entrez&#39;</span><span class="p">:</span> <span class="s1">&#39;GeneID&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gi&#39;</span><span class="p">:</span> <span class="s1">&#39;GI_number&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;refseqp&#39;</span><span class="p">:</span> <span class="s1">&#39;RefSeq_Protein&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;refseqn&#39;</span><span class="p">:</span> <span class="s1">&#39;RefSeq_Nucleotide&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ensembl&#39;</span><span class="p">:</span> <span class="s1">&#39;Ensembl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ensp&#39;</span><span class="p">:</span> <span class="s1">&#39;Ensembl_Protein&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;enst&#39;</span><span class="p">:</span> <span class="s1">&#39;Ensembl_Transcript&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ensg&#39;</span><span class="p">:</span> <span class="s1">&#39;Ensembl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ensgp&#39;</span><span class="p">:</span> <span class="s1">&#39;Ensembl_Genomes_Protein&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ensgt&#39;</span><span class="p">:</span> <span class="s1">&#39;Ensembl_Genomes_Transcript&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hgnc&#39;</span><span class="p">:</span> <span class="s1">&#39;HGNC&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ensp_string&#39;</span><span class="p">:</span> <span class="s1">&#39;STRING&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;genesymbol&#39;</span><span class="p">:</span> <span class="s1">&#39;Gene_Name&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">BIOMART_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
@@ -712,7 +714,17 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">id_type_b</span> <span class="o">==</span> <span class="n">other</span> <span class="ow">or</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_type_a</span> <span class="o">==</span> <span class="n">other</span> <span class="ow">or</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_type_b</span> <span class="o">==</span> <span class="n">other</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">swap_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_type_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_type_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_type_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_type_a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_b</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_b</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_a</span><span class="p">,</span>
         <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="FileMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.FileMapping.html#pypath.internals.input_formats.FileMapping">[docs]</a><span class="k">class</span> <span class="nc">FileMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
@@ -761,14 +773,14 @@ document.write(`
 
 <div class="viewcode-block" id="UniprotMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotMapping.html#pypath.internals.input_formats.UniprotMapping">[docs]</a><span class="k">class</span> <span class="nc">UniprotMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 
-    <span class="n">_resource_id_type_b</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+    <span class="n">_resource_id_type_b</span> <span class="o">=</span> <span class="s1">&#39;accession&#39;</span>
 
 <div class="viewcode-block" id="UniprotMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotMapping.html#pypath.internals.input_formats.UniprotMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span> <span class="o">=</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
-            <span class="n">swissprot</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span>
+            <span class="n">swissprot</span> <span class="o">=</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span>
         <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Defines an ID conversion table to retrieve from UniProt.</span>
@@ -837,8 +849,7 @@ document.write(`
 <span class="sd">                label is not known.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">id_type</span> <span class="o">=</span> <span class="n">AC_QUERY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-        <span class="n">id_type</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">id_type</span> <span class="k">if</span> <span class="n">id_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">id_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">id_type</span> <span class="o">=</span> <span class="n">AC_QUERY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">id_type</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">id_type</span></div></div>
 
@@ -863,6 +874,16 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">AC_MAPPING</span>
+    <span class="n">_from_uniprot</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB_AC-ID&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;swissprot&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB_AC-ID&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;trembl&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB_AC-ID&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">_to_uniprot</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;swissprot&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB-Swiss-Prot&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;trembl&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
 
 <div class="viewcode-block" id="UniprotListMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotListMapping.html#pypath.internals.input_formats.UniprotListMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -884,12 +905,9 @@ document.write(`
             <span class="n">resource_id_type_b</span> <span class="o">=</span> <span class="n">uniprot_id_type_b</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_swissprot</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ac_mapping</span> <span class="o">=</span> <span class="n">AC_MAPPING</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_id_type_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_type_a</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_id_type_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_type_b</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_uniprot_types</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span></div>
 
 
@@ -897,7 +915,54 @@ document.write(`
 
         <span class="n">other_organism</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">other_organism</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span>
-        <span class="k">return</span> <span class="n">other_organism</span></div>
+        <span class="k">return</span> <span class="n">other_organism</span>
+
+
+    <span class="k">def</span> <span class="nf">swap_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">MappingInput</span><span class="o">.</span><span class="n">swap_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_uniprot_types</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_update_uniprot_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_id_type_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_type_a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_id_type_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_type_b</span>
+
+
+    <span class="k">def</span> <span class="nf">_resource_id_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+        <span class="n">uniprot_id_types</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_uniprot</span><span class="p">,</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_uniprot</span><span class="p">,</span>
+        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">side</span><span class="p">)</span>
+
+        <span class="n">id_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;id_type_</span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">uniprot_id_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">id_type</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">id_type</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_set_swissprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swissprot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;swissprot&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;trembl&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">swissprot</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">id_type_a</span><span class="p">,</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_type_b</span><span class="p">,</span> <span class="n">swissprot</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_uniprotkb_id_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">id_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_uniprot</span></div>
 
 
 <div class="viewcode-block" id="ProMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ProMapping.html#pypath.internals.input_formats.ProMapping">[docs]</a><span class="k">class</span> <span class="nc">ProMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
