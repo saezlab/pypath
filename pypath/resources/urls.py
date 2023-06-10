@@ -55,6 +55,11 @@ urls = {
         'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/speclist.txt',
     },
+    'uniprot_idmapping': {
+        'run': 'https://rest.uniprot.org/idmapping/run',
+        'poll': 'https://rest.uniprot.org/idmapping/status/%s',
+        'details': 'https://rest.uniprot.org/idmapping/details/%s',
+    },
     'corum': {
         'label':
         'CORUM is a database of protein complexes, downloadable in csv format',
