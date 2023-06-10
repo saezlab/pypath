@@ -58,23 +58,23 @@ AC_QUERY = {
 }
 
 AC_MAPPING = {
-    'uniprot': 'ACC',
-    'uniprot_id': 'ID',
-    'embl': 'EMBL',
-    'embl_id': 'EMBL_ID',
+    'uniprot': 'UniProtKB',
+    'uniprot-entry': 'UniProtKB',
+    'embl': 'EMBL-GeneBank-DDBJ',
+    'embl_id': 'EMBL-GeneBank-DDBJ_CDS',
     'pir': 'PIR',
-    'entrez': 'P_ENTREZGENEID',
-    'gi': 'P_GI',
-    'refseqp': 'P_REFSEQ_AC',
-    'refseqn': 'REFSEQ_NT_ID',
-    'ensembl': 'ENSEMBL_ID',
-    'ensp': 'ENSEMBL_PRO_ID',
-    'enst': 'ENSEMBL_TRS_ID',
-    'ensg': 'ENSEMBLGENOME_ID',
-    'ensgp': 'ENSEMBLGENOME_PRO_ID',
-    'ensgt': 'ENSEMBLGENOME_TRS_ID',
-    'hgnc': 'HGNC_ID',
-    'ensp_string': 'STRING_ID',
+    'entrez': 'GeneID',
+    'gi': 'GI_number',
+    'refseqp': 'RefSeq_Protein',
+    'refseqn': 'RefSeq_Nucleotide',
+    'ensembl': 'Ensembl',
+    'ensp': 'Ensembl_Protein',
+    'enst': 'Ensembl_Transcript',
+    'ensg': 'Ensembl',
+    'ensgp': 'Ensembl_Genomes_Protein',
+    'ensgt': 'Ensembl_Genomes_Transcript',
+    'hgnc': 'HGNC',
+    'ensp_string': 'STRING',
 }
 
 BIOMART_MAPPING = {
@@ -374,6 +374,16 @@ class UniprotListMapping(MappingInput):
     """
 
     _resource_id_types = AC_MAPPING
+    _from_uniprot = {
+        'uniprot': 'UniProtKB_AC-ID',
+        'swissprot': 'UniProtKB_AC-ID',
+        'trembl': 'UniProtKB_AC-ID',
+    }
+    _to_uniprot = {
+        'uniprot': 'UniProtKB',
+        'swissprot': 'UniProtKB-Swiss-Prot',
+        'trembl': 'UniProtKB',
+    }
 
     def __init__(
             self,
@@ -409,6 +419,21 @@ class UniprotListMapping(MappingInput):
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
+
+
+    def _resource_id_type(self, side: str) -> str:
+
+        uniprot_id_types = {
+            'a': self._from_uniprot,
+            'b': self._to_uniprot,
+        }.get(side)
+
+        id_type = getattr(self, f'id_type_{side}')
+
+        return uniprot_id_types.get(
+            id_type,
+            self._resource_id_types.get(id_type, id_type)
+        )
 
 
 class ProMapping(MappingInput):
