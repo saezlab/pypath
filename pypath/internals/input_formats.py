@@ -75,6 +75,7 @@ AC_MAPPING = {
     'ensgt': 'Ensembl_Genomes_Transcript',
     'hgnc': 'HGNC',
     'ensp_string': 'STRING',
+    'genesymbol': 'Gene_Name',
 }
 
 BIOMART_MAPPING = {
@@ -225,6 +226,16 @@ class MappingInput(object):
             self._resource_id_type_a == other or
             self._resource_id_type_b == other
         )
+
+
+    def swap_sides(self):
+
+        self.id_type_a, self.id_type_b = self.id_type_b, self.id_type_a
+        self.resource_id_type_a, self.resource_id_type_b = (
+            self.resource_id_type_b,
+            self.resource_id_type_a,
+        )
+
 
 
 class FileMapping(MappingInput):
@@ -405,12 +416,9 @@ class UniprotListMapping(MappingInput):
             resource_id_type_b = uniprot_id_type_b,
         )
 
-        self.swissprot = swissprot
+        self._set_swissprot(swissprot)
         self.ac_mapping = AC_MAPPING
-
-        self.uniprot_id_type_a = self._resource_id_type_a
-        self.uniprot_id_type_b = self._resource_id_type_b
-
+        self._update_uniprot_types()
         self.entity_type = 'protein'
 
 
@@ -419,6 +427,18 @@ class UniprotListMapping(MappingInput):
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
+
+
+    def swap_sides(self):
+
+        MappingInput.swap_sides(self)
+        self._update_uniprot_types()
+
+
+    def _update_uniprot_types(self):
+
+        self.uniprot_id_type_a = self._resource_id_type_a
+        self.uniprot_id_type_b = self._resource_id_type_b
 
 
     def _resource_id_type(self, side: str) -> str:
@@ -434,6 +454,26 @@ class UniprotListMapping(MappingInput):
             id_type,
             self._resource_id_types.get(id_type, id_type)
         )
+
+
+    def _set_swissprot(self, swissprot: bool | None) -> None:
+
+        values = {'swissprot': True, 'trembl': False, 'uniprot': True}
+
+        if swissprot is None:
+
+            swissprot = values.get(
+                self.id_type_a,
+                values.get(self.id_type_b, swissprot)
+            )
+
+        self.swissprot = swissprot
+
+
+    @classmethod
+    def _uniprotkb_id_type(cls, id_type: str) -> bool:
+
+        return id_type in cls._from_uniprot
 
 
 class ProMapping(MappingInput):
