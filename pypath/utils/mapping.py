@@ -161,7 +161,7 @@ UNIPROT_ID_TYPES = {
 
 """
 Classes for reading and use serving ID mapping data from custom file,
-function, UniProt, UniProt uploadlists, Ensembl BioMart,
+function, UniProt, UniProt ID Mapping, Ensembl BioMart,
 PRO (Protein Ontology), miRBase or pickle file.
 """
 
@@ -716,10 +716,10 @@ class MapReader(session_mod.Logger):
             uniprot_id_type_a (str): Source ID type label as used in UniProt.
             uniprot_id_type_b (str): Target ID type label as used in UniProt.
             upload_ac_list (list): The identifiers to use in the query to
-                the uploadlists service. By default the list of all UniProt
+                the ID Mapping service. By default the list of all UniProt
                 IDs for the organism is used.
             chunk_size (int): Number of IDs in one query. Too large queries
-                might fail, by default we include 10,000 IDs in one query.
+                might fail, by default we include 100,000 IDs in one query.
         """
 
         chunk_size = (
@@ -733,7 +733,7 @@ class MapReader(session_mod.Logger):
         upload_ac_list = sorted(upload_ac_list)
 
         self._log(
-            'Querying the UniProt uploadlists service for ID translation '
+            'Querying the UniProt ID Mapping service for ID translation '
             'data. Querying a list of %u IDs.' % len(upload_ac_list)
         )
 
@@ -747,7 +747,7 @@ class MapReader(session_mod.Logger):
             this_chunk = upload_ac_list[i * chunk_size:(i + 1) * chunk_size]
 
             self._log(
-                'Request to UniProt uploadlists, chunk #%u with %u IDs.' % (
+                'Request to UniProt ID Mapping, chunk #%u with %u IDs.' % (
                     i,
                     len(this_chunk),
                 )
@@ -1673,7 +1673,7 @@ class Mapper(session_mod.Logger):
                             tbl_key = tbl_key_noorganism
                             tbl_key_rev = tbl_key_rev_noorganism
 
-                        # for uniprot/uploadlists or PRO or array
+                        # for uniprot/idmapping or PRO or array
                         # we create here the mapping params
                         this_param = input_cls(
                             id_type_a = _id_type,
@@ -2434,7 +2434,7 @@ class Mapper(session_mod.Logger):
         mapped_names = set()
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        # try first UniProt uploadlists
+        # try first UniProt ID Mapping
         # then Ensembl BioMart
         for id_type in ('ensp', 'ensp_biomart'):
 
@@ -2451,7 +2451,7 @@ class Mapper(session_mod.Logger):
 
             tax_ensp = '%u.%s' % (ncbi_tax_id, ensp)
 
-            # this uses UniProt uploadlists with STRING_ID
+            # this uses UniProt ID Mapping with STRING ID type
             mapped_names = self._map_name(
                 name = tax_ensp,
                 id_type = 'ensp_string',
@@ -2475,7 +2475,7 @@ class Mapper(session_mod.Logger):
         mapped_names = set()
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        # try first UniProt uploadlists
+        # try first UniProt ID Mapping
         # then Ensembl BioMart
         for target_id_type in ('ensp', 'ensp_biomart'):
 
@@ -2490,7 +2490,7 @@ class Mapper(session_mod.Logger):
 
         if not mapped_names:
 
-            # this uses UniProt uploadlists with STRING_ID
+            # this uses UniProt ID Mapping with STRING type
             mapped_names = self._map_name(
                 name = name,
                 id_type = id_type,
