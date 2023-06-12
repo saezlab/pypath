@@ -41,7 +41,7 @@ _log = _logger._log
 ALL_COLLECTIONS = {
     'hallmark': ('h.all', 'mh.all'),
     'positional': ('c1.all', 'm1.all'),
-    'chemical_and_genetic_perturbations': ('m2.cgp', 'm2.cgp'),
+    'chemical_and_genetic_perturbations': ('c2.cgp', 'm2.cgp'),
     'biocarta_pathways': ('c2.cp.biocarta', 'm2.cp.biocarta'),
     'kegg_pathways': ('c2.cp.kegg', None),
     'pid_pathways': ('c2.cp.pid', None),
@@ -53,9 +53,9 @@ ALL_COLLECTIONS = {
     'tf_targets_legacy': ('c3.tft.tft_legacy', None),
     'cancer_gene_neighborhoods': ('c4.cgn', None),
     'cancer_modules': ('c4.cm', None),
-    'go_biological_process': ('c5.bp', 'm5.bp'),
-    'go_molecular_function': ('c5.mf', 'm5.mf'),
-    'go_cellular_component': ('c5.cc', 'm5.cc'),
+    'go_biological_process': ('c5.go.bp', 'm5.go.bp'),
+    'go_molecular_function': ('c5.go.mf', 'm5.go.mf'),
+    'go_cellular_component': ('c5.go.cc', 'm5.go.cc'),
     'human_phenotype_ontology': ('c5.hpo', None),
     'mouse_phenotype_ontology': (None, 'm5.mpt'),
     'oncogenic_signatures': ('c6.all', None),
@@ -120,12 +120,9 @@ def msigdb_download(
 
     version = version or settings.get('msigdb_version')
 
-<<<<<<< HEAD
-=======
     #http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Mm/mh.all.v2022.1.Mm.symbols.gmt
     #http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Hs/h.all.v2022.1.Hs.symbols.gmt
 
->>>>>>> pr198
     url = urls.urls['msigdb']['url'] % (
         version,
         msigdb_org,
@@ -192,7 +189,8 @@ def msigdb_download(
             'Cookie: %s' % ';'.join(
                 '%s=%s' % cookie
                 for cookie in cookies.items()
-
+            )
+        ]
 
         c_login_2 = curl.Curl(
             urls.urls['msigdb']['login2'],
@@ -226,6 +224,7 @@ def msigdb_download(
                     registered_email,
                     jsessionid_1
                 )
+            )
 
         _log('msigdb cookies for upcoming request: %s' % req_headers[0])
 
@@ -267,20 +266,13 @@ def msigdb_download_collections(
         from ``pypath.settings`` will be used.
     :arg set,NoneType only_collections:
         Limit the annotations only to these collections. For available
-        collections e.g. ``{'h.all', 'c2cgp'}`` refer to the MSigDB webpage:
+        collections e.g. ``{'h.all', 'c2.cgp'}`` refer to the MSigDB webpage:
         http://software.broadinstitute.org/gsea/downloads.jsp#msigdb
     :arg tuple exclude:
         Exclude the collections having their name starting with any of the
-        strings in this tuple. By default `c5` (Gene Ontology) is excluded.
+        strings in this tuple. By default `c5` and `m5` (Gene Ontology and
+        Human/Mouse Phenotype Ontology) is excluded.
     """
-
-    MsigdbAnnotation = collections.namedtuple(
-        'MsigdbAnnotation',
-        [
-            'collection',
-            'geneset',
-        ],
-    )
 
     collection_data = {}
 

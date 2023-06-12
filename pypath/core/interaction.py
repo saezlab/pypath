@@ -34,12 +34,14 @@ from __future__ import annotations
 
 from future.utils import iteritems
 
+from typing import Literal
+
 import importlib as imp
 import collections
 import operator
 import itertools
 import functools
-from typing_extensions import Literal
+import json
 
 import pypath.core.evidence as pypath_evidence
 import pypath.internals.resource as pypath_resource
@@ -119,9 +121,11 @@ class Interaction(attrs_mod.AttributeHandler):
         'direction',
         'positive',
         'negative',
+        'unknown_effect',
     ]
 
     _get_methods = {
+        'datasets',
         'entities',
         'evidences',
         'references',
@@ -153,6 +157,7 @@ class Interaction(attrs_mod.AttributeHandler):
         'resource_names_via',
         'data_models',
         'interaction_types',
+        'datasets',
     )
 
     _by_methods = (
@@ -276,6 +281,10 @@ class Interaction(attrs_mod.AttributeHandler):
             self.a_b: pypath_evidence.Evidences(),
             self.b_a: pypath_evidence.Evidences(),
         }
+        self.unknown_effect = {
+            self.a_b: pypath_evidence.Evidences(),
+            self.b_a: pypath_evidence.Evidences(),
+        }
 
         attrs_mod.AttributeHandler.__init__(self, attrs)
 
@@ -305,6 +314,7 @@ class Interaction(attrs_mod.AttributeHandler):
             self.direction.values(),
             self.positive.values(),
             self.negative.values(),
+            self.unknown_effect.values(),
         ):
 
             evs.__class__ = evsnew
@@ -428,7 +438,7 @@ class Interaction(attrs_mod.AttributeHandler):
             self,
             evidence,
             direction = 'undirected',
-            effect = 0,
+            effect = None,
             references = None,
             attrs = None,
         ):
@@ -496,6 +506,10 @@ class Interaction(attrs_mod.AttributeHandler):
             elif effect in {-1, 'negative', 'inhibition'}:
 
                 self.negative[direction] += evidence
+
+            elif effect in {0, 'unknown'}:
+
+                self.unknown_effect[direction] += evidence
 
 
     def __hash__(self):
@@ -568,10 +582,22 @@ class Interaction(attrs_mod.AttributeHandler):
 
             one.negative[eff_key] += other.negative[eff_key]
 
+        for eff_key in one.unknown_effect.keys():
+
+            one.unknown_effect[eff_key] += other.unknown_effect[eff_key]
+
 
     def __repr__(self):
 
-        return '<Interaction: %s %s=%s=%s=%s %s [%s]>' % (
+        return '<Interaction: %s [%s]>' % (
+            self.__str__(),
+            self.evidences.__repr__().strip('<>'),
+        )
+
+
+    def __str__(self):
+
+        return '%s %s=%s=%s=%s %s' % (
             self.a.label or self.a.identifier,
             '<' if self.direction[self.b_a] else '=',
             (
@@ -594,9 +620,7 @@ class Interaction(attrs_mod.AttributeHandler):
             ),
             '>' if self.direction[self.a_b] else '=',
             self.b.label or self.b.identifier,
-            self.evidences.__repr__().strip('<>'),
         )
-
 
     def __contains__(self, other):
 
@@ -620,6 +644,20 @@ class Interaction(attrs_mod.AttributeHandler):
             ev.resource.data_model
             for ev in self.evidences
         }
+
+
+    def has_dataset(
+            self,
+            dataset: str,
+            direction: str | tuple = None,
+            effect: Literal['positive', 'negative'] = None,
+            **kwargs,
+        ) -> bool:
+
+        return (
+            self.get_evidences(direction = direction, effect = effect).
+            has_dataset(dataset, **kwargs)
+        )
 
 
     def get_direction(
@@ -836,6 +874,10 @@ class Interaction(attrs_mod.AttributeHandler):
 
             return 'negative'
 
+        if effect in {'unknown'}:
+
+            return 'unknown'
+
 
     def _resources_set(self, resources = None):
 
@@ -873,7 +915,7 @@ class Interaction(attrs_mod.AttributeHandler):
             attrs = (
                 (self._effect_synonyms(only_sign),)
                     if only_sign else
-                ('direction', 'positive', 'negative')
+                ('direction', 'positive', 'negative', 'unknown_effect')
             )
             resource = resource or source
 
@@ -2084,6 +2126,7 @@ class Interaction(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = None,
             references = None,
+            datasets = None,
         ):
 
         effect = self._effect_synonyms(effect)
@@ -2139,6 +2182,7 @@ class Interaction(attrs_mod.AttributeHandler):
                     via = via,
                     data_model = data_model,
                     references = references,
+                    datasets = datasets,
                 )
             )
         )
@@ -2154,6 +2198,7 @@ class Interaction(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = None,
             references = None,
+            datasets = None,
             return_type = None,
         ):
         """
@@ -2300,6 +2345,7 @@ class Interaction(attrs_mod.AttributeHandler):
             entity_type = None,
             source_entity_type = None,
             target_entity_type = None,
+            datasets = None,
         ):
         """
         Returns one or two tuples of the interacting partners: one if only
@@ -2381,6 +2427,7 @@ class Interaction(attrs_mod.AttributeHandler):
                     interaction_type = interaction_type,
                     via = via,
                     references = references,
+                    datasets = datasets,
                 )
             )
 
@@ -2397,6 +2444,7 @@ class Interaction(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = None,
             references = None,
+            datasets = None,
         ):
         """
         Selects the evidence collections matching the direction and effect
@@ -2420,6 +2468,7 @@ class Interaction(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = None,
             references = None,
+            datasets = None,
         ):
         """
         Selects the evidence collections matching the direction and effect
@@ -2438,6 +2487,7 @@ class Interaction(attrs_mod.AttributeHandler):
                 interaction_type = interaction_type,
                 via = via,
                 references = references,
+                datasets = datasets,
             ):
 
                 yield evs
@@ -3213,11 +3263,39 @@ class Interaction(attrs_mod.AttributeHandler):
                         )
 
 
-    def serialize_attrs(self, direction = None):
+    def asdict(self, direction: tuple) -> dict:
+        """
+        Dictionary representation of the evidences.
+        """
+
+        direction = self.a_b if self.a_b == direction else self.b_a
+
+        return {
+            'id_a': str(direction[0].identifier),
+            'id_b': str(direction[1].identifier),
+            'positive': self.positive[direction].asdict(),
+            'negative': self.negative[direction].asdict(),
+            'directed': self.unknown_effect[direction].asdict(),
+            'undirected': self.direction['undirected'].asdict(),
+        }
+
+
+    def serialize_attrs(self, direction: tuple | str | None = None) -> str:
+        """
+        Serialize the resource specific attributes into a JSON string.
+        """
 
         evs = self.evidences if not direction else self.direction[direction]
 
         return evs.serialize_attrs()
+
+
+    def serialize_evidences(self, direction: tuple) -> str:
+        """
+        Serialize the evidences into a JSON string.
+        """
+
+        return self._serialize(self.asdict(direction = direction))
 
 
     def _get_attr(self, resource, key, direction):

@@ -43,6 +43,7 @@ import pypath.share.common as common
 import pypath.share.session as session_mod
 import pypath.core.entity as entity
 import pypath.core.attrs as attrs_mod
+import pypath.resources.network as netres
 
 _logger = session_mod.Logger(name = 'evidence')
 _log = _logger._log
@@ -66,12 +67,14 @@ class Evidence(attrs_mod.AttributeHandler):
     __slots__ = [
         'resource',
         'references',
+        'dataset',
     ]
 
 
     def __init__(self, resource, references = None, attrs = None):
 
         self.resource = resource
+        self.dataset = getattr(resource, 'dataset', None)
         self.references = self._process_references(references)
         attrs_mod.AttributeHandler.__init__(self, attrs)
 
@@ -116,7 +119,11 @@ class Evidence(attrs_mod.AttributeHandler):
             self.resource == other or
             (
                 hasattr(other, 'resource') and
-                self.resource == other.resource
+                self.resource == other.resource and
+                (
+                    self.resource.interaction_type ==
+                    self.resource.interaction_type
+                )
             )
         )
 
@@ -129,6 +136,7 @@ class Evidence(attrs_mod.AttributeHandler):
 
         if self == other:
 
+            self.dataset = netres.choose_dataset(self.dataset, other.dataset)
             self.references.update(other.references)
             attrs_mod.AttributeHandler.__iadd__(other)
 
@@ -144,10 +152,13 @@ class Evidence(attrs_mod.AttributeHandler):
 
     def __add__(self, other):
 
+        dataset = netres.choose_dataset(self.dataset, other.dataset)
+
         new = self.__class__(
             resource = self.resource,
             references = self.references | other.references,
         )
+        new.dataset = dataset
         new.update_attrs(self.attrs.copy())
         new.update_attrs(other.attrs.copy())
 
@@ -183,6 +194,11 @@ class Evidence(attrs_mod.AttributeHandler):
             'via %s, ' % self.resource.via if self.resource.via else '',
             len(self.references),
         )
+
+
+    def __str__(self):
+
+        return self.resource.name
 
 
     def __copy__(self):
@@ -303,6 +319,7 @@ class Evidence(attrs_mod.AttributeHandler):
             interaction_type = None,
             via = False,
             references = None,
+            datasets = None,
         ):
 
         def _match(attr, value):
@@ -371,8 +388,40 @@ class Evidence(attrs_mod.AttributeHandler):
             (
                 not data_model or
                 _match('data_model', data_model)
+            ) and
+            (
+                datasets is None or
+                _match('dataset', datasets)
             )
         )
+
+
+    def __str__(self):
+
+        return self.resource.name
+
+
+    @property
+    def pubmeds(self) -> list[str]:
+        """
+        PubMed IDs of the references supporting this evidence.
+        """
+
+        return [r.pmid for r in self.references]
+
+
+    def asdict(self) -> dict:
+        """
+        Dictionary representation of the evidence.
+        """
+
+        return {
+            'resource': self.resource.name,
+            'references': self.pubmeds,
+            'dataset': self.dataset,
+            'via': self.resource.via,
+            'attrs': self.attrs,
+        }
 
 
 class Evidences(object):
@@ -714,6 +763,29 @@ class Evidences(object):
         return {ev.resource.data_model for ev in self.filter(**kwargs)}
 
 
+    def get_datasets(self, **kwargs):
+
+        return {
+            ds for ds in
+            (ev.dataset for ev in self.filter(**kwargs))
+            if ds
+        }
+
+
+    def has_dataset(self, dataset: str, **kwargs) -> bool:
+        """
+        Contains evidence(s) from a given dataset meeting the criteria.
+
+        Args:
+            dataset:
+                Name of the dataset.
+            kwargs:
+                Filtering criteria for evidences.
+        """
+
+        return dataset in self.get_datasets(**kwargs)
+
+
     def __isub__(self, other):
 
         if isinstance(other, self.__class__):
@@ -751,6 +823,7 @@ class Evidences(object):
             interaction_type = None,
             via = False,
             references = None,
+            datasets = None,
         ):
 
         return (
@@ -761,6 +834,7 @@ class Evidences(object):
                 interaction_type = interaction_type,
                 via = via,
                 references = references,
+                datasets = datasets,
             )
         )
 
@@ -772,6 +846,7 @@ class Evidences(object):
             interaction_type = None,
             via = False,
             references = None,
+            datasets = None,
         ):
 
         return bool(
@@ -782,6 +857,7 @@ class Evidences(object):
                     interaction_type = interaction_type,
                     via = via,
                     references = references,
+                    datasets = datasets,
                 )
             )
         )
@@ -845,3 +921,29 @@ class Evidences(object):
             top_key_prefix = top_key_prefix,
             default = lambda obj: obj.serialize(),
         )
+
+
+    @property
+    def datasets(self) -> set:
+        """
+        Datasets in this evidence set.
+        """
+
+        return {ev.dataset for ev in self}
+
+
+    @property
+    def attrs(self) -> dict:
+        """
+        Combines the custom attributes from all evidences within this set.
+        """
+
+        return common.combine_attrs([ev.attrs for ev in self])
+
+
+    def asdict(self) -> list[dict]:
+        """
+        Evidence set as a list of dictionaries.
+        """
+
+        return [ev.asdict() for ev in self]

@@ -1216,15 +1216,15 @@ class Regulation(object):
 
 #TODO this class does not belong here, find a better place
 class Complex(object):
-    
+
     have_stoichiometry = {
         'PDB',
         'Compleat',
         'ComplexPortal',
         'CellPhoneDB',
     }
-    
-    
+
+
     def __init__(
             self,
             components,
@@ -1239,7 +1239,7 @@ class Complex(object):
         ):
         """
         Represents a molecular complex.
-        
+
         components : list,dict
             Either a list of identifiers or a dict with identifiers as keys
             and stoichiometric coefficients as values. List of identifiers
@@ -1265,17 +1265,17 @@ class Complex(object):
         proteins : list,dict
             Synonym for `components`, kept for compatibility.
         """
-        
+
         components = components or proteins
-        
+
         if not isinstance(components, dict):
-            
+
             self.components = dict(collections.Counter(components))
-            
+
         else:
-            
+
             self.components = components
-        
+
         self.proteins = self.components
         self.name = name
         self.ids = collections.defaultdict(set)
@@ -1286,83 +1286,83 @@ class Complex(object):
         self.attrs = {}
         if isinstance(attrs, dict):
             self.attrs.update(attrs)
-        
+
         self.interactions = interactions
-    
-    
+
+
     def reload(self):
-        
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         import importlib as imp
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
+
+
     def __str__(self):
-        
+
         return 'COMPLEX:%s' % (
             COMPLEX_SEP.join(sorted(self.components.keys()))
         )
-    
-    
+
+
     def __repr__(self):
-        
+
         return 'Complex%s: %s' % (
             ' %s' % self.name if self.name else '',
             self.__str__(),
         )
-    
-    
+
+
     def __hash__(self):
-        
+
         return hash(self.__str__())
-    
-    
+
+
     def __contains__(self, other):
-        
+
         return other in self.components
-    
-    
+
+
     def __eq__(self, other):
-        
+
         return self.__hash__() == other.__hash__()
-    
-    
+
+
     def __iadd__(self, other):
-        
+
         self.merge(other)
-        
+
         return self
-    
-    
+
+
     def __lt__(self, other):
-        
+
         return self.__str__() < other
-    
-    
+
+
     def __gt__(self, other):
-        
+
         return self.__str__() > other
 
 
     def __len__(self):
 
         return len(self.components)
-    
-    
+
+
     def merge(self, other):
         """
         Adds the annotations (sources, references, attrs) of the other
         ``Complex`` instance to this one. If the other ``Complex`` has
         different components it does nothing.
         """
-        
+
         if self != other:
-            
+
             return
-        
+
         if (
             set(self.components.values()) == {1} and
             set(other.components.values()) != {1}
@@ -1370,91 +1370,91 @@ class Complex(object):
             # this complex has no stoichiometry information
             # but the other has
             self.components = other.components
-        
+
         self.sources.update(other.sources)
         self.references.update(other.references)
-        
+
         self.add_ids(other.ids)
-        
+
         for k, v in iteritems(other.attrs):
-            
+
             if k not in self.attrs:
-                
+
                 self.attrs[k] = v
-                
+
             elif isinstance(self.attrs[k], (dict, set)):
-                
+
                 self.attrs[k].update(v)
-    
-    
+
+
     def add_ids(self, ids, source = None):
-        
+
         if not isinstance(ids, dict):
-            
+
             ids = common.to_set(ids)
-        
+
         if isinstance(ids, set) and source:
-            
+
             source = common.to_set(source)
-            
+
             ids = dict((s, ids) for s in source)
-        
+
         if isinstance(ids, dict):
-            
+
             for this_source, this_ids in iteritems(ids):
-                
+
                 this_ids = common.to_set(this_ids)
                 self.ids[this_source].update(this_ids)
-    
-    
+
+
     def get_interaction(self, component1, component2):
-        
+
         if self.has_interaction(component1, component2):
-            
+
             return self.interactions[(component1, component2)]
-    
-    
+
+
     def set_interaction(self, component1, component2, interaction):
-        
+
         key = (component1, component2)
-        
+
         self.interactions = self.interactions or {}
         self.interactions[key] = interaction
-    
-    
+
+
     def has_interaction(self, component1, component2):
-        
+
         key = (component1, component2)
-        
+
         return self.interactions and key in self.interactions
-    
-    
+
+
     def add_source(self, source):
-        
+
         self.sources.add(source)
-    
-    
+
+
     def iter_proteins(self):
-        
+
         for protein in self.proteins.keys():
-            
+
             yield protein
-    
-    
+
+
     __iter__ = iter_proteins
-    
-    
+
+
     def add_attr(self, source, attr):
         """
         Attributes can store annotations for complexes.
         """
-        
+
         self.attrs[source] = attr
-    
-    
+
+
     @property
     def stoichiometry(self):
-        
+
         return ':'.join(
             '%u' % (
                 cnt
@@ -1467,11 +1467,11 @@ class Complex(object):
                 key = lambda id_cnt: id_cnt[0],
             )
         )
-    
-    
+
+
     @property
     def stoichiometry_str(self):
-        
+
         return ';'.join(
             itertools.chain(*(
                 (comp,) * cnt
@@ -1482,11 +1482,11 @@ class Complex(object):
                 )
             ))
         )
-    
-    
+
+
     @property
     def stoichiometry_str_genesymbols(self):
-        
+
         return ';'.join(
             itertools.chain(*(
                 (
@@ -1506,11 +1506,11 @@ class Complex(object):
                 )
             ))
         )
-    
-    
+
+
     @property
     def genesymbols(self):
-        
+
         return sorted(
             (
                 mapping.map_name0(uniprot, 'uniprot', 'genesymbol') or
@@ -1518,16 +1518,16 @@ class Complex(object):
             )
             for uniprot in self.components.keys()
         )
-    
-    
+
+
     @property
     def genesymbol_str(self):
-        
+
         return COMPLEX_SEP.join(self.genesymbols)
 
 
 class Interface(object):
-    
+
 
     def __init__(self,
                  id_a,

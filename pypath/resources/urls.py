@@ -35,22 +35,30 @@ urls = {
     },
     'uniprot_basic': {
         'label': 'URL for UniProt queries',
-        'url': 'https://legacy.uniprot.org/uniprot/',
+        'url': 'https://rest.uniprot.org/uniprotkb/stream',
         'lists': 'https://legacy.uniprot.org/uploadlists/',
-        'datasheet': 'https://legacy.uniprot.org/uniprot/%s.txt',
-        'history': 'https://legacy.uniprot.org/uniprot/%s.tab?version=*',
-        'deleted_sp': 'ftp://ftp.expasy.org/databases/uniprot/'
+        'datasheet': 'https://rest.uniprot.org/uniprotkb/%s.txt',
+        'history': 'https://rest.uniprot.org/uniprot/%s?format=tsv&version=*',
+        'deleted_sp': 'https://ftp.expasy.org/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/delac_sp.txt',
-        'deleted_tr': 'ftp://ftp.expasy.org/databases/uniprot/'
+        'deleted_tr': 'https://ftp.expasy.org/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/delac_tr.txt.gz',
         'speindex_old': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
             'knowledgebase/docs/speindex.txt',
-        'speindex': 'ftp://ftp.expasy.org/databases/uniprot/current_release/'
+        'speindex': 'https://ftp.expasy.org/databases/uniprot/current_release/'
             'knowledgebase/complete/docs/speindex.txt',
-        'taxids': 'https://www.uniprot.org/taxonomy/?query='
+        'taxids_old': 'https://www.uniprot.org/taxonomy/?query='
             '*&format=tab&force=true&columns=id&compress=yes',
+        'taxids': 'https://rest.uniprot.org/taxonomy/stream?compressed=true'
+            '&fields=id%2Ccommon_name%2Cscientific_name'
+            '&format=tsv&query=%28%2A%29',
         'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/speclist.txt',
+    },
+    'uniprot_idmapping': {
+        'run': 'https://rest.uniprot.org/idmapping/run',
+        'poll': 'https://rest.uniprot.org/idmapping/status/%s',
+        'details': 'https://rest.uniprot.org/idmapping/details/%s',
     },
     'corum': {
         'label':
@@ -59,6 +67,8 @@ urls = {
         'http://mips.helmholtz-muenchen.de/genre/proj/corum/allComplexes.csv',
         'url': 'http://mips.helmholtz-muenchen.de/corum/download/'
             'allComplexes.txt.zip',
+        'url_rescued':
+            'https://rescued.omnipathdb.org/CORUM_allComplexes.txt.zip',
     },
     'pfam_pdb': {
         'label': 'PDB-Pfam mapping and names of Pfam domains',
@@ -512,7 +522,10 @@ urls = {
     'goa': {
         'label': 'UniProt GO annotations from GOA',
         'go_url': 'http://geneontology.org/gene-associations/goa_%s.gaf.gz',
-        'ebi_url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/goa_%s.gaf.gz'
+        'ebi_url_old': 'ftp://ftp.ebi.ac.uk/pub/'
+            'databases/GO/goa/%s/goa_%s.gaf.gz',
+        'ebi_url': 'https://ftp.ebi.ac.uk/pub/databases/GO/'
+            'goa/%s/goa_%s.gaf.gz',
     },
     'quickgo_old': {
         'label': 'UniProt GO annotations from QuickGO',
@@ -924,7 +937,8 @@ urls = {
     },
     'mppi': {
         'label': 'MIPS PPI full download',
-        'url': 'http://mips.helmholtz-muenchen.de/proj/ppi/data/mppi.gz'
+        'url': 'http://mips.helmholtz-muenchen.de/proj/ppi/data/mppi.gz',
+        'url_rescued': 'https://rescued.omnipathdb.org/mppi.gz',
     },
     'negatome': {
         'label': 'Negatome manually curated non-interacting protein pairs',
@@ -1003,7 +1017,8 @@ urls = {
     'mirecords': {
         'label': 'miRecords experimentally validated'\
             'miRNA-target interactions',
-        'url': 'http://c1.accurascience.com/miRecords/download_data.php?v=4'
+        'url': 'http://c1.accurascience.com/miRecords/download_data.php?v=4',
+        'url_rescued': 'http://rescued.omnipathdb.org/miRecords_v4.xls',
     },
     'mirtarbase': {
         'label': 'miRTarBase experimentally validated'\
@@ -1066,7 +1081,7 @@ urls = {
             'Kirouac et al 2010',
         'url_old': 'http://msb.embopress.org/content/msb/6/1/417/DC3/embed/'\
             'inline-supplementary-material-3.xls?download=true',
-        'init_url': 'https://www.embopress.org/doi/10.1038/msb.2010.71',
+        'init_url': 'https://www.embopress.org/doi/full/10.1038/msb.2010.71',
         'url': r'https://www.embopress.org/action/downloadSupplement?doi='\
             r'10.1038%2Fmsb.2010.71&file=msb201071-sup-0003.xls'
     },
@@ -1136,6 +1151,8 @@ urls = {
             'tissue=2&download=Download',
         'url_xls': 'http://matrisomeproject.mit.edu/static/media/uploads/'\
             'Files/%s%%20in%%20silico%%20matrisome/'\
+            'matrisome_%s_masterlist.xls',
+        'url_rescued': 'https://rescued.omnipathdb.org/'
             'matrisome_%s_masterlist.xls',
     },
     'membranome': {
@@ -1511,7 +1528,7 @@ urls = {
     'celltypist': {
         'label': 'Immune cell type marker genes',
         'url': 'https://raw.githubusercontent.com/Teichlab/celltypist_wiki/'
-            'main/atlases/Pan_Immune_CellTypist/encyclopedia/'
+            'main/atlases/Pan_Immune_CellTypist/v2/encyclopedia/'
             'encyclopedia_table.xlsx',
     },
     'panglaodb': {
@@ -1566,7 +1583,7 @@ urls = {
             '5-1-9/downloads/transporter-all-polypeptide-ids',
         'full_database': 'https://go.drugbank.com/releases/5-1-9'
             '/downloads/all-full-database',
-    }, 
+    },
     'chembl': {
         'label': 'ChEMBL database',
         'url': 'https://www.ebi.ac.uk',
@@ -1576,6 +1593,7 @@ urls = {
         'molecule' : '/chembl/api/data/molecule.json?limit=1000',
         'document' : '/chembl/api/data/document.json?limit=1000',
         'drug_indication' : '/chembl/api/data/drug_indication.json?limit=1000',
+        'mechanism' : '/chembl/api/data/mechanism.json?limit=1000',
     },
     'hpo': {
         'label': 'HPO database',
@@ -1614,7 +1632,29 @@ urls = {
         'label': 'Transcriptional Regulatory Relationships Unraveled by Sentence-based Text mining',
         'scraping_url': 'https://www.grnpedia.org/trrust/data/search_list.%s.htm',
         'tsv_url': 'https://www.grnpedia.org/trrust/data/trrust_rawdata.%s.tsv'
-    }
+    },
+    'collectri': {
+        'label': 'Comprehensive collection of transcriptional regulatory interactions',
+        'url': 'https://rescued.omnipathdb.org/CollecTRI.csv',
+    },
+    'ramp': {
+        'label': 'RaMP metabolomic pathway and metabolite identifier database',
+        'url': 'https://figshare.com/ndownloader/files/38534654',
+        'api': 'https://rampdb.nih.gov/api/%s',
+    },
+    'hmdb': {
+        'label': 'Human Metabolome Database',
+        'metabolites': 'https://hmdb.ca/system/downloads/'
+            'current/hmdb_metabolites.zip',
+        'proteins': 'https://hmdb.ca/system/downloads/'
+            'current/hmdb_proteins.zip',
+        'svg': 'https://hmdb.ca/structures/%s/image.svg',
+        'sdf': 'https://hmdb.ca/system/downloads/current/structures.zip',
+    },
+    'lipidmaps': {
+        'label': 'A database of lipid structures',
+        'sdf': 'https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip',
+    },
 }
 
 

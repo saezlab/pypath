@@ -55,7 +55,7 @@ def lncrnadb_interactions():
         encoding = 'utf-8',
     )
 
-    b = bs4.BeautifulSoup(c.fileobj, 'lxml')
+    b = bs4.BeautifulSoup(c.fileobj, features = 'xml')
 
     result = []
 

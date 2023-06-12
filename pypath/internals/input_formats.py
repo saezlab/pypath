@@ -6,7 +6,7 @@
 #  Enables ID translations and mapping
 #
 #  Copyright
-#  2014-2022
+#  2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
@@ -36,7 +36,6 @@ __all__ = [
     'PickleMapping',
     'NetworkInput',
     'ReadList',
-    'Reference',
     'UniprotListMapping',
     'ProMapping',
     'ArrayMapping',
@@ -45,36 +44,38 @@ __all__ = [
 
 
 AC_QUERY = {
-    'genesymbol': ('genes', 'PREFERRED'),
-    'genesymbol-syn': ('genes', 'ALTERNATIVE'),
-    'hgnc': ('database', 'HGNC'),
-    'embl': ('database', 'embl'),
-    'entrez': ('database', 'geneid'),
-    'refseqp': ('database', 'refseq'),
-    'enst': ('database', 'ensembl'),
-    'uniprot-entry': ('entry name', None),
-    'protein-name': ('protein names', None),
-    'ec': ('ec', None),
+    'genesymbol': 'gene_primary',
+    'genesymbol-syn': 'gene_synonym',
+    'hgnc': 'xref_hgnc',
+    'embl': 'xref_embl',
+    'entrez': 'xref_geneid',
+    'geneid': 'xref_geneid',
+    'refseqp': 'xref_refseq',
+    'enst': 'xref_ensembl',
+    'uniprot-entry': 'id',
+    'protein-name': 'protein_name',
+    'ec': 'ec',
 }
 
 AC_MAPPING = {
-    'uniprot': 'ACC',
-    'uniprot_id': 'ID',
-    'embl': 'EMBL',
-    'embl_id': 'EMBL_ID',
+    'uniprot': 'UniProtKB',
+    'uniprot-entry': 'UniProtKB',
+    'embl': 'EMBL-GeneBank-DDBJ',
+    'embl_id': 'EMBL-GeneBank-DDBJ_CDS',
     'pir': 'PIR',
-    'entrez': 'P_ENTREZGENEID',
-    'gi': 'P_GI',
-    'refseqp': 'P_REFSEQ_AC',
-    'refseqn': 'REFSEQ_NT_ID',
-    'ensembl': 'ENSEMBL_ID',
-    'ensp': 'ENSEMBL_PRO_ID',
-    'enst': 'ENSEMBL_TRS_ID',
-    'ensg': 'ENSEMBLGENOME_ID',
-    'ensgp': 'ENSEMBLGENOME_PRO_ID',
-    'ensgt': 'ENSEMBLGENOME_TRS_ID',
-    'hgnc': 'HGNC_ID',
-    'ensp_string': 'STRING_ID',
+    'entrez': 'GeneID',
+    'gi': 'GI_number',
+    'refseqp': 'RefSeq_Protein',
+    'refseqn': 'RefSeq_Nucleotide',
+    'ensembl': 'Ensembl',
+    'ensp': 'Ensembl_Protein',
+    'enst': 'Ensembl_Transcript',
+    'ensg': 'Ensembl',
+    'ensgp': 'Ensembl_Genomes_Protein',
+    'ensgt': 'Ensembl_Genomes_Transcript',
+    'hgnc': 'HGNC',
+    'ensp_string': 'STRING',
+    'genesymbol': 'Gene_Name',
 }
 
 BIOMART_MAPPING = {
@@ -140,6 +141,32 @@ ARRAY_MAPPING = {
     'phalanx',
 }
 
+RAMP_MAPPING = {
+    'cas': 'CAS',
+    'cas_id': 'CAS',
+    'lipidmaps': 'LIPIDMAPS',
+    'en': 'EN',
+    'enzymatic_nomenclature': 'EN',
+    'genesymbol': 'gene_symbol',
+    'pubchem_compound': 'pubchem',
+    'pubchem_cid': 'pubchem',
+}
+
+HMDB_MAPPING = {
+    'hmdb': 'accession',
+    'pubchem_cid': 'pubchem_compound',
+    'pubchem': 'pubchem_compound',
+    'phenolexplorer': 'phenol_explorer_compound',
+    'cas': 'cas_registry_number',
+    'formula': 'chemical_formula',
+    'inchi': 'inchi',
+    'inchikey': 'inchikey',
+    'hmdb_name': 'name',
+    'hmdb_synonym': 'synonyms',
+    'smiles': 'smiles',
+    'iupac': 'traditional_iupac',
+}
+
 
 class MappingInput(object):
 
@@ -153,6 +180,7 @@ class MappingInput(object):
             ncbi_tax_id = None,
             resource_id_type_a = None,
             resource_id_type_b = None,
+            input_method = None,
         ):
 
         self.type = type_
@@ -161,6 +189,7 @@ class MappingInput(object):
         self.resource_id_type_a = resource_id_type_a
         self.resource_id_type_b = resource_id_type_b
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
+        self.input_method = input_method
 
 
     def _resource_id_type(self, side):
@@ -187,6 +216,26 @@ class MappingInput(object):
     def resource_id_type(cls, id_type, override = None):
 
         return override or cls._resource_id_types.get(id_type, None)
+
+
+    def __contains__(self, other: str) -> bool:
+
+        return (
+            self.id_type_a == other or
+            self.id_type_b == other or
+            self._resource_id_type_a == other or
+            self._resource_id_type_b == other
+        )
+
+
+    def swap_sides(self):
+
+        self.id_type_a, self.id_type_b = self.id_type_b, self.id_type_a
+        self.resource_id_type_a, self.resource_id_type_b = (
+            self.resource_id_type_b,
+            self.resource_id_type_a,
+        )
+
 
 
 class FileMapping(MappingInput):
@@ -235,14 +284,14 @@ class FileMapping(MappingInput):
 
 class UniprotMapping(MappingInput):
 
-    _resource_id_type_b = 'id'
+    _resource_id_type_b = 'accession'
 
     def __init__(
             self,
             id_type_a,
             id_type_b = 'uniprot',
             ncbi_tax_id = 9606,
-            swissprot = 'yes',
+            swissprot = 'true',
         ):
         """
         Defines an ID conversion table to retrieve from UniProt.
@@ -311,8 +360,7 @@ class UniprotMapping(MappingInput):
                 label is not known.
         """
 
-        id_type = AC_QUERY.get(id_type, (None, None))
-        id_type = '%s(%s)' % id_type if id_type[1] else id_type[0]
+        id_type = AC_QUERY.get(id_type, id_type)
 
         return id_type
 
@@ -337,6 +385,16 @@ class UniprotListMapping(MappingInput):
     """
 
     _resource_id_types = AC_MAPPING
+    _from_uniprot = {
+        'uniprot': 'UniProtKB_AC-ID',
+        'swissprot': 'UniProtKB_AC-ID',
+        'trembl': 'UniProtKB_AC-ID',
+    }
+    _to_uniprot = {
+        'uniprot': 'UniProtKB',
+        'swissprot': 'UniProtKB-Swiss-Prot',
+        'trembl': 'UniProtKB',
+    }
 
     def __init__(
             self,
@@ -358,12 +416,9 @@ class UniprotListMapping(MappingInput):
             resource_id_type_b = uniprot_id_type_b,
         )
 
-        self.swissprot = swissprot
+        self._set_swissprot(swissprot)
         self.ac_mapping = AC_MAPPING
-
-        self.uniprot_id_type_a = self._resource_id_type_a
-        self.uniprot_id_type_b = self._resource_id_type_b
-
+        self._update_uniprot_types()
         self.entity_type = 'protein'
 
 
@@ -372,6 +427,53 @@ class UniprotListMapping(MappingInput):
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
+
+
+    def swap_sides(self):
+
+        MappingInput.swap_sides(self)
+        self._update_uniprot_types()
+
+
+    def _update_uniprot_types(self):
+
+        self.uniprot_id_type_a = self._resource_id_type_a
+        self.uniprot_id_type_b = self._resource_id_type_b
+
+
+    def _resource_id_type(self, side: str) -> str:
+
+        uniprot_id_types = {
+            'a': self._from_uniprot,
+            'b': self._to_uniprot,
+        }.get(side)
+
+        id_type = getattr(self, f'id_type_{side}')
+
+        return uniprot_id_types.get(
+            id_type,
+            self._resource_id_types.get(id_type, id_type)
+        )
+
+
+    def _set_swissprot(self, swissprot: bool | None) -> None:
+
+        values = {'swissprot': True, 'trembl': False, 'uniprot': True}
+
+        if swissprot is None:
+
+            swissprot = values.get(
+                self.id_type_a,
+                values.get(self.id_type_b, swissprot)
+            )
+
+        self.swissprot = swissprot
+
+
+    @classmethod
+    def _uniprotkb_id_type(cls, id_type: str) -> bool:
+
+        return id_type in cls._from_uniprot
 
 
 class ProMapping(MappingInput):
@@ -469,6 +571,15 @@ class UnichemMapping(MappingInput):
             id_type_b,
             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
         ):
+        """
+        Paramaters for UniChem based ID translation.
+
+        Args:
+            id_type_a:
+                Custom name for one of the ID types.
+            id_type_b:
+                Custom name for the other ID type.
+        """
 
         MappingInput.__init__(
             self,
@@ -476,6 +587,66 @@ class UnichemMapping(MappingInput):
             id_type_a = id_type_a,
             id_type_b = id_type_b,
             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+        )
+
+
+class RampMapping(MappingInput):
+
+    _resource_id_types = RAMP_MAPPING
+
+    def __init__(
+            self,
+            id_type_a,
+            id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+        ):
+        """
+        Paramaters for ID translation tables from the RaMP database.
+
+        Args:
+            id_type_a:
+                Custom name for one of the ID types.
+            id_type_b:
+                Custom name for the other ID type.
+        """
+
+        MappingInput.__init__(
+            self,
+            type_ = 'ramp',
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+        )
+
+
+class HmdbMapping(MappingInput):
+
+    _resource_id_types = HMDB_MAPPING
+
+    def __init__(
+            self,
+            id_type_a,
+            id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+        ):
+        """
+        Paramaters for ID translation tables from the
+        Human Metabolome Database.
+
+        Args:
+            id_type_a:
+                Custom name for one of the ID types.
+            id_type_b:
+                Custom name for the other ID type.
+        """
+
+        MappingInput.__init__(
+            self,
+            type_ = 'hmdb',
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            input_method = 'hmdb.metabolites_mapping',
         )
 
 
@@ -528,15 +699,15 @@ class ArrayMapping(MappingInput):
         self.entity_type = 'protein'
 
 
-    @staticmethod
-    def _process_id_type(id_type):
+    @classmethod
+    def _process_id_type(cls, id_type: str):
 
         id_type = id_type.lower()
         id_type = 'affy' if id_type == 'affymetrix' else id_type
         id_type = 'ensg' if id_type == 'ensembl' else id_type
 
         if (
-            id_type not in self._resource_id_types and
+            id_type not in cls._resource_id_types and
             id_type not in {'ensg', 'enst', 'ensp'}
         ):
 
@@ -613,8 +784,9 @@ class NetworkInput:
             unique_fields = None,
             expand_complexes = None,
             data_model = None,
-            allow_loops = False,
+            allow_loops = None,
             only_default_organism = False,
+            dataset = None,
         ):
         """
         :param str mark_source:
@@ -659,6 +831,7 @@ class NetworkInput:
         self.data_model = data_model
         self.allow_loops = allow_loops
         self.only_default_organism = only_default_organism
+        self.dataset = dataset
 
 
     def _field(self, value, cls):
