@@ -63,6 +63,7 @@ def embopress_supplementary(
             req_headers = req_headers,
             follow = False,
             cache = False,
+            alpn = False,
         )
 
         cookies = []
@@ -94,6 +95,7 @@ def embopress_supplementary(
         silent = False,
         large = True,
         req_headers = req_headers,
+        alpn = False,
     )
 
     fname = c.fname

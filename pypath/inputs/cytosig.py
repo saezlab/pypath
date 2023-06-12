@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2022
+#  2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
@@ -30,7 +30,20 @@ import pandas as pd
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.session as session
 import pypath.utils.mapping as mapping
+
+
+_log = session.Logger(name = 'cytosig_input')._log
+
+
+CUSTOM_MAPPINGS = {
+    'Activin A': ('P08476', 'INHBA'),
+    'IL12': ('P29459', 'IL12A'),
+    'IL36': ('Q9UHA7', 'IL36A'),
+    'MCSF': ('P09603', 'CSF1'),
+    'TWEAK': ('O43508', 'TNFSF12'),
+}
 
 
 def cytosig_df(long: bool = False) -> Union[pd.DataFrame, pd.Series]:
@@ -72,18 +85,34 @@ def cytosig_annotations() -> dict:
         Dict of sets of annotations.
     """
 
+    def map_to_uniprot(genesymbol):
+
+        uniprots = mapping.map_name(genesymbol, 'genesymbol', 'uniprot')
+
+        if not uniprots and genesymbol in CUSTOM_MAPPINGS:
+
+            uniprots = {CUSTOM_MAPPINGS.get(genesymbol)[0]}
+
+        return uniprots
+
+
     cytosig = cytosig_df(long = True)
 
     record = collections.namedtuple(
         'CytosigAnnotation',
-        ('cytokine', 'score'),
+        ('cytokine', 'score', 'cytokine_genesymbol', 'target_genesymbol'),
     )
     result = collections.defaultdict(set)
+    unmapped = set()
 
     for (target, cytokine), score in cytosig.items():
 
-        u_target = mapping.map_name(target, 'genesymbol', 'uniprot')
-        u_cytokine = mapping.map_name(cytokine, 'genesymbol', 'uniprot')
+        u_target = map_to_uniprot(target)
+        u_cytokine = map_to_uniprot(cytokine)
+
+        if not u_cytokine:
+
+            unmapped.add(cytokine)
 
         for u_t, u_c in itertools.product(u_target, u_cytokine):
 
@@ -91,7 +120,16 @@ def cytosig_annotations() -> dict:
                 record(
                     cytokine = u_c,
                     score = score,
+                    cytokine_genesymbol = cytokine,
+                    target_genesymbol = target,
                 )
             )
+
+    if unmapped:
+
+        _log(
+            'Could not translate to UniProt IDs the following cytokines: ' +
+            ', '.join(sorted(unmapped))
+        )
 
     return dict(result)

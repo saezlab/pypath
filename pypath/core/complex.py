@@ -636,43 +636,53 @@ class ComplexAggregator(AbstractComplexResource):
 
         for res in self.resources:
 
-            self._log('Loading resource `%s`.' % str(res))
+            total_attempts = settings.get('complex_load_resource_attempts')
 
-            try:
+            for attempt in range(total_attempts):
 
-                if not callable(res):
+                try:
 
-                    if res in globals():
+                    self._log(
+                        f'Loading resource `{str(res)}`; '
+                        f'attempt {attempt + 1}/{total_attempts}.'
+                    )
 
-                        res = globals()[res]
+                    if not callable(res):
 
-                if callable(res):
+                        if res in globals():
 
-                    processor = res()
+                            res = globals()[res]
 
-                elif hasattr(res, 'complexes'):
+                    if callable(res):
 
-                    processor = res
+                        processor = res()
 
-                if hasattr(processor, 'summary'):
+                    elif hasattr(res, 'complexes'):
 
-                    self.summaries[processor.name] = processor.summary
+                        processor = res
 
-                for key, cplex in iteritems(processor.complexes):
+                    if hasattr(processor, 'summary'):
 
-                    if key in self.data:
+                        self.summaries[processor.name] = processor.summary
 
-                        self.data[key] += cplex
+                    for key, cplex in iteritems(processor.complexes):
 
-                    else:
+                        if key in self.data:
 
-                        self.data[key] = cplex
+                            self.data[key] += cplex
 
-            except Exception:
+                        else:
 
-                exc = sys.exc_info()
-                self._log('Failed to load resource `%s`:' % str(res))
-                self._log_traceback()
+                            self.data[key] = cplex
+
+                    self._log(f'Successfully loaded resource `{str(res)}`.')
+                    break
+
+                except Exception:
+
+                    exc = sys.exc_info()
+                    self._log('Failed to load resource `%s`:' % str(res))
+                    self._log_traceback()
 
         resource.AbstractResource.load(self)
         self.update_index()

@@ -215,8 +215,6 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
         self.taxon = taxon
 
 
-
-
     @staticmethod
     def entity_name_str(entity):
 
@@ -344,51 +342,51 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
         """
         Filters an iterable of entities or identifiers keeping only the ones
         of type(s) in ``entity_type``.
-        
+
         :param iterable entities:
             A list, set, tuple or other iterable yielding entities or
             identifiers.
         :param str,set entity_type:
             One or more entity types e.g. ``{'protein', 'mirna'}``.
-        
+
         :returns:
             Same type of object as ``entities`` if the type of the object is
             list, set or tuple, otherwise a generator.
         """
-        
+
         if not entity_type or not entities:
-            
+
             return entities
-        
+
         entity_type = common.to_set(entity_type)
         obj_type = (
             type(entities)
                 if isinstance(entities, common.list_like) else
             lambda x: x
         )
-        
+
         return obj_type(
             e
             for e in entities
             if cls._get_entity_type(e) in entity_type
         )
-    
-    
+
+
     @classmethod
     def only_proteins(cls, entities):
-        
+
         return cls.filter_entity_type(entities, entity_type = 'protein')
-    
-    
+
+
     @classmethod
     def only_complexes(cls, entities):
-        
+
         return cls.filter_entity_type(entities, entity_type = 'complex')
-    
-    
+
+
     @classmethod
     def only_mirnas(cls, entities):
-        
+
         return cls.filter_entity_type(entities, entity_type = 'mirna')
 
 
@@ -397,23 +395,23 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
         """
         Counts elements in an iterable of entities or identifiers of type(s)
         in ``entity_type``.
-        
+
         :param iterable entities:
             A list, set, tuple or other iterable yielding entities or
             identifiers.
         :param str,set entity_type:
             One or more entity types e.g. ``{'protein', 'mirna'}``.
-        
+
         :returns:
             int
         """
-        
+
         entities = (
             entities
                 if isinstance(entities, common.list_like) else
             list(entities)
         )
-        
+
         return len(
             cls.filter_entity_type(
                 entities,
@@ -501,6 +499,11 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
     def info(self):
 
         self.entity_info(self.identifier)
+
+
+    def __bool__(self):
+
+        return bool(self.identifier)
 
 
 class EntityList(object):

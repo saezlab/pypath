@@ -935,6 +935,7 @@ class Curl(FileOpener):
         if CACHEDEL:
 
             self.delete_cache_file()
+            self.init_cache()
 
         if not self.use_cache and not DRYRUN:
 
@@ -1066,7 +1067,7 @@ class Curl(FileOpener):
 
         if self.url != url_raw:
 
-            self._log('Quoted URL: `%s`.' % self.url)
+            self._log('Quoted URL: `%s`.' % self.url[:200])
 
 
     def set_title(self):
@@ -1644,6 +1645,21 @@ class Curl(FileOpener):
                 self.replace_forbidden('%s-%s' % (self.urlmd5, self.filename))
             )
         )
+
+
+    @classmethod
+    def cache_path(self, **kwargs) -> str:
+        """
+        Returns the cache path without performing download or creating file.
+
+        Args:
+            kwargs:
+                Arguments to `Curl`.
+        """
+
+        kwargs.update({'setup': False, 'call': False, 'process': False})
+
+        return Curl(**kwargs).cache_file_name
 
 
     @classmethod

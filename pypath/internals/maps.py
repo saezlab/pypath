@@ -27,7 +27,7 @@ import os
 import pypath.share.common as common
 import pypath.internals.input_formats as input_formats
 
-__all__ = ['misc', 'uniprot', 'mirbase', 'basic', 'uniprot_old']
+__all__ = ['misc', 'uniprot', 'mirbase', 'basic']
 
 
 misc = {
@@ -121,7 +121,7 @@ uniprot = {
         input_formats.UniprotMapping(
             id_type_a = 'embl',
         ),
-    ('genesymbol', 'uniprot'): 
+    ('genesymbol', 'uniprot'):
         input_formats.UniprotMapping(
             id_type_a = 'genesymbol',
         ),
@@ -240,7 +240,7 @@ basic = {
         input_formats.UniprotMapping(
             id_type_a = 'genesymbol',
             id_type_b = 'trembl',
-            swissprot = 'no',
+            swissprot = 'false',
         ),
     ('genesymbol', 'swissprot'):
         input_formats.UniprotMapping(

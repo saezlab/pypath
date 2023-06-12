@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2022
+#  2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
@@ -23,25 +23,24 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 """
 Performs mapping between IDs of different consensus systems for
 proteins and genes, miRNAs, and chemical compounds.
 
-Todo:
-    * None
 """
 
 from future.utils import iteritems
-from past.builtins import xrange, range, reduce
+from past.builtins import xrange, range
 
 import os
 import sys
 import math
 import re
 import importlib as imp
-import copy
-import itertools
 import collections
+import functools
 import datetime
 import time
 
@@ -61,6 +60,7 @@ except:
 
 from typing import Iterable, List, Literal, Optional, Set, Union
 
+import pandas as pd
 import timeloop
 
 # from pypath:
@@ -75,6 +75,8 @@ import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pro as pro_input
 import pypath.inputs.biomart as biomart_input
 import pypath.inputs.unichem as unichem_input
+import pypath.inputs.ramp as ramp_input
+import pypath.inputs.hmdb as hmdb_input
 import pypath.internals.input_formats as input_formats
 import pypath.utils.reflists as reflists
 import pypath.utils.taxonomy as taxonomy
@@ -121,9 +123,31 @@ RESOURCES_IMPLICIT = (
         input_formats.ArrayMapping,
     ),
     (
-        UNICHEM_NAME_TYPES,
+        {n: n for n in UNICHEM_NAME_TYPES},
         'unichem',
         input_formats.UnichemMapping,
+    ),
+    (
+        dict(
+            **{
+                it: it
+                for it in ramp_input.ramp_id_types_2('compound')
+            },
+            **input_formats.RAMP_MAPPING,
+        ),
+        'ramp',
+        input_formats.RampMapping,
+    ),
+    (
+        dict(
+            **{
+                it: it
+                for it in hmdb_input.ID_FIELDS
+            },
+            **input_formats.HMDB_MAPPING,
+        ),
+        'hmdb',
+        input_formats.HmdbMapping,
     ),
 )
 
@@ -137,7 +161,7 @@ UNIPROT_ID_TYPES = {
 
 """
 Classes for reading and use serving ID mapping data from custom file,
-function, UniProt, UniProt uploadlists, Ensembl BioMart,
+function, UniProt, UniProt ID Mapping, Ensembl BioMart,
 PRO (Protein Ontology), miRBase or pickle file.
 """
 
@@ -170,6 +194,7 @@ class MapReader(session_mod.Logger):
             load_b_to_a = False,
             uniprots = None,
             lifetime = 300,
+            resource_id_types = None,
         ):
         """
         Args
@@ -193,6 +218,8 @@ class MapReader(session_mod.Logger):
             lifetime (int): If this table has not been used for longer than
                 this preiod it is to be removed at next cleanup. Time in
                 seconds. Passed to ``MappingTable``.
+            resource_id_types: Additional mappings between pypath and resource
+                specific identifier type labels.
         """
 
         session_mod.Logger.__init__(self, name = 'mapping')
@@ -231,6 +258,7 @@ class MapReader(session_mod.Logger):
         self.a_to_b = None
         self.b_to_a = None
         self.uniprots = uniprots
+        self._resource_id_types = resource_id_types
 
         self.load()
 
@@ -380,10 +408,14 @@ class MapReader(session_mod.Logger):
 
             if os.path.exists(cachefile):
 
+                with open(cachefile, 'rb') as fp:
+
+                    from_cache = pickle.load(fp)
+
                 setattr(
                     self,
                     '%s_to_%s' % args,
-                    pickle.load(open(cachefile, 'rb')),
+                    from_cache,
                 )
                 self._log(
                     'Loading `%s` to `%s` mapping table '
@@ -568,6 +600,14 @@ class MapReader(session_mod.Logger):
         self.b_to_a = b_to_a if self.load_b_to_a else None
 
 
+    @staticmethod
+    def _uniprotkb_id_type(id_type: str) -> bool:
+
+        return input_formats.UniprotListMapping._uniprotkb_id_type(
+            id_type,
+        )
+
+
     def read_mapping_uniprot_list(self):
         """
         Builds a mapping table by downloading data from UniProt's
@@ -576,6 +616,7 @@ class MapReader(session_mod.Logger):
 
         a_to_b = collections.defaultdict(set)
         b_to_a = collections.defaultdict(set)
+        swap = False
 
         if not self.uniprots:
 
@@ -585,14 +626,26 @@ class MapReader(session_mod.Logger):
         # getting a proteome wide list of UniProt IDs. If the translated
         # ID type is not UniProt, then first we need to translate the
         # proteome wide reference list from UniProt to the target ID type.
-        if self.param.id_type_a != 'uniprot':
+        if not self._uniprotkb_id_type(self.param.id_type_a):
 
-            u_target = self._read_mapping_uniprot_list(
-                uniprot_id_type_a = 'ACC',
-                uniprot_id_type_b = self.param.uniprot_id_type_a,
-            )
+            if self._uniprotkb_id_type(self.param.id_type_b):
 
-            upload_ac_list = [l.split('\t')[1].strip() for l in u_target]
+                swap = True
+                self.param.swap_sides()
+                self.load_a_to_b, self.load_b_to_a = (
+                    self.load_b_to_a,
+                    self.load_a_to_b,
+                )
+                upload_ac_list = self.uniprots
+
+            else:
+
+                u_target = self._read_mapping_uniprot_list(
+                    uniprot_id_type_a = 'UniProtKB_AC-ID',
+                    uniprot_id_type_b = self.param.uniprot_id_type_a,
+                )
+
+                upload_ac_list = [l.split('\t')[1].strip() for l in u_target]
 
         else:
 
@@ -617,6 +670,15 @@ class MapReader(session_mod.Logger):
             if self.load_b_to_a:
 
                 b_to_a[l[1]].add(l[0])
+
+        if swap:
+
+            a_to_b, b_to_a = b_to_a, a_to_b
+            self.load_a_to_b, self.load_b_to_a = (
+                self.load_b_to_a,
+                self.load_a_to_b,
+            )
+            self.param.swap_sides()
 
         self.a_to_b = a_to_b if self.load_a_to_b else None
         self.b_to_a = b_to_a if self.load_b_to_a else None
@@ -654,10 +716,10 @@ class MapReader(session_mod.Logger):
             uniprot_id_type_a (str): Source ID type label as used in UniProt.
             uniprot_id_type_b (str): Target ID type label as used in UniProt.
             upload_ac_list (list): The identifiers to use in the query to
-                the uploadlists service. By default the list of all UniProt
+                the ID Mapping service. By default the list of all UniProt
                 IDs for the organism is used.
             chunk_size (int): Number of IDs in one query. Too large queries
-                might fail, by default we include 10,000 IDs in one query.
+                might fail, by default we include 100,000 IDs in one query.
         """
 
         chunk_size = (
@@ -671,12 +733,12 @@ class MapReader(session_mod.Logger):
         upload_ac_list = sorted(upload_ac_list)
 
         self._log(
-            'Querying the UniProt uploadlists service for ID translation '
+            'Querying the UniProt ID Mapping service for ID translation '
             'data. Querying a list of %u IDs.' % len(upload_ac_list)
         )
 
-        url = urls.urls['uniprot_basic']['lists']
-
+        run_url = urls.urls['uniprot_idmapping']['run']
+        poll_result = {}
         result = []
 
         # loading data in chunks of 10,000 by default
@@ -685,7 +747,7 @@ class MapReader(session_mod.Logger):
             this_chunk = upload_ac_list[i * chunk_size:(i + 1) * chunk_size]
 
             self._log(
-                'Request to UniProt uploadlists, chunk #%u with %u IDs.' % (
+                'Request to UniProt ID Mapping, chunk #%u with %u IDs.' % (
                     i,
                     len(this_chunk),
                 )
@@ -693,44 +755,100 @@ class MapReader(session_mod.Logger):
 
             post = {
                 'from': uniprot_id_type_a,
-                'format': 'tab',
                 'to': uniprot_id_type_b,
-                'uploadQuery': ' '.join(sorted(this_chunk)),
+                'ids': ' '.join(sorted(this_chunk)),
             }
+            accept_json = {'req_headers': ['Accept: application/json']}
 
-            c = curl.Curl(url, post = post, large = True, silent = False)
+            run_args = {'url': run_url, 'post': post}
+            nocache = {'cache': False, 'large': False}
 
-            # 3 extra attempts
-            if c.result is None:
+            cache_path = curl.Curl.cache_path(**run_args)
 
-                for i in xrange(3):
+            if not os.path.exists(cache_path):
 
-                    c = curl.Curl(
-                        url,
-                        post = post,
-                        large = True,
-                        silent = False,
-                        cache = False,
+                run_c = curl.Curl( **run_args, **nocache, **accept_json)
+
+                if run_c.status != 200:
+
+                    raise RuntimeError(
+                        'Failed to submit job to UniProt ID Mapping. '
+                        'See details in the log.'
                     )
 
-                    if c.result is not None:
+                jobid = json.loads(run_c.result)['jobId']
+
+                self._log(
+                    f'Submitted job to UniProt ID Mapping, job ID: `{jobid}`.'
+                )
+
+                timeout = settings.get('uniprot_idmapping_timeout')
+                interval = settings.get('uniprot_idmapping_poll_interval')
+                max_polls = math.ceil(timeout / interval)
+                poll_url = urls.urls['uniprot_idmapping']['poll'] % jobid
+                poll_args = {'url': poll_url} | nocache | accept_json
+
+                for i in range(max_polls):
+
+                    self._log(
+                        f'Polling job UniProt ID Mapping job `{jobid}`, '
+                        f'poll {i + 1} of {max_polls}.'
+                    )
+
+                    poll_c = curl.Curl(**poll_args)
+
+                    if poll_c.status != 200:
+
+                        self._log(f'Poll failed with HTTP {poll_c.status}.')
+                        continue
+
+                    poll_result = json.loads(poll_c.result)
+
+                    if 'status' in poll_result or 'failedIds' in poll_result:
 
                         break
 
-            if c.result is None or c.fileobj.read(5) == '<!DOC':
+                    elif 'messages' in poll_result:
 
-                self._console(
-                    'Error at downloading ID mapping data from UniProt.'
+                        msg = (
+                            'UniProt ID Mapping job failed: ' +
+                            ' '.join(common.to_list(poll_result['messages']))
+                        )
+
+                        self._log(msg)
+
+                        raise RuntimeError(msg)
+
+                    time.sleep(interval)
+
+                det_url = urls.urls['uniprot_idmapping']['details'] % jobid
+                det_c = curl.Curl(url = det_url, **nocache, **accept_json)
+                result_url = (
+                    json.loads(det_c.result)['redirectURL'].
+                    replace('/idmapping/results/', '/idmapping/stream/').
+                    replace('/results/', '/results/stream/').
+                    __add__('?format=tsv')
                 )
 
-                c.result = ''
+                self._log(
+                    'Retrieving UniProt ID Mapping results '
+                    f'from `{result_url}`'
+                )
 
-            c.fileobj.seek(0)
+                with curl.cache_delete_on():
 
-            # removing the header row
-            _ = next(c.result)
+                    res_c = curl.Curl(
+                        url = result_url,
+                        cache = cache_path,
+                        large = True,
+                        silent = False,
+                    )
 
-            result.extend(list(c.fileobj)[1:])
+            else:
+
+                res_c = curl.Curl(**run_args)
+
+            result.extend(list(res_c.fileobj)[1:])
 
         return result
 
@@ -754,13 +872,13 @@ class MapReader(session_mod.Logger):
                 if not self.param.swissprot else
             ' AND reviewed:%s' % self.param.swissprot
         )
-        query = 'organism:%u%s' % (int(self.ncbi_tax_id), rev)
+        query = 'organism_id:%u%s' % (int(self.ncbi_tax_id), rev)
 
         url = urls.urls['uniprot_basic']['url']
         post = {
             'query': query,
-            'format': 'tab',
-            'columns': 'id,%s' % self.param._resource_id_type_a,
+            'format': 'tsv',
+            'fields': 'accession,%s' % self.param._resource_id_type_a,
         }
 
         url = '%s?%s' % (url, urllib.urlencode(post))
@@ -773,7 +891,13 @@ class MapReader(session_mod.Logger):
         data = [
             [
                 [xx]
-                    if self.param.field == 'protein names' else
+                    if (
+                        self.param.field == 'protein names' or
+                        (
+                            'trembl' in self.param and
+                            any(char.islower() for char in xx)
+                        )
+                    ) else
                 [
                     xxx for xxx in resep.split(recolend.sub('', xx.strip()))
                     if len(xxx) > 0
@@ -945,14 +1069,23 @@ class MapReader(session_mod.Logger):
             )
 
 
-    def read_mapping_unichem(self):
+    def _read_mapping_smallmolecule(self):
         """
-        Loads an ID translation table from UniChem.
+        Loads a small molecule ID translation table.
         """
 
-        data = unichem_input.unichem_mapping(
-            id_type = self.param.id_type_a,
-            target_id_type = self.param.id_type_b,
+        if self.param.input_method:
+
+            method = inputs.get_method(self.param.input_method)
+
+        else:
+
+            mod = globals()[f'{self.source_type}_input']
+            method = getattr(mod, f'{self.source_type}_mapping')
+
+        data = method(
+            id_type_a = self.resource_id_type_a,
+            id_type_b = self.resource_id_type_b,
         )
 
         if self.load_a_to_b:
@@ -964,6 +1097,30 @@ class MapReader(session_mod.Logger):
             self.b_to_a = common.swap_dict(data, force_sets = True)
 
         self.ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC
+
+
+    def read_mapping_ramp(self):
+        """
+        Loads an ID translation table from RaMP.
+        """
+
+        self._read_mapping_smallmolecule()
+
+
+    def read_mapping_unichem(self):
+        """
+        Loads an ID translation table from UniChem.
+        """
+
+        self._read_mapping_smallmolecule()
+
+
+    def read_mapping_hmdb(self):
+        """
+        Loads an ID translation table from th Human Metabolome Database.
+        """
+
+        self._read_mapping_smallmolecule()
 
 
     @staticmethod
@@ -980,6 +1137,29 @@ class MapReader(session_mod.Logger):
         names += others
 
         return {x.strip() for x in names}
+
+
+    def resource_id_type(self, side = Literal['a', 'b']) -> str | None:
+        """
+        Resource specific identifier type.
+        """
+
+        return (
+            getattr(self.param, f'resource_id_type_{side}') or
+            self._resource_id_types.get(getattr(self.param, f'id_type_{side}'))
+        )
+
+
+    @property
+    def resource_id_type_a(self) -> str | None:
+
+        return self.resource_id_type('a')
+
+
+    @property
+    def resource_id_type_b(self) -> str | None:
+
+        return self.resource_id_type('b')
 
 
 class MappingTable(session_mod.Logger):
@@ -1098,6 +1278,24 @@ class MappingTable(session_mod.Logger):
         return '<MappingTable from=%s, to=%s, taxon=%u (%u IDs)>' % (
             self.key + (len(self),)
         )
+
+
+    @property
+    def items(self):
+
+        return self.data.items
+
+
+    @property
+    def keys(self):
+
+        return self.data.keys
+
+
+    @property
+    def values(self):
+
+        return self.data.values
 
 
 class Mapper(session_mod.Logger):
@@ -1397,13 +1595,15 @@ class Mapper(session_mod.Logger):
 
             if tbl is None:
 
+                basic_services = {'hmdb', 'ramp', 'uniprot', 'unichem'}
+
                 for (service_ids, service_id_type, input_cls) in (
                     RESOURCES_IMPLICIT
                 ):
 
                     if (
                         (
-                            service_id_type in {'uniprot', 'unichem'} and (
+                            service_id_type in basic_services and (
                                 id_type in service_ids and
                                 target_id_type in service_ids and
                                 id_type != target_id_type
@@ -1467,13 +1667,13 @@ class Mapper(session_mod.Logger):
                             )
                         )
 
-                        if service_id_type == 'unichem':
+                        if service_id_type in {'hmdb', 'ramp', 'unichem'}:
 
                             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC
                             tbl_key = tbl_key_noorganism
                             tbl_key_rev = tbl_key_rev_noorganism
 
-                        # for uniprot/uploadlists or PRO or array
+                        # for uniprot/idmapping or PRO or array
                         # we create here the mapping params
                         this_param = input_cls(
                             id_type_a = _id_type,
@@ -1488,6 +1688,7 @@ class Mapper(session_mod.Logger):
                             load_b_to_a = load_b_to_a,
                             uniprots = None,
                             lifetime = 300,
+                            resource_id_types = service_ids,
                         )
 
                         self.tables[tbl_key] = getattr(
@@ -1618,6 +1819,8 @@ class Mapper(session_mod.Logger):
         return list(names)[0] if names else None
 
 
+    @common.ignore_unhashable
+    @functools.lru_cache(maxsize = int(1e5))
     def map_name(
             self,
             name,
@@ -2231,7 +2434,7 @@ class Mapper(session_mod.Logger):
         mapped_names = set()
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        # try first UniProt uploadlists
+        # try first UniProt ID Mapping
         # then Ensembl BioMart
         for id_type in ('ensp', 'ensp_biomart'):
 
@@ -2248,7 +2451,7 @@ class Mapper(session_mod.Logger):
 
             tax_ensp = '%u.%s' % (ncbi_tax_id, ensp)
 
-            # this uses UniProt uploadlists with STRING_ID
+            # this uses UniProt ID Mapping with STRING ID type
             mapped_names = self._map_name(
                 name = tax_ensp,
                 id_type = 'ensp_string',
@@ -2272,7 +2475,7 @@ class Mapper(session_mod.Logger):
         mapped_names = set()
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        # try first UniProt uploadlists
+        # try first UniProt ID Mapping
         # then Ensembl BioMart
         for target_id_type in ('ensp', 'ensp_biomart'):
 
@@ -2287,7 +2490,7 @@ class Mapper(session_mod.Logger):
 
         if not mapped_names:
 
-            # this uses UniProt uploadlists with STRING_ID
+            # this uses UniProt ID Mapping with STRING type
             mapped_names = self._map_name(
                 name = name,
                 id_type = id_type,
@@ -2321,6 +2524,48 @@ class Mapper(session_mod.Logger):
         )
 
         return tbl[name] if tbl else set()
+
+
+    def translation_dict(
+            self,
+            id_type: str,
+            target_id_type: str,
+            ncbi_tax_id: int | None = None,
+        ) -> MappingTable | None:
+        """
+        Translation table as a dict.
+        """
+
+        return self.which_table(
+            id_type,
+            target_id_type,
+            ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id,
+        )
+
+
+    def translation_df(
+            self,
+            id_type: str,
+            target_id_type: str,
+            ncbi_tax_id: int | None = None,
+        ) -> pd.DataFrame | None:
+        """
+        Translation table as a data frame.
+        """
+
+        tbl = self.translation_dict(id_type, target_id_type, ncbi_tax_id)
+
+        if tbl:
+
+            return pd.DataFrame(
+                (
+                    (source_id, target_id)
+                    for source_id, target_ids in tbl.data.items() for
+                    target_id in target_ids
+                ),
+                columns = [id_type, target_id_type],
+            )
+
 
     #
     # ID specific translation methods
@@ -2621,7 +2866,7 @@ class Mapper(session_mod.Logger):
         only SwissProt, mapping from TrEMBL to gene symbols, and
         then back to SwissProt. If this kind of translation is not successful
         for any of the IDs it will be kept in the result, no matter if it's
-        not a SwissProt ID. If the 
+        not a SwissProt ID. If the
         """
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
@@ -3096,7 +3341,9 @@ class Mapper(session_mod.Logger):
 
             if os.path.exists(cachefile):
 
-                data[key] = pickle.load(open(cachefile, 'rb'))
+                with open(cachefile, 'rb') as fp:
+
+                    data[key] = pickle.load(fp)
 
             else:
 
@@ -3477,3 +3724,58 @@ def id_from_label0(label, label_id_type = 'genesymbol', ncbi_tax_id = None):
         label_id_type = label_id_type,
         ncbi_tax_id = ncbi_tax_id,
     )
+
+
+def translation_dict(
+        id_type: str,
+        target_id_type: str,
+        ncbi_tax_id: int | None = None,
+    ) -> MappingTable | None:
+    """
+    Identifier translation table as a dict of sets.
+    """
+
+    mapper = get_mapper()
+
+    return mapper.translation_dict(
+        id_type = id_type,
+        target_id_type = target_id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )
+
+
+def translation_df(
+        id_type: str,
+        target_id_type: str,
+        ncbi_tax_id: int | None = None,
+    ) -> MappingTable | None:
+    """
+    Identifier translation table as a `pandas.DataFrame`.
+    """
+
+    mapper = get_mapper()
+
+    return mapper.translation_df(
+        id_type = id_type,
+        target_id_type = target_id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )
+
+
+def mapping_tables() -> list[MappingTableDefinition]:
+    """
+    A list of built-in mapping tables.
+
+    If `id_type_b` is `None`, that means translation to all other ID types
+    provided by the same resource is possible.
+    """
+
+    return get_mapper().mapping_tables()
+
+
+def id_types() -> list[IdType]:
+    """
+    Identifier types with their labels.
+    """
+
+    return get_mapper().id_types()

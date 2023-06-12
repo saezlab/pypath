@@ -32,6 +32,7 @@ from typing import Literal
 import os
 import sys
 import itertools
+import functools
 import collections
 import importlib as imp
 import re
@@ -232,6 +233,8 @@ class HomologyManager(session.Logger):
         )
 
 
+    @common.ignore_unhashable
+    @functools.lru_cache(maxsize = int(1e5))
     def translate(
             self,
             source_id,

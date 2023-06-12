@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from future.utils import iteritems
 
 import time
@@ -214,14 +216,25 @@ def short_latin_names(long_names: dict[str, int]) -> dict[str, int]:
     }
 
 
-def ensure_common_name(taxon_id):
+def ensure_common_name(taxon_id: str | int, lower: bool = False) -> str | None:
+    """
+    Common English name of an organism.
 
-    # priority for these common names
-    if taxon_id in taxids:
+    Args:
+        taxon_id:
+            Organism name or NCBI Taxonomy ID.
+        lower:
+            Return lowercase name. Default is capitalized.
+    """
 
-        return taxids[taxon_id].capitalize()
+    common_name = (
+        # priority for these common names
+        taxids.get(taxon_id, None) or
+        _ensure_name(taxon_id, 'common')
+    )
 
-    return _ensure_name(taxon_id, 'common')
+    return common_name.lower() if lower else common_name.capitalize()
+
 
 
 def ensure_latin_name(taxon_id):

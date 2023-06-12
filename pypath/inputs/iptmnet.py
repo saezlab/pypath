@@ -27,6 +27,7 @@ import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.constants as constants
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.mapping as mapping
 import pypath.inputs.common as inputs_common
@@ -52,35 +53,35 @@ IptmnetInteraction = collections.namedtuple(
 
 
 def iptmnet_interactions(organism = 9606):
-    
+
     ptm_url = urls.urls['iptmnet']['ptms']
     score_url = urls.urls['iptmnet']['scores']
-    
+
     c = curl.Curl(score_url, large = True, silent = False)
-    
+
     scores = {}
-    
+
     for line in c.result:
-        
+
         line = line.strip('\n\r').split('\t')
-        
+
         if not line[2]:
-            
+
             continue
-        
+
         site = resite.match(line[1])
-        
+
         if not site:
-            
+
             continue
-        
+
         resaa, resnum = site.groups()
-        
+
         resnum = int(resnum)
         score = int(line[4])
         substrate, isoform = inputs_common._try_isoform(line[0])
         enzyme = line[2]
-        
+
         key = (
             enzyme,
             substrate,
@@ -89,30 +90,35 @@ def iptmnet_interactions(organism = 9606):
             resaa,
             resnum,
         )
-        
+
         scores[key] = score
-    
+
     c = curl.Curl(ptm_url, large = True, silent = False)
-    
+
     for line in c.result:
-        
+
         line = line.strip('\n\r').split('\t')
-        
+
         if not line or not line[6]:
-            
+
             continue
-        
-        ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(line[4].strip())
-        
+
+        organism_ = line[4].strip()
+        ncbi_tax_id = (
+            taxonomy.ensure_ncbi_tax_id(organism_)
+                if organism_ else
+            constants.NOT_ORGANISM_SPECIFIC
+        )
+
         if organism and ncbi_tax_id != organism:
-            
+
             continue
-        
+
         substrate, s_isoform = inputs_common._try_isoform(line[2])
         ptm_type = line[0].lower()
-        
+
         enzyme, e_isoform = inputs_common._try_isoform(line[6])
-        
+
         enzyme_ids = (
             mapping.map_name(
                 line[6],
@@ -123,10 +129,10 @@ def iptmnet_interactions(organism = 9606):
                 if line[6].startswith('PR:') else
             (enzyme,)
         )
-        
+
         refs = line[9].split(',')
         resnum, resaa = resite.match(line[5]).groups()
-        
+
         key = (
             line[6],
             substrate,
@@ -135,11 +141,11 @@ def iptmnet_interactions(organism = 9606):
             resaa,
             resnum,
         )
-        
+
         score = scores[key] if key in scores else None
-        
+
         for _enzyme in enzyme_ids:
-            
+
             yield IptmnetInteraction(
                 enzyme = _enzyme,
                 substrate = substrate,
