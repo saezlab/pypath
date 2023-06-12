@@ -150,7 +150,12 @@ def drug_to_drug(
                 {
                     'type': entry_types.get(entry[i][0].lower(), None),
                     'id': entry[i].split(':')[-1],
-                    'name': entry_dbs[entry_types.get(entry[i][0].lower(), None)].get(entry[i].split(':')[-1], None)
+                    'name': (
+                        entry_dbs[
+                            entry_types.get(entry[i][0].lower(), None)
+                        ].
+                        get(entry[i].split(':')[-1], None)
+                    ),
                 }
             )
             for i, role in enumerate(('source', 'target'))
@@ -172,7 +177,7 @@ def drug_to_drug(
         try:
             interactions[disease_id]['interactions'].append(interaction)
         except AttributeError:
-            interactions[disease_id]['interactions'] = [interaction]    
+            interactions[disease_id]['interactions'] = [interaction]
         interactions[disease_id]['type'] = partners['source']['type']
         interactions[disease_id]['name'] = partners['source']['name']
 
@@ -559,6 +564,7 @@ class _SplitDatabase(_KeggDatabase):
 
 
     def proc_key(self, entry):
+
         return entry[0].split(':')[1]
 
 
