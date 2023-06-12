@@ -1,107 +1,97 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module.
+#  Contains meta-information on all databases/resources.
+#
+#  Copyright
+#  2014-2023
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+from __future__ import annotations
+
+import collections
 
 from pypath.share import curl
 from pypath.resources.urls import urls
-import re
+from pypath.utils import taxonomy
+from pypath.share import session
 
-def trrust_scraping(org):
+_log = session.Logger(name = 'trrust_input')._log
 
-    print(f'Fetching records for {org}')
-    choices = {'human', 'mouse'}
-    
-    if org not in choices:
-        print('Not yet supported')
-        exit(0)
 
-    url = urls['trrust']['scraping_url'] % org
+def trrust_interactions(
+        organism: str | int = 'human',
+    ) -> list[TrrustInteraction]:
+    """
+    Gene regulatory interactions from the TRRUST v2 database.
 
-    c = curl.Curl(
-        url,
-        silent=False,
-        large=True,
-        encoding="utf-8",
-        default_mode="r",
-    )
+    https://academic.oup.com/nar/article/46/D1/D380/4566018
 
-    html_generator = c.result
-    records = list()
+    Args:
+        organism:
+            Either "human" or "mouse".
+    """
 
-    regex = r'[^<]*<td[^>]*>([^<]*)<\/td>'
-    matcher = re.compile(regex)
+    organisms = {'human', 'mouse'}
 
-    for line in html_generator:
+    organism_ = taxonomy.ensure_common_name(organism, lower = True)
 
-        attributes = matcher.findall(line)
+    if organism not in organisms:
 
-        if not attributes:
-            continue
+        err = f'Only human and mouse are availble in TRRUST, not `{organism}`.'
+        _log(err)
+        raise ValueError(err)
 
-        attributes = [e if e != '-' else None for e in attributes]
+    class TrrustInteraction(
+            collections.namedtuple(
+            'TrrustInteractionBase',
+            ('source_genesymbol', 'target_genesymbol', 'effect', 'references'),
+        )
+    ):
 
-        try:
-            aliases = attributes[2].split(',')
-            aliases = [e.strip() for e in aliases]
-            aliases = tuple(aliases)
-        except AttributeError:
-            aliases = None
-        
-        record = {
-            'gene_symbol': attributes[0],
-            'entrez_id': attributes[1],
-            'aliases': aliases,
-            'full_name': attributes[3]
-        }
+        def __new__(cls, line):
 
-        records.append(record)
+            line = line.strip('\n ').split('\t')
+            refs = tuple(sorted(line[-1].split(';')))
 
-    return records
+            return super().__new__(cls, *line[:-1], refs)
 
-def trrust_general(org):
-    
-    choices = {'human', 'mouse'}
-    
-    if org not in choices:
-        print('Not yet supported')
-        exit(0)
-    
-    url = urls['trrust']['tsv_url'] % org
+
+    url = urls['trrust']['tsv_url'] % organism_
 
     c = curl.Curl(
         url,
-        silent=False,
-        large=True,
-        encoding="utf-8",
-        default_mode="r",
+        silent = False,
+        large = True,
+        encoding = 'utf-8',
+        default_mode = 'r',
     )
 
-    interactions = dict()
-
-    for line in c.result:
-
-        line = line.strip('\n ')
-        data = line.split("\t")
-
-        key_gene = data[0]
-
-        interaction = {
-            'gene_symbol': data[1],
-            'effect': data[2]
-        }
-
-        try:
-            interactions[key_gene].append(interaction)
-        except KeyError:
-            interactions[key_gene] = [interaction]
+    interactions = [TrrustInteraction(line) for line in c.result]
 
     return interactions
 
+
 def trrust_human():
-    return trrust_general('human')
+
+    return trrust_interactions('human')
 
 def trrust_mouse():
-    return trrust_general('mouse')
 
-def scrape_human():
-    return trrust_scraping('human')
-
-def scrape_mouse():
-    return trrust_scraping('mouse')
+    return trrust_interactions('mouse')
