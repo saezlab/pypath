@@ -2386,6 +2386,27 @@ transcription_onebyone = {
         interaction_type = 'transcriptional',
         data_model = 'activity_flow',
     ),
+    'trrust': input_formats.NetworkInput(
+        name = 'TRRUST',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = True,
+        sign = (2, 'Activation', 'Repression'),
+        ncbi_tax_id = 9606,
+        input = 'trrust.trrust_interactions',
+        interaction_type = 'transcriptional',
+        references = 3,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        data_model = 'activity_flow',
+    ),
 }
 
 """
