@@ -43,24 +43,36 @@ def offsides_side_effects() -> Generator[tuple]:
         Tuples of drug side effect information.
     """
 
-    url = urls.urls['offsides']['url']
-    c = curl.Curl(url, large = True, silent = False)
-
-    fields = (
-        'drug_rxnorn',
-        'drug',
-        'condition_meddra',
-        'condition',
-        'prr',
-        'prr_error',
-        'mean_reporting_frequency',
+    return _sides_base(
+        url_key = 'offsides',
+        fields = (
+            'drug_rxnorn',
+            'drug',
+            'condition_meddra',
+            'condition',
+            'prr',
+            'prr_error',
+            'mean_reporting_frequency',
+        ),
+        indices = (0, 1, 2, 3, 8, 9, 10),
+        record_name = 'OffsideSideEffect',
     )
 
-    result = set()
-    record = collections.namedtuple('OffsideSideEffect', fields)
 
-    # requisite fields from all_fields
-    indices = (0, 1, 2, 3, 8, 9, 10)
+def _sides_base(
+        url_key: str,
+        fields: tuple[str],
+        indices: tuple[int],
+        record_name: str,
+    ) -> Generator[tuple]:
+
+    url = urls.urls[url_key]['url']
+    c = curl.Curl(url, large = True, silent = False)
+
+    result = set()
+    record = collections.namedtuple(record_name, fields)
+
+    _ = next(c.result)
 
     for line in c.result:
 
@@ -70,4 +82,7 @@ def offsides_side_effects() -> Generator[tuple]:
 
             continue
 
-        yield record( **{f: line[i] for f, i in zip(fields, indices)})
+        yield record(**{
+            f: line[i].strip(' "')
+            for f, i in zip(fields, indices)
+        })
