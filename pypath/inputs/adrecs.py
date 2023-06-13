@@ -24,8 +24,10 @@
 
 from __future__ import annotations
 
-import gzip
+from typing import Generator
+
 import collections
+
 import pandas as pd
 
 import pypath.share.curl as curl
@@ -33,7 +35,15 @@ import pypath.resources.urls as urls
 import pypath.inputs.common as inputs_common
 
 
-def adrecs_drug_identifiers() -> list[tuple]:
+_notavail = lambda x: None if x == 'Not Available' else x
+_synonyms = lambda x: (
+    tuple(sorted(y.strip() for y in x.split('|'))) if x else ()
+)
+
+
+def adrecs_drug_identifiers(
+        return_df: bool = False,
+    ) -> list[tuple] | pd.DataFrame:
     """
     Drug identifiers from the AdReCS database.
 
@@ -41,95 +51,102 @@ def adrecs_drug_identifiers() -> list[tuple]:
     http://www.bio-add.org/ADReCS/index.jsp
 
     Returns:
-        Dict of sets of tuples of drug identifiers. Top level keys are
-        PubChem CIDs.
+        List of tuples or data frame of drug identifiers.
     """
 
-    AdrecsDrug = collections.namedtuple(
-        'AdrecsDrug',
-        ('drug', 'synonyms', 'drugbank', 'pubchem_cid', 'mesh', 'kegg', 'tdd'),
+    return _adrecs_base(
+        url_key = 'drug_information',
+        record_name = 'Drug',
+        cell_range = 'A1:H2527',
+        fields = (
+            'badd',
+            'drug',
+            'synonyms',
+            'drugbank',
+            'pubchem_cid',
+            'mesh',
+            'kegg',
+            'tdd',
+        ),
+        synonym_idx = [2],
+        return_df = return_df,
+
     )
 
-    url = urls.urls['adrecs']['drug_information']
-    c = curl.Curl(url, silent = False, large = True)
-    contents = inputs_common.read_xls(c.outfile, cell_range = 'A1:H2527')
-    result = []
 
-    notavail = lambda x: None if x == 'Not Available' else x
+def adrecs_adr_ontology(return_df: bool = False) -> list[tuple] | pd.DataFrame:
+    """
+    Adverse drug reaction (ADR) ontology from the AdReCS database.
+
+    Returns:
+        List of tuples or data frame of adverse drug reaction terms.
+    """
+
+    return _adrecs_base(
+        url_key = 'terminology',
+        record_name = 'Term',
+        cell_range = 'A1:E13856',
+        fields = ('adrecs_class', 'badd', 'name', 'synonyms', 'meddra'),
+        synonym_idx = [3],
+        return_df = return_df,
+    )
+
+
+def _adrecs_base(
+        url_key: str,
+        record_name: str,
+        cell_range: str,
+        fields: tuple[str],
+        synonym_idx: list[int],
+        return_df: bool = False,
+    ) -> list[tuple] | pd.DataFrame:
+
+    record = collections.namedtuple(f'Adrecs{record_name}', fields)
+
+    url = urls.urls['adrecs'][url_key]
+    path = curl.Curl(url, silent = False, large = True)
+    contents = inputs_common.read_xls(path.outfile, cell_range = cell_range)
+    result = []
 
     for line in contents[1:]:
 
-        line = [notavail(x) for x in line]
+        line = [_notavail(x) for x in line]
 
-        line[2] = (
-            tuple(sorted(x.strip() for x in line[2].split('|')))
-                if line[2] else
-            ()
-        )
+        for isyn in synonym_idx:
 
-        result.append(AdrecsDrug(*line[1:]))
+            line[isyn] = _synonyms(line[isyn])
 
-    return result
+        result.append(record(*line))
+
+    return pd.DataFrame(result) if return_df else result
 
 
-def adrecs_terminology() -> list[tuple]:
+def adrecs_drug_adr(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
     """
-    Retrieves ADR terminology and hierachy.
+    Drug-ADR pairs from the AdReCS database.
+
     Returns:
-        list of namedtuples with all attributes
-        (adrecs_id, adr_id, adr_term, adr_synonyms, meddra_code)
+        List of tuples or data frame of drug-ADR pairs.
     """
 
-    url = urls.urls['adrecs']['url_terminology']
-    path = curl.Curl(
-        url,
-        silent = False,
-        large = True
-    ).fileobj.name
+    result = _adrecs_drug_adr()
 
-    with gzip.open(path, 'rb') as f_in:
-
-        df = pd.read_excel(f_in)
-        df.replace({'Not Available': None}, inplace=True)
-        df['ADR_SYNONYMS'] = df['ADR_SYNONYMS'].str.split('|')
-        df['ADR_SYNONYMS'] = df['ADR_SYNONYMS'].apply(lambda x: tuple([element.strip() for element in x]) if x is not None else None)
-        df.columns= df.columns.str.lower()
-
-        return list(df.itertuples(name='AdrecsOntology', index=False))
+    return pd.DataFrame(result) if return_df else result
 
 
-def adrecs_drugs() -> list[tuple]:
-    """
-    Retrieves Drug-ADR pairs
-    Returns:
-        list of namedtuples with drug_id and adr_id
-    """
+def _adrecs_drug_adr():
 
-    url = urls.urls['adrecs']['url_adrecs_drugs']
+    record = collections.namedtuple(
+        'AdrecsDrugAdr',
+        ('drug_badd',  'drug', 'adr_badd', 'adr'),
+    )
+
+    url = urls.urls['adrecs']['adrecs_drugs']
     c = curl.Curl(url, large = True, silent = False)
-    drugs = c.result
+    _ = next(c.result)
 
-    fields = [
-        'drug_id',
-        'adr_id'
-    ]
+    for line in c.result:
 
-    result = set()
-    record = collections.namedtuple('AdrecsDrug', fields)
-
-    # requisite fields from all_fields
-    indices = [0, 1]
-
-    for line in drugs:
-
-        if not line.strip():
-            continue
-
-        line = line.strip().split('\t')
-        line = dict(zip(fields, (line[i] for i in indices)))
-
-        result.add(
-            record(**dict(zip(fields, (line.get(f, None) for f in fields))))
-        )
-
-    return list(result)
+        yield record(*line.strip().split('\t'))

@@ -147,7 +147,13 @@ def read_xls(
 
             table = [
                 [
-                    cell.value if cell is not None else ''
+                    (
+                        cell
+                            if isinstance(cell, str) else
+                        cell.value
+                            if cell is not None else
+                        ''
+                    )
                     for cell in row
                 ]
                 for row in (sheet[cell_range] if cell_range else sheet.values)

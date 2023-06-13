@@ -1671,9 +1671,9 @@ urls = {
         'drug_information':
             'http://bioinf.xmu.edu.cn/ADReCS/download/Drug_information.xlsx',
         'terminology':
-            'http://bioinf.xmu.edu.cn/ADReCS/download/ADR_ontology.xlsx',
+            'http://www.bio-add.org/ADReCS/download/ADR_ontology.xlsx',
         'adrecs_drugs':
-            'http://bioinf.xmu.edu.cn/ADReCS/download/Drug_ADR.txt.gz',
+            'http://www.bio-add.org/ADReCS/download/Drug_ADR.txt.gz',
     },
     'ddinter': {
         'label': (
