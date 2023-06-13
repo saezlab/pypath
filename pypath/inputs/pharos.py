@@ -217,10 +217,19 @@ def pharos_targets(
         diseases: bool = False,
     ) -> list:
     """
+    Query the NIH Pharos database by GraphQL.
+
+    The queried data is fetched in chunks, by default 100 records each. The
+    complete data consists of thousands of chunks, the retrieval takes
+    about half hour.
+
     Args:
         chunk_size:
             Records in one batch. Better stay 100 because higher numbers
             likely to cause timeout errors.
+
+    Return:
+        Records as a list of dicts.
     """
 
     variables = {

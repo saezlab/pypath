@@ -24,6 +24,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
@@ -6133,7 +6135,7 @@ class Cancerdrugsdb(AnnotationBase):
 
 class InterPro(AnnotationBase):
 
-    _eq_fields = ('interpro_acc', 'locations')
+    _eq_fields = ('interpro_id', 'start', 'end')
 
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
@@ -6451,24 +6453,39 @@ class AnnotationTable(session_mod.Logger):
 
             cls = cls if callable(cls) else getattr(self._module, cls)
 
-            try:
+            total_attempts = settings.get('annot_load_resource_attempts')
 
-                annot = cls(
-                    ncbi_tax_id = self.ncbi_tax_id,
-                    reference_set = reference_set,
-                )
+            for attempt in range(total_attempts):
 
-                self.annots[annot.name] = annot
+                try:
 
-            except Exception as e:
-
-                exc = sys.exc_info()
-                self._log(
-                    'Failed to load annotations from resource `%s`:' % (
-                        cls.__name__ if hasattr(cls, '__name__') else str(cls)
+                    self._log(
+                        f'Loading annotation resource `{cls.__name__}`; '
+                        f'attempt {attempt + 1} of {total_attempts}.'
                     )
-                )
-                self._log_traceback()
+
+                    annot = cls(
+                        ncbi_tax_id = self.ncbi_tax_id,
+                        reference_set = reference_set,
+                    )
+
+                    self.annots[annot.name] = annot
+
+                    self._log(
+                        f'Successfully loaded resource `{cls.__name__}` '
+                        f'({annot.name}).'
+                    )
+                    break
+
+                except Exception as e:
+
+                    exc = sys.exc_info()
+                    self._log(
+                        'Failed to load annotations from resource `%s`:' % (
+                            cls.__name__ if hasattr(cls, '__name__') else str(cls)
+                        )
+                    )
+                    self._log_traceback()
 
 
     def make_dataframe(self, reference_set = None):

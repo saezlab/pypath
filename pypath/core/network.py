@@ -26,6 +26,8 @@ from __future__ import annotations
 
 from future.utils import iteritems
 
+from typing import Mapping
+
 import importlib as imp
 import re
 import os
@@ -56,6 +58,7 @@ import pypath.utils.mapping as mapping
 import pypath.inputs.pubmed as pubmed_input
 import pypath.share.curl as curl
 import pypath.internals.refs as refs_mod
+import pypath.internals.resource as resource_mod
 import pypath.utils.reflists as reflists
 import pypath.resources.network as network_resources
 import pypath.inputs as inputs
@@ -503,6 +506,11 @@ class Network(session_mod.Logger):
         return len(self.interactions)
 
 
+    def __bool__(self):
+
+        return bool(self.interactions)
+
+
     def __iter__(self):
 
         for ia in self.interactions.values():
@@ -582,9 +590,9 @@ class Network(session_mod.Logger):
 
         resources = (
             (resources,)
-                if not isinstance(resources, (list, dict, tuple, set)) else
+                if not isinstance(resources, (list, Mapping, tuple, set)) else
             resources.values()
-                if isinstance(resources, dict) else
+                if isinstance(resources, Mapping) else
             resources
         )
 
@@ -683,15 +691,48 @@ class Network(session_mod.Logger):
             Load only the first n interactions.
         """
 
-        self._log('Loading network data from resource `%s`.' % resource.name)
+        total_attempts = settings.get('network_load_resource_attempts')
 
-        self._read_resource(
-            resource,
-            reread = reread,
-            redownload = redownload,
-            keep_raw = keep_raw,
-            first_n = first_n,
-        )
+        for attempt in range(total_attempts):
+
+            try:
+
+                self._log(
+                    f'Loading network data from resource `{resource.name}`'
+                    f' (dataset: {resource.dataset}); '
+                    f'attempt {attempt + 1} of {total_attempts}.'
+                )
+
+                self._read_resource(
+                    resource,
+                    reread = reread,
+                    redownload = redownload,
+                    keep_raw = keep_raw,
+                    first_n = first_n,
+                )
+
+                self._log(
+                    'Successfully read interactions '
+                    f'from resource `{resource.name}`.'
+                )
+                break
+
+            except Exception as e:
+
+                exc = sys.exc_info()
+                self._log(
+                    'Failed to read interactions '
+                    f'from resource `{resource.name}`:'
+                )
+                self._log_traceback(console = True)
+
+                if attempt == total_attempts - 1:
+
+                    self._log(
+                        f'Not loading `{resource.name}`: giving up after '
+                        f'{total_attempts} attempts.'
+                    )
+                    return
 
         allow_loops = self._allow_loops(
             allow_loops = allow_loops,
@@ -802,6 +843,7 @@ class Network(session_mod.Logger):
 
         edge_list = []
         edge_list_mapped = []
+        self.edge_list_mapped = []
         infile = None
         _name = networkinput.name.lower()
 
@@ -944,33 +986,22 @@ class Network(session_mod.Logger):
 
                         curl.CACHE = not redownload
 
-                    # this try-except needs to be removed
-                    # once correct exception handling will
-                    # be implemented in every input function
                     try:
+
                         infile = input_func(**networkinput.input_args)
 
                     except Exception as e:
+
                         self._log(
-                            'Error in method `%s` of the '
+                            f'Error in method `{input_func.__name__}` of the '
                             'pypath.inputs module. '
-                            'Skipping to next resource. '
-                            'See below the traceback.' % input_func.__name__
                         )
-                        self._log_traceback()
 
-                        try:
-                            traceback.print_tb(
-                                e.__traceback__,
-                                file = sys.stdout
-                            )
+                        raise e
 
-                        except Exception as e:
+                    finally:
 
-                            self._log('Failed handling exception.')
-                            self._log_traceback()
-
-                    curl.CACHE = _store_cache
+                        curl.CACHE = _store_cache
 
                 elif os.path.isfile(networkinput.input):
 
@@ -1093,7 +1124,7 @@ class Network(session_mod.Logger):
                             for x in line
                         ]
 
-                    ## 1) filters
+                    # 1) filters
                     if self._filters(
                         line,
                         networkinput.positive_filters,
@@ -1103,7 +1134,7 @@ class Network(session_mod.Logger):
                         input_filtered += 1
                         continue
 
-                    ## 2) direction
+                    # 2) direction
                     # reading names and attributes:
                     if is_directed and not isinstance(is_directed, tuple):
 
@@ -1118,7 +1149,7 @@ class Network(session_mod.Logger):
                             dir_sep,
                         )
 
-                    ## 3) references
+                    # 3) references
                     refs = []
 
                     if ref_col is not None:
@@ -1141,14 +1172,16 @@ class Network(session_mod.Logger):
 
                         refs = common.del_empty(list(set(refs)))
 
-                    refs = pubmed_input.only_pmids([str(r).strip() for r in refs])
+                    refs = pubmed_input.only_pmids(
+                        [str(r).strip() for r in refs]
+                    )
 
                     if len(refs) == 0 and must_have_references:
 
                         ref_filtered += 1
                         continue
 
-                    ## 4) entity types
+                    # 4) entity types
                     entity_type_a = self._process_field(
                         networkinput.entity_type_a,
                         line,
@@ -1158,11 +1191,11 @@ class Network(session_mod.Logger):
                         line,
                     )
 
-                    ## 5) ID types
+                    # 5) ID types
                     id_type_a = self._process_field(networkinput.id_type_a, line)
                     id_type_b = self._process_field(networkinput.id_type_b, line)
 
-                    ## 6) organisms
+                    # 6) organisms
                     # to give an easy way for input definition:
                     if isinstance(networkinput.ncbi_tax_id, int):
 
@@ -1228,7 +1261,7 @@ class Network(session_mod.Logger):
                         taxon_filtered += 1
                         continue
 
-                    ## 7) effect (sign)
+                    # 7) effect (sign)
                     positive = False
                     negative = False
 
@@ -1238,7 +1271,7 @@ class Network(session_mod.Logger):
                             self._process_sign(line[sign[0]], sign)
                         )
 
-                    ## 8) resources (source databases)
+                    # 8) resources (source databases)
                     resource = (
                         line[networkinput.resource]
                             if isinstance(networkinput.resource, int) else
@@ -1262,6 +1295,7 @@ class Network(session_mod.Logger):
                             interaction_type = _resource.interaction_type,
                             data_model = _resource.data_model,
                             via = _resource.name,
+                            dataset = _resource.dataset,
                         )
                         for sec_res in resource
                         if sec_res != _resource.name
@@ -1269,11 +1303,11 @@ class Network(session_mod.Logger):
 
                     resource.add(networkinput.name)
 
-                    ## 9) interacting partners
+                    # 9) interacting partners
                     id_a = self._process_partner(networkinput.id_col_a, line)
                     id_b = self._process_partner(networkinput.id_col_b, line)
 
-                    ## 10) further attributes
+                    # 10) further attributes
                     # getting additional edge and node attributes
                     attrs_edge = self._process_attrs(
                         line,
@@ -1291,12 +1325,12 @@ class Network(session_mod.Logger):
                         lnum,
                     )
 
-                    ## 11) creating the Evidence object
+                    # 11) creating the Evidence object
                     evidences = evidence.Evidences(
                         evidences = (
                             evidence.Evidence(
                                 resource = _res,
-                                references = refs,
+                                references = None if _res.via else refs,
                                 attrs = attrs_edge,
                             )
                             for _res in
@@ -1304,8 +1338,8 @@ class Network(session_mod.Logger):
                         )
                     )
 
-                    ## 12) node attributes that
-                    ##     depend on the interaction direction
+                    # 12) node attributes that
+                    #     depend on the interaction direction
                     if networkinput.mark_source:
 
                         attrs_node_a[networkinput.mark_source] = this_edge_dir
@@ -1314,7 +1348,7 @@ class Network(session_mod.Logger):
 
                         attrs_node_b[networkinput.mark_target] = this_edge_dir
 
-                    ## 13) all interaction data goes into a dict
+                    # 13) all interaction data goes into a dict
                     new_edge = {
                         'id_a': id_a,
                         'id_b': id_b,
@@ -1355,27 +1389,14 @@ class Network(session_mod.Logger):
                 self._log(
                     'Error at loading resource `%s`.' % networkinput.name
                 )
-                self._log_traceback()
 
-                try:
-
-                    traceback.print_tb(
-                        e.__traceback__,
-                        file = sys.stdout
-                    )
-
-                except Exception as e:
-
-                    self._log('Failed handling exception.')
-                    self._log_traceback()
-
-                return None
+                raise e
 
             if hasattr(infile, 'close'):
 
                 infile.close()
 
-            ## 14) ID translation of edges
+            # 14) ID translation of edges
             edge_list_mapped = self._map_list(
                 edge_list,
                 expand_complexes = expand_complexes,
@@ -2161,6 +2182,14 @@ class Network(session_mod.Logger):
                 effect = -1,
             )
 
+        if is_directed and not positive and not negative:
+
+            interaction.add_evidence(
+                evidence = evidences,
+                direction = (entity_a, entity_b),
+                effect = 0,
+            )
+
         self.add_interaction(
             interaction,
             attrs = extra_attrs,
@@ -2938,6 +2967,7 @@ class Network(session_mod.Logger):
             resources = 'extra_directions',
             use_laudanna = False,
             use_string = False,
+            dataset = 'directionextra',
         ):
         """
         Adds additional direction & effect information from resources having
@@ -2965,6 +2995,11 @@ class Network(session_mod.Logger):
 
             pass
 
+        resources = resource_mod.NetworkDataset(
+            name = dataset,
+            resources = resources,
+        )
+
         self.load(resources = resources, only_directions = True)
 
 
@@ -2976,10 +3011,12 @@ class Network(session_mod.Logger):
             pathway_extra = False,
             old_omnipath_resources = False,
             exclude = None,
-        ):
+        ) -> list[network_resoruces.resource.NetworkResource]:
 
 
-        def reference_constraints(resources, data_model, relax):
+        def reference_constraints(resources, data_model, relax = True):
+
+            result = []
 
             resources = (
                 resources.values()
@@ -2987,11 +3024,16 @@ class Network(session_mod.Logger):
                 resources
             )
 
+            resources = copy_mod.deepcopy(resources)
+
             for res in resources:
 
                 if res.data_model == data_model:
 
                     res.networkinput.must_have_references = not relax
+                    result.append(res)
+
+            return result
 
 
         omnipath = omnipath or copy_mod.deepcopy(network_resources.omnipath)
@@ -3015,27 +3057,27 @@ class Network(session_mod.Logger):
                 network_resources.interaction_misc['huri']
             )
 
-        reference_constraints(
-            omnipath,
-            'activity_flow',
-            pathway_extra,
-        )
-        reference_constraints(
-            omnipath,
-            'ligand_receptor',
-            ligand_receptor_extra,
-        )
-        reference_constraints(
-            omnipath,
-            'enzyme_substrate',
-            kinase_substrate_extra,
-        )
+        omnipath = list(omnipath.without(exclude))
 
-        omnipath = dict(
-            (key, resource)
-            for key, resource in iteritems(omnipath)
-            if resource.name not in exclude
-        )
+        for dataset, data_model, enabled in (
+            ('pathwayextra', 'activity_flow', pathway_extra),
+            ('ligrecextra', 'ligand_receptor', ligand_receptor_extra),
+            ('kinaseextra', 'enzyme_substrate', kinase_substrate_extra),
+        ):
+
+            if enabled:
+
+                extra = list(
+                    resource_mod.NetworkDataset(
+                        name = dataset,
+                        resources = reference_constraints(
+                            omnipath,
+                            data_model,
+                        ),
+                    )
+                )
+
+                omnipath.extend(extra)
 
         return omnipath
 
@@ -3077,23 +3119,21 @@ class Network(session_mod.Logger):
 
         self.load(omnipath, exclude = exclude, allow_loops = allow_loops)
 
-        if kinase_substrate_extra:
 
-            self._log('Loading extra enzyme-substrate interactions.')
+        for dataset, label, enabled in (
+            ('pathwayextra', 'activity flow', pathway_extra),
+            ('ligrecextra', 'ligand-receptor', ligand_receptor_extra),
+            ('kinaseextra', 'enzyme-PTM', kinase_substrate_extra),
+        ):
 
-            self.load(network_resources.ptm_misc, exclude = exclude)
+            if enabled:
 
-        if ligand_receptor_extra:
+                self._log(f'Loading extra {label} interactions.')
 
-            self._log('Loading extra ligand-receptor interactions.')
-
-            self.load(network_resources.ligand_receptor, exclude = exclude)
-
-        if pathway_extra:
-
-            self._log('Loading extra activity flow interactions.')
-
-            self.load(network_resources.pathway_noref, exclude = exclude)
+                self.load(
+                    getattr(network_resources, dataset).rename(dataset),
+                    exclude = exclude,
+                )
 
         if extra_directions:
 
@@ -3337,7 +3377,8 @@ class Network(session_mod.Logger):
         return new
 
 
-    def load_dorothea(self, levels = None, expand_levels = None, **kwargs):
+    @staticmethod
+    def dorothea_resources(levels = None, expand_levels = None):
 
         expand_levels = (
             expand_levels
@@ -3345,21 +3386,28 @@ class Network(session_mod.Logger):
             settings.get('dorothea_expand_levels')
         )
 
-        dorothea_resource = copy_mod.deepcopy(
-            network_resources.transcription_dorothea['dorothea']
-        )
+        dorothea = copy_mod.deepcopy(network_resources.transcription_dorothea)
 
         if levels:
 
-            dorothea_resource.networkinput.input_args['levels'] = levels
+            dorothea['dorothea'].networkinput.input_args['levels'] = levels
 
         dorothea = (
-            network_resources.dorothea_expand_levels(
-                dorothea_resource,
-                levels = levels,
-            )
+            network_resources.dorothea_expand_levels(dorothea, levels = levels)
                 if expand_levels else
-            dorothea_resource
+            dorothea
+        )
+
+        dorothea = dorothea.rename('dorothea')
+
+        return dorothea
+
+
+    def load_dorothea(self, levels = None, expand_levels = None, **kwargs):
+
+        dorothea = self.dorothea_resources(
+            levels = levels,
+            expand_levels = expand_levels,
         )
 
         self.load(dorothea, **kwargs)
@@ -3384,8 +3432,30 @@ class Network(session_mod.Logger):
         return new
 
 
+    def load_collectri(self, **kwargs):
+
+        self.load(network_resources.collectri, **kwargs)
+
+
+    @classmethod
+    def collectri(cls, ncbi_tax_id = 9606, **kwargs):
+        """
+        Initializes a new ``Network`` object with loading the transcriptional
+        regulation network from CollecTRI.
+        """
+
+        make_df = kwargs.pop('make_df', False)
+
+        new = cls(ncbi_tax_id = ncbi_tax_id, **kwargs)
+
+        new.load_collectri(make_df = make_df)
+
+        return new
+
+
     def load_transcription(
             self,
+            collectri = True,
             dorothea = True,
             original_resources = True,
             dorothea_levels = None,
@@ -3397,6 +3467,14 @@ class Network(session_mod.Logger):
         ):
 
         make_df = kwargs.pop('make_df', None)
+
+        if collectri:
+
+            self.load_collectri(
+                reread = reread,
+                redownload = redownload,
+                allow_loops = allow_loops,
+            )
 
         if dorothea:
 
@@ -3412,7 +3490,7 @@ class Network(session_mod.Logger):
             transcription = (
                 original_resources
                     if not isinstance(original_resources, bool) else
-                network_resources.transcription_onebyone
+                network_resources.transcription_onebyone.rename('tf_target')
             )
 
             self.load(
@@ -3468,7 +3546,9 @@ class Network(session_mod.Logger):
 
         if 'resources' not in kwargs:
 
-            kwargs['resources'] = network_resources.mirna_target
+            kwargs['resources'] = (
+                network_resources.mirna_target.rename('mirnatarget')
+            )
 
         self.load(**kwargs)
 
@@ -4372,6 +4452,12 @@ class Network(session_mod.Logger):
             # from the current instance
             self.allow_loops
                 if isinstance(self.allow_loops, bool) else
+            # resource specific settings
+            resource.networkinput.allow_loops
+                if (
+                    hasattr(resource, 'networkinput') and
+                    isinstance(resource.networkinput.allow_loops, bool)
+                ) else
             # interaction type specific settings from the module level
             resource.networkinput.interaction_type in default
                 if (
@@ -4709,10 +4795,11 @@ def init_db(use_omnipath = False, method = None, **kwargs):
             if use_omnipath else
         (method or 'load')
     )
-    n = Network()
-    getattr(n, method_name)(**kwargs)
 
-    globals()['db'] = n
+    new_network = Network()
+    maybe_network = getattr(new_network, method_name)(**kwargs)
+
+    globals()['db'] = maybe_network or new_network
 
 
 def get_db(**kwargs):

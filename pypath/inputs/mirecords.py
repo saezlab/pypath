@@ -47,7 +47,7 @@ def mirecords_interactions():
         ),
     )
 
-    url = urls.urls['mirecords']['url']
+    url = urls.urls['mirecords']['url_rescued']
     c = curl.Curl(url, silent = False, large = True)
 
     tbl = inputs_common.read_xls(c.fileobj.name)

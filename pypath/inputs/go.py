@@ -69,11 +69,17 @@ def go_annotations_uniprot(organism = 9606, swissprot = 'yes'):
 
 
 def go_annotations_goa(
-    organism = 'human',
-    evidence_codes=False):
-
+        organism = 'human',
+        evidence_codes=False,
+    ):
     """
     Downloads GO annotation from UniProt GOA.
+
+    Args:
+        organism:
+            Organism name or NCBI Taxonomy ID.
+        evidence_codes:
+            Include evidence codes in the output.
     """
 
     organism = taxonomy.ensure_common_name(organism)
@@ -83,7 +89,7 @@ def go_annotations_goa(
         for asp in ('C', 'P', 'F')
     )
 
-    url = urls.urls['goa']['ebi_url'] % (organism.upper(), organism)
+    url = urls.urls['goa']['ebi_url'] % (organism.upper(), organism.lower())
     c = curl.Curl(url, silent = False, large = True)
 
     for line in c.result:

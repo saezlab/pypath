@@ -48,7 +48,7 @@ def interpro_entries() -> List[tuple]:
 
     Returns
         A list of named tuples, each representing information about
-        one InterPro entry. 
+        one InterPro entry.
     """
 
     InterproEntry = collections.namedtuple(
@@ -67,7 +67,7 @@ def interpro_entries() -> List[tuple]:
         )
 
     result=[]
-    
+
     url = urls.urls['interpro']['entries']
     path = curl.Curl(
         url,
@@ -77,7 +77,7 @@ def interpro_entries() -> List[tuple]:
     with gzip.open(path, 'rb') as f_in:
         with open(path.split('.gz')[0], 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
-    
+
     parser = etree.iterparse(path.split('.gz')[0], events = ('end',), tag='interpro')
 
     for ev, elem in parser:
@@ -95,23 +95,23 @@ def interpro_entries() -> List[tuple]:
             pubs=''
 
         if elem.find('parent_list') is not None:
-            
+
             parent_ids=[]
-            
+
             for parent in elem.find('parent_list'):
-                
+
                 parent_ids.append(parent.attrib['ipr_ref'])
 
         else:
-            
+
             parent_ids=''
 
         if elem.find('child_list') is not None:
-            
+
             child_ids=[]
-            
+
             for child in elem.find('child_list'):
-                
+
                 child_ids.append(child.attrib['ipr_ref'])
         else:
 
@@ -123,9 +123,9 @@ def interpro_entries() -> List[tuple]:
             if member.attrib['db'] in member_ids:
 
                 member_ids[member.attrib['db']].append(member.attrib['dbkey'])
-            
+
             else:
-                
+
                 member_ids[member.attrib['db']]=[]
                 member_ids[member.attrib['db']].append(member.attrib['dbkey'])
 
@@ -161,7 +161,7 @@ def interpro_xrefs(
     Returns
         A dictionary; keys are InterPro IDs.
             If 'db_type' is 'go', values are list of GO terms related to the InterPro entry.
-            Otherwise values are dictionaries, where keys are database names 
+            Otherwise values are dictionaries, where keys are database names
             and the values are list of cross references related to the InterPro entry.
     """
 
@@ -211,7 +211,7 @@ def interpro_xrefs(
                     if link.attrib['db'] in other_db_keys:
 
                         other_db_keys[link.attrib['db']].append(link.attrib['dbkey'])
-                    
+
                     else:
 
                         other_db_keys[link.attrib['db']]=[]
@@ -223,8 +223,8 @@ def interpro_xrefs(
 
 
 def interpro_annotations(
-        page_size: int = 200, 
-        reviewed: bool = True, 
+        page_size: int = 200,
+        reviewed: bool = True,
         tax_id: str | int = 9606,
     ) ->  dict:
     """
@@ -239,13 +239,14 @@ def interpro_annotations(
         A dictionary. Keys are Uniprot IDs, values are sets of annotations.
     """
 
-    
+
     InterproAnnotation = collections.namedtuple(
         'InterproAnnotation',
         (
             'interpro_id',
             'organism',
-            'locations',
+            'start',
+            'end',
         ),
     )
 
@@ -256,13 +257,15 @@ def interpro_annotations(
             if reviewed else
         'uniprot'
     )
-    base_url = urls.urls['interpro']['annotations'] % (proteins, tax_id, page_size)
-    next = base_url
+    base_url = (
+        urls.urls['interpro']['annotations'] % (proteins, tax_id, page_size)
+    )
+    next_page_url = base_url
 
-    while next:
+    while next_page_url:
 
         c = curl.Curl(
-            next,
+            next_page_url,
             silent = False,
             large = False
         )
@@ -285,32 +288,24 @@ def interpro_annotations(
 
             for protein in entry['protein_subset']:
 
-                start_end_list = []
                 locations = protein['entry_protein_locations']
 
                 for location in locations:
 
                     for fragment in location['fragments']:
 
-                        start_end_list.append(str(fragment['start']) + '-' + str(fragment['end']))
-
-                uniprot_id = protein['accession'].upper()
-                annotations[uniprot_id].add(
-                        InterproAnnotation(
-                            interpro_id = entry_info['accession'],
-                            organism = protein['organism'],
-                            locations = tuple(start_end_list),
+                        uniprot_id = protein['accession'].upper()
+                        annotations[uniprot_id].add(
+                            InterproAnnotation(
+                                interpro_id = entry_info['accession'],
+                                organism = protein['organism'],
+                                start = int(fragment['start']),
+                                end = int(fragment['end']),
+                            )
                         )
-                    )
-    
-        if 'next' in res:
 
-            next = res['next']
-            page = page + 1
-
-        else:
-
-            next = None
+        next_page_url = res.get('next')
+        page += 1
 
     return annotations
 
@@ -349,7 +344,7 @@ def interpro2go_annotations() -> dict[str, set[tuple]]:
                 Interpro2GOAnnotation(
                     go_term_id = go_term_id,
                     go_term_name = go_term_name
-                    )
                 )
-    
+            )
+
     return annotations
