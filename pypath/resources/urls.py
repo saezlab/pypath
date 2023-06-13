@@ -1668,10 +1668,10 @@ urls = {
             'A comprehensive ADR ontology database that provides both '
             'standardization and hierarchical classification of ADR terms.'
         ),
-        'drug_information': 'http://bioinf.xmu.edu.cn/ADReCS/download/'
-            'Drug_information.xlsx.gz',
+        'drug_information':
+            'http://bioinf.xmu.edu.cn/ADReCS/download/Drug_information.xlsx',
         'terminology':
-            'http://bioinf.xmu.edu.cn/ADReCS/download/ADR_ontology.xlsx.gz',
+            'http://bioinf.xmu.edu.cn/ADReCS/download/ADR_ontology.xlsx',
         'adrecs_drugs':
             'http://bioinf.xmu.edu.cn/ADReCS/download/Drug_ADR.txt.gz',
     },
