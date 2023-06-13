@@ -1,3 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2023
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+from __future__ import annotations
+
 import collections
 
 import pypath.share.curl as curl
@@ -5,159 +31,106 @@ import pypath.resources.urls as urls
 import pypath.share.common as common
 
 
-def sider_drug() -> list[tuple]:
+def sider_drug_names() -> dict[str, set[tuple]]:
     """
-    Retrieves drug information from the Sider database.
+    Retrieves drug information from the SIDER database.
+
     Returns:
-        Drug cid, name and atc information as a list of named tuples.
+        Drug PubChem CID, name and ATC information as a list of named tuples.
     """
 
-    Drug = collections.namedtuple(
-        'Drug',
-        [   
-            'cid',
-            'drug_name',
-            'drug_atc',
-        ],
-        defaults=None
+    SiderDrugName = collections.namedtuple(
+        'SiderDrugName',
+        ('name', 'atc'),
     )
 
-    result = set()
-    dct = {}
+    result = collections.defaultdict(set)
+    attrs = {}
 
-    url = urls.urls['sider']['url_drug_names']
+    for attr in ('name', 'atc'):
+
+        url = urls.urls['sider'][f'drug_{attr}s']
+        c = curl.Curl(url, large = True, silent = False)
+        attrs[attr] = collections.defaultdict(list)
+
+        for line in c.result:
+
+            cid, value = line.strip('\n').split('\t')
+            attrs[attr][cid].append(value)
+
+    for cid in set.union(*map(set, attrs.values())):
+
+        for atc in attrs['atc'].get(cid, (None,)):
+
+            result[cid].add(SiderDrugName(
+                name = attrs['name'].get(cid, (None,))[0],
+                atc = atc,
+            ))
+
+    return dict(result)
+
+
+def sider_side_effects(freq: bool = False) -> dict[str, set[tuple]]:
+    """
+    Retrieves side effect information from the SIDER database.
+
+    Args:
+        freq:
+            Retrieve the dataset with frequency information. This is
+            an independent dataset with lower coverage.
+
+    Returns:
+        Drug PubChem CID, UMLS concept ids both for label and MedDra
+        and side effect name.
+    """
+
+    fields = (
+        'umls_concept_on_label',
+        'umls_concept_in_meddra',
+        'side_effect',
+    )
+    fields += (('frequency',) if freq else ())
+    record = collections.namedtuple(
+        'SiderSideEffect%s' % ('Freq' if freq else ''),
+        fields,
+    )
+    result = collections.defaultdict(set)
+
+    url = urls.urls['sider']['meddra_%s' % ('freq' if freq else 'all')]
+
     c = curl.Curl(url, large = True, silent = False)
 
-    drug_names = c.result
-    
-    for drug in drug_names:
-
-        q = drug.strip('\n').split('\t')
-        cid = q[0]
-        name = q[1]
-
-        if cid not in dct:
-            dct[cid] = {'name':name, 'atc':None}
-
-    url_drug_atc = urls.urls['sider']['url_drug_atc']
-    c2 = curl.Curl(url_drug_atc, large = True, silent = False)
-
-    drug_atc = c2.result
-
-    for drug in drug_atc:
-
-        q = drug.strip('\n').split('\t')
-        cid = q[0]
-        atc = q[1]
-        
-        if cid in dct:
-            if dct[cid]['atc'] is not None:
-                dct[cid]['atc'].append(atc)
-            else:
-                dct[cid]['atc'] = [atc]
-
-    for key in dct:
-
-        drug = Drug(
-            cid = key,
-            drug_name = dct[key]['name'],
-            drug_atc = tuple(dct[key]['atc']) if dct[key]['atc'] is not None else None
-        )
-
-        result.add(drug)
-
-    return list(result)
-
-
-def sider_meddra() -> list[tuple]:
-    """
-    Retrieves drug information from the Sider database.
-    Returns:
-        Drug cid, umls concept ids both for label and MedDra and side effect name.
-    """
-
-    fields = (
-            'cid',
-            'umls_concept_id_on_label',
-            'umls_concept_id_on_MedDRA',
-            'side_effect_name',
-    )
-       
-    fields = common.to_list(fields)
-
-    url_meddra_all = urls.urls['sider']['url_meddra_all']
-
-    c = curl.Curl(
-        url_meddra_all, 
-        large = True, 
-        silent = False
-    )
-
-    result = set()
-    record = collections.namedtuple('Drug', fields)
-
     # essential features' indices
-    indices = [0, 2, 4, 5]
+    indices = (2, 8, 9, 4) if freq else (2, 4, 5)
 
     for line in c.result:
 
-        if not line.strip():
-            continue
-        
         line = line.strip().split('\t')
-        line = dict(zip(fields, (line[i] for i in indices)))
 
-        result.add(
-            record(**dict(zip(fields, (line.get(f, None) for f in fields))))
+        if not line:
+
+            continue
+
+        result[line[0]].add(
+            record(**{
+                key: line[i] or None
+                for key, i in zip(fields, indices)
+            })
         )
 
-    return list(result)
+    return dict(result)
 
 
-def sider_meddra_with_freq() -> list[tuple]:
+def sider_side_effect_frequencies() -> list[tuple]:
     """
-    Retrieves drug information from the Sider database.
+    Retrieves side effect information from the SIDER database.
+
     Returns:
-        Drug cid, umls concept ids both for label and MedDra,
+        Drug CID, UMLS concept ids both for label and MedDRA,
         frequency information and side effect name.
-    Attention! -> sider_meddra_all() function has about 20k row bigger 
-    than this dataset without frequency information
+
+    Attention! -> `sider_side_effects` function returns about 20k more rows
+    than this dataset, but without frequency information.
     """
 
-    fields = (
-            'cid',
-            'umls_concept_id_on_label',
-            'frequency',
-            'umls_concept_id_on_MedDRA',
-            'side_effect_name',
-    )
-
-    fields = common.to_list(fields)
-
-    url_meddra_with_freq = urls.urls['sider']['url_meddra_freq']
-
-    c = curl.Curl(
-        url_meddra_with_freq, 
-        large = True, 
-        silent = False
-    )
-
-    result = set()
-    record = collections.namedtuple('Drug', fields)
-
-    # essential features' indices
-    indices = [0, 2, 4, 8, 9]
-
-    for line in c.result:
-
-        if not line.strip():
-            continue
-        
-        line = line.strip().split('\t')
-        line = dict(zip(fields, (line[i] for i in indices)))
-
-        result.add(
-            record(**dict(zip(fields, (line.get(f, None) for f in fields))))
-        )
-
-    return list(result)
+    return sider_side_effects(freq = True)

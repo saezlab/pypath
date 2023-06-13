@@ -1635,7 +1635,7 @@ urls = {
         ),
         'drug_names':
             'http://sideeffects.embl.de/media/download/drug_names.tsv',
-        'drug_atc':
+        'drug_atcs':
             'http://sideeffects.embl.de/media/download/drug_atc.tsv',
         'meddra_all':
             'http://sideeffects.embl.de/media/download/meddra_all_se.tsv.gz',
@@ -1704,8 +1704,8 @@ urls = {
             'A database of proposed and accepted mappings by the '
             'users/curators between a pair of pathways.'
         ),
-        'url': 'https://compath.scai.fraunhofer.de/export_mappings'
-    }
+        'url': 'https://compath.scai.fraunhofer.de/export_mappings',
+    },
     'trrust': {
         'label': 'Transcriptional Regulatory Relationships Unraveled by Sentence-based Text mining',
         'scraping_url': 'https://www.grnpedia.org/trrust/data/search_list.%s.htm',

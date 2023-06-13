@@ -4700,8 +4700,7 @@
       ]
     }
   },
-<<<<<<< HEAD
-  "Sider": {
+  "SIDER": {
     "license": "CC BY-NC-SA 4.0",
     "urls": {
       "webpages": ["http://sideeffects.embl.de/"],
