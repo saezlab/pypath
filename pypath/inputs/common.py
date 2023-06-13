@@ -51,6 +51,7 @@ def read_xls(
         xls_file,
         sheet = 0,
         use_openpyxl = False,
+        cell_range = None,
     ):
     """
     Generic function to read MS Excel XLS file, and convert one sheet
@@ -74,6 +75,8 @@ def read_xls(
     if not use_openpyxl:
 
         try:
+
+            _log('Reading XLS(X) by xlrd.')
 
             if hasattr(xls_file, 'read'):
 
@@ -101,13 +104,17 @@ def read_xls(
 
             raise FileNotFoundError(xls_file)
 
-        except:
+        except Exception as e:
 
+            _log('Failed to read by xlrd, falling back to openpyxl.')
+            _logger._log_traceback()
             use_openpyxl = True
 
     if use_openpyxl:
 
         try:
+
+            _log('Reading XLS(X) by openpyxl.')
 
             book = openpyxl.load_workbook(
                 filename = xls_file,
@@ -115,8 +122,10 @@ def read_xls(
                 data_only = True,
             )
 
-        except:
+        except Exception as e:
 
+            _log(f'Failed to read `{xls_file}` by openpyxl.')
+            _logger._log_traceback()
             raise ValueError('Could not open xls: %s' % xls_file)
 
         try:
@@ -134,13 +143,14 @@ def read_xls(
         # which we can not avoid as the xlsx files were produced not by us
         with warnings.catch_warnings():
 
-            warnings.simplefilter("ignore")
+            warnings.simplefilter('ignore')
+
             table = [
                 [
-                    common.basestring(cell) if cell is not None else ''
+                    cell.value if cell is not None else ''
                     for cell in row
                 ]
-                for row in sheet.values
+                for row in (sheet[cell_range] if cell_range else sheet.values)
             ]
 
     if 'book' in locals() and hasattr(book, 'release_resources'):
