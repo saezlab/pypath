@@ -1,92 +1,103 @@
-import collections 
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2023
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+import re
+import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 
-
-def parse(description):
-        name = None
-        symbol = None
-        omim_id = None
-
-        if ('(' in description) and ('[' in description):
-            name = description[:description.find("(") - 1]
-            symbol = description[description.find("(")+1:description.find(")")]
-            omim_id = description[description.find("[")+1:description.find("]")]
-        
-        elif ('(' in description) and ('[' not in description):
-            name = description[:description.find("(") - 1]
-            symbol = description[description.find("(")+1:description.find(")")]
-
-        elif ('(' not in description) and ('[' in description):
-            name = description[:description.find("[") - 1]
-            omim_id = description[description.find("[")+1:description.find("]")]
-
-        return (name, symbol, omim_id)
+redesc = re.compile(
+    r'([^\(^\[]+[^\s^\(^\[])\s?'
+    r'(?:\((\w+)\))?\s?'
+    r'(?:\[(MIM:\d+)\])?'
+)
+reempty = re.compile(r'^-?\s?$')
 
 
-def humsavar() -> list[tuple]:
-    '''
-    Retrieves all missense variants annotated in UniProtKB/Swiss-Prot human entries.
+def _parse_desc(desc):
+
+        return (
+            (None,) * 3
+                if reempty.match(desc) else
+            redesc.match(desc).groups()
+        )
+
+
+def uniprot_variants() -> dict[str, set[tuple]]:
+    """
+    Retrieves all human missense variants annotated in UniProtKB/Swiss-Prot.
+
     Returns:
         Drug attributes in below as a list of named tuples.
-    '''
-    Variant = collections.namedtuple(
-            'Variant',
-            [   
-                'main_gene_name',
-                'swiss_prot_ac',
+    """
+
+    UniprotVariant = collections.namedtuple(
+            'UniprotVariant',
+            (
+                'genesymbol',
                 'ftid',
-                'AA_change',
+                'aa_change',
                 'variant_category',
-                'dbSNP',
-                'disease_name',
+                'dbsnp',
+                'disease',
                 'disease_symbol',
-                'disease_omim_id'
-            ],
-            defaults=None
+                'disease_omim'
+            ),
         )
 
     url = urls.urls['humsavar']['url']
+    c = curl.Curl(url, large=True, silent=False)
 
-    data = curl.Curl(url, large=True, silent=False)
-
-    data = data.result
-
-    result = set()
+    result = collections.defaultdict(set)
+    respace = re.compile(r'\s+')
 
     # skipping data description information in txt file
-    for r in data:
+    for r in c.result:
+
         if r.startswith('_'):
+
             break
 
-    for row in data:
-        description = ''
-        info = row.split()
+    for line in c.result:
 
-        # make sure not only contains first item '-'
-        if len(info) > 1:
+        line = respace.split(line.strip())
 
-            # make sure swiss_prot_ac does not mix the main_gene_name because
-            # some of them concat with main gene name unsensibly
-            if len(info[1]) == 6:
+        if len(line) == 1:
 
-                description = ' '.join(info[6:])
-            
-                name, symbol, omim_id = parse(description)
+            break
 
-                variant = Variant(
-                        main_gene_name = info[0],
-                        swiss_prot_ac = info[1],
-                        ftid = info[2],
-                        AA_change = info[3],
-                        variant_category=info[4],
-                        dbSNP=info[5],
-                        disease_name= name,
-                        disease_symbol=symbol,
-                        disease_omim_id=omim_id
-                )
+        disease, symbol, omim = _parse_desc(' '.join(line[6:]))
 
-                result.add(variant)
+        variant = UniprotVariant(
+                line[0],
+                *line[2:6],
+                disease = disease,
+                disease_symbol = symbol,
+                disease_omim = omim,
+        )
 
-    return list(result)
+        result[line[1]].add(variant)
+
+    return dict(result)
