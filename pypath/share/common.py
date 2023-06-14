@@ -419,7 +419,7 @@ def flat_list(lst):
     return [it for sl in lst for it in sl]
 
 
-def del_empty(lst): # XXX: Only used in main.py line: 1278
+def del_empty(lst):
     """Removes empty entries of a list.
 
     It is assumed that elemenst of *lst* are iterables (e.g. [str] or

@@ -1722,7 +1722,8 @@ urls = {
     },
     'expasy': {
         'label': 'Enzyme nomenclature database',
-        'url': 'https://ftp.expasy.org/databases/enzyme/%s',
+        'enzclass': 'https://ftp.expasy.org/databases/enzyme/enzclass.txt',
+        'enzymes': 'https://ftp.expasy.org/databases/enzyme/enzyme.dat',
     },
     'hmdb': {
         'label': 'Human Metabolome Database',

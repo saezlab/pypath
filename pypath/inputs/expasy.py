@@ -1,216 +1,147 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2023
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+from __future__ import annotations
 
 import re
-from pypath.share import curl
-from pypath.resources.urls import urls
 
-def enzyme_classes():
+import pandas as pd
 
-    url = urls['expasy']['url'] % 'enzclass.txt'
+import pypath.share.curl as curl
+import pypath.share.common as common
+import pypath.resources.urls as urls
+
+
+def expasy_enzyme_classes(
+        return_df: bool = False,
+    ) -> list[tuple] | pd.DataFrame:
+    """
+    Enzyme classification from the ExPASy database.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+
+    Returns:
+        Tuples with the first 3 digits and the names of EC classes.
+    """
+
+    url = urls.urls['expasy']['enzclass']
 
     c = curl.Curl(
         url,
         silent=False,
         large=True,
-        encoding="utf-8",
-        default_mode="r",
+        encoding='utf-8',
+        default_mode='r',
+    )
+    reec = re.compile(
+        r'^(\d+)\.\s?'
+        r'(?:(\d+))?-?\.\s*'
+        r'(?:(\d+))?-?\.\s*'
+        r'-?\s+'
+        r'([-\w\(\)\s\+]+)\.$'
     )
 
-    regex = r"^([\d ]+\.[\d\- ]+\.[\d\- ]+\. ?[\d\-]+) +(.+)\.$"
-    matcher = re.compile(regex)
-    tree = Tree(delimiter='.')
+    result = []
 
     for line in c.result:
 
-        try:
-            result = matcher.findall(line)[0]
-        except IndexError:
-            continue
-        
-        keys, value = result
-        tree.parse_add(keys, value)
-    
-    return tree
 
-def enzymes():
+        m = reec.match(line)
 
-    url = urls['expasy']['url'] % 'enzyme.dat'
+        if m:
+
+            result.append(m.groups())
+
+    return pd.DataFrame(result) if return_df else result
+
+
+def expasy_enzymes(return_df: bool = False) -> dict[key, tuple] | pd.DataFrame:
+    """
+    Enzyme data from the ExPASy database.
+
+    Args:
+        return_df:
+            Return a data frame.
+    """
+
+    url = urls.urls['expasy']['enzymes']
 
     c = curl.Curl(
         url,
-        silent=False,
-        large=True,
-        encoding="utf-8",
-        default_mode="r",
+        silent = False,
+        large = True,
+        encoding = 'utf-8',
+        default_mode = 'r',
+        slow = True,
     )
 
-    id_regex = r'^ID +([\d\w]+\.[\d\w]+\.[\d\w]+\.[\d\w]+)$'
-    id_matcher = re.compile(id_regex)
+    reid = re.compile(r'(\d+\.\d+\.\d+\.[\dn]+)')
+    reup = re.compile(r'([\w]+), ([\w]+_\w+)')
+    reeq = re.compile(r'\(\d\)')
+    recc = re.compile(r'-!-')
 
-    de_regex = r'^DE +(.+)\.?$'
-    de_matcher = re.compile(de_regex)
-
-    # Not implemented
-    an_regex = r''
-    an_matcher = re.compile(an_regex)
-
-    dr_regex = r'([^ ,]+), {0,}[^;]+ {0,};'
-    dr_matcher = re.compile(dr_regex)
-
-    enzyme = {
-        'name': [],
-        'class_description': None,
-        'annotations': []
+    result = []
+    new_enzyme = lambda: {
+        k: []
+        for k in ('uniprots', 'entries', 'ca', 'cc', 'an')
     }
-
-    ec_tree = process_classes()
-
-    result = {}
+    enzyme = new_enzyme()
 
     for line in c.result:
-        
-        if line.startswith('CC'):
-            continue
 
-        elif line.startswith('//'):
+        prefix, *line = line.split(maxsplit = 1)
 
-            try:
-                enzyme['class_description'] = ec_tree.describe(enzyme_id)
-                result[enzyme_id] = enzyme
+        if prefix == 'ID':
 
-                enzyme = {
-                    'name': [],
-                    'class_description': None,
-                    'annotations': []
-                }
-            except NameError:
-                continue
+            enzyme['ec'] = reid.match(line[0]).group(0)
 
-        elif line.startswith('ID'):
-            try:
-                enzyme_id = id_matcher.findall(line)[0]
-            except IndexError:
-                print(line)
-                print(id_matcher.findall(line))
+        elif prefix == 'DE':
 
-        elif line.startswith('DE'):
-            enzyme_desc = de_matcher.findall(line)
-            enzyme['name'].extend(enzyme_desc)
+            enzyme['de'] = line[0].strip('.\n ')
 
-        elif line.startswith('DR'):
-            enzyme_xref = dr_matcher.findall(line)
-            enzyme['annotations'].extend(enzyme_xref)
-    
-    return result
+        elif prefix in {'CA', 'CC', 'AN'} and line:
 
+            enzyme[prefix.lower()].append(line[0].strip('. \n'))
 
+        elif prefix == 'DR':
 
-class Tree:
+            uniprots, entries = list(zip(*reup.findall(line[0])))
+            enzyme['uniprots'].extend(uniprots)
+            enzyme['entries'].extend(entries)
 
-    def __init__(self, delimiter=None):
-        self.root = Node('root')
-        self.delimiter = delimiter
+        elif prefix == '//' and enzyme.get('ec', None):
 
-    def parse_add(self, keys, value):
-        keys = keys.split(self.delimiter)
-        keys = [int(key) for key in keys if key.strip() != '-']
+            for key, rexp in zip(('ca', 'cc'), (reeq, recc)):
 
-        tmp_node = self.root
+                enzyme[key] = common.del_empty(
+                    x.strip()
+                    for x in rexp.split(' '.join(enzyme[key]))
+                )
 
-        for key in keys:
-            tmp_node.add_child(key)
-            tmp_node = tmp_node.get_child(key)
-        
-        tmp_node.set_data(value)
-    
-    def describe(self, keys):
-        description = []
+            result.append(enzyme)
+            enzyme = new_enzyme()
 
-        keys = keys.split(self.delimiter)
-
-        tmp_node = self.root
-
-        for key in keys:
-
-            if key.strip() == '-':
-                break
-
-            try:
-                tmp_node = tmp_node.get_child(int(key))
-            except ValueError:
-                break
-        
-            try:
-                description.append(tmp_node.get_data())
-            except AttributeError:
-                continue
-        
-        return ', '.join(description)
-
-    def __str__(self):
-        string = str(self.root)
-        string = string.strip('\n')
-
-        return string
-
-    def __len__(self):
-        pass
-
-class Node:
-
-    def __init__(self, key, data=None):
-
-        self.key = key
-        self.data = data
-        self.children = {}
-    
-    def add_child(self, child_key, data=None):
-        
-        if child_key not in self.children:
-            self.children[child_key] = Node(child_key, data)
-            return True
-        
-        return False
-    
-    def remove_child(self, child_key):
-
-        try:
-            del self.children[child_key]
-            return True
-        except KeyError:
-            return False
-    
-    def get_child(self, child_key):
-
-        try:
-            return self.children[child_key]
-        except KeyError:
-            return None
-
-    def set_data(self, data):
-        self.data = data
-
-    def get_data(self):
-        return self.data
-    
-    def __str__(self):
-        
-        string = ''
-        prefix = ''
-
-        if self.key != 'root':
-            string += f'{self.key}: {self.data}\n'
-            prefix = '\t'
-
-        for child_key in self.children:
-
-            child_string = str(self.children[child_key])
-            lines = child_string.split('\n')
-            lines = [line for line in lines if line]
-
-            for line in lines:
-                string += f'{prefix}{line}\n'
-
-        return string
-
-    def __len__(self):
-        return len(self.children)
+    return pd.DataFrame(result) if return_df else {e['ec']: e for e in result}
