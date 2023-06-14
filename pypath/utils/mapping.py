@@ -40,6 +40,7 @@ import math
 import re
 import importlib as imp
 import collections
+import functools
 import datetime
 import time
 
@@ -160,7 +161,7 @@ UNIPROT_ID_TYPES = {
 
 """
 Classes for reading and use serving ID mapping data from custom file,
-function, UniProt, UniProt uploadlists, Ensembl BioMart,
+function, UniProt, UniProt ID Mapping, Ensembl BioMart,
 PRO (Protein Ontology), miRBase or pickle file.
 """
 
@@ -407,10 +408,14 @@ class MapReader(session_mod.Logger):
 
             if os.path.exists(cachefile):
 
+                with open(cachefile, 'rb') as fp:
+
+                    from_cache = pickle.load(fp)
+
                 setattr(
                     self,
                     '%s_to_%s' % args,
-                    pickle.load(open(cachefile, 'rb')),
+                    from_cache,
                 )
                 self._log(
                     'Loading `%s` to `%s` mapping table '
@@ -595,6 +600,14 @@ class MapReader(session_mod.Logger):
         self.b_to_a = b_to_a if self.load_b_to_a else None
 
 
+    @staticmethod
+    def _uniprotkb_id_type(id_type: str) -> bool:
+
+        return input_formats.UniprotListMapping._uniprotkb_id_type(
+            id_type,
+        )
+
+
     def read_mapping_uniprot_list(self):
         """
         Builds a mapping table by downloading data from UniProt's
@@ -603,6 +616,7 @@ class MapReader(session_mod.Logger):
 
         a_to_b = collections.defaultdict(set)
         b_to_a = collections.defaultdict(set)
+        swap = False
 
         if not self.uniprots:
 
@@ -612,14 +626,26 @@ class MapReader(session_mod.Logger):
         # getting a proteome wide list of UniProt IDs. If the translated
         # ID type is not UniProt, then first we need to translate the
         # proteome wide reference list from UniProt to the target ID type.
-        if self.param.id_type_a != 'uniprot':
+        if not self._uniprotkb_id_type(self.param.id_type_a):
 
-            u_target = self._read_mapping_uniprot_list(
-                uniprot_id_type_a = 'ACC',
-                uniprot_id_type_b = self.param.uniprot_id_type_a,
-            )
+            if self._uniprotkb_id_type(self.param.id_type_b):
 
-            upload_ac_list = [l.split('\t')[1].strip() for l in u_target]
+                swap = True
+                self.param.swap_sides()
+                self.load_a_to_b, self.load_b_to_a = (
+                    self.load_b_to_a,
+                    self.load_a_to_b,
+                )
+                upload_ac_list = self.uniprots
+
+            else:
+
+                u_target = self._read_mapping_uniprot_list(
+                    uniprot_id_type_a = 'UniProtKB_AC-ID',
+                    uniprot_id_type_b = self.param.uniprot_id_type_a,
+                )
+
+                upload_ac_list = [l.split('\t')[1].strip() for l in u_target]
 
         else:
 
@@ -644,6 +670,15 @@ class MapReader(session_mod.Logger):
             if self.load_b_to_a:
 
                 b_to_a[l[1]].add(l[0])
+
+        if swap:
+
+            a_to_b, b_to_a = b_to_a, a_to_b
+            self.load_a_to_b, self.load_b_to_a = (
+                self.load_b_to_a,
+                self.load_a_to_b,
+            )
+            self.param.swap_sides()
 
         self.a_to_b = a_to_b if self.load_a_to_b else None
         self.b_to_a = b_to_a if self.load_b_to_a else None
@@ -681,10 +716,10 @@ class MapReader(session_mod.Logger):
             uniprot_id_type_a (str): Source ID type label as used in UniProt.
             uniprot_id_type_b (str): Target ID type label as used in UniProt.
             upload_ac_list (list): The identifiers to use in the query to
-                the uploadlists service. By default the list of all UniProt
+                the ID Mapping service. By default the list of all UniProt
                 IDs for the organism is used.
             chunk_size (int): Number of IDs in one query. Too large queries
-                might fail, by default we include 10,000 IDs in one query.
+                might fail, by default we include 100,000 IDs in one query.
         """
 
         chunk_size = (
@@ -698,12 +733,12 @@ class MapReader(session_mod.Logger):
         upload_ac_list = sorted(upload_ac_list)
 
         self._log(
-            'Querying the UniProt uploadlists service for ID translation '
+            'Querying the UniProt ID Mapping service for ID translation '
             'data. Querying a list of %u IDs.' % len(upload_ac_list)
         )
 
-        url = urls.urls['uniprot_basic']['lists']
-
+        run_url = urls.urls['uniprot_idmapping']['run']
+        poll_result = {}
         result = []
 
         # loading data in chunks of 10,000 by default
@@ -712,7 +747,7 @@ class MapReader(session_mod.Logger):
             this_chunk = upload_ac_list[i * chunk_size:(i + 1) * chunk_size]
 
             self._log(
-                'Request to UniProt uploadlists, chunk #%u with %u IDs.' % (
+                'Request to UniProt ID Mapping, chunk #%u with %u IDs.' % (
                     i,
                     len(this_chunk),
                 )
@@ -720,45 +755,100 @@ class MapReader(session_mod.Logger):
 
             post = {
                 'from': uniprot_id_type_a,
-                'format': 'tab',
                 'to': uniprot_id_type_b,
-                'uploadQuery': ' '.join(sorted(this_chunk)),
+                'ids': ' '.join(sorted(this_chunk)),
             }
+            accept_json = {'req_headers': ['Accept: application/json']}
 
-            c = curl.Curl(url, post = post, large = True, silent = False)
+            run_args = {'url': run_url, 'post': post}
+            nocache = {'cache': False, 'large': False}
 
-            # 3 extra attempts
-            if c.result is None:
+            cache_path = curl.Curl.cache_path(**run_args)
 
-                for i in xrange(3):
+            if not os.path.exists(cache_path):
 
-                    c = curl.Curl(
-                        url,
-                        post = post,
-                        large = True,
-                        silent = False,
-                        cache = False,
-                        slow = True,
+                run_c = curl.Curl( **run_args, **nocache, **accept_json)
+
+                if run_c.status != 200:
+
+                    raise RuntimeError(
+                        'Failed to submit job to UniProt ID Mapping. '
+                        'See details in the log.'
                     )
 
-                    if c.result is not None:
+                jobid = json.loads(run_c.result)['jobId']
+
+                self._log(
+                    f'Submitted job to UniProt ID Mapping, job ID: `{jobid}`.'
+                )
+
+                timeout = settings.get('uniprot_idmapping_timeout')
+                interval = settings.get('uniprot_idmapping_poll_interval')
+                max_polls = math.ceil(timeout / interval)
+                poll_url = urls.urls['uniprot_idmapping']['poll'] % jobid
+                poll_args = {'url': poll_url} | nocache | accept_json
+
+                for i in range(max_polls):
+
+                    self._log(
+                        f'Polling job UniProt ID Mapping job `{jobid}`, '
+                        f'poll {i + 1} of {max_polls}.'
+                    )
+
+                    poll_c = curl.Curl(**poll_args)
+
+                    if poll_c.status != 200:
+
+                        self._log(f'Poll failed with HTTP {poll_c.status}.')
+                        continue
+
+                    poll_result = json.loads(poll_c.result)
+
+                    if 'status' in poll_result or 'failedIds' in poll_result:
 
                         break
 
-            if c.result is None or c.fileobj.read(5) == '<!DOC':
+                    elif 'messages' in poll_result:
 
-                self._console(
-                    'Error at downloading ID mapping data from UniProt.'
+                        msg = (
+                            'UniProt ID Mapping job failed: ' +
+                            ' '.join(common.to_list(poll_result['messages']))
+                        )
+
+                        self._log(msg)
+
+                        raise RuntimeError(msg)
+
+                    time.sleep(interval)
+
+                det_url = urls.urls['uniprot_idmapping']['details'] % jobid
+                det_c = curl.Curl(url = det_url, **nocache, **accept_json)
+                result_url = (
+                    json.loads(det_c.result)['redirectURL'].
+                    replace('/idmapping/results/', '/idmapping/stream/').
+                    replace('/results/', '/results/stream/').
+                    __add__('?format=tsv')
                 )
 
-                c.result = ''
+                self._log(
+                    'Retrieving UniProt ID Mapping results '
+                    f'from `{result_url}`'
+                )
 
-            c.fileobj.seek(0)
+                with curl.cache_delete_on():
 
-            # removing the header row
-            _ = next(c.result)
+                    res_c = curl.Curl(
+                        url = result_url,
+                        cache = cache_path,
+                        large = True,
+                        silent = False,
+                    )
 
-            result.extend(list(c.fileobj)[1:])
+            else:
+
+                res_c = curl.Curl(**run_args)
+
+            result.extend(list(res_c.fileobj)[1:])
 
         return result
 
@@ -782,13 +872,13 @@ class MapReader(session_mod.Logger):
                 if not self.param.swissprot else
             ' AND reviewed:%s' % self.param.swissprot
         )
-        query = 'organism:%u%s' % (int(self.ncbi_tax_id), rev)
+        query = 'organism_id:%u%s' % (int(self.ncbi_tax_id), rev)
 
         url = urls.urls['uniprot_basic']['url']
         post = {
             'query': query,
-            'format': 'tab',
-            'columns': 'id,%s' % self.param._resource_id_type_a,
+            'format': 'tsv',
+            'fields': 'accession,%s' % self.param._resource_id_type_a,
         }
 
         url = '%s?%s' % (url, urllib.urlencode(post))
@@ -984,8 +1074,15 @@ class MapReader(session_mod.Logger):
         Loads a small molecule ID translation table.
         """
 
-        mod = globals()[f'{self.source_type}_input']
-        method = getattr(mod, f'{self.source_type}_mapping')
+        if self.param.input_method:
+
+            method = inputs.get_method(self.param.input_method)
+
+        else:
+
+            mod = globals()[f'{self.source_type}_input']
+            method = getattr(mod, f'{self.source_type}_mapping')
+
         data = method(
             id_type_a = self.resource_id_type_a,
             id_type_b = self.resource_id_type_b,
@@ -1576,7 +1673,7 @@ class Mapper(session_mod.Logger):
                             tbl_key = tbl_key_noorganism
                             tbl_key_rev = tbl_key_rev_noorganism
 
-                        # for uniprot/uploadlists or PRO or array
+                        # for uniprot/idmapping or PRO or array
                         # we create here the mapping params
                         this_param = input_cls(
                             id_type_a = _id_type,
@@ -1722,6 +1819,8 @@ class Mapper(session_mod.Logger):
         return list(names)[0] if names else None
 
 
+    @common.ignore_unhashable
+    @functools.lru_cache(maxsize = int(1e5))
     def map_name(
             self,
             name,
@@ -2335,7 +2434,7 @@ class Mapper(session_mod.Logger):
         mapped_names = set()
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        # try first UniProt uploadlists
+        # try first UniProt ID Mapping
         # then Ensembl BioMart
         for id_type in ('ensp', 'ensp_biomart'):
 
@@ -2352,7 +2451,7 @@ class Mapper(session_mod.Logger):
 
             tax_ensp = '%u.%s' % (ncbi_tax_id, ensp)
 
-            # this uses UniProt uploadlists with STRING_ID
+            # this uses UniProt ID Mapping with STRING ID type
             mapped_names = self._map_name(
                 name = tax_ensp,
                 id_type = 'ensp_string',
@@ -2376,7 +2475,7 @@ class Mapper(session_mod.Logger):
         mapped_names = set()
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        # try first UniProt uploadlists
+        # try first UniProt ID Mapping
         # then Ensembl BioMart
         for target_id_type in ('ensp', 'ensp_biomart'):
 
@@ -2391,7 +2490,7 @@ class Mapper(session_mod.Logger):
 
         if not mapped_names:
 
-            # this uses UniProt uploadlists with STRING_ID
+            # this uses UniProt ID Mapping with STRING type
             mapped_names = self._map_name(
                 name = name,
                 id_type = id_type,
@@ -3242,7 +3341,9 @@ class Mapper(session_mod.Logger):
 
             if os.path.exists(cachefile):
 
-                data[key] = pickle.load(open(cachefile, 'rb'))
+                with open(cachefile, 'rb') as fp:
+
+                    data[key] = pickle.load(fp)
 
             else:
 

@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "pypath-omnipath"
-version = "0.14.47"
+version = "0.15.4"
 description = "Molecular signaling prior knowledge processing"
 license = "GPL-3.0-only"
 authors = [
@@ -73,24 +73,33 @@ timeloop = "*"
 toml = "*"
 tqdm = "*"
 xlrd = "*"
-pybel = { version = "*", optional = true }
-bio2bel = { version = "*", optional = true }
-click = { version = "*", optional = true }
+# pybel = { version = "*", optional = true, extras = [] }
+# bio2bel = { version = "*", optional = true, extras = [] }
+# click = { version = "*", optional = true }
 python-igraph = { version = "*", optional = true }
+sparqlwrapper = { version = "*", optional = true }
+openbabel = { version = "*", optional = true }
+rdkit = { version = "*", optional = true }
+"epam.indigo" = { version = "*", optional = true }
 pysftp = "^0.2.9"
 typing_extensions = "*"
 
 [tool.poetry.extras]
-bel = [
-    "pybel",
-    "bio2bel",
-    "click",
-]
+# bel = [
+#     "pybel",
+#     "bio2bel",
+#     "click",
+# ]
 graph = [
     "python-igraph",
 ]
 pathophenodb = [
     "sparqlwrapper",
+]
+metabo = [
+    "epam.indigo",
+    "openbabel",
+    "rdkit",
 ]
 
 [tool.poetry.dev-dependencies]

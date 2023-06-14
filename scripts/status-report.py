@@ -72,13 +72,13 @@ EXCLUDE = {
     'get_all_models', # infinite loop bug
     'chembl_assays', # takes about 1 hour
     'chembl_molecules', # takes about 4 hours
-    'hmdb_iter_metabolites',
-    'hmdb_metabolites_raw',
+    'hmdb.iter_metabolites',
+    'hmdb.metabolites_raw',
 }
 
 ARGS = {
-    'hmdb_iter_metabolites': ((), {'head': 10}),
-    'hmdb_metabolites_raw': ((), {'head': 10}),
+    'hmdb.iter_metabolites': ((), {'head': 10}),
+    'hmdb.metabolites_raw': ((), {'head': 10}),
 }
 
 HTML_TEMPLATE = (

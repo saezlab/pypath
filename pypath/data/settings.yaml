@@ -109,7 +109,9 @@ server_annotations_full_download: false
 mapping_use_cache: true
 mapping_uniprot_static: false
 use_intermediate_cache: true
-uniprot_uploadlists_chunk_size: 10000
+uniprot_uploadlists_chunk_size: 100000
+uniprot_idmapping_timeout: 180
+uniprot_idmapping_poll_interval: 3
 timestamp_dirs: true
 uniprot_info_maxlen: 500
 uniprot_datasheet_connect_timeout: 10

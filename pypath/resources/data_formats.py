@@ -136,6 +136,7 @@ reaction = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = False,
+        data_model = 'process_description',
     ),
 }
 
@@ -179,6 +180,7 @@ pathwaycommons_all = input_formats.NetworkInput(
             'controls-phosphorylation-of',
         },
     },
+    data_model = 'activity_flow',
 )
 
 
@@ -212,6 +214,7 @@ pathwaycommons_transcription_all = input_formats.NetworkInput(
             'controls-expression-of',
         },
     },
+    data_model = 'activity_flow',
 )
 
 
@@ -296,6 +299,7 @@ reaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'process_description',
     ),
     'acsn': input_formats.NetworkInput(
         name = 'ACSN',
@@ -315,6 +319,7 @@ reaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'process_description',
     ),
     'reactome': input_formats.NetworkInput(
         name = 'Reactome',
@@ -336,6 +341,7 @@ reaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'process_description',
     ),
 }
 
@@ -413,6 +419,7 @@ reaction_pc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'process_description',
     ),
 }
 
@@ -443,6 +450,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'spike': input_formats.NetworkInput(
         name = 'SPIKE',
@@ -464,6 +472,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'signalink3': input_formats.NetworkInput(
         name = 'SignaLink3',
@@ -484,6 +493,7 @@ pathway = {
         positive_filters = [(2, True)], # only direct interactions
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'guide2pharma': input_formats.NetworkInput(
         name = 'Guide2Pharma',
@@ -502,6 +512,7 @@ pathway = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {'g2p_ligand_location': 8},
         extra_node_attrs_b = {'g2p_target_type': 9},
+        data_model = 'ligand_receptor',
     ),
     'ca1': input_formats.NetworkInput(
         name = 'CA1',
@@ -529,6 +540,7 @@ pathway = {
             'ca1_location': 9,
             'ca1_function': 8,
         },
+        data_model = 'activity_flow',
     ),
     'arn': input_formats.NetworkInput(
         name = 'ARN',
@@ -551,6 +563,7 @@ pathway = {
         },
         extra_node_attrs_a = {'atg': 5},
         extra_node_attrs_b = {'atg': 6},
+        data_model = 'activity_flow',
     ),
     'nrf2': input_formats.NetworkInput(
         name = 'NRF2ome',
@@ -573,6 +586,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'macrophage': input_formats.NetworkInput(
         name = 'Macrophage',
@@ -594,6 +608,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'death': input_formats.NetworkInput(
         name = 'DeathDomain',
@@ -614,6 +629,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'pdz': input_formats.NetworkInput(
         name = 'PDZBase',
@@ -636,6 +652,7 @@ pathway = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'signor': input_formats.NetworkInput(
         name = 'SIGNOR',
@@ -699,6 +716,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'adhesome': input_formats.NetworkInput(
         name = 'Adhesome',
@@ -718,6 +736,7 @@ pathway = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'icellnet': input_formats.NetworkInput(
         name = 'ICELLNET',
@@ -738,6 +757,7 @@ pathway = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
     ),
     'celltalkdb': input_formats.NetworkInput(
         name = 'CellTalkDB',
@@ -757,6 +777,7 @@ pathway = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
     ),
     'cellchatdb': input_formats.NetworkInput(
         name = 'CellChatDB',
@@ -779,6 +800,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
     ),
     'connectomedb': input_formats.NetworkInput(
         name = 'connectomeDB2020',
@@ -794,6 +816,7 @@ pathway = {
         input = 'connectomedb.connectomedb_interactions',
         references = 3,
         header = False,
+        data_model = 'ligand_receptor',
     ),
     'talklr': input_formats.NetworkInput(
         name = 'talklr',
@@ -813,6 +836,7 @@ pathway = {
         extra_edge_attrs = {
             'putative': 4,
         },
+        data_model = 'ligand_receptor',
     ),
     'cellinker': input_formats.NetworkInput(
         name = 'Cellinker',
@@ -832,6 +856,7 @@ pathway = {
         extra_edge_attrs = {
             'type': 6,
         },
+        data_model = 'ligand_receptor',
     ),
     'scconnect': input_formats.NetworkInput(
         name = 'scConnect',
@@ -884,6 +909,7 @@ pathway = {
         input = 'scconnect.scconnect_interactions',
         references = (7, '|'),
         header = False,
+        data_model = 'ligand_receptor',
     ),
 }
 
@@ -919,6 +945,7 @@ pathway_noref = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'wang': input_formats.NetworkInput(
         name = 'Wang',
@@ -939,6 +966,7 @@ pathway_noref = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'cui': input_formats.NetworkInput(
         name = 'Cui2007',
@@ -959,6 +987,7 @@ pathway_noref = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'kegg-medicus': input_formats.NetworkInput(
         name = 'KEGG-MEDICUS',
@@ -985,6 +1014,7 @@ pathway_noref = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'spike_lc': input_formats.NetworkInput(
         name = 'SPIKE_LC',
@@ -1008,9 +1038,13 @@ pathway_noref = {
         extra_node_attrs_b = {},
         must_have_references = False,
         input_args = {'min_confidence': 99},
+        data_model = 'activity_flow',
     ),
 }
 
+
+# synonym
+pathwayextra = pathway_noref
 
 pathway_all = dict(copy.deepcopy(pathway), **copy.deepcopy(pathway_noref))
 
@@ -1035,6 +1069,7 @@ pathway_bad = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'laudanna_directions': input_formats.NetworkInput(
         name = 'Laudanna-directions',
@@ -1054,6 +1089,7 @@ pathway_bad = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
 }
 
@@ -1082,6 +1118,7 @@ interaction = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'ccmap': input_formats.NetworkInput(
         name = 'CancerCellMap',
@@ -1099,6 +1136,7 @@ interaction = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'mppi': input_formats.NetworkInput(
         name = 'MPPI',
@@ -1119,6 +1157,7 @@ interaction = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'dip': input_formats.NetworkInput(
         name = 'DIP',
@@ -1140,6 +1179,7 @@ interaction = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'netpath': input_formats.NetworkInput(
         name = 'NetPath',
@@ -1162,6 +1202,7 @@ interaction = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'innatedb': input_formats.NetworkInput(
         name = 'InnateDB',
@@ -1179,6 +1220,7 @@ interaction = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'intact': input_formats.NetworkInput(
         name = 'IntAct',
@@ -1199,6 +1241,7 @@ interaction = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'lit17': input_formats.NetworkInput(
         name = 'Lit-BM-17',
@@ -1220,6 +1263,7 @@ interaction = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'alz': input_formats.NetworkInput(
         name = 'AlzPathway',
@@ -1238,6 +1282,7 @@ interaction = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'matrixdb': input_formats.NetworkInput(
         name = 'MatrixDB',
@@ -1257,6 +1302,7 @@ interaction = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
 }
 """
@@ -1283,6 +1329,7 @@ ptm = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'depod': input_formats.NetworkInput(
         name = 'DEPOD',
@@ -1301,6 +1348,7 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'lmpid': input_formats.NetworkInput(
         name = 'LMPID',
@@ -1320,6 +1368,7 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'phelm': input_formats.NetworkInput(
         name = 'phosphoELM',
@@ -1344,6 +1393,7 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'elm': input_formats.NetworkInput(
         name = 'ELM',
@@ -1366,6 +1416,7 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'domino': input_formats.NetworkInput(
         name = 'DOMINO',
@@ -1400,6 +1451,7 @@ ptm = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'dbptm': input_formats.NetworkInput(
         name = 'dbPTM',
@@ -1420,6 +1472,7 @@ ptm = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = True,
+        data_model = 'enzyme_substrate',
     ),
     'hprd_p': input_formats.NetworkInput(
         name = 'HPRD-phos',
@@ -1441,6 +1494,7 @@ ptm = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'kea': input_formats.NetworkInput(
         name = 'KEA',
@@ -1462,6 +1516,7 @@ ptm = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = True,
+        data_model = 'enzyme_substrate',
     ),
     'iptmnet': input_formats.NetworkInput(
         name = 'iPTMnet',
@@ -1482,6 +1537,7 @@ ptm = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = True,
+        data_model = 'enzyme_substrate',
     ),
 }
 
@@ -1512,6 +1568,7 @@ ptm_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'ppoint': input_formats.NetworkInput(
         name = 'PhosphoPoint',
@@ -1533,6 +1590,7 @@ ptm_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'pnetworks': input_formats.NetworkInput(
         name = 'PhosphoNetworks',
@@ -1552,6 +1610,7 @@ ptm_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'mimp': input_formats.NetworkInput(
         name = 'MIMP',
@@ -1572,6 +1631,7 @@ ptm_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'li2012': input_formats.NetworkInput(
         name = 'Li2012',
@@ -1593,6 +1653,7 @@ ptm_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'enzyme_substrate',
     ),
     'protmapper': input_formats.NetworkInput(
         name = 'ProtMapper',
@@ -1614,11 +1675,13 @@ ptm_misc = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = False,
+        data_model = 'enzyme_substrate',
     ),
 }
 
 # synonym
 ptm_noref = ptm_misc
+kinaseextra = ptm_misc
 
 ptm_all = copy.deepcopy(ptm_misc)
 ptm_all.update(ptm)
@@ -1651,6 +1714,7 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'biogrid': input_formats.NetworkInput(
         name = 'BioGRID',
@@ -1670,6 +1734,7 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'hi2': input_formats.NetworkInput(
         name = 'HI-II',
@@ -1691,6 +1756,7 @@ interaction_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'lit13': input_formats.NetworkInput(
         name = 'Lit-BM-13',
@@ -1710,6 +1776,7 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'huri': input_formats.NetworkInput(
         name = 'HuRI',
@@ -1731,6 +1798,7 @@ interaction_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'hi_union': input_formats.NetworkInput(
         name = 'HI-union',
@@ -1752,6 +1820,7 @@ interaction_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'yu2011': input_formats.NetworkInput(
         name = 'Yu2011',
@@ -1773,6 +1842,7 @@ interaction_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'yang2016': input_formats.NetworkInput(
         name = 'Yang2016',
@@ -1794,6 +1864,7 @@ interaction_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'cpdb': input_formats.NetworkInput(
         name = 'CPDB',
@@ -1813,6 +1884,7 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
 }
 
@@ -1839,7 +1911,8 @@ interaction_deprecated = {
         header = True,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}
+        extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'hi3_local_2': input_formats.NetworkInput(
         name = 'Vidal HI-III',
@@ -1862,6 +1935,7 @@ interaction_deprecated = {
         # note: obtain the file yourself, and replace
         # this location
         input_args = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'},
+        data_model = 'interaction',
     ),
     'hi3': input_formats.NetworkInput(
         name = 'HI-III',
@@ -1883,6 +1957,7 @@ interaction_deprecated = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'hsn': input_formats.NetworkInput(
         name = 'HumanSignalingNetwork',
@@ -1901,6 +1976,7 @@ interaction_deprecated = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
 }
 
@@ -1926,6 +2002,7 @@ interaction_htp = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'intact': input_formats.NetworkInput(
         name = 'IntAct',
@@ -1944,6 +2021,7 @@ interaction_htp = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         input_args = {'miscore': 0.0},
+        data_model = 'interaction',
     ),
     'biogrid': input_formats.NetworkInput(
         name = 'BioGRID',
@@ -1967,6 +2045,7 @@ interaction_htp = {
             'htp_limit': None,
             'ltp': False,
         },
+        data_model = 'interaction',
     ),
     'dip': input_formats.NetworkInput(
         name = 'DIP',
@@ -1992,6 +2071,7 @@ interaction_htp = {
             'core_only': False,
             'small_scale_only': False,
         },
+        data_model = 'interaction',
     ),
     'ccmap': input_formats.NetworkInput(
         name = 'CancerCellMap',
@@ -2009,6 +2089,7 @@ interaction_htp = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'innatedb': input_formats.NetworkInput(
         name = 'InnateDB',
@@ -2026,6 +2107,7 @@ interaction_htp = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'matrixdb': input_formats.NetworkInput(
         name = 'MatrixDB',
@@ -2045,6 +2127,7 @@ interaction_htp = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
     'mppi': input_formats.NetworkInput(
         name = 'MPPI',
@@ -2065,6 +2148,7 @@ interaction_htp = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'interaction',
     ),
 }
 
@@ -2091,6 +2175,7 @@ transcription_onebyone = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'encode_dist': input_formats.NetworkInput(
         name = 'ENCODE-distal',
@@ -2111,6 +2196,7 @@ transcription_onebyone = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'encode_prox': input_formats.NetworkInput(
         name = 'ENCODE-proximal',
@@ -2131,6 +2217,7 @@ transcription_onebyone = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'pazar': input_formats.NetworkInput(
         name = 'PAZAR',
@@ -2151,6 +2238,7 @@ transcription_onebyone = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'htri': input_formats.NetworkInput(
         name = 'HTRIdb',
@@ -2171,6 +2259,7 @@ transcription_onebyone = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'oreganno': input_formats.NetworkInput(
         name = 'ORegAnno',
@@ -2191,6 +2280,7 @@ transcription_onebyone = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'signor': input_formats.NetworkInput(
         name = 'SIGNOR',
@@ -2240,6 +2330,7 @@ transcription_onebyone = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         interaction_type = 'transcriptional',
+        data_model = 'activity_flow',
     ),
     'kegg': input_formats.NetworkInput(
         name = 'KEGG',
@@ -2265,6 +2356,7 @@ transcription_onebyone = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         interaction_type = 'transcriptional',
+        data_model = 'activity_flow',
     ),
     'kegg-medicus': input_formats.NetworkInput(
         name = 'KEGG-MEDICUS',
@@ -2292,6 +2384,28 @@ transcription_onebyone = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         interaction_type = 'transcriptional',
+        data_model = 'activity_flow',
+    ),
+    'trrust': input_formats.NetworkInput(
+        name = 'TRRUST',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = True,
+        sign = (2, 'Activation', 'Repression'),
+        ncbi_tax_id = 9606,
+        input = 'trrust.trrust_interactions',
+        interaction_type = 'transcriptional',
+        references = 3,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
 }
 
@@ -2345,6 +2459,7 @@ transcription_dorothea_old = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = False,
+        data_model = 'activity_flow',
     ),
 }
 
@@ -2380,6 +2495,7 @@ transcription_dorothea = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = False,
+        data_model = 'activity_flow',
     ),
 }
 
@@ -2405,13 +2521,17 @@ transcription_collectri = {
         resource = (4, ';'),
         references = (5, ';'),
         header = False,
-        extra_edge_attrs = {},
+        extra_edge_attrs = {
+            'tf_category': 3,
+            'sign_decision': 6
+        },
         extra_node_attrs_a = {
             'tf_category': 3
         },
         extra_node_attrs_b = {},
         must_have_references = False,
         allow_loops = True,
+        data_model = 'activity_flow',
     ),
 }
 
@@ -2474,6 +2594,7 @@ mirna_target = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'mirdeath': input_formats.NetworkInput(
         name = 'miRDeathDB',
@@ -2499,6 +2620,7 @@ mirna_target = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'ncrdeath': input_formats.NetworkInput(
         name = 'ncRDeathDB',
@@ -2531,6 +2653,7 @@ mirna_target = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'mirecords': input_formats.NetworkInput(
         name = 'miRecords',
@@ -2561,6 +2684,7 @@ mirna_target = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'mirtarbase': input_formats.NetworkInput(
         name = 'miRTarBase',
@@ -2595,6 +2719,7 @@ mirna_target = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'signor': input_formats.NetworkInput(
         name = 'SIGNOR',
@@ -2640,8 +2765,13 @@ mirna_target = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         interaction_type = 'post_transcriptional',
+        data_model = 'activity_flow',
     ),
 }
+
+# synonym
+mirnatarget = mirna_target
+
 
 tf_mirna = {
     'transmir': input_formats.NetworkInput(
@@ -2663,6 +2793,7 @@ tf_mirna = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'encode': input_formats.NetworkInput(
         name = 'ENCODE_tf-mirna',
@@ -2683,6 +2814,7 @@ tf_mirna = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
      'collectri': input_formats.NetworkInput(
         name = 'CollecTRI',
@@ -2701,7 +2833,10 @@ tf_mirna = {
         resource = (4, ';'),
         references = (5, ';'),
         header = False,
-        extra_edge_attrs = {},
+        extra_edge_attrs = {
+            'tf_category': 3,
+            'sign_decision': 6
+        },
         extra_node_attrs_a = {
             'tf_category': 3
         },
@@ -2711,7 +2846,8 @@ tf_mirna = {
         input_args = {
             'protein_coding': False,
             'mirna': True,
-        }
+        },
+        data_model = 'activity_flow',
     ),
 }
 
@@ -2742,6 +2878,7 @@ lncrna_target = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'lncrnadb': input_formats.NetworkInput(
         name = 'lncrnadb',
@@ -2766,7 +2903,8 @@ lncrna_target = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}
+        extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     'ncrdeath': input_formats.NetworkInput(
         name = 'ncRDeathDB',
@@ -2799,8 +2937,12 @@ lncrna_target = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
 }
+
+# synonym
+lncrna_mrna = lncrna_target
 
 ligand_receptor = {
     'ramilowski2015': input_formats.NetworkInput(
@@ -3048,6 +3190,11 @@ ligand_receptor = {
     ),
 }
 
+
+# synonym
+ligrecextra = ligand_receptor
+
+
 small_molecule_protein = {
     'signor': input_formats.NetworkInput(
         name = 'SIGNOR',
@@ -3164,46 +3311,37 @@ small_molecule_protein = {
     ),
 }
 
+# synonym
+small_molecule = small_molecule_protein
+
+
 ligand_receptor['guide2pharma'] = copy.deepcopy(pathway['guide2pharma'])
-ligand_receptor['guide2pharma'].data_model = 'ligand_receptor'
 ligand_receptor['guide2pharma'].must_have_references = False
 ligand_receptor['icellnet'] = copy.deepcopy(pathway['icellnet'])
 ligand_receptor['icellnet'].must_have_references = False
-ligand_receptor['icellnet'].data_model = 'ligand_receptor'
 ligand_receptor['celltalkdb'] = copy.deepcopy(pathway['celltalkdb'])
 ligand_receptor['celltalkdb'].must_have_references = False
-ligand_receptor['celltalkdb'].data_model = 'ligand_receptor'
 ligand_receptor['cellchatdb'] = copy.deepcopy(pathway['cellchatdb'])
 ligand_receptor['cellchatdb'].must_have_references = False
-ligand_receptor['cellchatdb'].data_model = 'ligand_receptor'
 ligand_receptor['connectomedb'] = copy.deepcopy(pathway['connectomedb'])
 ligand_receptor['connectomedb'].must_have_references = False
-ligand_receptor['connectomedb'].data_model = 'ligand_receptor'
 ligand_receptor['talklr'] = copy.deepcopy(pathway['talklr'])
 ligand_receptor['talklr'].must_have_references = False
-ligand_receptor['talklr'].data_model = 'ligand_receptor'
 ligand_receptor['cellinker'] = copy.deepcopy(pathway['cellinker'])
 ligand_receptor['cellinker'].must_have_references = False
-ligand_receptor['cellinker'].data_model = 'ligand_receptor'
 ligand_receptor['scconnect'] = copy.deepcopy(pathway['scconnect'])
 ligand_receptor['scconnect'].must_have_references = False
-ligand_receptor['scconnect'].data_model = 'ligand_receptor'
 
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
-pathway['hpmr'].data_model = 'activity_flow'
 pathway['hpmr'].must_have_references = True
 pathway['hpmr'].positive_filters = []
 pathway['cellphonedb'] = copy.deepcopy(ligand_receptor['cellphonedb'])
 pathway['cellphonedb'].must_have_references = True
-pathway['cellphonedb'].data_model = 'activity_flow'
 pathway['ramilowski2015'] = copy.deepcopy(ligand_receptor['ramilowski2015'])
 pathway['ramilowski2015'].must_have_references = True
-pathway['ramilowski2015'].data_model = 'activity_flow'
 pathway['lrdb'] = copy.deepcopy(ligand_receptor['lrdb'])
-pathway['lrdb'].data_model = 'activity_flow'
 pathway['lrdb'].must_have_references = True
 pathway['baccin2019'] = copy.deepcopy(ligand_receptor['baccin2019'])
-pathway['baccin2019'].data_model = 'activity_flow'
 pathway['baccin2019'].must_have_references = True
 
 """

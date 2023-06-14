@@ -22,12 +22,15 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 import csv
 import collections
 import itertools
 
 import pypath.share.curl as curl
 import pypath.share.common as common
+import pypath.share.constants as constants
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.utils.taxonomy as taxonomy
@@ -51,7 +54,11 @@ def guide2pharma_download(
             Whether to include only endogenous ligands interactions.
     """
 
-    get_taxid = taxonomy.ensure_ncbi_tax_id
+    get_taxid = lambda x: (
+        constants.NOT_ORGANISM_SPECIFIC
+            if x in {'', 'None'} else
+        taxonomy.ensure_ncbi_tax_id(x)
+    )
     organism_ = None
     ncbi_tax_id = None
 

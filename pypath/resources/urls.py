@@ -35,22 +35,30 @@ urls = {
     },
     'uniprot_basic': {
         'label': 'URL for UniProt queries',
-        'url': 'https://legacy.uniprot.org/uniprot/',
+        'url': 'https://rest.uniprot.org/uniprotkb/stream',
         'lists': 'https://legacy.uniprot.org/uploadlists/',
-        'datasheet': 'https://legacy.uniprot.org/uniprot/%s.txt',
-        'history': 'https://legacy.uniprot.org/uniprot/%s.tab?version=*',
-        'deleted_sp': 'ftp://ftp.expasy.org/databases/uniprot/'
+        'datasheet': 'https://rest.uniprot.org/uniprotkb/%s.txt',
+        'history': 'https://rest.uniprot.org/uniprot/%s?format=tsv&version=*',
+        'deleted_sp': 'https://ftp.expasy.org/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/delac_sp.txt',
-        'deleted_tr': 'ftp://ftp.expasy.org/databases/uniprot/'
+        'deleted_tr': 'https://ftp.expasy.org/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/delac_tr.txt.gz',
         'speindex_old': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
             'knowledgebase/docs/speindex.txt',
-        'speindex': 'ftp://ftp.expasy.org/databases/uniprot/current_release/'
+        'speindex': 'https://ftp.expasy.org/databases/uniprot/current_release/'
             'knowledgebase/complete/docs/speindex.txt',
-        'taxids': 'https://www.uniprot.org/taxonomy/?query='
+        'taxids_old': 'https://www.uniprot.org/taxonomy/?query='
             '*&format=tab&force=true&columns=id&compress=yes',
+        'taxids': 'https://rest.uniprot.org/taxonomy/stream?compressed=true'
+            '&fields=id%2Ccommon_name%2Cscientific_name'
+            '&format=tsv&query=%28%2A%29',
         'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/speclist.txt',
+    },
+    'uniprot_idmapping': {
+        'run': 'https://rest.uniprot.org/idmapping/run',
+        'poll': 'https://rest.uniprot.org/idmapping/status/%s',
+        'details': 'https://rest.uniprot.org/idmapping/details/%s',
     },
     'corum': {
         'label':
@@ -1620,6 +1628,93 @@ urls = {
         'label': 'Comparative Toxicogenomics Database',
         'url': 'http://ctdbase.org/reports/%s',
     },
+    'diseases': {
+        'label': 'Disease-gene associations mined from literature',
+        'url': 'https://download.jensenlab.org/human_disease_%s_%s.tsv',
+    },
+    'sider': {
+        'label': (
+            'A Database contains information on marketed medicines and their '
+            'recorded adverse drug reactions.'
+        ),
+        'drug_names':
+            'http://sideeffects.embl.de/media/download/drug_names.tsv',
+        'drug_atcs':
+            'http://sideeffects.embl.de/media/download/drug_atc.tsv',
+        'meddra_all':
+            'http://sideeffects.embl.de/media/download/meddra_all_se.tsv.gz',
+        'meddra_freq':
+            'http://sideeffects.embl.de/media/download/meddra_freq.tsv.gz',
+    },
+    'humsavar': {
+        'label': (
+            'A Database contains all missense variants annotated in '
+            'UniProtKB/Swiss-Prot human entries'
+        ),
+        'url': (
+            'https://ftp.uniprot.org/pub/databases/uniprot/current_release/'
+            'knowledgebase/complete/docs/humsavar.txt'
+        ),
+    },
+    'twosides': {
+        'label': 'A comprehensive database drug-drug-effect relationships',
+        'url': 'https://tatonettilab.org/resources/nsides/TWOSIDES.csv.gz'
+    },
+    'offsides': {
+        'label': (
+            'A database of drug side-effects that were found, '
+            'but are not listed on the official FDA label'
+        ),
+        'url': 'https://tatonettilab.org/resources/nsides/OFFSIDES.csv.gz'
+    },
+    'adrecs': {
+        'label': (
+            'A comprehensive ADR ontology database that provides both '
+            'standardization and hierarchical classification of ADR terms.'
+        ),
+        'drug_information':
+            'http://bioinf.xmu.edu.cn/ADReCS/download/Drug_information.xlsx',
+        'terminology':
+            'http://www.bio-add.org/ADReCS/download/ADR_ontology.xlsx',
+        'adrecs_drugs':
+            'http://www.bio-add.org/ADReCS/download/Drug_ADR.txt.gz',
+    },
+    'ddinter': {
+        'label': (
+            'DDInter is a comprehensive, professional, and open-access '
+            'database specific to drug-drug interactions.'
+        ),
+        'source': 'http://ddinter.scbdd.com/ddinter/data-source/',
+        'mapping': 'http://ddinter.scbdd.com/ddinter/drug-detail/%s',
+        'interaction':
+            'http://ddinter.scbdd.com/ddinter/grapher-datasource/%s',
+    },
+    'reactome': {
+        'label': (
+            'REACTOME is an open-source, open access, manually curated '
+            'and peer-reviewed pathway database.'
+        ),
+        'uniprot2all': 'https://reactome.org/download/current/'
+            'UniProt2Reactome_All_Levels.txt',
+        'chebi2all': 'https://reactome.org/download/current/'
+            'ChEBI2Reactome_All_Levels.txt',
+        'pathways': 'https://reactome.org/download/current/'
+            'ReactomePathways.txt',
+        'pathway_relations': 'https://reactome.org/download/current/'
+            'ReactomePathwaysRelation.txt',
+    },
+    'compath': {
+        'label': (
+            'A database of proposed and accepted mappings by the '
+            'users/curators between a pair of pathways.'
+        ),
+        'url': 'https://compath.scai.fraunhofer.de/export_mappings',
+    },
+    'trrust': {
+        'label': 'Transcriptional Regulatory Relationships Unraveled by Sentence-based Text mining',
+        'scraping_url': 'https://www.grnpedia.org/trrust/data/search_list.%s.htm',
+        'tsv_url': 'https://www.grnpedia.org/trrust/data/trrust_rawdata.%s.tsv'
+    },
     'collectri': {
         'label': 'Comprehensive collection of transcriptional regulatory interactions',
         'url': 'https://rescued.omnipathdb.org/CollecTRI.csv',
@@ -1629,10 +1724,28 @@ urls = {
         'url': 'https://figshare.com/ndownloader/files/38534654',
         'api': 'https://rampdb.nih.gov/api/%s',
     },
+    'expasy': {
+        'label': 'Enzyme nomenclature database',
+        'enzclass': 'https://ftp.expasy.org/databases/enzyme/enzclass.txt',
+        'enzymes': 'https://ftp.expasy.org/databases/enzyme/enzyme.dat',
+    },
     'hmdb': {
         'label': 'Human Metabolome Database',
         'metabolites': 'https://hmdb.ca/system/downloads/'
             'current/hmdb_metabolites.zip',
+        'proteins': 'https://hmdb.ca/system/downloads/'
+            'current/hmdb_proteins.zip',
+        'svg': 'https://hmdb.ca/structures/%s/image.svg',
+        'sdf': 'https://hmdb.ca/system/downloads/current/structures.zip',
+    },
+    'lipidmaps': {
+        'label': 'A database of lipid structures',
+        'sdf': 'https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip',
+    },
+    'opentargets': {
+        'label': 'Open Targets',
+        'url': 'http://ftp.ebi.ac.uk/pub/databases/opentargets/platform/'
+            '22.11/output/etl/json/%s',
     },
 }
 
