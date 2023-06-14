@@ -1,86 +1,99 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2023
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+from __future__ import annotations
+
+from typing import Generator, Literal
+
 import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 
-def kegg_control(dct):
 
-    if dct['source_db'] == 'kegg':
-        dct['id_1'] = dct['id_1'][5:]
-
-    elif dct['target_db'] == 'kegg':
-        dct['id_2'] = dct['id_2'][5:]
-
-    return dct
-
-
-def get_all_mappings(source_db = None, target_db = None) -> list[tuple]:
+def compath_mappings(
+        source_db: Literal['kegg', 'wikipathways', 'reactome'] | None = None,
+        target_db: Literal['kegg', 'wikipathways', 'reactome'] | None = None,
+    ) -> Generator[tuple] | pd.DataFrame:
     """
-    Retrieves proposed and accepted mappings by the users/curators between a pair of pathways.
-    Parameters:
-        source_db & target_db are database names. It specifies direction 
+    Cross-database pathway to pathway mappings from Compath.
+
+    Compath contains proposed and accepted mappings by the users/curators
+    between pairs of pathways across databases. The source and target
+    databases specify the direction of the mapping.
+
+    Args:
+        source_db:
+            Name of the source database.
+        target_db:
+            Name of the target database.
+        return_df:
+            Return a pandas data frame.
+
     Returns:
-        interaction information as list of tuples
+        Tuples of pathway-to-pathway mappings.
     """
+
+    result = _compath_mappings(source_db, target_db)
+
+    return pd.DataFrame(result) if return_df else result
+
+
+def _compath_mappings(
+        source_db: Literal['kegg', 'wikipathways', 'reactome'] | None = None,
+        target_db: Literal['kegg', 'wikipathways', 'reactome'] | None = None,
+    ) -> Generator[tuple]:
 
     url = urls.urls['compath']['url']
-    c = curl.Curl(url, large=True).result
-
-    allowed_types = ['kegg', 'wikipathways', 'reactome', None]
-
-    if (source_db not in allowed_types) or (target_db not in allowed_types):
-        raise ValueError('Invalid Input')
+    c = curl.Curl(url, large = True)
 
     result = set()
-    fields = [
-            'pathway1',
-            'id_1',
-            'source_db',
-            'relation',
-            'pathway2',
-            'id_2',
-            'target_db',     
-        ]
-    record = collections.namedtuple('Mapping', fields)
+    fields = (
+        'pathway1',
+        'pathway_id_1',
+        'source_db',
+        'relation',
+        'pathway2',
+        'pathway_id_2',
+        'target_db',
+    )
+    record = collections.namedtuple('CompathPathwayToPathway', fields)
 
+    for line in c.result:
 
-    for mapping in c:
+        line = line.strip().split('\t')
 
-        elements = mapping.split('\t')
-        elements[-1] = elements[-1].strip('\n')
+        if (
+            source_db is None or l[2] == source_db and
+            target_db is None or l[6] == target_db
+        ):
 
-        zipped = dict(zip(fields, elements))
-        zipped = kegg_control(zipped)
+            for db_i, pw_i in zip((2, 6), (1, 5)):
 
-        if (source_db is None) and (target_db is None):
+                if line[db_i] == 'kegg':
 
-            result.add(
-                record(**dict(zip(fields, (zipped.get(f, None) for f in fields))))
-            )
+                    line[pw_i] = line[pw_i][5:]
 
-        
-        elif (source_db is None) and (target_db is not None):
-
-            if zipped['target_db'] == target_db:
-                
-                result.add(
-                    record(**dict(zip(fields, (zipped.get(f, None) for f in fields))))
-                )
-        
-        elif (source_db is not None) and (target_db is None):
-
-            if zipped['source_db'] == source_db:
-
-                result.add(
-                    record(**dict(zip(fields, (zipped.get(f, None) for f in fields))))
-                )
-
-        else:
-            if (zipped['source_db'] == source_db) and (zipped['target_db'] == target_db):
-
-                result.add(
-                    record(**dict(zip(fields, (zipped.get(f, None) for f in fields))))
-                )
-
-    return list(result)
+            yield record(*line)
 
