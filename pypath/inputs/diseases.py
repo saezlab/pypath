@@ -23,130 +23,233 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import sys
-sys.path.append('/home/exdeval/.stuff/biolab/star/pypath/pypath')
+from __future__ import annotations
 
-from pypath.share import curl
-from collections import namedtuple
-from resources.urls import urls
+from typing import Generator, Literal
 
-to_numeric = {
+import collections
+
+import pandas as pd
+
+import pypath.share.curl as curl
+import pypath.resources.urls as urls
+import pypath.share.common as common
+
+_NUMERIC_FIELDS = {
     'z_score',
-    'confidence_score',
-    'confidence_score'
+    'confidence',
+    'confidence',
+    'source_score',
 }
 
-def diseases_general(query, filtered=False):
+
+def diseases_general(
+        data_origin: Literal['textmining',  'knowledge', 'experiments'],
+        filtered: bool = False,
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    Retrieve a dataset from the DISEASES database from Jensen Lab.
+
+    Warning: The "textmining" datasets are enormous!
+
+    Args:
+        data_origin:
+            The data collection method.
+        filtered:
+            Download the filtered dataset instead of the full.
+        return_df:
+            Return a pandas data frame.
+    """
+
+    result = _diseases_general(data_origin, filtered)
+
+    return pd.DataFrame(result) if return_df else result
+
+
+def _diseases_general(
+        data_origin: Literal['textmining',  'knowledge', 'experiments'],
+        filtered: bool = False,
+    ) -> Generator[tuple]:
+    """
+    Args:
+        data_origin:
+            The data collection method.
+        filtered:
+            Download the filtered dataset instead of the full.
+    """
 
     query_type = 'filtered' if filtered else 'full'
 
-    url = urls['diseases']['url'] % (query, query_type)
+    url = urls['diseases']['url'] % (data_origin, query_type)
 
-    fieldnames = [
-        'gene_identifier',
-        'gene_name',
-        'disease_identifier',
-        'disease_name',
-    ]
-
-    if query == 'textmining':
-        fieldnames.extend(
+    query_fields = {
+        'textmining':
             [
                 'z_score',
-                'confidence_score',
+                'confidence',
                 'url'
-            ]
-        )
-
-    elif query == 'knowledge':
-        fieldnames.extend(
+            ],
+        'knowlwdge':
             [
-                'source_database',
+                'resource',
                 'evidence_type',
-                'confidence_score'
-            ]
-        )
-
-    elif query == 'experiments':
-        fieldnames.extend(
+                'confidence'
+            ],
+        'experiments':
             [
-                'source_database',
+                'resource',
                 'source_score',
-                'confidence_score'
-            ]
-        )
+                'confidence'
+            ],
+    }
 
-    elif query == 'integrated':
-        print('Not supported yet.')
-        exit(0)
+    fields = [
+        'gene_id',
+        'genesymbol',
+        'disease_id',
+        'disease',
+    ] + query_fields[data_origin]
 
-    else:
-        print('Problem in function call. Check arguments.')
-        exit(1)
 
-    c = curl.Curl(
-        url,
-        silent=False,
-        large=True,
-        encoding="utf-8",
-        default_mode="r",
-    )
+    record = namedtuple('DiseasesInteraction', fields)
 
-    Interaction = namedtuple('DISEASESInteraction', fieldnames)
+    c = curl.Curl(url, silent = False, large = True)
     interactions = list()
+
+    def proc_field(value, key):
+
+        if key == 'source_score':
+
+            value = value.split('=')[1]
+
+        if key in _NUMERIC_FIELDS:
+
+            num_type = int if common.is_int(value) else float
+            value = num_type(value)
+
+        return value
+
 
     for line in c.result:
 
-        line = line.strip('\n ')
-        data = line.split("\t")
+        line = line.strip('\n ').split('\t')
 
-        if data[-1] == "\n":
-            del data[-1]
+        line = [
+            proc_field(v, f)
+            for f, v in zip(fields, line)
+        ]
 
-        data = {
-            fieldname: element if element != "" else None
-            for (fieldname, element) in zip(fieldnames, data)
-        }
-        
-        for key, value in data.items():
-            if key in to_numeric:
-                data[key] = str_to_num(value)
-            elif key == 'source_score':
-                new_value = value.split('=')[1]
-                new_value = str_to_num(new_value)
-                data[key] = new_value
-
-        interactions.append(Interaction(**data))
-
-    return interactions
+        yield record(**line)
 
 
-def textmining_full():
-    return diseases_general('textmining', filtered=False)
+def textmining_full(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    Full textmining dataset of the DISEASES database from Jensen Lab.
+
+    Warning: The "textmining" datasets are enormous!
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
+
+    return diseases_general(
+        data_origin = 'textmining',
+        filtered = False,
+        return_df = return_df,
+    )
 
 
-def textmining_filtered():
-    return diseases_general('textmining', filtered=True)
+def textmining_filtered(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    Filtered textmining dataset of the DISEASES database from Jensen Lab.
+
+    Warning: The "textmining" datasets are enormous!
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
+
+    return diseases_general(
+        data_origin = 'textmining',
+        filtered = True,
+        return_df = return_df,
+    )
 
 
-def knowledge_full():
-    return diseases_general('knowledge', filtered=False)
+def knowledge_filtered(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    Filtered knowledge dataset of the DISEASES database from Jensen Lab.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
+
+    return diseases_general(
+        data_origin = 'knowledge',
+        filtered = True,
+        return_df = return_df,
+    )
 
 
-def knowledge_filtered():
-    return diseases_general('knowledge', filtered=True)
+def knowledge_full(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    Full knowledge dataset of the DISEASES database from Jensen Lab.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
+
+    return diseases_general(
+        data_origin = 'knowledge',
+        filtered = False,
+        return_df = return_df,
+    )
 
 
-def experiments_full():
-    return diseases_general('experiments', filtered=False)
+def experiments_filtered(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    Filtered experiments dataset of the DISEASES database from Jensen Lab.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
+
+    return diseases_general(
+        data_origin = 'experiments',
+        filtered = True,
+        return_df = return_df,
+    )
 
 
-def experiments_filtered():
-    return diseases_general('experiments', filtered=True)
+def experiments_full(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    Full experiments dataset of the DISEASES database from Jensen Lab.
 
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
 
-def str_to_num(string):
-    try:
-        return int(string)
-    except ValueError:
-        return float(string)
+    return diseases_general(
+        data_origin = 'experiments',
+        filtered = False,
+        return_df = return_df,
+    )
