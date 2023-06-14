@@ -115,3 +115,59 @@ def _reactome_data_gen(
 
         line = line.strip('\n').split('\t')
         yield record(*line)
+
+
+def reactome_uniprots(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    UniProt mappings from Reactome.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
+
+    return _reactome_data('uniprot2all', return_df = return_df)
+
+
+def reactome_chebis(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    ChEBI mappings from Reactome.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
+
+    return _reactome_data('chebi2all', return_df = return_df)
+
+
+def reactome_pathways(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    The list of pathways in Reactome.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
+
+    return _reactome_data('pathways', return_df = return_df)
+
+
+def reactome_pathway_relations(
+        return_df: bool = False,
+    ) -> Generator[tuple] | pd.DataFrame:
+    """
+    The Reactome pathway hierarchy (ontology).
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+    """
+
+    return _reactome_data('pathway_relations', return_df = return_df)
