@@ -45,7 +45,7 @@ def load_lmpid(organism = 9606):
     url = urls.urls['lmpid']['url']
     c = curl.Curl(url, silent = False, large = False)
 
-    soup = bs4.BeautifulSoup(c.result, 'html.parser')
+    soup = bs4.BeautifulSoup(c.result, features = 'xml')
     uniprots = uniprot_input.get_db(organism = organism, swissprot = None)
     prg = progress.Progress(
         len(soup.find_all('record')),

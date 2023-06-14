@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2022
+#  2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
@@ -48,7 +48,7 @@ def matrisome_annotations(organism = 9606):
         9606:  ('Human',  'hs'),
     }
 
-    url = urls.urls['matrisome']['url_xls'] % tax_names[organism]
+    url = urls.urls['matrisome']['url_rescued'] % tax_names[organism][1]
     c = curl.Curl(url, large = True, silent = False)
     xlsname = c.fname
     del(c)

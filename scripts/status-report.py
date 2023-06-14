@@ -72,9 +72,14 @@ EXCLUDE = {
     'get_all_models', # infinite loop bug
     'chembl_assays', # takes about 1 hour
     'chembl_molecules', # takes about 4 hours
+    'hmdb.iter_metabolites',
+    'hmdb.metabolites_raw',
 }
 
-ARGS = {}
+ARGS = {
+    'hmdb.iter_metabolites': ((), {'head': 10}),
+    'hmdb.metabolites_raw': ((), {'head': 10}),
+}
 
 HTML_TEMPLATE = (
     '''
@@ -710,6 +715,7 @@ class StatusReport(object):
                 _log('Entering directory `pypath_git`.')
                 os.chdir('pypath_git')
                 _log('Running `poetry install`.')
+                os.system('poetry config installer.modern-installation false')
                 os.system('poetry install')
 
                 poetry_run = f'poetry run {self.spawn_cmd} --poetry'

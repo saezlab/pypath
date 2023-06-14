@@ -66,7 +66,7 @@ def corum_complexes(organism = 9606):
     complexes = {}
 
     c = curl.Curl(
-        urls.urls['corum']['url'],
+        urls.urls['corum']['url_rescued'],
         silent = False,
         large = True,
         files_needed = ['allComplexes.txt'],

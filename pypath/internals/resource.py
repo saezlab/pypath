@@ -22,10 +22,23 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
+"""
+Generic objects for representing resources.
+"""
+
 from future.utils import iteritems
+
+from typing import Iterable, Mapping, TYPE_CHECKING
+
+if TYPE_CHECKING:
+
+    import pypath.internals.license as License
 
 import os
 import collections
+import copy
 
 try:
     import cPickle as pickle
@@ -183,6 +196,7 @@ class ResourceAttributes(object):
             name,
             data_type,
             evidence_types = None,
+            dataset = None,
             **kwargs
         ):
 
@@ -193,6 +207,8 @@ class ResourceAttributes(object):
         for attr, value in iteritems(kwargs):
 
             setattr(self, attr, value)
+
+        self.dataset = dataset
 
 
     def __eq__(self, other):
@@ -207,6 +223,26 @@ class ResourceAttributes(object):
     def __str__(self):
 
         return self.name
+
+
+    @property
+    def dataset(self):
+
+        return self._dataset
+
+
+    @dataset.setter
+    def dataset(self, dataset):
+
+        self._dataset = dataset
+
+        networkinput = getattr(self, 'networkinput', None)
+
+        if hasattr(self, 'networkinput'):
+
+            netinput_new = copy.deepcopy(self.networkinput)
+            netinput_new.dataset = dataset
+            self.networkinput = netinput_new
 
 
 class NetworkResourceKey(
@@ -264,8 +300,13 @@ class NetworkResource(ResourceAttributes):
             data_model = None,
             evidence_types = None,
             via = None,
+            dataset = None,
             **kwargs
         ):
+
+        if not dataset and 'networkinput' in kwargs:
+
+            dataset = kwargs['networkinput'].dataset
 
         ResourceAttributes.__init__(
             self,
@@ -275,6 +316,7 @@ class NetworkResource(ResourceAttributes):
             evidence_types = evidence_types,
             data_model = data_model,
             via = via,
+            dataset = dataset,
             **kwargs
         )
 
@@ -327,6 +369,175 @@ class NetworkResource(ResourceAttributes):
                 if self.data_model else
             'Unknown'
         )
+
+    @property
+    def license(self) -> license.License | None:
+
+        return getattr(self, 'resource_attrs', None).get('license')
+
+
+class NetworkDataset(collections.abc.MutableMapping):
+
+
+    def __init__(
+            self,
+            name: str,
+            resources: dict | list | None = None,
+        ):
+        """
+        A set of network resources.
+
+        Formerly the network datasets were represented by dicts. This is
+        only a thin wrapper around that solution to better organise metadata
+        of the datasets and resources within.
+        """
+
+        self._name = name
+        self._resources = {}
+        self.add(resources)
+
+
+    def __repr__(self):
+
+        it = ', '.join(self.interaction_types)
+
+        return f'<NetworkDataset: {self.name} ({len(self)} resources; {it})>'
+
+
+    def __iter__(self):
+
+        return (r for r in self._resources.values())
+
+
+    def __len__(self):
+
+        return len(self._resources)
+
+
+    @property
+    def interaction_types(self):
+
+        return sorted({r.interaction_type for r in self})
+
+
+    def __setitem__(self, key, value):
+
+        self.add(value, key)
+
+
+    def __getitem__(self, key):
+
+        return self._resources[key]
+
+
+    def __delitem__(self, key):
+
+        del self._resources[key]
+
+
+    def __contains__(self, key):
+
+        return (
+            key in self._resources or
+            any(r.name == key for r in self._resources.values())
+        )
+
+
+    def __eq__(self, other):
+
+        return (
+            self._name == other or
+            self._name == getattr(other, '_name', None)
+        )
+
+
+    def items(self):
+
+        return self._resources.items()
+
+
+    def values(self):
+
+        return self._resources.values()
+
+
+    def keys(self):
+
+        return self._resources.keys()
+
+
+    def add(self, value, key = None):
+
+        if isinstance(value, Mapping):
+
+            for label, resource in value.items():
+
+                self.add(resource, label)
+
+        elif isinstance(value, Iterable):
+
+            for resource in value:
+
+                self.add(resource)
+
+        elif isinstance(value, NetworkResource):
+
+            resource = copy.deepcopy(value)
+            resource.dataset = self.name
+            self._resources[key or resource.name] = resource
+
+
+    update = add
+
+
+    @property
+    def name(self):
+
+        return self._name
+
+
+    @name.setter
+    def name(self, name):
+
+        for resource in self.values():
+
+            resource.networkinput.dataset = name
+
+        self._name = name
+
+
+    def __copy__(self):
+
+        return self.__class__(
+            name = self.name,
+            resources = self._resources,
+        )
+
+
+    def rename(self, name: str):
+
+        new = self.__class__(name = name)
+        new.add(self)
+
+        return new
+
+
+    def remove(self, remove: str | set | None):
+
+        remove = common.to_set(remove)
+
+        self._resources = {
+            k: v for k, v in self.items()
+            if k not in remove and v.name not in remove
+        }
+
+
+    def without(self, exclude: str | set | None):
+
+        new = copy.copy(self)
+        new.remove(exclude)
+
+        return new
 
 
 EnzymeSubstrateResourceKey = collections.namedtuple(

@@ -280,6 +280,7 @@ def kegg_medicus(max_entity_variations = 10):
         '=|': ('transcriptional', 'inhibition'),
         '--': ('post_translational', 'undirected'),
         '>>': ('post_translational', 'enzyme_enzyme'),
+        '==': ('post_translational', 'missing'),
     }
 
 
@@ -487,7 +488,8 @@ def kegg_medicus(max_entity_variations = 10):
 
 
     recollect = re.compile(r'^(GENE|PERTURBANT|VARIANT|METABOLITE)')
-    recon = re.compile(r'(->|--|//|-\||=>|>>|=\|)')
+    recon = re.compile(r'(->|--|//|-\||=>|>>|=\||==)')
+    rewrongspace = re.compile(r'(\d+) (?=\d+)')
     result = set()
     url = urls.urls['kegg_pws']['medicus']
     c = curl.Curl(url, silent = False, large = True)
@@ -555,6 +557,7 @@ def kegg_medicus(max_entity_variations = 10):
 
             connections = renetref.sub('', row)
             connections = recon.sub(' \g<1> ', connections)
+            connections = rewrongspace.sub('\g<1>,', connections)
             connections = connections.split()[1:]
 
         elif row.startswith('///'):

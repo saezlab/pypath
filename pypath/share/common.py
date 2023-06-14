@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 #TODO requires cleaning, check what functions are not used and may be removed.
 #Some parts can go to jsons.
 
@@ -31,7 +33,9 @@ from past.builtins import xrange, range, reduce
 
 from typing import (
     Any,
+    Callable,
     Mapping,
+    Iterable,
     Iterator,
     KeysView,
     Generator,
@@ -48,6 +52,7 @@ import random
 import operator
 import collections
 import itertools
+import functools
 import warnings
 import textwrap
 import hashlib
@@ -2618,3 +2623,95 @@ def decode(string, *args, **kwargs):
         string = string.decode(*args, **kwargs)
 
     return string
+
+
+def identity(obj: Any) -> Any:
+    """
+    Do nothing, returns the object unchanged.
+    """
+
+    return obj
+
+
+def nest(*funcs: Callable) -> Callable:
+    """
+    Nest multiple functions into a single function.
+    """
+
+    return lambda x: functools.reduce(lambda x, f: f(x), (x,) + funcs)
+
+
+def compr(
+        obj: Iterable | dict,
+        apply: Callable | None = None,
+        filter: Callable | None = None,
+    ) -> Iterable | dict:
+    """
+    Unified interface for list, dict, set and tuple comprehensions.
+
+    Args:
+        obj:
+            An iterable, a dict or a set or a tuple.
+        apply:
+            A function to apply to each element of the iterable or dict.
+        filter:
+            A function to filter elements of the iterable or dict.
+            For filtering by equality or incidence, provide a simple
+            object or an array.
+
+    Returns:
+        Same type as the input: a list, a dict or a set or a tuple.
+    """
+
+    _type = (
+        dict
+            if isinstance(obj, Mapping) else
+        type(obj)
+            if isinstance(obj, Iterable) and not isinstance(obj, Iterator) else
+        list
+    )
+
+    apply = apply or identity
+    extract = (lambda x: x[1]) if _type == dict else identity
+    process = nest(extract, apply)
+    insert = (lambda x: (x[0], process(x))) if _type == dict else process
+
+    filter = (
+        filter
+            if callable(filter) else
+        to_set(filter).__contains__
+            if isinstance(filter, LIST_LIKE) else
+        filter.__eq__
+    )
+
+    filter = nest(extract, filter)
+    obj = obj.items() if _type == dict else obj
+
+    return _type(insert(it) for it in obj if filter(it))
+
+
+def ignore_unhashable(func):
+    """
+    Decorator to ignore unhashable values.
+
+    This is useful when using `lru_cache` on functions with optionally
+    unhashable arguments.
+
+    Based on https://stackoverflow.com/a/64111268/854988.
+    """
+
+    uncached = func.__wrapped__
+    attributes = functools.WRAPPER_ASSIGNMENTS + ('cache_info', 'cache_clear')
+    @functools.wraps(func, assigned=attributes)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except TypeError as error:
+            if 'unhashable type' in str(error):
+                return uncached(*args, **kwargs)
+            raise
+
+    wrapper.__uncached__ = uncached
+
+    return wrapper
+
