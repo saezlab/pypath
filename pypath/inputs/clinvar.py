@@ -32,14 +32,13 @@ from __future__ import annotations
 
 import io
 import csv
-import sys
+import ctypes
 import collections
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
-csv.field_size_limit(sys.maxsize)
-
+csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
 
 def clinvar_raw() -> list[tuple]:
     """
@@ -58,11 +57,16 @@ def clinvar_raw() -> list[tuple]:
                 'entrez',
                 'genesymbol',
                 'clinical_significance',
+                'review_status',
                 'rs',
                 'phenotype_ids',
                 'phenotypes',
+                'otherids',
                 'origin',
                 'variation_id',
+                'assembly',
+                'chromosome',
+                'chromosome_accession',
             ],
             defaults = None
         )
@@ -80,8 +84,9 @@ def clinvar_raw() -> list[tuple]:
 
     for row in response:
 
-        phenotype_ids = tuple(row['PhenotypeIDS'].replace('|', ';').split(';'))
-        phenotypes = tuple(row['PhenotypeList'].replace('|', ';').split(';'))
+        phenotype_ids = tuple(row['PhenotypeIDS'].replace('|', ';').replace(',', ';').split(';'))
+        phenotypes = tuple(row['PhenotypeList'].replace('|', ';').replace(',', ';').split(';'))
+        otherids = tuple(row['OtherIDs'].replace('|', ';').replace(',', ';').split(';'))
 
         variant = Variant(
             allele = row['AlleleID'],
@@ -90,11 +95,16 @@ def clinvar_raw() -> list[tuple]:
             entrez = row['GeneID'],
             genesymbol = row['GeneSymbol'],
             clinical_significance = row['ClinicalSignificance'],
+            review_status = row['ReviewStatus'],
             rs = row['RS# (dbSNP)'],
             phenotype_ids = phenotype_ids,
             phenotypes = phenotypes,
+            otherids = None if otherids[0] == '-' else otherids,
             origin = row['OriginSimple'],
-            variation_id = row['VariationID']
+            variation_id = row['VariationID'],
+            assembly = row['Assembly'],
+            chromosome = row['Chromosome'],
+            chromosome_accession = row['ChromosomeAccession'],
         )
         result.add(variant)
 

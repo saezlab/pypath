@@ -101,6 +101,9 @@ def _ctdbase_download(_type: str) -> list[tuple]:
 
             data[i] = v
 
+        if len(data) != len(fieldnames):
+            continue # some lines have missing fields and cannot be parsed
+
         entry = {}
         for (fieldname, element) in zip(fieldnames, data):
             if element == "":
@@ -120,6 +123,11 @@ def _ctdbase_download(_type: str) -> list[tuple]:
                 ('inferencegenesymbols',['name', 'id']),
                 ('interactionactions',['interaction', 'action']),
             )
+
+        if _type == 'gene_disease':
+
+            if entry['DirectEvidence'] == None:
+                continue
         
         entries.append(record(**entry))
 
@@ -129,6 +137,9 @@ def _ctdbase_download(_type: str) -> list[tuple]:
 def ctdbase_relations(relation_type: str) -> list[tuple]:
     """
     Retrieves a CTDbase relation file.
+    For "gene-disease" relation type only curated relations are returned
+    (i.e. those with a "DirectEvidence" field) as the number of non-curated
+    relations is too large.
 
     Args:
         relation_type: One of the following:

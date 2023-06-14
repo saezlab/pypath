@@ -3641,9 +3641,6 @@
     "omictools": ["http://omictools.com/pazar-tool"],
     "dateUpdated":"Nov 2016"
   },
-  "TRRUST": {
-    "license": "CC BY-SA 4.0"
-  },
   "HTRIdb": {
     "synonyms": ["HTRI"],
     "full_name": "Human Transcriptional Reference Interactome",
@@ -4708,6 +4705,155 @@
     "license": "CC BY",
     "urls": {
       "webpages": ["https://diseases.jensenlab.org/"]
+    }
+  },
+  "SIDER": {
+    "license": "CC BY-NC-SA 4.0",
+    "urls": {
+      "webpages": ["http://sideeffects.embl.de/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/18621671/"
+      ]
+    }
+  },
+  "Humsavar": {
+    "license": "CC BY 4.0",
+    "urls": {}
+  },
+  "Twosides": {
+    "license": "",
+    "urls": {
+      "webpages": ["https://tatonettilab.org/offsides/"],
+      "articles": [
+      ]
+    }
+  },
+  "Offsides": {
+    "license": "",
+    "urls": {
+      "webpages": ["https://tatonettilab.org/offsides/"],
+      "articles": [
+      ]
+    }
+  },
+  "Adrecs": {
+    "license": "CC BY-NC 4.0",
+    "urls": {
+      "webpages": ["http://bioinf.xmu.edu.cn/ADReCS/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/25361966/"
+      ]
+    }
+  },
+  "DDInter": {
+    "license": "CC BY-NC-SA 4.0",
+    "urls": {
+      "webpages": ["http://ddinter.scbdd.com/"],
+      "articles": [
+        "https://academic.oup.com/nar/article/50/D1/D1200/6389535"
+      ]
+    }
+  },
+  "Compath": {
+    "license": "CC BY 4.0",
+    "urls": {
+      "webpages": ["https://compath.scai.fraunhofer.de/"],
+      "articles": [
+        "https://www.nature.com/articles/s41540-018-0078-8"
+      ]
+    }
+  },
+  "TRRUST": {
+    "full_name": "Transcriptional Regulatory Relationships Unraveled by Sentence-based Text mining",
+    "license": "CC BY-SA 4.0",
+    "urls": {
+      "webpages": ["https://www.grnpedia.org/trrust/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/29087512/"
+      ]
+    }
+  },
+  "CollecTRI": {
+    "license": "Composite",
+    "components": [
+      "ExTRI",
+      "TFactS",
+      "HTRIdb",
+      "IntAct",
+      "GOA",
+      "TRRUST",
+      "SIGNOR",
+      "CytReg",
+      "GEREDB",
+      "Pavlidis",
+      "DoRothEA_A",
+      "NTNUcuration"
+    ],
+    "urls": {
+      "webpages": ["https://github.com/saezlab/CollecTRI"]
+    }
+  },
+  "ExTRI": {
+    "license": "CC BY 4.0"
+  },
+  "GOA": {
+    "license": "CC BY 4.0"
+   },
+  "CytReg": {
+    "license": "CC BY 4.0"
+  },
+  "GEREDB": {
+    "license": "AFL 3.0"
+  },
+  "Pavlidis": {
+    "synonyms": ["Pavlidis2021"],
+    "license": "CC BY 4.0"
+   },
+  "DoRothEA-A": {
+    "license": "Composite",
+    "components": [
+      "PAZAR",
+      "ORegAnno",
+      "HTRIdb",
+      "SIGNOR",
+      "DoRothEA-reviews"
+    ]
+  },
+  "NTNUcuration": {
+    "synonyms": ["NTNU.Curated"],
+    "license": "CC BY 4.0"
+  },
+  "RaMP": {
+    "full_name": "Relational Database for Metabolomic Pathways",
+    "license": "Unspecified NC-SA",
+    "urls": {
+      "webpages": ["https://rampdb.nih.gov/"],
+      "articles": [
+        "https://academic.oup.com/bioinformatics/article/39/1/btac726/6827287",
+        "https://www.mdpi.com/2218-1989/8/1/16"
+      ]
+    }
+  },
+  "ExPASy": {
+    "license": "CC BY 4.0",
+    "urls": {
+      "webpages": ["https://enzyme.expasy.org/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/10592255/"
+      ]
+    }
+  },
+  "Lambert2018": {
+    "license": "EUL"
+  },
+  "OpenTargets": {
+    "full_name": "Open Targets",
+    "license": "Mixed, see: https://platform-docs.opentargets.org/licence",
+    "urls": {
+      "webpages": ["https://www.opentargets.org/"],
+      "articles": [
+        "https://www.opentargets.org/publications"
+      ]
     }
   }
 }

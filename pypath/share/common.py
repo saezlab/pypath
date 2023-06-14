@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 #TODO requires cleaning, check what functions are not used and may be removed.
 #Some parts can go to jsons.
 
@@ -31,7 +33,9 @@ from past.builtins import xrange, range, reduce
 
 from typing import (
     Any,
+    Callable,
     Mapping,
+    Iterable,
     Iterator,
     KeysView,
     Generator,
@@ -48,6 +52,7 @@ import random
 import operator
 import collections
 import itertools
+import functools
 import warnings
 import textwrap
 import hashlib
@@ -55,6 +60,7 @@ import inspect
 import textwrap
 import tabulate
 
+import psutil
 import numpy as np
 
 from pypath.share.constants import *
@@ -333,6 +339,15 @@ def to_list(var):
         return [var]
 
 
+def to_tuple(var):
+    """
+    Makes sure `var` is a tuple otherwise creates a single element tuple
+    out of it. If `var` is None returns empty tuple.
+    """
+
+    return var if isinstance(var, tuple) else tuple(to_list(var))
+
+
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
 def unique_list(seq):
     """Reduces a list to its unique elements.
@@ -404,7 +419,7 @@ def flat_list(lst):
     return [it for sl in lst for it in sl]
 
 
-def del_empty(lst): # XXX: Only used in main.py line: 1278
+def del_empty(lst):
     """Removes empty entries of a list.
 
     It is assumed that elemenst of *lst* are iterables (e.g. [str] or
@@ -1782,15 +1797,42 @@ def df_memory_usage(df, deep = True):
 
     mem_usage = df.memory_usage(index = True, deep = deep).sum()
 
+    return format_bytes(mem_usage, size_qualifier)
+
+
+def python_memory_usage() -> float:
+    """
+    Returns the memory usage of the current process in bytes.
+    """
+
+    return psutil.Process(os.getpid()).memory_info().vms
+
+
+def format_bytes(bytes: float, qualifier: str = '') -> str:
+    """
+    Pretty printed bytes with unit.
+    """
+
     for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
 
-        if mem_usage < 1024.0:
+        if bytes < 1024.0:
 
-            return '%3.1f%s %s' % (mem_usage, size_qualifier, unit)
+            return '%3.1f%s %s' % (bytes, qualifier, unit)
 
-        mem_usage /= 1024.0
+        bytes /= 1024.0
 
-    return '%3.1f%s PB' % (mem_usage, size_qualifier)
+    return '%3.1f%s PB' % (bytes, qualifier)
+
+
+def log_memory_usage():
+    """
+    Logs the memory usage of the current process.
+    """
+
+    import pypath
+    pypath.session.log.msg(
+        f'Python memory use: {format_bytes(python_memory_usage())}',
+    )
 
 
 def sum_dicts(*args):
@@ -2581,3 +2623,95 @@ def decode(string, *args, **kwargs):
         string = string.decode(*args, **kwargs)
 
     return string
+
+
+def identity(obj: Any) -> Any:
+    """
+    Do nothing, returns the object unchanged.
+    """
+
+    return obj
+
+
+def nest(*funcs: Callable) -> Callable:
+    """
+    Nest multiple functions into a single function.
+    """
+
+    return lambda x: functools.reduce(lambda x, f: f(x), (x,) + funcs)
+
+
+def compr(
+        obj: Iterable | dict,
+        apply: Callable | None = None,
+        filter: Callable | None = None,
+    ) -> Iterable | dict:
+    """
+    Unified interface for list, dict, set and tuple comprehensions.
+
+    Args:
+        obj:
+            An iterable, a dict or a set or a tuple.
+        apply:
+            A function to apply to each element of the iterable or dict.
+        filter:
+            A function to filter elements of the iterable or dict.
+            For filtering by equality or incidence, provide a simple
+            object or an array.
+
+    Returns:
+        Same type as the input: a list, a dict or a set or a tuple.
+    """
+
+    _type = (
+        dict
+            if isinstance(obj, Mapping) else
+        type(obj)
+            if isinstance(obj, Iterable) and not isinstance(obj, Iterator) else
+        list
+    )
+
+    apply = apply or identity
+    extract = (lambda x: x[1]) if _type == dict else identity
+    process = nest(extract, apply)
+    insert = (lambda x: (x[0], process(x))) if _type == dict else process
+
+    filter = (
+        filter
+            if callable(filter) else
+        to_set(filter).__contains__
+            if isinstance(filter, LIST_LIKE) else
+        filter.__eq__
+    )
+
+    filter = nest(extract, filter)
+    obj = obj.items() if _type == dict else obj
+
+    return _type(insert(it) for it in obj if filter(it))
+
+
+def ignore_unhashable(func):
+    """
+    Decorator to ignore unhashable values.
+
+    This is useful when using `lru_cache` on functions with optionally
+    unhashable arguments.
+
+    Based on https://stackoverflow.com/a/64111268/854988.
+    """
+
+    uncached = func.__wrapped__
+    attributes = functools.WRAPPER_ASSIGNMENTS + ('cache_info', 'cache_clear')
+    @functools.wraps(func, assigned=attributes)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except TypeError as error:
+            if 'unhashable type' in str(error):
+                return uncached(*args, **kwargs)
+            raise
+
+    wrapper.__uncached__ = uncached
+
+    return wrapper
+

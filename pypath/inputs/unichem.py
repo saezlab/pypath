@@ -104,42 +104,42 @@ def unichem_sources():
     )
 
 
-def unichem_mapping(id_type, target_id_type):
+def unichem_mapping(id_type_a, id_type_b):
     """
     Identifier translation data from UniChem.
 
     Args
-        id_type (int,str): An ID type in UniChem: either the integer ID or
+        id_type_a (int,str): An ID type in UniChem: either the integer ID or
             the string label of a resource. For a full list see
             `unichem_sources`.
-        target_id_type (int,str): An ID type in UniChem, same way as
-            `id_type`.
+        id_type_b (int,str): An ID type in UniChem, same way as
+            `id_type_a`.
 
     Returns
         (dict): A dictionary with ID translation data, keys are IDs of
-            `id_type`, values are sets of IDs of `target_id_type`.
+            `id_type_a`, values are sets of IDs of `id_type_b`.
     """
 
     return (
-        _unichem_mapping(id_type, target_id_type) or
-        common.swap_dict(_unichem_mapping(target_id_type, id_type))
+        _unichem_mapping(id_type_a, id_type_b) or
+        common.swap_dict(_unichem_mapping(id_type_b, id_type_a))
     )
 
 
-def _unichem_mapping(id_type, target_id_type):
+def _unichem_mapping(id_type_a, id_type_b):
     """
     Identifier translation data from UniChem.
 
     Args
-        id_type (int,str): An ID type in UniChem: either the integer ID or
+        id_type_a (int,str): An ID type in UniChem: either the integer ID or
             the string label of a resource. For a full list see
             `unichem_sources`.
-        target_id_type (int,str): An ID type in UniChem, same way as
-            `id_type`.
+        id_type_b (int,str): An ID type in UniChem, same way as
+            `id_type_a`.
 
     Returns
         (dict): A dictionary with ID translation data, keys are IDs of
-            `id_type`, values are sets of IDs of `target_id_type`.
+            `id_type_a`, values are sets of IDs of `id_type_b`.
     """
 
     src_to_label = unichem_sources()
@@ -159,10 +159,10 @@ def _unichem_mapping(id_type, target_id_type):
         return _id_type
 
 
-    id_type = get_src_id(id_type)
-    target_id_type = get_src_id(target_id_type)
+    id_type_a = get_src_id(id_type_a)
+    id_type_b = get_src_id(id_type_b)
 
-    url = urls.urls['unichem']['mapping'] % (id_type, id_type, target_id_type)
+    url = urls.urls['unichem']['mapping'] % (id_type_a, id_type_a, id_type_b)
     c = curl.Curl(
         url,
         large = True,

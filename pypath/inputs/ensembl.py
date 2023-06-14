@@ -23,6 +23,7 @@
 #
 
 import collections
+import warnings
 
 import bs4
 
@@ -48,7 +49,11 @@ def ensembl_organisms():
     result = []
     url = urls.urls['ensembl']['species']
     c = curl.Curl(url)
-    soup = bs4.BeautifulSoup(c.result, 'html.parser')
+
+    with warnings.catch_warnings():
+
+        warnings.simplefilter('ignore', bs4.XMLParsedAsHTMLWarning)
+        soup = bs4.BeautifulSoup(c.result, 'html.parser')
 
     for r in soup.find('table').find_all('tr'):
 

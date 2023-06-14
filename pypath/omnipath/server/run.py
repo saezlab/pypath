@@ -31,6 +31,8 @@ import copy
 import collections
 import itertools
 import hashlib
+import warnings
+import contextlib
 
 from pypath.share import session as session_mod
 
@@ -40,9 +42,9 @@ _log = _logger._log
 try:
     import twisted.web.resource
     import twisted.web.server
-    import twisted.internet
+    import twisted.internet.reactor
     TwistedWebResource = twisted.web.resource.Resource
-    TwistedWebSite = Twisted.web.server.Site
+    TwistedWebSite = twisted.web.server.Site
     TWISTED_NOT_DONE_YET = twisted.web.server.NOT_DONE_YET
     twisted_listen_tcp = twisted.internet.reactor.listenTCP
     twisted_run = twisted.internet.reactor.run
@@ -83,6 +85,22 @@ LICENSE_IGNORE = 'ignore'
 def stop_server():
 
     reactor.removeAll()
+
+
+@contextlib.contextmanager
+def ignore_pandas_copywarn():
+
+    try:
+
+        with warnings.catch_warnings():
+
+            warnings.simplefilter('ignore', pd.errors.SettingWithCopyWarning)
+
+            yield
+
+    finally:
+
+        pass
 
 
 class BaseServer(TwistedWebResource, session_mod.Logger):
@@ -659,6 +677,7 @@ class TableServer(BaseServer):
                 'omnipath',
                 'tfregulons',
                 'dorothea',
+                'collectri',
                 'tf_target',
                 'tf_mirna',
                 'lncrna_mrna',
@@ -682,6 +701,8 @@ class TableServer(BaseServer):
             'targets':  None,
             'partners': None,
             'genesymbols': constants.BOOLEAN_VALUES,
+            'evidences': None,
+            'extra_attrs': None,
             'fields': {
                 'entity_type',
                 'references',
@@ -704,6 +725,7 @@ class TableServer(BaseServer):
                 'curation_effort',
                 'datasets',
                 'extra_attrs',
+                'evidences',
             },
             'tfregulons_levels':  {'A', 'B', 'C', 'D', 'E'},
             'tfregulons_methods': {
@@ -1046,6 +1068,7 @@ class TableServer(BaseServer):
         'omnipath',
         'tfregulons',
         'dorothea',
+        'collectri',
         'tf_target',
         'kinaseextra',
         'ligrecextra',
@@ -1060,6 +1083,7 @@ class TableServer(BaseServer):
         'omnipath': 'post_translational',
         'tfregulons': 'transcriptional',
         'dorothea': 'transcriptional',
+        'collectri': 'transcriptional',
         'tf_target': 'transcriptional',
         'kinaseextra': 'post_translational',
         'ligrecextra': 'post_translational',
@@ -1077,7 +1101,7 @@ class TableServer(BaseServer):
         'tfregulons_chipseq', 'tfregulons_tfbs', 'tfregulons_coexp',
         'type', 'ncbi_tax_id', 'databases', 'organism',
         'curation_effort', 'resources', 'entity_type',
-        'datasets', 'extra_attrs',
+        'datasets', 'extra_attrs', 'evidences',
     }
     enzsub_fields = {
         'references', 'sources', 'databases',
@@ -1118,6 +1142,7 @@ class TableServer(BaseServer):
             'entity_type_target': 'category',
             'curation_effort': 'int16',
             'extra_attrs': 'category',
+            'evidences': 'category',
         },
         annotations = {
             'uniprot': 'category',
@@ -1297,6 +1322,9 @@ class TableServer(BaseServer):
 
                 continue
 
+            fname_gz = f'{fname}.gz'
+            fname = fname_gz if os.path.exists(fname_gz) else fname
+
             self._log('Loading dataset `%s` from file `%s`.' % (name, fname))
 
             if not os.path.exists(fname):
@@ -1375,12 +1403,15 @@ class TableServer(BaseServer):
 
         self._log('Preprocessing complexes.')
         tbl = self.data['complexes']
-        tbl['set_sources'] = pd.Series(
-            [set(s.split(';')) for s in tbl.sources]
-        )
-        tbl['set_proteins'] = pd.Series(
-            [set(c.split('_')) for c in tbl.components]
-        )
+
+        tbl = tbl[~tbl.components.isna()]
+
+        with ignore_pandas_copywarn():
+
+            tbl['set_sources'] = [set(s.split(';')) for s in tbl.sources]
+            tbl['set_proteins'] = [set(c.split('_')) for c in tbl.components]
+
+        self.data['complexes'] = tbl
 
 
     def _preprocess_annotations_old(self):
@@ -2043,41 +2074,47 @@ class TableServer(BaseServer):
                 tbl.target.astype('string')
             ]
 
-        if req.args[b'fields']:
+        req.args[b'fields'] = req.args[b'fields'] or [b'']
 
-            _fields = [
-                f for f in
-                req.args[b'fields'][0].decode('utf-8').split(',')
-                if f in self.interaction_fields
-            ]
+        _fields = [
+            f for f in
+            req.args[b'fields'][0].decode('utf-8').split(',')
+            if f in self.interaction_fields
+        ]
 
-            for f in _fields:
+        for f in (b'evidences', b'extra_attrs'):
 
-                if f == 'ncbi_tax_id' or f == 'organism':
+            if f in req.uri and f not in req.args[b'fields'][0]:
 
-                    hdr.append('ncbi_tax_id_source')
-                    hdr.append('ncbi_tax_id_target')
+                _fields.append(f.decode('utf-8'))
 
-                elif f == 'entity_type':
+        for f in _fields:
 
-                    hdr.append('entity_type_source')
-                    hdr.append('entity_type_target')
+            if f == 'ncbi_tax_id' or f == 'organism':
 
-                elif f in {'databases', 'resources'}:
+                hdr.append('ncbi_tax_id_source')
+                hdr.append('ncbi_tax_id_target')
 
-                    hdr.append('sources')
+            elif f == 'entity_type':
 
-                elif f == 'datasets':
+                hdr.append('entity_type_source')
+                hdr.append('entity_type_target')
 
-                    hdr.extend(
-                        set(tbl.columns) &
-                        self.args_reference['interactions']['datasets'] &
-                        args['datasets']
-                    )
+            elif f in {'databases', 'resources'}:
 
-                else:
+                hdr.append('sources')
 
-                    hdr.append(f)
+            elif f == 'datasets':
+
+                hdr.extend(
+                    set(tbl.columns) &
+                    self.args_reference['interactions']['datasets'] &
+                    args['datasets']
+                )
+
+            else:
+
+                hdr.append(f)
 
         license = self._get_license(req)
 
@@ -2763,7 +2800,7 @@ class TableServer(BaseServer):
                 composite_to_remove = {
                     comp_res
                     for comp_res in composite
-                    if not res_ctrl.secondary_resources(comp_res) & res
+                    if not res_ctrl.secondary_resources(comp_res, True) & res
                 }
 
                 res = res - composite_to_remove
@@ -2794,10 +2831,13 @@ class TableServer(BaseServer):
                 filter_resources(ress)
                 for ress in _set_res_col
             ]
-            tbl[res_col] = [
-                ';'.join(sorted(ress))
-                for ress in _res_to_keep
-            ]
+
+            with ignore_pandas_copywarn():
+
+                tbl[res_col] = [
+                    ';'.join(sorted(ress))
+                    for ress in _res_to_keep
+                ]
 
             if prefix_col:
 
@@ -2821,7 +2861,9 @@ class TableServer(BaseServer):
                     for i, pref_ress in enumerate(_prefix_col)
                 ]
 
-                tbl[prefix_col] = _new_prefix_col
+                with ignore_pandas_copywarn():
+
+                    tbl[prefix_col] = _new_prefix_col
 
             bool_idx = [bool(res) for res in tbl[res_col]]
 

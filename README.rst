@@ -231,21 +231,42 @@ or sensitive matters feel free to contact us by omnipathdb@gmail.com.
 Impressum
 =========
 
-``pypath`` is developed in the `Saez Lab`_ by `Dénes Türei`_, Sebastian
-Lobentanzer and Ahmet Rifaioglu, and Melih Darcan, Erva Ulusoy, Tennur Kılıç
-and Ömer Kaan Vural in `Volkan Atalay's group`_.
-Olga Ivanova and Nicolàs Palacio also contributed in the past.
-The `R package`_ and the `Cytoscape app`_ are developed and maintained by
-Francesco Ceccarelli, Attila Gábor, Alberto Valdeolivas, Dénes Türei and
-Nicolàs Palacio. The `Python client`_ for the OmniPath web service has been
-developed and is maintained by Michael Klein in the group of `Fabian Theis`_.
+The development of ``pypath`` is coordinated by `Dénes Türei`_ in the
+`Saez Lab`_, with the contribution of developers and scientists from
+other groups:
+
+* Erva Ulusoy, Melih Darcan, Ömer Kaan Vural, Tennur Kılıç, Elif Çevrim,
+  Bünyamin Şen and Atabey Ünlü in the
+  `HU Biological Data Science Lab (PI: Tunca Doğan)`_ created many new input
+  modules in `pypath`;
+* Leila Gul, Dezső Módos, Márton Ölbei and Tamás Korcsmáros in the
+  `Korcsmaros Lab`_ contributed to the overall design of OmniPath, the
+  design and implementation of the intercellular communication database,
+  and with various case studies and tutorials;
+* Michael Klein from the group of `Fabian Theis`_ developed the
+  `Python client`_ for the OmniPath web service;
+* Charles Tapley Hoyt and Daniel Domingo-Fernández added the BEL export
+  module.
+* From the `Saez Lab`_, Olga Ivanova introduced the resource manager in
+  `pypath`, Sophia Müller-Dott added the CollecTRI gene regulatory network,
+  while Nicolàs Palacio, Sebastian Lobentanzer and Ahmet Rifaioglu
+  have done various maintenance and refactoring works. Aurelien Dugourd and
+  Christina Schmidt helped with the design of the metabolomics related
+  datasets and services.
+* The `R package`_ and the `Cytoscape app`_ are developed and maintained by
+  Francesco Ceccarelli, Attila Gábor, Alberto Valdeolivas, Dénes Türei and
+  Nicolàs Palacio;
+* The first logo of OmniPath has been designed by Jakob Wirbel (Saez Lab),
+  the current logo by Dénes Türei, while the cover graphics for Nature Methods
+  is the work of Spencer Phillips from EMBL-EBI.
 
 .. _`Saez Lab`: https://saezlab.org/
-.. _`Volkan Atalay's group`: https://blog.metu.edu.tr/vatalay/
+.. _`HU Biological Data Science Lab (PI: Tunca Doğan)`: https://yunus.hacettepe.edu.tr/~tuncadogan/
 .. _`Dénes Türei`: https://denes.omnipathdb.org/
 .. _`R package`: https://r.omnipathdb.org
 .. _`Cytoscape app`: https://apps.cytoscape.org/apps/omnipath
-.. _`Fabian Theis`: https://www.helmholtz-munich.de/en/icb/research-groups/theis-lab
+.. _`Fabian Theis`: https://www.helmholtz-munich.de/en/icb/research-groups/theis-lab/
+.. _`Korcsmaros Lab`: https://korcsmaroslab.org/
 
 History and releases
 ====================

@@ -137,10 +137,10 @@ def drug_to_drug(
         }
     )
 
-    join = join and drugs
+    join = join and (len(drugs) > 0)
     asynchronous = not drugs or asynchronous
-    drugs = drugs or entry_dbs['drug'].get_data().keys()
-    entries = _kegg_ddi(drugs, join = join, asynchronous=asynchronous)
+    drugs = drugs or entry_dbs['drug'].data.keys()
+    entries = _kegg_ddi(drugs, join = join, async_=asynchronous)
 
     for entry in entries:
 
@@ -150,7 +150,12 @@ def drug_to_drug(
                 {
                     'type': entry_types.get(entry[i][0].lower(), None),
                     'id': entry[i].split(':')[-1],
-                    'name': entry_dbs[entry_type].get(entry_id, None)
+                    'name': (
+                        entry_dbs[
+                            entry_types.get(entry[i][0].lower(), None)
+                        ].
+                        get(entry[i].split(':')[-1], None)
+                    ),
                 }
             )
             for i, role in enumerate(('source', 'target'))
@@ -169,7 +174,10 @@ def drug_to_drug(
         )
 
         disease_id = partners['source']['id']
-        interactions[disease_id]['interactions'].append(interaction)
+        try:
+            interactions[disease_id]['interactions'].append(interaction)
+        except AttributeError:
+            interactions[disease_id]['interactions'] = [interaction]
         interactions[disease_id]['type'] = partners['source']['type']
         interactions[disease_id]['name'] = partners['source']['name']
 
@@ -252,21 +260,19 @@ def _generate_conv_functions():
                 globals()[name] = _conv_function
 
 
-async def _kegg_general(
+def _kegg_general(
     operation: str,
     *arguments: str,
-    async_: bool = False,
 ) -> list[list[str]]:
 
-    url = '/'.join([_url % operation] + arguments)
+    arguments = [arg for arg in arguments if arg is not None]
+
+    url = '/'.join([_url % operation] + list(arguments))
     curl_args = {'url': url, 'silent': True, 'large': False}
 
-    if _async:
-        c = await curl.Curl(**curl_args)
-    else:
-        c = curl.Curl(**curl_args)
+    c = curl.Curl(**curl_args)
 
-    lines = getattr(c, 'result', []) or []
+    lines = getattr(c, 'result', []).split('\n') or []
 
     return [line.split('\t') for line in lines if line]
 
@@ -281,7 +287,7 @@ async def _kegg_general_async(
     # stay so we can implement it without
     # changing the structure of the module
 
-    return _kegg_general(operation, *arguments, async_ = False)
+    return _kegg_general(operation, *arguments)
 
 
 def _kegg_list(
@@ -290,11 +296,12 @@ def _kegg_list(
     organism: str | int | None = None,
 ) -> list[list[str]]:
 
-    args = (
-        ['list', database] +
-        common.to_list(option) if database == 'brite' else [] +
-        common.to_list(organism) if database == 'pathway' else []
-    )
+    args = ['list', database]
+
+    if database == 'brite' and option is not None:
+        args += common.to_list(option)
+    elif database == 'pathway' and organism is not None:
+        args += common.to_list(organism)
 
     return _kegg_general(*args)
 
@@ -323,9 +330,12 @@ def _kegg_link(source_db: str, target_db: str) -> list[list[str]]:
     return _kegg_general('link', target_db, source_db)
 
 
-def _kegg_ddi(drug_ids: str | Iterable[str], async_: bool = False):
+def _kegg_ddi(drug_ids: str | Iterable[str], join=True, async_: bool = False):
 
-    drug_ids = '+'.join(common.to_list(drug_ids))
+
+    if join and not isinstance(drug_ids, str):
+
+        drug_ids = '+'.join(common.to_list(drug_ids))
 
     if async_:
 
@@ -391,7 +401,7 @@ def _kegg_relations(
         if name not in data:
 
             cls = f'_{cls_prefix}{name.capitalize()}'
-            data[name] = locals()[cls](*l_organism)
+            data[name] = globals()[cls](*l_organism)
 
         return data[name]
 
@@ -407,7 +417,7 @@ def _kegg_relations(
 
     def process(entry, type_):
 
-        id_ = db(type_).handle(entry)
+        id_ = db(type_).proc_key(entry)
         name = db(type_).get(id_, None)
         ncbi = ids('ncbi').get(id_) if type_ == 'gene' else ()
         uniprot = ids('uniprot').get(id_) if type_ == 'gene' else ()
@@ -422,10 +432,10 @@ def _kegg_relations(
             chebi_ids = chebi,
         )
 
-
     args = [organism if db == 'gene' else db for db in (source_db, target_db)]
     entries = _kegg_link(*args)
-    interactions = [(process(e[0]), process(e[1])) for e in entries]
+
+    interactions = [(process(e[0], source_db), process(e[1], target_db)) for e in entries]
 
     return interactions
 
@@ -436,7 +446,6 @@ class _KeggDatabase(ABC):
     _query_args = None
 
 
-    @abstractmethod
     def __init__(self, *args):
 
         self.load(*args)
@@ -454,13 +463,12 @@ class _KeggDatabase(ABC):
         return entry
 
 
-    @abstractmethod
     def load(self, *args):
 
         entries = _kegg_list(*common.to_list(self._query_args), *args)
 
         self._data = {
-            self.proc_key(entry): self.proc_value(entry)
+            self.proc_key(entry[0]): self.proc_value(entry[1])
             for entry in entries
         }
 
@@ -485,15 +493,24 @@ class _Organism(_KeggDatabase):
 
     _query_args = 'organism'
 
+    def load(self, *args):
+
+        entries = _kegg_list(*common.to_list(self._query_args), *args)
+
+        self._data = {
+            self.proc_key(entry[1]): self.proc_value(entry[0], entry[2])
+            for entry in entries
+        }
+
 
     def proc_value(self, entry):
 
-        return (entry[0], entry[2])
+        return self.get(entry)
 
 
     def proc_key(self, entry):
 
-        return entry[1]
+        return entry
 
 
 class _Gene(_KeggDatabase):
@@ -503,15 +520,24 @@ class _Gene(_KeggDatabase):
 
         super().__init__(organism)
 
+    def load(self, *args):
+
+        entries = _kegg_list(*common.to_list(self._query_args), *args)
+
+        self._data = {
+            self.proc_key(entry[0]): self.proc_value(entry[-1])
+            for entry in entries
+        }
+
 
     def proc_key(self, entry):
 
-        return entry[0]
+        return entry
 
 
     def proc_value(self, entry):
 
-        return entry[-1].rsplit(';', maxsplit = 1)[-1].strip(' ')
+        return entry.rsplit(';', maxsplit = 1)[-1].strip(' ')
 
 
 class _Pathway(_KeggDatabase):
@@ -522,12 +548,12 @@ class _Pathway(_KeggDatabase):
 
     def proc_value(self, entry):
 
-        return entry[1]
+        return entry
 
 
     def proc_key(self, entry):
 
-        pathway_id = self._re_pathway.search(entry[0])
+        pathway_id = self._re_pathway.search(entry)
 
         # is this correct?
         # there are pathway prefixes in KEGG other than "map"
@@ -585,7 +611,7 @@ class _ConversionTable:
     @abstractmethod
     def load(self):
 
-        self._table.update(_kegg_conv(*self.id_types, **self.splits))
+        self._table.update(_kegg_conv(*self._id_types, **self._splits))
 
 
     def get(self, index, default = None):

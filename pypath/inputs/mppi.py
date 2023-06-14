@@ -30,7 +30,7 @@ import pypath.resources.urls as urls
 
 def mppi_interactions(organism = 9606):
 
-    url = urls.urls['mppi']['url']
+    url = urls.urls['mppi']['url_rescued']
     c = curl.Curl(url, silent = False, large = True)
     xmlfile = c.gzfile
 
