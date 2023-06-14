@@ -50,6 +50,10 @@ def adrecs_drug_identifiers(
     IUPAC name, synonyms, DrugBank, MeSH, KEGG and TDD IDs of drugs.
     http://www.bio-add.org/ADReCS/index.jsp
 
+    Args:
+        return_df:
+            Return a pandas data frame.
+
     Returns:
         List of tuples or data frame of drug identifiers.
     """
@@ -77,6 +81,10 @@ def adrecs_drug_identifiers(
 def adrecs_adr_ontology(return_df: bool = False) -> list[tuple] | pd.DataFrame:
     """
     Adverse drug reaction (ADR) ontology from the AdReCS database.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
 
     Returns:
         List of tuples or data frame of adverse drug reaction terms.
@@ -126,6 +134,10 @@ def adrecs_drug_adr(
     ) -> Generator[tuple] | pd.DataFrame:
     """
     Drug-ADR pairs from the AdReCS database.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
 
     Returns:
         List of tuples or data frame of drug-ADR pairs.

@@ -1,3 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2023
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+from __future__ import annotations
+
 from collections import namedtuple
 
 import json
@@ -5,14 +31,17 @@ import bs4
 import requests
 import json
 
+import pandas as pd
+
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
 
-def get_record_number():
-    '''
-    Retrieves number of records in ddinter datasource url
-    '''
+def ddinter_n_drugs() -> int:
+    """
+    Retrieves number of drug records in the DDInter database.
+    """
+
     cookies = {
         'csrftoken': '975RT1K1FXpLX6wZdcyTMIRdOAMwNNkx1MNFAbeJrlrRBFI5DbNmaQPz7tj2UNFZ',
     }
@@ -33,97 +62,81 @@ def get_record_number():
         'custom-length': '25',
     }
 
-    url = urls.urls['ddinter']['url_source']
-    response = requests.post(url, cookies=cookies, data=data, verify=False)
+    url = urls.urls['ddinter']['source']
+    response = requests.post(
+        url,
+        cookies = cookies,
+        data = data,
+        verify = False,
+    )
 
-    return int(response.json()["recordsTotal"])
+    return int(response.json()['recordsTotal'])
 
 
-def get_mappings(drug):
-    '''
-    Retrieves mappings of input drug in drugbank, chembl, pubchem
+def ddinter_identifiers(drug: str) -> list[tuple]:
+    """
+    DrugBank, ChEMBL and PubChem identifiers of a drug in DDInter.
+
+    Args:
+        drug:
+            DDInter drug identifier.
+
     Returns:
         list of mapping namedtuple (single)
-    '''
-    url = urls.urls['ddinter']['url_mapping'] % drug
+    """
+    url = urls.urls['ddinter']['mapping'] % drug
 
-    c = curl.Curl(
-        url, 
-        silent = False, 
-        large = True, 
-        )
+    c = curl.Curl(url, silent = False, large = True)
 
     soup = bs4.BeautifulSoup(c.fileobj, 'html.parser')
     refs = soup.find_all('a')
 
     links = [link.get('href', '') for link in refs]
     result = set()
-    
-    fields = ['drugbank', 'chembl', 'pubchem']
-    Mapping = namedtuple(
-        'DDInterMapping',
-        fields,
-        defaults=(None, ) * len(fields)
-    )
-    mapping_targets = ["drugbank", "chembl", "pubchem"]
+
+    fields = ('ddinter', 'drugbank', 'chembl', 'pubchem')
+    record = namedtuple('DdinterIdentifiers', fields, defaults = None)
+    mapping_targets = ['drugbank', 'chembl', 'pubchem']
     mapping_dict = {}
 
     for link in links:
+
         for target in mapping_targets:
+
             if target in link:
-                mapping_dict[target] = link.split("/")[-1]
-    
-    result.add(Mapping(**mapping_dict))
-                
+
+                mapping_dict[target] = link.split('/')[-1]
+                break
+
+    result.add(record(ddinter = drug, **mapping_dict))
+
     return list(result)
 
 
-def get_all_mappings():
-    '''
-    Retrieves all mappings of  drugs in DDinter to drugbank, chembl, pubchem
+def ddinter_mappings(return_df: bool = False) -> list[tuple] | pd.DataFrame:
+    """
+    DrugBank, ChEMBL and PubChem identifiers of all drugs in DDInter.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+
     Returns:
         list of mapping namedtuples
-    '''
+    """
 
-    result = set()
-    fields = ['ddinter_id', 'drugbank', 'chembl', 'pubchem']
-    Mapping = namedtuple(
-        'DDInterMapping',
-        fields,
-        defaults=(None, ) * len(fields)
-    )
-    
-    for index in range(1, get_record_number()+1):
-        ddinter_drug = 'DDInter'+str(index)
+    result = []
 
-        url = urls.urls['ddinter']['url_mapping'] % ddinter_drug
-    
-        c = curl.Curl(
-            url, 
-            silent = False, 
-            large = True, 
-            )
+    for idx in range(1, ddinter_n_records() + 1):
 
-        soup = bs4.BeautifulSoup(c.fileobj, 'html.parser')
-        refs = soup.find_all('a')
+        ddinter_drug = 'DDInter{idx}'
 
-        links = [link.get('href', '') for link in refs]
+        result.extend(ddinter_mapping(ddinter_drug))
 
-        mapping_targets = ["drugbank", "chembl", "pubchem"]
-        mapping_dict = {}
-
-        mapping_dict["ddinter_id"] = ddinter_drug
-        for link in links:      
-            for target in mapping_targets:
-                if target in link:                
-                    mapping_dict[target] = link.split("/")[-1]                        
-                        
-        result.add(Mapping(**mapping_dict))                                
-                
-    return list(result)
+    return pd.DataFram(result) if return_df else result
 
 
-def check_hashable(data):
+def _ensure_hashable(data):
 
     if isinstance(data, (dict, list, set)):
 
@@ -131,96 +144,76 @@ def check_hashable(data):
 
     return data
 
-def get_interactions(drug):
-    '''
-    Retrieves interactions of input drug
+
+def ddinter_drug_interactions(
+        drug: str,
+        return_df: bool = False,
+    ) -> list[tuple] | pd.DataFrame:
+    """
+    Interactions of one single drug from the DDInter database.
+
+    Args:
+        drug:
+            A DDInter drug identifier.
+        return_df:
+            Return a pandas data frame.
+
     Returns:
-        list of interaction namedtuple with drug ids, drug names, interaction level and actions
-    '''
-    url = urls.urls['ddinter']['url_interaction'] % drug
+        Drug-drug interaction tuples with drug ids, drug names, interaction
+        level and actions.
+    """
+
+    url = urls.urls['ddinter']['interaction'] % drug
     c = curl.Curl(url)
-    fileobj = open(c.fileobj.name, encoding='utf-8')
-    data = json.loads(fileobj.read())
+    data = json.loads(c.result)
 
     result = set()
-    Interaction = namedtuple(
-            'DDInterInteraction',
-            [
-                'drug1_id',
-                'drug1_name',
-                'drug2_id',
-                'drug2_name',
-                'level',
-                'actions'
-            ],
-            defaults = None
-        )
+    record = namedtuple(
+        'DdinterInteraction',
+        (
+            'drug1_id',
+            'drug1',
+            'drug2_id',
+            'drug2',
+            'level',
+            'actions',
+        ),
+        defaults = None,
+    )
 
     drug1_id = data['info']['id']
     drug1_name = data['info']['Name']
-    
+
     for interaction_fe in data['interactions']:
 
-        interaction = Interaction(
+        interaction = record(
             drug1_id = drug1_id,
             drug1_name = drug1_name,
-            drug2_id = check_hashable(interaction_fe['id']),
-            drug2_name =  check_hashable(interaction_fe['name']),
-            level = check_hashable(interaction_fe['level']),
-            actions = check_hashable(interaction_fe['actions'])
+            drug2_id = _ensure_hashable(interaction_fe['id']),
+            drug2_name =  _ensure_hashable(interaction_fe['name']),
+            level = _ensure_hashable(interaction_fe['level']),
+            actions = _ensure_hashable(interaction_fe['actions']),
         )
 
         result.add(interaction)
-            
-    return list(result)
+
+    return pd.DataFrame(result) if return_df else result
 
 
-def get_all_interactions():
-    '''
-    Retrieves all interactions
+def ddinter_interactions(return_df: bool = False) -> list[tuple] | pd.DataFrame:
+    """
+    Drug-drug interactions from the DDInter database.
+
+    Args:
+        return_df:
+            Return a pandas data frame.
+
     Returns:
         list of interaction namedtuple with drug ids, drug names, interaction level and actions
-    '''
-    result = set() 
-    
-    Interaction = namedtuple(
-            'DDInterInteraction',
-            [
-                'drug1_id',
-                'drug1_name',
-                'drug2_id',
-                'drug2_name',
-                'level',
-                'actions'
-            ],
-            defaults = None
-            )
-    
-    for index in range(1, get_record_number()+1):
+    """
+    result = [
+        ddinter_drug_interactions(drug = f'DDInter{i}')
+        for i in range(1, get_record_number()+1):
+    ]
 
-        ddinter_drug = 'DDInter'+str(index)
-
-        url = urls.urls['ddinter']['url_interaction'] % ddinter_drug
-
-        c = curl.Curl(url)
-        fileobj = open(c.fileobj.name, encoding='utf-8')
-        data = json.loads(fileobj.read())
-
-        drug1_id = data['info']['id']
-        drug1_name = data['info']['Name']
-    
-        for interaction_fe in data['interactions']:
-
-            interaction = Interaction(
-                drug1_id = drug1_id,
-                drug1_name = drug1_name,
-                drug2_id = check_hashable(interaction_fe['id']),
-                drug2_name =  check_hashable(interaction_fe['name']),
-                level = check_hashable(interaction_fe['level']),
-                actions = check_hashable(interaction_fe['actions'])
-            )
-
-            result.add(interaction)
-            
-    return list(result)
-
+    return pd.DataFrame(result) if return_df else result
