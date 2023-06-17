@@ -23,6 +23,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from ._auth import DisgenetAuth
-from ._records import *
-from ._client import *
+from __future__ import annotations
+
+import collections
+

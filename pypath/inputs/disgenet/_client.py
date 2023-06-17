@@ -37,109 +37,17 @@ import pypath.share.session as session
 import pypath.share.settings as settings
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
+import pypath.inputs.disgenet._auth as _auth
 
 _logger = session.Logger(name = 'disgenet_input')
 _log = _logger._log
 
 
-class DisgenetApi(session.Logger):
+class DisgenetOld(_auth.DisgenetAuth):
 
-    _name = 'DisGeNET'
-    _api_url = urls.urls['disgenet']['api_url']
-    _authenticated: bool = False
-    _api_key: str = None
+    def __init__(self, *args, **kwargs):
 
-    def __init__(self, email: str | None, password: str | None):
-
-        session.Logger.__init__(self, name = 'disgenet')
-        self.email = email
-        self.password = password
-
-
-    def authenticate(self) -> bool:
-        """
-        Starts an authorization process in DisGeNET API.
-        Returns a boolean which is success of authentication.
-        """
-
-        if self._authenticated and self._api_key is not None:
-
-            return True
-
-        self._log(f'Authorizing in {self._name} API.')
-        email: str = self.email or settings.get('disgenet_email')
-        password: str = self.password or settings.get('disgenet_password')
-
-        if not email or not password:
-
-            self._log(
-                'Email or password missing: '
-                'unable to authenticate in DisGeNet API.'
-            )
-            return False
-
-        url: str = f'{self._api_url}/auth/'
-        post_params: dict[str, str] = {'email': email, 'password': password}
-        headers: list[str] = [
-            'Accept: */*',
-            'Content-Type: application/x-www-form-urlencoded',
-        ]
-
-        c = curl.Curl(url = url, post = post_params, req_headers = headers)
-
-        if c.result:
-
-            try:
-                self._api_key = json.loads(c.result).get('token')
-                self._log('DisGeNet API Authentication successful.')
-
-            except Exception as e:
-
-                self._log(
-                    'Failed to process response from '
-                    'DisGeNet API authentication:'
-                )
-                self._log_traceback()
-
-        self._authenticated = self._api_key is not None
-
-        return self._authenticated
-
-
-    def _if_authenticated(f):
-        """
-        Decorator to ensure DisGeNet API authentication.
-        """
-
-        def wrapper(self, *args, **kwargs):
-
-            if self.authenticate():
-
-                return f(self, *args, **kwargs)
-
-            else:
-
-                self._log(
-                    'Unable to connect DisGeNet API in lack of authorization. '
-                    'Please check your credentials.'
-                )
-
-        return wrapper
-
-
-    def _delete_cache(f):
-        """
-        Decorator which calls under `cache_delete_on` context.
-        """
-
-        def wrapper(*args, **kwargs):
-
-            with curl.cache_delete_on():
-
-                return f(*args, **kwargs)
-
-        return wrapper
-
+        super().__init__(*args, **kwargs)
 
     def ddas_that_share_genes(
             self,
@@ -2041,8 +1949,8 @@ class DisgenetApi(session.Logger):
 
         return list_obj
 
-    @_if_authenticated
-    @_delete_cache
+    @_auth.DisgenetAuth._if_authenticated
+    @_auth.DisgenetAuth._delete_cache
     def _retrieve_data(
         self, url: str, get_params: Union[List[str], Dict[str, str]]
     ) -> List[Dict[str, str]]:
@@ -2141,7 +2049,7 @@ class DisgenetApi(session.Logger):
         return str_obj
 
 
-@DisgenetApi._delete_cache
+@_auth.DisgenetAuth._delete_cache
 def variant_gene_mappings() -> (
     Dict[
         str,
@@ -2221,7 +2129,7 @@ def variant_gene_mappings() -> (
     return mapping
 
 
-@DisgenetApi._delete_cache
+@_auth.DisgenetAuth._delete_cache
 def disease_id_mappings() -> (
     dict[
         str,
@@ -2304,7 +2212,7 @@ def disease_id_mappings() -> (
     return mapping
 
 
-@DisgenetApi._delete_cache
+@_auth.DisgenetAuth._delete_cache
 def disgenet_annotations(dataset = 'curated'):
     """
     Downloads and processes the list of all human disease related proteins
