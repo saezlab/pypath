@@ -25,5 +25,73 @@
 
 from __future__ import annotations
 
-import collections
+from typing import NamedTuple
 
+
+class DiseaseClass(NamedTuple):
+    id: str
+    name: str
+
+
+class ProteinClass(NamedTuple):
+    id: str
+    name: str
+
+
+class Disease(NamedTuple):
+    id: str
+    name: str
+    classes: tuple[DiseaseClass]
+    ngenes: int
+    nvariants: int
+    type: str
+    semantic_type: str
+
+
+class Gene(NamedTuple):
+    uniprot: str
+    genesymbol: str
+    entrez: str
+    dsi: float
+    dpi: float
+    pli: float
+    protein_class: str
+    protein_class_name: str
+
+
+class Variant(NamedTuple):
+    id: str
+    genesymbol: str
+    dsi: float
+    dpi: float
+    consequence_type: str
+
+
+class DiseaseDiseaseAssociation(NamedTuple):
+    disease1: Disease
+    disease2: Disease
+    jaccard_genes: float
+    pvalue_jaccard_genes: float
+    source: str
+    ngenes: int
+
+
+class GeneDiseaseAssociation(NamedTuple):
+    gene: Gene
+    disease: Disease
+    score: float
+    ei: float
+    el: str
+    year_initial: int
+    year_final: int
+    source: str
+
+
+class VariantDiseaseAssociation(NamedTuple):
+    variant: Variant
+    disease: Disease
+    score: float
+    ei: float
+    year_initial: int
+    year_final: int
+    source: str
