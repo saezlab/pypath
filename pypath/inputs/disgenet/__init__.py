@@ -26,3 +26,4 @@
 from ._auth import DisgenetAuth
 from ._records import *
 from ._client import *
+from ._api import disgenet_annotations
