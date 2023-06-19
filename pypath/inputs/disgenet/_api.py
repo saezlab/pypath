@@ -30,20 +30,19 @@ import collections
 import pypath.inputs.disgenet._auth as _auth
 
 
-@_auth.DisgenetAuth._delete_cache
 def variant_gene_mappings() -> (
-    Dict[
-        str,
-        NamedTuple(
-            'VariantGeneMapping',
-            [
-                ('geneId', str),
-                ('geneSymbol', str),
-                ('sourceIds', Tuple[str]),
-            ],
-        ),
-    ]
-):
+        dict[
+            str,
+            NamedTuple(
+                'VariantGeneMapping',
+                [
+                    ('geneId', str),
+                    ('geneSymbol', str),
+                    ('sourceIds', Tuple[str]),
+                ],
+            ),
+        ]
+    ):
     """
     Downloads and processes variant-gene mappings.
     Returns a dict where the \'snpId\' is the key.
@@ -110,31 +109,30 @@ def variant_gene_mappings() -> (
     return mapping
 
 
-@_auth.DisgenetAuth._delete_cache
 def disease_id_mappings() -> (
-    dict[
-        str,
-        NamedTuple(
-            'DiseaseIdMapping',
-            [
-                ('name', str),
-                (
-                    'vocabularies',
-                    Tuple[
-                        NamedTuple(
-                            'Vocabulary',
-                            [
-                                ('vocabulary', str),
-                                ('code', str),
-                                ('vocabularyName', str),
-                            ],
-                        )
-                    ],
-                ),
-            ],
-        ),
-    ]
-):
+        dict[
+            str,
+            NamedTuple(
+                'DiseaseIdMapping',
+                [
+                    ('name', str),
+                    (
+                        'vocabularies',
+                        tuple[
+                            NamedTuple(
+                                'Vocabulary',
+                                [
+                                    ('vocabulary', str),
+                                    ('code', str),
+                                    ('vocabularyName', str),
+                                ],
+                            )
+                        ],
+                    ),
+                ],
+            ),
+        ]
+    ):
     """
     Downloads and processes disease-id mappings.
     Returns a dict where the \'diseaseId\' is the key.
@@ -193,7 +191,6 @@ def disease_id_mappings() -> (
     return mapping
 
 
-@_auth.DisgenetAuth._delete_cache
 def disgenet_annotations(dataset = 'curated'):
     """
     Downloads and processes the list of all human disease related proteins
