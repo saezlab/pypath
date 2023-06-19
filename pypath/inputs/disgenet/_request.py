@@ -204,7 +204,7 @@ class DisgenetRequest(_auth.DisgenetAuth):
     @property
     def _dda(self) -> bool:
 
-        return self['query_type'] = 'dda'
+        return self['query_type'] == 'dda'
 
 
     @property

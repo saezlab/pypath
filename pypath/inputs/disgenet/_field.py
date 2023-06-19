@@ -58,6 +58,7 @@ class FieldMeta(abc.ABCMeta):
 
 class FieldBase(metaclass = FieldMeta):
 
+    _type = 'passthru'
 
     def __init__(self, key: str | tuple[str]):
 
@@ -108,8 +109,8 @@ class NamedTupleSeq(FieldBase):
 
 
 class ProteinClass(NamedTuple):
-    _record = records.ProteinClass
+    _type = records.ProteinClass
 
 
-class DieseaseClasses(NamedTupleSeq):
-    _record = records.DiseaseClass
+class DiseaseClasses(NamedTupleSeq):
+    _type = records.DiseaseClass

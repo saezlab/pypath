@@ -41,8 +41,8 @@ class ProcessBase:
 
     def __init__(
             self,
-            record: type | None,
-            entity_idx: int | None,
+            record: type | None = None,
+            entity_idx: int | None = None,
         ):
 
         self._record = record or getattr(_records, self.__class__.__name__)
@@ -87,22 +87,14 @@ class ProcessBase:
 
 
 class Disease(ProcessBase):
-
-    def __init__(self, entity_idx: int | None):
-
-        super().__init__(
-            entity_type = 'disease',
-            entity_idx = entity_idx,
-        )
+    entity_type = 'disease'
 
 
 class Gene(ProcessBase):
-
     entity_type = 'gene'
 
 
 class Variant(ProcessBase):
-
     entity_type = 'variant'
 
 
