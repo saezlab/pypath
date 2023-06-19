@@ -96,3 +96,31 @@ class VariantDiseaseAssociation(NamedTuple):
     year_initial: int
     year_final: int
     source: str
+
+
+class VariantGeneMapping(NamedTuple):
+    entrez: str
+    genesymbol: str
+    sources: tuple[str]
+
+
+class IdType(NamedTuple):
+    name: str
+    code: str
+    label: str
+
+
+class DiseaseIdMapping(NamedTuple):
+    name: str
+    id_types: tuple[IdType]
+
+
+class DisGeNetAnnotation(NamedTuple):
+    disease: str
+    type: str
+    score: float
+    dsi: float
+    dpi: float
+    nof_pmids: int
+    nof_snps: int
+    source: str
