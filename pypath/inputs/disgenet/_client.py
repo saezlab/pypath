@@ -32,7 +32,7 @@ import pypath.inputs.disgenet._proc as _proc
 import pypath.inputs.disgenet._request as _request
 
 
-class ClientBase(session.Logger):
+class DisgenetClient(session.Logger):
 
     def __init__(
             self,

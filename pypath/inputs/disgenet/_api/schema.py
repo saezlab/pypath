@@ -23,7 +23,11 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from ._auth import DisgenetAuth
-from ._client import DisgenetClient
-from ._request import DisgenetRequest
-from ._api import *
+from __future__ import annotations
+
+import pypath.inputs.disgenet._client as _client
+
+
+class ApiMeta:
+
+

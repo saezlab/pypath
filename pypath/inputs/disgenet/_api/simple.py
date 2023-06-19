@@ -33,7 +33,7 @@ import pypath.inputs.disgenet._auth as _auth
 import pypath.inputs.disgenet._records as _records
 
 
-def variant_gene_mappings() -> dict[str, _records.VariantGeneMapping]:
+def disgenet_variants() -> dict[str, _records.VariantGeneMapping]:
     """
     Downloads and processes variant-gene mappings.
     Returns a dict where the \'snpId\' is the key.
@@ -100,7 +100,7 @@ def variant_gene_mappings() -> dict[str, _records.VariantGeneMapping]:
     return mapping
 
 
-def disease_id_mappings() -> dict[str, _records.DiseaseIdMapping]:
+def disgenet_diseases() -> dict[str, _records.DiseaseIdMapping]:
     """
     Downloads and processes disease-id mappings.
     Returns a dict where the \'diseaseId\' is the key.
