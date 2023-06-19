@@ -242,6 +242,64 @@ def is_float(num):
     return bool(refloat.match(num))
 
 
+def _to_number(num: Any, to: type, recursive: bool = False) -> Any:
+    """
+    Convert `num` to `to` if possible, return it unchanged otherwise.
+    """
+
+    if isinstance(num, to):
+
+        return num
+
+    elif isinstance(num, str) and locals()[f'is_{to.__name__}'](num):
+
+        return to(num)
+
+    elif recursive and isinstance(num, LIST_LIKE):
+
+        container = type(num) if type(num) in {tuple, set} else list
+
+        return container(_to_number(n, to, recursive) for n in num)
+
+    else:
+
+        try:
+
+            return to(num)
+
+        except TypeError:
+
+            return num
+
+
+def to_float(num: Any, recursive: bool = False) -> Any:
+    """
+    Convert `num` to float if possible, return it unchanged otherwise.
+
+    Args:
+        num:
+            The value to convert.
+        recursive:
+            Convert elements of iterables recursively.
+    """
+
+    return _to_number(num, float, recursive)
+
+
+def to_int(num: Any, recursive: bool = False) -> Any:
+    """
+    Convert `num` to integer if possible, return it unchanged otherwise.
+
+    Args:
+        num:
+            The value to convert.
+        recursive:
+            Convert elements of iterables recursively.
+    """
+
+    return _to_number(num, int, recursive)
+
+
 def is_int(num):
     """
     Tells if a string represents an integer,
@@ -346,6 +404,18 @@ def to_tuple(var):
     """
 
     return var if isinstance(var, tuple) else tuple(to_list(var))
+
+
+def not_none(fun: Callable) -> Callable:
+    """
+    Decorator implementing `fun(var) if var is not None else None`.
+    """
+
+    def wrapper(var):
+
+        return None if var is None else fun(var)
+
+    return wrapper
 
 
 # From http://www.peterbe.com/plog/uniqifiers-benchmark

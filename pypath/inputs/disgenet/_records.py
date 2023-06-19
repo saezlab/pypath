@@ -55,8 +55,7 @@ class Gene(NamedTuple):
     dsi: float
     dpi: float
     pli: float
-    protein_class: str
-    protein_class_name: str
+    protein_class: ProteinClass
 
 
 class Variant(NamedTuple):
@@ -72,6 +71,8 @@ class DiseaseDiseaseAssociation(NamedTuple):
     disease2: Disease
     jaccard_genes: float
     pvalue_jaccard_genes: float
+    jaccard_variants: float
+    pvalue_jaccard_variants: float
     source: str
     ngenes: int
 
