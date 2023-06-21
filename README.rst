@@ -236,7 +236,7 @@ The development of ``pypath`` is coordinated by `Dénes Türei`_ in the
 other groups:
 
 * Erva Ulusoy, Melih Darcan, Ömer Kaan Vural, Tennur Kılıç, Elif Çevrim,
-  Bünyamin Şen and Atabey Ünlü in the
+  Bünyamin Şen, Atabey Ünlü and Mert Ergün in the
   `HU Biological Data Science Lab (PI: Tunca Doğan)`_ created many new input
   modules in `pypath`;
 * Leila Gul, Dezső Módos, Márton Ölbei and Tamás Korcsmáros in the
