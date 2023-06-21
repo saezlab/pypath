@@ -1592,7 +1592,7 @@ urls = {
     },
     'hpo': {
         'label': 'HPO database',
-        'ontology': 'https://raw.githubusercontent.com/obophenotype/'
+        'ontology': 'http://purl.obolibrary.org/obo/hp.obo'
             'human-phenotype-ontology/master/hp.obo',
         'disease' : 'http://purl.obolibrary.org/obo/hp/hpoa/phenotype.hpoa',
         'gene' : 'http://purl.obolibrary.org/obo/hp/hpoa/'
