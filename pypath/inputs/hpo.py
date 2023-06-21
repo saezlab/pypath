@@ -4,17 +4,23 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright 2014-2023
+#  Copyright
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  Authors: see the file `README.rst`
-#  Contact: Dénes Türei (turei.denes@gmail.com)
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#           Tennur Kılıç
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
-#      https://www.gnu.org/licenses/gpl-3.0.html
+#      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: https://pypath.omnipathdb.org/
+#  Website: http://pypath.omnipathdb.org/
 #
 
 from typing import Union
@@ -141,7 +147,7 @@ def hpo_ontology() -> dict[str, dict[str, Union[str, set[str]]]]:
     """
 
     url = urls.urls['hpo']['ontology']
-    reader = obo.Obo(url)
+    reader = obo.Obo('http://purl.obolibrary.org/obo/hp.obo')
 
     result = {
         'terms': {},
@@ -155,10 +161,14 @@ def hpo_ontology() -> dict[str, dict[str, Union[str, set[str]]]]:
 
         if r.stanza != 'Term': continue
 
+        if r.name is None or r.name.value == 'obsolete' or r.attrs.get('is_obsolete'): continue
+        
         term = r.id.value
 
-        name = (r.name.value, r.name.modifiers)
-        name = ' '.join(n for n in name if n)
+        name = (r.name.value, r.name.modifiers) if r.name.modifiers else r.name.value
+
+        if isinstance(name, tuple): name = ' '.join(n for n in name if n)
+
         result['terms'][term] = name
 
         result['defs'][term] = r.definition.value if r.definition else None
