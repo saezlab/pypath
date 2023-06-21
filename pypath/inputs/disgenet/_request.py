@@ -27,6 +27,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable, Literal, Sequence
 
+import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.share.session as session
 import pypath.resources.urls as urls
@@ -57,14 +58,16 @@ class DisgenetRequest(_auth.DisgenetAuth):
         super().__init__(email = email, password = password)
         query_param = {**(query_param or {}), **kwargs}
         query_param.update(self._query_param_defaults)
+        query_param.pop('__class__')
         del kwargs, email, password
         self._param = locals()
         self._param.pop('self')
+        self._param.pop('__class__')
 
 
     def __getitem__(self, key: str) -> Any:
 
-        return self.param.get(key)
+        return self._param.get(key)
 
 
     @property
@@ -110,7 +113,12 @@ class DisgenetRequest(_auth.DisgenetAuth):
         for argname, values in self._param.items():
 
             valids_name = argname.replace('_', '').lower().capitalize()
-            valids = getattr(_valid, valids_name)
+            valids = getattr(_valid, valids_name, None)
+
+            if not valids:
+
+                continue
+
             invalids = [
                 val
                 for val in common.to_list(values)
@@ -249,7 +257,7 @@ class DisgenetRequest(_auth.DisgenetAuth):
             c = self.retrieve(url)
             url = None
 
-            if c.result != 200 or not hasattr(c, 'fileobj'):
+            if c.status != 200 or not hasattr(c, 'fileobj'):
 
                 msg = (
                     'Transaction to DisGeNet API failed, '

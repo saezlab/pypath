@@ -58,7 +58,7 @@ class DisgenetAuth(session.Logger):
 
     def authenticate(self) -> bool:
         """
-        Starts an authorization process in DisGeNET API.
+        Starts an authorization process to the DisGeNET API.
         Returns a boolean which is success of authentication.
         """
 
@@ -66,7 +66,7 @@ class DisgenetAuth(session.Logger):
 
             return True
 
-        self._log(f'Authorizing in {self._name} API.')
+        self._log(f'Authorizing to the {self._name} API.')
         email: str = self.email or settings.get('disgenet_email')
         password: str = self.password or settings.get('disgenet_password')
 
@@ -74,7 +74,7 @@ class DisgenetAuth(session.Logger):
 
             self._log(
                 'Email or password missing: '
-                'unable to authenticate in DisGeNet API.'
+                'unable to authenticate to the DisGeNet API.'
             )
             return False
 
@@ -119,10 +119,12 @@ class DisgenetAuth(session.Logger):
 
             else:
 
-                self._log(
+                err = (
                     'Unable to connect DisGeNet API in lack of authorization. '
                     'Please check your credentials.'
                 )
+                self._log(err)
+                raise RuntimeError(err)
 
         return wrapper
 
