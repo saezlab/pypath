@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.legacy.main.get_db &#8212; pypath 0.15.4 documentation</title>
+    <title>pypath.inputs.sider.sider_side_effect_frequencies &#8212; pypath 0.15.5 documentation</title>
   
   
   
@@ -42,12 +42,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.legacy.main.get_db';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.sider.sider_side_effect_frequencies';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.legacy.main.init_db" href="pypath.legacy.main.init_db.html" />
-    <link rel="prev" title="pypath.legacy.main" href="pypath.legacy.main.html" />
+    <link rel="next" title="pypath.inputs.sider.sider_side_effects" href="pypath.inputs.sider.sider_side_effects.html" />
+    <link rel="prev" title="pypath.inputs.sider.sider_drug_names" href="pypath.inputs.sider.sider_drug_names.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -475,9 +475,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.legacy.main.html" class="nav-link">pypath.legacy.main</a></li>
+    <li class="breadcrumb-item"><a href="pypath.inputs.sider.html" class="nav-link">pypath.inputs.sider</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.legacy.main.get_db</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.sider.sider_side_effect_frequencies</li>
   </ul>
 </nav>
 </div>
@@ -494,12 +494,21 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-legacy-main-get-db">
-<h1>pypath.legacy.main.get_db<a class="headerlink" href="#pypath-legacy-main-get-db" title="Permalink to this heading">§</a></h1>
+  <section id="pypath-inputs-sider-sider-side-effect-frequencies">
+<h1>pypath.inputs.sider.sider_side_effect_frequencies<a class="headerlink" href="#pypath-inputs-sider-sider-side-effect-frequencies" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="pypath.legacy.main.get_db">
-<span class="sig-prename descclassname"><span class="pre">pypath.legacy.main.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/legacy/main.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.legacy.main.get_db" title="Permalink to this definition">§</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="pypath.inputs.sider.sider_side_effect_frequencies">
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.sider.</span></span><span class="sig-name descname"><span class="pre">sider_side_effect_frequencies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/sider.html#sider_side_effect_frequencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.sider.sider_side_effect_frequencies" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves side effect information from the SIDER database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Drug CID, UMLS concept ids both for label and MedDRA,
+frequency information and side effect name.</p>
+</dd>
+</dl>
+<p>Attention! -&gt; <cite>sider_side_effects</cite> function returns about 20k more rows
+than this dataset, but without frequency information.</p>
+</dd></dl>
 
 </section>
 
@@ -515,20 +524,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.legacy.main.html"
+       href="pypath.inputs.sider.sider_drug_names.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.legacy.main</p>
+        <p class="prev-next-title">pypath.inputs.sider.sider_drug_names</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.legacy.main.init_db.html"
+       href="pypath.inputs.sider.sider_side_effects.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.legacy.main.init_db</p>
+        <p class="prev-next-title">pypath.inputs.sider.sider_side_effects</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

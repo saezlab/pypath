@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.disgenet.disgenet_annotations &#8212; pypath 0.15.4 documentation</title>
+    <title>pypath.inputs.diseases.textmining_filtered &#8212; pypath 0.15.5 documentation</title>
   
   
   
@@ -42,12 +42,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.disgenet.disgenet_annotations';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.diseases.textmining_filtered';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.disgenet.variant_gene_mappings" href="pypath.inputs.disgenet.variant_gene_mappings.html" />
-    <link rel="prev" title="pypath.inputs.disgenet.disease_id_mappings" href="pypath.inputs.disgenet.disease_id_mappings.html" />
+    <link rel="next" title="pypath.inputs.diseases.textmining_full" href="pypath.inputs.diseases.textmining_full.html" />
+    <link rel="prev" title="pypath.inputs.diseases.knowledge_full" href="pypath.inputs.diseases.knowledge_full.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -475,9 +475,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.inputs.disgenet.html" class="nav-link">pypath.inputs.disgenet</a></li>
+    <li class="breadcrumb-item"><a href="pypath.inputs.diseases.html" class="nav-link">pypath.inputs.diseases</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.disgenet.disgenet_annotations</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.diseases.textmining_filtered</li>
   </ul>
 </nav>
 </div>
@@ -494,12 +494,19 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-inputs-disgenet-disgenet-annotations">
-<h1>pypath.inputs.disgenet.disgenet_annotations<a class="headerlink" href="#pypath-inputs-disgenet-disgenet-annotations" title="Permalink to this heading">§</a></h1>
+  <section id="pypath-inputs-diseases-textmining-filtered">
+<h1>pypath.inputs.diseases.textmining_filtered<a class="headerlink" href="#pypath-inputs-diseases-textmining-filtered" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.disgenet.disgenet_annotations">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.disgenet.</span></span><span class="sig-name descname"><span class="pre">disgenet_annotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/disgenet.html#disgenet_annotations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.disgenet.disgenet_annotations" title="Permalink to this definition">§</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="pypath.inputs.diseases.textmining_filtered">
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.diseases.</span></span><span class="sig-name descname"><span class="pre">textmining_filtered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span></span></span><a class="reference internal" href="../_modules/pypath/inputs/diseases.html#textmining_filtered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.diseases.textmining_filtered" title="Permalink to this definition">§</a></dt>
+<dd><p>Filtered textmining dataset of the DISEASES database from Jensen Lab.</p>
+<p>Warning: The “textmining” datasets are enormous!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>return_df</strong> – Return a pandas data frame.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
@@ -515,20 +522,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.inputs.disgenet.disease_id_mappings.html"
+       href="pypath.inputs.diseases.knowledge_full.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.inputs.disgenet.disease_id_mappings</p>
+        <p class="prev-next-title">pypath.inputs.diseases.knowledge_full</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.inputs.disgenet.variant_gene_mappings.html"
+       href="pypath.inputs.diseases.textmining_full.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.inputs.disgenet.variant_gene_mappings</p>
+        <p class="prev-next-title">pypath.inputs.diseases.textmining_full</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

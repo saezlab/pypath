@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.kegg_api &#8212; pypath 0.15.4 documentation</title>
+    <title>pypath.inputs.kegg_api &#8212; pypath 0.15.5 documentation</title>
   
   
   
@@ -631,10 +631,10 @@ document.write(`
         <span class="p">}</span>
     <span class="p">)</span>
 
-    <span class="n">join</span> <span class="o">=</span> <span class="n">join</span> <span class="ow">and</span> <span class="n">drugs</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">join</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">drugs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">asynchronous</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">drugs</span> <span class="ow">or</span> <span class="n">asynchronous</span>
-    <span class="n">drugs</span> <span class="o">=</span> <span class="n">drugs</span> <span class="ow">or</span> <span class="n">entry_dbs</span><span class="p">[</span><span class="s1">&#39;drug&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-    <span class="n">entries</span> <span class="o">=</span> <span class="n">_kegg_ddi</span><span class="p">(</span><span class="n">drugs</span><span class="p">,</span> <span class="n">join</span> <span class="o">=</span> <span class="n">join</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
+    <span class="n">drugs</span> <span class="o">=</span> <span class="n">drugs</span> <span class="ow">or</span> <span class="n">entry_dbs</span><span class="p">[</span><span class="s1">&#39;drug&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">entries</span> <span class="o">=</span> <span class="n">_kegg_ddi</span><span class="p">(</span><span class="n">drugs</span><span class="p">,</span> <span class="n">join</span> <span class="o">=</span> <span class="n">join</span><span class="p">,</span> <span class="n">async_</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
 
@@ -644,7 +644,12 @@ document.write(`
                 <span class="p">{</span>
                     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">entry_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="kc">None</span><span class="p">),</span>
                     <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">entry</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">entry_dbs</span><span class="p">[</span><span class="n">entry_type</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">entry_dbs</span><span class="p">[</span>
+                            <span class="n">entry_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="p">]</span><span class="o">.</span>
+                        <span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="p">),</span>
                 <span class="p">}</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">role</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">))</span>
@@ -663,7 +668,10 @@ document.write(`
         <span class="p">)</span>
 
         <span class="n">disease_id</span> <span class="o">=</span> <span class="n">partners</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
-        <span class="n">interactions</span><span class="p">[</span><span class="n">disease_id</span><span class="p">][</span><span class="s1">&#39;interactions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interaction</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">interactions</span><span class="p">[</span><span class="n">disease_id</span><span class="p">][</span><span class="s1">&#39;interactions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interaction</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">interactions</span><span class="p">[</span><span class="n">disease_id</span><span class="p">][</span><span class="s1">&#39;interactions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">interaction</span><span class="p">]</span>
         <span class="n">interactions</span><span class="p">[</span><span class="n">disease_id</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">partners</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
         <span class="n">interactions</span><span class="p">[</span><span class="n">disease_id</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">partners</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
 
@@ -746,21 +754,19 @@ document.write(`
                 <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_conv_function</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_kegg_general</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_kegg_general</span><span class="p">(</span>
     <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">*</span><span class="n">arguments</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">async_</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 
-    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">_url</span> <span class="o">%</span> <span class="n">operation</span><span class="p">]</span> <span class="o">+</span> <span class="n">arguments</span><span class="p">)</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">arguments</span> <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">_url</span> <span class="o">%</span> <span class="n">operation</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">arguments</span><span class="p">))</span>
     <span class="n">curl_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span> <span class="s1">&#39;silent&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
-    <span class="k">if</span> <span class="n">_async</span><span class="p">:</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="k">await</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="o">**</span><span class="n">curl_args</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="o">**</span><span class="n">curl_args</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="o">**</span><span class="n">curl_args</span><span class="p">)</span>
 
-    <span class="n">lines</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
 
     <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">line</span><span class="p">]</span>
 
@@ -775,7 +781,7 @@ document.write(`
     <span class="c1"># stay so we can implement it without</span>
     <span class="c1"># changing the structure of the module</span>
 
-    <span class="k">return</span> <span class="n">_kegg_general</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="o">*</span><span class="n">arguments</span><span class="p">,</span> <span class="n">async_</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_kegg_general</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="o">*</span><span class="n">arguments</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_kegg_list</span><span class="p">(</span>
@@ -784,11 +790,12 @@ document.write(`
     <span class="n">organism</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 
-    <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="n">database</span><span class="p">]</span> <span class="o">+</span>
-        <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="s1">&#39;brite&#39;</span> <span class="k">else</span> <span class="p">[]</span> <span class="o">+</span>
-        <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span> <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="s1">&#39;pathway&#39;</span> <span class="k">else</span> <span class="p">[]</span>
-    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="n">database</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="s1">&#39;brite&#39;</span> <span class="ow">and</span> <span class="n">option</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">database</span> <span class="o">==</span> <span class="s1">&#39;pathway&#39;</span> <span class="ow">and</span> <span class="n">organism</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_kegg_general</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
@@ -817,9 +824,12 @@ document.write(`
     <span class="k">return</span> <span class="n">_kegg_general</span><span class="p">(</span><span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="n">target_db</span><span class="p">,</span> <span class="n">source_db</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_kegg_ddi</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">async_</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_kegg_ddi</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">join</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">async_</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 
-    <span class="n">drug_ids</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">join</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+
+        <span class="n">drug_ids</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">async_</span><span class="p">:</span>
 
@@ -885,7 +895,7 @@ document.write(`
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
 
             <span class="bp">cls</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">cls_prefix</span><span class="si">}{</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()[</span><span class="bp">cls</span><span class="p">](</span><span class="o">*</span><span class="n">l_organism</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="bp">cls</span><span class="p">](</span><span class="o">*</span><span class="n">l_organism</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
@@ -901,7 +911,7 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">type_</span><span class="p">):</span>
 
-        <span class="n">id_</span> <span class="o">=</span> <span class="n">db</span><span class="p">(</span><span class="n">type_</span><span class="p">)</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+        <span class="n">id_</span> <span class="o">=</span> <span class="n">db</span><span class="p">(</span><span class="n">type_</span><span class="p">)</span><span class="o">.</span><span class="n">proc_key</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">db</span><span class="p">(</span><span class="n">type_</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">ncbi</span> <span class="o">=</span> <span class="n">ids</span><span class="p">(</span><span class="s1">&#39;ncbi&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span> <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;gene&#39;</span> <span class="k">else</span> <span class="p">()</span>
         <span class="n">uniprot</span> <span class="o">=</span> <span class="n">ids</span><span class="p">(</span><span class="s1">&#39;uniprot&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span> <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;gene&#39;</span> <span class="k">else</span> <span class="p">()</span>
@@ -916,10 +926,10 @@ document.write(`
             <span class="n">chebi_ids</span> <span class="o">=</span> <span class="n">chebi</span><span class="p">,</span>
         <span class="p">)</span>
 
-
     <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">organism</span> <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="s1">&#39;gene&#39;</span> <span class="k">else</span> <span class="n">db</span> <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="p">(</span><span class="n">source_db</span><span class="p">,</span> <span class="n">target_db</span><span class="p">)]</span>
     <span class="n">entries</span> <span class="o">=</span> <span class="n">_kegg_link</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-    <span class="n">interactions</span> <span class="o">=</span> <span class="p">[(</span><span class="n">process</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">process</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">]</span>
+
+    <span class="n">interactions</span> <span class="o">=</span> <span class="p">[(</span><span class="n">process</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">source_db</span><span class="p">),</span> <span class="n">process</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">target_db</span><span class="p">))</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">interactions</span>
 
@@ -930,7 +940,6 @@ document.write(`
     <span class="n">_query_args</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
@@ -948,13 +957,12 @@ document.write(`
         <span class="k">return</span> <span class="n">entry</span>
 
 
-    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 
         <span class="n">entries</span> <span class="o">=</span> <span class="n">_kegg_list</span><span class="p">(</span><span class="o">*</span><span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_args</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">proc_key</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_value</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proc_key</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_value</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span>
         <span class="p">}</span>
 
@@ -979,15 +987,24 @@ document.write(`
 
     <span class="n">_query_args</span> <span class="o">=</span> <span class="s1">&#39;organism&#39;</span>
 
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+
+        <span class="n">entries</span> <span class="o">=</span> <span class="n">_kegg_list</span><span class="p">(</span><span class="o">*</span><span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_args</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proc_key</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_value</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">entry</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span>
+        <span class="p">}</span>
+
 
     <span class="k">def</span> <span class="nf">proc_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">entry</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">proc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">entry</span>
 
 
 <span class="k">class</span> <span class="nc">_Gene</span><span class="p">(</span><span class="n">_KeggDatabase</span><span class="p">):</span>
@@ -997,15 +1014,24 @@ document.write(`
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+
+        <span class="n">entries</span> <span class="o">=</span> <span class="n">_kegg_list</span><span class="p">(</span><span class="o">*</span><span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_args</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proc_key</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_value</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span>
+        <span class="p">}</span>
+
 
     <span class="k">def</span> <span class="nf">proc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">entry</span>
 
 
     <span class="k">def</span> <span class="nf">proc_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">entry</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">_Pathway</span><span class="p">(</span><span class="n">_KeggDatabase</span><span class="p">):</span>
@@ -1016,12 +1042,12 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">proc_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">entry</span>
 
 
     <span class="k">def</span> <span class="nf">proc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
 
-        <span class="n">pathway_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_re_pathway</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">pathway_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_re_pathway</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
 
         <span class="c1"># is this correct?</span>
         <span class="c1"># there are pathway prefixes in KEGG other than &quot;map&quot;</span>
@@ -1079,7 +1105,7 @@ document.write(`
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_kegg_conv</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">id_types</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_kegg_conv</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_id_types</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_splits</span><span class="p">))</span>
 
 
     <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>

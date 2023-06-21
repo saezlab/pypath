@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.common &#8212; pypath 0.15.4 documentation</title>
+    <title>pypath.inputs.common &#8212; pypath 0.15.5 documentation</title>
   
   
   
@@ -545,6 +545,7 @@ document.write(`
         <span class="n">xls_file</span><span class="p">,</span>
         <span class="n">sheet</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">use_openpyxl</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">cell_range</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic function to read MS Excel XLS file, and convert one sheet</span>
@@ -568,6 +569,8 @@ document.write(`
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_openpyxl</span><span class="p">:</span>
 
         <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Reading XLS(X) by xlrd.&#39;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">xls_file</span><span class="p">,</span> <span class="s1">&#39;read&#39;</span><span class="p">):</span>
 
@@ -595,13 +598,17 @@ document.write(`
 
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">xls_file</span><span class="p">)</span>
 
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 
+            <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Failed to read by xlrd, falling back to openpyxl.&#39;</span><span class="p">)</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
             <span class="n">use_openpyxl</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">if</span> <span class="n">use_openpyxl</span><span class="p">:</span>
 
         <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Reading XLS(X) by openpyxl.&#39;</span><span class="p">)</span>
 
             <span class="n">book</span> <span class="o">=</span> <span class="n">openpyxl</span><span class="o">.</span><span class="n">load_workbook</span><span class="p">(</span>
                 <span class="n">filename</span> <span class="o">=</span> <span class="n">xls_file</span><span class="p">,</span>
@@ -609,8 +616,10 @@ document.write(`
                 <span class="n">data_only</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 
+            <span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Failed to read `</span><span class="si">{</span><span class="n">xls_file</span><span class="si">}</span><span class="s1">` by openpyxl.&#39;</span><span class="p">)</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not open xls: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">xls_file</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -628,13 +637,20 @@ document.write(`
         <span class="c1"># which we can not avoid as the xlsx files were produced not by us</span>
         <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
 
-            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
             <span class="n">table</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">[</span>
-                    <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span> <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                    <span class="p">(</span>
+                        <span class="n">cell</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span>
+                        <span class="n">cell</span><span class="o">.</span><span class="n">value</span>
+                            <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span>
+                        <span class="s1">&#39;&#39;</span>
+                    <span class="p">)</span>
                     <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">row</span>
                 <span class="p">]</span>
-                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">sheet</span><span class="o">.</span><span class="n">values</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="p">(</span><span class="n">sheet</span><span class="p">[</span><span class="n">cell_range</span><span class="p">]</span> <span class="k">if</span> <span class="n">cell_range</span> <span class="k">else</span> <span class="n">sheet</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
             <span class="p">]</span>
 
     <span class="k">if</span> <span class="s1">&#39;book&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="s1">&#39;release_resources&#39;</span><span class="p">):</span>
