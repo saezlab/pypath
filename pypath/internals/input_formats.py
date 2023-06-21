@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 import copy
 
 import pypath.share.settings as settings
