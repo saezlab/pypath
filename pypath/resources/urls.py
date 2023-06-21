@@ -1747,6 +1747,11 @@ urls = {
         'url': 'http://ftp.ebi.ac.uk/pub/databases/opentargets/platform/'
             '22.11/output/etl/json/%s',
     },
+    'gutmgene': {
+        'label': 'A comprehensive database for target genes of gut microbes and microbial metabolites',
+        'url_human': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-human.txt',
+        'url_mouse': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-mouse.txt',
+    },
 }
 
 

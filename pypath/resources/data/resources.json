@@ -4855,5 +4855,14 @@
         "https://www.opentargets.org/publications"
       ]
     }
+  },
+  "gutMGene": {
+    "license": "No license",
+    "urls": {
+      "webpages": ["http://bio-annotation.cn/gutmgene/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/34500458/"
+      ]
+    }
   }
 }
