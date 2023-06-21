@@ -1,31 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#  !!!THIS FILE IS NOW OBSOLETE AND WILL BE REMOVED FROM THE NEXT RELEASE!!!
 #
-#  This file is part of the `pypath` python module.
-#  Contains descriptions for all resources: e.g. their URLs
+#  This file is part of the `pypath` python module
 #
-#  Copyright
-#  2014-2022
+#  Copyright 2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  Authors: Dénes Türei (turei.denes@gmail.com)
-#           Nicolàs Palacio
-#           Sebastian Lobentanzer
-#           Erva Ulusoy
-#           Olga Ivanova
-#           Ahmet Rifaioglu
+#  Authors: see the file `README.rst`
+#  Contact: Dénes Türei (turei.denes@gmail.com)
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
-#      http://www.gnu.org/licenses/gpl-3.0.html
+#      https://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://pypath.omnipathdb.org/
+#  Website: https://pypath.omnipathdb.org/
 #
-
-# http://www.ijbs.com/v06p0051.htm
-# http://www.nature.com/cddis/journal/v4/n8/full/cddis2013292a.html
 
 import sys
 from future.utils import iteritems
