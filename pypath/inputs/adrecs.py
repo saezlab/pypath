@@ -19,7 +19,7 @@
 
 from __future__ import annotations
 
-from typing import Generator
+from typing import Generator, NamedTuple
 
 import collections
 
@@ -34,6 +34,42 @@ _notavail = lambda x: None if x == 'Not Available' else x
 _synonyms = lambda x: (
     tuple(sorted(y.strip() for y in x.split('|'))) if x else ()
 )
+
+
+class AdrecsAdr(NamedTuple):
+    adr_class: str
+    badd: str
+
+
+class AdrecsChildParent(NamedTuple):
+    child: AdrecsAdr
+    parent: AdrecsAdr
+
+
+class AdrecsDrugAdr(NamedTuple):
+    drug_badd: str
+    drug: str
+    adr_badd: str
+    adr: str
+
+
+class AdrecsTerm(NamedTuple):
+    adrecs_class: str
+    badd: str
+    name: str
+    synonyms: tuple[str]
+    meddra: str
+
+
+class AdrecsDrug(NamedTuple):
+    badd: str
+    drug: str
+    synonyms: str
+    drugbank: str
+    pubchem_cid: str
+    mesh: str
+    kegg: str
+    tdd: str
 
 
 def adrecs_drug_identifiers(
@@ -55,25 +91,14 @@ def adrecs_drug_identifiers(
 
     return _adrecs_base(
         url_key = 'drug_information',
-        record_name = 'Drug',
+        record = AdrecsDrug,
         cell_range = 'A1:H2527',
-        fields = (
-            'badd',
-            'drug',
-            'synonyms',
-            'drugbank',
-            'pubchem_cid',
-            'mesh',
-            'kegg',
-            'tdd',
-        ),
         synonym_idx = [2],
         return_df = return_df,
-
     )
 
 
-def adrecs_adr_ontology(return_df: bool = False) -> list[tuple] | pd.DataFrame:
+def adrecs_adr_ontology(return_df: bool = False) -> list[AdrecsTerm] | pd.DataFrame:
     """
     Adverse drug reaction (ADR) ontology from the AdReCS database.
 
@@ -87,9 +112,8 @@ def adrecs_adr_ontology(return_df: bool = False) -> list[tuple] | pd.DataFrame:
 
     return _adrecs_base(
         url_key = 'terminology',
-        record_name = 'Term',
+        record = AdrecsTerm,
         cell_range = 'A1:E13856',
-        fields = ('adrecs_class', 'badd', 'name', 'synonyms', 'meddra'),
         synonym_idx = [3],
         return_df = return_df,
     )
@@ -97,14 +121,16 @@ def adrecs_adr_ontology(return_df: bool = False) -> list[tuple] | pd.DataFrame:
 
 def _adrecs_base(
         url_key: str,
-        record_name: str,
+        record: str | type,
         cell_range: str,
-        fields: tuple[str],
         synonym_idx: list[int],
+        fields: tuple[str] | None = None,
         return_df: bool = False,
     ) -> list[tuple] | pd.DataFrame:
 
-    record = collections.namedtuple(f'Adrecs{record_name}', fields)
+    if isinstance(record, str):
+
+        record = collections.namedtuple(f'Adrecs{record_name}', fields)
 
     url = urls.urls['adrecs'][url_key]
     path = curl.Curl(url, silent = False, large = True)
@@ -126,7 +152,7 @@ def _adrecs_base(
 
 def adrecs_drug_adr(
         return_df: bool = False,
-    ) -> Generator[tuple] | pd.DataFrame:
+    ) -> Generator[AdrecsDrugAdr] | pd.DataFrame:
     """
     Drug-ADR pairs from the AdReCS database.
 
@@ -145,15 +171,52 @@ def adrecs_drug_adr(
 
 def _adrecs_drug_adr():
 
-    record = collections.namedtuple(
-        'AdrecsDrugAdr',
-        ('drug_badd',  'drug', 'adr_badd', 'adr'),
-    )
-
     url = urls.urls['adrecs']['adrecs_drugs']
     c = curl.Curl(url, large = True, silent = False)
     _ = next(c.result)
 
     for line in c.result:
 
-        yield record(*line.strip().split('\t'))
+        yield AdrecsDrugAdr(*line.strip().split('\t'))
+
+
+def adrecs_hierarchy() -> set[AdrecsChildParent]:
+    """
+    Child-parent relationships between AdReCS ontology terms.
+
+    Return:
+        Set of tuples representing child-parent relationship. Both the child
+        and parent terms present with their numeric class and BADD identifiers.
+    """
+
+    adr_ontology = adrecs_adr_ontology()
+
+    child_adrs = {
+        record.adrecs_class: record.badd
+        for record in adr_ontology
+    }
+
+    result = set()
+
+    for field in adr_ontology:
+
+        if '.' not in field.adrecs_class:
+
+            continue
+
+        parent_adrecs = field.adrecs_class.rsplit('.', 1)[0]
+
+        result.add(
+            AdrecsChildParent(
+                child = AdrecsAdr(
+                    adr_class = field.adrecs_class,
+                    badd = field.badd,
+                ),
+                parent = AdrecsAdr(
+                    adr_class = parent_adrecs,
+                    badd = child_adrs.get(parent_adrecs),
+                ),
+            )
+        )
+
+    return result
