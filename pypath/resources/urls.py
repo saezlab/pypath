@@ -1592,7 +1592,8 @@ urls = {
     },
     'hpo': {
         'label': 'HPO database',
-        'ontology': 'https://purl.obolibrary.org/obo/hp.obo'
+        'ontology': 'https://purl.obolibrary.org/obo/hp.obo',
+        'ontology_new': 'https://purl.obolibrary.org/obo/hp.obo'
             'human-phenotype-ontology/master/hp.obo',
         'disease' : 'https://purl.obolibrary.org/obo/hp/hpoa/phenotype.hpoa',
         'gene' : 'https://purl.obolibrary.org/obo/hp/hpoa/'
