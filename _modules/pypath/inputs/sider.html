@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.sider &#8212; pypath 0.15.6 documentation</title>
+    <title>pypath.inputs.sider &#8212; pypath 0.15.7 documentation</title>
   
   
   
@@ -513,11 +513,37 @@ document.write(`
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NamedTuple</span>
+
 <span class="kn">import</span> <span class="nn">collections</span>
 
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+
+
+<div class="viewcode-block" id="SiderSideeffect"><a class="viewcode-back" href="../../../api/pypath.inputs.sider.SiderSideeffect.html#pypath.inputs.sider.SiderSideeffect">[docs]</a><span class="k">class</span> <span class="nc">SiderSideeffect</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">umls_concept_on_label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">umls_concept_in_meddra</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">side_effect</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+<div class="viewcode-block" id="SiderSideeffetFrequency"><a class="viewcode-back" href="../../../api/pypath.inputs.sider.SiderSideeffetFrequency.html#pypath.inputs.sider.SiderSideeffetFrequency">[docs]</a><span class="k">class</span> <span class="nc">SiderSideeffetFrequency</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">umls_concept_on_label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">umls_concept_in_meddra</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">side_effect</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+<div class="viewcode-block" id="SiderSideeffectMeddra"><a class="viewcode-back" href="../../../api/pypath.inputs.sider.SiderSideeffectMeddra.html#pypath.inputs.sider.SiderSideeffectMeddra">[docs]</a><span class="k">class</span> <span class="nc">SiderSideeffectMeddra</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">cid</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">meddra_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">side_effect_name</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+<div class="viewcode-block" id="SiderDrug"><a class="viewcode-back" href="../../../api/pypath.inputs.sider.SiderDrug.html#pypath.inputs.sider.SiderDrug">[docs]</a><span class="k">class</span> <span class="nc">SiderDrug</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">atc</span><span class="p">:</span> <span class="nb">str</span></div>
 
 
 <div class="viewcode-block" id="sider_drug_names"><a class="viewcode-back" href="../../../api/pypath.inputs.sider.sider_drug_names.html#pypath.inputs.sider.sider_drug_names">[docs]</a><span class="k">def</span> <span class="nf">sider_drug_names</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]]:</span>
@@ -528,10 +554,6 @@ document.write(`
 <span class="sd">        Drug PubChem CID, name and ATC information as a list of named tuples.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">SiderDrugName</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
-        <span class="s1">&#39;SiderDrugName&#39;</span><span class="p">,</span>
-        <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;atc&#39;</span><span class="p">),</span>
-    <span class="p">)</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
     <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -551,7 +573,7 @@ document.write(`
 
         <span class="k">for</span> <span class="n">atc</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;atc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)):</span>
 
-            <span class="n">result</span><span class="p">[</span><span class="n">cid</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">SiderDrugName</span><span class="p">(</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">cid</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">SiderDrug</span><span class="p">(</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,))[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="n">atc</span> <span class="o">=</span> <span class="n">atc</span><span class="p">,</span>
             <span class="p">))</span>
@@ -573,20 +595,9 @@ document.write(`
 <span class="sd">        and side effect name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;umls_concept_on_label&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;umls_concept_in_meddra&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;side_effect&#39;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">fields</span> <span class="o">+=</span> <span class="p">((</span><span class="s1">&#39;frequency&#39;</span><span class="p">,)</span> <span class="k">if</span> <span class="n">freq</span> <span class="k">else</span> <span class="p">())</span>
-    <span class="n">record</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
-        <span class="s1">&#39;SiderSideEffect</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;Freq&#39;</span> <span class="k">if</span> <span class="n">freq</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
-        <span class="n">fields</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="n">record</span> <span class="o">=</span> <span class="n">SiderSideeffetFrequency</span> <span class="k">if</span> <span class="n">freq</span> <span class="k">else</span> <span class="n">SiderSideeffect</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
-
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;sider&#39;</span><span class="p">][</span><span class="s1">&#39;meddra_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;freq&#39;</span> <span class="k">if</span> <span class="n">freq</span> <span class="k">else</span> <span class="s1">&#39;all&#39;</span><span class="p">)]</span>
-
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># essential features&#39; indices</span>
@@ -603,7 +614,7 @@ document.write(`
         <span class="n">result</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="n">record</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
                 <span class="n">key</span><span class="p">:</span> <span class="n">line</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="kc">None</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">_fields</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
             <span class="p">})</span>
         <span class="p">)</span>
 
@@ -623,6 +634,48 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">sider_side_effects</span><span class="p">(</span><span class="n">freq</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sider_meddra_side_effects"><a class="viewcode-back" href="../../../api/pypath.inputs.sider.sider_meddra_side_effects.html#pypath.inputs.sider.sider_meddra_side_effects">[docs]</a><span class="k">def</span> <span class="nf">sider_meddra_side_effects</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves MedDRA side effect information from the SIDER database.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of named tuples containing the following fields:</span>
+<span class="sd">        - cid: Drug PubChem CID</span>
+<span class="sd">        - meddra_id: MedDRA ID for the side effect</span>
+<span class="sd">        - side_effect_name: Name of the side effect</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="n">url_meddra_tsv</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;sider&#39;</span><span class="p">][</span><span class="s1">&#39;meddra_tsv&#39;</span><span class="p">]</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+        <span class="n">url_meddra_tsv</span><span class="p">,</span>
+        <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">continue</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;PT&#39;</span><span class="p">:</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">SiderSideeffectMeddra</span><span class="p">(</span>
+                    <span class="n">cid</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">meddra_id</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                    <span class="n">side_effect_name</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 </pre></div>
 
                 </article>

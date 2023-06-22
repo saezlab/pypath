@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.adrecs &#8212; pypath 0.15.6 documentation</title>
+    <title>pypath.inputs.adrecs &#8212; pypath 0.15.7 documentation</title>
   
   
   
@@ -513,7 +513,7 @@ document.write(`
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">NamedTuple</span>
 
 <span class="kn">import</span> <span class="nn">collections</span>
 
@@ -528,6 +528,42 @@ document.write(`
 <span class="n">_synonyms</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span>
     <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)))</span> <span class="k">if</span> <span class="n">x</span> <span class="k">else</span> <span class="p">()</span>
 <span class="p">)</span>
+
+
+<div class="viewcode-block" id="AdrecsAdr"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.AdrecsAdr.html#pypath.inputs.adrecs.AdrecsAdr">[docs]</a><span class="k">class</span> <span class="nc">AdrecsAdr</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">adr_class</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">badd</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+<div class="viewcode-block" id="AdrecsChildParent"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.AdrecsChildParent.html#pypath.inputs.adrecs.AdrecsChildParent">[docs]</a><span class="k">class</span> <span class="nc">AdrecsChildParent</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">child</span><span class="p">:</span> <span class="n">AdrecsAdr</span>
+    <span class="n">parent</span><span class="p">:</span> <span class="n">AdrecsAdr</span></div>
+
+
+<div class="viewcode-block" id="AdrecsDrugAdr"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.AdrecsDrugAdr.html#pypath.inputs.adrecs.AdrecsDrugAdr">[docs]</a><span class="k">class</span> <span class="nc">AdrecsDrugAdr</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">drug_badd</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">drug</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">adr_badd</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">adr</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+<div class="viewcode-block" id="AdrecsTerm"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.AdrecsTerm.html#pypath.inputs.adrecs.AdrecsTerm">[docs]</a><span class="k">class</span> <span class="nc">AdrecsTerm</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">adrecs_class</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">badd</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">synonyms</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">meddra</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+<div class="viewcode-block" id="AdrecsDrug"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.AdrecsDrug.html#pypath.inputs.adrecs.AdrecsDrug">[docs]</a><span class="k">class</span> <span class="nc">AdrecsDrug</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">badd</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">drug</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">synonyms</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">drugbank</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">pubchem_cid</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">mesh</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">kegg</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">tdd</span><span class="p">:</span> <span class="nb">str</span></div>
 
 
 <div class="viewcode-block" id="adrecs_drug_identifiers"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.adrecs_drug_identifiers.html#pypath.inputs.adrecs.adrecs_drug_identifiers">[docs]</a><span class="k">def</span> <span class="nf">adrecs_drug_identifiers</span><span class="p">(</span>
@@ -549,25 +585,14 @@ document.write(`
 
     <span class="k">return</span> <span class="n">_adrecs_base</span><span class="p">(</span>
         <span class="n">url_key</span> <span class="o">=</span> <span class="s1">&#39;drug_information&#39;</span><span class="p">,</span>
-        <span class="n">record_name</span> <span class="o">=</span> <span class="s1">&#39;Drug&#39;</span><span class="p">,</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="n">AdrecsDrug</span><span class="p">,</span>
         <span class="n">cell_range</span> <span class="o">=</span> <span class="s1">&#39;A1:H2527&#39;</span><span class="p">,</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s1">&#39;badd&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;drug&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;synonyms&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;drugbank&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;pubchem_cid&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;mesh&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;kegg&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;tdd&#39;</span><span class="p">,</span>
-        <span class="p">),</span>
         <span class="n">synonym_idx</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
         <span class="n">return_df</span> <span class="o">=</span> <span class="n">return_df</span><span class="p">,</span>
-
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="adrecs_adr_ontology"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.adrecs_adr_ontology.html#pypath.inputs.adrecs.adrecs_adr_ontology">[docs]</a><span class="k">def</span> <span class="nf">adrecs_adr_ontology</span><span class="p">(</span><span class="n">return_df</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="adrecs_adr_ontology"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.adrecs_adr_ontology.html#pypath.inputs.adrecs.adrecs_adr_ontology">[docs]</a><span class="k">def</span> <span class="nf">adrecs_adr_ontology</span><span class="p">(</span><span class="n">return_df</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AdrecsTerm</span><span class="p">]</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adverse drug reaction (ADR) ontology from the AdReCS database.</span>
 
@@ -581,9 +606,8 @@ document.write(`
 
     <span class="k">return</span> <span class="n">_adrecs_base</span><span class="p">(</span>
         <span class="n">url_key</span> <span class="o">=</span> <span class="s1">&#39;terminology&#39;</span><span class="p">,</span>
-        <span class="n">record_name</span> <span class="o">=</span> <span class="s1">&#39;Term&#39;</span><span class="p">,</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="n">AdrecsTerm</span><span class="p">,</span>
         <span class="n">cell_range</span> <span class="o">=</span> <span class="s1">&#39;A1:E13856&#39;</span><span class="p">,</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;adrecs_class&#39;</span><span class="p">,</span> <span class="s1">&#39;badd&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;synonyms&#39;</span><span class="p">,</span> <span class="s1">&#39;meddra&#39;</span><span class="p">),</span>
         <span class="n">synonym_idx</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span>
         <span class="n">return_df</span> <span class="o">=</span> <span class="n">return_df</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -591,14 +615,16 @@ document.write(`
 
 <span class="k">def</span> <span class="nf">_adrecs_base</span><span class="p">(</span>
         <span class="n">url_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">record_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">record</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">type</span><span class="p">,</span>
         <span class="n">cell_range</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">fields</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">synonym_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">fields</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_df</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 
-    <span class="n">record</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Adrecs</span><span class="si">{</span><span class="n">record_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+
+        <span class="n">record</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Adrecs</span><span class="si">{</span><span class="n">record_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;adrecs&#39;</span><span class="p">][</span><span class="n">url_key</span><span class="p">]</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
@@ -620,7 +646,7 @@ document.write(`
 
 <div class="viewcode-block" id="adrecs_drug_adr"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.adrecs_drug_adr.html#pypath.inputs.adrecs.adrecs_drug_adr">[docs]</a><span class="k">def</span> <span class="nf">adrecs_drug_adr</span><span class="p">(</span>
         <span class="n">return_df</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">AdrecsDrugAdr</span><span class="p">]</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Drug-ADR pairs from the AdReCS database.</span>
 
@@ -639,18 +665,55 @@ document.write(`
 
 <span class="k">def</span> <span class="nf">_adrecs_drug_adr</span><span class="p">():</span>
 
-    <span class="n">record</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
-        <span class="s1">&#39;AdrecsDrugAdr&#39;</span><span class="p">,</span>
-        <span class="p">(</span><span class="s1">&#39;drug_badd&#39;</span><span class="p">,</span>  <span class="s1">&#39;drug&#39;</span><span class="p">,</span> <span class="s1">&#39;adr_badd&#39;</span><span class="p">,</span> <span class="s1">&#39;adr&#39;</span><span class="p">),</span>
-    <span class="p">)</span>
-
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;adrecs&#39;</span><span class="p">][</span><span class="s1">&#39;adrecs_drugs&#39;</span><span class="p">]</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
     <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
 
-        <span class="k">yield</span> <span class="n">record</span><span class="p">(</span><span class="o">*</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">AdrecsDrugAdr</span><span class="p">(</span><span class="o">*</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="adrecs_hierarchy"><a class="viewcode-back" href="../../../api/pypath.inputs.adrecs.adrecs_hierarchy.html#pypath.inputs.adrecs.adrecs_hierarchy">[docs]</a><span class="k">def</span> <span class="nf">adrecs_hierarchy</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">AdrecsChildParent</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Child-parent relationships between AdReCS ontology terms.</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        Set of tuples representing child-parent relationship. Both the child</span>
+<span class="sd">        and parent terms present with their numeric class and BADD identifiers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">adr_ontology</span> <span class="o">=</span> <span class="n">adrecs_adr_ontology</span><span class="p">()</span>
+
+    <span class="n">child_adrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">record</span><span class="o">.</span><span class="n">adrecs_class</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">badd</span>
+        <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">adr_ontology</span>
+    <span class="p">}</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">adr_ontology</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">adrecs_class</span><span class="p">:</span>
+
+            <span class="k">continue</span>
+
+        <span class="n">parent_adrecs</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">adrecs_class</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">AdrecsChildParent</span><span class="p">(</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="n">AdrecsAdr</span><span class="p">(</span>
+                    <span class="n">adr_class</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">adrecs_class</span><span class="p">,</span>
+                    <span class="n">badd</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">badd</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="n">AdrecsAdr</span><span class="p">(</span>
+                    <span class="n">adr_class</span> <span class="o">=</span> <span class="n">parent_adrecs</span><span class="p">,</span>
+                    <span class="n">badd</span> <span class="o">=</span> <span class="n">child_adrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parent_adrecs</span><span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
 </pre></div>
 
                 </article>
