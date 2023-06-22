@@ -4,22 +4,17 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright
-#  2014-2023
+#  Copyright 2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  Authors: Dénes Türei (turei.denes@gmail.com)
-#           Nicolàs Palacio
-#           Sebastian Lobentanzer
-#           Erva Ulusoy
-#           Olga Ivanova
-#           Ahmet Rifaioglu
+#  Authors: see the file `README.rst`
+#  Contact: Dénes Türei (turei.denes@gmail.com)
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
-#      http://www.gnu.org/licenses/gpl-3.0.html
+#      https://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://pypath.omnipathdb.org/
+#  Website: https://pypath.omnipathdb.org/
 #
 
 from __future__ import annotations
@@ -173,17 +168,17 @@ def adrecs_extract_child_parent_relationship() -> list[tuple]:
         'parent_adr_id'
     ]  
 
-    child_adr_ids = {record.adrecs_id: record.adr_id for record in data}
+    child_adr_ids = {record.adrecs_class: record.badd for record in data}
     
     result = set()
     record = collections.namedtuple('AdrecsChildParentRelationship', fields)
     
     for field in data:
-        if '.' not in field.adrecs_id:
+        if '.' not in field.adrecs_class:
             continue
         
-        child_adrecs_id = field.adrecs_id
-        child_adr_id = field.adr_id
+        child_adrecs_id = field.adrecs_class
+        child_adr_id = field.badd
         parent_adrecs_id = child_adrecs_id.rsplit('.', 1)[0]
         parent_adr_id = child_adr_ids.get(parent_adrecs_id)
 
@@ -199,4 +194,5 @@ def adrecs_extract_child_parent_relationship() -> list[tuple]:
         )
         
     return list(result)
+
 
