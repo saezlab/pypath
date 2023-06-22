@@ -200,4 +200,3 @@ def adrecs_extract_child_parent_relationship() -> list[tuple]:
         
     return list(result)
 
-print(adrecs_extract_child_parent_relationship())
