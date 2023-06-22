@@ -533,10 +533,13 @@ document.write(`
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;hpo&#39;</span><span class="p">][</span><span class="s1">&#39;gene&#39;</span><span class="p">]</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
     <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
-    
+
     <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;entrez_gene_id&#39;</span><span class="p">,</span><span class="s1">&#39;entrez_gene_symbol&#39;</span><span class="p">,</span><span class="s1">&#39;hpo_id&#39;</span><span class="p">)</span>
 
-    <span class="n">HPOAnnotations</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;HPOAnnotations&#39;</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span><span class="n">defaults</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">))</span>
+    <span class="n">HpoAnnotation</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;HpoAnnotation&#39;</span><span class="p">,</span>
+        <span class="n">fields</span><span class="p">,</span><span class="n">defaults</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
 
@@ -549,14 +552,14 @@ document.write(`
         <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">:</span>
 
             <span class="n">result</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                <span class="n">HPOAnnotations</span><span class="p">(</span>
+                <span class="n">HpoAnnotation</span><span class="p">(</span>
                     <span class="n">entrez_gene_id</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                     <span class="n">entrez_gene_symbol</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                     <span class="n">hpo_id</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">result</span></div>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="hpo_terms"><a class="viewcode-back" href="../../../api/pypath.inputs.hpo.hpo_terms.html#pypath.inputs.hpo.hpo_terms">[docs]</a><span class="k">def</span> <span class="nf">hpo_terms</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -649,10 +652,23 @@ document.write(`
 
         <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">stanza</span> <span class="o">!=</span> <span class="s1">&#39;Term&#39;</span><span class="p">:</span> <span class="k">continue</span>
 
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;obsolete&#39;</span> <span class="ow">or</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;is_obsolete&#39;</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">continue</span>
+
         <span class="n">term</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span>
 
-        <span class="n">name</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">modifiers</span><span class="p">)</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">name</span> <span class="k">if</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">modifiers</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">modifiers</span> <span class="k">else</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">value</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">name</span> <span class="k">if</span> <span class="n">n</span><span class="p">)</span>
+
         <span class="n">result</span><span class="p">[</span><span class="s1">&#39;terms&#39;</span><span class="p">][</span><span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
 
         <span class="n">result</span><span class="p">[</span><span class="s1">&#39;defs&#39;</span><span class="p">][</span><span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">definition</span> <span class="k">else</span> <span class="kc">None</span>
@@ -675,7 +691,7 @@ document.write(`
                     <span class="p">{</span>
                         <span class="n">y</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">tuple</span> <span class="k">else</span>
-                        <span class="n">y</span> 
+                        <span class="n">y</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
 
