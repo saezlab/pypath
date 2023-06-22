@@ -1592,10 +1592,10 @@ urls = {
     },
     'hpo': {
         'label': 'HPO database',
-        'ontology': 'http://purl.obolibrary.org/obo/hp.obo'
+        'ontology': 'https://purl.obolibrary.org/obo/hp.obo'
             'human-phenotype-ontology/master/hp.obo',
-        'disease' : 'http://purl.obolibrary.org/obo/hp/hpoa/phenotype.hpoa',
-        'gene' : 'http://purl.obolibrary.org/obo/hp/hpoa/'
+        'disease' : 'https://purl.obolibrary.org/obo/hp/hpoa/phenotype.hpoa',
+        'gene' : 'https://purl.obolibrary.org/obo/hp/hpoa/'
             'genes_to_phenotype.txt',
     },
     'oma': {
