@@ -134,3 +134,52 @@ def sider_side_effect_frequencies() -> list[tuple]:
     """
 
     return sider_side_effects(freq = True)
+
+def sider_meddra_tsv() -> list[tuple]:
+    """
+    Retrieves MedDRA side effect information from the SIDER database.
+
+    Returns:
+        A list of named tuples containing the following fields:
+        - cid: Drug PubChem CID
+        - meddra_id: MedDRA ID for the side effect
+        - side_effect_name: Name of the side effect
+    """
+    fields = (
+        'cid',
+        'kind_of_term',
+        'meddra_id',
+        'side_effect_name',
+    )
+    
+    fields = common.to_list(fields)
+    
+    url_meddra_tsv = urls.urls['sider']['meddra_tsv']
+    
+    c = curl.Curl(
+        url_meddra_tsv,
+        large=True,
+        silent=False
+    )
+    
+    result = set()
+    record = collections.namedtuple('Drug', fields[0:1] + fields[2:])
+    
+    for line in c.result:
+        
+        if not line.strip():
+            continue
+        
+        line = line.strip().split('\t')
+        line = dict(zip(fields, line))
+        
+        if line['kind_of_term'] == 'PT':
+            result.add(
+                record(
+                    cid=line['cid'],
+                    meddra_id=line['meddra_id'],
+                    side_effect_name=line['side_effect_name']
+                )
+            )
+    
+    return list(result)

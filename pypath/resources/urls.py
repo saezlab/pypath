@@ -1645,6 +1645,8 @@ urls = {
             'http://sideeffects.embl.de/media/download/meddra_all_se.tsv.gz',
         'meddra_freq':
             'http://sideeffects.embl.de/media/download/meddra_freq.tsv.gz',
+        'meddra_tsv':
+            'http://sideeffects.embl.de/media/download/meddra.tsv.gz',
     },
     'humsavar': {
         'label': (

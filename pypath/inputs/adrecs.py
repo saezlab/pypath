@@ -162,3 +162,42 @@ def _adrecs_drug_adr():
     for line in c.result:
 
         yield record(*line.strip().split('\t'))
+        
+def adrecs_extract_child_parent_relationship() -> list[tuple]:
+    data = adrecs_adr_ontology()
+    
+    fields = [
+        'child_adrecs_id',
+        'child_adr_id',
+        'parent_adrecs_id',
+        'parent_adr_id'
+    ]  
+
+    child_adr_ids = {record.adrecs_id: record.adr_id for record in data}
+    
+    result = set()
+    record = collections.namedtuple('AdrecsChildParentRelationship', fields)
+    
+    for field in data:
+        if '.' not in field.adrecs_id:
+            continue
+        
+        child_adrecs_id = field.adrecs_id
+        child_adr_id = field.adr_id
+        parent_adrecs_id = child_adrecs_id.rsplit('.', 1)[0]
+        parent_adr_id = child_adr_ids.get(parent_adrecs_id)
+
+        relationship = (
+            child_adrecs_id,
+            child_adr_id,
+            parent_adrecs_id,
+            parent_adr_id
+        )
+        
+        result.add(
+            record(**dict(zip(fields, relationship)))
+        )
+        
+    return list(result)
+
+print(adrecs_extract_child_parent_relationship())
