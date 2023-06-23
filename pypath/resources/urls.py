@@ -1754,6 +1754,14 @@ urls = {
         'url_human': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-human.txt',
         'url_mouse': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-mouse.txt',
     },
+    'drugcombdb': {
+        'label': 'DrugCombDB: a comprehensive database of drug combinations toward the discovery of combinatorial therapy',
+        'url_syner_antag_voting': 'http://drugcombdb.denglab.org/download/Syner&Antag_voting.csv',
+        'url_drug_chemical_info': 'http://drugcombdb.denglab.org/download/drug_chemical_info.csv',
+        'url_syndrugcomb_fda': 'http://drugcombdb.denglab.org/download/SynDrugComb_fda.xlsx',
+        'url_syndrugcomb_textmining': 'http://drugcombdb.denglab.org/download/SynDrugComb_textmining.xlsx',
+        
+    },
 }
 
 

@@ -4864,5 +4864,14 @@
         "https://pubmed.ncbi.nlm.nih.gov/34500458/"
       ]
     }
+  },
+  "DrugCombDB": {
+    "license": "CC BY-NC-ND 4.0",
+    "urls": {
+      "webpages": ["http://drugcombdb.denglab.org/"],
+      "articles": [
+        "https://academic.oup.com/nar/article/48/D1/D871/5609522"
+      ]
+    }
   }
 }
