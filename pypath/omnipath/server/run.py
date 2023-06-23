@@ -2120,23 +2120,32 @@ class TableServer(BaseServer):
         return self._serve_dataframe(tbl, req)
 
 
-    @staticmethod
-    def _dorothea_dataset_filter(tbl, args):
+    @classmethod
+    def _dataset_included(cls, dataset: str, args: dict) -> bool:
 
         return (
-            np.logical_not(tbl.dorothea) |
+            dataset in args['datasets'] |
+            (
+                not args['datasets'] and
+                cls.dataset2type.get(dataset, None) in args['types']
+            )
+        )
+
+
+    @classmethod
+    def _dorothea_dataset_filter(cls, tbl: pd.DataFrame, args: dict):
+
+        return (
             (
                 # if the tf_target dataset is requested
                 # we need to serve it including the parts which
                 # don't fit the filters below
-                (
-                    ('tf_target' in args['datasets']) |
-                    (
-                        (not args['datasets']) &
-                        ('transcriptional' in args['types'])
-                    )
-                ) &
+                cls._dataset_included('tf_target', args) &
                 tbl.tf_target
+            ) |
+            (
+                cls._dataset_included('collectri', args) &
+                tbl.collectri
             )
         )
 
