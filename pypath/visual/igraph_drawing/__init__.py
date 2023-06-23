@@ -4,34 +4,17 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright
-#  2014-2022
+#  Copyright 2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  Authors: Dénes Türei (turei.denes@gmail.com)
-#           Nicolàs Palacio
-#           Sebastian Lobentanzer
-#           Erva Ulusoy
-#           Olga Ivanova
-#           Ahmet Rifaioglu
+#  Authors: see the file `README.rst`
+#  Contact: Dénes Türei (turei.denes@gmail.com)
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
-#      http://www.gnu.org/licenses/gpl-3.0.html
+#      https://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://pypath.omnipathdb.org/
-#
-
-#
-#  This module is from `python-igraph`, with additions that allow to set a typeface.
-#
-#  Authors: Gábor Csárdi & Tamás Nepusz
-#
-#  Distributed under GNU GPLv2 License.
-#  See the license here:
-#  https://github.com/igraph/python-igraph/blob/master/LICENSE
-#
-#  Website: http://igraph.org/
+#  Website: https://pypath.omnipathdb.org/
 #
 
 """

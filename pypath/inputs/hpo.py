@@ -4,23 +4,17 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright
-#  2014-2022
+#  Copyright 2014-2023
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  Authors: Dénes Türei (turei.denes@gmail.com)
-#           Nicolàs Palacio
-#           Sebastian Lobentanzer
-#           Erva Ulusoy
-#           Olga Ivanova
-#           Ahmet Rifaioglu
-#           Tennur Kılıç
+#  Authors: see the file `README.rst`
+#  Contact: Dénes Türei (turei.denes@gmail.com)
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
-#      http://www.gnu.org/licenses/gpl-3.0.html
+#      https://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://pypath.omnipathdb.org/
+#  Website: https://pypath.omnipathdb.org/
 #
 
 from typing import Union
@@ -45,10 +39,13 @@ def hpo_annotations() -> dict[str, set[tuple]]:
     url = urls.urls['hpo']['gene']
     c = curl.Curl(url, large = True, silent = False)
     _ = next(c.result)
-    
+
     fields = ('entrez_gene_id','entrez_gene_symbol','hpo_id')
 
-    HPOAnnotations = collections.namedtuple('HPOAnnotations', fields,defaults = ("",) * len(fields))
+    HpoAnnotation = collections.namedtuple(
+        'HpoAnnotation',
+        fields,defaults = ("",) * len(fields)
+    )
 
     result = collections.defaultdict(set)
 
@@ -61,14 +58,14 @@ def hpo_annotations() -> dict[str, set[tuple]]:
         for uniprot in uniprots:
 
             result[uniprot].add(
-                HPOAnnotations(
+                HpoAnnotation(
                     entrez_gene_id = r[0],
                     entrez_gene_symbol = r[1],
                     hpo_id = r[2],
-                    )
+                )
             )
 
-    return result
+    return dict(result)
 
 
 def hpo_terms() -> dict[str, str]:
@@ -161,10 +158,23 @@ def hpo_ontology() -> dict[str, dict[str, Union[str, set[str]]]]:
 
         if r.stanza != 'Term': continue
 
+        if (
+            r.name is None or
+            r.name.value == 'obsolete' or
+            r.attrs.get('is_obsolete')
+        ):
+            continue
+
         term = r.id.value
 
-        name = (r.name.value, r.name.modifiers)
-        name = ' '.join(n for n in name if n)
+        name = (
+            (r.name.value, r.name.modifiers)
+                if r.name.modifiers else
+            r.name.value
+        )
+
+        if isinstance(name, tuple): name = ' '.join(n for n in name if n)
+
         result['terms'][term] = name
 
         result['defs'][term] = r.definition.value if r.definition else None
@@ -187,7 +197,7 @@ def hpo_ontology() -> dict[str, dict[str, Union[str, set[str]]]]:
                     {
                         y(x.value)
                         if type(y) != tuple else
-                        y 
+                        y
                     }
                 )
 
