@@ -1756,7 +1756,7 @@ urls = {
         'url_drug_chemical_info': 'http://drugcombdb.denglab.org/download/drug_chemical_info.csv',
         'url_syndrugcomb_fda': 'http://drugcombdb.denglab.org/download/SynDrugComb_fda.xlsx',
         'url_syndrugcomb_textmining': 'http://drugcombdb.denglab.org/download/SynDrugComb_textmining.xlsx',
-        
+        'url_syndrugcomb_external': 'http://drugcombdb.denglab.org/download/SynDrugComb_external.xlsx',
     },
 }
 

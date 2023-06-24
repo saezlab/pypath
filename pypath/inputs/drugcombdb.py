@@ -123,4 +123,52 @@ def drugcombdb_syndrugcomb_textmining() -> list[tuple]:
     return list(result)
     
     
-        
+def drugcombdb_syndrugcomb_external_synergism() -> list[tuple]:
+    Fields = collections.namedtuple(
+        'drugcombdb_syndrugcomb_external',
+        [
+            'Drug1',
+            'Drug2',
+            'PubmedID',
+        ],
+        defaults = None
+    )
+    
+    url = urls.urls['drugcombdb']['url_syndrugcomb_external']
+    c = curl.Curl(url, silent = False, large = True)
+    contents = inputs_common.read_xls(c.outfile, sheet='ASDCD_synergism')
+    
+    result = set()
+    
+    for l in contents:
+        l = l[:3]
+        l = [None if not i else i for i in l]
+        if l:
+            result.add(Fields(*l))
+            
+    return list(result)
+
+
+def drugcombdb_syndrugcomb_external_antagonism() -> list[tuple]:
+    Fields = collections.namedtuple(
+        'drugcombdb_syndrugcomb_external',
+        [
+            'Interaction_A',
+            'Interaction_B',
+        ],
+        defaults = None
+    )
+    
+    url = urls.urls['drugcombdb']['url_syndrugcomb_external']
+    c = curl.Curl(url, silent = False, large = True)
+    contents = inputs_common.read_xls(c.outfile, sheet='Drugbank_antagonism')
+    
+    result = set()
+    
+    for l in contents:
+        if l[0] and l[1]:
+            l = [None if not i else i for i in l]
+            if l:
+                result.add(Fields(*l))
+            
+    return list(result)
