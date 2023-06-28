@@ -723,7 +723,14 @@ class MapReader(session_mod.Logger):
         uniprot_id_type_a = uniprot_id_type_a or self.param.uniprot_id_type_a
         uniprot_id_type_b = uniprot_id_type_b or self.param.uniprot_id_type_b
 
-        upload_ac_list = upload_ac_list or self.uniprots
+        if not upload_ac_list:
+
+            self._log(
+                'No identifiers provided, '
+                'using all UniProt IDs of the organism.'
+            )
+            upload_ac_list = self.uniprots
+
         upload_ac_list = sorted(upload_ac_list)
 
         self._log(
@@ -800,6 +807,10 @@ class MapReader(session_mod.Logger):
 
                     if 'status' in poll_result or 'failedIds' in poll_result:
 
+                        self._log(
+                            f'UniProt ID Mapping job `{jobid}` '
+                            'successfully completed.'
+                        )
                         break
 
                     elif 'messages' in poll_result:
@@ -815,6 +826,10 @@ class MapReader(session_mod.Logger):
 
                     time.sleep(interval)
 
+                self._log(
+                    'Getting UniProt ID Mapping results URL '
+                    'for job `{jobid}`.'
+                )
                 det_url = urls.urls['uniprot_idmapping']['details'] % jobid
                 det_c = curl.Curl(url = det_url, **nocache, **accept_json)
                 result_url = (
@@ -826,7 +841,7 @@ class MapReader(session_mod.Logger):
 
                 self._log(
                     'Retrieving UniProt ID Mapping results '
-                    f'from `{result_url}`'
+                    f'from `{result_url}`.'
                 )
 
                 with curl.cache_delete_on():
