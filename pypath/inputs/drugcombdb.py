@@ -1,33 +1,64 @@
 from __future__ import annotations
 
 import collections
+from typing import NamedTuple
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.inputs.common as inputs_common
 
-def drugcombdb_syner_antag_voting() -> list[tuple]:
-    Fields = collections.namedtuple(
-        'drugcombdb_syner_antag_voting',
-        [
-            'ID',
-            'Drug1',
-            'Drug2',
-            'CellLine',
-            'ZIP',
-            'Bliss',
-            'Loewe',
-            'HSA',
-            'ZIPclass',
-            'Blissclass',
-            'Loeweclass',
-            'HSAclass',
-            'synthetic',
-            'classification',
-        ],
-        defaults = None
-    )
+
+class DrugcombdbSynerAntagVoting(NamedTuple):
+    ID: str
+    Drug1: str
+    Drug2: str
+    CellLine: str
+    ZIP: str
+    Bliss: str
+    Loewe: str
+    HSA: str
+    ZIPclass: str
+    Blissclass: str
+    Loeweclass: str
+    HSAclass: str
+    synthetic: str
+    classification: str
     
+    
+class DrugcombdbDrugChemicalInfo(NamedTuple):
+    DrugName: str
+    cIDs: str
+    drugNameOfficial: str
+    molecularWeight: str
+    smiles: str
+    
+    
+class DrugcombdbSyndrugcombFda(NamedTuple):
+    ID: str
+    Drug1: str
+    Drug2: str
+    Machenism: str
+    Source: str
+    
+
+class DrugcombdbSyndrugcombTextmining(NamedTuple):
+    Drug1: str
+    Drug2: str
+    Target : str
+    Source : str
+    
+
+class DrugcombdbExternalSynergy(NamedTuple):
+    Drug1: str
+    Drug2: str
+    PubmedID : str
+    
+
+class DrugcombdbExternalAntagonism(NamedTuple):
+    InteractionA : str
+    InteractionB : str
+
+def drugcombdb_syner_antag_voting() -> list[tuple]:
     url = urls.urls['drugcombdb']['url_syner_antag_voting']
     c = curl.Curl(url, silent = False, large = True)
     
@@ -36,24 +67,12 @@ def drugcombdb_syner_antag_voting() -> list[tuple]:
     for l in c.result:
         l = l.strip().split(',')
         l = [None if not i else i for i in l]
-        if l and len(l) == len(Fields._fields):
-            result.add(Fields(*l))
+        if l and len(l) == len(DrugcombdbSynerAntagVoting._fields):
+            result.add(DrugcombdbSynerAntagVoting(*l))
             
     return list(result)
 
 def drugcombdb_drug_chemical_info() -> list[tuple]:
-    Fields = collections.namedtuple(
-        'drugcombdb_drug_chemical_info',
-        [
-            'DrugName',
-            'cIDs',
-            'drugNameOfficial',
-            'molecularWeight',
-            'smiles',
-        ],
-        defaults = None
-    )
-    
     url = urls.urls['drugcombdb']['url_drug_chemical_info']
     c = curl.Curl(url, silent = False, large = True, encoding = 'ISO-8859-1')
     
@@ -63,25 +82,13 @@ def drugcombdb_drug_chemical_info() -> list[tuple]:
         l = l.strip().split(',')
         l = [None if not i or i == '#N/A' else i for i in l]
         l = [None if not i else i for i in l]
-        if l and len(l) == len(Fields._fields):
-            result.add(Fields(*l))
+        if l and len(l) == len(DrugcombdbDrugChemicalInfo._fields):
+            result.add(DrugcombdbDrugChemicalInfo(*l))
             
     return list(result)
 
 
 def drugcombdb_syndrugcomb_fda() -> list[tuple]:
-    Fields = collections.namedtuple(
-        'drugcombdb_syndrugcomb_fda',
-        [
-            'ID',
-            'Drug1',
-            'Drug2',
-            'Machenism',
-            'Source',
-        ],
-        defaults = None
-    )
-    
     url = urls.urls['drugcombdb']['url_syndrugcomb_fda']
     c = curl.Curl(url, silent = False, large = True)
     contents = inputs_common.read_xls(c.outfile, sheet='2drugs')
@@ -90,24 +97,13 @@ def drugcombdb_syndrugcomb_fda() -> list[tuple]:
     
     for l in contents:
         l = [None if not i else i for i in l]
-        if l and len(l) == len(Fields._fields):
-            result.add(Fields(*l))
+        if l and len(l) == len(DrugcombdbSyndrugcombFda._fields):
+            result.add(DrugcombdbSyndrugcombFda(*l))
             
     return list(result)
 
 
 def drugcombdb_syndrugcomb_textmining() -> list[tuple]:
-    Fields = collections.namedtuple(
-        'drugcombdb_syndrugcomb_textmining',
-        [
-            'Drug1',
-            'Drug2',
-            'Target',
-            'Source',
-        ],
-        defaults = None
-    )
-    
     url = urls.urls['drugcombdb']['url_syndrugcomb_textmining']
     c = curl.Curl(url, silent = False, large = True)
     contents = inputs_common.read_xls(c.outfile, sheet='2drugs')
@@ -118,22 +114,12 @@ def drugcombdb_syndrugcomb_textmining() -> list[tuple]:
         l = l[:-1]
         l = [None if not i else i for i in l]
         if l:
-            result.add(Fields(*l))
+            result.add(DrugcombdbSyndrugcombTextmining(*l))
             
     return list(result)
     
     
 def drugcombdb_syndrugcomb_external_synergism() -> list[tuple]:
-    Fields = collections.namedtuple(
-        'drugcombdb_syndrugcomb_external',
-        [
-            'Drug1',
-            'Drug2',
-            'PubmedID',
-        ],
-        defaults = None
-    )
-    
     url = urls.urls['drugcombdb']['url_syndrugcomb_external']
     c = curl.Curl(url, silent = False, large = True)
     contents = inputs_common.read_xls(c.outfile, sheet='ASDCD_synergism')
@@ -144,21 +130,12 @@ def drugcombdb_syndrugcomb_external_synergism() -> list[tuple]:
         l = l[:3]
         l = [None if not i else i for i in l]
         if l:
-            result.add(Fields(*l))
+            result.add(DrugcombdbExternalSynergy(*l))
             
     return list(result)
 
 
 def drugcombdb_syndrugcomb_external_antagonism() -> list[tuple]:
-    Fields = collections.namedtuple(
-        'drugcombdb_syndrugcomb_external',
-        [
-            'Interaction_A',
-            'Interaction_B',
-        ],
-        defaults = None
-    )
-    
     url = urls.urls['drugcombdb']['url_syndrugcomb_external']
     c = curl.Curl(url, silent = False, large = True)
     contents = inputs_common.read_xls(c.outfile, sheet='Drugbank_antagonism')
@@ -169,6 +146,6 @@ def drugcombdb_syndrugcomb_external_antagonism() -> list[tuple]:
         if l[0] and l[1]:
             l = [None if not i else i for i in l]
             if l:
-                result.add(Fields(*l))
+                result.add(DrugcombdbExternalAntagonism(*l))
             
     return list(result)
