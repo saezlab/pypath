@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections
 from typing import NamedTuple
 
 import pypath.share.curl as curl
@@ -57,8 +56,21 @@ class DrugcombdbExternalSynergy(NamedTuple):
 class DrugcombdbExternalAntagonism(NamedTuple):
     InteractionA : str
     InteractionB : str
+    
 
 def drugcombdb_syner_antag_voting() -> list[tuple]:
+    """
+    Drug combinations classified based on the majority voting.
+    
+    Returns
+    -------
+    list[tuple]
+        List of named tuples.
+        
+    References
+    ----------
+    http://drugcombdb.denglab.org/download/Syner&Antag_voting.csv
+    """
     url = urls.urls['drugcombdb']['url_syner_antag_voting']
     c = curl.Curl(url, silent = False, large = True)
     
@@ -73,6 +85,18 @@ def drugcombdb_syner_antag_voting() -> list[tuple]:
     return list(result)
 
 def drugcombdb_drug_chemical_info() -> list[tuple]:
+    """
+    Drug chemical information from DrugCombDB.
+    
+    Returns
+    -------
+    list[tuple]
+        List of named tuples containing drug chemical information.
+        
+    References
+    ----------
+    http://drugcombdb.denglab.org/download/drug_chemical_info.csv
+    """
     url = urls.urls['drugcombdb']['url_drug_chemical_info']
     c = curl.Curl(url, silent = False, large = True, encoding = 'ISO-8859-1')
     
@@ -89,6 +113,18 @@ def drugcombdb_drug_chemical_info() -> list[tuple]:
 
 
 def drugcombdb_syndrugcomb_fda() -> list[tuple]:
+    """
+    Drug combinations extracted from FDA orange book.
+    
+    Returns
+    -------
+    list[tuple]
+        List of named tuples containing FDA approved drug combinations.
+    
+    References
+    ----------
+    http://drugcombdb.denglab.org/download/SynDrugComb_fda.xlsx
+    """
     url = urls.urls['drugcombdb']['url_syndrugcomb_fda']
     c = curl.Curl(url, silent = False, large = True)
     contents = inputs_common.read_xls(c.outfile, sheet='2drugs')
@@ -104,6 +140,18 @@ def drugcombdb_syndrugcomb_fda() -> list[tuple]:
 
 
 def drugcombdb_syndrugcomb_textmining() -> list[tuple]:
+    """
+    Drug combinations extracted from pubmed iteratures followed by manual curations. 
+    
+    Returns
+    -------
+    list[tuple]
+        List of named tuples containing text mining drug combinations.
+        
+    References
+    ----------
+    http://drugcombdb.denglab.org/download/SynDrugComb_textmining.xlsx
+    """
     url = urls.urls['drugcombdb']['url_syndrugcomb_textmining']
     c = curl.Curl(url, silent = False, large = True)
     contents = inputs_common.read_xls(c.outfile, sheet='2drugs')
@@ -120,6 +168,18 @@ def drugcombdb_syndrugcomb_textmining() -> list[tuple]:
     
     
 def drugcombdb_syndrugcomb_external_synergism() -> list[tuple]:
+    """
+    Synergism data extracted from external databases. 
+    
+    Returns
+    -------
+    list[tuple]
+        List of named tuples containing external synergism data.
+        
+    References
+    ----------
+    http://drugcombdb.denglab.org/download/SynDrugComb_external.xlsx
+    """
     url = urls.urls['drugcombdb']['url_syndrugcomb_external']
     c = curl.Curl(url, silent = False, large = True)
     contents = inputs_common.read_xls(c.outfile, sheet='ASDCD_synergism')
@@ -136,6 +196,18 @@ def drugcombdb_syndrugcomb_external_synergism() -> list[tuple]:
 
 
 def drugcombdb_syndrugcomb_external_antagonism() -> list[tuple]:
+    """
+    Antagonism data extracted from external databases.
+    
+    Returns
+    -------
+    list[tuple]
+        List of named tuples containing external antagonism data.
+        
+    References
+    ----------
+    http://drugcombdb.denglab.org/download/SynDrugComb_external.xlsx
+    """
     url = urls.urls['drugcombdb']['url_syndrugcomb_external']
     c = curl.Curl(url, silent = False, large = True)
     contents = inputs_common.read_xls(c.outfile, sheet='Drugbank_antagonism')
