@@ -90,7 +90,7 @@ def ddinter_identifiers(drug: str) -> list[tuple]:
     result = set()
 
     fields = ('ddinter', 'drugbank', 'chembl', 'pubchem')
-    record = namedtuple('DdinterIdentifiers', fields, defaults = None)
+    record = namedtuple('DdinterIdentifiers', fields, defaults = (None, ) * len(fields))
     mapping_targets = ['drugbank', 'chembl', 'pubchem']
     mapping_dict = {}
 
@@ -122,13 +122,13 @@ def ddinter_mappings(return_df: bool = False) -> list[tuple] | pd.DataFrame:
 
     result = []
 
-    for idx in range(1, ddinter_n_records() + 1):
+    for idx in range(1, ddinter_n_drugs() + 1):
 
-        ddinter_drug = 'DDInter{idx}'
+        ddinter_drug = f'DDInter{idx}'
+        
+        result.extend(ddinter_identifiers(ddinter_drug))
 
-        result.extend(ddinter_mapping(ddinter_drug))
-
-    return pd.DataFram(result) if return_df else result
+    return pd.DataFrame(result) if return_df else result
 
 
 def _ensure_hashable(data):
@@ -167,9 +167,9 @@ def ddinter_drug_interactions(
         'DdinterInteraction',
         (
             'drug1_id',
-            'drug1',
+            'drug1_name',
             'drug2_id',
-            'drug2',
+            'drug2_name',
             'level',
             'actions',
         ),
@@ -208,7 +208,7 @@ def ddinter_interactions(return_df: bool = False) -> list[tuple] | pd.DataFrame:
     """
     result = [
         ddinter_drug_interactions(drug = f'DDInter{i}')
-        for i in range(1, get_record_number()+1):
+        for i in range(1, ddinter_n_drugs()+1)
     ]
 
     return pd.DataFrame(result) if return_df else result
