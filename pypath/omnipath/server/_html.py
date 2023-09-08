@@ -1447,7 +1447,7 @@ _default_css = u'''
                         font-size: 17px;
                     }
                 }
-                
+
                 @media screen and (min-width: 1200px) {
                     html {
                         font-size: 18px;
@@ -1568,7 +1568,7 @@ _header = u'''<!DOCTYPE html>
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
             <meta name="dc.language" content="en">
-            <meta name="viewport" content="width=device-width, 
+            <meta name="viewport" content="width=device-width,
             initial-scale=1.0">
             <link rel="icon" type="image/png" href="%s" />
             <style type="text/css">%s
@@ -1585,16 +1585,16 @@ _footer = u'''
                 Nicolàs Palacio,</a>
             <a href="http://saezlab.org/person/olga-ivanova/">
                 Olga Ivanova,</a>
-            <a href="http://saezlab.org/">Saez Lab</a> 2016-2020. 
+            <a href="http://saezlab.org/">Saez Lab</a> 2016-2020.
             Feedback: omnipathdb@gmail.com </p>
         <p>
             <a href="https://validator.w3.org/check/referer">
-                <img 
+                <img
                     src="%s"
                      alt="Valid HTML5" />
             </a>
             <a href="https://jigsaw.w3.org/css-validator/check/referer">
-                <img 
+                <img
                     src="%s"
                      alt="Valid CSS3" />
             </a>
@@ -1683,16 +1683,16 @@ def main_page():
 
     with open(os.path.join(common.ROOT, 'data', 'main.html'), 'r') as f:
         doc = f.read()
-    
+
     tut = ''
-    
+
     tut += '<h3>Check out our tutorials:</h3>'
     for nb, name in notebook_names:
         if nb in notebooks:
             tut += '<p><a href="%s" title="%s">%s</a></p>' % (
                 'http://pypath.omnipathdb.org/notebooks/%s' % nb, name, name)
     tut += '<p>Special thanks for Luis Tobalina for providing some of the tutorials.</p>'
-    
+
     doc = doc.replace('<!--TUTORIALS-->', tut)
 
     return default_template(
@@ -1705,7 +1705,9 @@ def main_page():
 
 def http_500():
 
-    with open(os.path.join(common.ROOT, 'data', 'http500.html'), 'r') as f:
+    html_path = os.path.join(common.ROOT, 'data', 'www', 'http500.html')
+
+    with open(html_path, 'r') as f:
 
         html = f.read()
 
