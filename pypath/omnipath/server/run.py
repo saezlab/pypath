@@ -2124,7 +2124,7 @@ class TableServer(BaseServer):
     def _dataset_included(cls, dataset: str, args: dict) -> bool:
 
         return (
-            dataset in args['datasets'] |
+            dataset in args['datasets'] or
             (
                 not args['datasets'] and
                 cls.dataset2type.get(dataset, None) in args['types']
