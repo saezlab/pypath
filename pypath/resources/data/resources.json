@@ -4701,11 +4701,14 @@
     }
   },
   "DISEASES": {
-    "full_name": "",
-    "license": "CC BY",
+    "full_name": "DISEASES",
+    "license": "CC BY 4.0",
     "urls": {
       "webpages": ["https://diseases.jensenlab.org/"]
-    }
+    },
+    "descriptions": [
+      "Disease-gene associations mined from the literature"
+    ]
   },
   "SIDER": {
     "license": "CC BY-NC-SA 4.0",
@@ -4721,20 +4724,35 @@
     "urls": {}
   },
   "Twosides": {
-    "license": "",
+    "license": "No license",
     "urls": {
-      "webpages": ["https://tatonettilab.org/offsides/"],
+      "webpages": [
+        "https://tatonettilab.org/offsides/",
+        "https://nsides.io/"
+      ],
       "articles": [
       ]
     }
   },
   "Offsides": {
-    "license": "",
+    "full_name": "OffSIDES",
+    "license": "No license",
     "urls": {
-      "webpages": ["https://tatonettilab.org/offsides/"],
+      "webpages": [
+        "https://tatonettilab.org/offsides/",
+        "https://nsides.io/"
+      ],
       "articles": [
       ]
-    }
+    },
+    "descriptions": [
+      "Drug side effects and drug-drug interactions were mined from publicly ",
+      "available data. OffSIDES is a database of drug side-effects that were ",
+      "found, but are not listed on the official FDA label. TwoSIDES is the ",
+      "only comprehensive database drug-drug-effect relationships. Over ",
+      "3,300 drugs and 63,000 combinations connected to millions of ",
+      "potential adverse reactions."
+    ]
   },
   "Adrecs": {
     "license": "CC BY-NC 4.0",
