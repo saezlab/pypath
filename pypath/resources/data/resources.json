@@ -4848,7 +4848,7 @@
   },
   "OpenTargets": {
     "full_name": "Open Targets",
-    "license": "Mixed, see: https://platform-docs.opentargets.org/licence",
+    "license": "OpenTargets",
     "urls": {
       "webpages": ["https://www.opentargets.org/"],
       "articles": [
