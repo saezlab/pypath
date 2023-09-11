@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.utils.mapping &#8212; pypath 0.15.7 documentation</title>
+    <title>pypath.utils.mapping &#8212; pypath 0.15.8 documentation</title>
   
   
   
@@ -1212,7 +1212,14 @@ document.write(`
         <span class="n">uniprot_id_type_a</span> <span class="o">=</span> <span class="n">uniprot_id_type_a</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">uniprot_id_type_a</span>
         <span class="n">uniprot_id_type_b</span> <span class="o">=</span> <span class="n">uniprot_id_type_b</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">uniprot_id_type_b</span>
 
-        <span class="n">upload_ac_list</span> <span class="o">=</span> <span class="n">upload_ac_list</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniprots</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">upload_ac_list</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;No identifiers provided, &#39;</span>
+                <span class="s1">&#39;using all UniProt IDs of the organism.&#39;</span>
+            <span class="p">)</span>
+            <span class="n">upload_ac_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniprots</span>
+
         <span class="n">upload_ac_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">upload_ac_list</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
@@ -1289,6 +1296,10 @@ document.write(`
 
                     <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">poll_result</span> <span class="ow">or</span> <span class="s1">&#39;failedIds&#39;</span> <span class="ow">in</span> <span class="n">poll_result</span><span class="p">:</span>
 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;UniProt ID Mapping job `</span><span class="si">{</span><span class="n">jobid</span><span class="si">}</span><span class="s1">` &#39;</span>
+                            <span class="s1">&#39;successfully completed.&#39;</span>
+                        <span class="p">)</span>
                         <span class="k">break</span>
 
                     <span class="k">elif</span> <span class="s1">&#39;messages&#39;</span> <span class="ow">in</span> <span class="n">poll_result</span><span class="p">:</span>
@@ -1304,6 +1315,10 @@ document.write(`
 
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="s1">&#39;Getting UniProt ID Mapping results URL &#39;</span>
+                    <span class="s1">&#39;for job `</span><span class="si">{jobid}</span><span class="s1">`.&#39;</span>
+                <span class="p">)</span>
                 <span class="n">det_url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_idmapping&#39;</span><span class="p">][</span><span class="s1">&#39;details&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="n">jobid</span>
                 <span class="n">det_c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span> <span class="o">=</span> <span class="n">det_url</span><span class="p">,</span> <span class="o">**</span><span class="n">nocache</span><span class="p">,</span> <span class="o">**</span><span class="n">accept_json</span><span class="p">)</span>
                 <span class="n">result_url</span> <span class="o">=</span> <span class="p">(</span>
@@ -1315,7 +1330,7 @@ document.write(`
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                     <span class="s1">&#39;Retrieving UniProt ID Mapping results &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;from `</span><span class="si">{</span><span class="n">result_url</span><span class="si">}</span><span class="s1">`&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;from `</span><span class="si">{</span><span class="n">result_url</span><span class="si">}</span><span class="s1">`.&#39;</span>
                 <span class="p">)</span>
 
                 <span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_delete_on</span><span class="p">():</span>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.omnipath.server.run &#8212; pypath 0.15.7 documentation</title>
+    <title>pypath.omnipath.server.run &#8212; pypath 0.15.8 documentation</title>
   
   
   
@@ -2618,7 +2618,7 @@ document.write(`
     <span class="k">def</span> <span class="nf">_dataset_included</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 
         <span class="k">return</span> <span class="p">(</span>
-            <span class="n">dataset</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span> <span class="o">|</span>
+            <span class="n">dataset</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span> <span class="ow">or</span>
             <span class="p">(</span>
                 <span class="ow">not</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span> <span class="ow">and</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">dataset2type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;types&#39;</span><span class="p">]</span>
