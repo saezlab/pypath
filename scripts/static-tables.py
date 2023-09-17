@@ -7,6 +7,9 @@ import requests
 targets = (
     ('annotations', 'PROGENy'),
     ('annotations', 'MSigDB'),
+    ('annotations', 'CytoSig'),
+    ('annotations', 'PanglaoDB'),
+    ('annotations', 'HPA'),
     ('interactions', 'collectri'),
     ('interactions', 'dorothea'),
 )
