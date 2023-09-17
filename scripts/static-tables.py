@@ -27,7 +27,11 @@ for query, resource in targets:
             )
         )
 
-        dorothea = '&dorothea_levels=A,B,C,D' if resource == 'dorothea' else ''
+        dorothea = (
+            ',dorothea_level&dorothea_levels=A,B,C,D'
+                if resource == 'dorothea' else
+            ''
+        )
         query_param = (
             f'&organisms={organism}'
             '&genesymbols=yes'
