@@ -178,6 +178,57 @@ def oma_orthologs(
     return result
 
 
+def oma_table(
+        organism_a: str | int = 'human',
+        organism_b: str | int = 'mouse',
+        id_type: str | None = None,
+        rel_type: set[Literal['1:1', '1:n', 'm:1', 'm:n']] | None = None,
+        score: float = None,
+        return_df: bool = False,
+    ) -> dict[str[set[str]]] | pd.DataFrame:
+    """
+    Translation table of orthologous gene pairs between two organisms from the
+    OMA (Orthologous Matrix) database (https://omabrowser.org/oma/home/).
+
+    Args:
+        organism_a:
+            Name or NCBI Taxonomy ID of the first organism.
+        organism_b:
+            Name or NCBI Taxonomy ID of the second organism.
+        id_type:
+            OMA by default uses UniProt entry IDs and sometimes other
+            identifiers for genes. Set this parameter to control which
+            ID type all the identifiers are to be mapped to.
+        rel_type:
+            Restrict relations to certain types.
+        score:
+            Lower threshold for similarity metric.
+        return_df:
+            If True, returns a data frame instead of a list of tuples.
+
+    Returns:
+        A dict with source organism identifiers as keys and sets of target
+        organism identifiers as values; or a two column data frame with
+        source organism-target organism identifier pairs.
+    """
+
+    full = oma_orthologs(**locals())
+
+    if return_df:
+
+        result = full[['id_a', 'id_b']]
+
+    else:
+
+        result = collections.defaultdict(set)
+
+        for o in full:
+
+            result[o.a.id].add(o.b.id)
+
+    return result
+
+
 def _id_translate(id_: str, taxon: int, id_type: str | None) -> set[str]:
 
     if not id_type: return {id_}
