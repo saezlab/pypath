@@ -279,19 +279,18 @@ class OrthologyManager(session.Logger):
             target:
                 Name or NCBI Taxonomy ID of the target organism.
             source:
-                Name or NCBI Taxonomy ID of the default source organism.
-                Multiple source organisms can be used on the same instance.
+                Name or NCBI Taxonomy ID of the source organism.
             id_type:
                 The identifier type to use.
             only_swissprot:
                 Use only SwissProt IDs.
             oma
-                Use homology information from the Orthologous Matrix (OMA).
-                Currently this is the recommended source for homology data.
+                Use orthology information from the Orthologous Matrix (OMA).
+                Currently this is the recommended source for orthology data.
             homologene:
-                Use homology information from NCBI HomoloGene.
+                Use orthology information from NCBI HomoloGene.
             ensembl:
-                Use homology information from Ensembl.
+                Use orthology information from Ensembl.
             oma_rel_type:
                 Restrict relations to certain types.
             oma_score:
@@ -371,19 +370,18 @@ class OrthologyManager(session.Logger):
             target:
                 Name or NCBI Taxonomy ID of the target organism.
             source:
-                Name or NCBI Taxonomy ID of the default source organism.
-                Multiple source organisms can be used on the same instance.
+                Name or NCBI Taxonomy ID of the source organism.
             id_type:
                 The identifier type to use.
             only_swissprot:
                 Use only SwissProt IDs.
             oma
-                Use homology information from the Orthologous Matrix (OMA).
-                Currently this is the recommended source for homology data.
+                Use orthology information from the Orthologous Matrix (OMA).
+                Currently this is the recommended source for orthology data.
             homologene:
-                Use homology information from NCBI HomoloGene.
+                Use orthology information from NCBI HomoloGene.
             ensembl:
-                Use homology information from Ensembl.
+                Use orthology information from Ensembl.
             oma_rel_type:
                 Restrict relations to certain types.
             oma_score:
@@ -467,19 +465,18 @@ class OrthologyManager(session.Logger):
             target:
                 Name or NCBI Taxonomy ID of the target organism.
             source:
-                Name or NCBI Taxonomy ID of the default source organism.
-                Multiple source organisms can be used on the same instance.
+                Name or NCBI Taxonomy ID of the source organism.
             id_type:
                 The identifier type to use.
             only_swissprot:
                 Use only SwissProt IDs.
             oma
-                Use homology information from the Orthologous Matrix (OMA).
-                Currently this is the recommended source for homology data.
+                Use orthology information from the Orthologous Matrix (OMA).
+                Currently this is the recommended source for orthology data.
             homologene:
-                Use homology information from NCBI HomoloGene.
+                Use orthology information from NCBI HomoloGene.
             ensembl:
-                Use homology information from Ensembl.
+                Use orthology information from Ensembl.
             oma_rel_type:
                 Restrict relations to certain types.
             oma_score:
@@ -572,20 +569,19 @@ class OrthologyManager(session.Logger):
             target:
                 Name or NCBI Taxonomy ID of the target organism.
             source:
-                Name or NCBI Taxonomy ID of the default source organism.
-                Multiple source organisms can be used on the same instance.
+                Name or NCBI Taxonomy ID of the source organism.
             id_type:
                 The default identifier type to use, will be used for all
                 columns where ID type is not specified.
             only_swissprot:
                 Use only SwissProt IDs.
             oma
-                Use homology information from the Orthologous Matrix (OMA).
-                Currently this is the recommended source for homology data.
+                Use orthology information from the Orthologous Matrix (OMA).
+                Currently this is the recommended source for orthology data.
             homologene:
-                Use homology information from NCBI HomoloGene.
+                Use orthology information from NCBI HomoloGene.
             ensembl:
-                Use homology information from Ensembl.
+                Use orthology information from Ensembl.
             oma_rel_type:
                 Restrict relations to certain types.
             oma_score:
@@ -697,7 +693,7 @@ class SequenceContainer(session.Logger):
 
         if not hasattr(self, '_logger'):
 
-            session.Logger.__init__(self, name = 'homology')
+            session.Logger.__init__(self, name = 'orthology')
 
         self.seq_isoforms = isoforms
 
@@ -851,8 +847,7 @@ class ProteinOrthology(Proteomes):
             target:
                 Name or NCBI Taxonomy ID of the target organism.
             source:
-                Name or NCBI Taxonomy ID of the default source organism.
-                Multiple source organisms can be used on the same instance.
+                Name or NCBI Taxonomy ID of the source organism.
             id_type:
                 The identifier type to use.
             only_swissprot:
@@ -1209,7 +1204,7 @@ class HomologeneOrthology(ProteinOrthology):
         }
 
         _log(
-            'Loading homology data from NCBI HomoloGene '
+            'Loading orthology data from NCBI HomoloGene '
             f'between organisms `{self.source}` and `{self.target}`.'
         )
 
@@ -1302,8 +1297,7 @@ class EnsemblOrthology(ProteinOrthology):
             target:
                 Name or NCBI Taxonomy ID of the target organism.
             source:
-                Name or NCBI Taxonomy ID of the default source organism.
-                Multiple source organisms can be used on the same instance.
+                Name or NCBI Taxonomy ID of the source organism.
             id_type:
                 The identifier type to use.
             only_swissprot:
@@ -1482,8 +1476,7 @@ class OmaOrthology(ProteinOrthology):
             target:
                 Name or NCBI Taxonomy ID of the target organism.
             source:
-                Name or NCBI Taxonomy ID of the default source organism.
-                Multiple source organisms can be used on the same instance.
+                Name or NCBI Taxonomy ID of the source organism.
             id_type:
                 The identifier type to use.
             only_swissprot:
@@ -1969,8 +1962,8 @@ def get_manager():
     Access the orthology manager.
 
     Returns the orthology manager, an object which loads and unloads the
-    homology lookup tables as necessary, and provides the interface for
-    querying the homology data. Normally an instance of the manager
+    orthology lookup tables as necessary, and provides the interface for
+    querying the orthology data. Normally an instance of the manager
     belongs to the module, and if it does not exist yet, will be created
     automatically.
     """
@@ -2013,19 +2006,18 @@ def translate(
         target:
             Name or NCBI Taxonomy ID of the target organism.
         source:
-            Name or NCBI Taxonomy ID of the default source organism.
-            Multiple source organisms can be used on the same instance.
+            Name or NCBI Taxonomy ID of the source organism.
         id_type:
             The identifier type to use.
         only_swissprot:
             Use only SwissProt IDs.
         oma
-            Use homology information from the Orthologous Matrix (OMA).
-            Currently this is the recommended source for homology data.
+            Use orthology information from the Orthologous Matrix (OMA).
+            Currently this is the recommended source for orthology data.
         homologene:
-            Use homology information from NCBI HomoloGene.
+            Use orthology information from NCBI HomoloGene.
         ensembl:
-            Use homology information from Ensembl.
+            Use orthology information from Ensembl.
         oma_rel_type:
             Restrict relations to certain types.
         oma_score:
@@ -2080,19 +2072,18 @@ def get_dict(
         target:
             Name or NCBI Taxonomy ID of the target organism.
         source:
-            Name or NCBI Taxonomy ID of the default source organism.
-            Multiple source organisms can be used on the same instance.
+            Name or NCBI Taxonomy ID of the source organism.
         id_type:
             The identifier type to use.
         only_swissprot:
             Use only SwissProt IDs.
         oma
-            Use homology information from the Orthologous Matrix (OMA).
-            Currently this is the recommended source for homology data.
+            Use orthology information from the Orthologous Matrix (OMA).
+            Currently this is the recommended source for orthology data.
         homologene:
-            Use homology information from NCBI HomoloGene.
+            Use orthology information from NCBI HomoloGene.
         ensembl:
-            Use homology information from Ensembl.
+            Use orthology information from Ensembl.
         oma_rel_type:
             Restrict relations to certain types.
         oma_score:
@@ -2148,19 +2139,18 @@ def get_df(
         target:
             Name or NCBI Taxonomy ID of the target organism.
         source:
-            Name or NCBI Taxonomy ID of the default source organism.
-            Multiple source organisms can be used on the same instance.
+            Name or NCBI Taxonomy ID of the source organism.
         id_type:
             The identifier type to use.
         only_swissprot:
             Use only SwissProt IDs.
         oma
-            Use homology information from the Orthologous Matrix (OMA).
-            Currently this is the recommended source for homology data.
+            Use orthology information from the Orthologous Matrix (OMA).
+            Currently this is the recommended source for orthology data.
         homologene:
-            Use homology information from NCBI HomoloGene.
+            Use orthology information from NCBI HomoloGene.
         ensembl:
-            Use homology information from Ensembl.
+            Use orthology information from Ensembl.
         oma_rel_type:
             Restrict relations to certain types.
         oma_score:
@@ -2222,8 +2212,7 @@ def translate_df(
         target:
             Name or NCBI Taxonomy ID of the target organism.
         source:
-            Name or NCBI Taxonomy ID of the default source organism.
-            Multiple source organisms can be used on the same instance.
+            Name or NCBI Taxonomy ID of the source organism.
         cols:
             One or more columns to be translated. It can be a single
             column name, an iterable of column names or a dict where
@@ -2235,12 +2224,12 @@ def translate_df(
         only_swissprot:
             Use only SwissProt IDs.
         oma
-            Use homology information from the Orthologous Matrix (OMA).
-            Currently this is the recommended source for homology data.
+            Use orthology information from the Orthologous Matrix (OMA).
+            Currently this is the recommended source for orthology data.
         homologene:
-            Use homology information from NCBI HomoloGene.
+            Use orthology information from NCBI HomoloGene.
         ensembl:
-            Use homology information from Ensembl.
+            Use orthology information from Ensembl.
         oma_rel_type:
             Restrict relations to certain types.
         oma_score:
