@@ -1027,14 +1027,14 @@ data-default-mode="">
                       </ul>
                     </li>
                     <li class="toctree-l2">
-                      <a class="reference internal" href="#Homology-translation">Homology translation</a>
+                      <a class="reference internal" href="#Orthology-translation">Orthology translation</a>
                       <ul>
                         <li class="toctree-l3">
-                          <a class="reference internal" href="#Homology-translation-tables-as-dictionaries">Homology
+                          <a class="reference internal" href="#Orthology-translation-tables-as-dictionaries">Orthology
                           translation tables as dictionaries</a>
                         </li>
                         <li class="toctree-l3">
-                          <a class="reference internal" href="#Homology-translation-data-frames">Homology translation
+                          <a class="reference internal" href="#Orthology-translation-data-frames">Orthology translation
                           data frames</a>
                         </li>
                       </ul>
@@ -1478,13 +1478,13 @@ data-default-mode="">
                       </ul>
                     </li>
                     <li>
-                      <p>9&nbsp;&nbsp;Homology translation</p>
+                      <p>9&nbsp;&nbsp;Orthology translation</p>
                       <ul class="toc-item">
                         <li>
-                          <p>9.1&nbsp;&nbsp;Homology translation tables as dictionaries</p>
+                          <p>9.1&nbsp;&nbsp;Orthology translation tables as dictionaries</p>
                         </li>
                         <li>
-                          <p>9.2&nbsp;&nbsp;Homology translation data frames</p>
+                          <p>9.2&nbsp;&nbsp;Orthology translation data frames</p>
                         </li>
                       </ul>
                     </li>
@@ -10363,18 +10363,19 @@ False
                     </div>
                   </section>
                 </section>
-                <section id="Homology-translation">
-                  <h2>Homology translation<a class="headerlink" href="#Homology-translation" title=
+                <section id="Orthology-translation">
+                  <h2>Orthology translation<a class="headerlink" href="#Orthology-translation" title=
                   "Permalink to this heading">§</a></h2>
-                  <p>The <code class="docutils literal notranslate"><span class="pre">utils.homology</span></code>
-                  module handles translation of data between organism by orthologous gene pairs. Its most important
-                  function is <code class="docutils literal notranslate"><span class="pre">translate</span></code>. The
-                  source organism is human by default, the target must be provided, below we use mouse (NCBI Taxonomy
-                  10090):</p>
+                  <p>The <code class="docutils literal notranslate"><span class="pre">utils.orthology</span></code>
+                  module (formerly <code class="docutils literal notranslate"><span class=
+                  "pre">utils.homology</span></code>) handles translation of data between organism by orthologous gene
+                  pairs. Its most important function is <code class="docutils literal notranslate"><span class=
+                  "pre">translate</span></code>. The source organism is human by default, the target must be provided,
+                  below we use mouse (NCBI Taxonomy 10090):</p>
                   <div class="nbinput docutils container">
                     <div class="prompt highlight-none notranslate">
                       <div class="highlight">
-                        <pre>[4]:
+                        <pre>[2]:
 </pre>
                       </div>
                     </div>
@@ -10382,22 +10383,22 @@ False
                       <div class="highlight-ipython3 notranslate">
                         <div class="highlight">
                           <pre><span class="kn">from</span> <span class="nn">pypath.utils</span> <span class=
-                          "kn">import</span> <span class="n">homology</span>
-<span class="n">homology</span><span class="o">.</span><span class="n">translate</span><span class=
+                          "kn">import</span> <span class="n">orthology</span>
+<span class="n">orthology</span><span class="o">.</span><span class="n">translate</span><span class=
 "p">(</span><span class="s1">'P00533'</span><span class="p">,</span> <span class="n">target</span> <span class=
 "o">=</span> <span class="mi">10090</span><span class="p">)</span>
 </pre>
                         </div>
                       </div>
                       <div class="timing docutils container">
-                        <p>executed in 0ms, finished 15:36:30 2022-12-03</p>
+                        <p>executed in 22.33s, finished 18:03:50 2023-09-28</p>
                       </div>
                     </div>
                   </div>
                   <div class="nboutput nblast docutils container">
                     <div class="prompt highlight-none notranslate">
                       <div class="highlight">
-                        <pre>[4]:
+                        <pre>[2]:
 </pre>
                       </div>
                     </div>
@@ -10409,19 +10410,19 @@ False
                       </div>
                     </div>
                   </div>
-                  <p>ID translation and homology translation are integrated, hence not only UniProt IDs can be
+                  <p>ID translation and orthology translation are integrated, hence not only UniProt IDs can be
                   translated:</p>
                   <div class="nbinput docutils container">
                     <div class="prompt highlight-none notranslate">
                       <div class="highlight">
-                        <pre>[17]:
+                        <pre>[3]:
 </pre>
                       </div>
                     </div>
                     <div class="input_area docutils container">
                       <div class="highlight-ipython3 notranslate">
                         <div class="highlight">
-                          <pre><span class="n">homology</span><span class="o">.</span><span class=
+                          <pre><span class="n">orthology</span><span class="o">.</span><span class=
                           "n">translate</span><span class="p">(</span><span class="s1">'EGFR'</span><span class=
                           "p">,</span> <span class="n">target</span> <span class="o">=</span> <span class=
                           "mi">10090</span><span class="p">,</span> <span class="n">id_type</span> <span class=
@@ -10430,14 +10431,14 @@ False
                         </div>
                       </div>
                       <div class="timing docutils container">
-                        <p>executed in 0ms, finished 14:18:05 2022-12-02</p>
+                        <p>executed in 22.08s, finished 18:04:16 2023-09-28</p>
                       </div>
                     </div>
                   </div>
                   <div class="nboutput nblast docutils container">
                     <div class="prompt highlight-none notranslate">
                       <div class="highlight">
-                        <pre>[17]:
+                        <pre>[3]:
 </pre>
                       </div>
                     </div>
@@ -10449,61 +10450,64 @@ False
                       </div>
                     </div>
                   </div>
-                  <p>This module uses data from NCBI HomoloGene and Ensembl. The latter covers more organisms, and
-                  accepts some parameters (high confidence, one-to-one vs.&nbsp;one-to-many mapping). These parameters
-                  can be controlled by the settings module, or passed to the functions above and below. For some reason
-                  the settings below fail to find any ortholog of our example protein:</p>
+                  <p>This module uses data from the Orthologous Matrix )OMA), NCBI HomoloGene and Ensembl. The latter
+                  covers more organisms, and accepts some parameters (high confidence, one-to-one vs.&nbsp;one-to-many
+                  mapping). The default is to use only OMA as that one is the most comprehensive, up to date and easy
+                  to use resource. These parameters can be controlled by the settings module, or passed to the
+                  functions above and below, for example:</p>
                   <div class="nbinput docutils container">
                     <div class="prompt highlight-none notranslate">
                       <div class="highlight">
-                        <pre>[18]:
+                        <pre>[8]:
 </pre>
                       </div>
                     </div>
                     <div class="input_area docutils container">
                       <div class="highlight-ipython3 notranslate">
                         <div class="highlight">
-                          <pre><span class="n">homology</span><span class="o">.</span><span class=
+                          <pre><span class="n">orthology</span><span class="o">.</span><span class=
                           "n">translate</span><span class="p">(</span><span class="s1">'P00533'</span><span class=
                           "p">,</span> <span class="n">target</span> <span class="o">=</span> <span class=
-                          "mi">10090</span><span class="p">,</span> <span class="n">homologene</span> <span class=
+                          "mi">10090</span><span class="p">,</span> <span class="n">oma</span> <span class=
                           "o">=</span> <span class="kc">False</span><span class="p">,</span> <span class=
-                          "n">ensembl</span> <span class="o">=</span> <span class="kc">False</span><span class=
-                          "p">,</span> <span class="n">ensembl_hc</span> <span class="o">=</span> <span class=
-                          "kc">False</span><span class="p">,</span> <span class="n">ensembl_types</span> <span class=
-                          "o">=</span> <span class="s1">'one2one'</span><span class="p">)</span>
+                          "n">homologene</span> <span class="o">=</span> <span class="kc">False</span><span class=
+                          "p">,</span> <span class="n">ensembl</span> <span class="o">=</span> <span class=
+                          "kc">True</span><span class="p">,</span> <span class="n">ensembl_hc</span> <span class=
+                          "o">=</span> <span class="kc">False</span><span class="p">,</span> <span class=
+                          "n">ensembl_types</span> <span class="o">=</span> <span class=
+                          "s1">'one2one'</span><span class="p">)</span>
 </pre>
                         </div>
                       </div>
                       <div class="timing docutils container">
-                        <p>executed in 0ms, finished 14:18:07 2022-12-02</p>
+                        <p>executed in 24.52s, finished 18:07:43 2023-09-28</p>
                       </div>
                     </div>
                   </div>
                   <div class="nboutput nblast docutils container">
                     <div class="prompt highlight-none notranslate">
                       <div class="highlight">
-                        <pre>[18]:
+                        <pre>[8]:
 </pre>
                       </div>
                     </div>
                     <div class="output_area docutils container">
                       <div class="highlight">
                         <pre>
-set()
+{'Q01279'}
 </pre>
                       </div>
                     </div>
                   </div>
-                  <section id="Homology-translation-tables-as-dictionaries">
-                    <h3>Homology translation tables as dictionaries<a class="headerlink" href=
-                    "#Homology-translation-tables-as-dictionaries" title="Permalink to this heading">§</a></h3>
+                  <section id="Orthology-translation-tables-as-dictionaries">
+                    <h3>Orthology translation tables as dictionaries<a class="headerlink" href=
+                    "#Orthology-translation-tables-as-dictionaries" title="Permalink to this heading">§</a></h3>
                     <p>The translation tables are available as dicts of sets, these are convenient for use outside of
                     pypath:</p>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
-                          <pre>[19]:
+                          <pre>[9]:
 </pre>
                         </div>
                       </div>
@@ -10511,7 +10515,7 @@ set()
                         <div class="highlight-ipython3 notranslate">
                           <div class="highlight">
                             <pre><span class="n">human_mouse_genesymbols</span> <span class="o">=</span> <span class=
-                            "n">homology</span><span class="o">.</span><span class="n">get_dict</span><span class=
+                            "n">orthology</span><span class="o">.</span><span class="n">get_dict</span><span class=
                             "p">(</span><span class="n">target</span> <span class="o">=</span> <span class=
                             "s1">'mouse'</span><span class="p">,</span> <span class="n">id_type</span> <span class=
                             "o">=</span> <span class="s1">'genesymbol'</span><span class="p">)</span>
@@ -10521,14 +10525,14 @@ set()
                           </div>
                         </div>
                         <div class="timing docutils container">
-                          <p>executed in 1ms, finished 14:18:09 2022-12-02</p>
+                          <p>executed in 0ms, finished 18:08:26 2023-09-28</p>
                         </div>
                       </div>
                     </div>
                     <div class="nboutput nblast docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
-                          <pre>[19]:
+                          <pre>[9]:
 </pre>
                         </div>
                       </div>
@@ -10540,16 +10544,12 @@ set()
                         </div>
                       </div>
                     </div>
-                  </section>
-                  <section id="Homology-translation-data-frames">
-                    <h3>Homology translation data frames<a class="headerlink" href="#Homology-translation-data-frames"
-                    title="Permalink to this heading">§</a></h3>
-                    <p>Similarly, <code class="docutils literal notranslate"><span class=
-                    "pre">pandas.DataFrame</span></code>s are available:</p>
+                    <p>The relationship types and confdence levels can be included using the <code class=
+                    "docutils literal notranslate"><span class="pre">full_records</span></code> argument:</p>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
-                          <pre>[5]:
+                          <pre>[11]:
 </pre>
                         </div>
                       </div>
@@ -10557,23 +10557,73 @@ set()
                         <div class="highlight-ipython3 notranslate">
                           <div class="highlight">
                             <pre><span class="n">human_mouse_genesymbols</span> <span class="o">=</span> <span class=
-                            "n">homology</span><span class="o">.</span><span class="n">get_df</span><span class=
+                            "n">orthology</span><span class="o">.</span><span class="n">get_dict</span><span class=
                             "p">(</span><span class="n">target</span> <span class="o">=</span> <span class=
                             "s1">'mouse'</span><span class="p">,</span> <span class="n">id_type</span> <span class=
-                            "o">=</span> <span class="s1">'genesymbol'</span><span class="p">)</span>
-<span class="n">human_mouse_genesymbols</span>
+                            "o">=</span> <span class="s1">'genesymbol'</span><span class="p">,</span> <span class=
+                            "n">full_records</span> <span class="o">=</span> <span class="kc">True</span><span class=
+                            "p">)</span>
+<span class="n">human_mouse_genesymbols</span><span class="p">[</span><span class="s1">'EGFR'</span><span class=
+"p">]</span>
 </pre>
                           </div>
                         </div>
                         <div class="timing docutils container">
-                          <p>executed in 2.08s, finished 15:36:36 2022-12-03</p>
+                          <p>executed in 0ms, finished 18:10:13 2023-09-28</p>
                         </div>
                       </div>
                     </div>
                     <div class="nboutput nblast docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
-                          <pre>[5]:
+                          <pre>[11]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{OmaOrtholog(id='Egfr', rel_type='1:1', score=12704.5703125)}
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <section id="Orthology-translation-data-frames">
+                    <h3>Orthology translation data frames<a class="headerlink" href=
+                    "#Orthology-translation-data-frames" title="Permalink to this heading">§</a></h3>
+                    <p>Similarly, <code class="docutils literal notranslate"><span class=
+                    "pre">pandas.DataFrame</span></code>s are available:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[13]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">human_mouse_genesymbols</span> <span class="o">=</span> <span class=
+                            "n">orthology</span><span class="o">.</span><span class="n">get_df</span><span class=
+                            "p">(</span><span class="n">target</span> <span class="o">=</span> <span class=
+                            "s1">'mouse'</span><span class="p">,</span> <span class="n">id_type</span> <span class=
+                            "o">=</span> <span class="s1">'genesymbol'</span><span class="p">,</span> <span class=
+                            "n">full_records</span> <span class="o">=</span> <span class="kc">True</span><span class=
+                            "p">)</span>
+<span class="n">human_mouse_genesymbols</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 18:11:16 2023-09-28</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[13]:
 </pre>
                         </div>
                       </div>
@@ -10585,67 +10635,91 @@ set()
                                 <th></th>
                                 <th>source</th>
                                 <th>target</th>
+                                <th>rel_type</th>
+                                <th>score</th>
                               </tr>
                             </thead>
                             <tbody>
                               <tr>
                                 <th>0</th>
-                                <td>MICOS13</td>
-                                <td>Micos13</td>
+                                <td>H4C3</td>
+                                <td>H4c1</td>
+                                <td>m:n</td>
+                                <td>1262.050049</td>
                               </tr>
                               <tr>
                                 <th>1</th>
-                                <td>FAT4</td>
-                                <td>Fat4</td>
+                                <td>H4C3</td>
+                                <td>H4c3</td>
+                                <td>m:n</td>
+                                <td>1262.050049</td>
                               </tr>
                               <tr>
                                 <th>2</th>
-                                <td>RARS2</td>
-                                <td>Rars2</td>
+                                <td>H4C3</td>
+                                <td>H4c12</td>
+                                <td>m:n</td>
+                                <td>1262.050049</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>H4C3</td>
+                                <td>H4c11</td>
+                                <td>m:n</td>
+                                <td>1262.050049</td>
                               </tr>
                               <tr>
                                 <th>4</th>
-                                <td>ZFP36L2</td>
-                                <td>Zfp36l2</td>
-                              </tr>
-                              <tr>
-                                <th>5</th>
-                                <td>LAMC1</td>
-                                <td>Lamc1</td>
+                                <td>H4C3</td>
+                                <td>H4c9</td>
+                                <td>m:n</td>
+                                <td>1262.050049</td>
                               </tr>
                               <tr>
                                 <th>...</th>
                                 <td>...</td>
                                 <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
                               </tr>
                               <tr>
-                                <th>24843</th>
-                                <td>KRTAP4-16</td>
-                                <td>Gm40460</td>
+                                <th>18446</th>
+                                <td>GDAP2</td>
+                                <td>Gdap2</td>
+                                <td>1:1</td>
+                                <td>5553.779785</td>
                               </tr>
                               <tr>
-                                <th>24844</th>
-                                <td>KRTAP4-16</td>
-                                <td>Gm45618</td>
+                                <th>18447</th>
+                                <td>ITGA8</td>
+                                <td>Itga8</td>
+                                <td>1:1</td>
+                                <td>10772.969727</td>
                               </tr>
                               <tr>
-                                <th>24845</th>
-                                <td>KRTAP4-16</td>
-                                <td>Gm4559</td>
+                                <th>18448</th>
+                                <td>SEMA3F</td>
+                                <td>Sema3f</td>
+                                <td>1:1</td>
+                                <td>9121.080078</td>
                               </tr>
                               <tr>
-                                <th>24846</th>
-                                <td>IGKV1OR2-108</td>
-                                <td>Igkv20-101-2</td>
+                                <th>18449</th>
+                                <td>EEPD1</td>
+                                <td>Eepd1</td>
+                                <td>1:1</td>
+                                <td>5874.350098</td>
                               </tr>
                               <tr>
-                                <th>24847</th>
-                                <td>FPGT-TNNI3K</td>
-                                <td>Tnni3k</td>
+                                <th>18450</th>
+                                <td>DRG2</td>
+                                <td>Drg2</td>
+                                <td>1:1</td>
+                                <td>4423.589844</td>
                               </tr>
                             </tbody>
                           </table>
-                          <p>22266 rows × 2 columns</p>
+                          <p>18451 rows × 4 columns</p>
                         </div>
                       </div>
                     </div>
@@ -17739,16 +17813,17 @@ AKT1 - GSK3B
                           </ul>
                         </li>
                         <li class="toctree-l2 toc-h2 nav-item toc-entry">
-                          <a class="reference internal nav-link" href="#Homology-translation">Homology translation</a>
+                          <a class="reference internal nav-link" href="#Orthology-translation">Orthology
+                          translation</a>
                           <ul class="visible nav section-nav flex-column">
                             <li class="toctree-l3 toc-h3 nav-item toc-entry">
                               <a class="reference internal nav-link" href=
-                              "#Homology-translation-tables-as-dictionaries">Homology translation tables as
+                              "#Orthology-translation-tables-as-dictionaries">Orthology translation tables as
                               dictionaries</a>
                             </li>
                             <li class="toctree-l3 toc-h3 nav-item toc-entry">
-                              <a class="reference internal nav-link" href="#Homology-translation-data-frames">Homology
-                              translation data frames</a>
+                              <a class="reference internal nav-link" href=
+                              "#Orthology-translation-data-frames">Orthology translation data frames</a>
                             </li>
                           </ul>
                         </li>

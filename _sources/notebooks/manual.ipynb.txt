@@ -14,7 +14,7 @@
    },
    "source": [
     "<h1>Contents<span class=\"tocSkip\"></span></h1>\n",
-    "<div class=\"toc\"><ul class=\"toc-item\"><li><span><a href=\"#Introduction\" data-toc-modified-id=\"Introduction-1\"><span class=\"toc-item-num\">1&nbsp;&nbsp;</span>Introduction</a></span></li><li><span><a href=\"#Build,-load-and-save-databases\" data-toc-modified-id=\"Build,-load-and-save-databases-2\"><span class=\"toc-item-num\">2&nbsp;&nbsp;</span>Build, load and save databases</a></span><ul class=\"toc-item\"><li><span><a href=\"#The-OmniPath-app\" data-toc-modified-id=\"The-OmniPath-app-2.1\"><span class=\"toc-item-num\">2.1&nbsp;&nbsp;</span>The OmniPath app</a></span></li><li><span><a href=\"#Built-in-database-definitions\" data-toc-modified-id=\"Built-in-database-definitions-2.2\"><span class=\"toc-item-num\">2.2&nbsp;&nbsp;</span>Built-in database definitions</a></span></li><li><span><a href=\"#Networks\" data-toc-modified-id=\"Networks-2.3\"><span class=\"toc-item-num\">2.3&nbsp;&nbsp;</span>Networks</a></span><ul class=\"toc-item\"><li><span><a href=\"#Strictly-literature-curated-network\" data-toc-modified-id=\"Strictly-literature-curated-network-2.3.1\"><span class=\"toc-item-num\">2.3.1&nbsp;&nbsp;</span>Strictly literature curated network</a></span></li><li><span><a href=\"#The-OmniPath-network-with-extra-activity-flow,-enzyme-substrate-and-ligand-receptor-interactions\" data-toc-modified-id=\"The-OmniPath-network-with-extra-activity-flow,-enzyme-substrate-and-ligand-receptor-interactions-2.3.2\"><span class=\"toc-item-num\">2.3.2&nbsp;&nbsp;</span>The OmniPath network with extra activity flow, enzyme-substrate and ligand-receptor interactions</a></span></li><li><span><a href=\"#Transcriptional-regulation-network-from-DoRothEA-and-other-resources\" data-toc-modified-id=\"Transcriptional-regulation-network-from-DoRothEA-and-other-resources-2.3.3\"><span class=\"toc-item-num\">2.3.3&nbsp;&nbsp;</span>Transcriptional regulation network from DoRothEA and other resources</a></span></li><li><span><a href=\"#Literature-curated-miRNA-post-transcriptional-regulation-network\" data-toc-modified-id=\"Literature-curated-miRNA-post-transcriptional-regulation-network-2.3.4\"><span class=\"toc-item-num\">2.3.4&nbsp;&nbsp;</span>Literature curated miRNA post-transcriptional regulation network</a></span></li><li><span><a href=\"#Transcriptional-regulation-of-miRNA\" data-toc-modified-id=\"Transcriptional-regulation-of-miRNA-2.3.5\"><span class=\"toc-item-num\">2.3.5&nbsp;&nbsp;</span>Transcriptional regulation of miRNA</a></span></li><li><span><a href=\"#lncRNA-mRNA-interactions\" data-toc-modified-id=\"lncRNA-mRNA-interactions-2.3.6\"><span class=\"toc-item-num\">2.3.6&nbsp;&nbsp;</span>lncRNA-mRNA interactions</a></span></li><li><span><a href=\"#Small-molecule-protein-interactions\" data-toc-modified-id=\"Small-molecule-protein-interactions-2.3.7\"><span class=\"toc-item-num\">2.3.7&nbsp;&nbsp;</span>Small molecule-protein interactions</a></span></li></ul></li><li><span><a href=\"#Enzyme-substrate-relationships\" data-toc-modified-id=\"Enzyme-substrate-relationships-2.4\"><span class=\"toc-item-num\">2.4&nbsp;&nbsp;</span>Enzyme-substrate relationships</a></span></li><li><span><a href=\"#Protein-complexes\" data-toc-modified-id=\"Protein-complexes-2.5\"><span class=\"toc-item-num\">2.5&nbsp;&nbsp;</span>Protein complexes</a></span></li><li><span><a href=\"#Annotations\" data-toc-modified-id=\"Annotations-2.6\"><span class=\"toc-item-num\">2.6&nbsp;&nbsp;</span>Annotations</a></span></li><li><span><a href=\"#Inter-cellular-communication-roles\" data-toc-modified-id=\"Inter-cellular-communication-roles-2.7\"><span class=\"toc-item-num\">2.7&nbsp;&nbsp;</span>Inter-cellular communication roles</a></span></li></ul></li><li><span><a href=\"#Data-directly-from-the-original-resources\" data-toc-modified-id=\"Data-directly-from-the-original-resources-3\"><span class=\"toc-item-num\">3&nbsp;&nbsp;</span>Data directly from the original resources</a></span></li><li><span><a href=\"#Interesting-resources\" data-toc-modified-id=\"Interesting-resources-4\"><span class=\"toc-item-num\">4&nbsp;&nbsp;</span>Interesting resources</a></span><ul class=\"toc-item\"><li><span><a href=\"#RaMP\" data-toc-modified-id=\"RaMP-4.1\"><span class=\"toc-item-num\">4.1&nbsp;&nbsp;</span>RaMP</a></span><ul class=\"toc-item\"><li><span><a href=\"#TL;DR\" data-toc-modified-id=\"TL;DR-4.1.1\"><span class=\"toc-item-num\">4.1.1&nbsp;&nbsp;</span>TL;DR</a></span></li></ul></li><li><span><a href=\"#HMDB-(Human-Metabolome-Database)\" data-toc-modified-id=\"HMDB-(Human-Metabolome-Database)-4.2\"><span class=\"toc-item-num\">4.2&nbsp;&nbsp;</span>HMDB (Human Metabolome Database)</a></span><ul class=\"toc-item\"><li><span><a href=\"#Direct-access-to-HMDB-data\" data-toc-modified-id=\"Direct-access-to-HMDB-data-4.2.1\"><span class=\"toc-item-num\">4.2.1&nbsp;&nbsp;</span>Direct access to HMDB data</a></span></li><li><span><a href=\"#Higher-level-access-to-HMDB-data\" data-toc-modified-id=\"Higher-level-access-to-HMDB-data-4.2.2\"><span class=\"toc-item-num\">4.2.2&nbsp;&nbsp;</span>Higher level access to HMDB data</a></span></li><li><span><a href=\"#ID-translation-with-HMDB\" data-toc-modified-id=\"ID-translation-with-HMDB-4.2.3\"><span class=\"toc-item-num\">4.2.3&nbsp;&nbsp;</span>ID translation with HMDB</a></span></li></ul></li></ul></li><li><span><a href=\"#Download-management\" data-toc-modified-id=\"Download-management-5\"><span class=\"toc-item-num\">5&nbsp;&nbsp;</span>Download management</a></span><ul class=\"toc-item\"><li><span><a href=\"#Cache-management-and-customization\" data-toc-modified-id=\"Cache-management-and-customization-5.1\"><span class=\"toc-item-num\">5.1&nbsp;&nbsp;</span>Cache management and customization</a></span></li><li><span><a href=\"#Download-failures\" data-toc-modified-id=\"Download-failures-5.2\"><span class=\"toc-item-num\">5.2&nbsp;&nbsp;</span>Download failures</a></span><ul class=\"toc-item\"><li><span><a href=\"#Corrupted-cache-content\" data-toc-modified-id=\"Corrupted-cache-content-5.2.1\"><span class=\"toc-item-num\">5.2.1&nbsp;&nbsp;</span>Corrupted cache content</a></span></li><li><span><a href=\"#Network-communication-issues:-look-into-the-curl-debug-log\" data-toc-modified-id=\"Network-communication-issues:-look-into-the-curl-debug-log-5.2.2\"><span class=\"toc-item-num\">5.2.2&nbsp;&nbsp;</span>Network communication issues: look into the curl debug log</a></span></li><li><span><a href=\"#Timeouts\" data-toc-modified-id=\"Timeouts-5.2.3\"><span class=\"toc-item-num\">5.2.3&nbsp;&nbsp;</span>Timeouts</a></span></li><li><span><a href=\"#Access-and-inspect-the-Curl-object\" data-toc-modified-id=\"Access-and-inspect-the-Curl-object-5.2.4\"><span class=\"toc-item-num\">5.2.4&nbsp;&nbsp;</span>Access and inspect the <code>Curl</code> object</a></span></li><li><span><a href=\"#Is-it-failing-only-for-you?\" data-toc-modified-id=\"Is-it-failing-only-for-you?-5.2.5\"><span class=\"toc-item-num\">5.2.5&nbsp;&nbsp;</span>Is it failing only for you?</a></span></li><li><span><a href=\"#Read-the-log\" data-toc-modified-id=\"Read-the-log-5.2.6\"><span class=\"toc-item-num\">5.2.6&nbsp;&nbsp;</span>Read the log</a></span></li><li><span><a href=\"#TLS-(SSL,-HTTPS)-errors\" data-toc-modified-id=\"TLS-(SSL,-HTTPS)-errors-5.2.7\"><span class=\"toc-item-num\">5.2.7&nbsp;&nbsp;</span>TLS (SSL, HTTPS) errors</a></span></li></ul></li></ul></li><li><span><a href=\"#Resources\" data-toc-modified-id=\"Resources-6\"><span class=\"toc-item-num\">6&nbsp;&nbsp;</span>Resources</a></span><ul class=\"toc-item\"><li><span><a href=\"#Licenses\" data-toc-modified-id=\"Licenses-6.1\"><span class=\"toc-item-num\">6.1&nbsp;&nbsp;</span>Licenses</a></span><ul class=\"toc-item\"><li><span><a href=\"#Example:-build-a-network-for-commercial-use\" data-toc-modified-id=\"Example:-build-a-network-for-commercial-use-6.1.1\"><span class=\"toc-item-num\">6.1.1&nbsp;&nbsp;</span>Example: build a network for commercial use</a></span></li></ul></li><li><span><a href=\"#Resource-information\" data-toc-modified-id=\"Resource-information-6.2\"><span class=\"toc-item-num\">6.2&nbsp;&nbsp;</span>Resource information</a></span></li><li><span><a href=\"#Resource-definitions-for-a-certain-database-or-dataset\" data-toc-modified-id=\"Resource-definitions-for-a-certain-database-or-dataset-6.3\"><span class=\"toc-item-num\">6.3&nbsp;&nbsp;</span>Resource definitions for a certain database or dataset</a></span></li></ul></li><li><span><a href=\"#Building-networks-\" data-toc-modified-id=\"Building-networks--7\"><span class=\"toc-item-num\">7&nbsp;&nbsp;</span>Building networks <a class=\"anchor\" id=\"building-networks\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Which-network-datasets-are-pre-defined-in-pypath?-\" data-toc-modified-id=\"Which-network-datasets-are-pre-defined-in-pypath?--7.1\"><span class=\"toc-item-num\">7.1&nbsp;&nbsp;</span>Which network datasets are pre-defined in pypath? <a class=\"anchor\" id=\"network-resources\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#The-Network-object\" data-toc-modified-id=\"The-Network-object-7.2\"><span class=\"toc-item-num\">7.2&nbsp;&nbsp;</span>The <code>Network</code> object</a></span></li><li><span><a href=\"#Network-in-pandas.DataFrame-\" data-toc-modified-id=\"Network-in-pandas.DataFrame--7.3\"><span class=\"toc-item-num\">7.3&nbsp;&nbsp;</span>Network in <em>pandas.DataFrame</em> <a class=\"anchor\" id=\"network-pandas\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Self-interactions-(loop-edges)-in-the-network\" data-toc-modified-id=\"Self-interactions-(loop-edges)-in-the-network-7.4\"><span class=\"toc-item-num\">7.4&nbsp;&nbsp;</span>Self interactions (loop edges) in the network</a></span></li><li><span><a href=\"#Molecular-complexes-in-the-network\" data-toc-modified-id=\"Molecular-complexes-in-the-network-7.5\"><span class=\"toc-item-num\">7.5&nbsp;&nbsp;</span>Molecular complexes in the network</a></span></li></ul></li><li><span><a href=\"#Translating-identifiers-\" data-toc-modified-id=\"Translating-identifiers--8\"><span class=\"toc-item-num\">8&nbsp;&nbsp;</span>Translating identifiers <a class=\"anchor\" id=\"mapping\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Pre-defined-ID-translation-tables\" data-toc-modified-id=\"Pre-defined-ID-translation-tables-8.1\"><span class=\"toc-item-num\">8.1&nbsp;&nbsp;</span>Pre-defined ID translation tables</a></span></li><li><span><a href=\"#Direct-access-to-ID-translation-tables\" data-toc-modified-id=\"Direct-access-to-ID-translation-tables-8.2\"><span class=\"toc-item-num\">8.2&nbsp;&nbsp;</span>Direct access to ID translation tables</a></span></li></ul></li><li><span><a href=\"#Homology-translation\" data-toc-modified-id=\"Homology-translation-9\"><span class=\"toc-item-num\">9&nbsp;&nbsp;</span>Homology translation</a></span><ul class=\"toc-item\"><li><span><a href=\"#Homology-translation-tables-as-dictionaries\" data-toc-modified-id=\"Homology-translation-tables-as-dictionaries-9.1\"><span class=\"toc-item-num\">9.1&nbsp;&nbsp;</span>Homology translation tables as dictionaries</a></span></li><li><span><a href=\"#Homology-translation-data-frames\" data-toc-modified-id=\"Homology-translation-data-frames-9.2\"><span class=\"toc-item-num\">9.2&nbsp;&nbsp;</span>Homology translation data frames</a></span></li></ul></li><li><span><a href=\"#Taxonomy\" data-toc-modified-id=\"Taxonomy-10\"><span class=\"toc-item-num\">10&nbsp;&nbsp;</span>Taxonomy</a></span><ul class=\"toc-item\"><li><span><a href=\"#Translating-to-NCBI-Taxonomy,-scientific-names-and-common-names\" data-toc-modified-id=\"Translating-to-NCBI-Taxonomy,-scientific-names-and-common-names-10.1\"><span class=\"toc-item-num\">10.1&nbsp;&nbsp;</span>Translating to NCBI Taxonomy, scientific names and common names</a></span></li><li><span><a href=\"#Organism-from-UniProt-ID\" data-toc-modified-id=\"Organism-from-UniProt-ID-10.2\"><span class=\"toc-item-num\">10.2&nbsp;&nbsp;</span>Organism from UniProt ID</a></span></li></ul></li><li><span><a href=\"#UniProt\" data-toc-modified-id=\"UniProt-11\"><span class=\"toc-item-num\">11&nbsp;&nbsp;</span>UniProt</a></span><ul class=\"toc-item\"><li><span><a href=\"#The-UniProt-input-module\" data-toc-modified-id=\"The-UniProt-input-module-11.1\"><span class=\"toc-item-num\">11.1&nbsp;&nbsp;</span>The UniProt input module</a></span><ul class=\"toc-item\"><li><span><a href=\"#All-UniProt-IDs-for-one-organism\" data-toc-modified-id=\"All-UniProt-IDs-for-one-organism-11.1.1\"><span class=\"toc-item-num\">11.1.1&nbsp;&nbsp;</span>All UniProt IDs for one organism</a></span></li><li><span><a href=\"#UniProt-ID-format-validation\" data-toc-modified-id=\"UniProt-ID-format-validation-11.1.2\"><span class=\"toc-item-num\">11.1.2&nbsp;&nbsp;</span>UniProt ID format validation</a></span></li><li><span><a href=\"#UniProt-ID-validation\" data-toc-modified-id=\"UniProt-ID-validation-11.1.3\"><span class=\"toc-item-num\">11.1.3&nbsp;&nbsp;</span>UniProt ID validation</a></span></li><li><span><a href=\"#Single-UniProt-protein-datasheet\" data-toc-modified-id=\"Single-UniProt-protein-datasheet-11.1.4\"><span class=\"toc-item-num\">11.1.4&nbsp;&nbsp;</span>Single UniProt protein datasheet</a></span></li><li><span><a href=\"#History-of-UniProt-records\" data-toc-modified-id=\"History-of-UniProt-records-11.1.5\"><span class=\"toc-item-num\">11.1.5&nbsp;&nbsp;</span>History of UniProt records</a></span></li><li><span><a href=\"#UniProt-legacy-API\" data-toc-modified-id=\"UniProt-legacy-API-11.1.6\"><span class=\"toc-item-num\">11.1.6&nbsp;&nbsp;</span>UniProt legacy API</a></span></li><li><span><a href=\"#Processed-UniProt-annotations\" data-toc-modified-id=\"Processed-UniProt-annotations-11.1.7\"><span class=\"toc-item-num\">11.1.7&nbsp;&nbsp;</span>Processed UniProt annotations</a></span></li></ul></li><li><span><a href=\"#The-UniProt-utils-module\" data-toc-modified-id=\"The-UniProt-utils-module-11.2\"><span class=\"toc-item-num\">11.2&nbsp;&nbsp;</span>The UniProt utils module</a></span><ul class=\"toc-item\"><li><span><a href=\"#Datasheets\" data-toc-modified-id=\"Datasheets-11.2.1\"><span class=\"toc-item-num\">11.2.1&nbsp;&nbsp;</span>Datasheets</a></span></li><li><span><a href=\"#Tables\" data-toc-modified-id=\"Tables-11.2.2\"><span class=\"toc-item-num\">11.2.2&nbsp;&nbsp;</span>Tables</a></span></li></ul></li><li><span><a href=\"#Sanitizing-UniProt-IDs\" data-toc-modified-id=\"Sanitizing-UniProt-IDs-11.3\"><span class=\"toc-item-num\">11.3&nbsp;&nbsp;</span>Sanitizing UniProt IDs</a></span></li></ul></li><li><span><a href=\"#Enzyme-substrate-interactions-\" data-toc-modified-id=\"Enzyme-substrate-interactions--12\"><span class=\"toc-item-num\">12&nbsp;&nbsp;</span>Enzyme-substrate interactions <a class=\"anchor\" id=\"enz-sub\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Enzyme-substrate-objects\" data-toc-modified-id=\"Enzyme-substrate-objects-12.1\"><span class=\"toc-item-num\">12.1&nbsp;&nbsp;</span>Enzyme-substrate objects</a></span></li><li><span><a href=\"#Enzyme-substrate-data-frame\" data-toc-modified-id=\"Enzyme-substrate-data-frame-12.2\"><span class=\"toc-item-num\">12.2&nbsp;&nbsp;</span>Enzyme-substrate data frame</a></span></li></ul></li><li><span><a href=\"#Protein-sequences\" data-toc-modified-id=\"Protein-sequences-13\"><span class=\"toc-item-num\">13&nbsp;&nbsp;</span>Protein sequences</a></span></li><li><span><a href=\"#Annotations-\" data-toc-modified-id=\"Annotations--14\"><span class=\"toc-item-num\">14&nbsp;&nbsp;</span>Annotations <a class=\"anchor\" id=\"annotations\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Load-a-single-annotation-resource\" data-toc-modified-id=\"Load-a-single-annotation-resource-14.1\"><span class=\"toc-item-num\">14.1&nbsp;&nbsp;</span>Load a single annotation resource</a></span></li><li><span><a href=\"#Load-the-full-annotations-database-by-the-database-manager\" data-toc-modified-id=\"Load-the-full-annotations-database-by-the-database-manager-14.2\"><span class=\"toc-item-num\">14.2&nbsp;&nbsp;</span>Load the full annotations database by the database manager</a></span></li><li><span><a href=\"#Load-only-selected-annotations\" data-toc-modified-id=\"Load-only-selected-annotations-14.3\"><span class=\"toc-item-num\">14.3&nbsp;&nbsp;</span>Load only selected annotations</a></span></li><li><span><a href=\"#Data-frames-of-annotations\" data-toc-modified-id=\"Data-frames-of-annotations-14.4\"><span class=\"toc-item-num\">14.4&nbsp;&nbsp;</span>Data frames of annotations</a></span></li></ul></li><li><span><a href=\"#Inter-cellular-signaling-roles-\" data-toc-modified-id=\"Inter-cellular-signaling-roles--15\"><span class=\"toc-item-num\">15&nbsp;&nbsp;</span>Inter-cellular signaling roles <a class=\"anchor\" id=\"intercell\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Build-an-intercellular-communication-network\" data-toc-modified-id=\"Build-an-intercellular-communication-network-15.1\"><span class=\"toc-item-num\">15.1&nbsp;&nbsp;</span>Build an intercellular communication network</a></span></li><li><span><a href=\"#Quantitative-overview-of-intercell-annotations\" data-toc-modified-id=\"Quantitative-overview-of-intercell-annotations-15.2\"><span class=\"toc-item-num\">15.2&nbsp;&nbsp;</span>Quantitative overview of intercell annotations</a></span></li><li><span><a href=\"#Intercell-database-as-data-frame\" data-toc-modified-id=\"Intercell-database-as-data-frame-15.3\"><span class=\"toc-item-num\">15.3&nbsp;&nbsp;</span>Intercell database as data frame</a></span></li><li><span><a href=\"#Browse-intercell-categories\" data-toc-modified-id=\"Browse-intercell-categories-15.4\"><span class=\"toc-item-num\">15.4&nbsp;&nbsp;</span>Browse intercell categories</a></span></li></ul></li><li><span><a href=\"#Gene-Ontology-\" data-toc-modified-id=\"Gene-Ontology--16\"><span class=\"toc-item-num\">16&nbsp;&nbsp;</span>Gene Ontology <a class=\"anchor\" id=\"gene-ontology\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Protein-complexes-\" data-toc-modified-id=\"Protein-complexes--17\"><span class=\"toc-item-num\">17&nbsp;&nbsp;</span>Protein complexes <a class=\"anchor\" id=\"complexes\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Protein-complex-objects\" data-toc-modified-id=\"Protein-complex-objects-17.1\"><span class=\"toc-item-num\">17.1&nbsp;&nbsp;</span>Protein complex objects</a></span></li><li><span><a href=\"#Protein-complex-data-frame\" data-toc-modified-id=\"Protein-complex-data-frame-17.2\"><span class=\"toc-item-num\">17.2&nbsp;&nbsp;</span>Protein complex data frame</a></span></li></ul></li><li><span><a href=\"#Saving-datasets-as-pickles-\" data-toc-modified-id=\"Saving-datasets-as-pickles--18\"><span class=\"toc-item-num\">18&nbsp;&nbsp;</span>Saving datasets as pickles <a class=\"anchor\" id=\"pickle\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Log-messages-and-sessions-\" data-toc-modified-id=\"Log-messages-and-sessions--19\"><span class=\"toc-item-num\">19&nbsp;&nbsp;</span>Log messages and sessions <a class=\"anchor\" id=\"log-session\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Basic-info-about-the-session\" data-toc-modified-id=\"Basic-info-about-the-session-19.1\"><span class=\"toc-item-num\">19.1&nbsp;&nbsp;</span>Basic info about the session</a></span></li><li><span><a href=\"#Read-the-log-file\" data-toc-modified-id=\"Read-the-log-file-19.2\"><span class=\"toc-item-num\">19.2&nbsp;&nbsp;</span>Read the log file</a></span></li><li><span><a href=\"#Logging-to-the-console\" data-toc-modified-id=\"Logging-to-the-console-19.3\"><span class=\"toc-item-num\">19.3&nbsp;&nbsp;</span>Logging to the console</a></span></li><li><span><a href=\"#Disable-logging\" data-toc-modified-id=\"Disable-logging-19.4\"><span class=\"toc-item-num\">19.4&nbsp;&nbsp;</span>Disable logging</a></span></li><li><span><a href=\"#Write-to-the-log\" data-toc-modified-id=\"Write-to-the-log-19.5\"><span class=\"toc-item-num\">19.5&nbsp;&nbsp;</span>Write to the log</a></span><ul class=\"toc-item\"><li><span><a href=\"#Sending-a-single-message\" data-toc-modified-id=\"Sending-a-single-message-19.5.1\"><span class=\"toc-item-num\">19.5.1&nbsp;&nbsp;</span>Sending a single message</a></span></li><li><span><a href=\"#Connect-a-module-or-class-to-the-pypath-logger\" data-toc-modified-id=\"Connect-a-module-or-class-to-the-pypath-logger-19.5.2\"><span class=\"toc-item-num\">19.5.2&nbsp;&nbsp;</span>Connect a module or class to the pypath logger</a></span></li></ul></li></ul></li><li><span><a href=\"#BEL-export-\" data-toc-modified-id=\"BEL-export--20\"><span class=\"toc-item-num\">20&nbsp;&nbsp;</span>BEL export <a class=\"anchor\" id=\"bel\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#CellPhoneDB-export-\" data-toc-modified-id=\"CellPhoneDB-export--21\"><span class=\"toc-item-num\">21&nbsp;&nbsp;</span>CellPhoneDB export <a class=\"anchor\" id=\"cellphonedb\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#The-legacy-igraph-based-network-object-\" data-toc-modified-id=\"The-legacy-igraph-based-network-object--22\"><span class=\"toc-item-num\">22&nbsp;&nbsp;</span>The legacy <em>igraph</em>-based network object <a class=\"anchor\" id=\"legacy\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#I-just-want-a-network-quickly-and-play-around-with-pypath-\" data-toc-modified-id=\"I-just-want-a-network-quickly-and-play-around-with-pypath--22.1\"><span class=\"toc-item-num\">22.1&nbsp;&nbsp;</span>I just want a network quickly and play around with <em>pypath</em> <a class=\"anchor\" id=\"legacy-quick-start\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#How-do-I-build-networks-from-any-data-with-pypath?-\" data-toc-modified-id=\"How-do-I-build-networks-from-any-data-with-pypath?--22.2\"><span class=\"toc-item-num\">22.2&nbsp;&nbsp;</span>How do I build networks from any data with <em>pypath</em>? <a class=\"anchor\" id=\"legacy-quick-start-2\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Defining-input-formats-\" data-toc-modified-id=\"Defining-input-formats--22.2.1\"><span class=\"toc-item-num\">22.2.1&nbsp;&nbsp;</span>Defining input formats <a class=\"anchor\" id=\"input-formats\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Creating-PyPath-object-and-loading-the-2-test-files-\" data-toc-modified-id=\"Creating-PyPath-object-and-loading-the-2-test-files--22.2.2\"><span class=\"toc-item-num\">22.2.2&nbsp;&nbsp;</span>Creating PyPath object and loading the 2 test files <a class=\"anchor\" id=\"toy-example\" rel=\"nofollow\"></a></a></span></li></ul></li><li><span><a href=\"#Structure-of-the-legacy-network-object\" data-toc-modified-id=\"Structure-of-the-legacy-network-object-22.3\"><span class=\"toc-item-num\">22.3&nbsp;&nbsp;</span>Structure of the legacy network object</a></span><ul class=\"toc-item\"><li><span><a href=\"#Directions-and-signs-\" data-toc-modified-id=\"Directions-and-signs--22.3.1\"><span class=\"toc-item-num\">22.3.1&nbsp;&nbsp;</span>Directions and signs <a class=\"anchor\" id=\"directions\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Accessing-nodes-in-the-network-\" data-toc-modified-id=\"Accessing-nodes-in-the-network--22.3.2\"><span class=\"toc-item-num\">22.3.2&nbsp;&nbsp;</span>Accessing nodes in the network <a class=\"anchor\" id=\"nodes\" rel=\"nofollow\"></a></a></span></li></ul></li><li><span><a href=\"#Querying-relationships-with-our-without-causality-\" data-toc-modified-id=\"Querying-relationships-with-our-without-causality--22.4\"><span class=\"toc-item-num\">22.4&nbsp;&nbsp;</span>Querying relationships with our without causality <a class=\"anchor\" id=\"causality\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Accessing-edges-by-identifiers-\" data-toc-modified-id=\"Accessing-edges-by-identifiers--22.5\"><span class=\"toc-item-num\">22.5&nbsp;&nbsp;</span>Accessing edges by identifiers <a class=\"anchor\" id=\"edge-lookup\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Literature-references-\" data-toc-modified-id=\"Literature-references--22.6\"><span class=\"toc-item-num\">22.6&nbsp;&nbsp;</span>Literature references <a class=\"anchor\" id=\"references\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Plotting-the-network-with-igraph-\" data-toc-modified-id=\"Plotting-the-network-with-igraph--22.7\"><span class=\"toc-item-num\">22.7&nbsp;&nbsp;</span>Plotting the network with <em>igraph</em> <a class=\"anchor\" id=\"plot\" rel=\"nofollow\"></a></a></span></li></ul></li></ul></div>"
+    "<div class=\"toc\"><ul class=\"toc-item\"><li><span><a href=\"#Introduction\" data-toc-modified-id=\"Introduction-1\"><span class=\"toc-item-num\">1&nbsp;&nbsp;</span>Introduction</a></span></li><li><span><a href=\"#Build,-load-and-save-databases\" data-toc-modified-id=\"Build,-load-and-save-databases-2\"><span class=\"toc-item-num\">2&nbsp;&nbsp;</span>Build, load and save databases</a></span><ul class=\"toc-item\"><li><span><a href=\"#The-OmniPath-app\" data-toc-modified-id=\"The-OmniPath-app-2.1\"><span class=\"toc-item-num\">2.1&nbsp;&nbsp;</span>The OmniPath app</a></span></li><li><span><a href=\"#Built-in-database-definitions\" data-toc-modified-id=\"Built-in-database-definitions-2.2\"><span class=\"toc-item-num\">2.2&nbsp;&nbsp;</span>Built-in database definitions</a></span></li><li><span><a href=\"#Networks\" data-toc-modified-id=\"Networks-2.3\"><span class=\"toc-item-num\">2.3&nbsp;&nbsp;</span>Networks</a></span><ul class=\"toc-item\"><li><span><a href=\"#Strictly-literature-curated-network\" data-toc-modified-id=\"Strictly-literature-curated-network-2.3.1\"><span class=\"toc-item-num\">2.3.1&nbsp;&nbsp;</span>Strictly literature curated network</a></span></li><li><span><a href=\"#The-OmniPath-network-with-extra-activity-flow,-enzyme-substrate-and-ligand-receptor-interactions\" data-toc-modified-id=\"The-OmniPath-network-with-extra-activity-flow,-enzyme-substrate-and-ligand-receptor-interactions-2.3.2\"><span class=\"toc-item-num\">2.3.2&nbsp;&nbsp;</span>The OmniPath network with extra activity flow, enzyme-substrate and ligand-receptor interactions</a></span></li><li><span><a href=\"#Transcriptional-regulation-network-from-DoRothEA-and-other-resources\" data-toc-modified-id=\"Transcriptional-regulation-network-from-DoRothEA-and-other-resources-2.3.3\"><span class=\"toc-item-num\">2.3.3&nbsp;&nbsp;</span>Transcriptional regulation network from DoRothEA and other resources</a></span></li><li><span><a href=\"#Literature-curated-miRNA-post-transcriptional-regulation-network\" data-toc-modified-id=\"Literature-curated-miRNA-post-transcriptional-regulation-network-2.3.4\"><span class=\"toc-item-num\">2.3.4&nbsp;&nbsp;</span>Literature curated miRNA post-transcriptional regulation network</a></span></li><li><span><a href=\"#Transcriptional-regulation-of-miRNA\" data-toc-modified-id=\"Transcriptional-regulation-of-miRNA-2.3.5\"><span class=\"toc-item-num\">2.3.5&nbsp;&nbsp;</span>Transcriptional regulation of miRNA</a></span></li><li><span><a href=\"#lncRNA-mRNA-interactions\" data-toc-modified-id=\"lncRNA-mRNA-interactions-2.3.6\"><span class=\"toc-item-num\">2.3.6&nbsp;&nbsp;</span>lncRNA-mRNA interactions</a></span></li><li><span><a href=\"#Small-molecule-protein-interactions\" data-toc-modified-id=\"Small-molecule-protein-interactions-2.3.7\"><span class=\"toc-item-num\">2.3.7&nbsp;&nbsp;</span>Small molecule-protein interactions</a></span></li></ul></li><li><span><a href=\"#Enzyme-substrate-relationships\" data-toc-modified-id=\"Enzyme-substrate-relationships-2.4\"><span class=\"toc-item-num\">2.4&nbsp;&nbsp;</span>Enzyme-substrate relationships</a></span></li><li><span><a href=\"#Protein-complexes\" data-toc-modified-id=\"Protein-complexes-2.5\"><span class=\"toc-item-num\">2.5&nbsp;&nbsp;</span>Protein complexes</a></span></li><li><span><a href=\"#Annotations\" data-toc-modified-id=\"Annotations-2.6\"><span class=\"toc-item-num\">2.6&nbsp;&nbsp;</span>Annotations</a></span></li><li><span><a href=\"#Inter-cellular-communication-roles\" data-toc-modified-id=\"Inter-cellular-communication-roles-2.7\"><span class=\"toc-item-num\">2.7&nbsp;&nbsp;</span>Inter-cellular communication roles</a></span></li></ul></li><li><span><a href=\"#Data-directly-from-the-original-resources\" data-toc-modified-id=\"Data-directly-from-the-original-resources-3\"><span class=\"toc-item-num\">3&nbsp;&nbsp;</span>Data directly from the original resources</a></span></li><li><span><a href=\"#Interesting-resources\" data-toc-modified-id=\"Interesting-resources-4\"><span class=\"toc-item-num\">4&nbsp;&nbsp;</span>Interesting resources</a></span><ul class=\"toc-item\"><li><span><a href=\"#RaMP\" data-toc-modified-id=\"RaMP-4.1\"><span class=\"toc-item-num\">4.1&nbsp;&nbsp;</span>RaMP</a></span><ul class=\"toc-item\"><li><span><a href=\"#TL;DR\" data-toc-modified-id=\"TL;DR-4.1.1\"><span class=\"toc-item-num\">4.1.1&nbsp;&nbsp;</span>TL;DR</a></span></li></ul></li><li><span><a href=\"#HMDB-(Human-Metabolome-Database)\" data-toc-modified-id=\"HMDB-(Human-Metabolome-Database)-4.2\"><span class=\"toc-item-num\">4.2&nbsp;&nbsp;</span>HMDB (Human Metabolome Database)</a></span><ul class=\"toc-item\"><li><span><a href=\"#Direct-access-to-HMDB-data\" data-toc-modified-id=\"Direct-access-to-HMDB-data-4.2.1\"><span class=\"toc-item-num\">4.2.1&nbsp;&nbsp;</span>Direct access to HMDB data</a></span></li><li><span><a href=\"#Higher-level-access-to-HMDB-data\" data-toc-modified-id=\"Higher-level-access-to-HMDB-data-4.2.2\"><span class=\"toc-item-num\">4.2.2&nbsp;&nbsp;</span>Higher level access to HMDB data</a></span></li><li><span><a href=\"#ID-translation-with-HMDB\" data-toc-modified-id=\"ID-translation-with-HMDB-4.2.3\"><span class=\"toc-item-num\">4.2.3&nbsp;&nbsp;</span>ID translation with HMDB</a></span></li></ul></li></ul></li><li><span><a href=\"#Download-management\" data-toc-modified-id=\"Download-management-5\"><span class=\"toc-item-num\">5&nbsp;&nbsp;</span>Download management</a></span><ul class=\"toc-item\"><li><span><a href=\"#Cache-management-and-customization\" data-toc-modified-id=\"Cache-management-and-customization-5.1\"><span class=\"toc-item-num\">5.1&nbsp;&nbsp;</span>Cache management and customization</a></span></li><li><span><a href=\"#Download-failures\" data-toc-modified-id=\"Download-failures-5.2\"><span class=\"toc-item-num\">5.2&nbsp;&nbsp;</span>Download failures</a></span><ul class=\"toc-item\"><li><span><a href=\"#Corrupted-cache-content\" data-toc-modified-id=\"Corrupted-cache-content-5.2.1\"><span class=\"toc-item-num\">5.2.1&nbsp;&nbsp;</span>Corrupted cache content</a></span></li><li><span><a href=\"#Network-communication-issues:-look-into-the-curl-debug-log\" data-toc-modified-id=\"Network-communication-issues:-look-into-the-curl-debug-log-5.2.2\"><span class=\"toc-item-num\">5.2.2&nbsp;&nbsp;</span>Network communication issues: look into the curl debug log</a></span></li><li><span><a href=\"#Timeouts\" data-toc-modified-id=\"Timeouts-5.2.3\"><span class=\"toc-item-num\">5.2.3&nbsp;&nbsp;</span>Timeouts</a></span></li><li><span><a href=\"#Access-and-inspect-the-Curl-object\" data-toc-modified-id=\"Access-and-inspect-the-Curl-object-5.2.4\"><span class=\"toc-item-num\">5.2.4&nbsp;&nbsp;</span>Access and inspect the <code>Curl</code> object</a></span></li><li><span><a href=\"#Is-it-failing-only-for-you?\" data-toc-modified-id=\"Is-it-failing-only-for-you?-5.2.5\"><span class=\"toc-item-num\">5.2.5&nbsp;&nbsp;</span>Is it failing only for you?</a></span></li><li><span><a href=\"#Read-the-log\" data-toc-modified-id=\"Read-the-log-5.2.6\"><span class=\"toc-item-num\">5.2.6&nbsp;&nbsp;</span>Read the log</a></span></li><li><span><a href=\"#TLS-(SSL,-HTTPS)-errors\" data-toc-modified-id=\"TLS-(SSL,-HTTPS)-errors-5.2.7\"><span class=\"toc-item-num\">5.2.7&nbsp;&nbsp;</span>TLS (SSL, HTTPS) errors</a></span></li></ul></li></ul></li><li><span><a href=\"#Resources\" data-toc-modified-id=\"Resources-6\"><span class=\"toc-item-num\">6&nbsp;&nbsp;</span>Resources</a></span><ul class=\"toc-item\"><li><span><a href=\"#Licenses\" data-toc-modified-id=\"Licenses-6.1\"><span class=\"toc-item-num\">6.1&nbsp;&nbsp;</span>Licenses</a></span><ul class=\"toc-item\"><li><span><a href=\"#Example:-build-a-network-for-commercial-use\" data-toc-modified-id=\"Example:-build-a-network-for-commercial-use-6.1.1\"><span class=\"toc-item-num\">6.1.1&nbsp;&nbsp;</span>Example: build a network for commercial use</a></span></li></ul></li><li><span><a href=\"#Resource-information\" data-toc-modified-id=\"Resource-information-6.2\"><span class=\"toc-item-num\">6.2&nbsp;&nbsp;</span>Resource information</a></span></li><li><span><a href=\"#Resource-definitions-for-a-certain-database-or-dataset\" data-toc-modified-id=\"Resource-definitions-for-a-certain-database-or-dataset-6.3\"><span class=\"toc-item-num\">6.3&nbsp;&nbsp;</span>Resource definitions for a certain database or dataset</a></span></li></ul></li><li><span><a href=\"#Building-networks-\" data-toc-modified-id=\"Building-networks--7\"><span class=\"toc-item-num\">7&nbsp;&nbsp;</span>Building networks <a class=\"anchor\" id=\"building-networks\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Which-network-datasets-are-pre-defined-in-pypath?-\" data-toc-modified-id=\"Which-network-datasets-are-pre-defined-in-pypath?--7.1\"><span class=\"toc-item-num\">7.1&nbsp;&nbsp;</span>Which network datasets are pre-defined in pypath? <a class=\"anchor\" id=\"network-resources\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#The-Network-object\" data-toc-modified-id=\"The-Network-object-7.2\"><span class=\"toc-item-num\">7.2&nbsp;&nbsp;</span>The <code>Network</code> object</a></span></li><li><span><a href=\"#Network-in-pandas.DataFrame-\" data-toc-modified-id=\"Network-in-pandas.DataFrame--7.3\"><span class=\"toc-item-num\">7.3&nbsp;&nbsp;</span>Network in <em>pandas.DataFrame</em> <a class=\"anchor\" id=\"network-pandas\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Self-interactions-(loop-edges)-in-the-network\" data-toc-modified-id=\"Self-interactions-(loop-edges)-in-the-network-7.4\"><span class=\"toc-item-num\">7.4&nbsp;&nbsp;</span>Self interactions (loop edges) in the network</a></span></li><li><span><a href=\"#Molecular-complexes-in-the-network\" data-toc-modified-id=\"Molecular-complexes-in-the-network-7.5\"><span class=\"toc-item-num\">7.5&nbsp;&nbsp;</span>Molecular complexes in the network</a></span></li></ul></li><li><span><a href=\"#Translating-identifiers-\" data-toc-modified-id=\"Translating-identifiers--8\"><span class=\"toc-item-num\">8&nbsp;&nbsp;</span>Translating identifiers <a class=\"anchor\" id=\"mapping\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Pre-defined-ID-translation-tables\" data-toc-modified-id=\"Pre-defined-ID-translation-tables-8.1\"><span class=\"toc-item-num\">8.1&nbsp;&nbsp;</span>Pre-defined ID translation tables</a></span></li><li><span><a href=\"#Direct-access-to-ID-translation-tables\" data-toc-modified-id=\"Direct-access-to-ID-translation-tables-8.2\"><span class=\"toc-item-num\">8.2&nbsp;&nbsp;</span>Direct access to ID translation tables</a></span></li></ul></li><li><span><a href=\"#Orthology-translation\" data-toc-modified-id=\"Orthology-translation-9\"><span class=\"toc-item-num\">9&nbsp;&nbsp;</span>Orthology translation</a></span><ul class=\"toc-item\"><li><span><a href=\"#Orthology-translation-tables-as-dictionaries\" data-toc-modified-id=\"Orthology-translation-tables-as-dictionaries-9.1\"><span class=\"toc-item-num\">9.1&nbsp;&nbsp;</span>Orthology translation tables as dictionaries</a></span></li><li><span><a href=\"#Orthology-translation-data-frames\" data-toc-modified-id=\"Orthology-translation-data-frames-9.2\"><span class=\"toc-item-num\">9.2&nbsp;&nbsp;</span>Orthology translation data frames</a></span></li></ul></li><li><span><a href=\"#Taxonomy\" data-toc-modified-id=\"Taxonomy-10\"><span class=\"toc-item-num\">10&nbsp;&nbsp;</span>Taxonomy</a></span><ul class=\"toc-item\"><li><span><a href=\"#Translating-to-NCBI-Taxonomy,-scientific-names-and-common-names\" data-toc-modified-id=\"Translating-to-NCBI-Taxonomy,-scientific-names-and-common-names-10.1\"><span class=\"toc-item-num\">10.1&nbsp;&nbsp;</span>Translating to NCBI Taxonomy, scientific names and common names</a></span></li><li><span><a href=\"#Organism-from-UniProt-ID\" data-toc-modified-id=\"Organism-from-UniProt-ID-10.2\"><span class=\"toc-item-num\">10.2&nbsp;&nbsp;</span>Organism from UniProt ID</a></span></li></ul></li><li><span><a href=\"#UniProt\" data-toc-modified-id=\"UniProt-11\"><span class=\"toc-item-num\">11&nbsp;&nbsp;</span>UniProt</a></span><ul class=\"toc-item\"><li><span><a href=\"#The-UniProt-input-module\" data-toc-modified-id=\"The-UniProt-input-module-11.1\"><span class=\"toc-item-num\">11.1&nbsp;&nbsp;</span>The UniProt input module</a></span><ul class=\"toc-item\"><li><span><a href=\"#All-UniProt-IDs-for-one-organism\" data-toc-modified-id=\"All-UniProt-IDs-for-one-organism-11.1.1\"><span class=\"toc-item-num\">11.1.1&nbsp;&nbsp;</span>All UniProt IDs for one organism</a></span></li><li><span><a href=\"#UniProt-ID-format-validation\" data-toc-modified-id=\"UniProt-ID-format-validation-11.1.2\"><span class=\"toc-item-num\">11.1.2&nbsp;&nbsp;</span>UniProt ID format validation</a></span></li><li><span><a href=\"#UniProt-ID-validation\" data-toc-modified-id=\"UniProt-ID-validation-11.1.3\"><span class=\"toc-item-num\">11.1.3&nbsp;&nbsp;</span>UniProt ID validation</a></span></li><li><span><a href=\"#Single-UniProt-protein-datasheet\" data-toc-modified-id=\"Single-UniProt-protein-datasheet-11.1.4\"><span class=\"toc-item-num\">11.1.4&nbsp;&nbsp;</span>Single UniProt protein datasheet</a></span></li><li><span><a href=\"#History-of-UniProt-records\" data-toc-modified-id=\"History-of-UniProt-records-11.1.5\"><span class=\"toc-item-num\">11.1.5&nbsp;&nbsp;</span>History of UniProt records</a></span></li><li><span><a href=\"#UniProt-legacy-API\" data-toc-modified-id=\"UniProt-legacy-API-11.1.6\"><span class=\"toc-item-num\">11.1.6&nbsp;&nbsp;</span>UniProt legacy API</a></span></li><li><span><a href=\"#Processed-UniProt-annotations\" data-toc-modified-id=\"Processed-UniProt-annotations-11.1.7\"><span class=\"toc-item-num\">11.1.7&nbsp;&nbsp;</span>Processed UniProt annotations</a></span></li></ul></li><li><span><a href=\"#The-UniProt-utils-module\" data-toc-modified-id=\"The-UniProt-utils-module-11.2\"><span class=\"toc-item-num\">11.2&nbsp;&nbsp;</span>The UniProt utils module</a></span><ul class=\"toc-item\"><li><span><a href=\"#Datasheets\" data-toc-modified-id=\"Datasheets-11.2.1\"><span class=\"toc-item-num\">11.2.1&nbsp;&nbsp;</span>Datasheets</a></span></li><li><span><a href=\"#Tables\" data-toc-modified-id=\"Tables-11.2.2\"><span class=\"toc-item-num\">11.2.2&nbsp;&nbsp;</span>Tables</a></span></li></ul></li><li><span><a href=\"#Sanitizing-UniProt-IDs\" data-toc-modified-id=\"Sanitizing-UniProt-IDs-11.3\"><span class=\"toc-item-num\">11.3&nbsp;&nbsp;</span>Sanitizing UniProt IDs</a></span></li></ul></li><li><span><a href=\"#Enzyme-substrate-interactions-\" data-toc-modified-id=\"Enzyme-substrate-interactions--12\"><span class=\"toc-item-num\">12&nbsp;&nbsp;</span>Enzyme-substrate interactions <a class=\"anchor\" id=\"enz-sub\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Enzyme-substrate-objects\" data-toc-modified-id=\"Enzyme-substrate-objects-12.1\"><span class=\"toc-item-num\">12.1&nbsp;&nbsp;</span>Enzyme-substrate objects</a></span></li><li><span><a href=\"#Enzyme-substrate-data-frame\" data-toc-modified-id=\"Enzyme-substrate-data-frame-12.2\"><span class=\"toc-item-num\">12.2&nbsp;&nbsp;</span>Enzyme-substrate data frame</a></span></li></ul></li><li><span><a href=\"#Protein-sequences\" data-toc-modified-id=\"Protein-sequences-13\"><span class=\"toc-item-num\">13&nbsp;&nbsp;</span>Protein sequences</a></span></li><li><span><a href=\"#Annotations-\" data-toc-modified-id=\"Annotations--14\"><span class=\"toc-item-num\">14&nbsp;&nbsp;</span>Annotations <a class=\"anchor\" id=\"annotations\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Load-a-single-annotation-resource\" data-toc-modified-id=\"Load-a-single-annotation-resource-14.1\"><span class=\"toc-item-num\">14.1&nbsp;&nbsp;</span>Load a single annotation resource</a></span></li><li><span><a href=\"#Load-the-full-annotations-database-by-the-database-manager\" data-toc-modified-id=\"Load-the-full-annotations-database-by-the-database-manager-14.2\"><span class=\"toc-item-num\">14.2&nbsp;&nbsp;</span>Load the full annotations database by the database manager</a></span></li><li><span><a href=\"#Load-only-selected-annotations\" data-toc-modified-id=\"Load-only-selected-annotations-14.3\"><span class=\"toc-item-num\">14.3&nbsp;&nbsp;</span>Load only selected annotations</a></span></li><li><span><a href=\"#Data-frames-of-annotations\" data-toc-modified-id=\"Data-frames-of-annotations-14.4\"><span class=\"toc-item-num\">14.4&nbsp;&nbsp;</span>Data frames of annotations</a></span></li></ul></li><li><span><a href=\"#Inter-cellular-signaling-roles-\" data-toc-modified-id=\"Inter-cellular-signaling-roles--15\"><span class=\"toc-item-num\">15&nbsp;&nbsp;</span>Inter-cellular signaling roles <a class=\"anchor\" id=\"intercell\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Build-an-intercellular-communication-network\" data-toc-modified-id=\"Build-an-intercellular-communication-network-15.1\"><span class=\"toc-item-num\">15.1&nbsp;&nbsp;</span>Build an intercellular communication network</a></span></li><li><span><a href=\"#Quantitative-overview-of-intercell-annotations\" data-toc-modified-id=\"Quantitative-overview-of-intercell-annotations-15.2\"><span class=\"toc-item-num\">15.2&nbsp;&nbsp;</span>Quantitative overview of intercell annotations</a></span></li><li><span><a href=\"#Intercell-database-as-data-frame\" data-toc-modified-id=\"Intercell-database-as-data-frame-15.3\"><span class=\"toc-item-num\">15.3&nbsp;&nbsp;</span>Intercell database as data frame</a></span></li><li><span><a href=\"#Browse-intercell-categories\" data-toc-modified-id=\"Browse-intercell-categories-15.4\"><span class=\"toc-item-num\">15.4&nbsp;&nbsp;</span>Browse intercell categories</a></span></li></ul></li><li><span><a href=\"#Gene-Ontology-\" data-toc-modified-id=\"Gene-Ontology--16\"><span class=\"toc-item-num\">16&nbsp;&nbsp;</span>Gene Ontology <a class=\"anchor\" id=\"gene-ontology\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Protein-complexes-\" data-toc-modified-id=\"Protein-complexes--17\"><span class=\"toc-item-num\">17&nbsp;&nbsp;</span>Protein complexes <a class=\"anchor\" id=\"complexes\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Protein-complex-objects\" data-toc-modified-id=\"Protein-complex-objects-17.1\"><span class=\"toc-item-num\">17.1&nbsp;&nbsp;</span>Protein complex objects</a></span></li><li><span><a href=\"#Protein-complex-data-frame\" data-toc-modified-id=\"Protein-complex-data-frame-17.2\"><span class=\"toc-item-num\">17.2&nbsp;&nbsp;</span>Protein complex data frame</a></span></li></ul></li><li><span><a href=\"#Saving-datasets-as-pickles-\" data-toc-modified-id=\"Saving-datasets-as-pickles--18\"><span class=\"toc-item-num\">18&nbsp;&nbsp;</span>Saving datasets as pickles <a class=\"anchor\" id=\"pickle\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Log-messages-and-sessions-\" data-toc-modified-id=\"Log-messages-and-sessions--19\"><span class=\"toc-item-num\">19&nbsp;&nbsp;</span>Log messages and sessions <a class=\"anchor\" id=\"log-session\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Basic-info-about-the-session\" data-toc-modified-id=\"Basic-info-about-the-session-19.1\"><span class=\"toc-item-num\">19.1&nbsp;&nbsp;</span>Basic info about the session</a></span></li><li><span><a href=\"#Read-the-log-file\" data-toc-modified-id=\"Read-the-log-file-19.2\"><span class=\"toc-item-num\">19.2&nbsp;&nbsp;</span>Read the log file</a></span></li><li><span><a href=\"#Logging-to-the-console\" data-toc-modified-id=\"Logging-to-the-console-19.3\"><span class=\"toc-item-num\">19.3&nbsp;&nbsp;</span>Logging to the console</a></span></li><li><span><a href=\"#Disable-logging\" data-toc-modified-id=\"Disable-logging-19.4\"><span class=\"toc-item-num\">19.4&nbsp;&nbsp;</span>Disable logging</a></span></li><li><span><a href=\"#Write-to-the-log\" data-toc-modified-id=\"Write-to-the-log-19.5\"><span class=\"toc-item-num\">19.5&nbsp;&nbsp;</span>Write to the log</a></span><ul class=\"toc-item\"><li><span><a href=\"#Sending-a-single-message\" data-toc-modified-id=\"Sending-a-single-message-19.5.1\"><span class=\"toc-item-num\">19.5.1&nbsp;&nbsp;</span>Sending a single message</a></span></li><li><span><a href=\"#Connect-a-module-or-class-to-the-pypath-logger\" data-toc-modified-id=\"Connect-a-module-or-class-to-the-pypath-logger-19.5.2\"><span class=\"toc-item-num\">19.5.2&nbsp;&nbsp;</span>Connect a module or class to the pypath logger</a></span></li></ul></li></ul></li><li><span><a href=\"#BEL-export-\" data-toc-modified-id=\"BEL-export--20\"><span class=\"toc-item-num\">20&nbsp;&nbsp;</span>BEL export <a class=\"anchor\" id=\"bel\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#CellPhoneDB-export-\" data-toc-modified-id=\"CellPhoneDB-export--21\"><span class=\"toc-item-num\">21&nbsp;&nbsp;</span>CellPhoneDB export <a class=\"anchor\" id=\"cellphonedb\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#The-legacy-igraph-based-network-object-\" data-toc-modified-id=\"The-legacy-igraph-based-network-object--22\"><span class=\"toc-item-num\">22&nbsp;&nbsp;</span>The legacy <em>igraph</em>-based network object <a class=\"anchor\" id=\"legacy\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#I-just-want-a-network-quickly-and-play-around-with-pypath-\" data-toc-modified-id=\"I-just-want-a-network-quickly-and-play-around-with-pypath--22.1\"><span class=\"toc-item-num\">22.1&nbsp;&nbsp;</span>I just want a network quickly and play around with <em>pypath</em> <a class=\"anchor\" id=\"legacy-quick-start\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#How-do-I-build-networks-from-any-data-with-pypath?-\" data-toc-modified-id=\"How-do-I-build-networks-from-any-data-with-pypath?--22.2\"><span class=\"toc-item-num\">22.2&nbsp;&nbsp;</span>How do I build networks from any data with <em>pypath</em>? <a class=\"anchor\" id=\"legacy-quick-start-2\" rel=\"nofollow\"></a></a></span><ul class=\"toc-item\"><li><span><a href=\"#Defining-input-formats-\" data-toc-modified-id=\"Defining-input-formats--22.2.1\"><span class=\"toc-item-num\">22.2.1&nbsp;&nbsp;</span>Defining input formats <a class=\"anchor\" id=\"input-formats\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Creating-PyPath-object-and-loading-the-2-test-files-\" data-toc-modified-id=\"Creating-PyPath-object-and-loading-the-2-test-files--22.2.2\"><span class=\"toc-item-num\">22.2.2&nbsp;&nbsp;</span>Creating PyPath object and loading the 2 test files <a class=\"anchor\" id=\"toy-example\" rel=\"nofollow\"></a></a></span></li></ul></li><li><span><a href=\"#Structure-of-the-legacy-network-object\" data-toc-modified-id=\"Structure-of-the-legacy-network-object-22.3\"><span class=\"toc-item-num\">22.3&nbsp;&nbsp;</span>Structure of the legacy network object</a></span><ul class=\"toc-item\"><li><span><a href=\"#Directions-and-signs-\" data-toc-modified-id=\"Directions-and-signs--22.3.1\"><span class=\"toc-item-num\">22.3.1&nbsp;&nbsp;</span>Directions and signs <a class=\"anchor\" id=\"directions\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Accessing-nodes-in-the-network-\" data-toc-modified-id=\"Accessing-nodes-in-the-network--22.3.2\"><span class=\"toc-item-num\">22.3.2&nbsp;&nbsp;</span>Accessing nodes in the network <a class=\"anchor\" id=\"nodes\" rel=\"nofollow\"></a></a></span></li></ul></li><li><span><a href=\"#Querying-relationships-with-our-without-causality-\" data-toc-modified-id=\"Querying-relationships-with-our-without-causality--22.4\"><span class=\"toc-item-num\">22.4&nbsp;&nbsp;</span>Querying relationships with our without causality <a class=\"anchor\" id=\"causality\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Accessing-edges-by-identifiers-\" data-toc-modified-id=\"Accessing-edges-by-identifiers--22.5\"><span class=\"toc-item-num\">22.5&nbsp;&nbsp;</span>Accessing edges by identifiers <a class=\"anchor\" id=\"edge-lookup\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Literature-references-\" data-toc-modified-id=\"Literature-references--22.6\"><span class=\"toc-item-num\">22.6&nbsp;&nbsp;</span>Literature references <a class=\"anchor\" id=\"references\" rel=\"nofollow\"></a></a></span></li><li><span><a href=\"#Plotting-the-network-with-igraph-\" data-toc-modified-id=\"Plotting-the-network-with-igraph--22.7\"><span class=\"toc-item-num\">22.7&nbsp;&nbsp;</span>Plotting the network with <em>igraph</em> <a class=\"anchor\" id=\"plot\" rel=\"nofollow\"></a></a></span></li></ul></li></ul></div>"
    ]
   },
   {
@@ -8443,18 +8443,18 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Homology translation\n",
+    "## Orthology translation\n",
     "\n",
-    "The `utils.homology` module handles translation of data between organism by orthologous gene pairs. Its most important function is `translate`. The source organism is human by default, the target must be provided, below we use mouse (NCBI Taxonomy 10090):"
+    "The `utils.orthology` module (formerly `utils.homology`) handles translation of data between organism by orthologous gene pairs. Its most important function is `translate`. The source organism is human by default, the target must be provided, below we use mouse (NCBI Taxonomy 10090):"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 2,
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2022-12-03T15:36:30.677741Z",
-     "start_time": "2022-12-03T15:36:30.601032Z"
+     "end_time": "2023-09-28T18:03:50.063128Z",
+     "start_time": "2023-09-28T18:03:27.729650Z"
     }
    },
    "outputs": [
@@ -8464,30 +8464,30 @@
        "{'Q01279'}"
       ]
      },
-     "execution_count": 4,
+     "execution_count": 2,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "from pypath.utils import homology\n",
-    "homology.translate('P00533', target = 10090)"
+    "from pypath.utils import orthology\n",
+    "orthology.translate('P00533', target = 10090)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "ID translation and homology translation are integrated, hence not only UniProt IDs can be translated:"
+    "ID translation and orthology translation are integrated, hence not only UniProt IDs can be translated:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 17,
+   "execution_count": 3,
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2022-12-02T14:18:05.181867Z",
-     "start_time": "2022-12-02T14:18:05.114049Z"
+     "end_time": "2023-09-28T18:04:16.227314Z",
+     "start_time": "2023-09-28T18:03:54.151630Z"
     }
    },
    "outputs": [
@@ -8497,63 +8497,63 @@
        "{'Egfr'}"
       ]
      },
-     "execution_count": 17,
+     "execution_count": 3,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "homology.translate('EGFR', target = 10090, id_type = 'genesymbol')"
+    "orthology.translate('EGFR', target = 10090, id_type = 'genesymbol')"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "This module uses data from NCBI HomoloGene and Ensembl. The latter covers more organisms, and accepts some parameters (high confidence, one-to-one vs. one-to-many mapping). These parameters can be controlled by the settings module, or passed to the functions above and below. For some reason the settings below fail to find any ortholog of our example protein:"
+    "This module uses data from the Orthologous Matrix )OMA), NCBI HomoloGene and Ensembl. The latter covers more organisms, and accepts some parameters (high confidence, one-to-one vs. one-to-many mapping). The default is to use only OMA as that one is the most comprehensive, up to date and easy to use resource. These parameters can be controlled by the settings module, or passed to the functions above and below, for example:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 18,
+   "execution_count": 8,
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2022-12-02T14:18:07.062911Z",
-     "start_time": "2022-12-02T14:18:07.053896Z"
+     "end_time": "2023-09-28T18:07:43.983305Z",
+     "start_time": "2023-09-28T18:07:19.466364Z"
     }
    },
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "set()"
+       "{'Q01279'}"
       ]
      },
-     "execution_count": 18,
+     "execution_count": 8,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "homology.translate('P00533', target = 10090, homologene = False, ensembl = False, ensembl_hc = False, ensembl_types = 'one2one')"
+    "orthology.translate('P00533', target = 10090, oma = False, homologene = False, ensembl = True, ensembl_hc = False, ensembl_types = 'one2one')"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Homology translation tables as dictionaries\n",
+    "### Orthology translation tables as dictionaries\n",
     "\n",
     "The translation tables are available as dicts of sets, these are convenient for use outside of pypath:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 19,
+   "execution_count": 9,
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2022-12-02T14:18:09.872102Z",
-     "start_time": "2022-12-02T14:18:09.006307Z"
+     "end_time": "2023-09-28T18:08:26.204826Z",
+     "start_time": "2023-09-28T18:08:26.130931Z"
     }
    },
    "outputs": [
@@ -8563,13 +8563,13 @@
        "{'Egfr'}"
       ]
      },
-     "execution_count": 19,
+     "execution_count": 9,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "human_mouse_genesymbols = homology.get_dict(target = 'mouse', id_type = 'genesymbol')\n",
+    "human_mouse_genesymbols = orthology.get_dict(target = 'mouse', id_type = 'genesymbol')\n",
     "human_mouse_genesymbols['EGFR']"
    ]
   },
@@ -8577,18 +8577,51 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Homology translation data frames\n",
+    "The relationship types and confdence levels can be included using the `full_records` argument:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2023-09-28T18:10:13.499398Z",
+     "start_time": "2023-09-28T18:10:13.437657Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{OmaOrtholog(id='Egfr', rel_type='1:1', score=12704.5703125)}"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "human_mouse_genesymbols = orthology.get_dict(target = 'mouse', id_type = 'genesymbol', full_records = True)\n",
+    "human_mouse_genesymbols['EGFR']"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Orthology translation data frames\n",
     "\n",
     "Similarly, `pandas.DataFrame`s are available:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 13,
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2022-12-03T15:36:36.124841Z",
-     "start_time": "2022-12-03T15:36:34.042594Z"
+     "end_time": "2023-09-28T18:11:16.838576Z",
+     "start_time": "2023-09-28T18:11:16.713567Z"
     }
    },
    "outputs": [
@@ -8615,93 +8648,117 @@
        "      <th></th>\n",
        "      <th>source</th>\n",
        "      <th>target</th>\n",
+       "      <th>rel_type</th>\n",
+       "      <th>score</th>\n",
        "    </tr>\n",
        "  </thead>\n",
        "  <tbody>\n",
        "    <tr>\n",
        "      <th>0</th>\n",
-       "      <td>MICOS13</td>\n",
-       "      <td>Micos13</td>\n",
+       "      <td>H4C3</td>\n",
+       "      <td>H4c1</td>\n",
+       "      <td>m:n</td>\n",
+       "      <td>1262.050049</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>1</th>\n",
-       "      <td>FAT4</td>\n",
-       "      <td>Fat4</td>\n",
+       "      <td>H4C3</td>\n",
+       "      <td>H4c3</td>\n",
+       "      <td>m:n</td>\n",
+       "      <td>1262.050049</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>2</th>\n",
-       "      <td>RARS2</td>\n",
-       "      <td>Rars2</td>\n",
+       "      <td>H4C3</td>\n",
+       "      <td>H4c12</td>\n",
+       "      <td>m:n</td>\n",
+       "      <td>1262.050049</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>H4C3</td>\n",
+       "      <td>H4c11</td>\n",
+       "      <td>m:n</td>\n",
+       "      <td>1262.050049</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>4</th>\n",
-       "      <td>ZFP36L2</td>\n",
-       "      <td>Zfp36l2</td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <th>5</th>\n",
-       "      <td>LAMC1</td>\n",
-       "      <td>Lamc1</td>\n",
+       "      <td>H4C3</td>\n",
+       "      <td>H4c9</td>\n",
+       "      <td>m:n</td>\n",
+       "      <td>1262.050049</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>...</th>\n",
        "      <td>...</td>\n",
        "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
        "    </tr>\n",
        "    <tr>\n",
-       "      <th>24843</th>\n",
-       "      <td>KRTAP4-16</td>\n",
-       "      <td>Gm40460</td>\n",
+       "      <th>18446</th>\n",
+       "      <td>GDAP2</td>\n",
+       "      <td>Gdap2</td>\n",
+       "      <td>1:1</td>\n",
+       "      <td>5553.779785</td>\n",
        "    </tr>\n",
        "    <tr>\n",
-       "      <th>24844</th>\n",
-       "      <td>KRTAP4-16</td>\n",
-       "      <td>Gm45618</td>\n",
+       "      <th>18447</th>\n",
+       "      <td>ITGA8</td>\n",
+       "      <td>Itga8</td>\n",
+       "      <td>1:1</td>\n",
+       "      <td>10772.969727</td>\n",
        "    </tr>\n",
        "    <tr>\n",
-       "      <th>24845</th>\n",
-       "      <td>KRTAP4-16</td>\n",
-       "      <td>Gm4559</td>\n",
+       "      <th>18448</th>\n",
+       "      <td>SEMA3F</td>\n",
+       "      <td>Sema3f</td>\n",
+       "      <td>1:1</td>\n",
+       "      <td>9121.080078</td>\n",
        "    </tr>\n",
        "    <tr>\n",
-       "      <th>24846</th>\n",
-       "      <td>IGKV1OR2-108</td>\n",
-       "      <td>Igkv20-101-2</td>\n",
+       "      <th>18449</th>\n",
+       "      <td>EEPD1</td>\n",
+       "      <td>Eepd1</td>\n",
+       "      <td>1:1</td>\n",
+       "      <td>5874.350098</td>\n",
        "    </tr>\n",
        "    <tr>\n",
-       "      <th>24847</th>\n",
-       "      <td>FPGT-TNNI3K</td>\n",
-       "      <td>Tnni3k</td>\n",
+       "      <th>18450</th>\n",
+       "      <td>DRG2</td>\n",
+       "      <td>Drg2</td>\n",
+       "      <td>1:1</td>\n",
+       "      <td>4423.589844</td>\n",
        "    </tr>\n",
        "  </tbody>\n",
        "</table>\n",
-       "<p>22266 rows × 2 columns</p>\n",
+       "<p>18451 rows × 4 columns</p>\n",
        "</div>"
       ],
       "text/plain": [
-       "             source        target\n",
-       "0           MICOS13       Micos13\n",
-       "1              FAT4          Fat4\n",
-       "2             RARS2         Rars2\n",
-       "4           ZFP36L2       Zfp36l2\n",
-       "5             LAMC1         Lamc1\n",
-       "...             ...           ...\n",
-       "24843     KRTAP4-16       Gm40460\n",
-       "24844     KRTAP4-16       Gm45618\n",
-       "24845     KRTAP4-16        Gm4559\n",
-       "24846  IGKV1OR2-108  Igkv20-101-2\n",
-       "24847   FPGT-TNNI3K        Tnni3k\n",
+       "       source  target rel_type         score\n",
+       "0        H4C3    H4c1      m:n   1262.050049\n",
+       "1        H4C3    H4c3      m:n   1262.050049\n",
+       "2        H4C3   H4c12      m:n   1262.050049\n",
+       "3        H4C3   H4c11      m:n   1262.050049\n",
+       "4        H4C3    H4c9      m:n   1262.050049\n",
+       "...       ...     ...      ...           ...\n",
+       "18446   GDAP2   Gdap2      1:1   5553.779785\n",
+       "18447   ITGA8   Itga8      1:1  10772.969727\n",
+       "18448  SEMA3F  Sema3f      1:1   9121.080078\n",
+       "18449   EEPD1   Eepd1      1:1   5874.350098\n",
+       "18450    DRG2    Drg2      1:1   4423.589844\n",
        "\n",
-       "[22266 rows x 2 columns]"
+       "[18451 rows x 4 columns]"
       ]
      },
-     "execution_count": 5,
+     "execution_count": 13,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "human_mouse_genesymbols = homology.get_df(target = 'mouse', id_type = 'genesymbol')\n",
+    "human_mouse_genesymbols = orthology.get_df(target = 'mouse', id_type = 'genesymbol', full_records = True)\n",
     "human_mouse_genesymbols"
    ]
   },
@@ -14737,7 +14794,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.10.9"
+   "version": "3.11.5"
   },
   "toc": {
    "base_numbering": 1,

@@ -505,8 +505,7 @@ document.write(`
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> – A data frame.</p></li>
 <li><p><strong>target</strong> – Name or NCBI Taxonomy ID of the target organism.</p></li>
-<li><p><strong>source</strong> – Name or NCBI Taxonomy ID of the default source organism.
-Multiple source organisms can be used on the same instance.</p></li>
+<li><p><strong>source</strong> – Name or NCBI Taxonomy ID of the source organism.</p></li>
 <li><p><strong>cols</strong> – One or more columns to be translated. It can be a single
 column name, an iterable of column names or a dict where
 keys are column names and values are ID types. Except this
@@ -514,10 +513,10 @@ last case, identifiers are assumed to be <cite>id_type</cite>.</p></li>
 <li><p><strong>id_type</strong> – The default identifier type to use, will be used for all
 columns where ID type is not specified.</p></li>
 <li><p><strong>only_swissprot</strong> – Use only SwissProt IDs.</p></li>
-<li><p><strong>oma</strong> – Use homology information from the Orthologous Matrix (OMA).
-Currently this is the recommended source for homology data.</p></li>
-<li><p><strong>homologene</strong> – Use homology information from NCBI HomoloGene.</p></li>
-<li><p><strong>ensembl</strong> – Use homology information from Ensembl.</p></li>
+<li><p><strong>oma</strong> – Use orthology information from the Orthologous Matrix (OMA).
+Currently this is the recommended source for orthology data.</p></li>
+<li><p><strong>homologene</strong> – Use orthology information from NCBI HomoloGene.</p></li>
+<li><p><strong>ensembl</strong> – Use orthology information from Ensembl.</p></li>
 <li><p><strong>oma_rel_type</strong> – Restrict relations to certain types.</p></li>
 <li><p><strong>oma_score</strong> – Lower threshold for similarity metric.</p></li>
 <li><p><strong>ensembl_hc</strong> – Use only the high confidence orthology relations from Ensembl.</p></li>
