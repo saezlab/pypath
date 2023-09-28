@@ -234,7 +234,12 @@ dependencies:
   annotations: !!python/tuple
   - complex
 
-homology_ensembl_hc: true
-homology_ensembl_types: one2one
-homology_ensembl: true
-homology_homologene: true
+orthology_ensembl_hc: true
+orthology_ensembl_types: one2one
+orthology_ensembl: false
+orthology_homologene: false
+orthology_oma: true
+orthology_oma_rel_type: null
+orthology_oma_id_type: null
+orthology_oma_score: null
+orthology_cache: true

@@ -35,6 +35,9 @@ import datetime
 import json
 import pickle
 import copy
+import abc
+import inspect
+import types as _types
 
 import timeloop
 import pandas as pd
@@ -46,6 +49,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.homologene as homologene_input
+import pypath.inputs.oma as oma_input
 import pypath.inputs.biomart as biomart
 import pypath.utils.seq as _se
 import pypath.share.session as session
@@ -53,50 +57,62 @@ import pypath.share.settings as settings
 import pypath.utils.taxonomy as taxonomy
 import pypath.share.cache as cache_mod
 
-_homology_cleanup_timeloop = timeloop.Timeloop()
-_homology_cleanup_timeloop.logger.setLevel(9999)
+_orthology_cleanup_timeloop = timeloop.Timeloop()
+_orthology_cleanup_timeloop.logger.setLevel(9999)
 
-_logger = session.Logger(name = 'homology')
+_logger = session.Logger(name = 'orthology')
 _log = _logger._log
 
 
-class Ortholog(
-        collections.namedtuple(
-            'OrthologBase',
-            (
-                'uniprot',
-                'resource',
-                'ensembl_hc',
-                'ensembl_type',
-            ),
-        )
-    ):
+class OrthologMeta(abc.ABCMeta):
+
 
     def __new__(
             cls,
-            uniprot,
-            resource,
-            ensembl_hc = None,
-            ensembl_type = None
+            name,
+            supercls,
+            attrs,
+            resource: str,
+            fields: tuple[str] = ('id',),
         ):
 
-        return super(Ortholog, cls).__new__(
-            cls,
-            uniprot,
-            resource,
-            ensembl_hc = ensembl_hc,
-            ensembl_type = ensembl_type,
+        Base = collections.namedtuple(f'{name}Base', fields)
+
+        def new_method(cls, *args, **kwargs):
+
+            return Base.__new__(cls, *args, **kwargs)
+
+        sig = inspect.signature(new_method)
+        new_params = [
+            inspect.Parameter(arg, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+            for arg in fields
+        ]
+        new_method.__signature__ = sig.replace(
+            parameters = list(itertools.chain(
+                (sig.parameters['cls'],),
+                new_params,
+            ))
         )
+
+        clazz = _types.new_class(name, (Base,))
+        setattr(clazz, '__new__', new_method)
+        setattr(clazz, '_resource', resource)
+        clazz.__module__ = __name__
+
+        return clazz
+
+
+class OrthologBase:
 
 
     def __str__(self):
 
-        return self.uniprot
+        return self.id
 
 
     def __repr__(self):
 
-        return '<Ortholog %s (%s)>' % (self.uniprot, self.resource)
+        return f'<Ortholog {self.id} ({self._resource})>'
 
 
     def __eq__(self, other):
@@ -106,32 +122,66 @@ class Ortholog(
 
     def __hash__(self):
 
-        return super().__hash__()
+        return self.id.__hash__()
 
 
-class HomologyManager(session.Logger):
+class OmaOrtholog(
+        OrthologBase,
+        metaclass = OrthologMeta,
+        resource = 'OMA',
+        fields = ('id', 'rel_type', 'score'),
+    ): pass
+
+
+
+class EnsemblOrtholog(
+        OrthologBase,
+        metaclass = OrthologMeta,
+        resource = 'Ensembl',
+        fields = ('id', 'types', 'hc'),
+    ): pass
+
+
+class HomologeneOrtholog(
+        OrthologBase,
+        metaclass = OrthologMeta,
+        resource = 'HomoloGene',
+    ): pass
+
+
+OrthologyTableKey = collections.namedtuple(
+    'OrthologyTableKey',
+    ('source', 'target', 'only_swissprot', 'resource', 'id_type'),
+)
+
+class OrthologyManager(session.Logger):
 
     TRANSLATION_PARAM = (
+        'oma',
         'homologene',
+        'oma_rel_type',
+        'oma_score',
         'ensembl',
         'ensembl_hc',
         'ensembl_types',
     )
+    RESOURCE_PARAM = {
+        'oma': ('rel_type', 'score'),
+        'ensembl': ('hc', 'types'),
+        'homologene': (),
+    }
 
     def __init__(
             self,
-            cleanup_period = 10,
-            lifetime = 300,
-            homologene = None,
-            ensembl = None,
-            ensembl_hc = None,
-            ensembl_types = None,
+            cleanup_period: int = 10,
+            lifetime: int = 300,
+            **kwargs
         ):
 
-        session.Logger.__init__(self, name = 'homology')
+        session.Logger.__init__(self, name = 'orthology')
 
 
-        @_homology_cleanup_timeloop.job(
+        @_orthology_cleanup_timeloop.job(
             interval = datetime.timedelta(
                 seconds = cleanup_period
             )
@@ -141,35 +191,38 @@ class HomologyManager(session.Logger):
             self._remove_expired()
 
 
-        _homology_cleanup_timeloop.start(block = False)
+        _orthology_cleanup_timeloop.start(block = False)
 
         self.lifetime = lifetime
         self.tables = {}
         self.expiry = {}
-        self.cachedir = cache_mod.get_cachedir()
-
-        for param in ('homologene', 'ensembl', 'ensembl_hc', 'ensembl_types'):
-
-            setattr(
-                self,
-                param,
-                settings.get('homology_%s' % param)
-                    if locals()[param] is None else
-                locals()[param]
-            )
-
-        self.ensembl_types = common.to_set(self.ensembl_types)
-        self.ensembl_types = {
-            x if x.startswith('ortholog_') else ('ortholog_%s' % x)
-            for x in self.ensembl_types
-        }
-
-        self._log('HomologyManager has been created.')
+        self._param = {k: kwargs.get(k, None) for k in self.TRANSLATION_PARAM}
+        self._log('OrthologyManager has been created.')
 
 
-    def which_table(self, target, source = 9606, only_swissprot = True):
+    def reload(self):
 
-        key = (source, target, only_swissprot)
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+
+
+    def which_table(
+            self,
+            target: str | int,
+            source: str | int = 9606,
+            only_swissprot: bool = True,
+            resource: Literal['oma', 'homologene', 'ensembl'] = 'oma',
+            id_type: str = 'uniprot',
+        ):
+
+        loc = locals()
+        key = OrthologyTableKey(**{
+            f: loc[f]
+            for f in OrthologyTableKey._fields
+        })
 
         self.expiry[key] = time.time()
 
@@ -184,46 +237,11 @@ class HomologyManager(session.Logger):
 
     def load(self, key):
 
-        cachefile = '%s-homology-%u-%u.pickle' % (
-            common.md5(json.dumps(key)),
-            key[0],
-            key[1],
-        )
-        cachefile = os.path.join(self.cachedir, cachefile)
-
-        if os.path.exists(cachefile):
-
-            self.tables[key] = pickle.load(open(cachefile, 'rb'))
-            self.tables[key].homologene = self.homologene
-            self.tables[key].ensembl = self.ensembl
-            self.tables[key].ensembl_hc = self.ensembl_hc
-            self.tables[key].ensembl_types = self.ensembl_types
-
-            self._log(
-                'Homology table from taxon %u to %u (only SwissProt: %s) '
-                'has been loaded from `%s`.' % (key + (cachefile,))
-            )
-
-        else:
-
-            self.tables[key] = self._load(key)
-            pickle.dump(self.tables[key], open(cachefile, 'wb'))
-            self._log(
-                'Homology table from taxon %u to %u (only SwissProt: %s) '
-                'has been saved to `%s`.' % (key + (cachefile,))
-            )
-
-
-    def _load(self, key):
-
-        return ProteinHomology(
-            target = key[1],
-            source = key[0],
-            only_swissprot = key[2],
-            homologene = self.homologene,
-            ensembl = self.ensembl,
-            ensembl_hc = self.ensembl_hc,
-            ensembl_types = self.ensembl_types,
+        self.tables[key] = globals()[f'{key.resource.capitalize()}Orthology'](
+            target = key.target,
+            source = key.source,
+            only_swissprot = key.only_swissprot,
+            id_type = key.id_type,
         )
 
 
@@ -231,281 +249,417 @@ class HomologyManager(session.Logger):
     @functools.lru_cache(maxsize = int(1e5))
     def translate(
             self,
-            source_id,
-            target,
-            source = 9606,
-            only_swissprot = True,
-            homologene = None,
-            ensembl = None,
-            ensembl_hc = None,
-            ensembl_types = None,
-            id_type = 'uniprot',
+            identifiers: str | Iterable[str],
+            target: str | int,
+            source: str | int = 9606,
+            id_type: str = 'uniprot',
+            only_swissprot: bool = True,
+            oma: bool = None,
+            homologene: bool = None,
+            ensembl: bool = None,
+            oma_rel_type: (
+                set[Literal['1:1', '1:n', 'm:1', 'm:n']] |
+                None
+            ) = None,
+            oma_score: float | None = None,
+            ensembl_hc: bool = True,
+            ensembl_types: (
+                list[Literal['one2one', 'one2many', 'many2many']] |
+                None
+            ) = None,
+            full_records: bool = False,
         ):
         """
-        For one or more UniProt ID of the source organism returns all
-        orthologs from the target organism.
+        Translate one or more identifiers by orthologous gene pairs.
 
-        Args
-            source_id (str,list): UniProt ID of one or more protein in the
-                source organism.
-            target (int,str): The target organism.
-            source (int,str): The source organism.
-            homologene (bool): Use NCBI HomoloGene data for ortholog lookup.
-            ensembl (bool): Use Ensembl data for ortholog lookup.
-            ensembl_hc (bool): Use only high confidence orthology relations
-                from Ensembl. By default it is True. You can also set it
-                by the `ensembl_hc` attribute.
-            ensembl_types (list): The Ensembl orthology relationship types
-                to use. Possible values are `one2one`, `one2many` and
-                `many2many`. By default only `one2one` is used. You can
-                also set this parameter by the `ensembl_types` attribute.
-            id_type (str): Identifier type to translate from and to.
+        Args:
+            identifiers:
+                One or more identifers of the source organism, of ID type
+                `id_type`.
+            target:
+                Name or NCBI Taxonomy ID of the target organism.
+            source:
+                Name or NCBI Taxonomy ID of the default source organism.
+                Multiple source organisms can be used on the same instance.
+            id_type:
+                The identifier type to use.
+            only_swissprot:
+                Use only SwissProt IDs.
+            oma
+                Use homology information from the Orthologous Matrix (OMA).
+                Currently this is the recommended source for homology data.
+            homologene:
+                Use homology information from NCBI HomoloGene.
+            ensembl:
+                Use homology information from Ensembl.
+            oma_rel_type:
+                Restrict relations to certain types.
+            oma_score:
+                Lower threshold for similarity metric.
+            ensembl_hc:
+                Use only the high confidence orthology relations from Ensembl.
+            ensembl_types:
+                Ensembl orthology relation types to use. Possible values are
+                `one2one`, `one2many` and `many2many`. By default only
+                `one2one` is used.
+            full_records:
+                Include not only the identifiers, but also some properties of
+                the orthology relationships.
 
-        Returns
-            Set of UniProt IDs of homologous proteins in the target taxon.
+        Returns:
+            Set of identifiers of orthologous genes or proteins in the
+            target taxon.
         """
 
         target = taxonomy.ensure_ncbi_tax_id(target)
-
-        table = self.which_table(
-            target = target,
-            source = source,
-            only_swissprot = only_swissprot,
-        )
-
+        source = taxonomy.ensure_ncbi_tax_id(source)
         param = self._translation_param(locals())
-        homologene = self.homologene if homologene is None else homologene
-        ensembl = self.ensembl if ensembl is None else ensembl
-        ensembl_hc = self.ensembl_hc if ensembl_hc is None else ensembl_hc
-        ensembl_types = (
-            self.ensembl_types if ensembl_types is None else ensembl_types
-        )
-        ensembl_types = common.to_set(ensembl_types)
-        ensembl_types = {
-            x if x.startswith('ortholog_') else ('ortholog_%s' % x)
-            for x in ensembl_types
-        }
+        proc = (lambda x: x) if full_records else (lambda x: x.id)
 
-        return table.translate(
-            protein = source_id,
-            source = source,
-            **param,
-            id_type = id_type,
-        )
+        result = set()
+
+        for resource, keys in self.RESOURCE_PARAM.items():
+
+            if not param[resource]:
+
+                continue
+
+            table = self.which_table(
+                target = target,
+                source = source,
+                only_swissprot = only_swissprot,
+                id_type = id_type,
+                resource = resource,
+            )
+
+            result.update(
+                table.translate(
+                    identifiers,
+                    full_records = full_records,
+                    **{k: v for k, v in param.items() if k in keys},
+                )
+            )
+
+        return result
 
 
     def get_dict(
             self,
-            target,
-            source = 9606,
-            only_swissprot = True,
-            homologene = None,
-            ensembl = None,
-            ensembl_hc = None,
-            ensembl_types = None,
-            id_type = 'uniprot',
-        ) -> dict[str, set[str]]:
+            target: str | int,
+            source: str | int = 9606,
+            id_type: str = 'uniprot',
+            only_swissprot: bool = True,
+            oma: bool = None,
+            homologene: bool = None,
+            ensembl: bool = None,
+            oma_rel_type: (
+                set[Literal['1:1', '1:n', 'm:1', 'm:n']] |
+                None
+            ) = None,
+            oma_score: float | None = None,
+            ensembl_hc: bool = True,
+            ensembl_types: (
+                list[Literal['one2one', 'one2many', 'many2many']] |
+                None
+            ) = None,
+            full_records: bool = False,
+        ) -> dict[str, set[OrthologBase]]:
         """
         Create a dictionary for one source organism and ID type.
 
-        Args
+        Args:
             target:
-                Tha organism to translate to.
+                Name or NCBI Taxonomy ID of the target organism.
             source:
-                The organism to translate from.
-            homologene:
-                Use NCBI HomoloGene data for ortholog lookup.
-            ensembl:
-                Use Ensembl data for ortholog lookup.
-            ensembl_hc:
-                Use only high confidence orthology relations
-                from Ensembl. By default it is True. You can also set it
-                by the `ensembl_hc` attribute.
-            ensembl_types:
-                The Ensembl orthology relationship types
-                to use. Possible values are `one2one`, `one2many` and
-                `many2many`. By default only `one2one` is used. You can
-                also set this parameter by the `ensembl_types` attribute.
+                Name or NCBI Taxonomy ID of the default source organism.
+                Multiple source organisms can be used on the same instance.
             id_type:
-                Identifier type to translate from and to. If a tuple, the
-                first element will be used for keys (source organism) and
-                the second for the values (target organism). By default
-                UniProt IDs are assumed. For a complete list of ID types see
-                ``pypath.utils.mapping.get_mapper().id_types()`` and
-                ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+                The identifier type to use.
+            only_swissprot:
+                Use only SwissProt IDs.
+            oma
+                Use homology information from the Orthologous Matrix (OMA).
+                Currently this is the recommended source for homology data.
+            homologene:
+                Use homology information from NCBI HomoloGene.
+            ensembl:
+                Use homology information from Ensembl.
+            oma_rel_type:
+                Restrict relations to certain types.
+            oma_score:
+                Lower threshold for similarity metric.
+            ensembl_hc:
+                Use only the high confidence orthology relations from Ensembl.
+            ensembl_types:
+                Ensembl orthology relation types to use. Possible values are
+                `one2one`, `one2many` and `many2many`. By default only
+                `one2one` is used.
+            full_records:
+                Include not only the identifiers, but also some properties of
+                the orthology relationships.
 
-        Return
+        Returns:
             A dict with identifiers of the source organism as keys, and
             sets of their orthologs as values.
         """
 
-        source = taxonomy.ensure_ncbi_tax_id(source)
         target = taxonomy.ensure_ncbi_tax_id(target)
-
-        table = self.which_table(
-            target = target,
-            source = source,
-            only_swissprot = only_swissprot,
-        )
-
+        source = taxonomy.ensure_ncbi_tax_id(source)
         param = self._translation_param(locals())
 
-        return table.asdict(
-            source = source,
-            id_type = id_type,
-            **param
-        )
+        result = collections.defaultdict(set)
+
+        for resource, keys in self.RESOURCE_PARAM.items():
+
+            if not param[resource]:
+
+                continue
+
+            table = self.which_table(
+                target = target,
+                source = source,
+                only_swissprot = only_swissprot,
+                id_type = id_type,
+                resource = resource,
+            )
+            dct = table.asdict(
+                full_records = full_records,
+                **{
+                    p: v
+                    for p, v in param.items()
+                    if p in keys
+                }
+            )
+
+            for s, o in dct.items():
+
+                result[s].update(o)
+
+        return dict(result)
 
 
     def get_df(
             self,
-            target,
-            source = 9606,
-            only_swissprot = True,
-            homologene = None,
-            ensembl = None,
-            ensembl_hc = None,
-            ensembl_types = None,
-            id_type = 'uniprot',
-        ):
+            target: str | int,
+            source: str | int = 9606,
+            id_type: str = 'uniprot',
+            only_swissprot: bool = True,
+            oma: bool = None,
+            homologene: bool = None,
+            ensembl: bool = None,
+            oma_rel_type: (
+                set[Literal['1:1', '1:n', 'm:1', 'm:n']] |
+                None
+            ) = None,
+            oma_score: float | None = None,
+            ensembl_hc: bool = True,
+            ensembl_types: (
+                list[Literal['one2one', 'one2many', 'many2many']] |
+                None
+            ) = None,
+            full_records: bool = False,
+            **kwargs
+        ) -> pd.DataFrame:
         """
         Create a data frame for one source organism and ID type.
 
-        Args
+        Args:
             target:
-                The target organism.
+                Name or NCBI Taxonomy ID of the target organism.
             source:
-                The source organism.
-            homologene:
-                Use NCBI HomoloGene data for ortholog lookup.
-            ensembl:
-                Use Ensembl data for ortholog lookup.
-            ensembl_hc:
-                Use only high confidence orthology relations
-                from Ensembl. By default it is True. You can also set it
-                by the `ensembl_hc` attribute.
-            ensembl_types:
-                The Ensembl orthology relationship types
-                to use. Possible values are `one2one`, `one2many` and
-                `many2many`. By default only `one2one` is used. You can
-                also set this parameter by the `ensembl_types` attribute.
+                Name or NCBI Taxonomy ID of the default source organism.
+                Multiple source organisms can be used on the same instance.
             id_type:
-                Identifier type to translate from and to. If a tuple, the
-                first element will be used for keys (source organism) and
-                the second for the values (target organism). By default
-                UniProt IDs are assumed. For a complete list of ID types see
-                ``pypath.utils.mapping.get_mapper().id_types()`` and
-                ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+                The identifier type to use.
+            only_swissprot:
+                Use only SwissProt IDs.
+            oma
+                Use homology information from the Orthologous Matrix (OMA).
+                Currently this is the recommended source for homology data.
+            homologene:
+                Use homology information from NCBI HomoloGene.
+            ensembl:
+                Use homology information from Ensembl.
+            oma_rel_type:
+                Restrict relations to certain types.
+            oma_score:
+                Lower threshold for similarity metric.
+            ensembl_hc:
+                Use only the high confidence orthology relations from Ensembl.
+            ensembl_types:
+                Ensembl orthology relation types to use. Possible values are
+                `one2one`, `one2many` and `many2many`. By default only
+                `one2one` is used.
+            full_records:
+                Include not only the identifiers, but also some properties of
+                the orthology relationships.
+            kwargs:
+                Ignored.
 
-        Return
+        Returns:
             A data frame with pairs of orthologous identifiers,
             in two columns: "source" and "target".
         """
 
-        source = taxonomy.ensure_ncbi_tax_id(source)
         target = taxonomy.ensure_ncbi_tax_id(target)
-
-        table = self.which_table(
-            target = target,
-            source = source,
-            only_swissprot = only_swissprot,
-        )
-
+        source = taxonomy.ensure_ncbi_tax_id(source)
         param = self._translation_param(locals())
 
-        return table.df(
-            source = source,
-            id_type = id_type,
-            **param
-        )
+        result = []
+
+        for resource, keys in self.RESOURCE_PARAM.items():
+
+            if not param[resource]:
+
+                continue
+
+            table = self.which_table(
+                target = target,
+                source = source,
+                only_swissprot = only_swissprot,
+                id_type = id_type,
+                resource = resource,
+            )
+
+            result.append(
+                table.df(
+                    full_records = full_records,
+                    **{
+                        p: v
+                        for p, v in param.items()
+                        if p in keys
+                    }
+                )
+            )
+
+        return pd.concat(result)
 
 
     def translate_df(
             self,
-            df,
-            target: int | str,
+            df: pd.DataFrame,
+            target: str | int,
+            source: str | int = 9606,
             cols: str | list[str] | dict[str, str] | None = None,
-            source: int | str = 9606,
+            id_type: str = 'uniprot',
+            only_swissprot: bool = True,
+            oma: bool = None,
             homologene: bool = None,
             ensembl: bool = None,
-            ensembl_hc: bool = None,
-            ensembl_types: list[Literal[
-                'one2one', 'one2many', 'many2many'
-            ]] = None,
+            oma_rel_type: (
+                set[Literal['1:1', '1:n', 'm:1', 'm:n']] |
+                None
+            ) = None,
+            oma_score: float | None = None,
+            ensembl_hc: bool = True,
+            ensembl_types: (
+                list[Literal['one2one', 'one2many', 'many2many']] |
+                None
+            ) = None,
             **kwargs: str | tuple[str, str]
-        ):
+        ) -> pd.DataFrame:
         """
         Translate columns in a data frame.
 
-        Args
+        Args:
             df:
                 A data frame.
             cols:
                 One or more columns to be translated. It can be a single
                 column name, an iterable of column names or a dict where
                 keys are column names and values are ID types. Except this
-                last case, identifiers are assumed to be UniProt.
+                last case, identifiers are assumed to be `id_type`.
+            target:
+                Name or NCBI Taxonomy ID of the target organism.
             source:
-                The organism to translate from.
+                Name or NCBI Taxonomy ID of the default source organism.
+                Multiple source organisms can be used on the same instance.
+            id_type:
+                The default identifier type to use, will be used for all
+                columns where ID type is not specified.
+            only_swissprot:
+                Use only SwissProt IDs.
+            oma
+                Use homology information from the Orthologous Matrix (OMA).
+                Currently this is the recommended source for homology data.
             homologene:
-                Use NCBI HomoloGene data for ortholog lookup.
+                Use homology information from NCBI HomoloGene.
             ensembl:
-                Use Ensembl data for ortholog lookup.
+                Use homology information from Ensembl.
+            oma_rel_type:
+                Restrict relations to certain types.
+            oma_score:
+                Lower threshold for similarity metric.
             ensembl_hc:
-                Use only high confidence orthology relations
-                from Ensembl. By default it is True. You can also set it
-                by the `ensembl_hc` attribute.
+                Use only the high confidence orthology relations from Ensembl.
             ensembl_types:
-                The Ensembl orthology relationship types
-                to use. Possible values are `one2one`, `one2many` and
-                `many2many`. By default only `one2one` is used. You can
-                also set this parameter by the `ensembl_types` attribute.
+                Ensembl orthology relation types to use. Possible values are
+                `one2one`, `one2many` and `many2many`. By default only
+                `one2one` is used.
             kwargs:
                 Same as providing a dict to ``cols``, but beware, keys
                 (column names) can not match existing argument names of
                 this function.
 
-        Return
+        Returns:
             A data frame with the same column layout as the input, and the
             identifiers translated as demanded. Rows that could not be
             translated are omitted.
         """
 
-        source = taxonomy.ensure_ncbi_tax_id(source)
-        target = taxonomy.ensure_ncbi_tax_id(target)
+        if not isinstance(cols, dict):
 
-        table = self.which_table(
-            target = target,
-            source = source,
-        )
+            cols = dict((col, id_type) for col in common.to_list(cols))
 
-        param = self._translation_param(locals())
+        kwargs.update(cols)
+        id_types = set(kwargs.values())
 
-        return table.translate_df(
-            df = df,
-            cols = cols,
-            source = source,
-            **param,
-            **kwargs
-        )
+        for _id_type in set(cols.values()):
 
+            args = locals().copy()
+            args.pop('self')
+            args['id_type'] = _id_type
+            ortho_df = self.get_df(**args)
+
+            table = self.which_table(
+                target = target,
+                source = source,
+                only_swissprot = only_swissprot,
+                id_type = _id_type,
+                resource = 'oma',
+            )
+
+            df = table.translate_df(
+                df = df,
+                cols = [c for c, i in cols.items() if i == _id_type],
+                ortho_df = ortho_df,
+            )
+
+        return df
 
 
     def _translation_param(self, loc: dict) -> dict:
 
-        param = dict(
-            (
-                name,
-                getattr(self, name) if loc[name] is None else loc[name]
-            )
-            for name in self.TRANSLATION_PARAM
-        )
+        param = {}
 
-        param['ensembl_types'] = common.to_set(param['ensembl_types'])
-        param['ensembl_types'] = {
-            x if x.startswith('ortholog_') else ('ortholog_%s' % x)
-            for x in param['ensembl_types']
-        }
+        for resource, keys in self.RESOURCE_PARAM.items():
+
+            enabled = common.first_value(
+                loc[resource],
+                self._param[resource],
+                settings.get(f'orthology_{resource}'),
+            )
+            param[resource] = enabled
+
+            if enabled:
+
+                for key in keys:
+
+                    param[key] = common.first_value(
+                        loc[f'{resource}_{key}'],
+                        self._param[f'{resource}_{key}'],
+                        settings.get(f'orthology_{resource}_{key}'),
+                    )
 
         return param
 
@@ -517,8 +671,8 @@ class HomologyManager(session.Logger):
             if time.time() - last_used > self.lifetime and key in self.tables:
 
                 self._log(
-                    'Removing homology table from taxon %u to %u '
-                    '(only SwissProt: %s)' % key
+                    'Removing orthology table from taxon %u to %u '
+                    '(only SwissProt: %s; resource: %s; ID type: %s)' % key
                 )
 
                 del self.tables[key]
@@ -527,9 +681,9 @@ class HomologyManager(session.Logger):
 
     def __del__(self):
 
-        if hasattr(_homology_cleanup_timeloop, 'stop'):
+        if hasattr(_orthology_cleanup_timeloop, 'stop'):
 
-            _homology_cleanup_timeloop.stop()
+            _orthology_cleanup_timeloop.stop()
 
 
 class SequenceContainer(session.Logger):
@@ -591,21 +745,35 @@ class SequenceContainer(session.Logger):
 class Proteomes(object):
 
 
-    def __init__(self, preload_prot = [], swissprot_only = True):
+    def __init__(
+            self,
+            preload_prot: list[int] | None = None,
+            only_swissprot: bool = True,
+        ):
 
         if not hasattr(self, '_taxonomy'):
 
             self._taxonomy = {}
+            self._up_taxonomy = {}
             self._proteomes = {}
 
-        for taxon in preload_prot:
+        self.only_swissprot = only_swissprot
+        self.load_taxonomy()
 
-            self.load_proteome(taxon, swissprot_only)
+        for taxon in (preload_prot or ()):
+
+            self.load_proteome(taxon)
 
 
-    def load_proteome(self, taxon, swissprot_only = True):
+    def load_proteome(self, taxon: int, only_swissprot: bool | None = None):
 
-        key = (taxon, swissprot_only)
+        only_swissprot = (
+            self.only_swissprot
+                if only_swissprot is None else
+            only_swissprot
+        )
+
+        key = (taxon, only_swissprot)
 
         if key not in self._proteomes:
 
@@ -617,23 +785,29 @@ class Proteomes(object):
 
                 self._taxonomy[protein] = key
 
-            if not swissprot_only:
+            if not only_swissprot:
 
                 self.load_proteome(taxon, True)
 
 
-    def get_taxon(self, protein, swissprot_only = True):
+    def get_taxon(self, protein, only_swissprot = True):
 
-        if not swissprot_only or self.is_swissprot(protein):
+        ncbi_tax_id = self.get_taxon_trembl(protein)
 
-            return self._taxonomy[protein][0]
+        if (
+            only_swissprot and
+            ncbi_tax_id and
+            not uniprot_input.is_swissprot(protein, organism = ncbi_tax_id)
+        ):
+
+            ncbi_tax_id = None
+
+        return ncbi_tax_id
 
 
     def get_taxon_trembl(self, protein):
 
-        if self.has_protein(protein):
-
-            return self._taxonomy[protein][0]
+        return self._up_taxonomy.get(protein, None)
 
 
     def has_protein(self, protein):
@@ -643,21 +817,26 @@ class Proteomes(object):
 
     def is_swissprot(self, protein):
 
-        return self.has_protein(protein) and self._taxonomy[protein][1]
+        return bool(self.get_taxon(protein, only_swissprot = True))
 
 
-class ProteinHomology(Proteomes):
+    def load_taxonomy(self):
+
+        self._up_taxonomy = uniprot_input.uniprot_taxonomy(ncbi_tax_ids = True)
+
+
+class ProteinOrthology(Proteomes):
+
+    _param = ('id',)
 
 
     def __init__(
             self,
-            target,
-            source = None,
-            only_swissprot = True,
-            homologene = True,
-            ensembl = True,
-            ensembl_hc = True,
-            ensembl_types = None,
+            target: str | int,
+            source: str | int | None = 9606,
+            id_type: str = 'uniprot',
+            only_swissprot: bool = True,
+            **kwargs
         ):
         """
         This class translates between homologous UniProt IDs of two organisms
@@ -669,47 +848,28 @@ class ProteinHomology(Proteomes):
         data with Ensembl protein identifiers and translate those to UniProt.
 
         Args
-            target (int): NCBI Taxonomy ID of the target organism.
-            source (int): NCBI Taxonomy ID of the default source organism.
+            target:
+                Name or NCBI Taxonomy ID of the target organism.
+            source:
+                Name or NCBI Taxonomy ID of the default source organism.
                 Multiple source organisms can be used on the same instance.
-            only_swissprot (bool): Use only SwissProt IDs.
-            homologene (bool): Use homology information from NCBI HomoloGene.
-            ensembl (bool): Use homology information from Ensembl.
-            ensembl_hc (bool): Use only the high confidence
-                orthology relations from Ensembl.
-            ensembl_types (list): Ensembl orthology relation types to use.
-                Possible values are `one2one`, `one2many` and `many2many`.
-                By default only `one2one` is used.
+            id_type:
+                The identifier type to use.
+            only_swissprot:
+                Use only SwissProt IDs.
+            kwargs:
+                Resource specific parameters.
         """
 
-        self.orthologs = {}
-        self.only_swissprot = only_swissprot
+        self.data = {}
         self.target = taxonomy.ensure_ncbi_tax_id(target)
-        self.source = source
-        self._default_source = 9606
-        self.set_default_source(source)
-        for param in ('homologene', 'ensembl', 'ensembl_hc', 'ensembl_types'):
-
-            setattr(
-                self,
-                param,
-                settings.get('homology_%s' % param)
-                    if locals()[param] is None else
-                locals()[param]
-            )
-
-        self.ensembl_types = common.to_set(self.ensembl_types)
-        self.ensembl_types = {
-            x if x.startswith('ortholog_') else ('ortholog_%s' % x)
-            for x in self.ensembl_types
-        }
-
-        Proteomes.__init__(self)
-        self.load_proteome(self.target, self.only_swissprot)
-
-        if source is not None:
-
-            self.load(source)
+        self.source = taxonomy.ensure_ncbi_tax_id(source)
+        self.id_type = id_type
+        self._resource_l = self.resource.lower()
+        Proteomes.__init__(self, only_swissprot = only_swissprot)
+        self.load_proteome(self.source)
+        self._set_param(kwargs, *self._param)
+        self.load()
 
 
     def reload(self):
@@ -723,313 +883,121 @@ class ProteinHomology(Proteomes):
 
     def load(self, source = None):
 
-        if self.homologene:
-
-            self.load_homologene(source)
-
-        if self.ensembl:
-
-            self.load_ensembl(source)
-
-
-    def ensure_source_taxon(self, source):
-
-        if source not in self.orthologs:
-
-            self.load(source = source)
-
-
-    def set_default_source(self, source = None):
-
-        self.source = self.get_source(source)
-
-
-    def get_source(self, source = None):
-
-        source = source or self.source or self._default_source
-        _source = taxonomy.ensure_ncbi_tax_id(source)
-
-        if _source is None:
-
-            msg = 'Unknown organism: `%s`.' % str(source)
-            _log(msg)
-            raise ValueError(msg)
-
-        else:
-
-            return _source
+        pass
 
 
     def translate(
             self,
-            protein: str | list,
-            source: int | str = None,
-            homologene: bool = None,
-            ensembl: bool = None,
-            ensembl_hc: bool = None,
-            ensembl_types: list[Literal[
-                'one2one', 'one2many', 'many2many'
-            ]] = None,
-            id_type: str = 'uniprot',
-        ):
+            identifier: str | Iterable[str],
+            full_records: bool = False,
+            **kwargs
+        ) -> set[str]:
         """
         For one UniProt ID of the source organism returns all orthologues
         from the target organism.
 
-        Args
-            protein:
-                UniProt ID of one or more protein in the source organism.
-            source:
-                The source organism.
-            homologene:
-                Use NCBI HomoloGene data for ortholog lookup.
-            ensembl:
-                Use Ensembl data for ortholog lookup.
-            ensembl_hc:
-                Use only high confidence orthology relations
-                from Ensembl. By default it is True. You can also set it
-                by the `ensembl_hc` attribute.
-            ensembl_types:
-                The Ensembl orthology relationship types
-                to use. Possible values are `one2one`, `one2many` and
-                `many2many`. By default only `one2one` is used. You can
-                also set this parameter by the `ensembl_types` attribute.
-            id_type:
-                Identifier type to translate from and to.
+        Args:
+            identifier:
+                An identifier corresponding to the ID type and source organism
+                of the instance.
+            full_records:
+                Include not only the identifiers, but also some properties of
+                the orthology relationships.
+            kwargs:
+                Resource specific translation parameters.
 
-        Returns
-            Set of UniProt IDs of homologous proteins in the target taxon.
+        Returns:
+            A set of identifiers of orthologues in the target taxon.
         """
 
-        protein = (
-            (protein,)
-                if hasattr(protein, 'components') else
-            common.to_list(protein)
+        identifier = (
+            (identifier,)
+                if hasattr(identifier, 'components') else
+            common.to_list(identifier)
         )
 
-        source = self.get_source(source)
+        result = set.union(*(self.data.get(i, set()) for i in identifier))
 
-        if source is None:
+        if not full_records:
 
-            msg = (
-                'Can not translate without knowing the organism of the input.'
-            )
-            _log(msg)
-            raise ValueError(msg)
-
-        homologene = self.homologene if homologene is None else homologene
-        ensembl = self.ensembl if ensembl is None else ensembl
-        ensembl_hc = self.ensembl_hc if ensembl_hc is None else ensembl_hc
-        ensembl_types = (
-            self.ensembl_types if ensembl_types is None else ensembl_types
-        )
-        ensembl_types = common.to_set(ensembl_types)
-        ensembl_types = {
-            x if x.startswith('ortholog_') else ('ortholog_%s' % x)
-            for x in ensembl_types
-        }
-
-        if id_type != 'uniprot':
-
-            protein = mapping.map_names(
-                protein,
-                id_type = id_type,
-                target_id_type = 'uniprot',
-                ncbi_tax_id = source,
-            )
-
-        result = {
-            p for p in protein
-            if self.get_taxon(p) == self.target
-        }
-
-        self.ensure_source_taxon(source)
-
-        for p in protein:
-
-            result.update(
-                {
-                    o.uniprot
-                    for o in self.orthologs[source][p]
-                    if (
-                        (
-                            homologene and
-                            o.resource == 'HomoloGene'
-                        ) or (
-                            ensembl and
-                            o.resource == 'Ensembl' and (
-                                not ensembl_hc or
-                                o.ensembl_hc
-                            ) and
-                            o.ensembl_type in ensembl_types
-                        )
-                    )
-                    for uniprot in o.uniprot
-                }
-            )
-
-        if id_type != 'uniprot':
-
-            result = mapping.map_names(
-                result,
-                id_type = 'uniprot',
-                target_id_type = id_type,
-                ncbi_tax_id = self.target,
-            )
+            result = {o.id for o in result}
 
         return result
 
+
     def asdict(
             self,
-            source: int | str = None,
-            homologene: bool = None,
-            ensembl: bool = None,
-            ensembl_hc: bool = None,
-            ensembl_types: list[Literal[
-                'one2one', 'one2many', 'many2many'
-            ]] = None,
-            id_type: str | tuple[str, str] = 'uniprot',
-        ):
+            full_records: bool = False,
+            **kwargs
+        ) -> dict[str, set[OrthologBase]]:
         """
-        Create a dictionary for one source organism and ID type.
+        Create a dictionary from the translation table.
 
-        Args
-            source:
-                The source organism.
-            homologene:
-                Use NCBI HomoloGene data for ortholog lookup.
-            ensembl:
-                Use Ensembl data for ortholog lookup.
-            ensembl_hc:
-                Use only high confidence orthology relations
-                from Ensembl. By default it is True. You can also set it
-                by the `ensembl_hc` attribute.
-            ensembl_types:
-                The Ensembl orthology relationship types
-                to use. Possible values are `one2one`, `one2many` and
-                `many2many`. By default only `one2one` is used. You can
-                also set this parameter by the `ensembl_types` attribute.
-            id_type:
-                Identifier type to translate from and to. If a tuple, the
-                first element will be used for keys (source organism) and
-                the second for the values (target organism). By default
-                UniProt IDs are assumed. For a complete list of ID types see
-                ``pypath.utils.mapping.get_mapper().id_types()`` and
-                ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+        Args:
+            full_records:
+                Include not only the identifiers, but also some properties of
+                the orthology relationships.
+            kwargs:
+                Resource specific filtering criteria.
 
-        Return
+        Returns:
             A dict with identifiers of the source organism as keys, and
             sets of their orthologs as values.
         """
 
-        source = self.get_source(source)
-        self.ensure_source_taxon(source)
+        proc = (lambda x: x) if full_records else (lambda x: x.id)
 
-        id_type = (id_type,) * 2 if isinstance(id_type, str) else id_type
-
-        if not (
-                isinstance(id_type, tuple) and
-                len(id_type) >= 2 and
-                isinstance(id_type[0], str) and
-                isinstance(id_type[1], str)
-            ):
-
-            msg = (
-                '`ProteinHomology.asdict`: '
-                f'wrong format for `id_type`: `{id_type}`.'
-            )
-            _log(msg)
-            raise ValueError(msg)
-
-        _log(
-            'Creating dict of orthologous genes between organisms '
-            f'`{source}` (ID type `{id_type[0]}`) and '
-            f'`{self.target}` (ID type `{id_type[1]}`).'
-        )
-
-        return dict(
-            (
-                id_src,
-                mapping.map_names(
-                    names = {o.uniprot for o in orthologs},
-                    id_type = 'uniprot',
-                    target_id_type = id_type[1],
-                    ncbi_tax_id = self.target,
-                    uniprot_cleanup = False,
-                )
-            )
-            for uniprot_src, orthologs in self.orthologs[source].items()
-            for id_src in (
-                mapping.map_name(
-                    name = uniprot_src,
-                    id_type = 'uniprot',
-                    target_id_type = id_type[0],
-                    ncbi_tax_id = source,
-                    uniprot_cleanup = False,
-                )
-            )
-        )
+        return {
+            s: {proc(o) for o in orthologs if self.match(o, **kwargs)}
+            for s, orthologs in self.data.items()
+        }
 
 
-    def df(
-            self,
-            source: int | str = None,
-            homologene: bool = None,
-            ensembl: bool = None,
-            ensembl_hc: bool = None,
-            ensembl_types: list[Literal[
-                'one2one', 'one2many', 'many2many'
-            ]] = None,
-            id_type: str | tuple[str, str] = 'uniprot',
-        ):
+    def df(self, full_records: bool = False, **kwargs) -> pd.DataFrame:
         """
-        Create a data frame for one source organism and ID type.
+        Orthologous pairs as data frame.
 
-        Args
-            source:
-                The source organism.
-            homologene:
-                Use NCBI HomoloGene data for ortholog lookup.
-            ensembl:
-                Use Ensembl data for ortholog lookup.
-            ensembl_hc:
-                Use only high confidence orthology relations
-                from Ensembl. By default it is True. You can also set it
-                by the `ensembl_hc` attribute.
-            ensembl_types:
-                The Ensembl orthology relationship types
-                to use. Possible values are `one2one`, `one2many` and
-                `many2many`. By default only `one2one` is used. You can
-                also set this parameter by the `ensembl_types` attribute.
-            id_type:
-                Identifier type to translate from and to. If a tuple, the
-                first element will be used for keys (source organism) and
-                the second for the values (target organism). By default
-                UniProt IDs are assumed. For a complete list of ID types see
-                ``pypath.utils.mapping.get_mapper().id_types()`` and
-                ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+        Args:
+            full_records:
+                Include not only the identifiers, but also some properties of
+                the orthology relationships.
+            kwargs:
+                Resource specific filtering criteria.
 
-        Return
+        Returns:
             A data frame with pairs of orthologous identifiers,
             in two columns: "source" and "target".
         """
 
         _log(
             'Creating translation data frame between '
-            f'organisms `{source}` and `{self.target}`.'
+            f'organisms `{self.source}` and `{self.target}`, '
+            f'ID type `{self.id_type}`.'
         )
-
-        args = locals().copy()
-        args.pop('self')
 
         df = (
             pd.DataFrame(
-                self.asdict(**args).items(),
+                self.asdict(full_records = full_records, **kwargs).items(),
                 columns = ['source', 'target'],
             ).
             explode('target', ignore_index = True).
-            dropna()
+            dropna().
+            reset_index(drop = True)
         )
+
+        if full_records:
+
+            # some beautiful pandas code again
+            df = (
+                pd.concat(
+                    [
+                        df.source,
+                        pd.DataFrame(df.target.tolist()),
+                    ],
+                    axis = 1,
+                ).
+                rename(columns = {'id': 'target'})
+            )
 
         return df
 
@@ -1037,25 +1005,14 @@ class ProteinHomology(Proteomes):
     def translate_df(
             self,
             df: pd.DataFrame,
-            cols: (
-                str |
-                list[str] |
-                dict[str, str | tuple[str, str]] |
-                None
-            ) = None,
-            source: int | str = None,
-            homologene: bool = None,
-            ensembl: bool = None,
-            ensembl_hc: bool = None,
-            ensembl_types: list[Literal[
-                'one2one', 'one2many', 'many2many'
-            ]] = None,
-            **kwargs: str | tuple[str, str]
+            cols: str | list[str] | None = None,
+            ortho_df: pd.DataFrame | None = None,
+            **kwargs
         ):
         """
         Translate columns in a data frame.
 
-        Args
+        Args:
             df:
                 A data frame.
             cols:
@@ -1063,27 +1020,14 @@ class ProteinHomology(Proteomes):
                 column name, an iterable of column names or a dict where
                 keys are column names and values are ID types. Except this
                 last case, identifiers are assumed to be UniProt.
-            source:
-                The source organism.
-            homologene:
-                Use NCBI HomoloGene data for ortholog lookup.
-            ensembl:
-                Use Ensembl data for ortholog lookup.
-            ensembl_hc:
-                Use only high confidence orthology relations
-                from Ensembl. By default it is True. You can also set it
-                by the `ensembl_hc` attribute.
-            ensembl_types:
-                The Ensembl orthology relationship types
-                to use. Possible values are `one2one`, `one2many` and
-                `many2many`. By default only `one2one` is used. You can
-                also set this parameter by the `ensembl_types` attribute.
+            ortho_df:
+                Override the translation data frame. If provided, the
+                parameters in `kwargs` won't have an effect. Must have
+                columns "source" and "target".
             kwargs:
-                Same as providing a dict to ``cols``, but beware, keys
-                (column names) can not match existing argument names of
-                this function.
+                Resource specific translation parameters.
 
-        Return
+        Returns:
             A data frame with the same column layout as the input, and the
             identifiers translated as demanded. Rows that could not be
             translated are omitted.
@@ -1094,48 +1038,30 @@ class ProteinHomology(Proteomes):
             f'organism `{source}` to `{self.target}`.'
         )
 
-        loc = locals()
-
-        col_order = df.columns
-
-        if not isinstance(cols, dict):
-
-            cols = dict((col, 'uniprot') for col in common.to_list(cols))
-
-        kwargs.update(cols)
-        id_types = set(kwargs.values())
-
-        transdfs = dict(
-            (
-                id_type,
-                self.df(
-                    source = source,
-                    id_type = id_type,
-                    **self._translation_param(loc)
-                ).
-                rename(
-                    {
-                        'source': 'pypath_internal_source',
-                        'target': 'pypath_internal_target',
-                    },
-                    axis = 1,
-                )
+        ortho_df = (
+            (self.df(**kwargs) if ortho_df is None else ortho_df).
+            rename(
+                {
+                    'source': 'pypath_internal_source',
+                    'target': 'pypath_internal_target',
+                },
+                axis = 1,
             )
-            for id_type in id_types
         )
 
-        for col, id_type in kwargs.items():
+        col_order = df.columns
+        cols = common.to_list(cols)
+
+        for col in cols:
 
             _log(
-                f'Translating `{id_type[0]}` IDs of organism `{source}` '
-                f'in column `{col}` to `{id_type[1]}` IDs of '
-                f'organism `{self.target}`.'
+                f'Translating `{self.id_type}` IDs of organism `{source}` '
+                f'in column `{col}` to organism `{self.target}`.'
             )
 
             df = (
                 df.merge(
-                    transdfs[id_type].
-                        rename({'pypath_internal_source': col}, axis = 1),
+                    ortho_df.rename({'pypath_internal_source': col}, axis = 1),
                     on = col,
                     how = 'inner',
                 ).
@@ -1150,226 +1076,581 @@ class ProteinHomology(Proteomes):
 
         return dict(
             (p, loc[p])
-            for p in HomologyManager.TRANSLATION_PARAM
+            for p in OrthologyManager.TRANSLATION_PARAM
         )
 
-    def load_homologene(self, source):
+
+    def _set_param(self, loc: dict, *params: str):
+
+        for param in params:
+
+            key = f'orthology_{self._resource_l}_{param}'
+            setattr(
+                self,
+                param,
+                common.first_value(loc.get(param, None), settings.get(key)),
+            )
+
+
+    def match(self, ortholog: OrthologBase, **kwargs) -> bool:
+
+        return True
+
+
+    def _from_pickle(self) -> bool:
+
+        if (
+            settings.get('orthology_cache') and
+            os.path.exists(self.pickle_path)
+        ):
+
+            with open(self.pickle_path, 'rb') as fp:
+
+                self.data = pickle.load(fp)
+                _log(
+                    'Orthology table from taxon %u to %u (only SwissProt: %s; '
+                    'resource: %s; ID type: %s) has been loaded from `%s`.' % (
+                        self.key + (self.pickle_path,)
+                    )
+                )
+                return True
+
+        return False
+
+
+    def _to_pickle(self):
+
+        with open(self.pickle_path, 'wb') as fp:
+
+            pickle.dump(self.data, fp)
+            _log(
+                'Orthology table from taxon %u to %u (only SwissProt: %s; '
+                'resource: %s; ID type: %s) has been saved to `%s`.' % (
+                    self.key + (self.pickle_path,)
+                )
+            )
+
+
+    @property
+    def key(self):
+
+        return OrthologyTableKey(
+            source = self.source,
+            target = self.target,
+            only_swissprot = self.only_swissprot,
+            resource = self._resource_l,
+            id_type = self.id_type,
+        )
+
+
+    @property
+    def pickle_path(self):
+
+        return os.path.join(
+            cache_mod.get_cachedir(),
+            f'{common.md5(json.dumps(self.key))}.pickle',
+        )
+
+
+    def __len__(self):
+
+        return sum(map(len, self.data.values()))
+
+
+    def __repr__(self):
+
+        return (
+            f'<{self.resource} Orthology table from {self.source} to '
+            f'{self.target}: {self.id_type} IDs, {len(self)} relationships>'
+        )
+
+
+class HomologeneOrthology(ProteinOrthology):
+
+    resource = 'HomoloGene'
+
+
+    def load(self):
         """
-        Builds orthology translation table as dict from UniProt to Uniprot,
-        obtained from NCBI HomoloGene data. Uses RefSeq and Entrez IDs for
-        translation.
+        Load orthology data from NCBI HomoloGene.
+
+        Builds orthology translation table as dict based on NCBI HomoloGene
+        data. If the `id_type` is supported by HomoloGene (Gene Symbol, RefSeq,
+        Entrez, GI), the data will be simply loaded. For other ID types it
+        translates HomoloGene Gene Symbol, RefSeq and Entrez tables to UniProt
+        and then translates the orthologous UniProt pairs to the desired
+        ID type.
         """
 
-        source = self.get_source(source)
+        if self._from_pickle():
 
-        if source not in self.orthologs:
+            return
 
-            self.orthologs[source] = collections.defaultdict(set)
+        if self.id_type in ('genesymbol', 'refseq', 'refseqp', 'entrez', 'gi'):
 
-        hge = homologene_input.homologene_dict(source, self.target, 'entrez')
-        hgr = homologene_input.homologene_dict(source, self.target, 'refseq')
+            data = homologene_input.homologene_dict(
+                self.source,
+                self.target,
+                self.id_type,
+            )
+            self.data = {
+                s: {HomologeneOrtholog(t) for t in target_ids}
+                for s, target_ids in data.items()
+            }
+            return
 
-        self.load_proteome(source, self.only_swissprot)
+        hg = {
+            id_type: homologene_input.homologene_dict(
+                self.source,
+                self.target,
+                id_type,
+            )
+            for id_type in ('genesymbol', 'refseq', 'entrez')
+        }
 
         _log(
             'Loading homology data from NCBI HomoloGene '
-            'between organisms `%u` and `%u`' % (source, self.target)
+            f'between organisms `{self.source}` and `{self.target}`.'
         )
 
-        for u in self._proteomes[(source, self.only_swissprot)]:
+        self.data = collections.defaultdict(set)
 
-            source_e = mapping.map_name(u, 'uniprot', 'entrez', source)
-            source_r = mapping.map_name(u, 'uniprot', 'refseqp', source)
-            target_u = set()
-            target_r = set()
-            target_e = set()
+        for u in self._proteomes[(self.source, self.only_swissprot)]:
 
-            for e in source_e:
+            target_uniprots = set()
 
-                if e in hge:
+            for id_type, hgdata in hg.items():
 
-                    target_e.update(hge[e])
+                hg_source_ids = mapping.map_name(
+                    u,
+                    'uniprot',
+                    id_type,
+                    ncbi_tax_id = self.source,
+                )
 
-            for r in source_r:
+                if not hg_source_ids: continue
 
-                if r in hgr:
+                hg_target_ids = set.union(*(
+                    hgdata.get(s, set())
+                    for s in hg_source_ids)
+                )
 
-                    target_r.update(hgr[r])
+                if not hg_target_ids: continue
 
-            for e in target_e:
-
-                target_u.update(
-                    set(
-                        mapping.map_name(e, 'entrez', 'uniprot', self.target)
+                target_uniprots.update(
+                    mapping.map_names(
+                        hg_target_ids,
+                        id_type,
+                        'uniprot',
+                        ncbi_tax_id = self.target,
                     )
                 )
 
-            for r in target_r:
+            if self.id_type == 'uniprot':
 
-                target_u.update(
-                    set(
-                        mapping.map_name(e, 'refseqp', 'uniprot', self.target)
-                    )
+                source_ids = (u,)
+                target_ids = target_uniprots
+
+            else:
+
+                source_ids = mapping.map_name(
+                    u,
+                    'uniprot',
+                    self.id_type,
+                    ncbi_tax_id = self.source,
+                )
+                target_ids = mapping.map_names(
+                    target_uniprots,
+                    'uniprot',
+                    self.id_type,
+                    ncbi_tax_id = self.target,
                 )
 
-            target_u = (
-                itertools.chain(
-                    *map(
-                        lambda tu:
-                            mapping.map_name(
-                                tu, 'uniprot', 'uniprot', self.target
-                            ),
-                        target_u
-                    )
-                )
-            )
+            for s in source_ids:
 
-            self.orthologs[source][u].update(
-                {
-                    Ortholog(u, 'HomoloGene')
-                    for u in target_u
-                }
-            )
-
-
-    def load_ensembl(self, source):
-
-        source = self.get_source(source)
-        target_organism = taxonomy.ensure_ensembl_name(self.target)
-        source_organism = taxonomy.ensure_ensembl_name(source)
-
-        _log(
-            'Loading homology data from Ensembl '
-            'between organisms `%u` and `%u`' % (source, self.target)
-        )
-
-        if not target_organism or not source_organism:
-
-            self.ensembl[source] = {}
-            _log(
-                'No Ensembl homology data available between '
-                'organisms `%s` and `%s`.' % (source, self.target)
-            )
-            return
-
-        if source not in self.orthologs:
-
-            self.orthologs[source] = collections.defaultdict(set)
-
-        attr_target_ensp = '%s_homolog_ensembl_peptide' % target_organism
-        attr_conf = '%s_homolog_orthology_confidence' % target_organism
-        attr_type = '%s_homolog_orthology_type' % target_organism
-
-        ensembl_data = biomart.biomart_homology(
-            source_organism = source,
-            target_organism = self.target,
-        )
-
-        for r in ensembl_data:
-
-            source_uniprots = mapping.map_name(
-                r.ensembl_peptide_id,
-                'ensp',
-                'uniprot',
-                source,
-            )
-
-            target_uniprots = mapping.map_name(
-                getattr(r, attr_target_ensp),
-                'ensp',
-                'uniprot',
-                self.target,
-            )
-
-            for u in source_uniprots:
-
-                self.orthologs[source][u].update(
+                self.data[s].update(
                     {
-                        Ortholog(
-                            u,
-                            'Ensembl',
-                            ensembl_hc = getattr(r, attr_conf) == '1',
-                            ensembl_type = getattr(r, attr_type),
-                        )
-                        for u in target_uniprots
+                        HomologeneOrtholog(t)
+                        for t in target_ids
                     }
                 )
 
+        self.data = dict(self.data)
+        self._to_pickle()
 
-class PtmHomology(ProteinHomology, SequenceContainer):
+
+class EnsemblOrthology(ProteinOrthology):
+
+    _param = ('hc', 'types')
+    resource = 'Ensembl'
+
+    def __init__(
+            self,
+            target: int | str,
+            source: int | str = 9606,
+            id_type: str = 'uniprot',
+            only_swissprot: bool = None,
+            hc: bool = None,
+            types: list[Literal[
+                'one2one', 'one2many', 'many2many'
+            ]] = None,
+        ):
+        """
+        Orthology translation with Ensembl data.
+
+        Args
+            target:
+                Name or NCBI Taxonomy ID of the target organism.
+            source:
+                Name or NCBI Taxonomy ID of the default source organism.
+                Multiple source organisms can be used on the same instance.
+            id_type:
+                The identifier type to use.
+            only_swissprot:
+                Use only SwissProt IDs.
+            hc:
+                Use only high confidence orthology relations
+                from Ensembl. By default it is True. You can also set it
+                by the `ensembl_hc` attribute.
+            types:
+                The Ensembl orthology relationship types
+                to use. Possible values are `one2one`, `one2many` and
+                `many2many`. By default only `one2one` is used. You can
+                also set this parameter by the `ensembl_types` attribute.
+        """
+
+        ProteinOrthology.__init__(**locals())
+
+
+    def load(self):
+
+        target_organism = taxonomy.ensure_ensembl_name(self.target)
+        source_organism = taxonomy.ensure_ensembl_name(self.source)
+
+        _log(
+            'Loading orthology data from Ensembl '
+            f'between organisms `{self.source}` and `{self.target}`.'
+        )
+
+        if self._from_pickle():
+
+            return
+
+        if not target_organism or not source_organism:
+
+            _log(
+                'No Ensembl orthology data available between '
+                f'organisms `{self.source}` and `{self.target}`.'
+            )
+            return
+
+        target_prefix = f'{target_organism}_homolog_'
+
+        attr_target_ensp = f'{target_prefix}ensembl_peptide'
+        attr_conf = f'{target_prefix}orthology_confidence'
+        attr_type = f'{target_prefix}orthology_type'
+
+        ensembl_data = biomart.biomart_homology(
+            source_organism = self.source,
+            target_organism = self.target,
+        )
+
+        _id_types = {
+            'target': {
+                'genesymbol': f'{target_prefix}associated_gene_name',
+                'ensp': f'{target_prefix}ensembl_peptide',
+                'ensg': f'{target_prefix}ensembl_gene',
+            },
+            'source': {
+                'genesymbol': 'external_gene_name',
+                'ensp': 'ensembl_peptide_id',
+                'ensg': 'ensembl_gene_id',
+            },
+        }
+        attr_tgt_id = _id_types['target'].get(
+            self.id_type,
+            f'{target_prefix}ensembl_peptide',
+        )
+        attr_src_id = _id_types['source'].get(
+            self.id_type,
+            'ensembl_peptide_id',
+        )
+
+        self.data = collections.defaultdict(set)
+
+        if self.id_type in _id_types['target']:
+
+            for r in ensembl_data:
+
+                self.data[getattr(r, attr_src_id)].add(
+                    EnsemblOrtholog(
+                        id = getattr(r, attr_tgt_id),
+                        hc = getattr(r, attr_conf) == '1',
+                        types = getattr(r, attr_type).split('_')[-1],
+                    )
+                )
+
+        for r in ensembl_data:
+
+            ids = {}
+
+            for side, attr_id in (
+                    ('source', attr_src_id),
+                    ('target', attr_tgt_id)
+                ):
+
+                uniprots = mapping.map_name(
+                    getattr(r, attr_id),
+                    'ensp',
+                    'uniprot',
+                    ncbi_tax_id = getattr(self, side),
+                )
+                ids[side] = mapping.map_names(
+                    uniprots,
+                    'uniprot',
+                    self.id_type,
+                    ncbi_tax_id = getattr(self, side),
+                    uniprot_cleanup = False,
+                )
+
+                if not ids[side]:
+
+                    continue
+
+            for s in ids['source']:
+
+                self.data[s].update(
+                    {
+                        EnsemblOrtholog(
+                            id = t,
+                            hc = getattr(r, attr_conf) == '1',
+                            types = getattr(r, attr_type).split('_')[-1],
+                        )
+                        for t in ids['target']
+                    }
+                )
+
+        self.data = dict(self.data)
+        self._to_pickle()
+
+
+    def match(self, ortholog: OrthologBase, **kwargs) -> bool:
+        """
+        Check an ortholog against filtering criteria.
+
+        Args:
+            ortholog:
+                An ortholog record.
+            kwargs:
+                Override default filtering parameters.
+
+        Returns:
+            True if the ortholog meets the criteria.
+        """
+
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        hc = kwargs.get('hc', self.hc)
+        types = kwargs.get('types', self.types)
+
+        return (
+            (not hc or ortholog.hc) and
+            (not types or ortholog.types in types)
+        )
+
+
+class OmaOrthology(ProteinOrthology):
+
+    _param = ('rel_type', 'score')
+    resource = 'OMA'
+
+    def __init__(
+            self,
+            target: int | str,
+            source: int | str = 9606,
+            id_type: str = 'uniprot',
+            only_swissprot: bool = None,
+            rel_type: (
+                set[Literal['1:1', '1:n', 'm:1', 'm:n']] |
+                None
+             ) = None,
+            score: float | None = None,
+        ):
+        """
+        Orthology translation with Ensembl data.
+
+        Args
+            target:
+                Name or NCBI Taxonomy ID of the target organism.
+            source:
+                Name or NCBI Taxonomy ID of the default source organism.
+                Multiple source organisms can be used on the same instance.
+            id_type:
+                The identifier type to use.
+            only_swissprot:
+                Use only SwissProt IDs.
+            rel_type:
+                Restrict relations to certain types.
+            score:
+                Lower threshold for similarity metric.
+        """
+
+        ProteinOrthology.__init__(**locals())
+
+
+    def load(self):
+
+        _log(
+            'Loading orthology data from OMA '
+            f'between organisms `{self.source}` and `{self.target}`.'
+        )
+
+        if self._from_pickle():
+
+            return
+
+        oma_data = oma_input.oma_orthologs(
+            organism_a = self.source,
+            organism_b = self.target,
+            id_type = self.id_type,
+        )
+        self.data = collections.defaultdict(set)
+
+        for rec in oma_data:
+
+            self.data[rec.a.id].add(
+                OmaOrtholog(
+                    id = rec.b.id,
+                    score = rec.score,
+                    rel_type = rec.rel_type,
+                )
+            )
+
+        self.data = dict(self.data)
+        self._to_pickle()
+
+
+    def match(self, ortholog: OrthologBase, **kwargs) -> bool:
+        """
+        Check an ortholog against filtering criteria.
+
+        Args:
+            ortholog:
+                An ortholog record.
+            kwargs:
+                Override default filtering parameters.
+
+        Returns:
+            True if the ortholog meets the criteria.
+        """
+
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        score = kwargs.get('score', self.score)
+        rel_type = kwargs.get('rel_type', self.rel_type)
+
+        return (
+            (score is None or ortholog.score >= score) and
+            (not rel_type or ortholog.rel_type in rel_type)
+        )
+
+
+class PtmOrthology(Proteomes, SequenceContainer):
 
 
     def __init__(
-        self,
-        target,
-        source = None,
-        only_swissprot = True,
-        strict = True
-    ):
+            self,
+            target: str | int,
+            source: str | int | None = None,
+            only_swissprot: bool = True,
+            strict: bool = True,
+            orthology_args: dict | None = None,
+        ):
 
         if not hasattr(self, '_logger'):
 
-            session.Logger.__init__(self, name = 'homology')
+            session.Logger.__init__(self, name = 'orthology')
 
-        ProteinHomology.__init__(
-            self,
-            target = target,
-            source = source,
-            only_swissprot = only_swissprot,
-        )
-
+        self.manager = get_manager()
         SequenceContainer.__init__(self)
+        Proteomes.__init__(self, only_swissprot = only_swissprot)
+        self.source = taxonomy.ensure_ncbi_tax_id(source)
+        self.target = taxonomy.ensure_ncbi_tax_id(target)
         self.load_seq(taxon = self.target)
-
         self.reptm = re.compile(r'([A-Z\d]{6,10})_([A-Z])(\d*)')
-
         self.strict = strict
-
+        self.orthology_args = orthology_args or {}
+        self.id_type = 'uniprot'
         self.ptm_orthology()
+
+
+    def reload(self):
+
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
 
 
     def translate_site(
             self,
-            protein,
-            res,
-            offset,
-            isoform = 1,
-            typ = 'phosphorylation',
-            source_taxon = None,
-        ):
+            protein: str | intera.Protein,
+            res: str,
+            offset: int,
+            isoform: int = 1,
+            typ: str = 'phosphorylation',
+            source_organism: str | int | None = None,
+        ) -> set[tuple]:
         """
         Translates one PTM site.
+
+        Args:
+            protein:
+                A protein identifier or an intera.Protein object.
+            res:
+                Single letter code of the residue.
+            offset:
+                Sequence offset of the site.
+            isoform:
+                Sequence isoform.
+            typ:
+                Modification type.
+            source_organism:
+                Name or NCBI Taxonomy ID of the source organism.
+
+        Returns:
+            A list of tuples with the identifier, isoform, residue, offset,
+            taxon and modification type of the orthologous PTM sites.
         """
 
         result = set()
+        source = self._get_source(source_organism)
+        protein_id = getattr(protein, 'identifier', protein)
+        sourceptm = (protein_id, isoform, res, offset, source, typ)
 
-        self.set_default_source(source_taxon)
-
-        source = self.get_source(source_taxon)
-
-        sourceptm = (protein, isoform, res, offset, source, typ)
-
-        if self.get_taxon(protein.identifier) == self.target:
+        if self.get_taxon(protein_id) == self.target:
             result.add(sourceptm)
             return result
 
-        if sourceptm in self.ptmhomo:
+        if sourceptm in self.ptmortho:
 
-            if self.target in self.ptmhomo[sourceptm]:
+            if self.target in self.ptmortho[sourceptm]:
 
-                result = self.ptmhomo[sourceptm]
+                result = self.ptmortho[sourceptm]
 
         if not result and not self.strict:
 
-            tsubs = ProteinHomology.translate(
-                self,
-                protein.identifier,
+            tsubs = self.manager.translate(
+                identifiers = protein_id,
+                target = self.target,
                 source = source,
+                only_swissprot = self.only_swissprot,
+                id_type = self.id_type,
+                **self.orthology_args
             )
 
             for tsub in tsubs:
 
-                se = self.get_seq(tsub)
+                se = self.get_seq(tsub, taxon = self.target)
 
                 if se is None:
                     continue
@@ -1388,7 +1669,7 @@ class PtmHomology(ProteinHomology, SequenceContainer):
                                 tres,
                                 toffset,
                                 self.target,
-                                typ
+                                typ,
                             ))
 
                     if result:
@@ -1397,27 +1678,25 @@ class PtmHomology(ProteinHomology, SequenceContainer):
         return result
 
 
-    def translate_domain(self, domain):
+    def translate_domain(self, domain: intera.Domain) -> list[intera.Domain]:
 
-        return (
-            list(
-                map(
-                    lambda x:
-                        intera.Domain(
-                            protein = x,
-                            ncbi_tax_id = self.target,
-                        ),
-                    ProteinHomology.translate(
-                        self,
-                        domain.protein.identifier,
-                        source = self.get_source()
-                    )
-                )
+        return [
+            intera.Domain(
+                protein = target_id,
+                ncbi_tax_id = self.target,
             )
-        )
+            for target_id in self.manager.translate(
+                identifiers = domain.protein.identifier,
+                target = self.target,
+                id_type = self.id_type,
+                source = self.get_source(domain.ncbi_tax_id),
+                only_swissprot = self.only_swissprot,
+                **self.orthology_args
+            )
+        ]
 
 
-    def translate_ptm(self, ptm):
+    def translate_ptm(self, ptm: intera.Ptm) -> list[intera.Ptm]:
 
         tptms = self.translate_site(
             ptm.protein,
@@ -1431,7 +1710,7 @@ class PtmHomology(ProteinHomology, SequenceContainer):
 
         for x in tptms:
 
-            se = self.get_seq(x[0])
+            se = self.get_seq(x[0], taxon = self.target)
 
             if (se is None or x[1] not in se.isof) and self.strict:
                 continue
@@ -1472,55 +1751,49 @@ class PtmHomology(ProteinHomology, SequenceContainer):
         return result
 
 
-    def translate_domain_motif(self, dmotif):
+    def translate_domain_motif(
+            self,
+            dmotif: intera.DomainMotif,
+        ) -> list[intera.DomainMotif]:
 
         ds = self.translate_domain(dmotif.domain)
         ps = self.translate_ptm(dmotif.ptm)
 
-        return (
-            list(
-                map(
-                    lambda x:
-                        intera.DomainMotif(
-                            x[0],
-                            x[1],
-                            evidences = dmotif.evidences,
-                        ),
-                        itertools.product(ds, ps)
-                )
+        return [
+            intera.DomainMotif(
+                x[0],
+                x[1],
+                evidences = dmotif.evidences,
             )
-        )
+            for x in itertools.product(ds, ps)
+        ]
 
 
-    def translate_residue(self, residue):
+    def translate_residue(
+            self,
+            residue: intera.Residue,
+        ) -> list[intera.Residue]:
 
-        return (
-            list(
-                map(
-                    lambda r:
-                        intera.Residue(r[3], r[2], r[0], isoform = r[1]),
-                    self.translate_site(
-                        residue.protein,
-                        residue.name,
-                        residue.number,
-                        residue.isoform
-                    )
-                )
+        return [
+            intera.Residue(r[3], r[2], r[0], isoform = r[1])
+            for r in self.translate_site(
+                residue.protein,
+                residue.name,
+                residue.number,
+                residue.isoform,
             )
-        )
+        ]
 
 
     def translate(self, x, return_strings = False, **kwargs):
         """
-        Translates anything:
+        Translates anything: string notation, intera objects, tuples.
 
-        - one UniProt ID
         - one PTM provided as tuple of (UniProt, amino acid, offest)
         - one PTM provided as string (e.g. `P00533_S231`)
         - instance from pypath.intera: DomainMotif, Domain or Ptm
 
         Additional arguments can be isoform and typ (modification type).
-
         """
 
         result = []
@@ -1535,14 +1808,16 @@ class PtmHomology(ProteinHomology, SequenceContainer):
 
             if ptm is not None:
 
-                result = self.translate_site(ptm[0], ptm[1],
-                                             int(ptm[2]), **kwargs)
+                result = self.translate_site(
+                    ptm[1],
+                    ptm[2],
+                    int(ptm[3]),
+                    **kwargs
+                )
 
         if return_strings:
 
-            result = list(map(lambda r:
-                              '%s_%s%u' % (r[0], r[2], r[3]),
-                              result))
+            result = ['%s_%s%u' % (r[0], r[2], r[3]) for r in result]
 
         elif isinstance(x, intera.Ptm):
 
@@ -1561,26 +1836,27 @@ class PtmHomology(ProteinHomology, SequenceContainer):
 
     def ptm_orthology(self):
         """
+        Load PTM orthology data from PhosphoSite.
+
         Creates an orthology translation dict of phosphosites
         based on phosphorylation sites table from PhosphoSitePlus.
         In the result all PTMs represented by a tuple of the following
         6 elements: UniProt ID, isoform (int), residue one letter code,
         residue number (int), NCBI Taxonomy ID (int), modification type.
-
         """
 
-        self.ptmhomo = {}
+        self.ptmortho = {}
 
         nondigit = re.compile(r'[^\d]+')
 
-        unknown_taxa = set([])
+        unknown_taxa = set()
 
         for typ in common.psite_mod_types:
 
             groups = {}
 
             url = urls.urls['psite_%s' % typ[0]]['url']
-            c = curl.Curl(url, silent=False, large=True)
+            c = curl.Curl(url, silent = False, large = True)
 
             data = c.result
 
@@ -1630,15 +1906,15 @@ class PtmHomology(ProteinHomology, SequenceContainer):
 
                             continue
 
-                        if site1 not in self.ptmhomo:
+                        if site1 not in self.ptmortho:
 
-                            self.ptmhomo[site1] = {}
+                            self.ptmortho[site1] = {}
 
-                        if site2[4] not in self.ptmhomo[site1]:
+                        if site2[4] not in self.ptmortho[site1]:
 
-                            self.ptmhomo[site1][site2[4]] = set([])
+                            self.ptmortho[site1][site2[4]] = set([])
 
-                        self.ptmhomo[site1][site2[4]].add(site2)
+                        self.ptmortho[site1][site2[4]].add(site2)
 
         if len(unknown_taxa):
 
@@ -1648,19 +1924,51 @@ class PtmHomology(ProteinHomology, SequenceContainer):
                 )
             )
 
+    def _get_source(self, source: str | int | None) -> int:
+        """
+        Returns the NCBI Taxonomy ID of the source taxon.
+        """
+
+        ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(source) or self.source
+
+        if not ncbi_tax_id:
+
+            msg = (
+                f'No source taxon provided (argument: `{source}`, '
+                f'instance: `{self.source}`)'
+            )
+            self._log(msg)
+            raise ValueError(msg)
+
+        return ncbi_tax_id
+
+
+    def __len__(self):
+
+        return len(getattr(self, 'ptmortho', ()))
+
+
+    def __repr__(self):
+
+        return f'<PTM Orthology: {len(self)} sites>'
+
 
 def init():
     """
-    Creates an instance of the homology manager. Stores it in the module
+    Initialize the orthology manager.
+
+    Creates an instance of the orthology manager. Stores it in the module
     namespace.
     """
 
-    globals()['manager'] = HomologyManager()
+    globals()['manager'] = OrthologyManager()
 
 
 def get_manager():
     """
-    Returns the homology manager, an object which loads and unloads the
+    Access the orthology manager.
+
+    Returns the orthology manager, an object which loads and unloads the
     homology lookup tables as necessary, and provides the interface for
     querying the homology data. Normally an instance of the manager
     belongs to the module, and if it does not exist yet, will be created
@@ -1675,99 +1983,131 @@ def get_manager():
 
 
 def translate(
-        source_id,
-        target,
-        source = 9606,
-        only_swissprot = True,
-        homologene = None,
-        ensembl = None,
-        ensembl_hc = None,
-        ensembl_types = None,
-        id_type = 'uniprot',
+        identifiers: str | Iterable[str],
+        target: str | int,
+        source: str | int = 9606,
+        id_type: str = 'uniprot',
+        only_swissprot: bool = True,
+        oma: bool = None,
+        homologene: bool = None,
+        ensembl: bool = None,
+        oma_rel_type: (
+            set[Literal['1:1', '1:n', 'm:1', 'm:n']] |
+            None
+        ) = None,
+        oma_score: float | None = None,
+        ensembl_hc: bool = True,
+        ensembl_types: (
+            list[Literal['one2one', 'one2many', 'many2many']] |
+            None
+        ) = None,
+        full_records: bool = False,
     ):
     """
-    Homology translation. For a UniProt ID, finds the corresponding
-    homologous (orthologous) genes in another organism.
+    Translate one or more identifiers by orthologous gene pairs.
 
-    Args
-        source_id (str,list): UniProt ID of one or more protein in the
-                source organism.
-        target (int,str): The target organism.
-        source (int,str): The source organism.
-        only_swissprot (bool): Use only SwissProt IDs. For human and some
-            popular model organisms this is advisible, as almost all proteins
-            have reviewed record in UniProt.
-        homologene (bool): Use NCBI HomoloGene data for ortholog lookup.
-        ensembl (bool): Use Ensembl data for ortholog lookup.
-        ensembl_hc (bool): Use only high confidence orthology relations
-            from Ensembl. By default it is True. You can also set it
-            by the `ensembl_hc` attribute.
-        ensembl_types (list): The Ensembl orthology relationship types
-            to use. Possible values are `one2one`, `one2many` and
-            `many2many`. By default only `one2one` is used. You can
-            also set this parameter by the `ensembl_types` attribute.
-        id_type (str): Type of the identifiers to translate from and to.
+    Args:
+        identifiers:
+            One or more identifers of the source organism, of ID type
+            `id_type`.
+        target:
+            Name or NCBI Taxonomy ID of the target organism.
+        source:
+            Name or NCBI Taxonomy ID of the default source organism.
+            Multiple source organisms can be used on the same instance.
+        id_type:
+            The identifier type to use.
+        only_swissprot:
+            Use only SwissProt IDs.
+        oma
+            Use homology information from the Orthologous Matrix (OMA).
+            Currently this is the recommended source for homology data.
+        homologene:
+            Use homology information from NCBI HomoloGene.
+        ensembl:
+            Use homology information from Ensembl.
+        oma_rel_type:
+            Restrict relations to certain types.
+        oma_score:
+            Lower threshold for similarity metric.
+        ensembl_hc:
+            Use only the high confidence orthology relations from Ensembl.
+        ensembl_types:
+            Ensembl orthology relation types to use. Possible values are
+            `one2one`, `one2many` and `many2many`. By default only
+            `one2one` is used.
+        full_records:
+            Include not only the identifiers, but also some properties of
+            the orthology relationships.
 
-    Returns
-        Set of UniProt IDs of orthologous gene products in the target
-        organism.
+    Returns:
+        Set of identifiers of orthologous genes or proteins in the
+        target taxon.
     """
 
     manager = get_manager()
 
-    return manager.translate(
-        source_id  = source_id,
-        target = target,
-        source = source,
-        only_swissprot = only_swissprot,
-        homologene = homologene,
-        ensembl = ensembl,
-        ensembl_hc = ensembl_hc,
-        ensembl_types = ensembl_types,
-        id_type = id_type,
-    )
+    args = locals().copy()
+    args.pop('manager')
+
+    return manager.translate(**args)
 
 
 def get_dict(
-        target,
-        source = 9606,
-        only_swissprot = True,
-        homologene = None,
-        ensembl = None,
-        ensembl_hc = None,
-        ensembl_types = None,
-        id_type = 'uniprot',
-    ):
+        target: str | int,
+        source: str | int = 9606,
+        id_type: str = 'uniprot',
+        only_swissprot: bool = True,
+        oma: bool = None,
+        homologene: bool = None,
+        ensembl: bool = None,
+        oma_rel_type: (
+            set[Literal['1:1', '1:n', 'm:1', 'm:n']] |
+            None
+        ) = None,
+        oma_score: float | None = None,
+        ensembl_hc: bool = True,
+        ensembl_types: (
+            list[Literal['one2one', 'one2many', 'many2many']] |
+            None
+        ) = None,
+        full_records: bool = False,
+    ) -> dict[str, set[OrthologBase]]:
     """
     Create a dictionary for one source organism and ID type.
 
-    Args
+    Args:
         target:
-            Tha organism to translate to.
+            Name or NCBI Taxonomy ID of the target organism.
         source:
-            The organism to translate from.
-        homologene:
-            Use NCBI HomoloGene data for ortholog lookup.
-        ensembl:
-            Use Ensembl data for ortholog lookup.
-        ensembl_hc:
-            Use only high confidence orthology relations
-            from Ensembl. By default it is True. You can also set it
-            by the `ensembl_hc` attribute.
-        ensembl_types:
-            The Ensembl orthology relationship types
-            to use. Possible values are `one2one`, `one2many` and
-            `many2many`. By default only `one2one` is used. You can
-            also set this parameter by the `ensembl_types` attribute.
+            Name or NCBI Taxonomy ID of the default source organism.
+            Multiple source organisms can be used on the same instance.
         id_type:
-            Identifier type to translate from and to. If a tuple, the
-            first element will be used for keys (source organism) and
-            the second for the values (target organism). By default
-            UniProt IDs are assumed. For a complete list of ID types see
-            ``pypath.utils.mapping.get_mapper().id_types()`` and
-            ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+            The identifier type to use.
+        only_swissprot:
+            Use only SwissProt IDs.
+        oma
+            Use homology information from the Orthologous Matrix (OMA).
+            Currently this is the recommended source for homology data.
+        homologene:
+            Use homology information from NCBI HomoloGene.
+        ensembl:
+            Use homology information from Ensembl.
+        oma_rel_type:
+            Restrict relations to certain types.
+        oma_score:
+            Lower threshold for similarity metric.
+        ensembl_hc:
+            Use only the high confidence orthology relations from Ensembl.
+        ensembl_types:
+            Ensembl orthology relation types to use. Possible values are
+            `one2one`, `one2many` and `many2many`. By default only
+            `one2one` is used.
+        full_records:
+            Include not only the identifiers, but also some properties of
+            the orthology relationships.
 
-    Return
+    Returns:
         A dict with identifiers of the source organism as keys, and
         sets of their orthologs as values.
     """
@@ -1781,45 +2121,63 @@ def get_dict(
 
 
 def get_df(
-        target,
-        source = 9606,
-        only_swissprot = True,
-        homologene = None,
-        ensembl = None,
-        ensembl_hc = None,
-        ensembl_types = None,
-        id_type = 'uniprot',
-    ):
+        target: str | int,
+        source: str | int = 9606,
+        id_type: str = 'uniprot',
+        only_swissprot: bool = True,
+        oma: bool = None,
+        homologene: bool = None,
+        ensembl: bool = None,
+        oma_rel_type: (
+            set[Literal['1:1', '1:n', 'm:1', 'm:n']] |
+            None
+        ) = None,
+        oma_score: float | None = None,
+        ensembl_hc: bool = True,
+        ensembl_types: (
+            list[Literal['one2one', 'one2many', 'many2many']] |
+            None
+        ) = None,
+        full_records: bool = False,
+        **kwargs
+    ) -> pd.DataFrame:
     """
     Create a data frame for one source organism and ID type.
 
-    Args
+    Args:
         target:
-            The organism to translate to.
+            Name or NCBI Taxonomy ID of the target organism.
         source:
-            The organism to translate from.
-        homologene:
-            Use NCBI HomoloGene data for ortholog lookup.
-        ensembl:
-            Use Ensembl data for ortholog lookup.
-        ensembl_hc:
-            Use only high confidence orthology relations
-            from Ensembl. By default it is True. You can also set it
-            by the `ensembl_hc` attribute.
-        ensembl_types:
-            The Ensembl orthology relationship types
-            to use. Possible values are `one2one`, `one2many` and
-            `many2many`. By default only `one2one` is used. You can
-            also set this parameter by the `ensembl_types` attribute.
+            Name or NCBI Taxonomy ID of the default source organism.
+            Multiple source organisms can be used on the same instance.
         id_type:
-            Identifier type to translate from and to. If a tuple, the
-            first element will be used for keys (source organism) and
-            the second for the values (target organism). By default
-            UniProt IDs are assumed. For a complete list of ID types see
-            ``pypath.utils.mapping.get_mapper().id_types()`` and
-            ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+            The identifier type to use.
+        only_swissprot:
+            Use only SwissProt IDs.
+        oma
+            Use homology information from the Orthologous Matrix (OMA).
+            Currently this is the recommended source for homology data.
+        homologene:
+            Use homology information from NCBI HomoloGene.
+        ensembl:
+            Use homology information from Ensembl.
+        oma_rel_type:
+            Restrict relations to certain types.
+        oma_score:
+            Lower threshold for similarity metric.
+        ensembl_hc:
+            Use only the high confidence orthology relations from Ensembl.
+        ensembl_types:
+            Ensembl orthology relation types to use. Possible values are
+            `one2one`, `one2many` and `many2many`. By default only
+            `one2one` is used.
+        full_records:
+            Include not only the identifiers, but also some properties of
+            the orthology relationships.
+        kwargs:
+            Ignored.
 
-    Return
+    Returns:
         A data frame with pairs of orthologous identifiers,
         in two columns: "source" and "target".
     """
@@ -1828,62 +2186,77 @@ def get_df(
 
     args = locals().copy()
     args.pop('manager')
+    args.pop('kwargs')
 
     return manager.get_df(**args)
 
 
 def translate_df(
-        df,
-        target: int | str,
-        cols: (
-            str |
-            list[str] |
-            dict[str, str | tuple[str, str]] |
-            None
-        ) = None,
-        source: int | str = 9606,
+        df: pd.DataFrame,
+        target: str | int,
+        source: str | int = 9606,
+        cols: str | list[str] | dict[str, str] | None = None,
+        id_type: str = 'uniprot',
+        only_swissprot: bool = True,
+        oma: bool = None,
         homologene: bool = None,
         ensembl: bool = None,
-        ensembl_hc: bool = None,
-        ensembl_types: list[Literal[
-            'one2one', 'one2many', 'many2many'
-        ]] = None,
+        oma_rel_type: (
+            set[Literal['1:1', '1:n', 'm:1', 'm:n']] |
+            None
+        ) = None,
+        oma_score: float | None = None,
+        ensembl_hc: bool = True,
+        ensembl_types: (
+            list[Literal['one2one', 'one2many', 'many2many']] |
+            None
+        ) = None,
         **kwargs: str | tuple[str, str]
-    ):
+    ) -> pd.DataFrame:
     """
     Translate columns in a data frame.
 
-    Args
+    Args:
         df:
             A data frame.
         target:
-            The organism to translate to.
+            Name or NCBI Taxonomy ID of the target organism.
+        source:
+            Name or NCBI Taxonomy ID of the default source organism.
+            Multiple source organisms can be used on the same instance.
         cols:
             One or more columns to be translated. It can be a single
             column name, an iterable of column names or a dict where
             keys are column names and values are ID types. Except this
-            last case, identifiers are assumed to be UniProt.
-        source:
-            The organism to translate from.
+            last case, identifiers are assumed to be `id_type`.
+        id_type:
+            The default identifier type to use, will be used for all
+            columns where ID type is not specified.
+        only_swissprot:
+            Use only SwissProt IDs.
+        oma
+            Use homology information from the Orthologous Matrix (OMA).
+            Currently this is the recommended source for homology data.
         homologene:
-            Use NCBI HomoloGene data for ortholog lookup.
+            Use homology information from NCBI HomoloGene.
         ensembl:
-            Use Ensembl data for ortholog lookup.
+            Use homology information from Ensembl.
+        oma_rel_type:
+            Restrict relations to certain types.
+        oma_score:
+            Lower threshold for similarity metric.
         ensembl_hc:
-            Use only high confidence orthology relations
-            from Ensembl. By default it is True. You can also set it
-            by the `ensembl_hc` attribute.
+            Use only the high confidence orthology relations from Ensembl.
         ensembl_types:
-            The Ensembl orthology relationship types
-            to use. Possible values are `one2one`, `one2many` and
-            `many2many`. By default only `one2one` is used. You can
-            also set this parameter by the `ensembl_types` attribute.
+            Ensembl orthology relation types to use. Possible values are
+            `one2one`, `one2many` and `many2many`. By default only
+            `one2one` is used.
         kwargs:
             Same as providing a dict to ``cols``, but beware, keys
             (column names) can not match existing argument names of
             this function.
 
-    Return
+    Returns:
         A data frame with the same column layout as the input, and the
         identifiers translated as demanded. Rows that could not be
         translated are omitted.
@@ -1893,6 +2266,5 @@ def translate_df(
 
     args = locals().copy()
     args.pop('manager')
-    kwargs = args.pop('kwargs')
 
-    return manager.translate_df(**args, **kwargs)
+    return manager.translate_df(**args)
