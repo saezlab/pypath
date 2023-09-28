@@ -21,6 +21,7 @@ import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.utils.taxonomy as taxonomy
 
 
 def lncdisease_interactions():
@@ -53,7 +54,7 @@ def lncdisease_interactions():
                 source_type = l[3].split('-')[0],
                 target_type = l[3].split('-')[1] if '-' in l[3] else '',
                 mechanism = l[4].lower(),
-                organism = l[6].lower(),
+                organism = taxonomy.ensure_ncbi_tax_id(l[6]),
                 pmid = l[9],
             )
         )

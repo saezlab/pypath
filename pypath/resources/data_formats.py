@@ -27,7 +27,6 @@ import pypath.internals.input_formats as input_formats
 import pypath.resources.urls as urls
 import pypath.share.common as common
 import pypath.share.constants as constants
-import pypath.utils.taxonomy as taxonomy
 
 
 __all__ = [
@@ -2658,16 +2657,9 @@ mirna_target = {
         is_directed = True,
         sign = False,
         ncbi_tax_id = {
-            'A': {
-                'col': 3,
-                'dict': taxonomy.latin_name_to_ncbi_tax_id,
-                'include': {9606},
-            },
-            'B': {
-                'col': 4,
-                'dict': taxonomy.latin_name_to_ncbi_tax_id,
-                'include': {9606},
-            }},
+            'A': {'col': 3, 'include': {9606}},
+            'B': {'col': 4, 'include': {9606}},
+        },
         input = 'mirecords.mirecords_interactions',
         interaction_type = 'post_transcriptional',
         references = 5,
@@ -2689,16 +2681,8 @@ mirna_target = {
         is_directed = True,
         sign = False,
         ncbi_tax_id = {
-            'A': {
-                'col': 2,
-                'dict': taxonomy.latin_name_to_ncbi_tax_id,
-                'include': {9606},
-            },
-            'B': {
-                'col': 5,
-                'dict': taxonomy.latin_name_to_ncbi_tax_id,
-                'include': {9606},
-            },
+            'A': {'col': 2, 'include': {9606}},
+            'B': {'col': 5, 'include': {9606}},
         },
         positive_filters = [(8, 'Functional MTI')],
         input = 'mirtarbase.mirtarbase_interactions',
@@ -2854,11 +2838,7 @@ lncrna_target = {
         entity_type_b = 'protein',
         is_directed = True,
         sign = False,
-        ncbi_tax_id= {
-                'col': 5,
-                'dict': common.swap_dict(taxonomy.taxids),
-                'include': set([9606])
-            },
+        ncbi_tax_id = {'col': 5, 'include': {9606}},
         positive_filters = [(2, 'RNA'), (3, 'Protein')],
         input = 'lncdisease.lncdisease_interactions',
         interaction_type = 'lncrna_post_transcriptional',
@@ -2882,11 +2862,7 @@ lncrna_target = {
         entity_type_b = 'protein',
         is_directed = True,
         sign = False,
-        ncbi_tax_id= {
-                'col': 3,
-                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
-                'include': set([9606])
-            },
+        ncbi_tax_id = {'col': 3, 'include': {9606}},
         positive_filters = [(2, 'protein')],
         input = 'lncrnadb.lncrnadb_interactions',
         interaction_type = 'lncrna_post_transcriptional',
