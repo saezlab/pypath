@@ -158,11 +158,12 @@ def biomart_query(
 
 
 def biomart_homology(
-        source_organism = 9606,
-        target_organism = 10090,
+        source_organism: int | str = 9606,
+        target_organism: int | str = 10090,
+        extra_fields: str | Iterable[str] = 'external_gene_name',
     ):
     """
-    Retrieves homology data from Ensembl Biomart.
+    Retrieves orthology data from Ensembl Biomart.
 
     Returns
         List of named tuples filtered to genes of the source organism having
@@ -191,12 +192,13 @@ def biomart_homology(
         'homolog_orthology_type',
         'homolog_orthology_confidence',
         'homolog_canonical_transcript_protein',
+        'homolog_associated_gene_name',
     ]
 
     homolog_attrs = [
         '%s_%s' % (target_organism, attr)
         for attr in homolog_attrs
-    ]
+    ] + common.to_list(extra_fields)
 
     filters = [
         'with_%s_homolog' % target_organism
