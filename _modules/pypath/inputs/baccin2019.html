@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.baccin2019 &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.inputs.baccin2019 &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -518,7 +518,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
-<span class="kn">import</span> <span class="nn">pypath.utils.homology</span> <span class="k">as</span> <span class="nn">homology_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.orthology</span> <span class="k">as</span> <span class="nn">orthology_mod</span>
 <span class="kn">import</span> <span class="nn">pypath.internals.intera</span> <span class="k">as</span> <span class="nn">intera</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.common</span> <span class="k">as</span> <span class="nn">inputs_common</span>
 
@@ -552,7 +552,7 @@ document.write(`
 
             <span class="n">uniprots</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
                 <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
-                    <span class="n">homology_mod</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
+                    <span class="n">orthology_mod</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
                         <span class="n">uniprot</span><span class="p">,</span>
                         <span class="n">target</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
                         <span class="n">source</span> <span class="o">=</span> <span class="mi">10090</span><span class="p">,</span>

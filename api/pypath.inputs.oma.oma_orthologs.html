@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.oma.oma_orthologs &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.inputs.oma.oma_orthologs &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -46,7 +46,7 @@
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.ontology" href="pypath.inputs.ontology.html" />
+    <link rel="next" title="pypath.inputs.oma.oma_table" href="pypath.inputs.oma.oma_table.html" />
     <link rel="prev" title="pypath.inputs.oma" href="pypath.inputs.oma.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -498,20 +498,25 @@ document.write(`
 <h1>pypath.inputs.oma.oma_orthologs<a class="headerlink" href="#pypath-inputs-oma-oma-orthologs" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="pypath.inputs.oma.oma_orthologs">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.oma.</span></span><span class="sig-name descname"><span class="pre">oma_orthologs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">organism_a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organism_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'1:1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'1:n'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'m:1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'m:n'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/oma.html#oma_orthologs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.oma.oma_orthologs" title="Permalink to this definition">§</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.oma.</span></span><span class="sig-name descname"><span class="pre">oma_orthologs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">organism_a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'human'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organism_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mouse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'1:1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'1:n'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'m:1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'m:n'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pypath/inputs/oma.html#oma_orthologs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.oma.oma_orthologs" title="Permalink to this definition">§</a></dt>
 <dd><p>Retrieves pairwise relations between two genomes from the OMA
 (Orthologous Matrix) database (<a class="reference external" href="https://omabrowser.org/oma/home/">https://omabrowser.org/oma/home/</a>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>genome_id_a</strong> – Name or NCBI Taxonomy ID of the first organism.</p></li>
-<li><p><strong>genome_id_b</strong> – Name or NCBI Taxonomy ID of the second organism.</p></li>
+<li><p><strong>organism_a</strong> – Name or NCBI Taxonomy ID of the first organism.</p></li>
+<li><p><strong>organism_b</strong> – Name or NCBI Taxonomy ID of the second organism.</p></li>
+<li><p><strong>id_type</strong> – OMA by default uses UniProt entry IDs and sometimes other
+identifiers for genes. Set this parameter to control which
+ID type all the identifiers are to be mapped to.</p></li>
 <li><p><strong>rel_type</strong> – Restrict relations to certain types.</p></li>
-<li><p><strong>score</strong> – Resemblance metric.</p></li>
+<li><p><strong>score</strong> – Lower threshold for similarity metric.</p></li>
+<li><p><strong>return_df</strong> – If True, returns a data frame instead of a list of tuples.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list with tuples of pairwise orthologous relationships.</p>
+<dd class="field-even"><p>A list with tuples of pairwise orthologous relationships or a data
+frame with the same records.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -539,11 +544,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="pypath.inputs.ontology.html"
+       href="pypath.inputs.oma.oma_table.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.inputs.ontology</p>
+        <p class="prev-next-title">pypath.inputs.oma.oma_table</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

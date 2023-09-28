@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.utils.homology.Ortholog &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.utils.orthology.SequenceContainer &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -42,12 +42,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.homology.Ortholog';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.orthology.SequenceContainer';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.utils.homology.ProteinHomology" href="pypath.utils.homology.ProteinHomology.html" />
-    <link rel="prev" title="pypath.utils.homology.HomologyManager" href="pypath.utils.homology.HomologyManager.html" />
+    <link rel="next" title="pypath.utils.pdb" href="pypath.utils.pdb.html" />
+    <link rel="prev" title="pypath.utils.orthology.PtmOrthology" href="pypath.utils.orthology.PtmOrthology.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -475,9 +475,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.utils.homology.html" class="nav-link">pypath.utils.homology</a></li>
+    <li class="breadcrumb-item"><a href="pypath.utils.orthology.html" class="nav-link">pypath.utils.orthology</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.utils.homology.Ortholog</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.utils.orthology.SequenceContainer</li>
   </ul>
 </nav>
 </div>
@@ -494,85 +494,33 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-utils-homology-ortholog">
-<h1>pypath.utils.homology.Ortholog<a class="headerlink" href="#pypath-utils-homology-ortholog" title="Permalink to this heading">§</a></h1>
+  <section id="pypath-utils-orthology-sequencecontainer">
+<h1>pypath.utils.orthology.SequenceContainer<a class="headerlink" href="#pypath-utils-orthology-sequencecontainer" title="Permalink to this heading">§</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="pypath.utils.homology.Ortholog">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.utils.homology.</span></span><span class="sig-name descname"><span class="pre">Ortholog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniprot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl_hc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/homology.html#Ortholog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.homology.Ortholog" title="Permalink to this definition">§</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OrthologBase</span></code></p>
+<dt class="sig sig-object py" id="pypath.utils.orthology.SequenceContainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.utils.orthology.</span></span><span class="sig-name descname"><span class="pre">SequenceContainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preload_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isoforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#SequenceContainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.SequenceContainer" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypath.share.session.Logger.html#pypath.share.session.Logger" title="pypath.share.session.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="pypath.utils.homology.Ortholog.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pypath.utils.homology.Ortholog.__init__" title="Permalink to this definition">§</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="pypath.utils.orthology.SequenceContainer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preload_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isoforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#SequenceContainer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.SequenceContainer.__init__" title="Permalink to this definition">§</a></dt>
+<dd><p>This is an object to store sequences of multiple
+organisms and select the appropriate one.</p>
+</dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.homology.Ortholog.__init__" title="pypath.utils.homology.Ortholog.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.orthology.SequenceContainer.__init__" title="pypath.utils.orthology.SequenceContainer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([preload_seq, isoforms])</p></td>
+<td><p>This is an object to store sequences of multiple organisms and select the appropriate one.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_seq</span></code>(protein[, taxon])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.homology.Ortholog.count" title="pypath.utils.homology.Ortholog.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
-<td><p>Return number of occurrences of value.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.homology.Ortholog.index" title="pypath.utils.homology.Ortholog.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
-<td><p>Return first index of value.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_seq</span></code>(taxon)</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Attributes</p>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.homology.Ortholog.ensembl_hc" title="pypath.utils.homology.Ortholog.ensembl_hc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensembl_hc</span></code></a></p></td>
-<td><p>Alias for field number 2</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.homology.Ortholog.ensembl_type" title="pypath.utils.homology.Ortholog.ensembl_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensembl_type</span></code></a></p></td>
-<td><p>Alias for field number 3</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.homology.Ortholog.resource" title="pypath.utils.homology.Ortholog.resource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resource</span></code></a></p></td>
-<td><p>Alias for field number 1</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.homology.Ortholog.uniprot" title="pypath.utils.homology.Ortholog.uniprot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniprot</span></code></a></p></td>
-<td><p>Alias for field number 0</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="pypath.utils.homology.Ortholog.count">
-<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.utils.homology.Ortholog.count" title="Permalink to this definition">§</a></dt>
-<dd><p>Return number of occurrences of value.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pypath.utils.homology.Ortholog.ensembl_hc">
-<span class="sig-name descname"><span class="pre">ensembl_hc</span></span><a class="headerlink" href="#pypath.utils.homology.Ortholog.ensembl_hc" title="Permalink to this definition">§</a></dt>
-<dd><p>Alias for field number 2</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pypath.utils.homology.Ortholog.ensembl_type">
-<span class="sig-name descname"><span class="pre">ensembl_type</span></span><a class="headerlink" href="#pypath.utils.homology.Ortholog.ensembl_type" title="Permalink to this definition">§</a></dt>
-<dd><p>Alias for field number 3</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pypath.utils.homology.Ortholog.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9223372036854775807</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.utils.homology.Ortholog.index" title="Permalink to this definition">§</a></dt>
-<dd><p>Return first index of value.</p>
-<p>Raises ValueError if the value is not present.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pypath.utils.homology.Ortholog.resource">
-<span class="sig-name descname"><span class="pre">resource</span></span><a class="headerlink" href="#pypath.utils.homology.Ortholog.resource" title="Permalink to this definition">§</a></dt>
-<dd><p>Alias for field number 1</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pypath.utils.homology.Ortholog.uniprot">
-<span class="sig-name descname"><span class="pre">uniprot</span></span><a class="headerlink" href="#pypath.utils.homology.Ortholog.uniprot" title="Permalink to this definition">§</a></dt>
-<dd><p>Alias for field number 0</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -589,20 +537,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.utils.homology.HomologyManager.html"
+       href="pypath.utils.orthology.PtmOrthology.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.utils.homology.HomologyManager</p>
+        <p class="prev-next-title">pypath.utils.orthology.PtmOrthology</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.utils.homology.ProteinHomology.html"
+       href="pypath.utils.pdb.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.utils.homology.ProteinHomology</p>
+        <p class="prev-next-title">pypath.utils.pdb</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

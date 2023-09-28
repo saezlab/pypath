@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.utils.homology.get_df &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.utils.orthology.OrthologyTableKey &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -42,12 +42,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.homology.get_df';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.orthology.OrthologyTableKey';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.utils.homology.get_dict" href="pypath.utils.homology.get_dict.html" />
-    <link rel="prev" title="pypath.utils.homology" href="pypath.utils.homology.html" />
+    <link rel="next" title="pypath.utils.orthology.ProteinOrthology" href="pypath.utils.orthology.ProteinOrthology.html" />
+    <link rel="prev" title="pypath.utils.orthology.OrthologyManager" href="pypath.utils.orthology.OrthologyManager.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -475,9 +475,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.utils.homology.html" class="nav-link">pypath.utils.homology</a></li>
+    <li class="breadcrumb-item"><a href="pypath.utils.orthology.html" class="nav-link">pypath.utils.orthology</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.utils.homology.get_df</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.utils.orthology.OrthologyTableKey</li>
   </ul>
 </nav>
 </div>
@@ -494,44 +494,94 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-utils-homology-get-df">
-<h1>pypath.utils.homology.get_df<a class="headerlink" href="#pypath-utils-homology-get-df" title="Permalink to this heading">§</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="pypath.utils.homology.get_df">
-<span class="sig-prename descclassname"><span class="pre">pypath.utils.homology.</span></span><span class="sig-name descname"><span class="pre">get_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_swissprot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">homologene</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl_hc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniprot'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/homology.html#get_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.homology.get_df" title="Permalink to this definition">§</a></dt>
-<dd><p>Create a data frame for one source organism and ID type.</p>
-<dl class="simple">
-<dt>Args</dt><dd><dl class="simple">
-<dt>target:</dt><dd><p>The organism to translate to.</p>
-</dd>
-<dt>source:</dt><dd><p>The organism to translate from.</p>
-</dd>
-<dt>homologene:</dt><dd><p>Use NCBI HomoloGene data for ortholog lookup.</p>
-</dd>
-<dt>ensembl:</dt><dd><p>Use Ensembl data for ortholog lookup.</p>
-</dd>
-<dt>ensembl_hc:</dt><dd><p>Use only high confidence orthology relations
-from Ensembl. By default it is True. You can also set it
-by the <cite>ensembl_hc</cite> attribute.</p>
-</dd>
-<dt>ensembl_types:</dt><dd><p>The Ensembl orthology relationship types
-to use. Possible values are <cite>one2one</cite>, <cite>one2many</cite> and
-<cite>many2many</cite>. By default only <cite>one2one</cite> is used. You can
-also set this parameter by the <cite>ensembl_types</cite> attribute.</p>
-</dd>
-<dt>id_type:</dt><dd><p>Identifier type to translate from and to. If a tuple, the
-first element will be used for keys (source organism) and
-the second for the values (target organism). By default
-UniProt IDs are assumed. For a complete list of ID types see
-<code class="docutils literal notranslate"><span class="pre">pypath.utils.mapping.get_mapper().id_types()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">pypath.utils.mapping.get_mapper().mapping_tables()</span></code>.</p>
-</dd>
-</dl>
-</dd>
-<dt>Return</dt><dd><p>A data frame with pairs of orthologous identifiers,
-in two columns: “source” and “target”.</p>
-</dd>
-</dl>
+  <section id="pypath-utils-orthology-orthologytablekey">
+<h1>pypath.utils.orthology.OrthologyTableKey<a class="headerlink" href="#pypath-utils-orthology-orthologytablekey" title="Permalink to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.utils.orthology.OrthologyTableKey">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.utils.orthology.</span></span><span class="sig-name descname"><span class="pre">OrthologyTableKey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_swissprot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.utils.orthology.OrthologyTableKey" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.orthology.OrthologyTableKey.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pypath.utils.orthology.OrthologyTableKey.__init__" title="Permalink to this definition">§</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.orthology.OrthologyTableKey.__init__" title="pypath.utils.orthology.OrthologyTableKey.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.orthology.OrthologyTableKey.count" title="pypath.utils.orthology.OrthologyTableKey.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.orthology.OrthologyTableKey.index" title="pypath.utils.orthology.OrthologyTableKey.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.orthology.OrthologyTableKey.id_type" title="pypath.utils.orthology.OrthologyTableKey.id_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id_type</span></code></a></p></td>
+<td><p>Alias for field number 4</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.orthology.OrthologyTableKey.only_swissprot" title="pypath.utils.orthology.OrthologyTableKey.only_swissprot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">only_swissprot</span></code></a></p></td>
+<td><p>Alias for field number 2</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.orthology.OrthologyTableKey.resource" title="pypath.utils.orthology.OrthologyTableKey.resource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resource</span></code></a></p></td>
+<td><p>Alias for field number 3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.orthology.OrthologyTableKey.source" title="pypath.utils.orthology.OrthologyTableKey.source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source</span></code></a></p></td>
+<td><p>Alias for field number 0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.orthology.OrthologyTableKey.target" title="pypath.utils.orthology.OrthologyTableKey.target"><code class="xref py py-obj docutils literal notranslate"><span class="pre">target</span></code></a></p></td>
+<td><p>Alias for field number 1</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.orthology.OrthologyTableKey.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.utils.orthology.OrthologyTableKey.count" title="Permalink to this definition">§</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.utils.orthology.OrthologyTableKey.id_type">
+<span class="sig-name descname"><span class="pre">id_type</span></span><a class="headerlink" href="#pypath.utils.orthology.OrthologyTableKey.id_type" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.orthology.OrthologyTableKey.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9223372036854775807</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.utils.orthology.OrthologyTableKey.index" title="Permalink to this definition">§</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.utils.orthology.OrthologyTableKey.only_swissprot">
+<span class="sig-name descname"><span class="pre">only_swissprot</span></span><a class="headerlink" href="#pypath.utils.orthology.OrthologyTableKey.only_swissprot" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.utils.orthology.OrthologyTableKey.resource">
+<span class="sig-name descname"><span class="pre">resource</span></span><a class="headerlink" href="#pypath.utils.orthology.OrthologyTableKey.resource" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.utils.orthology.OrthologyTableKey.source">
+<span class="sig-name descname"><span class="pre">source</span></span><a class="headerlink" href="#pypath.utils.orthology.OrthologyTableKey.source" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.utils.orthology.OrthologyTableKey.target">
+<span class="sig-name descname"><span class="pre">target</span></span><a class="headerlink" href="#pypath.utils.orthology.OrthologyTableKey.target" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -548,20 +598,20 @@ in two columns: “source” and “target”.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.utils.homology.html"
+       href="pypath.utils.orthology.OrthologyManager.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.utils.homology</p>
+        <p class="prev-next-title">pypath.utils.orthology.OrthologyManager</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.utils.homology.get_dict.html"
+       href="pypath.utils.orthology.ProteinOrthology.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.utils.homology.get_dict</p>
+        <p class="prev-next-title">pypath.utils.orthology.ProteinOrthology</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

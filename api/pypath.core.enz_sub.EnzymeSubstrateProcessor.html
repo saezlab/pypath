@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.core.enz_sub.EnzymeSubstrateProcessor &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.core.enz_sub.EnzymeSubstrateProcessor &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -47,7 +47,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pypath.core.evidence" href="pypath.core.evidence.html" />
-    <link rel="prev" title="pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor" href="pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor.html" />
+    <link rel="prev" title="pypath.core.enz_sub.EnzymeSubstrateOrthologyProcessor" href="pypath.core.enz_sub.EnzymeSubstrateOrthologyProcessor.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -499,7 +499,7 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="pypath.core.enz_sub.EnzymeSubstrateProcessor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.core.enz_sub.</span></span><span class="sig-name descname"><span class="pre">EnzymeSubstrateProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_enzyme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_substrate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_mixed_organisms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organisms_supported</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/enz_sub.html#EnzymeSubstrateProcessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.enz_sub.EnzymeSubstrateProcessor" title="Permalink to this definition">§</a></dt>
-<dd><p>Bases: <a class="reference internal" href="pypath.utils.homology.Proteomes.html#pypath.utils.homology.Proteomes" title="pypath.utils.homology.Proteomes"><code class="xref py py-class docutils literal notranslate"><span class="pre">Proteomes</span></code></a>, <a class="reference internal" href="pypath.utils.homology.SequenceContainer.html#pypath.utils.homology.SequenceContainer" title="pypath.utils.homology.SequenceContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceContainer</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="pypath.utils.orthology.Proteomes.html#pypath.utils.orthology.Proteomes" title="pypath.utils.orthology.Proteomes"><code class="xref py py-class docutils literal notranslate"><span class="pre">Proteomes</span></code></a>, <a class="reference internal" href="pypath.utils.orthology.SequenceContainer.html#pypath.utils.orthology.SequenceContainer" title="pypath.utils.orthology.SequenceContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceContainer</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.core.enz_sub.EnzymeSubstrateProcessor.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_enzyme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type_substrate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_mixed_organisms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organisms_supported</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/enz_sub.html#EnzymeSubstrateProcessor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.enz_sub.EnzymeSubstrateProcessor.__init__" title="Permalink to this definition">§</a></dt>
@@ -539,7 +539,7 @@ target species.</p></li>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_seq</span></code>(protein[, taxon])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_taxon</span></code>(protein[, swissprot_only])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_taxon</span></code>(protein[, only_swissprot])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_taxon_trembl</span></code>(protein)</p></td>
@@ -560,28 +560,31 @@ target species.</p></li>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_enz_sub</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_proteome</span></code>(taxon[, swissprot_only])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_proteome</span></code>(taxon[, only_swissprot])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_seq</span></code>(taxon)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_taxonomy</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_ptmprocessor</span></code>([seq, ncbi_tax_id])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.enz_sub.EnzymeSubstrateProcessor.set_inputargs" title="pypath.core.enz_sub.EnzymeSubstrateProcessor.set_inputargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inputargs</span></code></a>(**inputargs)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_ptmprocessor</span></code>([seq, ncbi_tax_id])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.enz_sub.EnzymeSubstrateProcessor.set_inputargs" title="pypath.core.enz_sub.EnzymeSubstrateProcessor.set_inputargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inputargs</span></code></a>(**inputargs)</p></td>
 <td><p>Sets the arguments to be provided for the input method.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.enz_sub.EnzymeSubstrateProcessor.set_method" title="pypath.core.enz_sub.EnzymeSubstrateProcessor.set_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_method</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.enz_sub.EnzymeSubstrateProcessor.set_method" title="pypath.core.enz_sub.EnzymeSubstrateProcessor.set_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_method</span></code></a>()</p></td>
 <td><p>Selects the input method.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_taxon</span></code>(ncbi_tax_id)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_taxon</span></code>(ncbi_tax_id)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup</span></code>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -620,12 +623,12 @@ target species.</p></li>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor.html"
+       href="pypath.core.enz_sub.EnzymeSubstrateOrthologyProcessor.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor</p>
+        <p class="prev-next-title">pypath.core.enz_sub.EnzymeSubstrateOrthologyProcessor</p>
       </div>
     </a>
     <a class="right-next"

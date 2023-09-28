@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.utils.homology.get_manager &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.utils.orthology.translate &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -42,12 +42,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.homology.get_manager';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.orthology.translate';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.utils.homology.init" href="pypath.utils.homology.init.html" />
-    <link rel="prev" title="pypath.utils.homology.get_dict" href="pypath.utils.homology.get_dict.html" />
+    <link rel="next" title="pypath.utils.orthology.translate_df" href="pypath.utils.orthology.translate_df.html" />
+    <link rel="prev" title="pypath.utils.orthology.init" href="pypath.utils.orthology.init.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -475,9 +475,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.utils.homology.html" class="nav-link">pypath.utils.homology</a></li>
+    <li class="breadcrumb-item"><a href="pypath.utils.orthology.html" class="nav-link">pypath.utils.orthology</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.utils.homology.get_manager</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.utils.orthology.translate</li>
   </ul>
 </nav>
 </div>
@@ -494,16 +494,41 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-utils-homology-get-manager">
-<h1>pypath.utils.homology.get_manager<a class="headerlink" href="#pypath-utils-homology-get-manager" title="Permalink to this heading">§</a></h1>
+  <section id="pypath-utils-orthology-translate">
+<h1>pypath.utils.orthology.translate<a class="headerlink" href="#pypath-utils-orthology-translate" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="pypath.utils.homology.get_manager">
-<span class="sig-prename descclassname"><span class="pre">pypath.utils.homology.</span></span><span class="sig-name descname"><span class="pre">get_manager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/homology.html#get_manager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.homology.get_manager" title="Permalink to this definition">§</a></dt>
-<dd><p>Returns the homology manager, an object which loads and unloads the
-homology lookup tables as necessary, and provides the interface for
-querying the homology data. Normally an instance of the manager
-belongs to the module, and if it does not exist yet, will be created
-automatically.</p>
+<dt class="sig sig-object py" id="pypath.utils.orthology.translate">
+<span class="sig-prename descclassname"><span class="pre">pypath.utils.orthology.</span></span><span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifiers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'uniprot'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_swissprot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">homologene</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oma_rel_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'1:1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'1:n'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'m:1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'m:n'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oma_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl_hc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'one2one'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'one2many'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'many2many'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_records</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.translate" title="Permalink to this definition">§</a></dt>
+<dd><p>Translate one or more identifiers by orthologous gene pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifiers</strong> – One or more identifers of the source organism, of ID type
+<cite>id_type</cite>.</p></li>
+<li><p><strong>target</strong> – Name or NCBI Taxonomy ID of the target organism.</p></li>
+<li><p><strong>source</strong> – Name or NCBI Taxonomy ID of the default source organism.
+Multiple source organisms can be used on the same instance.</p></li>
+<li><p><strong>id_type</strong> – The identifier type to use.</p></li>
+<li><p><strong>only_swissprot</strong> – Use only SwissProt IDs.</p></li>
+<li><p><strong>oma</strong> – Use homology information from the Orthologous Matrix (OMA).
+Currently this is the recommended source for homology data.</p></li>
+<li><p><strong>homologene</strong> – Use homology information from NCBI HomoloGene.</p></li>
+<li><p><strong>ensembl</strong> – Use homology information from Ensembl.</p></li>
+<li><p><strong>oma_rel_type</strong> – Restrict relations to certain types.</p></li>
+<li><p><strong>oma_score</strong> – Lower threshold for similarity metric.</p></li>
+<li><p><strong>ensembl_hc</strong> – Use only the high confidence orthology relations from Ensembl.</p></li>
+<li><p><strong>ensembl_types</strong> – Ensembl orthology relation types to use. Possible values are
+<cite>one2one</cite>, <cite>one2many</cite> and <cite>many2many</cite>. By default only
+<cite>one2one</cite> is used.</p></li>
+<li><p><strong>full_records</strong> – Include not only the identifiers, but also some properties of
+the orthology relationships.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Set of identifiers of orthologous genes or proteins in the
+target taxon.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -520,20 +545,20 @@ automatically.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.utils.homology.get_dict.html"
+       href="pypath.utils.orthology.init.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.utils.homology.get_dict</p>
+        <p class="prev-next-title">pypath.utils.orthology.init</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.utils.homology.init.html"
+       href="pypath.utils.orthology.translate_df.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.utils.homology.init</p>
+        <p class="prev-next-title">pypath.utils.orthology.translate_df</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

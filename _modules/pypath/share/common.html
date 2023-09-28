@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.share.common &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.share.common &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -899,6 +899,18 @@ document.write(`
         <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">var</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fun</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="first_value"><a class="viewcode-back" href="../../../api/pypath.share.common.first_value.html#pypath.share.common.first_value">[docs]</a><span class="k">def</span> <span class="nf">first_value</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the first non-None value of the arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">arg</span></div>
 
 
 <span class="c1"># From http://www.peterbe.com/plog/uniqifiers-benchmark</span>

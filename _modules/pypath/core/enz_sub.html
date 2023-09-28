@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.core.enz_sub &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.core.enz_sub &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -520,7 +520,7 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
-<span class="kn">import</span> <span class="nn">pypath.utils.homology</span> <span class="k">as</span> <span class="nn">homology</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.orthology</span> <span class="k">as</span> <span class="nn">orthology</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.uniprot</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
 <span class="kn">import</span> <span class="nn">pypath.internals.intera</span> <span class="k">as</span> <span class="nn">intera</span>
 <span class="kn">import</span> <span class="nn">pypath.share.progress</span> <span class="k">as</span> <span class="nn">progress</span>
@@ -533,8 +533,8 @@ document.write(`
 
 
 <div class="viewcode-block" id="EnzymeSubstrateProcessor"><a class="viewcode-back" href="../../../api/pypath.core.enz_sub.EnzymeSubstrateProcessor.html#pypath.core.enz_sub.EnzymeSubstrateProcessor">[docs]</a><span class="k">class</span> <span class="nc">EnzymeSubstrateProcessor</span><span class="p">(</span>
-        <span class="n">homology</span><span class="o">.</span><span class="n">Proteomes</span><span class="p">,</span>
-        <span class="n">homology</span><span class="o">.</span><span class="n">SequenceContainer</span>
+        <span class="n">orthology</span><span class="o">.</span><span class="n">Proteomes</span><span class="p">,</span>
+        <span class="n">orthology</span><span class="o">.</span><span class="n">SequenceContainer</span>
     <span class="p">):</span>
 
 
@@ -597,7 +597,7 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
-        <span class="n">homology</span><span class="o">.</span><span class="n">SequenceContainer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">orthology</span><span class="o">.</span><span class="n">SequenceContainer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_seq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_mixed_organisms</span><span class="p">:</span>
@@ -606,7 +606,7 @@ document.write(`
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">load_seq</span><span class="p">(</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon</span><span class="p">)</span>
 
-        <span class="n">homology</span><span class="o">.</span><span class="n">Proteomes</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">orthology</span><span class="o">.</span><span class="n">Proteomes</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_inputargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_enz_sub</span><span class="p">()</span></div>
@@ -1033,48 +1033,48 @@ document.write(`
         <span class="k">return</span> <span class="s1">&#39;&lt;Enzyme-substrate processor: </span><span class="si">%u</span><span class="s1"> records&gt;&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="EnzymeSubstrateHomologyProcessor"><a class="viewcode-back" href="../../../api/pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor.html#pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor">[docs]</a><span class="k">class</span> <span class="nc">EnzymeSubstrateHomologyProcessor</span><span class="p">(</span>
-        <span class="n">homology</span><span class="o">.</span><span class="n">PtmHomology</span><span class="p">,</span>
+<div class="viewcode-block" id="EnzymeSubstrateOrthologyProcessor"><a class="viewcode-back" href="../../../api/pypath.core.enz_sub.EnzymeSubstrateOrthologyProcessor.html#pypath.core.enz_sub.EnzymeSubstrateOrthologyProcessor">[docs]</a><span class="k">class</span> <span class="nc">EnzymeSubstrateOrthologyProcessor</span><span class="p">(</span>
+        <span class="n">orthology</span><span class="o">.</span><span class="n">PtmOrthology</span><span class="p">,</span>
         <span class="n">EnzymeSubstrateProcessor</span><span class="p">,</span>
         <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span>
     <span class="p">):</span>
 
 
-<div class="viewcode-block" id="EnzymeSubstrateHomologyProcessor.__init__"><a class="viewcode-back" href="../../../api/pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor.html#pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="EnzymeSubstrateOrthologyProcessor.__init__"><a class="viewcode-back" href="../../../api/pypath.core.enz_sub.EnzymeSubstrateOrthologyProcessor.html#pypath.core.enz_sub.EnzymeSubstrateOrthologyProcessor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span><span class="p">,</span>
             <span class="n">input_param</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">input_method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">map_by_orthology_from</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">trace</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">id_type_enzyme</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">id_type_substrate</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">homology_only_swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="n">ptm_homology_strict</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">orthology_only_swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">ptm_orthology_strict</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unifies a `pypath.core.enz_sub.EnzymeSubstrateProcessor` and</span>
-<span class="sd">        a `pypath.utils.homology.EnzymeSubstrateHomology` object to build</span>
+<span class="sd">        a `pypath.utils.orthology.PtmOrthology` object to build</span>
 <span class="sd">        a set of enzyme-substrate interactions from a database and</span>
-<span class="sd">        subsequently translate them by homology to one different organism.</span>
+<span class="sd">        subsequently translate them by orthology to one different organism.</span>
 <span class="sd">        Multiple organism can be chosen as the source of the</span>
 <span class="sd">        enzyme-substrate interactions. For example if you want mouse</span>
 <span class="sd">        interactions, you can translate them from human and from rat.</span>
 <span class="sd">        To get the original mouse interactions themselves, use an</span>
 <span class="sd">        other instance of the `EnzymeSubstrateProcessor`.</span>
-<span class="sd">        To have both the original and the homology translated set,</span>
+<span class="sd">        To have both the original and the orthology translated set,</span>
 <span class="sd">        and also from multiple databases, whatmore all these merged</span>
 <span class="sd">        into a single set, use the `EnzymeSubstrateAggregator`.</span>
 
 <span class="sd">        :param str input_method: Data source for `EnzymeSubstrateProcessor`.</span>
 <span class="sd">        :param int ncbi_tax_id: The NCBI Taxonomy ID the interactions</span>
 <span class="sd">                                should be translated to.</span>
-<span class="sd">        :param bool homology_only_swissprot: Use only SwissProt</span>
-<span class="sd">                                             (i.e. not Trembl) at homology</span>
+<span class="sd">        :param bool orthology_only_swissprot: Use only SwissProt</span>
+<span class="sd">                                             (i.e. not Trembl) at orthology</span>
 <span class="sd">                                             translation.</span>
-<span class="sd">        :param bool ptm_homology_strict: Use only those homologous PTM pairs</span>
+<span class="sd">        :param bool ptm_orthology_strict: Use only those homologous PTM pairs</span>
 <span class="sd">                                         which are in PhosphoSite data, i.e.</span>
 <span class="sd">                                         do not look for residues with same</span>
 <span class="sd">                                         offset in protein sequence.</span>
@@ -1085,15 +1085,15 @@ document.write(`
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_logger&#39;</span><span class="p">):</span>
 
-            <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;enz_sub_homology&#39;</span><span class="p">)</span>
+            <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;enz_sub_orthology&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">target_taxon</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">map_by_homology_from</span> <span class="ow">or</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">map_by_orthology_from</span> <span class="ow">or</span>
             <span class="p">{</span><span class="mi">9606</span><span class="p">,</span> <span class="mi">10090</span><span class="p">,</span> <span class="mi">10116</span><span class="p">}</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_taxon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_taxon</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">input_param</span> <span class="o">=</span> <span class="n">input_param</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span> <span class="o">=</span> <span class="n">input_method</span>
@@ -1103,11 +1103,11 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ptmprocargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 
-        <span class="n">homology</span><span class="o">.</span><span class="n">PtmHomology</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="n">orthology</span><span class="o">.</span><span class="n">PtmOrthology</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
-            <span class="n">only_swissprot</span> <span class="o">=</span> <span class="n">homology_only_swissprot</span><span class="p">,</span>
-            <span class="n">strict</span> <span class="o">=</span> <span class="n">ptm_homology_strict</span><span class="p">,</span>
+            <span class="n">only_swissprot</span> <span class="o">=</span> <span class="n">orthology_only_swissprot</span><span class="p">,</span>
+            <span class="n">strict</span> <span class="o">=</span> <span class="n">ptm_orthology_strict</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -1117,7 +1117,7 @@ document.write(`
 <span class="sd">        translated to another organism by orthology.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">for</span> <span class="n">source_taxon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">source_taxon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span><span class="p">:</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                 <span class="s1">&#39;Translating enzyme-substrate interactions &#39;</span>
@@ -1161,10 +1161,10 @@ document.write(`
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="p">(</span>
-            <span class="s1">&#39;&lt;Enzyme-substrate homology processor, &#39;</span>
+            <span class="s1">&#39;&lt;Enzyme-substrate orthology processor, &#39;</span>
             <span class="s1">&#39;target taxon: </span><span class="si">%u</span><span class="s1">, source taxon(s): </span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">target_taxon</span><span class="p">,</span>
-                <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tax</span><span class="p">)</span> <span class="k">for</span> <span class="n">tax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">),</span>
+                <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tax</span><span class="p">)</span> <span class="k">for</span> <span class="n">tax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
 
@@ -1176,10 +1176,10 @@ document.write(`
             <span class="n">input_param</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">exclude</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
-            <span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">map_by_orthology_from</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">trace</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="n">homology_only_swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="n">ptm_homology_strict</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">orthology_only_swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">ptm_orthology_strict</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">nonhuman_direct_lookup</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">inputargs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1245,17 +1245,17 @@ document.write(`
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span>
                 <span class="p">{</span><span class="mi">9606</span><span class="p">,</span> <span class="mi">10090</span><span class="p">,</span> <span class="mi">10116</span><span class="p">}</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">!=</span> <span class="mi">9606</span> <span class="k">else</span>
                 <span class="nb">set</span><span class="p">()</span>
             <span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_inputs</span><span class="p">()</span>
 
@@ -1397,33 +1397,33 @@ document.write(`
 
                     <span class="n">extend_lists</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span>
 
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span><span class="p">:</span>
 
                     <span class="n">source_taxons_str</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="s1">&#39;</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tax</span> <span class="k">for</span> <span class="n">tax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span>
+                        <span class="s1">&#39;</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tax</span> <span class="k">for</span> <span class="n">tax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span>
                     <span class="p">)</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-                        <span class="s1">&#39;Mapping `</span><span class="si">%s</span><span class="s1">` by homology from taxons </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%u</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="s1">&#39;Mapping `</span><span class="si">%s</span><span class="s1">` by orthology from taxons </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%u</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span>
                             <span class="n">input_method</span><span class="p">,</span>
                             <span class="n">source_taxons_str</span><span class="p">,</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
 
-                    <span class="n">proc</span> <span class="o">=</span> <span class="n">EnzymeSubstrateHomologyProcessor</span><span class="p">(</span>
+                    <span class="n">proc</span> <span class="o">=</span> <span class="n">EnzymeSubstrateOrthologyProcessor</span><span class="p">(</span>
                         <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
-                        <span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">,</span>
+                        <span class="n">map_by_orthology_from</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_orthology_from</span><span class="p">,</span>
                         <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span>
-                        <span class="n">homology_only_swissprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">homology_only_swissprot</span><span class="p">,</span>
-                        <span class="n">ptm_homology_strict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptm_homology_strict</span><span class="p">,</span>
+                        <span class="n">orthology_only_swissprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orthology_only_swissprot</span><span class="p">,</span>
+                        <span class="n">ptm_orthology_strict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptm_orthology_strict</span><span class="p">,</span>
                         <span class="o">**</span><span class="n">args</span>
                     <span class="p">)</span>
 
                     <span class="n">extend_lists</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-                        <span class="s1">&#39;Finished translating `</span><span class="si">%s</span><span class="s1">` by homology &#39;</span>
+                        <span class="s1">&#39;Finished translating `</span><span class="si">%s</span><span class="s1">` by orthology &#39;</span>
                         <span class="s1">&#39;from </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%u</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span>
                             <span class="n">input_method</span><span class="p">,</span>
                             <span class="n">source_taxons_str</span><span class="p">,</span>

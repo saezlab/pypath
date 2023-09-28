@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.utils.homology &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.utils.orthology.Proteomes &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -42,12 +42,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.homology';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.orthology.Proteomes';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.utils.homology.get_df" href="pypath.utils.homology.get_df.html" />
-    <link rel="prev" title="pypath.utils.go.GeneOntology" href="pypath.utils.go.GeneOntology.html" />
+    <link rel="next" title="pypath.utils.orthology.PtmOrthology" href="pypath.utils.orthology.PtmOrthology.html" />
+    <link rel="prev" title="pypath.utils.orthology.ProteinOrthology" href="pypath.utils.orthology.ProteinOrthology.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -475,9 +475,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.utils.html" class="nav-link">pypath.utils</a></li>
+    <li class="breadcrumb-item"><a href="pypath.utils.orthology.html" class="nav-link">pypath.utils.orthology</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.utils.homology</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.utils.orthology.Proteomes</li>
   </ul>
 </nav>
 </div>
@@ -494,58 +494,45 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="module-pypath.utils.homology">
-<span id="pypath-utils-homology"></span><h1>pypath.utils.homology<a class="headerlink" href="#module-pypath.utils.homology" title="Permalink to this heading">§</a></h1>
-<dl class="field-list simple">
-<dt class="field-odd">members<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p class="rubric">Functions</p>
+  <section id="pypath-utils-orthology-proteomes">
+<h1>pypath.utils.orthology.Proteomes<a class="headerlink" href="#pypath-utils-orthology-proteomes" title="Permalink to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.utils.orthology.Proteomes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.utils.orthology.</span></span><span class="sig-name descname"><span class="pre">Proteomes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preload_prot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_swissprot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#Proteomes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.Proteomes" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.orthology.Proteomes.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preload_prot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_swissprot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#Proteomes.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.Proteomes.__init__" title="Permalink to this definition">§</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.homology.get_df.html#pypath.utils.homology.get_df" title="pypath.utils.homology.get_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_df</span></code></a>(target[, source, only_swissprot, ...])</p></td>
-<td><p>Create a data frame for one source organism and ID type.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.homology.get_dict.html#pypath.utils.homology.get_dict" title="pypath.utils.homology.get_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dict</span></code></a>(target[, source, only_swissprot, ...])</p></td>
-<td><p>Create a dictionary for one source organism and ID type.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.homology.get_manager.html#pypath.utils.homology.get_manager" title="pypath.utils.homology.get_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_manager</span></code></a>()</p></td>
-<td><p>Returns the homology manager, an object which loads and unloads the homology lookup tables as necessary, and provides the interface for querying the homology data.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.homology.init.html#pypath.utils.homology.init" title="pypath.utils.homology.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>()</p></td>
-<td><p>Creates an instance of the homology manager.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.homology.translate.html#pypath.utils.homology.translate" title="pypath.utils.homology.translate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate</span></code></a>(source_id, target[, source, ...])</p></td>
-<td><p>Homology translation.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.homology.translate_df.html#pypath.utils.homology.translate_df" title="pypath.utils.homology.translate_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_df</span></code></a>(df, target[, cols, source, ...])</p></td>
-<td><p>Translate columns in a data frame.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Classes</p>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.homology.HomologyManager.html#pypath.utils.homology.HomologyManager" title="pypath.utils.homology.HomologyManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HomologyManager</span></code></a>([cleanup_period, lifetime, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.orthology.Proteomes.__init__" title="pypath.utils.orthology.Proteomes.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([preload_prot, only_swissprot])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.homology.Ortholog.html#pypath.utils.homology.Ortholog" title="pypath.utils.homology.Ortholog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ortholog</span></code></a>(uniprot, resource[, ensembl_hc, ...])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_taxon</span></code>(protein[, only_swissprot])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.homology.ProteinHomology.html#pypath.utils.homology.ProteinHomology" title="pypath.utils.homology.ProteinHomology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProteinHomology</span></code></a>(target[, source, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_taxon_trembl</span></code>(protein)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.homology.Proteomes.html#pypath.utils.homology.Proteomes" title="pypath.utils.homology.Proteomes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proteomes</span></code></a>([preload_prot, swissprot_only])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_protein</span></code>(protein)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.homology.PtmHomology.html#pypath.utils.homology.PtmHomology" title="pypath.utils.homology.PtmHomology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PtmHomology</span></code></a>(target[, source, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_swissprot</span></code>(protein)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.homology.SequenceContainer.html#pypath.utils.homology.SequenceContainer" title="pypath.utils.homology.SequenceContainer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SequenceContainer</span></code></a>([preload_seq, isoforms])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_proteome</span></code>(taxon[, only_swissprot])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_taxonomy</span></code>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
 </section>
 
 
@@ -560,20 +547,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.utils.go.GeneOntology.html"
+       href="pypath.utils.orthology.ProteinOrthology.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.utils.go.GeneOntology</p>
+        <p class="prev-next-title">pypath.utils.orthology.ProteinOrthology</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.utils.homology.get_df.html"
+       href="pypath.utils.orthology.PtmOrthology.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.utils.homology.get_df</p>
+        <p class="prev-next-title">pypath.utils.orthology.PtmOrthology</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

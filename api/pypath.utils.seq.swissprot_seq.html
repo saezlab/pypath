@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.utils.seq.swissprot_seq &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.utils.seq.swissprot_seq &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -498,9 +498,23 @@ document.write(`
 <h1>pypath.utils.seq.swissprot_seq<a class="headerlink" href="#pypath-utils-seq-swissprot-seq" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="pypath.utils.seq.swissprot_seq">
-<span class="sig-prename descclassname"><span class="pre">pypath.utils.seq.</span></span><span class="sig-name descname"><span class="pre">swissprot_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">organism</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isoforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/seq.html#swissprot_seq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.seq.swissprot_seq" title="Permalink to this definition">§</a></dt>
-<dd><p>Loads all sequences for an organism, optionally
+<span class="sig-prename descclassname"><span class="pre">pypath.utils.seq.</span></span><span class="sig-name descname"><span class="pre">swissprot_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">organism</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isoforms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pypath.utils.seq.Seq.html#pypath.utils.seq.Seq" title="pypath.utils.seq.Seq"><span class="pre">pypath.utils.seq.Seq</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/utils/seq.html#swissprot_seq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.seq.swissprot_seq" title="Permalink to this definition">§</a></dt>
+<dd><p>All UniProt sequences for an organism.</p>
+<p>Loads all sequences for an organism, optionally
 for all isoforms, by default only first isoform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>organism</strong> – Name or NCBI Taxonomy ID of the organism.</p></li>
+<li><p><strong>reviewed</strong> – Load only reviewed (SwissProt) sequences.</p></li>
+<li><p><strong>isoforms</strong> – Load all isoforms, not only the first one.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dict with UniProt IDs as keys and <cite>Seq</cite> objects
+as values.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

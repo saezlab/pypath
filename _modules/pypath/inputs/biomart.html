@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.biomart &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.inputs.biomart &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -652,11 +652,12 @@ document.write(`
 
 
 <div class="viewcode-block" id="biomart_homology"><a class="viewcode-back" href="../../../api/pypath.inputs.biomart.biomart_homology.html#pypath.inputs.biomart.biomart_homology">[docs]</a><span class="k">def</span> <span class="nf">biomart_homology</span><span class="p">(</span>
-        <span class="n">source_organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
-        <span class="n">target_organism</span> <span class="o">=</span> <span class="mi">10090</span><span class="p">,</span>
+        <span class="n">source_organism</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
+        <span class="n">target_organism</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="mi">10090</span><span class="p">,</span>
+        <span class="n">extra_fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;external_gene_name&#39;</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Retrieves homology data from Ensembl Biomart.</span>
+<span class="sd">    Retrieves orthology data from Ensembl Biomart.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">        List of named tuples filtered to genes of the source organism having</span>
@@ -685,12 +686,13 @@ document.write(`
         <span class="s1">&#39;homolog_orthology_type&#39;</span><span class="p">,</span>
         <span class="s1">&#39;homolog_orthology_confidence&#39;</span><span class="p">,</span>
         <span class="s1">&#39;homolog_canonical_transcript_protein&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;homolog_associated_gene_name&#39;</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="n">homolog_attrs</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">target_organism</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">homolog_attrs</span>
-    <span class="p">]</span>
+    <span class="p">]</span> <span class="o">+</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">extra_fields</span><span class="p">)</span>
 
     <span class="n">filters</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s1">&#39;with_</span><span class="si">%s</span><span class="s1">_homolog&#39;</span> <span class="o">%</span> <span class="n">target_organism</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.utils.homology.SequenceContainer &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.utils.orthology &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -42,12 +42,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.homology.SequenceContainer';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.orthology';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.utils.mapping" href="pypath.utils.mapping.html" />
-    <link rel="prev" title="pypath.utils.homology.PtmHomology" href="pypath.utils.homology.PtmHomology.html" />
+    <link rel="next" title="pypath.utils.orthology.get_df" href="pypath.utils.orthology.get_df.html" />
+    <link rel="prev" title="pypath.utils.metabo" href="pypath.utils.metabo.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -475,9 +475,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.utils.homology.html" class="nav-link">pypath.utils.homology</a></li>
+    <li class="breadcrumb-item"><a href="pypath.utils.html" class="nav-link">pypath.utils</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.utils.homology.SequenceContainer</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.utils.orthology</li>
   </ul>
 </nav>
 </div>
@@ -494,35 +494,82 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-utils-homology-sequencecontainer">
-<h1>pypath.utils.homology.SequenceContainer<a class="headerlink" href="#pypath-utils-homology-sequencecontainer" title="Permalink to this heading">§</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="pypath.utils.homology.SequenceContainer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.utils.homology.</span></span><span class="sig-name descname"><span class="pre">SequenceContainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preload_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isoforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/homology.html#SequenceContainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.homology.SequenceContainer" title="Permalink to this definition">§</a></dt>
-<dd><p>Bases: <a class="reference internal" href="pypath.share.session.Logger.html#pypath.share.session.Logger" title="pypath.share.session.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pypath.utils.homology.SequenceContainer.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preload_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isoforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/homology.html#SequenceContainer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.homology.SequenceContainer.__init__" title="Permalink to this definition">§</a></dt>
-<dd><p>This is an object to store sequences of multiple
-organisms and select the appropriate one.</p>
-</dd></dl>
-
-<p class="rubric">Methods</p>
+  <section id="module-pypath.utils.orthology">
+<span id="pypath-utils-orthology"></span><h1>pypath.utils.orthology<a class="headerlink" href="#module-pypath.utils.orthology" title="Permalink to this heading">§</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">members<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p class="rubric">Functions</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.homology.SequenceContainer.__init__" title="pypath.utils.homology.SequenceContainer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([preload_seq, isoforms])</p></td>
-<td><p>This is an object to store sequences of multiple organisms and select the appropriate one.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.get_df.html#pypath.utils.orthology.get_df" title="pypath.utils.orthology.get_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_df</span></code></a>(target[, source, id_type, ...])</p></td>
+<td><p>Create a data frame for one source organism and ID type.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_seq</span></code>(protein[, taxon])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.get_dict.html#pypath.utils.orthology.get_dict" title="pypath.utils.orthology.get_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dict</span></code></a>(target[, source, id_type, ...])</p></td>
+<td><p>Create a dictionary for one source organism and ID type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.get_manager.html#pypath.utils.orthology.get_manager" title="pypath.utils.orthology.get_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_manager</span></code></a>()</p></td>
+<td><p>Access the orthology manager.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.init.html#pypath.utils.orthology.init" title="pypath.utils.orthology.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>()</p></td>
+<td><p>Initialize the orthology manager.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.translate.html#pypath.utils.orthology.translate" title="pypath.utils.orthology.translate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate</span></code></a>(identifiers, target[, source, ...])</p></td>
+<td><p>Translate one or more identifiers by orthologous gene pairs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.translate_df.html#pypath.utils.orthology.translate_df" title="pypath.utils.orthology.translate_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_df</span></code></a>(df, target[, source, cols, ...])</p></td>
+<td><p>Translate columns in a data frame.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.EnsemblOrtholog.html#pypath.utils.orthology.EnsemblOrtholog" title="pypath.utils.orthology.EnsemblOrtholog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EnsemblOrtholog</span></code></a>(id, types, hc)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_seq</span></code>(taxon)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.EnsemblOrthology.html#pypath.utils.orthology.EnsemblOrthology" title="pypath.utils.orthology.EnsemblOrthology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EnsemblOrthology</span></code></a>(target[, source, id_type, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.HomologeneOrtholog.html#pypath.utils.orthology.HomologeneOrtholog" title="pypath.utils.orthology.HomologeneOrtholog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HomologeneOrtholog</span></code></a>(id)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.HomologeneOrthology.html#pypath.utils.orthology.HomologeneOrthology" title="pypath.utils.orthology.HomologeneOrthology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HomologeneOrthology</span></code></a>(target[, source, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.OmaOrtholog.html#pypath.utils.orthology.OmaOrtholog" title="pypath.utils.orthology.OmaOrtholog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OmaOrtholog</span></code></a>(id, rel_type, score)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.OmaOrthology.html#pypath.utils.orthology.OmaOrthology" title="pypath.utils.orthology.OmaOrthology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OmaOrthology</span></code></a>(target[, source, id_type, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.OrthologBase.html#pypath.utils.orthology.OrthologBase" title="pypath.utils.orthology.OrthologBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrthologBase</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.OrthologMeta.html#pypath.utils.orthology.OrthologMeta" title="pypath.utils.orthology.OrthologMeta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrthologMeta</span></code></a>(name, supercls, attrs, resource)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.OrthologyManager.html#pypath.utils.orthology.OrthologyManager" title="pypath.utils.orthology.OrthologyManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrthologyManager</span></code></a>([cleanup_period, lifetime])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.OrthologyTableKey.html#pypath.utils.orthology.OrthologyTableKey" title="pypath.utils.orthology.OrthologyTableKey"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrthologyTableKey</span></code></a>(source, target, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.ProteinOrthology.html#pypath.utils.orthology.ProteinOrthology" title="pypath.utils.orthology.ProteinOrthology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProteinOrthology</span></code></a>(target[, source, id_type, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.Proteomes.html#pypath.utils.orthology.Proteomes" title="pypath.utils.orthology.Proteomes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proteomes</span></code></a>([preload_prot, only_swissprot])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pypath.utils.orthology.PtmOrthology.html#pypath.utils.orthology.PtmOrthology" title="pypath.utils.orthology.PtmOrthology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PtmOrthology</span></code></a>(target[, source, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pypath.utils.orthology.SequenceContainer.html#pypath.utils.orthology.SequenceContainer" title="pypath.utils.orthology.SequenceContainer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SequenceContainer</span></code></a>([preload_seq, isoforms])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
 </section>
 
 
@@ -537,20 +584,20 @@ organisms and select the appropriate one.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.utils.homology.PtmHomology.html"
+       href="pypath.utils.metabo.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.utils.homology.PtmHomology</p>
+        <p class="prev-next-title">pypath.utils.metabo</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.utils.mapping.html"
+       href="pypath.utils.orthology.get_df.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.utils.mapping</p>
+        <p class="prev-next-title">pypath.utils.orthology.get_df</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.utils.homology.translate &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.utils.orthology.PtmOrthology &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -42,12 +42,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.homology.translate';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.orthology.PtmOrthology';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.utils.homology.translate_df" href="pypath.utils.homology.translate_df.html" />
-    <link rel="prev" title="pypath.utils.homology.init" href="pypath.utils.homology.init.html" />
+    <link rel="next" title="pypath.utils.orthology.SequenceContainer" href="pypath.utils.orthology.SequenceContainer.html" />
+    <link rel="prev" title="pypath.utils.orthology.Proteomes" href="pypath.utils.orthology.Proteomes.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -475,9 +475,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.utils.homology.html" class="nav-link">pypath.utils.homology</a></li>
+    <li class="breadcrumb-item"><a href="pypath.utils.orthology.html" class="nav-link">pypath.utils.orthology</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.utils.homology.translate</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.utils.orthology.PtmOrthology</li>
   </ul>
 </nav>
 </div>
@@ -494,44 +494,120 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-utils-homology-translate">
-<h1>pypath.utils.homology.translate<a class="headerlink" href="#pypath-utils-homology-translate" title="Permalink to this heading">§</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="pypath.utils.homology.translate">
-<span class="sig-prename descclassname"><span class="pre">pypath.utils.homology.</span></span><span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_swissprot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">homologene</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl_hc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensembl_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniprot'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/homology.html#translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.homology.translate" title="Permalink to this definition">§</a></dt>
-<dd><p>Homology translation. For a UniProt ID, finds the corresponding
-homologous (orthologous) genes in another organism.</p>
-<dl>
-<dt>Args</dt><dd><dl class="simple">
-<dt>source_id (str,list): UniProt ID of one or more protein in the</dt><dd><p>source organism.</p>
+  <section id="pypath-utils-orthology-ptmorthology">
+<h1>pypath.utils.orthology.PtmOrthology<a class="headerlink" href="#pypath-utils-orthology-ptmorthology" title="Permalink to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.utils.orthology.PtmOrthology">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.utils.orthology.</span></span><span class="sig-name descname"><span class="pre">PtmOrthology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_swissprot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orthology_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#PtmOrthology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.PtmOrthology" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypath.utils.orthology.Proteomes.html#pypath.utils.orthology.Proteomes" title="pypath.utils.orthology.Proteomes"><code class="xref py py-class docutils literal notranslate"><span class="pre">Proteomes</span></code></a>, <a class="reference internal" href="pypath.utils.orthology.SequenceContainer.html#pypath.utils.orthology.SequenceContainer" title="pypath.utils.orthology.SequenceContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceContainer</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.orthology.PtmOrthology.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_swissprot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orthology_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#PtmOrthology.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.PtmOrthology.__init__" title="Permalink to this definition">§</a></dt>
+<dd><p>This is an object to store sequences of multiple
+organisms and select the appropriate one.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.orthology.PtmOrthology.__init__" title="pypath.utils.orthology.PtmOrthology.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(target[, source, only_swissprot, ...])</p></td>
+<td><p>This is an object to store sequences of multiple organisms and select the appropriate one.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_seq</span></code>(protein[, taxon])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_taxon</span></code>(protein[, only_swissprot])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_taxon_trembl</span></code>(protein)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_protein</span></code>(protein)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_swissprot</span></code>(protein)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_proteome</span></code>(taxon[, only_swissprot])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_seq</span></code>(taxon)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_taxonomy</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.orthology.PtmOrthology.ptm_orthology" title="pypath.utils.orthology.PtmOrthology.ptm_orthology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ptm_orthology</span></code></a>()</p></td>
+<td><p>Load PTM orthology data from PhosphoSite.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.orthology.PtmOrthology.translate" title="pypath.utils.orthology.PtmOrthology.translate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate</span></code></a>(x[, return_strings])</p></td>
+<td><p>Translates anything: string notation, intera objects, tuples.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_domain</span></code>(domain)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_domain_motif</span></code>(dmotif)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_ptm</span></code>(ptm)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_residue</span></code>(residue)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.orthology.PtmOrthology.translate_site" title="pypath.utils.orthology.PtmOrthology.translate_site"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_site</span></code></a>(protein, res, offset[, ...])</p></td>
+<td><p>Translates one PTM site.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.orthology.PtmOrthology.ptm_orthology">
+<span class="sig-name descname"><span class="pre">ptm_orthology</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#PtmOrthology.ptm_orthology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.PtmOrthology.ptm_orthology" title="Permalink to this definition">§</a></dt>
+<dd><p>Load PTM orthology data from PhosphoSite.</p>
+<p>Creates an orthology translation dict of phosphosites
+based on phosphorylation sites table from PhosphoSitePlus.
+In the result all PTMs represented by a tuple of the following
+6 elements: UniProt ID, isoform (int), residue one letter code,
+residue number (int), NCBI Taxonomy ID (int), modification type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.orthology.PtmOrthology.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#PtmOrthology.translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.PtmOrthology.translate" title="Permalink to this definition">§</a></dt>
+<dd><p>Translates anything: string notation, intera objects, tuples.</p>
+<ul class="simple">
+<li><p>one PTM provided as tuple of (UniProt, amino acid, offest)</p></li>
+<li><p>one PTM provided as string (e.g. <cite>P00533_S231</cite>)</p></li>
+<li><p>instance from pypath.intera: DomainMotif, Domain or Ptm</p></li>
+</ul>
+<p>Additional arguments can be isoform and typ (modification type).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.orthology.PtmOrthology.translate_site">
+<span class="sig-name descname"><span class="pre">translate_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protein</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">intera.Protein</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isoform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'phosphorylation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_organism</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/utils/orthology.html#PtmOrthology.translate_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.orthology.PtmOrthology.translate_site" title="Permalink to this definition">§</a></dt>
+<dd><p>Translates one PTM site.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protein</strong> – A protein identifier or an intera.Protein object.</p></li>
+<li><p><strong>res</strong> – Single letter code of the residue.</p></li>
+<li><p><strong>offset</strong> – Sequence offset of the site.</p></li>
+<li><p><strong>isoform</strong> – Sequence isoform.</p></li>
+<li><p><strong>typ</strong> – Modification type.</p></li>
+<li><p><strong>source_organism</strong> – Name or NCBI Taxonomy ID of the source organism.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of tuples with the identifier, isoform, residue, offset,
+taxon and modification type of the orthologous PTM sites.</p>
 </dd>
 </dl>
-<p>target (int,str): The target organism.
-source (int,str): The source organism.
-only_swissprot (bool): Use only SwissProt IDs. For human and some</p>
-<blockquote>
-<div><p>popular model organisms this is advisible, as almost all proteins
-have reviewed record in UniProt.</p>
-</div></blockquote>
-<p>homologene (bool): Use NCBI HomoloGene data for ortholog lookup.
-ensembl (bool): Use Ensembl data for ortholog lookup.
-ensembl_hc (bool): Use only high confidence orthology relations</p>
-<blockquote>
-<div><p>from Ensembl. By default it is True. You can also set it
-by the <cite>ensembl_hc</cite> attribute.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>ensembl_types (list): The Ensembl orthology relationship types</dt><dd><p>to use. Possible values are <cite>one2one</cite>, <cite>one2many</cite> and
-<cite>many2many</cite>. By default only <cite>one2one</cite> is used. You can
-also set this parameter by the <cite>ensembl_types</cite> attribute.</p>
-</dd>
-</dl>
-<p>id_type (str): Type of the identifiers to translate from and to.</p>
-</dd>
-<dt>Returns</dt><dd><p>Set of UniProt IDs of orthologous gene products in the target
-organism.</p>
-</dd>
-</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -548,20 +624,20 @@ organism.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.utils.homology.init.html"
+       href="pypath.utils.orthology.Proteomes.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.utils.homology.init</p>
+        <p class="prev-next-title">pypath.utils.orthology.Proteomes</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.utils.homology.translate_df.html"
+       href="pypath.utils.orthology.SequenceContainer.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.utils.homology.translate_df</p>
+        <p class="prev-next-title">pypath.utils.orthology.SequenceContainer</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

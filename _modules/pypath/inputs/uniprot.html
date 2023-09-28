@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.uniprot &#8212; pypath 0.15.8 documentation</title>
+    <title>pypath.inputs.uniprot &#8212; pypath 0.15.9 documentation</title>
   
   
   
@@ -1702,10 +1702,19 @@ document.write(`
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="uniprot_taxonomy"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_taxonomy.html#pypath.inputs.uniprot.uniprot_taxonomy">[docs]</a><span class="k">def</span> <span class="nf">uniprot_taxonomy</span><span class="p">():</span>
+<div class="viewcode-block" id="uniprot_taxonomy"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_taxonomy.html#pypath.inputs.uniprot.uniprot_taxonomy">[docs]</a><span class="k">def</span> <span class="nf">uniprot_taxonomy</span><span class="p">(</span>
+        <span class="n">ncbi_tax_ids</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a dictionary with SwissProt IDs as keys and sets of various taxon</span>
-<span class="sd">    names as values.</span>
+<span class="sd">    From UniProt IDs to organisms</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ncbi_tax_ids:</span>
+<span class="sd">            Translate the names to NCBI Taxonomy numeric identifiers.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary with SwissProt IDs as keys and sets of various taxon</span>
+<span class="sd">        names as values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">rename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\(?(\w[\w\s</span><span class="se">\&#39;</span><span class="s1">,/\.-]+\w)\)?&#39;</span><span class="p">)</span>
@@ -1727,6 +1736,23 @@ document.write(`
             <span class="k">for</span> <span class="n">ac</span> <span class="ow">in</span> <span class="n">reac</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
 
                 <span class="n">result</span><span class="p">[</span><span class="n">ac</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ncbi_tax_ids</span><span class="p">:</span>
+
+        <span class="n">new_result</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">ac</span><span class="p">,</span> <span class="n">names</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+
+                <span class="n">nti</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">nti</span><span class="p">:</span>
+
+                    <span class="n">new_result</span><span class="p">[</span><span class="n">ac</span><span class="p">]</span> <span class="o">=</span> <span class="n">nti</span>
+                    <span class="k">break</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">new_result</span>
 
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
