@@ -22,6 +22,7 @@ import collections
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.common as inputs_common
+import pypath.utils.taxonomy as taxonomy
 
 
 def mirecords_interactions():
@@ -54,8 +55,8 @@ def mirecords_interactions():
             mirna_name = l[6],
             target_refseq = l[3],
             target_genesymbol = l[2],
-            mirna_organism = l[1],
-            target_organism = l[5],
+            mirna_organism = taxonomy.ensure_ncbi_tax_id(l[1]),
+            target_organism = taxonomy.ensure_ncbi_tax_id(l[5]),
             pmid = l[0].split('.')[0],
         )
         for l in

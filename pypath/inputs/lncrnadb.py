@@ -24,6 +24,7 @@ import bs4
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.utils.taxonomy as taxonomy
 
 
 def lncrnadb_interactions():
@@ -73,7 +74,7 @@ def lncrnadb_interactions():
                         lncrna = lncrna,
                         partner = partner,
                         type = typ,
-                        organism = organism,
+                        organism = taxonomy.ensure_ncbi_tax_id(organism),
                         pmid = pmid,
                     )
                 )

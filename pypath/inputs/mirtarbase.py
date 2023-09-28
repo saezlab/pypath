@@ -24,6 +24,7 @@ import collections
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.common as inputs_common
+import pypath.utils.taxonomy as taxonomy
 
 
 def mirtarbase_interactions(curated = True, strong = True, all = False):
@@ -82,10 +83,13 @@ def _mirtarbase_interactions(dataset):
 
     return [
         MirtarbaseInteraction(
-            *l[:6],
+            *l[:2],
+            taxonomy.ensure_ncbi_tax_id(l[2]),
+            *l[3:5],
+            taxonomy.ensure_ncbi_tax_id(l[5]),
             l[6] if dataset == 'curated' else None,
             *l[-3:],
-            dataset
+            dataset,
         )
         for l in tbl[1:]
     ]
