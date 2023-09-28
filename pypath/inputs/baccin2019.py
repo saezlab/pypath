@@ -24,7 +24,7 @@ import itertools
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
-import pypath.utils.homology as homology_mod
+import pypath.utils.orthology as orthology_mod
 import pypath.internals.intera as intera
 import pypath.inputs.common as inputs_common
 
@@ -58,7 +58,7 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
 
             uniprots = set(
                 itertools.chain(*(
-                    homology_mod.translate(
+                    orthology_mod.translate(
                         uniprot,
                         target = ncbi_tax_id,
                         source = 10090,

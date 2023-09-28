@@ -17,3 +17,5 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
+# old name as a synonym
+import pypath.utils.orthology as homology

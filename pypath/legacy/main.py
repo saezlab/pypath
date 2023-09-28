@@ -141,7 +141,7 @@ import pypath.inputs.ielm as ielm_input
 import pypath.inputs.pisa as pisa
 import pypath.inputs as inputs
 import pypath.core.network as network
-import pypath.utils.homology as homology
+import pypath.utils.orthology as orthology
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pfam as pfam_input
 import pypath.share.curl as curl
@@ -234,7 +234,7 @@ class Direction(object):
     provides a clearer and much more versatile interface. This object will
     be removed at some point, we don't recommend to build applications by
     using it.
-    
+
     Object storing directionality information of an edge. Also includes
     information about the reverse direction, mode of regulation and
     sources of that information.
@@ -2564,7 +2564,7 @@ class PyPath(session_mod.Logger):
                         network_resources.resource.NetworkResource,
                     )
                 ):
-                    
+
                     self._log(
                         '_read_network_data: No proper input file '
                         'definition. `param` should be either '
@@ -4262,12 +4262,12 @@ class PyPath(session_mod.Logger):
 
         # assigning source:
         self.add_set_eattr(edge, 'sources', source)
-        
+
         # adding references:
         # if len(refs) > 0:
         refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
-        
+
         entity_a = entity_mod.Entity(
             identifier = id_a,
             id_type = id_type_a,
@@ -4280,12 +4280,12 @@ class PyPath(session_mod.Logger):
             entity_type = entity_type_b,
             taxon = taxon_b,
         )
-        
+
         attrs = interaction.Interaction(
             a = entity_a,
             b = entity_b,
         )
-        
+
         # updating references-by-source dict:
         sources = (
             source
@@ -4345,18 +4345,18 @@ class PyPath(session_mod.Logger):
                 direction = (entity_a, entity_b),
                 effect = -1,
             )
-        
+
         # adding interaction attributes (this new kind of object either will
         # replace the igraph based network representation or is a temporary
         # solution and something else will replace them):
         if not isinstance(g.es[edge]['attrs'], interaction.Interaction):
-            
+
             g.es[edge]['attrs'] = attrs
-            
+
         else:
-            
+
             g.es[edge]['attrs'] += attrs
-        
+
         # updating sources-by-type dict:
         self.add_grouped_set_eattr(edge, 'sources_by_type', typ, source)
         # adding type:
@@ -6765,7 +6765,7 @@ class PyPath(session_mod.Logger):
 
         self.load_resources({'dorothea': settings})
 
-    
+
     load_tfregulons = load_dorothea
 
     # XXX: Wouldn't it be better if only printed the resources loaded in
@@ -9378,7 +9378,7 @@ class PyPath(session_mod.Logger):
         """
 
         if self.u_pfam is None:
-            
+
             self.u_pfam = pfam_input.pfam_regions(
                 uniprots = self.graph.vs['name'],
                 value = 'uniprot',
@@ -10199,9 +10199,9 @@ class PyPath(session_mod.Logger):
     def load_ptms2(
             self,
             input_methods = None,
-            map_by_homology_from = [9606],
-            homology_only_swissprot = True,
-            ptm_homology_strict = False,
+            map_by_orthology_from = [9606],
+            orthology_only_swissprot = True,
+            ptm_orthology_strict = False,
             nonhuman_direct_lookup = True,
             inputargs = {},
             database = None,
@@ -10211,22 +10211,22 @@ class PyPath(session_mod.Logger):
         This is a new method which will replace `load_ptms`.
         It uses `pypath.enz_sub.EnzymeSubstrateAggregator`, a newly
         introduced module for combining enzyme-substrate data from multiple
-        resources using homology translation on users demand.
+        resources using orthology translation on users demand.
 
         :param list input_methods: Resources to collect enzyme-substrate
             interactions from. E.g. `['Signor', 'phosphoELM']`. By default
             it contains Signor, PhosphoSitePlus, HPRD, phosphoELM, dbPTM,
             PhosphoNetworks, Li2012 and MIMP.
-        :param list map_by_homology_from: List of NCBI Taxonomy IDs of
-            source taxons used for homology translation of enzyme-substrate
+        :param list map_by_orthology_from: List of NCBI Taxonomy IDs of
+            source taxons used for orthology translation of enzyme-substrate
             interactions. If you have a human network and you add here
             `[10090, 10116]` then mouse and rat interactions from the source
             databases will be translated to human.
-        :param bool homology_only_swissprot: `True` by default which means
-            only SwissProt IDs are accepted at homology translateion, Trembl
+        :param bool orthology_only_swissprot: `True` by default which means
+            only SwissProt IDs are accepted at orthology translateion, Trembl
             IDs will be dropped.
-        :param bool ptm_homology_strict: For homology translation use
-            PhosphoSite's PTM homology table. This guarantees that only
+        :param bool ptm_orthology_strict: For orthology translation use
+            PhosphoSite's PTM orthology table. This guarantees that only
             truely homologous sites will be included. Otherwise we only
             check if at the same numeric offset in the homologous sequence
             the appropriate residue can be find.
@@ -10261,9 +10261,9 @@ class PyPath(session_mod.Logger):
             _ = getattr(pypath.core.enz_sub, 'method')(
                 input_methods = input_methods,
                 ncbi_tax_id = self.ncbi_tax_id,
-                map_by_homology_from = map_by_homology_from,
-                homology_only_swissprot = homology_only_swissprot,
-                ptm_homology_strict = ptm_homology_strict,
+                map_by_orthology_from = map_by_orthology_from,
+                orthology_only_swissprot = orthology_only_swissprot,
+                ptm_orthology_strict = ptm_orthology_strict,
                 nonhuman_direct_lookup = nonhuman_direct_lookup,
                 inputargs = inputargs
             )
@@ -11722,7 +11722,7 @@ class PyPath(session_mod.Logger):
         """
 
         if sources is None:
-            
+
             sources = network_resources.pathway
 
         CC_EXTRACELL    = 'GO:0005576' # select all extracellular
@@ -11867,7 +11867,7 @@ class PyPath(session_mod.Logger):
         self.update_sources()
 
         if lig_rec_resources:
-            
+
             datasets = copy_mod.deepcopy(network_resources.ligand_receptor)
             datasets['cellphonedb'].networkinput.input_args = {
                 'ligand_ligand':     keep_lig_lig,
@@ -14193,13 +14193,13 @@ class PyPath(session_mod.Logger):
             categories = None,
             entity_type = None,
         ):
-            
+
             for _id in self.iter_entities(
                 resources = resources,
                 categories = categories,
                 entity_type = entity_type,
             ):
-                
+
                 yield self.graph.vs(self.nodDct[_id])
 
 
@@ -14228,19 +14228,19 @@ class PyPath(session_mod.Logger):
                     iattr.data_models % categories
                 )
             ):
-                
+
                 if (
                     not entity_type or
                     iattr.entity_type_a == entity_type
                 ):
-                    
+
                     yield iattr_id_a
-                
+
                 if (
                     not entity_type or
                     iattr.entity_type_b == entity_type
                 ):
-                    
+
                     yield iattr_id_b
 
 
@@ -15686,7 +15686,7 @@ class PyPath(session_mod.Logger):
 
     def _translate_refsdir(self, rd, ids):
         """
-        Homology translation of the `references by direction` dictionaries.
+        Orthology translation of the `references by direction` dictionaries.
         """
 
         new_refsdir = {}
@@ -15722,14 +15722,14 @@ class PyPath(session_mod.Logger):
             'from taxon `%u` to taxon `%u`.' % (source, target)
         )
 
-        name_old__name_new = homology.homologene_uniprot_dict(
+        name_old__name_new = orthology.homologene_uniprot_dict(
             source = source,
             target = target,
             only_swissprot = only_swissprot,
         )
 
         self._log(
-            'UniProt to UniProt homology dictionary obtained from '
+            'UniProt to UniProt orthology dictionary obtained from '
             'NCBI Homologene. Contains %u UniProt IDs for taxon `%u`.' % (
                 len(name_old__name_new),
                 source,
@@ -15968,7 +15968,7 @@ class PyPath(session_mod.Logger):
         # id_new > name
         vid_new__name = dict((v['id_new'], v['name']) for v in graph.vs)
 
-        prg = Progress(graph.ecount(), 'Translating network by homology', 21)
+        prg = Progress(graph.ecount(), 'Translating network by orthology', 21)
 
         self._log(
             'Copying edge attributes from original edges '

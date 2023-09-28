@@ -31,7 +31,7 @@ import pandas as pd
 
 import pypath.share.common as common
 import pypath.utils.mapping as mapping
-import pypath.utils.homology as homology
+import pypath.utils.orthology as orthology
 import pypath.inputs.uniprot as uniprot_input
 import pypath.internals.intera as intera
 import pypath.share.progress as progress
@@ -44,8 +44,8 @@ import pypath.resources as resources
 
 
 class EnzymeSubstrateProcessor(
-        homology.Proteomes,
-        homology.SequenceContainer
+        orthology.Proteomes,
+        orthology.SequenceContainer
     ):
 
 
@@ -108,7 +108,7 @@ class EnzymeSubstrateProcessor(
 
         self.setup()
 
-        homology.SequenceContainer.__init__(self)
+        orthology.SequenceContainer.__init__(self)
         self.load_seq(self.ncbi_tax_id)
 
         if self.allow_mixed_organisms:
@@ -117,7 +117,7 @@ class EnzymeSubstrateProcessor(
 
                 self.load_seq(taxon = taxon)
 
-        homology.Proteomes.__init__(self)
+        orthology.Proteomes.__init__(self)
 
         self.set_inputargs(**kwargs)
         self.load_enz_sub()
@@ -544,8 +544,8 @@ class EnzymeSubstrateProcessor(
         return '<Enzyme-substrate processor: %u records>' % len(self)
 
 
-class EnzymeSubstrateHomologyProcessor(
-        homology.PtmHomology,
+class EnzymeSubstrateOrthologyProcessor(
+        orthology.PtmOrthology,
         EnzymeSubstrateProcessor,
         session_mod.Logger
     ):
@@ -556,36 +556,36 @@ class EnzymeSubstrateHomologyProcessor(
             ncbi_tax_id,
             input_param = None,
             input_method = None,
-            map_by_homology_from = None,
+            map_by_orthology_from = None,
             trace = False,
             id_type_enzyme = None,
             id_type_substrate = None,
             name = None,
-            homology_only_swissprot = True,
-            ptm_homology_strict = False,
+            orthology_only_swissprot = True,
+            ptm_orthology_strict = False,
             **kwargs
         ):
         """
         Unifies a `pypath.core.enz_sub.EnzymeSubstrateProcessor` and
-        a `pypath.utils.homology.EnzymeSubstrateHomology` object to build
+        a `pypath.utils.orthology.PtmOrthology` object to build
         a set of enzyme-substrate interactions from a database and
-        subsequently translate them by homology to one different organism.
+        subsequently translate them by orthology to one different organism.
         Multiple organism can be chosen as the source of the
         enzyme-substrate interactions. For example if you want mouse
         interactions, you can translate them from human and from rat.
         To get the original mouse interactions themselves, use an
         other instance of the `EnzymeSubstrateProcessor`.
-        To have both the original and the homology translated set,
+        To have both the original and the orthology translated set,
         and also from multiple databases, whatmore all these merged
         into a single set, use the `EnzymeSubstrateAggregator`.
 
         :param str input_method: Data source for `EnzymeSubstrateProcessor`.
         :param int ncbi_tax_id: The NCBI Taxonomy ID the interactions
                                 should be translated to.
-        :param bool homology_only_swissprot: Use only SwissProt
-                                             (i.e. not Trembl) at homology
+        :param bool orthology_only_swissprot: Use only SwissProt
+                                             (i.e. not Trembl) at orthology
                                              translation.
-        :param bool ptm_homology_strict: Use only those homologous PTM pairs
+        :param bool ptm_orthology_strict: Use only those homologous PTM pairs
                                          which are in PhosphoSite data, i.e.
                                          do not look for residues with same
                                          offset in protein sequence.
@@ -596,15 +596,15 @@ class EnzymeSubstrateHomologyProcessor(
 
         if not hasattr(self, '_logger'):
 
-            session_mod.Logger.__init__(self, name = 'enz_sub_homology')
+            session_mod.Logger.__init__(self, name = 'enz_sub_orthology')
 
         self.target_taxon = ncbi_tax_id
-        self.map_by_homology_from = (
-            map_by_homology_from or
+        self.map_by_orthology_from = (
+            map_by_orthology_from or
             {9606, 10090, 10116}
         )
-        self.map_by_homology_from = common.to_set(self.map_by_homology_from)
-        self.map_by_homology_from.discard(self.target_taxon)
+        self.map_by_orthology_from = common.to_set(self.map_by_orthology_from)
+        self.map_by_orthology_from.discard(self.target_taxon)
 
         self.input_param = input_param
         self.input_method = input_method
@@ -614,11 +614,11 @@ class EnzymeSubstrateHomologyProcessor(
         self.name = name
         self.ptmprocargs = kwargs
 
-        homology.PtmHomology.__init__(
+        orthology.PtmOrthology.__init__(
             self,
             target = ncbi_tax_id,
-            only_swissprot = homology_only_swissprot,
-            strict = ptm_homology_strict,
+            only_swissprot = orthology_only_swissprot,
+            strict = ptm_orthology_strict,
         )
 
 
@@ -628,7 +628,7 @@ class EnzymeSubstrateHomologyProcessor(
         translated to another organism by orthology.
         """
 
-        for source_taxon in self.map_by_homology_from:
+        for source_taxon in self.map_by_orthology_from:
 
             self._log(
                 'Translating enzyme-substrate interactions '
@@ -672,10 +672,10 @@ class EnzymeSubstrateHomologyProcessor(
     def __repr__(self):
 
         return (
-            '<Enzyme-substrate homology processor, '
+            '<Enzyme-substrate orthology processor, '
             'target taxon: %u, source taxon(s): %s>' % (
                 self.target_taxon,
-                ', '.join(str(tax) for tax in self.map_by_homology_from),
+                ', '.join(str(tax) for tax in self.map_by_orthology_from),
             )
         )
 
@@ -687,10 +687,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             input_param = None,
             exclude = None,
             ncbi_tax_id = 9606,
-            map_by_homology_from = None,
+            map_by_orthology_from = None,
             trace = False,
-            homology_only_swissprot = True,
-            ptm_homology_strict = False,
+            orthology_only_swissprot = True,
+            ptm_orthology_strict = False,
             nonhuman_direct_lookup = True,
             inputargs = None,
             pickle_file = None,
@@ -756,17 +756,17 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
     def build(self):
 
         self.inputargs = self.inputargs or {}
-        self.map_by_homology_from = (
+        self.map_by_orthology_from = (
             (
                 {9606, 10090, 10116}
                     if self.ncbi_tax_id != 9606 else
                 set()
             )
-                if self.map_by_homology_from is None else
-            self.map_by_homology_from
+                if self.map_by_orthology_from is None else
+            self.map_by_orthology_from
         )
-        self.map_by_homology_from = set(self.map_by_homology_from)
-        self.map_by_homology_from.discard(self.ncbi_tax_id)
+        self.map_by_orthology_from = set(self.map_by_orthology_from)
+        self.map_by_orthology_from.discard(self.ncbi_tax_id)
 
         self.set_inputs()
 
@@ -908,33 +908,33 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
                     extend_lists(proc.__iter__())
 
-                if self.map_by_homology_from:
+                if self.map_by_orthology_from:
 
                     source_taxons_str = ', '.join(
-                        '%u' % tax for tax in self.map_by_homology_from
+                        '%u' % tax for tax in self.map_by_orthology_from
                     )
 
                     self._log(
-                        'Mapping `%s` by homology from taxons %s to %u.' % (
+                        'Mapping `%s` by orthology from taxons %s to %u.' % (
                             input_method,
                             source_taxons_str,
                             self.ncbi_tax_id,
                         )
                     )
 
-                    proc = EnzymeSubstrateHomologyProcessor(
+                    proc = EnzymeSubstrateOrthologyProcessor(
                         ncbi_tax_id = self.ncbi_tax_id,
-                        map_by_homology_from = self.map_by_homology_from,
+                        map_by_orthology_from = self.map_by_orthology_from,
                         trace = self.trace,
-                        homology_only_swissprot = self.homology_only_swissprot,
-                        ptm_homology_strict = self.ptm_homology_strict,
+                        orthology_only_swissprot = self.orthology_only_swissprot,
+                        ptm_orthology_strict = self.ptm_orthology_strict,
                         **args
                     )
 
                     extend_lists(proc.__iter__())
 
                     self._log(
-                        'Finished translating `%s` by homology '
+                        'Finished translating `%s` by orthology '
                         'from %s to %u.' % (
                             input_method,
                             source_taxons_str,

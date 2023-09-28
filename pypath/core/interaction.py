@@ -45,7 +45,7 @@ import pypath.share.common as common
 import pypath.utils.mapping as mapping
 import pypath.core.entity as entity
 import pypath.core.attrs as attrs_mod
-import pypath.utils.homology as homology
+import pypath.utils.orthology as orthology
 
 _logger = session_mod.Logger(name = 'interaction')
 _log = _logger._log
@@ -2057,7 +2057,7 @@ class Interaction(attrs_mod.AttributeHandler):
         return new
 
 
-    def homology_translate_one(self, id_a, id_b, taxon):
+    def orthology_translate_one(self, id_a, id_b, taxon):
 
         return self.translate(
             ids = {
@@ -2083,7 +2083,7 @@ class Interaction(attrs_mod.AttributeHandler):
         )
 
 
-    def homology_translate(self, taxon, exclude = None):
+    def orthology_translate(self, taxon, exclude = None):
 
         exclude = exclude or set()
         exclude.add(0)
@@ -2091,21 +2091,21 @@ class Interaction(attrs_mod.AttributeHandler):
         for new_a, new_b in itertools.product(
             (self.a.identifier,)
                 if self.a.taxon in exclude else
-            homology.translate(
+            orthology.translate(
                 source_id = self.a.identifier,
                 target = taxon,
                 source = self.a.taxon,
             ),
             (self.b.identifier,)
                 if self.b.taxon in exclude else
-            homology.translate(
+            orthology.translate(
                 source_id = self.b.identifier,
                 target = taxon,
                 source = self.b.taxon,
             ),
         ):
 
-            yield self.homology_translate_one(
+            yield self.orthology_translate_one(
                 id_a = new_a,
                 id_b = new_b,
                 taxon = taxon,

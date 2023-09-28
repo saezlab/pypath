@@ -4309,7 +4309,7 @@ class Network(session_mod.Logger):
             n_ia_translated += ia_translated
 
         self._log(
-            'Homology translation ready. '
+            'Orthology translation ready. '
             '%u out of %u interactions (%.02f%%), '
             '%u out of %u entities (%.02f%%) '
             'have been translated.' % (

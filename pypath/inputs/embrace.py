@@ -23,7 +23,7 @@ import collections
 import pypath.inputs.common as inputs_common
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
-import pypath.utils.homology as homology
+import pypath.utils.orthology as orthology
 import pypath.share.common as common
 import pypath.inputs.cell as cell_input
 
@@ -64,7 +64,7 @@ def _embrace_id_translation(mouse_genesymbol, organism = 9606):
 
     if organism != 10090:
 
-        uniprots = homology.translate(
+        uniprots = orthology.translate(
             uniprots,
             target = organism,
             source = 10090,
