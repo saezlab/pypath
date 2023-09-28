@@ -43,7 +43,7 @@ def trrust_interactions(
 
     organisms = {'human', 'mouse'}
 
-    organism = taxonomy.lower()
+    organism = organism.lower()
 
     if organism not in organisms:
 
