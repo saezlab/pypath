@@ -24,6 +24,7 @@ import collections
 from pypath.share import curl
 from pypath.resources.urls import urls
 from pypath.share import session
+from pypath.utils import taxonomy
 
 _log = session.Logger(name = 'trrust_input')._log
 
@@ -38,14 +39,14 @@ def trrust_interactions(
 
     Args:
         organism:
-            Either "human" or "mouse".
+            Name or NCBI Taxonomy ID of the organism. Human and mouse
+            are available in TRRUST.
     """
 
     organisms = {'human', 'mouse'}
+    _organism = taxonomy.ensure_common_name(organism, lower = True)
 
-    organism = organism.lower()
-
-    if organism not in organisms:
+    if _organism not in organisms:
 
         err = f'Only human and mouse are availble in TRRUST, not `{organism}`.'
         _log(err)
@@ -66,7 +67,7 @@ def trrust_interactions(
             return super().__new__(cls, *line[:-1], refs)
 
 
-    url = urls['trrust']['tsv_url'] % organism
+    url = urls['trrust']['tsv_url'] % _organism
 
     c = curl.Curl(
         url,
@@ -84,6 +85,7 @@ def trrust_interactions(
 def trrust_human():
 
     return trrust_interactions('human')
+
 
 def trrust_mouse():
 
