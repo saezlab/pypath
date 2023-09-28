@@ -1208,10 +1208,19 @@ def uniprot_tissues(organism = 9606, reviewed = True):
     return dict(result)
 
 
-def uniprot_taxonomy():
+def uniprot_taxonomy(
+        ncbi_tax_ids: bool = False,
+    ) -> dict[str, set[str]] | dict[str, int]:
     """
-    Returns a dictionary with SwissProt IDs as keys and sets of various taxon
-    names as values.
+    From UniProt IDs to organisms
+
+    Args:
+        ncbi_tax_ids:
+            Translate the names to NCBI Taxonomy numeric identifiers.
+
+    Returns:
+        A dictionary with SwissProt IDs as keys and sets of various taxon
+        names as values.
     """
 
     rename = re.compile(r'\(?(\w[\w\s\',/\.-]+\w)\)?')
@@ -1233,6 +1242,23 @@ def uniprot_taxonomy():
             for ac in reac.findall(line):
 
                 result[ac].update(names)
+
+    if ncbi_tax_ids:
+
+        new_result = {}
+
+        for ac, names in result.items():
+
+            for name in names:
+
+                nti = taxonomy.ensure_ncbi_tax_id(name)
+
+                if nti:
+
+                    new_result[ac] = nti
+                    break
+
+        result = new_result
 
     return dict(result)
 
