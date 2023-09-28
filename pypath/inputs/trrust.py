@@ -23,7 +23,6 @@ import collections
 
 from pypath.share import curl
 from pypath.resources.urls import urls
-from pypath.utils import taxonomy
 from pypath.share import session
 
 _log = session.Logger(name = 'trrust_input')._log
@@ -44,7 +43,7 @@ def trrust_interactions(
 
     organisms = {'human', 'mouse'}
 
-    organism_ = taxonomy.ensure_common_name(organism, lower = True)
+    organism = taxonomy.lower()
 
     if organism not in organisms:
 
@@ -67,7 +66,7 @@ def trrust_interactions(
             return super().__new__(cls, *line[:-1], refs)
 
 
-    url = urls['trrust']['tsv_url'] % organism_
+    url = urls['trrust']['tsv_url'] % organism
 
     c = curl.Curl(
         url,
