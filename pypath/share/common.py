@@ -412,6 +412,18 @@ def not_none(fun: Callable) -> Callable:
     return wrapper
 
 
+def first_value(*args: Any) -> Any:
+    """
+    Returns the first non-None value of the arguments.
+    """
+
+    for arg in args:
+
+        if arg is not None:
+
+            return arg
+
+
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
 def unique_list(seq):
     """Reduces a list to its unique elements.
