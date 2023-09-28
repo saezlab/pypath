@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.internals.input_formats &#8212; pypath 0.15.9 documentation</title>
+    <title>pypath.internals.input_formats &#8212; pypath 0.15.11 documentation</title>
   
   
   
@@ -17,29 +17,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=77553476" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css?v=b64fc3cb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/internals/input_formats';</script>
     <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
@@ -55,6 +56,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -95,7 +105,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -119,7 +130,6 @@
 </a></div>
     
   </div>
-  
   
   <div class=" navbar-header-items">
     
@@ -178,23 +188,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -210,8 +222,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -222,8 +234,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -234,8 +246,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
         <li class="nav-item">
           
@@ -246,8 +258,8 @@ document.write(`
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
         </li>
         <li class="nav-item">
           
@@ -258,8 +270,8 @@ document.write(`
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
         </li>
 </ul></div>
       
@@ -269,18 +281,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -355,10 +369,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -374,8 +388,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -386,8 +400,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -398,8 +412,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
         <li class="nav-item">
           
@@ -410,8 +424,8 @@ document.write(`
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
         </li>
         <li class="nav-item">
           
@@ -422,8 +436,8 @@ document.write(`
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
         </li>
 </ul></div>
         
@@ -455,8 +469,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../../contents.html" class="nav-link" aria-label="Home">
@@ -469,7 +483,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../pypath.html" class="nav-link">pypath</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.internals.input_formats</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.inter...</li>
   </ul>
 </nav>
 </div>
@@ -653,11 +667,15 @@ document.write(`
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="MappingInput"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.MappingInput.html#pypath.internals.input_formats.MappingInput">[docs]</a><span class="k">class</span> <span class="nc">MappingInput</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="MappingInput">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.MappingInput.html#pypath.internals.input_formats.MappingInput">[docs]</a>
+<span class="k">class</span> <span class="nc">MappingInput</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="MappingInput.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.MappingInput.html#pypath.internals.input_formats.MappingInput.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="MappingInput.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.MappingInput.html#pypath.internals.input_formats.MappingInput.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">type_</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
@@ -675,6 +693,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_b</span> <span class="o">=</span> <span class="n">resource_id_type_b</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_organism&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span> <span class="o">=</span> <span class="n">input_method</span></div>
+
 
 
     <span class="k">def</span> <span class="nf">_resource_id_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">):</span>
@@ -723,9 +742,14 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="FileMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.FileMapping.html#pypath.internals.input_formats.FileMapping">[docs]</a><span class="k">class</span> <span class="nc">FileMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 
-<div class="viewcode-block" id="FileMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.FileMapping.html#pypath.internals.input_formats.FileMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="FileMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.FileMapping.html#pypath.internals.input_formats.FileMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">FileMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="FileMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.FileMapping.html#pypath.internals.input_formats.FileMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span><span class="p">,</span>
@@ -755,6 +779,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">input_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;organism&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">}</span></div>
 
 
+
     <span class="k">def</span> <span class="nf">set_organism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">):</span>
 
         <span class="n">other_organism</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -767,11 +792,16 @@ document.write(`
         <span class="k">return</span> <span class="n">other_organism</span></div>
 
 
-<div class="viewcode-block" id="UniprotMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotMapping.html#pypath.internals.input_formats.UniprotMapping">[docs]</a><span class="k">class</span> <span class="nc">UniprotMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="UniprotMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotMapping.html#pypath.internals.input_formats.UniprotMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">UniprotMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 
     <span class="n">_resource_id_type_b</span> <span class="o">=</span> <span class="s1">&#39;accession&#39;</span>
 
-<div class="viewcode-block" id="UniprotMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotMapping.html#pypath.internals.input_formats.UniprotMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="UniprotMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotMapping.html#pypath.internals.input_formats.UniprotMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span> <span class="o">=</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
@@ -814,6 +844,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span></div>
 
 
+
     <span class="k">def</span> <span class="nf">set_organism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">):</span>
 
         <span class="n">other_organism</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -833,7 +864,9 @@ document.write(`
         <span class="k">return</span> <span class="n">AC_QUERY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_type_a</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="UniprotMapping.resource_id_type"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotMapping.html#pypath.internals.input_formats.UniprotMapping.resource_id_type">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="UniprotMapping.resource_id_type">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotMapping.html#pypath.internals.input_formats.UniprotMapping.resource_id_type">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">resource_id_type</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">override</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For an ID type label used in pypath, returns the one used in the</span>
@@ -847,10 +880,14 @@ document.write(`
 
         <span class="n">id_type</span> <span class="o">=</span> <span class="n">AC_QUERY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">id_type</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">id_type</span></div></div>
+        <span class="k">return</span> <span class="n">id_type</span></div>
+</div>
 
 
-<div class="viewcode-block" id="UniprotListMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotListMapping.html#pypath.internals.input_formats.UniprotListMapping">[docs]</a><span class="k">class</span> <span class="nc">UniprotListMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="UniprotListMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotListMapping.html#pypath.internals.input_formats.UniprotListMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">UniprotListMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides parameters for downloading mapping table from UniProt</span>
 <span class="sd">    `Upload Lists` webservice.</span>
@@ -881,7 +918,9 @@ document.write(`
         <span class="s1">&#39;trembl&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="UniprotListMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotListMapping.html#pypath.internals.input_formats.UniprotListMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="UniprotListMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotListMapping.html#pypath.internals.input_formats.UniprotListMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span><span class="p">,</span>
@@ -905,6 +944,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">ac_mapping</span> <span class="o">=</span> <span class="n">AC_MAPPING</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_uniprot_types</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span></div>
+
 
 
     <span class="k">def</span> <span class="nf">set_organism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">):</span>
@@ -961,7 +1001,10 @@ document.write(`
         <span class="k">return</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_uniprot</span></div>
 
 
-<div class="viewcode-block" id="ProMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ProMapping.html#pypath.internals.input_formats.ProMapping">[docs]</a><span class="k">class</span> <span class="nc">ProMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ProMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ProMapping.html#pypath.internals.input_formats.ProMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">ProMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides parameters for mapping table from the Protein Ontology</span>
 <span class="sd">    Consortium.</span>
@@ -980,7 +1023,9 @@ document.write(`
 
     <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">PRO_MAPPING</span>
 
-<div class="viewcode-block" id="ProMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ProMapping.html#pypath.internals.input_formats.ProMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="ProMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ProMapping.html#pypath.internals.input_formats.ProMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1011,14 +1056,20 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">pro_id_type</span> <span class="o">=</span> <span class="n">pro_id_type</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_mapping</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id_type_b</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span></div>
+</div>
 
 
-<div class="viewcode-block" id="BiomartMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.BiomartMapping.html#pypath.internals.input_formats.BiomartMapping">[docs]</a><span class="k">class</span> <span class="nc">BiomartMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BiomartMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.BiomartMapping.html#pypath.internals.input_formats.BiomartMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">BiomartMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 
     <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">BIOMART_MAPPING</span>
 
-<div class="viewcode-block" id="BiomartMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.BiomartMapping.html#pypath.internals.input_formats.BiomartMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BiomartMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.BiomartMapping.html#pypath.internals.input_formats.BiomartMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1045,12 +1096,18 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">biomart_id_type_b</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">biomart_mapping</span> <span class="o">=</span> <span class="n">BIOMART_MAPPING</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">biomart_mapping</span> <span class="o">=</span> <span class="n">BIOMART_MAPPING</span></div>
+</div>
 
 
-<div class="viewcode-block" id="UnichemMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UnichemMapping.html#pypath.internals.input_formats.UnichemMapping">[docs]</a><span class="k">class</span> <span class="nc">UnichemMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 
-<div class="viewcode-block" id="UnichemMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UnichemMapping.html#pypath.internals.input_formats.UnichemMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="UnichemMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UnichemMapping.html#pypath.internals.input_formats.UnichemMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">UnichemMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="UnichemMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UnichemMapping.html#pypath.internals.input_formats.UnichemMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span><span class="p">,</span>
@@ -1072,14 +1129,20 @@ document.write(`
             <span class="n">id_type_a</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="RampMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.RampMapping.html#pypath.internals.input_formats.RampMapping">[docs]</a><span class="k">class</span> <span class="nc">RampMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="RampMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.RampMapping.html#pypath.internals.input_formats.RampMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">RampMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 
     <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">RAMP_MAPPING</span>
 
-<div class="viewcode-block" id="RampMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.RampMapping.html#pypath.internals.input_formats.RampMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="RampMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.RampMapping.html#pypath.internals.input_formats.RampMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span><span class="p">,</span>
@@ -1101,14 +1164,20 @@ document.write(`
             <span class="n">id_type_a</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="HmdbMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.HmdbMapping.html#pypath.internals.input_formats.HmdbMapping">[docs]</a><span class="k">class</span> <span class="nc">HmdbMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HmdbMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.HmdbMapping.html#pypath.internals.input_formats.HmdbMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">HmdbMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 
     <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">HMDB_MAPPING</span>
 
-<div class="viewcode-block" id="HmdbMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.HmdbMapping.html#pypath.internals.input_formats.HmdbMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="HmdbMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.HmdbMapping.html#pypath.internals.input_formats.HmdbMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span><span class="p">,</span>
@@ -1132,10 +1201,14 @@ document.write(`
             <span class="n">id_type_b</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span><span class="p">,</span>
             <span class="n">input_method</span> <span class="o">=</span> <span class="s1">&#39;hmdb.metabolites_mapping&#39;</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ArrayMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ArrayMapping.html#pypath.internals.input_formats.ArrayMapping">[docs]</a><span class="k">class</span> <span class="nc">ArrayMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ArrayMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ArrayMapping.html#pypath.internals.input_formats.ArrayMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">ArrayMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides parameters for microarray probe mapping tables.</span>
 
@@ -1153,7 +1226,9 @@ document.write(`
 
     <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">ARRAY_MAPPING</span>
 
-<div class="viewcode-block" id="ArrayMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ArrayMapping.html#pypath.internals.input_formats.ArrayMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="ArrayMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ArrayMapping.html#pypath.internals.input_formats.ArrayMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span><span class="p">,</span>
@@ -1184,6 +1259,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span></div>
 
 
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_process_id_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">id_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 
@@ -1210,10 +1286,15 @@ document.write(`
         <span class="k">return</span> <span class="n">id_type</span></div>
 
 
-<div class="viewcode-block" id="PickleMapping"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.PickleMapping.html#pypath.internals.input_formats.PickleMapping">[docs]</a><span class="k">class</span> <span class="nc">PickleMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PickleMapping">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.PickleMapping.html#pypath.internals.input_formats.PickleMapping">[docs]</a>
+<span class="k">class</span> <span class="nc">PickleMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 
 
-<div class="viewcode-block" id="PickleMapping.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.PickleMapping.html#pypath.internals.input_formats.PickleMapping.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="PickleMapping.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.PickleMapping.html#pypath.internals.input_formats.PickleMapping.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">id_type_a</span><span class="p">,</span>
             <span class="n">id_type_b</span><span class="p">,</span>
@@ -1229,13 +1310,19 @@ document.write(`
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span></div>
+</div>
 
 
-<div class="viewcode-block" id="NetworkInput"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.NetworkInput.html#pypath.internals.input_formats.NetworkInput">[docs]</a><span class="k">class</span> <span class="nc">NetworkInput</span><span class="p">:</span>
+
+<div class="viewcode-block" id="NetworkInput">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.NetworkInput.html#pypath.internals.input_formats.NetworkInput">[docs]</a>
+<span class="k">class</span> <span class="nc">NetworkInput</span><span class="p">:</span>
 
 
-<div class="viewcode-block" id="NetworkInput.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.NetworkInput.html#pypath.internals.input_formats.NetworkInput.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="NetworkInput.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.NetworkInput.html#pypath.internals.input_formats.NetworkInput.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
             <span class="n">separator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1319,15 +1406,21 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span></div>
 
 
+
     <span class="k">def</span> <span class="nf">_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span> <span class="k">else</span> <span class="bp">cls</span><span class="p">(</span><span class="n">compact</span> <span class="o">=</span> <span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ReadList"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ReadList.html#pypath.internals.input_formats.ReadList">[docs]</a><span class="k">class</span> <span class="nc">ReadList</span><span class="p">:</span>
+
+<div class="viewcode-block" id="ReadList">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ReadList.html#pypath.internals.input_formats.ReadList">[docs]</a>
+<span class="k">class</span> <span class="nc">ReadList</span><span class="p">:</span>
 
 
-<div class="viewcode-block" id="ReadList.__init__"><a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ReadList.html#pypath.internals.input_formats.ReadList.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="ReadList.__init__">
+<a class="viewcode-back" href="../../../api/pypath.internals.input_formats.ReadList.html#pypath.internals.input_formats.ReadList.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span><span class="p">,</span>
             <span class="n">separator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1346,23 +1439,21 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">extra_attrs</span> <span class="o">=</span> <span class="n">extra_attrs</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">separator</span> <span class="o">=</span> <span class="n">separator</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span></div>
+</div>
+
 </pre></div>
 
                 </article>
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1399,8 +1490,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1418,7 +1509,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
@@ -1426,10 +1517,11 @@ document.write(`
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
 </p></div>
       
     </div>

@@ -4,33 +4,34 @@
   <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.6.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/">
-  <title>The pypath book — pypath 0.15.9 documentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The pypath book — pypath 0.15.11 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script><!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet">
-  <link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet">
-  <link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet">
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet">
+  <link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet">
+  <link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
   "../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
   "../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
   "../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
-  <link rel="stylesheet" type="text/css" href="../_static/pygments.css">
-  <link rel="stylesheet" type="text/css" href="../_static/copybutton.css">
-  <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css">
+  <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=77553476">
+  <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b">
+  <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css?v=b64fc3cb">
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52">
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52">
-  <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-  <script src="../_static/doctools.js"></script>
-  <script src="../_static/sphinx_highlight.js"></script>
-  <script src="../_static/clipboard.min.js"></script>
-  <script src="../_static/copybutton.js"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794">
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <script src="../_static/documentation_options.js?v=7d490fb3"></script>
+  <script src="../_static/doctools.js?v=888ff710"></script>
+  <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+  <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+  <script src="../_static/copybutton.js?v=f281be69"></script>
   <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src=
   "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
   <script>
@@ -625,8 +626,10 @@
 </head>
 <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%"
 data-default-mode="">
-  <a class="skip-link" href="#main-content">Skip to main content</a> <input type="checkbox" class="sidebar-toggle"
-  name="__primary" id="__primary"> <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-scroll-pixel-helper"></div><button type="button" class="btn rounded-pill" id="pst-back-to-top"> Back to
+  top</button> <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary"> <input type="checkbox"
+  class="sidebar-toggle" name="__secondary" id="__secondary">
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
@@ -679,8 +682,10 @@ data-default-mode="">
           <div class="navbar-item navbar-persistent--container">
             <script>
             document.write(`
-            <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+            <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
             <i class="fa-solid fa-magnifying-glass"></i>
+            <span class="search-button__default-text">Search</span>
+            <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
             </button>
             `);
             </script>
@@ -688,10 +693,10 @@ data-default-mode="">
           <div class="navbar-item">
             <script>
             document.write(`
-            <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-            <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-            <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-            <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+            <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+            <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+            <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+            <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
             </button>
             `);
             </script>
@@ -700,23 +705,23 @@ data-default-mode="">
             <ul class="navbar-icon-links navbar-nav" aria-label="Icon Links">
               <li class="nav-item">
                 <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target=
-                "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">GitHub</label></a>
+                "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span class="sr-only">GitHub</span></a>
               </li>
               <li class="nav-item">
                 <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target=
-                "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">Twitter</label></a>
+                "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span class="sr-only">Twitter</span></a>
               </li>
               <li class="nav-item">
                 <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target=
-                "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">PyPI</label></a>
+                "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span class="sr-only">PyPI</span></a>
               </li>
               <li class="nav-item">
                 <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank"
-                data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">OmniPath</label></a>
+                data-bs-toggle="tooltip" data-bs-placement="bottom"><span class="sr-only">OmniPath</span></a>
               </li>
               <li class="nav-item">
                 <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank"
-                data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">Saez Lab</label></a>
+                data-bs-toggle="tooltip" data-bs-placement="bottom"><span class="sr-only">Saez Lab</span></a>
               </li>
             </ul>
           </div>
@@ -725,8 +730,10 @@ data-default-mode="">
       <div class="navbar-persistent--mobile">
         <script>
         document.write(`
-        <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+        <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
         <i class="fa-solid fa-magnifying-glass"></i>
+        <span class="search-button__default-text">Search</span>
+        <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
         </button>
         `);
         </script>
@@ -766,10 +773,10 @@ data-default-mode="">
             <div class="navbar-item">
               <script>
               document.write(`
-              <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-              <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-              <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-              <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+              <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+              <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+              <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+              <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
               </button>
               `);
               </script>
@@ -778,26 +785,24 @@ data-default-mode="">
               <ul class="navbar-icon-links navbar-nav" aria-label="Icon Links">
                 <li class="nav-item">
                   <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target=
-                  "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class=
-                  "sr-only">GitHub</label></a>
+                  "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span class="sr-only">GitHub</span></a>
                 </li>
                 <li class="nav-item">
                   <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target=
-                  "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class=
-                  "sr-only">Twitter</label></a>
+                  "_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span class="sr-only">Twitter</span></a>
                 </li>
                 <li class="nav-item">
                   <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener"
-                  target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><label class=
-                  "sr-only">PyPI</label></a>
+                  target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span class=
+                  "sr-only">PyPI</span></a>
                 </li>
                 <li class="nav-item">
                   <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank"
-                  data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">OmniPath</label></a>
+                  data-bs-toggle="tooltip" data-bs-placement="bottom"><span class="sr-only">OmniPath</span></a>
                 </li>
                 <li class="nav-item">
                   <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank"
-                  data-bs-toggle="tooltip" data-bs-placement="bottom"><label class="sr-only">Saez Lab</label></a>
+                  data-bs-toggle="tooltip" data-bs-placement="bottom"><span class="sr-only">Saez Lab</span></a>
                 </li>
               </ul>
             </div>
@@ -1289,8 +1294,8 @@ data-default-mode="">
               <div class="header-article-items header-article__inner">
                 <div class="header-article-items__start">
                   <div class="header-article-item">
-                    <nav aria-label="Breadcrumbs">
-                      <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+                    <nav aria-label="Breadcrumb">
+                      <ul class="bd-breadcrumbs">
                         <li class="breadcrumb-item breadcrumb-home">
                           <a href="../contents.html" class="nav-link" aria-label="Home"></a>
                         </li>
@@ -1305,7 +1310,7 @@ data-default-mode="">
             <article class="bd-article" role="main">
               <section id="The-pypath-book">
                 <h1>The pypath book<a class="headerlink" href="#The-pypath-book" title=
-                "Permalink to this heading">§</a></h1>
+                "Link to this heading">§</a></h1>
                 <p>Contents</p>
                 <div class="toc">
                   <ul class="toc-item">
@@ -1688,8 +1693,7 @@ data-default-mode="">
                   </ul>
                 </div>
                 <section id="Introduction">
-                  <h2>Introduction<a class="headerlink" href="#Introduction" title=
-                  "Permalink to this heading">§</a></h2>
+                  <h2>Introduction<a class="headerlink" href="#Introduction" title="Link to this heading">§</a></h2>
                   <p>OmniPath consists of 5 main database segments: network <em>(interactions)</em>, enzyme-substrate
                   interactions <em>(enz_sub or ptms)</em>, protein complexes <em>(complexes)</em>, molecular entity
                   annotations <em>(annotations)</em> and intercellular communication roles <em>(intercell)</em>. You
@@ -1742,13 +1746,13 @@ data-default-mode="">
                 </section>
                 <section id="Build,-load-and-save-databases">
                   <h2>Build, load and save databases<a class="headerlink" href="#Build,-load-and-save-databases" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p>We provide a high level interface in the module <em>pypath.omnipath.app</em>. This is the easiest
                   way to build, manage and access the OmniPath databases, hence this is what we present in the
                   <em>Quick start</em> section. In further sections we show the lower level modules more in detail.</p>
                   <section id="The-OmniPath-app">
                     <h3>The OmniPath app<a class="headerlink" href="#The-OmniPath-app" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p><em>pypath.omnipath</em> is an application which contains a database manager at
                     <em>omnipath.db</em>. This manager is empty by default. It builds and loads the databases on
                     demand.</p>
@@ -1792,7 +1796,7 @@ data-default-mode="">
                   </section>
                   <section id="Built-in-database-definitions">
                     <h3>Built-in database definitions<a class="headerlink" href="#Built-in-database-definitions" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>The databases presented below are <a class="reference external" href=
                     "https://github.com/saezlab/pypath/blob/master/pypath/omnipath/databases/builtins.json">pre-defined
                     in pypath</a>. You can also list them by:</p>
@@ -1846,14 +1850,14 @@ data-default-mode="">
                     </div>
                   </section>
                   <section id="Networks">
-                    <h3>Networks<a class="headerlink" href="#Networks" title="Permalink to this heading">§</a></h3>
+                    <h3>Networks<a class="headerlink" href="#Networks" title="Link to this heading">§</a></h3>
                     <p>OmniPath offers multiple built in network datasets: the OmniPath PPI network the more strict
                     literature curated PPI network, the special ligand-receptor PPI network and various other PPI
                     datasets, the transcriptional regulation network from DoRothEA and other resources, miRNA
                     post-transcriptional regulation network and also transcriptional regulation network for miRNAs.</p>
                     <section id="Strictly-literature-curated-network">
                       <h4>Strictly literature curated network<a class="headerlink" href=
-                      "#Strictly-literature-curated-network" title="Permalink to this heading">§</a></h4>
+                      "#Strictly-literature-curated-network" title="Link to this heading">§</a></h4>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
@@ -1899,7 +1903,7 @@ data-default-mode="">
                       <h4>The OmniPath network with extra activity flow, enzyme-substrate and ligand-receptor
                       interactions<a class="headerlink" href=
                       "#The-OmniPath-network-with-extra-activity-flow,-enzyme-substrate-and-ligand-receptor-interactions"
-                      title="Permalink to this heading">§</a></h4>
+                      title="Link to this heading">§</a></h4>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
@@ -1943,7 +1947,7 @@ data-default-mode="">
                     <section id="Transcriptional-regulation-network-from-DoRothEA-and-other-resources">
                       <h4>Transcriptional regulation network from DoRothEA and other resources<a class="headerlink"
                       href="#Transcriptional-regulation-network-from-DoRothEA-and-other-resources" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>Note: according to the default settings, DoRothEA confidence levels A-D and all original
                       resources will be loaded. To load only DoRothEA, use the key <code class=
                       "docutils literal notranslate"><span class="pre">"dorothea"</span></code> instead of <code class=
@@ -1991,7 +1995,7 @@ data-default-mode="">
                     <section id="Literature-curated-miRNA-post-transcriptional-regulation-network">
                       <h4>Literature curated miRNA post-transcriptional regulation network<a class="headerlink" href=
                       "#Literature-curated-miRNA-post-transcriptional-regulation-network" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
@@ -2034,7 +2038,7 @@ data-default-mode="">
                     </section>
                     <section id="Transcriptional-regulation-of-miRNA">
                       <h4>Transcriptional regulation of miRNA<a class="headerlink" href=
-                      "#Transcriptional-regulation-of-miRNA" title="Permalink to this heading">§</a></h4>
+                      "#Transcriptional-regulation-of-miRNA" title="Link to this heading">§</a></h4>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
@@ -2077,7 +2081,7 @@ data-default-mode="">
                     </section>
                     <section id="lncRNA-mRNA-interactions">
                       <h4>lncRNA-mRNA interactions<a class="headerlink" href="#lncRNA-mRNA-interactions" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
@@ -2120,7 +2124,7 @@ data-default-mode="">
                     </section>
                     <section id="Small-molecule-protein-interactions">
                       <h4>Small molecule-protein interactions<a class="headerlink" href=
-                      "#Small-molecule-protein-interactions" title="Permalink to this heading">§</a></h4>
+                      "#Small-molecule-protein-interactions" title="Link to this heading">§</a></h4>
                       <p>These interactions are either ligand-receptor connections, enzyme inhibitions, allosteric
                       regulations or enzyme-metabolite interactions. Currently it is a small, experimental dataset, but
                       will be largely extended in the future.</p>
@@ -2167,7 +2171,7 @@ data-default-mode="">
                   </section>
                   <section id="Enzyme-substrate-relationships">
                     <h3>Enzyme-substrate relationships<a class="headerlink" href="#Enzyme-substrate-relationships"
-                    title="Permalink to this heading">§</a></h3>
+                    title="Link to this heading">§</a></h3>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
@@ -2210,7 +2214,7 @@ data-default-mode="">
                   </section>
                   <section id="Protein-complexes">
                     <h3>Protein complexes<a class="headerlink" href="#Protein-complexes" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
@@ -2252,8 +2256,7 @@ data-default-mode="">
                     </div>
                   </section>
                   <section id="Annotations">
-                    <h3>Annotations<a class="headerlink" href="#Annotations" title=
-                    "Permalink to this heading">§</a></h3>
+                    <h3>Annotations<a class="headerlink" href="#Annotations" title="Link to this heading">§</a></h3>
                     <p>The annotations database is huge, building or even loading it takes long time and requires quite
                     some memory.</p>
                     <div class="nbinput docutils container">
@@ -2298,7 +2301,7 @@ data-default-mode="">
                   </section>
                   <section id="Inter-cellular-communication-roles">
                     <h3>Inter-cellular communication roles<a class="headerlink" href=
-                    "#Inter-cellular-communication-roles" title="Permalink to this heading">§</a></h3>
+                    "#Inter-cellular-communication-roles" title="Link to this heading">§</a></h3>
                     <p>This database is quick to build, but it requires the <em>annotations</em> database, which is
                     really heavy.</p>
                     <div class="nbinput docutils container">
@@ -2344,7 +2347,7 @@ data-default-mode="">
                 </section>
                 <section id="Data-directly-from-the-original-resources">
                   <h2>Data directly from the original resources<a class="headerlink" href=
-                  "#Data-directly-from-the-original-resources" title="Permalink to this heading">§</a></h2>
+                  "#Data-directly-from-the-original-resources" title="Link to this heading">§</a></h2>
                   <p>The <code class="docutils literal notranslate"><span class="pre">pypath.inputs</span></code>
                   module contains clients for more than 150 molecular biology and biomedical resources, and overall
                   almost 500 functions that download data directly from these resources. Maintaining such a large
@@ -2628,11 +2631,11 @@ data-default-mode="">
                 </section>
                 <section id="Interesting-resources">
                   <h2>Interesting resources<a class="headerlink" href="#Interesting-resources" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p>Here we showcase a few potentially useful features in <code class=
                   "docutils literal notranslate"><span class="pre">pypath.inputs</span></code>.</p>
                   <section id="RaMP">
-                    <h3>RaMP<a class="headerlink" href="#RaMP" title="Permalink to this heading">§</a></h3>
+                    <h3>RaMP<a class="headerlink" href="#RaMP" title="Link to this heading">§</a></h3>
                     <p><a class="reference external" href="https://rampdb.nih.gov/">RaMP</a> is a human metabolite and
                     metabolic network database providing ID translation, annotations and enzymatic reactions of
                     metabolites. Let’s take a closer look first at the full database contents. It is available as a
@@ -3731,7 +3734,7 @@ data-default-mode="">
                       </div>
                     </div>
                     <section id="TL;DR">
-                      <h4>TL;DR<a class="headerlink" href="#TL;DR" title="Permalink to this heading">§</a></h4>
+                      <h4>TL;DR<a class="headerlink" href="#TL;DR" title="Link to this heading">§</a></h4>
                       <p>Up until this point this section is about extra insights, but what 99% of the users will do
                       looks like this:</p>
                       <div class="nbinput docutils container">
@@ -3776,10 +3779,10 @@ data-default-mode="">
                   </section>
                   <section id="HMDB-(Human-Metabolome-Database)">
                     <h3>HMDB (Human Metabolome Database)<a class="headerlink" href="#HMDB-(Human-Metabolome-Database)"
-                    title="Permalink to this heading">§</a></h3>
+                    title="Link to this heading">§</a></h3>
                     <section id="Direct-access-to-HMDB-data">
                       <h4>Direct access to HMDB data<a class="headerlink" href="#Direct-access-to-HMDB-data" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>In the <code class="docutils literal notranslate"><span class="pre">inputs.hmdb</span></code>
                       module processes metabolite and protein data using <code class=
                       "docutils literal notranslate"><span class="pre">lxml.etree</span></code> and some minimal
@@ -4171,7 +4174,7 @@ data-default-mode="">
                     </section>
                     <section id="Higher-level-access-to-HMDB-data">
                       <h4>Higher level access to HMDB data<a class="headerlink" href=
-                      "#Higher-level-access-to-HMDB-data" title="Permalink to this heading">§</a></h4>
+                      "#Higher-level-access-to-HMDB-data" title="Link to this heading">§</a></h4>
                       <p>By the <code class="docutils literal notranslate"><span class=
                       "pre">hmdb.metabolites_table</span></code> and <code class=
                       "docutils literal notranslate"><span class="pre">hmdb.proteins_table</span></code> functions you
@@ -5156,7 +5159,7 @@ data-default-mode="">
                     </section>
                     <section id="ID-translation-with-HMDB">
                       <h4>ID translation with HMDB<a class="headerlink" href="#ID-translation-with-HMDB" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>HMDB is also integrated into the ID translation service. Thanks to the multiple levels of
                       caching, only the first call takes long time, subsequent calls are pretty fast:</p>
                       <div class="nbinput docutils container">
@@ -5349,10 +5352,10 @@ data-default-mode="">
                 </section>
                 <section id="Download-management">
                   <h2>Download management<a class="headerlink" href="#Download-management" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <section id="Cache-management-and-customization">
                     <h3>Cache management and customization<a class="headerlink" href=
-                    "#Cache-management-and-customization" title="Permalink to this heading">§</a></h3>
+                    "#Cache-management-and-customization" title="Link to this heading">§</a></h3>
                     <p>The <code class="docutils literal notranslate"><span class=
                     "pre">pypath.omnipath.app</span></code> saves the databases to pickle dumps by default under the
                     <code class="docutils literal notranslate"><span class="pre">~/.pypath/pickles/</span></code>
@@ -5366,13 +5369,13 @@ data-default-mode="">
                   </section>
                   <section id="Download-failures">
                     <h3>Download failures<a class="headerlink" href="#Download-failures" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>Issuing hundreds of requests to dozens of servers sooner or later comes with failures. These
                     might happen just by accident, especially on slow networks, it is always recommended to try again.
                     The</p>
                     <section id="Corrupted-cache-content">
                       <h4>Corrupted cache content<a class="headerlink" href="#Corrupted-cache-content" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>Sometimes a truncated or corrupted file remains in the cache, in this case you can use the
                       context managers in <code class="docutils literal notranslate"><span class=
                       "pre">pypath.share.curl</span></code> to control the cache. E.g. if the download of the
@@ -5416,7 +5419,7 @@ data-default-mode="">
                     <section id="Network-communication-issues:-look-into-the-curl-debug-log">
                       <h4>Network communication issues: look into the curl debug log<a class="headerlink" href=
                       "#Network-communication-issues:-look-into-the-curl-debug-log" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>Downloads might fail also due to TLS or HTTP errors, wrong headers or parameters, and many
                       other reasons. In this case a full debug output from <code class=
                       "docutils literal notranslate"><span class="pre">curl</span></code> might be very useful. The
@@ -5451,7 +5454,7 @@ data-default-mode="">
                       </div>
                     </section>
                     <section id="Timeouts">
-                      <h4>Timeouts<a class="headerlink" href="#Timeouts" title="Permalink to this heading">§</a></h4>
+                      <h4>Timeouts<a class="headerlink" href="#Timeouts" title="Link to this heading">§</a></h4>
                       <p>From the log we can find out if the download fails due to a timeout. In this case, the timeout
                       parameters can be altered by a settings context. Apart from a timeout for the completion of the
                       download, there is <code class="docutils literal notranslate"><span class=
@@ -5492,7 +5495,7 @@ data-default-mode="">
                     <section id="Access-and-inspect-the-Curl-object">
                       <h4>Access and inspect the <code class="docutils literal notranslate"><span class=
                       "pre">Curl</span></code> object<a class="headerlink" href="#Access-and-inspect-the-Curl-object"
-                      title="Permalink to this heading">§</a></h4>
+                      title="Link to this heading">§</a></h4>
                       <p>Often the <code class="docutils literal notranslate"><span class="pre">Curl</span></code>
                       object is created in a function from the <code class="docutils literal notranslate"><span class=
                       "pre">pypath.inputs</span></code> module, deep in a call stack, hence accessing it for
@@ -5592,7 +5595,7 @@ data-default-mode="">
                     </section>
                     <section id="Is-it-failing-only-for-you?">
                       <h4>Is it failing only for you?<a class="headerlink" href="#Is-it-failing-only-for-you?" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>Okay, this is the one you should check first: we run almost all downloads in <code class=
                       "docutils literal notranslate"><span class="pre">pypath</span></code> daily, you can always check
                       <a class="reference external" href="https://status.omnipathdb.org/">in the report</a> wether a
@@ -5605,7 +5608,7 @@ data-default-mode="">
                     </section>
                     <section id="Read-the-log">
                       <h4>Read the log<a class="headerlink" href="#Read-the-log" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>Above we mentioned a lot the pypath log. Here is how to access the log, see more details in
                       the section about logging:</p>
                       <div class="nbinput docutils container">
@@ -5660,7 +5663,7 @@ data-default-mode="">
                     </section>
                     <section id="TLS-(SSL,-HTTPS)-errors">
                       <h4>TLS (SSL, HTTPS) errors<a class="headerlink" href="#TLS-(SSL,-HTTPS)-errors" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>Failed to verify certificate, invalid, expired, self-signed, missing certificates. These might
                       be the most common reasons why people open issues for our software. TLS is a method for
                       encrypted, typically HTTP, communication. The server has a certificate and uses it to sign and
@@ -5723,7 +5726,7 @@ data-default-mode="">
                   </section>
                 </section>
                 <section id="Resources">
-                  <h2>Resources<a class="headerlink" href="#Resources" title="Permalink to this heading">§</a></h2>
+                  <h2>Resources<a class="headerlink" href="#Resources" title="Link to this heading">§</a></h2>
                   <div class="nbinput docutils container">
                     <div class="prompt highlight-none notranslate">
                       <div class="highlight">
@@ -5763,7 +5766,7 @@ data-default-mode="">
                     </div>
                   </div>
                   <section id="Licenses">
-                    <h3>Licenses<a class="headerlink" href="#Licenses" title="Permalink to this heading">§</a></h3>
+                    <h3>Licenses<a class="headerlink" href="#Licenses" title="Link to this heading">§</a></h3>
                     <p>The license of SIGNOR is CC BY-SA, it allows commercial (for-profit) use:</p>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
@@ -5805,7 +5808,7 @@ data-default-mode="">
                     </div>
                     <section id="Example:-build-a-network-for-commercial-use">
                       <h4>Example: build a network for commercial use<a class="headerlink" href=
-                      "#Example:-build-a-network-for-commercial-use" title="Permalink to this heading">§</a></h4>
+                      "#Example:-build-a-network-for-commercial-use" title="Link to this heading">§</a></h4>
                       <p>For our users, the most important aspect of licenses is whether they allow for-profit use in
                       companies. In the near future we intend to provide more convenient interface for license options;
                       until then, see the example below.</p>
@@ -6066,7 +6069,7 @@ data-default-mode="">
                   </section>
                   <section id="Resource-information">
                     <h3>Resource information<a class="headerlink" href="#Resource-information" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
@@ -6127,8 +6130,7 @@ data-default-mode="">
                   </section>
                   <section id="Resource-definitions-for-a-certain-database-or-dataset">
                     <h3>Resource definitions for a certain database or dataset<a class="headerlink" href=
-                    "#Resource-definitions-for-a-certain-database-or-dataset" title=
-                    "Permalink to this heading">§</a></h3>
+                    "#Resource-definitions-for-a-certain-database-or-dataset" title="Link to this heading">§</a></h3>
                     <div class="alert alert-block alert-success">
                       <p>Note: This does not work yet for all databases and datasets, but likely in the near future
                       this will be the preferred method to access resource definitions.</p>
@@ -6222,7 +6224,7 @@ data-default-mode="">
                 </section>
                 <section id="Building-networks">
                   <h2>Building networks<a class="headerlink" href="#Building-networks" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p>For this you will need the <code class="docutils literal notranslate"><span class=
                   "pre">Network</span></code> class from the <code class="docutils literal notranslate"><span class=
                   "pre">pypath.core.network</span></code> module which takes care about building and querying the
@@ -6493,7 +6495,7 @@ data-default-mode="">
                   </div>
                   <section id="Which-network-datasets-are-pre-defined-in-pypath?">
                     <h3>Which network datasets are pre-defined in pypath?<a class="headerlink" href=
-                    "#Which-network-datasets-are-pre-defined-in-pypath?" title="Permalink to this heading">§</a></h3>
+                    "#Which-network-datasets-are-pre-defined-in-pypath?" title="Link to this heading">§</a></h3>
                     <p>You can find all the pre-defined datasets in the <code class=
                     "docutils literal notranslate"><span class="pre">pypath.resources.network</span></code> module.
                     This module currently is a wrapper around an older module, <code class=
@@ -6751,7 +6753,7 @@ dict_keys(['trip', 'spike', 'signalink3', 'guide2pharma', 'ca1', 'arn', 'nrf2', 
                   </section>
                   <section id="The-Network-object">
                     <h3>The <code class="docutils literal notranslate"><span class="pre">Network</span></code>
-                    object<a class="headerlink" href="#The-Network-object" title="Permalink to this heading">§</a></h3>
+                    object<a class="headerlink" href="#The-Network-object" title="Link to this heading">§</a></h3>
                     <p>Once you built a network you can use it for various purposes and write your own scripts for
                     further processing or analysis. Below we create a <code class=
                     "docutils literal notranslate"><span class="pre">Network</span></code> object and populate it with
@@ -7640,7 +7642,7 @@ False
                   </section>
                   <section id="Network-in-pandas.DataFrame">
                     <h3>Network in <em>pandas.DataFrame</em><a class="headerlink" href="#Network-in-pandas.DataFrame"
-                    title="Permalink to this heading">§</a></h3>
+                    title="Link to this heading">§</a></h3>
                     <p>Contents of a <code class="docutils literal notranslate"><span class=
                     "pre">pypath.core.network.Network</span></code> object can be exported to a <code class=
                     "docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
@@ -8414,7 +8416,7 @@ False
                   </section>
                   <section id="Self-interactions-(loop-edges)-in-the-network">
                     <h3>Self interactions (loop edges) in the network<a class="headerlink" href=
-                    "#Self-interactions-(loop-edges)-in-the-network" title="Permalink to this heading">§</a></h3>
+                    "#Self-interactions-(loop-edges)-in-the-network" title="Link to this heading">§</a></h3>
                     <p>Depending on the downstream application, loops might be beneficial or undesired. By default
                     loops are disabled, but are enabled for OmniPath and the GRN networks among the built-in network
                     databases. The <code class="docutils literal notranslate"><span class=
@@ -8560,7 +8562,7 @@ False
                   </section>
                   <section id="Molecular-complexes-in-the-network">
                     <h3>Molecular complexes in the network<a class="headerlink" href=
-                    "#Molecular-complexes-in-the-network" title="Permalink to this heading">§</a></h3>
+                    "#Molecular-complexes-in-the-network" title="Link to this heading">§</a></h3>
                     <p>Currently <code class="docutils literal notranslate"><span class="pre">pypath</span></code>
                     supports protein complexes, however, soon other kind of components, such as small molecules,
                     nucleic acids, will be supported too. Complexes are represented by <code class=
@@ -9469,7 +9471,7 @@ Complex: COMPLEX:P15407_P17535
                 </section>
                 <section id="Translating-identifiers">
                   <h2>Translating identifiers<a class="headerlink" href="#Translating-identifiers" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p>The <code class="docutils literal notranslate"><span class=
                   "pre">pypath.utils.mapping</span></code> module is for ID translation, most of the time you can
                   simply call the <code class="docutils literal notranslate"><span class="pre">map_name</span></code>
@@ -9889,7 +9891,7 @@ Complex: COMPLEX:P15407_P17535
                   </div>
                   <section id="Pre-defined-ID-translation-tables">
                     <h3>Pre-defined ID translation tables<a class="headerlink" href=
-                    "#Pre-defined-ID-translation-tables" title="Permalink to this heading">§</a></h3>
+                    "#Pre-defined-ID-translation-tables" title="Link to this heading">§</a></h3>
                     <p>A number of mapping tables are pre-defined, these load automatically on demand, and are removed
                     from the memory if not used for some time (5 minutes by default). New mapping tables are saved
                     directly into pickle files in the cache for a quick reload. Tables are either organism specific
@@ -10068,7 +10070,7 @@ Complex: COMPLEX:P15407_P17535
                   </section>
                   <section id="Direct-access-to-ID-translation-tables">
                     <h3>Direct access to ID translation tables<a class="headerlink" href=
-                    "#Direct-access-to-ID-translation-tables" title="Permalink to this heading">§</a></h3>
+                    "#Direct-access-to-ID-translation-tables" title="Link to this heading">§</a></h3>
                     <p>The <code class="docutils literal notranslate"><span class="pre">Mapper</span></code> (or the
                     <code class="docutils literal notranslate"><span class="pre">mapping</span></code> module) is able
                     to return ID translation tables as dicts or data frames:</p>
@@ -10365,7 +10367,7 @@ False
                 </section>
                 <section id="Orthology-translation">
                   <h2>Orthology translation<a class="headerlink" href="#Orthology-translation" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p>The <code class="docutils literal notranslate"><span class="pre">utils.orthology</span></code>
                   module (formerly <code class="docutils literal notranslate"><span class=
                   "pre">utils.homology</span></code>) handles translation of data between organism by orthologous gene
@@ -10501,7 +10503,7 @@ False
                   </div>
                   <section id="Orthology-translation-tables-as-dictionaries">
                     <h3>Orthology translation tables as dictionaries<a class="headerlink" href=
-                    "#Orthology-translation-tables-as-dictionaries" title="Permalink to this heading">§</a></h3>
+                    "#Orthology-translation-tables-as-dictionaries" title="Link to this heading">§</a></h3>
                     <p>The translation tables are available as dicts of sets, these are convenient for use outside of
                     pypath:</p>
                     <div class="nbinput docutils container">
@@ -10591,7 +10593,7 @@ False
                   </section>
                   <section id="Orthology-translation-data-frames">
                     <h3>Orthology translation data frames<a class="headerlink" href=
-                    "#Orthology-translation-data-frames" title="Permalink to this heading">§</a></h3>
+                    "#Orthology-translation-data-frames" title="Link to this heading">§</a></h3>
                     <p>Similarly, <code class="docutils literal notranslate"><span class=
                     "pre">pandas.DataFrame</span></code>s are available:</p>
                     <div class="nbinput docutils container">
@@ -10726,7 +10728,7 @@ False
                   </section>
                 </section>
                 <section id="Taxonomy">
-                  <h2>Taxonomy<a class="headerlink" href="#Taxonomy" title="Permalink to this heading">§</a></h2>
+                  <h2>Taxonomy<a class="headerlink" href="#Taxonomy" title="Link to this heading">§</a></h2>
                   <p>Organisms matter everywhere, both in the input, output and processing parts of pypath. For this
                   reason we created a utility module to deal with translation of organism identifiers. We prefer NCBI
                   Taxonomy IDs as the primary organism identifier. These are simple numbers, 9606 is human, 10090 is
@@ -10739,7 +10741,7 @@ False
                   <section id="Translating-to-NCBI-Taxonomy,-scientific-names-and-common-names">
                     <h3>Translating to NCBI Taxonomy, scientific names and common names<a class="headerlink" href=
                     "#Translating-to-NCBI-Taxonomy,-scientific-names-and-common-names" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>The most often used is <code class="docutils literal notranslate"><span class=
                     "pre">ensure_ncbi_tax_id</span></code>, which returns the NCBI Taxonomy ID for any comprehensible
                     input:</p>
@@ -10863,7 +10865,7 @@ False
                   </section>
                   <section id="Organism-from-UniProt-ID">
                     <h3>Organism from UniProt ID<a class="headerlink" href="#Organism-from-UniProt-ID" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>The <code class="docutils literal notranslate"><span class="pre">uniprot_taxid</span></code>
                     function returns the taxonomy ID for a SwissProt ID. Unfortunately it does not work for TrEMBL IDs,
                     that would require to keep too much data in memory.</p>
@@ -10907,7 +10909,7 @@ False
                   </section>
                 </section>
                 <section id="UniProt">
-                  <h2>UniProt<a class="headerlink" href="#UniProt" title="Permalink to this heading">§</a></h2>
+                  <h2>UniProt<a class="headerlink" href="#UniProt" title="Link to this heading">§</a></h2>
                   <p>UniProt is a huge, diverse resource that is essential for <em>pypath</em> as we use it as a
                   reference set for proteomes and it provides ID translation data. Its input module <code class=
                   "docutils literal notranslate"><span class="pre">pypath.inputs.uniprot</span></code> is already more
@@ -10917,10 +10919,10 @@ False
                   module.</p>
                   <section id="The-UniProt-input-module">
                     <h3>The UniProt input module<a class="headerlink" href="#The-UniProt-input-module" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <section id="All-UniProt-IDs-for-one-organism">
                       <h4>All UniProt IDs for one organism<a class="headerlink" href=
-                      "#All-UniProt-IDs-for-one-organism" title="Permalink to this heading">§</a></h4>
+                      "#All-UniProt-IDs-for-one-organism" title="Link to this heading">§</a></h4>
                       <p>The complete set of UniProt IDs for an organism is considered to be the proteome of the
                       organism, and it is used in many procedures across <em>pypath</em>. All SwissProt IDs, all TrEMBL
                       IDs or both together can be retrieved:</p>
@@ -10974,7 +10976,7 @@ False
                     </section>
                     <section id="UniProt-ID-format-validation">
                       <h4>UniProt ID format validation<a class="headerlink" href="#UniProt-ID-format-validation" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>UniProt defines a format for its accessions, any string can be checked against this template
                       to tell if it’s possibly a valid ID:</p>
                       <div class="nbinput docutils container">
@@ -11018,7 +11020,7 @@ True
                     </section>
                     <section id="UniProt-ID-validation">
                       <h4>UniProt ID validation<a class="headerlink" href="#UniProt-ID-validation" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>Another functions check if an ID indeed exists in UniProt. These functions require loading the
                       list of all UniProt IDs for the organism, hence calling them the first time might take even a few
                       minutes (in case new download is necessary). Subsequent calls will be much faster.</p>
@@ -11137,7 +11139,7 @@ False
                     </section>
                     <section id="Single-UniProt-protein-datasheet">
                       <h4>Single UniProt protein datasheet<a class="headerlink" href=
-                      "#Single-UniProt-protein-datasheet" title="Permalink to this heading">§</a></h4>
+                      "#Single-UniProt-protein-datasheet" title="Link to this heading">§</a></h4>
                       <p>Raw contents of protein datasheets can be retrieved. The structure is a Python list with
                       tuples of two elements, the first is the tag of the line, the second is the line content.</p>
                       <div class="nbinput docutils container">
@@ -11209,7 +11211,7 @@ False
                     </section>
                     <section id="History-of-UniProt-records">
                       <h4>History of UniProt records<a class="headerlink" href="#History-of-UniProt-records" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
@@ -11366,7 +11368,7 @@ UniprotRecordHistory(entry_version='283', sequence_version='2', entry_name='EGFR
                     </section>
                     <section id="UniProt-legacy-API">
                       <h4>UniProt legacy API<a class="headerlink" href="#UniProt-legacy-API" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>UniProt deployed its new API in the autumn of 2022, since then the old API is available as a
                       legacy option. In <em>pypath</em> this API is well supported. It is accessed by the <code class=
                       "docutils literal notranslate"><span class="pre">inputs.uniprot.uniprot_data</span></code>
@@ -11444,7 +11446,7 @@ UniprotRecordHistory(entry_version='283', sequence_version='2', entry_name='EGFR
                     </section>
                     <section id="Processed-UniProt-annotations">
                       <h4>Processed UniProt annotations<a class="headerlink" href="#Processed-UniProt-annotations"
-                      title="Permalink to this heading">§</a></h4>
+                      title="Link to this heading">§</a></h4>
                       <p>For a few important fields we have dedicated processing functions with the aim of making their
                       format cleaner and better usable. Sometimes even these do an imperfect job, and certain fields
                       are badly truncated or contain residual fragments of the stripped labels.</p>
@@ -11850,10 +11852,9 @@ UniprotRecordHistory(entry_version='283', sequence_version='2', entry_name='EGFR
                   </section>
                   <section id="The-UniProt-utils-module">
                     <h3>The UniProt utils module<a class="headerlink" href="#The-UniProt-utils-module" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <section id="Datasheets">
-                      <h4>Datasheets<a class="headerlink" href="#Datasheets" title=
-                      "Permalink to this heading">§</a></h4>
+                      <h4>Datasheets<a class="headerlink" href="#Datasheets" title="Link to this heading">§</a></h4>
                       <p>The <code class="docutils literal notranslate"><span class=
                       "pre">pypath.utils.uniprot</span></code> module is an API around UniProt protein datasheets. It
                       is not suitable for bulk retrieval: that would work but take really long time. Calling its bulk
@@ -12034,7 +12035,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                       </div>
                     </section>
                     <section id="Tables">
-                      <h4>Tables<a class="headerlink" href="#Tables" title="Permalink to this heading">§</a></h4>
+                      <h4>Tables<a class="headerlink" href="#Tables" title="Link to this heading">§</a></h4>
                       <p>UniProt data can be printed to the console in a tabular format:</p>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
@@ -12136,7 +12137,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </section>
                   <section id="Sanitizing-UniProt-IDs">
                     <h3>Sanitizing UniProt IDs<a class="headerlink" href="#Sanitizing-UniProt-IDs" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>It is important to know that the ID translation module always do a number of checks when
                     translating to UniProt IDs. Unless the <code class="docutils literal notranslate"><span class=
                     "pre">uniprot_cleanup</span></code> parameter is disabled. It translates secondary IDs to primary,
@@ -12184,7 +12185,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                 </section>
                 <section id="Enzyme-substrate-interactions">
                   <h2>Enzyme-substrate interactions<a class="headerlink" href="#Enzyme-substrate-interactions" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p>The database is an instance of <code class="docutils literal notranslate"><span class=
                   "pre">pypath.core.enz_sub.EnzymeSubstrateAggregator</span></code> class. The database is built with
                   the default or current configuration by the <code class="docutils literal notranslate"><span class=
@@ -12285,7 +12286,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </div>
                   <section id="Enzyme-substrate-objects">
                     <h3>Enzyme-substrate objects<a class="headerlink" href="#Enzyme-substrate-objects" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>Let’s take a closer look at one of the enzyme-PTM relationships, represented by <code class=
                     "docutils literal notranslate"><span class="pre">pypath.internals.intera.DomainMotif</span></code>
                     objects. Below some of the attributes are shown:</p>
@@ -12472,7 +12473,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </section>
                   <section id="Enzyme-substrate-data-frame">
                     <h3>Enzyme-substrate data frame<a class="headerlink" href="#Enzyme-substrate-data-frame" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>The dabase object is able to export its contents into a <code class=
                     "docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
                     <div class="nbinput docutils container">
@@ -12687,7 +12688,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                 </section>
                 <section id="Protein-sequences">
                   <h2>Protein sequences<a class="headerlink" href="#Protein-sequences" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p>The APIs for sequences are very basic, because we’ve never really needed them; but the
                   fundamentals are probably there to make a nice, powerful API. Still, I don’t believe <em>pypath</em>
                   will ever be strong in sequences, it’s just not our main topic.</p>
@@ -12837,7 +12838,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </div>
                 </section>
                 <section id="id1">
-                  <h2>Annotations<a class="headerlink" href="#id1" title="Permalink to this heading">§</a></h2>
+                  <h2>Annotations<a class="headerlink" href="#id1" title="Link to this heading">§</a></h2>
                   <p>This database provides various annotations about the function, structure, localization and many
                   other properties of the proteins and genes. The database is an instance of <code class=
                   "docutils literal notranslate"><span class="pre">pypath.core.annot.AnnotationTable</span></code>
@@ -12887,7 +12888,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </div>
                   <section id="Load-a-single-annotation-resource">
                     <h3>Load a single annotation resource<a class="headerlink" href=
-                    "#Load-a-single-annotation-resource" title="Permalink to this heading">§</a></h3>
+                    "#Load-a-single-annotation-resource" title="Link to this heading">§</a></h3>
                     <p>The annotations database is huge, on disk it takes up 1-2 GB of space, it consists of 60-70
                     resources. But all these resources are not integrated with each other, each can be loaded
                     individually, by their dedicated classes in the <code class=
@@ -13157,7 +13158,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   <section id="Load-the-full-annotations-database-by-the-database-manager">
                     <h3>Load the full annotations database by the database manager<a class="headerlink" href=
                     "#Load-the-full-annotations-database-by-the-database-manager" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>Alternatively, the full annotations database can be accessed in the usual way:</p>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
@@ -13417,7 +13418,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </section>
                   <section id="Load-only-selected-annotations">
                     <h3>Load only selected annotations<a class="headerlink" href="#Load-only-selected-annotations"
-                    title="Permalink to this heading">§</a></h3>
+                    title="Link to this heading">§</a></h3>
                     <p>Another option is to load only certain annotation resources into an <code class=
                     "docutils literal notranslate"><span class="pre">AnnotationTable</span></code> object. We refer to
                     the resources by class names. For example, if you only want to load the pathway membership
@@ -13535,7 +13536,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </section>
                   <section id="Data-frames-of-annotations">
                     <h3>Data frames of annotations<a class="headerlink" href="#Data-frames-of-annotations" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>Data from annotation objects can be exported to a <code class=
                     "docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
                     <div class="nbinput docutils container">
@@ -13922,7 +13923,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                 </section>
                 <section id="Inter-cellular-signaling-roles">
                   <h2>Inter-cellular signaling roles<a class="headerlink" href="#Inter-cellular-signaling-roles" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p><code class="docutils literal notranslate"><span class="pre">pypath</span></code> does not combine
                   the annotations in the <code class="docutils literal notranslate"><span class=
                   "pre">annot</span></code> module, exactly what goes in goes out. For example, WNT pathway from Signor
@@ -14203,7 +14204,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </div>
                   <section id="Build-an-intercellular-communication-network">
                     <h3>Build an intercellular communication network<a class="headerlink" href=
-                    "#Build-an-intercellular-communication-network" title="Permalink to this heading">§</a></h3>
+                    "#Build-an-intercellular-communication-network" title="Link to this heading">§</a></h3>
                     <p>The intercell database can be connected to a <code class=
                     "docutils literal notranslate"><span class="pre">Network</span></code> object to create an
                     intercellular communication network:</p>
@@ -14234,7 +14235,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </section>
                   <section id="Quantitative-overview-of-intercell-annotations">
                     <h3>Quantitative overview of intercell annotations<a class="headerlink" href=
-                    "#Quantitative-overview-of-intercell-annotations" title="Permalink to this heading">§</a></h3>
+                    "#Quantitative-overview-of-intercell-annotations" title="Link to this heading">§</a></h3>
                     <p>A data frame with basic statistics is available:</p>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
@@ -14470,7 +14471,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </section>
                   <section id="Intercell-database-as-data-frame">
                     <h3>Intercell database as data frame<a class="headerlink" href="#Intercell-database-as-data-frame"
-                    title="Permalink to this heading">§</a></h3>
+                    title="Link to this heading">§</a></h3>
                     <p>Just like the other databases, the object can be exported into a <code class=
                     "docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
                     <div class="nbinput docutils container">
@@ -14714,7 +14715,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </section>
                   <section id="Browse-intercell-categories">
                     <h3>Browse intercell categories<a class="headerlink" href="#Browse-intercell-categories" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>Use the <code class="docutils literal notranslate"><span class="pre">select</span></code> method
                     to access intercell classes:</p>
                     <div class="nbinput docutils container">
@@ -14808,8 +14809,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </section>
                 </section>
                 <section id="Gene-Ontology">
-                  <h2>Gene Ontology<a class="headerlink" href="#Gene-Ontology" title=
-                  "Permalink to this heading">§</a></h2>
+                  <h2>Gene Ontology<a class="headerlink" href="#Gene-Ontology" title="Link to this heading">§</a></h2>
                   <p><code class="docutils literal notranslate"><span class="pre">pypath.utils.go</span></code> is an
                   almost standalone module for management of the Gene Ontology tree and annotations. The main objects
                   here are <code class="docutils literal notranslate"><span class="pre">GeneOntology</span></code> and
@@ -15062,7 +15062,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   </div>
                 </section>
                 <section id="id2">
-                  <h2>Protein complexes<a class="headerlink" href="#id2" title="Permalink to this heading">§</a></h2>
+                  <h2>Protein complexes<a class="headerlink" href="#id2" title="Link to this heading">§</a></h2>
                   <p>The <code class="docutils literal notranslate"><span class="pre">pypath.complex</span></code>
                   module builds a non-redundant list of complexes from about 12 original resources. Complexes are
                   unique considering their set of components, and optionally carry stoichiometry information.
@@ -15171,7 +15171,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   "docutils literal notranslate"><span class="pre">COMPLEX:list-of-components</span></code>.</p>
                   <section id="Protein-complex-objects">
                     <h3>Protein complex objects<a class="headerlink" href="#Protein-complex-objects" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>Take a closer look on one complex object. The hash of the is equivalent with the string
                     representation below, where the UniProt IDs are unique and alphabetically sorted. Hence you can
                     look up complexes using strings as keys despite the dict keys are in fact <code class=
@@ -15286,7 +15286,7 @@ Complex CBP/p300: COMPLEX:Q09472_Q92793
                   </section>
                   <section id="Protein-complex-data-frame">
                     <h3>Protein complex data frame<a class="headerlink" href="#Protein-complex-data-frame" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>The database can be exported into a <code class="docutils literal notranslate"><span class=
                     "pre">pandas.DataFrame</span></code>:</p>
                     <div class="nbinput docutils container">
@@ -15453,7 +15453,7 @@ Complex CBP/p300: COMPLEX:Q09472_Q92793
                 </section>
                 <section id="Saving-datasets-as-pickles">
                   <h2>Saving datasets as pickles<a class="headerlink" href="#Saving-datasets-as-pickles" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p>The large datasets above are compiled from many resources. Even if these are already available in
                   the cache, the data processing often takes longer than convenient, e.g.&nbsp;from a few minutes up to
                   half an hour. Most of the data integration objects in <code class=
@@ -15491,7 +15491,7 @@ Complex CBP/p300: COMPLEX:Q09472_Q92793
                 </section>
                 <section id="Log-messages-and-sessions">
                   <h2>Log messages and sessions<a class="headerlink" href="#Log-messages-and-sessions" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <p>In <code class="docutils literal notranslate"><span class="pre">pypath</span></code> all modules
                   sends messages to a log file named by default by the session ID (a 5 char random string). The default
                   path to the log file is <code class="docutils literal notranslate"><span class=
@@ -15504,7 +15504,7 @@ Complex CBP/p300: COMPLEX:Q09472_Q92793
                   </div>
                   <section id="Basic-info-about-the-session">
                     <h3>Basic info about the session<a class="headerlink" href="#Basic-info-about-the-session" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>The <code class="docutils literal notranslate"><span class="pre">info</span></code> function
                     prints the most important information about the current session:</p>
                     <div class="nbinput docutils container">
@@ -15592,7 +15592,7 @@ Complex CBP/p300: COMPLEX:Q09472_Q92793
                   </section>
                   <section id="Read-the-log-file">
                     <h3>Read the log file<a class="headerlink" href="#Read-the-log-file" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>Calling <code class="docutils literal notranslate"><span class="pre">pypath.log</span></code>
                     opens the logfile by the default console application for paginating text files (in GNU systems
                     typically <code class="docutils literal notranslate"><span class="pre">less</span></code>):</p>
@@ -15728,7 +15728,7 @@ Logger [/home/denes/pypath/notebooks/pypath_log/pypath-l0n17.log]
                   </section>
                   <section id="Logging-to-the-console">
                     <h3>Logging to the console<a class="headerlink" href="#Logging-to-the-console" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>Each log message has a numeric priority level, and messages with lower level than a threshold
                     are printed to the console. By default only important warnings are dispatched to the console. To
                     log everything to the console, set the threshold to a large number:</p>
@@ -15790,7 +15790,7 @@ Logger [/home/denes/pypath/notebooks/pypath_log/pypath-l0n17.log]
                   </section>
                   <section id="Disable-logging">
                     <h3>Disable logging<a class="headerlink" href="#Disable-logging" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>To avoid creation of a log file (and the directory <code class=
                     "docutils literal notranslate"><span class="pre">pypath_log</span></code>) set the environment
                     variable <code class="docutils literal notranslate"><span class="pre">PYPATH_LOG</span></code> or
@@ -15841,10 +15841,10 @@ Logger [/home/denes/pypath/notebooks/pypath_log/pypath-l0n17.log]
                   </section>
                   <section id="Write-to-the-log">
                     <h3>Write to the log<a class="headerlink" href="#Write-to-the-log" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <section id="Sending-a-single-message">
                       <h4>Sending a single message<a class="headerlink" href="#Sending-a-single-message" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>First we change the console level so we can see the log messages. The label is optional. The
                       priority of the message is given by the <code class="docutils literal notranslate"><span class=
                       "pre">level</span></code>, notice that the second message won’t be printed to the console as its
@@ -15892,7 +15892,7 @@ Logger [/home/denes/pypath/notebooks/pypath_log/pypath-l0n17.log]
                     </section>
                     <section id="Connect-a-module-or-class-to-the-pypath-logger">
                       <h4>Connect a module or class to the pypath logger<a class="headerlink" href=
-                      "#Connect-a-module-or-class-to-the-pypath-logger" title="Permalink to this heading">§</a></h4>
+                      "#Connect-a-module-or-class-to-the-pypath-logger" title="Link to this heading">§</a></h4>
                       <p>The preferred way of connecting to the logger is to make a class inherit from the <code class=
                       "docutils literal notranslate"><span class="pre">Logger</span></code> class. Here the
                       <code class="docutils literal notranslate"><span class="pre">name</span></code> will be the
@@ -16016,7 +16016,7 @@ Logger [/home/denes/pypath/notebooks/pypath_log/pypath-l0n17.log]
                   </section>
                 </section>
                 <section id="BEL-export">
-                  <h2>BEL export<a class="headerlink" href="#BEL-export" title="Permalink to this heading">§</a></h2>
+                  <h2>BEL export<a class="headerlink" href="#BEL-export" title="Link to this heading">§</a></h2>
                   <div class="alert alert-block alert-danger">
                     <p>Warning: This section hasn’t been thoroughly revised for long time, some parts might be outdated
                     or broken.</p>
@@ -16206,7 +16206,7 @@ Logger [/home/denes/pypath/notebooks/pypath_log/pypath-l0n17.log]
                 </section>
                 <section id="CellPhoneDB-export">
                   <h2>CellPhoneDB export<a class="headerlink" href="#CellPhoneDB-export" title=
-                  "Permalink to this heading">§</a></h2>
+                  "Link to this heading">§</a></h2>
                   <div class="alert alert-block alert-danger">
                     <p>Warning: This section hasn’t been thoroughly revised for long time, some parts might be outdated
                     or broken.</p>
@@ -16324,7 +16324,7 @@ Logger [/home/denes/pypath/notebooks/pypath_log/pypath-l0n17.log]
                 </section>
                 <section id="The-legacy-igraph-based-network-object">
                   <h2>The legacy <em>igraph</em>-based network object<a class="headerlink" href=
-                  "#The-legacy-igraph-based-network-object" title="Permalink to this heading">§</a></h2>
+                  "#The-legacy-igraph-based-network-object" title="Link to this heading">§</a></h2>
                   <div class="alert alert-block alert-danger">
                     <p>Warning: This section hasn’t been thoroughly revised for long time, some parts might be outdated
                     or broken.</p>
@@ -16393,7 +16393,7 @@ Some plotting functionalities won't be accessible.
                   <section id="I-just-want-a-network-quickly-and-play-around-with-pypath">
                     <h3>I just want a network quickly and play around with <em>pypath</em><a class="headerlink" href=
                     "#I-just-want-a-network-quickly-and-play-around-with-pypath" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>You can find the predefined formats in the <code class=
                     "docutils literal notranslate"><span class="pre">pypath.resources.network</span></code> module. For
                     example, to load one resource from there, let’s say SIGNOR:</p>
@@ -16488,7 +16488,7 @@ Some plotting functionalities won't be accessible.
                   </section>
                   <section id="How-do-I-build-networks-from-any-data-with-pypath?">
                     <h3>How do I build networks from any data with <em>pypath</em>?<a class="headerlink" href=
-                    "#How-do-I-build-networks-from-any-data-with-pypath?" title="Permalink to this heading">§</a></h3>
+                    "#How-do-I-build-networks-from-any-data-with-pypath?" title="Link to this heading">§</a></h3>
                     <p>Here we show how to build a network from your own files. The advantage of building network with
                     pypath is that you don’t need to worry about merging redundant elements, neither about different
                     formats and identifiers. Let’s say you have two files with network data:</p>
@@ -16521,7 +16521,7 @@ AKT1 - GSK3B
                     <p><em>Note: you need to create these files in order to load them.</em></p>
                     <section id="Defining-input-formats">
                       <h4>Defining input formats<a class="headerlink" href="#Defining-input-formats" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <div class="nbinput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
@@ -16577,8 +16577,7 @@ AKT1 - GSK3B
                     </section>
                     <section id="Creating-PyPath-object-and-loading-the-2-test-files">
                       <h4>Creating PyPath object and loading the 2 test files<a class="headerlink" href=
-                      "#Creating-PyPath-object-and-loading-the-2-test-files" title=
-                      "Permalink to this heading">§</a></h4>
+                      "#Creating-PyPath-object-and-loading-the-2-test-files" title="Link to this heading">§</a></h4>
                       <div class="nbinput nblast docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
@@ -16608,7 +16607,7 @@ AKT1 - GSK3B
                   </section>
                   <section id="Structure-of-the-legacy-network-object">
                     <h3>Structure of the legacy network object<a class="headerlink" href=
-                    "#Structure-of-the-legacy-network-object" title="Permalink to this heading">§</a></h3>
+                    "#Structure-of-the-legacy-network-object" title="Link to this heading">§</a></h3>
                     <div class="nbinput nblast docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
@@ -16690,7 +16689,7 @@ AKT1 - GSK3B
                     </div>
                     <section id="Directions-and-signs">
                       <h4>Directions and signs<a class="headerlink" href="#Directions-and-signs" title=
-                      "Permalink to this heading">§</a></h4>
+                      "Link to this heading">§</a></h4>
                       <p>By default the <code class="docutils literal notranslate"><span class=
                       "pre">igraph</span></code> object is undirected but it carries all direction information in
                       Python objects assigned to each edge. Pypath can convert it to a directed <code class=
@@ -16984,7 +16983,7 @@ AKT1 - GSK3B
                     </section>
                     <section id="Accessing-nodes-in-the-network">
                       <h4>Accessing nodes in the network<a class="headerlink" href="#Accessing-nodes-in-the-network"
-                      title="Permalink to this heading">§</a></h4>
+                      title="Link to this heading">§</a></h4>
                       <p>In <code class="docutils literal notranslate"><span class="pre">igraph</span></code> the
                       vertices are numbered but this numbering can change at certain operations. Instead the we can use
                       the vertex attributes. In <code class="docutils literal notranslate"><span class=
@@ -17121,7 +17120,7 @@ AKT1 - GSK3B
                   </section>
                   <section id="Querying-relationships-with-our-without-causality">
                     <h3>Querying relationships with our without causality<a class="headerlink" href=
-                    "#Querying-relationships-with-our-without-causality" title="Permalink to this heading">§</a></h3>
+                    "#Querying-relationships-with-our-without-causality" title="Link to this heading">§</a></h3>
                     <p>Above you could see how to query the directions and names of individual edges and nodes.
                     Building on top of these, other methods give a way to query causality, i.e.&nbsp;which proteins are
                     affected by an other one, and which others are its regulators. The example below returns the nodes
@@ -17350,7 +17349,7 @@ AKT1 - GSK3B
                   </section>
                   <section id="Accessing-edges-by-identifiers">
                     <h3>Accessing edges by identifiers<a class="headerlink" href="#Accessing-edges-by-identifiers"
-                    title="Permalink to this heading">§</a></h3>
+                    title="Link to this heading">§</a></h3>
                     <p>Just like nodes also edges can be accessed by identifiers like Gene Symbols. <code class=
                     "docutils literal notranslate"><span class="pre">get_edge</span></code> returns an <code class=
                     "docutils literal notranslate"><span class="pre">igraph.Edge</span></code> if the edge exists
@@ -17435,7 +17434,7 @@ AKT1 - GSK3B
                   </section>
                   <section id="Literature-references">
                     <h3>Literature references<a class="headerlink" href="#Literature-references" title=
-                    "Permalink to this heading">§</a></h3>
+                    "Link to this heading">§</a></h3>
                     <p>Select a random edge and in the <code class="docutils literal notranslate"><span class=
                     "pre">references</span></code> attribute you find a list of references:</p>
                     <div class="nbinput nblast docutils container">
@@ -17517,7 +17516,7 @@ AKT1 - GSK3B
                   </section>
                   <section id="Plotting-the-network-with-igraph">
                     <h3>Plotting the network with <em>igraph</em><a class="headerlink" href=
-                    "#Plotting-the-network-with-igraph" title="Permalink to this heading">§</a></h3>
+                    "#Plotting-the-network-with-igraph" title="Link to this heading">§</a></h3>
                     <p>Here we use the network created above (because it is reasonable size, not like the networks we
                     could get from most of the network databases). Igraph has excellent plotting abilities built on top
                     of the <em>cairo</em> library.</p>
@@ -17564,18 +17563,14 @@ AKT1 - GSK3B
                 </section>
               </section>
             </article>
-            <footer class="bd-footer-article">
-              <div class="footer-article-items footer-article__inner">
-                <div class="footer-article-item">
-                  <!-- Previous / next buttons -->
-                  <div class="prev-next-area">
-                    <a class="left-prev" href="../api/pypath.visual.plot.StackedBarplot.html" title="previous page">
-                    <div class="prev-next-info">
-                      <p class="prev-next-subtitle">previous</p>
-                      <p class="prev-next-title">pypath.visual.plot.StackedBarplot</p>
-                    </div></a>
-                  </div>
-                </div>
+            <footer class="prev-next-footer">
+              <!-- Previous / next buttons -->
+              <div class="prev-next-area">
+                <a class="left-prev" href="../api/pypath.visual.plot.StackedBarplot.html" title="previous page">
+                <div class="prev-next-info">
+                  <p class="prev-next-subtitle">previous</p>
+                  <p class="prev-next-title">pypath.visual.plot.StackedBarplot</p>
+                </div></a>
               </div>
             </footer>
           </div>
@@ -18094,8 +18089,8 @@ AKT1 - GSK3B
       </main>
     </div>
   </div><!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script> 
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script> 
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
   <footer class="bd-footer">
     <div class="bd-footer__inner bd-page-width">
       <div class="footer-items__start">
@@ -18105,13 +18100,13 @@ AKT1 - GSK3B
           Tapley Hoyt.<br></p>
         </div>
         <div class="footer-item">
-          <p class="sphinx-version">Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.<br></p>
+          <p class="sphinx-version">Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.<br></p>
         </div>
       </div>
       <div class="footer-items__end">
         <div class="footer-item">
           <p class="theme-version">Built with the <a href=
-          "https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.</p>
+          "https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.</p>
         </div>
       </div>
     </div>

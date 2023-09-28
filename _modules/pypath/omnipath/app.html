@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.omnipath.app &#8212; pypath 0.15.9 documentation</title>
+    <title>pypath.omnipath.app &#8212; pypath 0.15.11 documentation</title>
   
   
   
@@ -17,29 +17,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=77553476" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css?v=b64fc3cb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/omnipath/app';</script>
     <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
@@ -55,6 +56,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -95,7 +105,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -119,7 +130,6 @@
 </a></div>
     
   </div>
-  
   
   <div class=" navbar-header-items">
     
@@ -178,23 +188,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -210,8 +222,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -222,8 +234,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -234,8 +246,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
         <li class="nav-item">
           
@@ -246,8 +258,8 @@ document.write(`
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
         </li>
         <li class="nav-item">
           
@@ -258,8 +270,8 @@ document.write(`
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
         </li>
 </ul></div>
       
@@ -269,18 +281,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -355,10 +369,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -374,8 +388,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -386,8 +400,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -398,8 +412,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
         <li class="nav-item">
           
@@ -410,8 +424,8 @@ document.write(`
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
         </li>
         <li class="nav-item">
           
@@ -422,8 +436,8 @@ document.write(`
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
         </li>
 </ul></div>
         
@@ -457,8 +471,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../../contents.html" class="nav-link" aria-label="Home">
@@ -537,7 +551,9 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
 
 
-<div class="viewcode-block" id="DatabaseManager"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager">[docs]</a><span class="k">class</span> <span class="nc">DatabaseManager</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<div class="viewcode-block" id="DatabaseManager">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager">[docs]</a>
+<span class="k">class</span> <span class="nc">DatabaseManager</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Builds and serves the databases in OmniPath such as various networks,</span>
 <span class="sd">    enzyme-substrate interactions, protein complexes, annotations and</span>
@@ -546,7 +562,9 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="DatabaseManager.__init__"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rebuild</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DatabaseManager.__init__">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rebuild</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;omnipath.dbmanager&#39;</span><span class="p">)</span>
 
@@ -560,7 +578,10 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;The OmniPath database manager has been initialized.&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.reload"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.reload">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.reload">[docs]</a>
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -573,7 +594,10 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">foreach_dataset</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reload_module</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.build"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.build">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.build">[docs]</a>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Builds all built-in datasets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -585,7 +609,10 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">foreach_dataset</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_dataset</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.ensure_dataset"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.ensure_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_dataset</span><span class="p">(</span>
+
+<div class="viewcode-block" id="DatabaseManager.ensure_dataset">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.ensure_dataset">[docs]</a>
+    <span class="k">def</span> <span class="nf">ensure_dataset</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">dataset</span><span class="p">,</span>
             <span class="n">force_reload</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -637,7 +664,10 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.dataset_dependencies"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.dataset_dependencies">[docs]</a>    <span class="k">def</span> <span class="nf">dataset_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.dataset_dependencies">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.dataset_dependencies">[docs]</a>
+    <span class="k">def</span> <span class="nf">dataset_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the dependencies of a dataset. E.g. to build `annotations`</span>
 <span class="sd">        `complexes` must be loaded hence the former is dependent on the</span>
@@ -649,7 +679,10 @@ document.write(`
         <span class="k">return</span> <span class="n">deps</span><span class="p">[</span><span class="n">dataset</span><span class="p">]</span> <span class="k">if</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">deps</span> <span class="k">else</span> <span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.ensure_dirs"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.ensure_dirs">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.ensure_dirs">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.ensure_dirs">[docs]</a>
+    <span class="k">def</span> <span class="nf">ensure_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if the directories for tables, figures and pickles exist and</span>
 <span class="sd">        creates them if necessary.</span>
@@ -684,7 +717,10 @@ document.write(`
             <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.pickle_path"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.pickle_path">[docs]</a>    <span class="k">def</span> <span class="nf">pickle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.pickle_path">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.pickle_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">pickle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the path of the pickle dump for a dataset according to</span>
 <span class="sd">        the current settings.</span>
@@ -705,7 +741,10 @@ document.write(`
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.pickle_exists"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.pickle_exists">[docs]</a>    <span class="k">def</span> <span class="nf">pickle_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.pickle_exists">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.pickle_exists">[docs]</a>
+    <span class="k">def</span> <span class="nf">pickle_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tells if a pickle dump of a particular dataset exists.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -715,7 +754,10 @@ document.write(`
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.table_path"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.table_path">[docs]</a>    <span class="k">def</span> <span class="nf">table_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.table_path">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.table_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">table_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the full path for a table (to be exported or imported).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -726,7 +768,10 @@ document.write(`
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.build_dataset"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.build_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">build_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.build_dataset">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.build_dataset">[docs]</a>
+    <span class="k">def</span> <span class="nf">build_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Builds a dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -803,7 +848,10 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_network_df</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.ensure_module"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.ensure_module">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">reset</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.ensure_module">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.ensure_module">[docs]</a>
+    <span class="k">def</span> <span class="nf">ensure_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">reset</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes sure the module providing a particular dataset is available</span>
 <span class="sd">        and has no default database loaded yet (:py:attr:`db` attribute</span>
@@ -820,7 +868,10 @@ document.write(`
         <span class="k">return</span> <span class="n">mod</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.reload_module"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.reload_module">[docs]</a>    <span class="k">def</span> <span class="nf">reload_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.reload_module">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.reload_module">[docs]</a>
+    <span class="k">def</span> <span class="nf">reload_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the module of the database object of a particular dataset.</span>
 <span class="sd">        E.g. in case of network datasets the ``pypath.network`` module</span>
@@ -835,7 +886,10 @@ document.write(`
             <span class="n">mod</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.get_build_args"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_build_args">[docs]</a>    <span class="k">def</span> <span class="nf">get_build_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.get_build_args">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_build_args">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_build_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the default database build parameters for a dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -849,7 +903,10 @@ document.write(`
         <span class="k">return</span> <span class="n">args</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.load_dataset"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.load_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.load_dataset">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.load_dataset">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a dataset, builds it if no pickle dump is available.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -869,6 +926,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_network_df</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span></div>
 
 
+
     <span class="k">def</span> <span class="nf">_dataset_taxid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
@@ -881,7 +939,9 @@ document.write(`
     <span class="c1"># the get_args_* methods below will be replaced by the</span>
     <span class="c1"># pypath.omnipath.databases module</span>
 
-<div class="viewcode-block" id="DatabaseManager.get_args_curated"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_curated">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_curated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DatabaseManager.get_args_curated">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_curated">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_args_curated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the arguments for building the curated PPI network dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -892,7 +952,10 @@ document.write(`
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">resources</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.get_args_tf_target"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_tf_target">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_tf_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.get_args_tf_target">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_tf_target">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_args_tf_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the arguments for building the TF-target network dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -909,7 +972,10 @@ document.write(`
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">transcription</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.get_args_tf_mirna"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_tf_mirna">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_tf_mirna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.get_args_tf_mirna">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_tf_mirna">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_args_tf_mirna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the arguments for building the TF-miRNA network dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -917,7 +983,10 @@ document.write(`
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">netres</span><span class="o">.</span><span class="n">tf_mirna</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.get_args_mirna_mrna"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_mirna_mrna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.get_args_mirna_mrna">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_args_mirna_mrna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the arguments for building the miRNA-mRNA network dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -925,7 +994,10 @@ document.write(`
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">netres</span><span class="o">.</span><span class="n">mirnatarget</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.get_args_lncrna_mrna"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_lncrna_mrna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.get_args_lncrna_mrna">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_args_lncrna_mrna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the arguments for building the lncRNA-mRNA network dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -933,7 +1005,10 @@ document.write(`
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">netres</span><span class="o">.</span><span class="n">lncrna_mrna</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.get_args_small_molecule"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_small_molecule">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_small_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.get_args_small_molecule">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_small_molecule">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_args_small_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the arguments for building the small molecule-protein</span>
 <span class="sd">        network dataset.</span>
@@ -942,7 +1017,10 @@ document.write(`
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">netres</span><span class="o">.</span><span class="n">small_molecule</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.compile_tables"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.compile_tables">[docs]</a>    <span class="k">def</span> <span class="nf">compile_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.compile_tables">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.compile_tables">[docs]</a>
+    <span class="k">def</span> <span class="nf">compile_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compiles the `summaries` table for all datasets. These tables contain</span>
 <span class="sd">        various quantitative descriptions of the data contents.</span>
@@ -951,7 +1029,10 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">foreach_dataset</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_table</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.compile_table"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.compile_table">[docs]</a>    <span class="k">def</span> <span class="nf">compile_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.compile_table">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.compile_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">compile_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compiles the `summaries` table for a dataset. These tables contain</span>
 <span class="sd">        various quantitative descriptions of the data contents.</span>
@@ -963,7 +1044,10 @@ document.write(`
         <span class="n">db</span><span class="o">.</span><span class="n">summaries_tab</span><span class="p">(</span><span class="n">outfile</span> <span class="o">=</span> <span class="n">table_path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.foreach_dataset"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.foreach_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">foreach_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.foreach_dataset">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.foreach_dataset">[docs]</a>
+    <span class="k">def</span> <span class="nf">foreach_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies a method for each dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -973,7 +1057,10 @@ document.write(`
             <span class="n">_</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.get_db"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_db">[docs]</a>    <span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.get_db">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_db">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dataset object. Loads and builds the dataset if necessary.</span>
 
@@ -990,7 +1077,10 @@ document.write(`
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.remove_db"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.remove_db">[docs]</a>    <span class="k">def</span> <span class="nf">remove_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.remove_db">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.remove_db">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes a dataset. Deletes the references to the object</span>
 <span class="sd">        in the module, however if you have references elsewhere in your</span>
@@ -1004,7 +1094,10 @@ document.write(`
             <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.remove_all"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.remove_all">[docs]</a>    <span class="k">def</span> <span class="nf">remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.remove_all">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.remove_all">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes all loaded datasets. Deletes the references to the objects</span>
 <span class="sd">        in the module, however if you have references elsewhere in your</span>
@@ -1015,13 +1108,17 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">foreach_dataset</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_db</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.get_param"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_param">[docs]</a>    <span class="k">def</span> <span class="nf">get_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.get_param">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_param">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a parameter from the :py:attr:`param` dict of the current</span>
 <span class="sd">        object or from the module settings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
+
 
 
     <span class="k">def</span> <span class="nf">_create_network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1031,7 +1128,9 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_df</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="DatabaseManager.network_df"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.network_df">[docs]</a>    <span class="k">def</span> <span class="nf">network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="DatabaseManager.network_df">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.network_df">[docs]</a>
+    <span class="k">def</span> <span class="nf">network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a data frame of a network dataset where rows aggregate</span>
 <span class="sd">        information from all resources describing an interaction.</span>
@@ -1044,7 +1143,10 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_dfs</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">by_source_str</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.network_df_by_source"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.network_df_by_source">[docs]</a>    <span class="k">def</span> <span class="nf">network_df_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseManager.network_df_by_source">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.network_df_by_source">[docs]</a>
+    <span class="k">def</span> <span class="nf">network_df_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a data frame of a network dataset where each row contains</span>
 <span class="sd">        information from one resource.</span>
@@ -1053,6 +1155,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">ensure_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_dfs</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;by_source&#39;</span><span class="p">]</span></div>
+
 
 
     <span class="k">def</span> <span class="nf">_network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1090,7 +1193,9 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Created network data frames for `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="DatabaseManager.set_network"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.set_network">[docs]</a>    <span class="k">def</span> <span class="nf">set_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DatabaseManager.set_network">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.set_network">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets dataset as the default</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1102,7 +1207,10 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">intercell</span><span class="o">.</span><span class="n">register_network</span><span class="p">(</span><span class="n">network_df</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatabaseManager.define_dataset"><a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.define_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">define_dataset</span><span class="p">(</span>
+
+<div class="viewcode-block" id="DatabaseManager.define_dataset">
+<a class="viewcode-back" href="../../../api/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.define_dataset">[docs]</a>
+    <span class="k">def</span> <span class="nf">define_dataset</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">module</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
@@ -1143,23 +1251,21 @@ document.write(`
         <span class="n">param</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_mod&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
         <span class="n">param</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">param</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">param</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
                 </article>
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1196,8 +1302,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1215,7 +1321,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
@@ -1223,10 +1329,11 @@ document.write(`
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
 </p></div>
       
     </div>

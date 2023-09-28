@@ -6,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>pypath.omnipath.app.DatabaseManager &#8212; pypath 0.15.9 documentation</title>
+    <title>pypath.omnipath.app.DatabaseManager &#8212; pypath 0.15.11 documentation</title>
   
   
   
@@ -18,29 +18,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=77553476" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css?v=b64fc3cb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.omnipath.app.DatabaseManager';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
@@ -58,6 +59,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -98,7 +108,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -122,7 +133,6 @@
 </a></div>
     
   </div>
-  
   
   <div class=" navbar-header-items">
     
@@ -181,23 +191,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -213,8 +225,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -225,8 +237,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -237,8 +249,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
         <li class="nav-item">
           
@@ -249,8 +261,8 @@ document.write(`
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
         </li>
         <li class="nav-item">
           
@@ -261,8 +273,8 @@ document.write(`
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
         </li>
 </ul></div>
       
@@ -272,18 +284,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -358,10 +372,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -377,8 +391,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -389,8 +403,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -401,8 +415,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
         <li class="nav-item">
           
@@ -413,8 +427,8 @@ document.write(`
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
         </li>
         <li class="nav-item">
           
@@ -425,8 +439,8 @@ document.write(`
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
         </li>
 </ul></div>
         
@@ -460,8 +474,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../contents.html" class="nav-link" aria-label="Home">
@@ -477,7 +491,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="pypath.omnipath.app.html" class="nav-link">pypath.omnipath.app</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.omnipath.app.DatabaseManager</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.omnip...</li>
   </ul>
 </nav>
 </div>
@@ -495,10 +509,10 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="pypath-omnipath-app-databasemanager">
-<h1>pypath.omnipath.app.DatabaseManager<a class="headerlink" href="#pypath-omnipath-app-databasemanager" title="Permalink to this heading">§</a></h1>
+<h1>pypath.omnipath.app.DatabaseManager<a class="headerlink" href="#pypath-omnipath-app-databasemanager" title="Link to this heading">§</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.omnipath.app.</span></span><span class="sig-name descname"><span class="pre">DatabaseManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager" title="Permalink to this definition">§</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.omnipath.app.</span></span><span class="sig-name descname"><span class="pre">DatabaseManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager" title="Link to this definition">§</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypath.share.session.Logger.html#pypath.share.session.Logger" title="pypath.share.session.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a></p>
 <p>Builds and serves the databases in OmniPath such as various networks,
 enzyme-substrate interactions, protein complexes, annotations and
@@ -506,7 +520,7 @@ inter-cellular communication roles. Saves the databases to and loads
 them from pickle dumps on demand.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.__init__" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.__init__" title="Link to this definition">§</a></dt>
 <dd></dd></dl>
 
 <p class="rubric">Methods</p>
@@ -609,33 +623,33 @@ them from pickle dumps on demand.</p>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.build">
-<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.build" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.build" title="Link to this definition">§</a></dt>
 <dd><p>Builds all built-in datasets.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.build_dataset">
-<span class="sig-name descname"><span class="pre">build_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.build_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.build_dataset" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">build_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.build_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.build_dataset" title="Link to this definition">§</a></dt>
 <dd><p>Builds a dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.compile_table">
-<span class="sig-name descname"><span class="pre">compile_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.compile_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.compile_table" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">compile_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.compile_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.compile_table" title="Link to this definition">§</a></dt>
 <dd><p>Compiles the <cite>summaries</cite> table for a dataset. These tables contain
 various quantitative descriptions of the data contents.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.compile_tables">
-<span class="sig-name descname"><span class="pre">compile_tables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.compile_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.compile_tables" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">compile_tables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.compile_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.compile_tables" title="Link to this definition">§</a></dt>
 <dd><p>Compiles the <cite>summaries</cite> table for all datasets. These tables contain
 various quantitative descriptions of the data contents.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.dataset_dependencies">
-<span class="sig-name descname"><span class="pre">dataset_dependencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.dataset_dependencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.dataset_dependencies" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">dataset_dependencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.dataset_dependencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.dataset_dependencies" title="Link to this definition">§</a></dt>
 <dd><p>Returns the dependencies of a dataset. E.g. to build <cite>annotations</cite>
 <cite>complexes</cite> must be loaded hence the former is dependent on the
 latter.</p>
@@ -643,7 +657,7 @@ latter.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.define_dataset">
-<span class="sig-name descname"><span class="pre">define_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'annot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'complex'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'enz_sub'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'intercell'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'network'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.define_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.define_dataset" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">define_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'annot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'complex'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'enz_sub'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'intercell'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'network'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.define_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.define_dataset" title="Link to this definition">§</a></dt>
 <dd><p>Add a new dataset definition.</p>
 <dl class="simple">
 <dt>Args</dt><dd><dl class="simple">
@@ -669,7 +683,7 @@ override values provided this way.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.ensure_dataset">
-<span class="sig-name descname"><span class="pre">ensure_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_reload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.ensure_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.ensure_dataset" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">ensure_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_reload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.ensure_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.ensure_dataset" title="Link to this definition">§</a></dt>
 <dd><p>Makes sure a dataset is loaded. It loads only if it’s not loaded
 yet or <a href="#id5"><span class="problematic" id="id6">:py:arg:`force_reload`</span></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>. It only builds if it’s
 not availabe as a pickle dump or <a href="#id7"><span class="problematic" id="id8">:py:arg:`force_rebuild`</span></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
@@ -687,14 +701,14 @@ files.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.ensure_dirs">
-<span class="sig-name descname"><span class="pre">ensure_dirs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.ensure_dirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.ensure_dirs" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">ensure_dirs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.ensure_dirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.ensure_dirs" title="Link to this definition">§</a></dt>
 <dd><p>Checks if the directories for tables, figures and pickles exist and
 creates them if necessary.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.ensure_module">
-<span class="sig-name descname"><span class="pre">ensure_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.ensure_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.ensure_module" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">ensure_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.ensure_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.ensure_module" title="Link to this definition">§</a></dt>
 <dd><p>Makes sure the module providing a particular dataset is available
 and has no default database loaded yet (<code class="xref py py-attr docutils literal notranslate"><span class="pre">db</span></code> attribute
 of the module).</p>
@@ -702,56 +716,56 @@ of the module).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.foreach_dataset">
-<span class="sig-name descname"><span class="pre">foreach_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.foreach_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.foreach_dataset" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">foreach_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.foreach_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.foreach_dataset" title="Link to this definition">§</a></dt>
 <dd><p>Applies a method for each dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_curated">
-<span class="sig-name descname"><span class="pre">get_args_curated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_curated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_curated" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_args_curated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_curated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_curated" title="Link to this definition">§</a></dt>
 <dd><p>Returns the arguments for building the curated PPI network dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna">
-<span class="sig-name descname"><span class="pre">get_args_lncrna_mrna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_lncrna_mrna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_args_lncrna_mrna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_lncrna_mrna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna" title="Link to this definition">§</a></dt>
 <dd><p>Returns the arguments for building the lncRNA-mRNA network dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna">
-<span class="sig-name descname"><span class="pre">get_args_mirna_mrna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_mirna_mrna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_args_mirna_mrna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_mirna_mrna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna" title="Link to this definition">§</a></dt>
 <dd><p>Returns the arguments for building the miRNA-mRNA network dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_small_molecule">
-<span class="sig-name descname"><span class="pre">get_args_small_molecule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_small_molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_small_molecule" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_args_small_molecule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_small_molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_small_molecule" title="Link to this definition">§</a></dt>
 <dd><p>Returns the arguments for building the small molecule-protein
 network dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_tf_mirna">
-<span class="sig-name descname"><span class="pre">get_args_tf_mirna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_tf_mirna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_tf_mirna" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_args_tf_mirna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_tf_mirna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_tf_mirna" title="Link to this definition">§</a></dt>
 <dd><p>Returns the arguments for building the TF-miRNA network dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_args_tf_target">
-<span class="sig-name descname"><span class="pre">get_args_tf_target</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_tf_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_tf_target" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_args_tf_target</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_args_tf_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_args_tf_target" title="Link to this definition">§</a></dt>
 <dd><p>Returns the arguments for building the TF-target network dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_build_args">
-<span class="sig-name descname"><span class="pre">get_build_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_build_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_build_args" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_build_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_build_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_build_args" title="Link to this definition">§</a></dt>
 <dd><p>Retrieves the default database build parameters for a dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_db">
-<span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_db" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_db" title="Link to this definition">§</a></dt>
 <dd><p>Returns a dataset object. Loads and builds the dataset if necessary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -764,53 +778,53 @@ files.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.get_param">
-<span class="sig-name descname"><span class="pre">get_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_param" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.get_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.get_param" title="Link to this definition">§</a></dt>
 <dd><p>Retrieves a parameter from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">param</span></code> dict of the current
 object or from the module settings.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.load_dataset">
-<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.load_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.load_dataset" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.load_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.load_dataset" title="Link to this definition">§</a></dt>
 <dd><p>Loads a dataset, builds it if no pickle dump is available.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.network_df">
-<span class="sig-name descname"><span class="pre">network_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.network_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.network_df" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">network_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.network_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.network_df" title="Link to this definition">§</a></dt>
 <dd><p>Creates a data frame of a network dataset where rows aggregate
 information from all resources describing an interaction.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.network_df_by_source">
-<span class="sig-name descname"><span class="pre">network_df_by_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'omnipath'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.network_df_by_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.network_df_by_source" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">network_df_by_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'omnipath'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.network_df_by_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.network_df_by_source" title="Link to this definition">§</a></dt>
 <dd><p>Creates a data frame of a network dataset where each row contains
 information from one resource.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.pickle_exists">
-<span class="sig-name descname"><span class="pre">pickle_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.pickle_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.pickle_exists" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">pickle_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.pickle_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.pickle_exists" title="Link to this definition">§</a></dt>
 <dd><p>Tells if a pickle dump of a particular dataset exists.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.pickle_path">
-<span class="sig-name descname"><span class="pre">pickle_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.pickle_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.pickle_path" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">pickle_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.pickle_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.pickle_path" title="Link to this definition">§</a></dt>
 <dd><p>Returns the path of the pickle dump for a dataset according to
 the current settings.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.reload">
-<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.reload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.reload" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.reload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.reload" title="Link to this definition">§</a></dt>
 <dd><p>Reloads the object from the module level.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.reload_module">
-<span class="sig-name descname"><span class="pre">reload_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.reload_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.reload_module" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">reload_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.reload_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.reload_module" title="Link to this definition">§</a></dt>
 <dd><p>Reloads the module of the database object of a particular dataset.
 E.g. in case of network datasets the <code class="docutils literal notranslate"><span class="pre">pypath.network</span></code> module
 will be reloaded.</p>
@@ -818,7 +832,7 @@ will be reloaded.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.remove_all">
-<span class="sig-name descname"><span class="pre">remove_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.remove_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.remove_all" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">remove_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.remove_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.remove_all" title="Link to this definition">§</a></dt>
 <dd><p>Removes all loaded datasets. Deletes the references to the objects
 in the module, however if you have references elsewhere in your
 code they remain in the memory.</p>
@@ -826,7 +840,7 @@ code they remain in the memory.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.remove_db">
-<span class="sig-name descname"><span class="pre">remove_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.remove_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.remove_db" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">remove_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.remove_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.remove_db" title="Link to this definition">§</a></dt>
 <dd><p>Removes a dataset. Deletes the references to the object
 in the module, however if you have references elsewhere in your
 code it remains in the memory.</p>
@@ -834,13 +848,13 @@ code it remains in the memory.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.set_network">
-<span class="sig-name descname"><span class="pre">set_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.set_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.set_network" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">set_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.set_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.set_network" title="Link to this definition">§</a></dt>
 <dd><p>Sets dataset as the default</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.omnipath.app.DatabaseManager.table_path">
-<span class="sig-name descname"><span class="pre">table_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.table_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.table_path" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">table_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/omnipath/app.html#DatabaseManager.table_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.omnipath.app.DatabaseManager.table_path" title="Link to this definition">§</a></dt>
 <dd><p>Returns the full path for a table (to be exported or imported).</p>
 </dd></dl>
 
@@ -853,11 +867,10 @@ code it remains in the memory.</p>
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="pypath.omnipath.app.html"
@@ -877,10 +890,7 @@ code it remains in the memory.</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -917,8 +927,8 @@ code it remains in the memory.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -936,7 +946,7 @@ code it remains in the memory.</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
@@ -944,10 +954,11 @@ code it remains in the memory.</p>
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
 </p></div>
       
     </div>

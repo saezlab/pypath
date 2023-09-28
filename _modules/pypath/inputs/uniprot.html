@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.uniprot &#8212; pypath 0.15.9 documentation</title>
+    <title>pypath.inputs.uniprot &#8212; pypath 0.15.11 documentation</title>
   
   
   
@@ -17,29 +17,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=77553476" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css?v=b64fc3cb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/inputs/uniprot';</script>
     <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
@@ -55,6 +56,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -95,7 +105,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -119,7 +130,6 @@
 </a></div>
     
   </div>
-  
   
   <div class=" navbar-header-items">
     
@@ -178,23 +188,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -210,8 +222,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -222,8 +234,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -234,8 +246,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
         <li class="nav-item">
           
@@ -246,8 +258,8 @@ document.write(`
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
         </li>
         <li class="nav-item">
           
@@ -258,8 +270,8 @@ document.write(`
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
         </li>
 </ul></div>
       
@@ -269,18 +281,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -355,10 +369,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -374,8 +388,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -386,8 +400,8 @@ document.write(`
           
           
           
-          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter"></i></span>
-            <label class="sr-only">Twitter</label></a>
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
         </li>
         <li class="nav-item">
           
@@ -398,8 +412,8 @@ document.write(`
           
           
           
-          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box"></i></span>
-            <label class="sr-only">PyPI</label></a>
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
         </li>
         <li class="nav-item">
           
@@ -410,8 +424,8 @@ document.write(`
           
           
           
-          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university"></i></span>
-            <label class="sr-only">OmniPath</label></a>
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
         </li>
         <li class="nav-item">
           
@@ -422,8 +436,8 @@ document.write(`
           
           
           
-          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users"></i></span>
-            <label class="sr-only">Saez Lab</label></a>
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
         </li>
 </ul></div>
         
@@ -457,8 +471,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../../contents.html" class="nav-link" aria-label="Home">
@@ -474,7 +488,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../inputs.html" class="nav-link">pypath.inputs</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.uniprot</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.input...</li>
   </ul>
 </nav>
 </div>
@@ -575,22 +589,33 @@ document.write(`
     <span class="p">}</span>
 
 
-<div class="viewcode-block" id="all_uniprots"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_uniprots.html#pypath.inputs.uniprot.all_uniprots">[docs]</a><span class="k">def</span> <span class="nf">all_uniprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="all_uniprots">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_uniprots.html#pypath.inputs.uniprot.all_uniprots">[docs]</a>
+<span class="k">def</span> <span class="nf">all_uniprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="all_swissprots"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_swissprots.html#pypath.inputs.uniprot.all_swissprots">[docs]</a><span class="k">def</span> <span class="nf">all_swissprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="all_swissprots">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_swissprots.html#pypath.inputs.uniprot.all_swissprots">[docs]</a>
+<span class="k">def</span> <span class="nf">all_swissprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="all_trembls"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_trembls.html#pypath.inputs.uniprot.all_trembls">[docs]</a><span class="k">def</span> <span class="nf">all_trembls</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="all_trembls">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_trembls.html#pypath.inputs.uniprot.all_trembls">[docs]</a>
+<span class="k">def</span> <span class="nf">all_trembls</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="init_db"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.init_db.html#pypath.inputs.uniprot.init_db">[docs]</a><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="init_db">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.init_db.html#pypath.inputs.uniprot.init_db">[docs]</a>
+<span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
     <span class="n">_swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
     <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
@@ -610,7 +635,10 @@ document.write(`
     <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.get_db.html#pypath.inputs.uniprot.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_db">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.get_db.html#pypath.inputs.uniprot.get_db">[docs]</a>
+<span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
     <span class="n">_swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
     <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">_swissprot</span><span class="p">)</span>
@@ -624,6 +652,7 @@ document.write(`
     <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="p">(</span>
@@ -635,7 +664,9 @@ document.write(`
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="valid_uniprot"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.valid_uniprot.html#pypath.inputs.uniprot.valid_uniprot">[docs]</a><span class="k">def</span> <span class="nf">valid_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="valid_uniprot">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.valid_uniprot.html#pypath.inputs.uniprot.valid_uniprot">[docs]</a>
+<span class="k">def</span> <span class="nf">valid_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if ``name`` fits the format requirements for UniProt accession</span>
 <span class="sd">    numbers.</span>
@@ -644,7 +675,10 @@ document.write(`
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">reac</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="is_uniprot"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_uniprot.html#pypath.inputs.uniprot.is_uniprot">[docs]</a><span class="k">def</span> <span class="nf">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="is_uniprot">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_uniprot.html#pypath.inputs.uniprot.is_uniprot">[docs]</a>
+<span class="k">def</span> <span class="nf">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tells if ``name`` is a UniProt ID of ``organism``.</span>
 <span class="sd">    If ``swissprot`` is None then both SwissProt and TrEMBL IDs will be</span>
@@ -654,7 +688,10 @@ document.write(`
     <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="is_swissprot"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_swissprot.html#pypath.inputs.uniprot.is_swissprot">[docs]</a><span class="k">def</span> <span class="nf">is_swissprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="is_swissprot">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_swissprot.html#pypath.inputs.uniprot.is_swissprot">[docs]</a>
+<span class="k">def</span> <span class="nf">is_swissprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tells if ``name`` is a SwissProt ID of ``organism``.</span>
 <span class="sd">    For TrEMBL IDs returns False.</span>
@@ -663,13 +700,17 @@ document.write(`
     <span class="k">return</span> <span class="n">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="is_trembl"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_trembl.html#pypath.inputs.uniprot.is_trembl">[docs]</a><span class="k">def</span> <span class="nf">is_trembl</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="is_trembl">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_trembl.html#pypath.inputs.uniprot.is_trembl">[docs]</a>
+<span class="k">def</span> <span class="nf">is_trembl</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tells if ``name`` is a TrEMBL ID of ``organism``.</span>
 <span class="sd">    For SwissProt IDs returns False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></div>
+
 
 
 <span class="n">_cleanup_timeloop</span> <span class="o">=</span> <span class="n">timeloop</span><span class="o">.</span><span class="n">Timeloop</span><span class="p">()</span>
@@ -711,7 +752,9 @@ document.write(`
         <span class="k">del</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="protein_datasheet"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.protein_datasheet.html#pypath.inputs.uniprot.protein_datasheet">[docs]</a><span class="k">def</span> <span class="nf">protein_datasheet</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+<div class="viewcode-block" id="protein_datasheet">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.protein_datasheet.html#pypath.inputs.uniprot.protein_datasheet">[docs]</a>
+<span class="k">def</span> <span class="nf">protein_datasheet</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;datasheet&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="n">identifier</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
@@ -732,7 +775,10 @@ document.write(`
         <span class="k">return</span> <span class="n">datasheet</span></div>
 
 
-<div class="viewcode-block" id="deleted_uniprot_genesymbol"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.deleted_uniprot_genesymbol.html#pypath.inputs.uniprot.deleted_uniprot_genesymbol">[docs]</a><span class="k">def</span> <span class="nf">deleted_uniprot_genesymbol</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+
+<div class="viewcode-block" id="deleted_uniprot_genesymbol">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.deleted_uniprot_genesymbol.html#pypath.inputs.uniprot.deleted_uniprot_genesymbol">[docs]</a>
+<span class="k">def</span> <span class="nf">deleted_uniprot_genesymbol</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves the archived datasheet for a deleted UniProt ID and returns</span>
 <span class="sd">    the Gene Symbol and the NCBI Taxonomy ID from the datasheet.</span>
@@ -758,6 +804,7 @@ document.write(`
             <span class="k">break</span>
 
     <span class="k">return</span> <span class="n">genesymbol</span><span class="p">,</span> <span class="n">ncbi_tax_id</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_protein_datasheet</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
@@ -794,7 +841,9 @@ document.write(`
     <span class="k">return</span> <span class="n">_redatasheet</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span> <span class="k">else</span> <span class="p">[]</span>
 
 
-<div class="viewcode-block" id="uniprot_history_recent_datasheet"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_history_recent_datasheet.html#pypath.inputs.uniprot.uniprot_history_recent_datasheet">[docs]</a><span class="k">def</span> <span class="nf">uniprot_history_recent_datasheet</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+<div class="viewcode-block" id="uniprot_history_recent_datasheet">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_history_recent_datasheet.html#pypath.inputs.uniprot.uniprot_history_recent_datasheet">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_history_recent_datasheet</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
 
     <span class="n">recent_version</span> <span class="o">=</span> <span class="n">uniprot_recent_version</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
 
@@ -835,6 +884,7 @@ document.write(`
     <span class="k">return</span> <span class="p">[]</span></div>
 
 
+
 <span class="n">UniprotRecordHistory</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
     <span class="s1">&#39;UniprotRecordHistory&#39;</span><span class="p">,</span>
     <span class="p">[</span>
@@ -850,7 +900,9 @@ document.write(`
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="uniprot_history"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_history.html#pypath.inputs.uniprot.uniprot_history">[docs]</a><span class="k">def</span> <span class="nf">uniprot_history</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+<div class="viewcode-block" id="uniprot_history">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_history.html#pypath.inputs.uniprot.uniprot_history">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_history</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves the history of a record.</span>
 <span class="sd">    Returns a generator iterating over the history from most recent to the</span>
@@ -883,7 +935,10 @@ document.write(`
                         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="uniprot_recent_version"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_recent_version.html#pypath.inputs.uniprot.uniprot_recent_version">[docs]</a><span class="k">def</span> <span class="nf">uniprot_recent_version</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+
+<div class="viewcode-block" id="uniprot_recent_version">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_recent_version.html#pypath.inputs.uniprot.uniprot_recent_version">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_recent_version</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
 
     <span class="k">for</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">uniprot_history</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
 
@@ -897,9 +952,13 @@ document.write(`
             <span class="k">return</span> <span class="n">version</span></div>
 
 
-<div class="viewcode-block" id="uniprot_deleted"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_deleted.html#pypath.inputs.uniprot.uniprot_deleted">[docs]</a><span class="k">def</span> <span class="nf">uniprot_deleted</span><span class="p">(</span><span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="uniprot_deleted">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_deleted.html#pypath.inputs.uniprot.uniprot_deleted">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_deleted</span><span class="p">(</span><span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">swissprot_deleted</span><span class="p">()</span> <span class="o">|</span> <span class="n">trembl_deleted</span><span class="p">(</span><span class="n">confirm</span> <span class="o">=</span> <span class="n">confirm</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_uniprot_deleted</span><span class="p">(</span><span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
@@ -932,17 +991,25 @@ document.write(`
     <span class="k">return</span> <span class="n">result</span>
 
 
-<div class="viewcode-block" id="swissprot_deleted"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.swissprot_deleted.html#pypath.inputs.uniprot.swissprot_deleted">[docs]</a><span class="k">def</span> <span class="nf">swissprot_deleted</span><span class="p">():</span>
+<div class="viewcode-block" id="swissprot_deleted">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.swissprot_deleted.html#pypath.inputs.uniprot.swissprot_deleted">[docs]</a>
+<span class="k">def</span> <span class="nf">swissprot_deleted</span><span class="p">():</span>
 
     <span class="k">return</span> <span class="n">_uniprot_deleted</span><span class="p">(</span><span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="trembl_deleted"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.trembl_deleted.html#pypath.inputs.uniprot.trembl_deleted">[docs]</a><span class="k">def</span> <span class="nf">trembl_deleted</span><span class="p">(</span><span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="trembl_deleted">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.trembl_deleted.html#pypath.inputs.uniprot.trembl_deleted">[docs]</a>
+<span class="k">def</span> <span class="nf">trembl_deleted</span><span class="p">(</span><span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="n">_uniprot_deleted</span><span class="p">(</span><span class="n">swissprot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_uniprot_sec"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.get_uniprot_sec.html#pypath.inputs.uniprot.get_uniprot_sec">[docs]</a><span class="k">def</span> <span class="nf">get_uniprot_sec</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_uniprot_sec">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.get_uniprot_sec.html#pypath.inputs.uniprot.get_uniprot_sec">[docs]</a>
+<span class="k">def</span> <span class="nf">get_uniprot_sec</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Downloads and processes the mapping between secondary and</span>
 <span class="sd">    primary UniProt IDs.</span>
@@ -978,6 +1045,7 @@ document.write(`
         <span class="k">yield</span> <span class="n">line</span></div>
 
 
+
 <span class="n">_uniprot_fields</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;function&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_function&#39;</span><span class="p">,</span>
     <span class="s1">&#39;activity_regulation&#39;</span><span class="p">:</span> <span class="s1">&#39;cc_activity_regulation&#39;</span><span class="p">,</span>
@@ -996,7 +1064,9 @@ document.write(`
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="uniprot_data"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_data.html#pypath.inputs.uniprot.uniprot_data">[docs]</a><span class="k">def</span> <span class="nf">uniprot_data</span><span class="p">(</span>
+<div class="viewcode-block" id="uniprot_data">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_data.html#pypath.inputs.uniprot.uniprot_data">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_data</span><span class="p">(</span>
         <span class="n">field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">organism</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
         <span class="n">reviewed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -1073,7 +1143,10 @@ document.write(`
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="uniprot_preprocess"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_preprocess.html#pypath.inputs.uniprot.uniprot_preprocess">[docs]</a><span class="k">def</span> <span class="nf">uniprot_preprocess</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="uniprot_preprocess">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_preprocess.html#pypath.inputs.uniprot.uniprot_preprocess">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_preprocess</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
     <span class="n">relabel</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[A-Z\s]+:\s&#39;</span><span class="p">)</span>
     <span class="n">reisoform</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\[[-\w\s]+\]:?\s?&#39;</span><span class="p">)</span>
@@ -1120,7 +1193,10 @@ document.write(`
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="uniprot_locations"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_locations.html#pypath.inputs.uniprot.uniprot_locations">[docs]</a><span class="k">def</span> <span class="nf">uniprot_locations</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="uniprot_locations">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_locations.html#pypath.inputs.uniprot.uniprot_locations">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_locations</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
 
     <span class="n">UniprotLocation</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
@@ -1154,7 +1230,10 @@ document.write(`
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="uniprot_keywords"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_keywords.html#pypath.inputs.uniprot.uniprot_keywords">[docs]</a><span class="k">def</span> <span class="nf">uniprot_keywords</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="uniprot_keywords">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_keywords.html#pypath.inputs.uniprot.uniprot_keywords">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_keywords</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
     <span class="n">UniprotKeyword</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
         <span class="s1">&#39;UniprotKeyword&#39;</span><span class="p">,</span>
@@ -1185,7 +1264,10 @@ document.write(`
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="uniprot_families"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_families.html#pypath.inputs.uniprot.uniprot_families">[docs]</a><span class="k">def</span> <span class="nf">uniprot_families</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="uniprot_families">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_families.html#pypath.inputs.uniprot.uniprot_families">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_families</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
     <span class="n">refamily</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(.+) (?:super)?family(?:, (.*) subfamily)?&#39;</span><span class="p">)</span>
 
@@ -1225,7 +1307,10 @@ document.write(`
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="uniprot_topology"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_topology.html#pypath.inputs.uniprot.uniprot_topology">[docs]</a><span class="k">def</span> <span class="nf">uniprot_topology</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="uniprot_topology">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_topology.html#pypath.inputs.uniprot.uniprot_topology">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_topology</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
     <span class="n">retopo</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;TOPO_DOM (\d+)\.\.(\d+);\s+/note=&quot;(\w+)&quot;&#39;</span><span class="p">)</span>
     <span class="n">retm</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(TRANSMEM|INTRAMEM) (\d+)\.\.(\d+);&#39;</span><span class="p">)</span>
@@ -1311,7 +1396,10 @@ document.write(`
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="uniprot_tissues"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_tissues.html#pypath.inputs.uniprot.uniprot_tissues">[docs]</a><span class="k">def</span> <span class="nf">uniprot_tissues</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="uniprot_tissues">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_tissues.html#pypath.inputs.uniprot.uniprot_tissues">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_tissues</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">reviewed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
     <span class="n">reref</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s?\{.*\}\s?&#39;</span><span class="p">)</span>
     <span class="n">resep</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
@@ -1702,7 +1790,10 @@ document.write(`
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="uniprot_taxonomy"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_taxonomy.html#pypath.inputs.uniprot.uniprot_taxonomy">[docs]</a><span class="k">def</span> <span class="nf">uniprot_taxonomy</span><span class="p">(</span>
+
+<div class="viewcode-block" id="uniprot_taxonomy">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_taxonomy.html#pypath.inputs.uniprot.uniprot_taxonomy">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_taxonomy</span><span class="p">(</span>
         <span class="n">ncbi_tax_ids</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1757,6 +1848,7 @@ document.write(`
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
+
 <span class="n">Taxon</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
     <span class="s1">&#39;Taxon&#39;</span><span class="p">,</span>
     <span class="p">[</span>
@@ -1769,7 +1861,9 @@ document.write(`
 <span class="n">Taxon</span><span class="o">.</span><span class="fm">__new__</span><span class="o">.</span><span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="uniprot_ncbi_taxids"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_ncbi_taxids.html#pypath.inputs.uniprot.uniprot_ncbi_taxids">[docs]</a><span class="k">def</span> <span class="nf">uniprot_ncbi_taxids</span><span class="p">():</span>
+<div class="viewcode-block" id="uniprot_ncbi_taxids">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_ncbi_taxids.html#pypath.inputs.uniprot.uniprot_ncbi_taxids">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_ncbi_taxids</span><span class="p">():</span>
 
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;taxids&#39;</span><span class="p">]</span>
 
@@ -1803,7 +1897,10 @@ document.write(`
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="uniprot_ncbi_taxids_2"><a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_ncbi_taxids_2.html#pypath.inputs.uniprot.uniprot_ncbi_taxids_2">[docs]</a><span class="k">def</span> <span class="nf">uniprot_ncbi_taxids_2</span><span class="p">():</span>
+
+<div class="viewcode-block" id="uniprot_ncbi_taxids_2">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.uniprot_ncbi_taxids_2.html#pypath.inputs.uniprot.uniprot_ncbi_taxids_2">[docs]</a>
+<span class="k">def</span> <span class="nf">uniprot_ncbi_taxids_2</span><span class="p">():</span>
 
     <span class="n">reline</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
         <span class="sa">r</span><span class="s1">&#39;(?:([A-Z\d]+)\s+)?&#39;</span> <span class="c1"># code</span>
@@ -1853,22 +1950,19 @@ document.write(`
         <span class="n">result</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;ncbi_id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
+
 </pre></div>
 
                 </article>
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1905,8 +1999,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1924,7 +2018,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
@@ -1932,10 +2026,11 @@ document.write(`
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
 </p></div>
       
     </div>
