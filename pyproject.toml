@@ -83,6 +83,9 @@ rdkit = { version = "*", optional = true }
 "epam.indigo" = { version = "*", optional = true }
 pysftp = "^0.2.9"
 typing_extensions = "*"
+tornado = ">=3.6.6"
+cryptography = ">=41.0.4"
+certifi = ">=2023.7.22"
 
 [tool.poetry.extras]
 # bel = [
@@ -115,6 +118,7 @@ pydata-sphinx-theme = "*"
 sphinx_remove_toctrees = "*"
 jupyter-contrib-nbextensions = { git = "https://github.com/deeenes/jupyter_contrib_nbextensions.git", branch = "master" }
 nbsphinx = { git = "https://github.com/deeenes/nbsphinx.git", branch = "timings" }
+jupyter-server = ">=2.7.2"
 
 [tool.poetry.scripts]
 bio2bel_omnipath = "pypath.omnipath.bel:main"
