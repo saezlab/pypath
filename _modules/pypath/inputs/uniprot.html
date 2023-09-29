@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.uniprot &#8212; pypath 0.15.11 documentation</title>
+    <title>pypath.inputs.uniprot &#8212; pypath 0.15.12 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../../_static/documentation_options.js?v=5df89558"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -532,28 +532,20 @@ document.write(`
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
 
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 
-<span class="kn">import</span> <span class="nn">timeloop</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
 <span class="kn">import</span> <span class="nn">pypath.share.constants</span> <span class="k">as</span> <span class="nn">constants</span>
-<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
-<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
 
 <span class="n">_logger</span> <span class="o">=</span> <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;uniprot_input&#39;</span><span class="p">)</span>
-
-<span class="n">db</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">_cleanup_period</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapper_cleanup_interval&#39;</span><span class="p">)</span>
-<span class="n">_lifetime</span> <span class="o">=</span> <span class="mi">300</span>
-<span class="n">_last_used</span> <span class="o">=</span> <span class="p">{}</span>
-
 
 <span class="n">_redatasheet</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([A-Z\s]</span><span class="si">{2}</span><span class="s1">)\s*([^\n\r]+)[\n\r]+&#39;</span><span class="p">)</span>
 
@@ -589,70 +581,6 @@ document.write(`
     <span class="p">}</span>
 
 
-<div class="viewcode-block" id="all_uniprots">
-<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_uniprots.html#pypath.inputs.uniprot.all_uniprots">[docs]</a>
-<span class="k">def</span> <span class="nf">all_uniprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-
-    <span class="k">return</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="all_swissprots">
-<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_swissprots.html#pypath.inputs.uniprot.all_swissprots">[docs]</a>
-<span class="k">def</span> <span class="nf">all_swissprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
-
-    <span class="k">return</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="all_trembls">
-<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.all_trembls.html#pypath.inputs.uniprot.all_trembls">[docs]</a>
-<span class="k">def</span> <span class="nf">all_trembls</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
-
-    <span class="k">return</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="init_db">
-<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.init_db.html#pypath.inputs.uniprot.init_db">[docs]</a>
-<span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-
-    <span class="n">_swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
-    <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-        <span class="s1">&#39;Loading list of all UniProt IDs for &#39;</span>
-        <span class="s1">&#39;organism `</span><span class="si">%u</span><span class="s1">` (only SwissProt: </span><span class="si">%s</span><span class="s1">).&#39;</span> <span class="o">%</span> <span class="p">(</span>
-            <span class="n">organism</span><span class="p">,</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">swissprot</span><span class="p">),</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">_swissprot</span><span class="p">)</span>
-
-    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_all_uniprots</span><span class="p">(</span>
-        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
-        <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
-
-
-
-<div class="viewcode-block" id="get_db">
-<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.get_db.html#pypath.inputs.uniprot.get_db">[docs]</a>
-<span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-
-    <span class="n">_swissprot</span> <span class="o">=</span> <span class="n">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="n">_swissprot</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]:</span>
-
-        <span class="n">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">)</span>
-
-    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span></div>
-
-
-
 <span class="k">def</span> <span class="nf">_swissprot_param</span><span class="p">(</span><span class="n">swissprot</span><span class="p">):</span>
 
     <span class="k">return</span> <span class="p">(</span>
@@ -674,82 +602,6 @@ document.write(`
 
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">reac</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name</span><span class="p">))</span></div>
 
-
-
-<div class="viewcode-block" id="is_uniprot">
-<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_uniprot.html#pypath.inputs.uniprot.is_uniprot">[docs]</a>
-<span class="k">def</span> <span class="nf">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Tells if ``name`` is a UniProt ID of ``organism``.</span>
-<span class="sd">    If ``swissprot`` is None then both SwissProt and TrEMBL IDs will be</span>
-<span class="sd">    considered.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="is_swissprot">
-<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_swissprot.html#pypath.inputs.uniprot.is_swissprot">[docs]</a>
-<span class="k">def</span> <span class="nf">is_swissprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Tells if ``name`` is a SwissProt ID of ``organism``.</span>
-<span class="sd">    For TrEMBL IDs returns False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="is_trembl">
-<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.is_trembl.html#pypath.inputs.uniprot.is_trembl">[docs]</a>
-<span class="k">def</span> <span class="nf">is_trembl</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Tells if ``name`` is a TrEMBL ID of ``organism``.</span>
-<span class="sd">    For SwissProt IDs returns False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">is_uniprot</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span> <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></div>
-
-
-
-<span class="n">_cleanup_timeloop</span> <span class="o">=</span> <span class="n">timeloop</span><span class="o">.</span><span class="n">Timeloop</span><span class="p">()</span>
-<span class="n">_cleanup_timeloop</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="mi">9999</span><span class="p">)</span>
-
-<span class="nd">@_cleanup_timeloop</span><span class="o">.</span><span class="n">job</span><span class="p">(</span>
-    <span class="n">interval</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span>
-        <span class="n">seconds</span> <span class="o">=</span> <span class="n">_cleanup_period</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-<span class="k">def</span> <span class="nf">_cleanup</span><span class="p">():</span>
-
-    <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-
-        <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">_lifetime</span><span class="p">:</span>
-
-            <span class="n">_remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-
-<span class="n">_cleanup_timeloop</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">block</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_remove</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-
-    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]:</span>
-
-        <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-            <span class="s1">&#39;Removing UniProt ID list for &#39;</span>
-            <span class="s1">&#39;organism `</span><span class="si">%u</span><span class="s1">` (SwissProt: </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span>
-                <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="k">del</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">]:</span>
-
-        <span class="k">del</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_last_used&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="protein_datasheet">
@@ -1948,6 +1800,80 @@ document.write(`
     <span class="k">if</span> <span class="n">entry</span> <span class="ow">and</span> <span class="s1">&#39;ncbi_id&#39;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
 
         <span class="n">result</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;ncbi_id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="idmapping_idtypes">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.idmapping_idtypes.html#pypath.inputs.uniprot.idmapping_idtypes">[docs]</a>
+<span class="k">def</span> <span class="nf">idmapping_idtypes</span><span class="p">(</span>
+        <span class="n">pairs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">raw</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Identifier types in the UniProt ID mapping service.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pairs:</span>
+<span class="sd">            Process the data into pairs of identifiers.</span>
+<span class="sd">        raw:</span>
+<span class="sd">            Return the raw data as extracted from JSON.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The JSON contents as a dict if `raw` is `True`,</span>
+<span class="sd">        a list of tuples if `pairs` is `True`,</span>
+<span class="sd">        otherwise a set of tuples of ID types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_idmapping&#39;</span><span class="p">][</span><span class="s1">&#39;fields&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">raw</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;groups&#39;</span><span class="p">])</span><span class="o">.</span>
+        <span class="n">explode</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">)</span><span class="o">.</span>
+        <span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">groups</span><span class="p">[</span><span class="s1">&#39;groupName&#39;</span><span class="p">],</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+            <span class="p">],</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span>
+        <span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;from_&#39;</span><span class="p">})</span>
+    <span class="p">)</span>
+
+    <span class="n">rules</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rules&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pairs</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;groups&#39;</span><span class="p">:</span> <span class="n">groups</span><span class="p">,</span> <span class="s1">&#39;rules&#39;</span><span class="p">:</span> <span class="n">rules</span><span class="p">}</span>
+
+    <span class="n">rules</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ruleId</span><span class="p">):</span> <span class="n">r</span><span class="o">.</span><span class="n">tos</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rules</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()}</span>
+    <span class="n">groups</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">idtype</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+
+        <span class="n">tos</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">idtype</span><span class="o">.</span><span class="n">ruleId</span><span class="p">),</span> <span class="p">[])</span>
+
+        <span class="n">from_to</span> <span class="o">=</span> <span class="p">{(</span><span class="n">idtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tos</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">idtype</span><span class="o">.</span><span class="n">from_</span><span class="p">:</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">from_to</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">idtype</span><span class="o">.</span><span class="n">to</span><span class="p">:</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">t</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">from_to</span><span class="p">})</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
 

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>pypath.inputs.uniprot.is_uniprot &#8212; pypath 0.15.11 documentation</title>
+    <title>pypath.inputs.uniprot_db.get_db &#8212; pypath 0.15.12 documentation</title>
   
   
   
@@ -37,18 +37,18 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../_static/documentation_options.js?v=5df89558"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.uniprot.is_uniprot';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.uniprot_db.get_db';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.uniprot.protein_datasheet" href="pypath.inputs.uniprot.protein_datasheet.html" />
-    <link rel="prev" title="pypath.inputs.uniprot.is_trembl" href="pypath.inputs.uniprot.is_trembl.html" />
+    <link rel="next" title="pypath.inputs.uniprot_db.init_db" href="pypath.inputs.uniprot_db.init_db.html" />
+    <link rel="prev" title="pypath.inputs.uniprot_db.all_uniprots" href="pypath.inputs.uniprot_db.all_uniprots.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -489,7 +489,7 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.inputs.uniprot.html" class="nav-link">pypath.inputs.uniprot</a></li>
+    <li class="breadcrumb-item"><a href="pypath.inputs.uniprot_db.html" class="nav-link">pypath.inputs.uniprot_db</a></li>
     
     <li class="breadcrumb-item active" aria-current="page">pypath.input...</li>
   </ul>
@@ -508,15 +508,12 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-inputs-uniprot-is-uniprot">
-<h1>pypath.inputs.uniprot.is_uniprot<a class="headerlink" href="#pypath-inputs-uniprot-is-uniprot" title="Link to this heading">§</a></h1>
+  <section id="pypath-inputs-uniprot-db-get-db">
+<h1>pypath.inputs.uniprot_db.get_db<a class="headerlink" href="#pypath-inputs-uniprot-db-get-db" title="Link to this heading">§</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.uniprot.is_uniprot">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.uniprot.</span></span><span class="sig-name descname"><span class="pre">is_uniprot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organism</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swissprot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/uniprot.html#is_uniprot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.uniprot.is_uniprot" title="Link to this definition">§</a></dt>
-<dd><p>Tells if <code class="docutils literal notranslate"><span class="pre">name</span></code> is a UniProt ID of <code class="docutils literal notranslate"><span class="pre">organism</span></code>.
-If <code class="docutils literal notranslate"><span class="pre">swissprot</span></code> is None then both SwissProt and TrEMBL IDs will be
-considered.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="pypath.inputs.uniprot_db.get_db">
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.uniprot_db.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">organism</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swissprot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/uniprot_db.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.uniprot_db.get_db" title="Link to this definition">§</a></dt>
+<dd></dd></dl>
 
 </section>
 
@@ -531,20 +528,20 @@ considered.</p>
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.inputs.uniprot.is_trembl.html"
+       href="pypath.inputs.uniprot_db.all_uniprots.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.inputs.uniprot.is_trembl</p>
+        <p class="prev-next-title">pypath.inputs.uniprot_db.all_uniprots</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.inputs.uniprot.protein_datasheet.html"
+       href="pypath.inputs.uniprot_db.init_db.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.inputs.uniprot.protein_datasheet</p>
+        <p class="prev-next-title">pypath.inputs.uniprot_db.init_db</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

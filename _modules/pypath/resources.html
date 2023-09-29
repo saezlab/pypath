@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.resources &#8212; pypath 0.15.11 documentation</title>
+    <title>pypath.resources &#8212; pypath 0.15.12 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../_static/documentation_options.js?v=5df89558"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -520,8 +520,6 @@ document.write(`
 <span class="c1">#  Website: https://pypath.omnipathdb.org/</span>
 <span class="c1">#</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">controller</span> <span class="k">as</span> <span class="n">_controller_mod</span>
-
 
 <div class="viewcode-block" id="get_controller">
 <a class="viewcode-back" href="../../api/pypath.resources.get_controller.html#pypath.resources.get_controller">[docs]</a>
@@ -532,6 +530,8 @@ document.write(`
 <span class="sd">    The controller instantiated only once by default, at the first access</span>
 <span class="sd">    attempt. The instance is stored in the module and provided on demand.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">controller</span> <span class="k">as</span> <span class="n">_controller_mod</span>
 
     <span class="k">if</span> <span class="s1">&#39;_controller&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="ow">or</span> <span class="n">reload</span><span class="p">:</span>
 

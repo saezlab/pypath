@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.internals.input_formats &#8212; pypath 0.15.11 documentation</title>
+    <title>pypath.internals.input_formats &#8212; pypath 0.15.12 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../../_static/documentation_options.js?v=5df89558"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -527,6 +527,8 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
 <span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
 <span class="kn">import</span> <span class="nn">pypath.share.constants</span> <span class="k">as</span> <span class="nn">constants</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.unichem</span> <span class="k">as</span> <span class="nn">unichem_input</span>
 
 <span class="n">_logger</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;input_formats&#39;</span><span class="p">)</span>
 
@@ -553,6 +555,9 @@ document.write(`
     <span class="s1">&#39;enst&#39;</span><span class="p">:</span> <span class="s1">&#39;xref_ensembl&#39;</span><span class="p">,</span>
     <span class="s1">&#39;uniprot-entry&#39;</span><span class="p">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span>
     <span class="s1">&#39;protein-name&#39;</span><span class="p">:</span> <span class="s1">&#39;protein_name&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gene-name&#39;</span><span class="p">:</span> <span class="s1">&#39;gene_names&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gene-orf&#39;</span><span class="p">:</span> <span class="s1">&#39;gene_orf&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gene-oln&#39;</span><span class="p">:</span> <span class="s1">&#39;gene_oln&#39;</span><span class="p">,</span>
     <span class="s1">&#39;ec&#39;</span><span class="p">:</span> <span class="s1">&#39;ec&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
@@ -738,8 +743,24 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_b</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_b</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">resource_id_type_a</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">possible</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">id_type_a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">id_type_b</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_id_types</span> <span class="ow">or</span>
+                <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 
@@ -789,7 +810,18 @@ document.write(`
 
             <span class="n">other_organism</span><span class="o">.</span><span class="n">input_args</span><span class="p">[</span><span class="s1">&#39;organism&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span>
 
-        <span class="k">return</span> <span class="n">other_organism</span></div>
+        <span class="k">return</span> <span class="n">other_organism</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">possible</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">id_type_a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">id_type_b</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
 
@@ -798,6 +830,7 @@ document.write(`
 <span class="k">class</span> <span class="nc">UniprotMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
 
     <span class="n">_resource_id_type_b</span> <span class="o">=</span> <span class="s1">&#39;accession&#39;</span>
+    <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">AC_QUERY</span>
 
 <div class="viewcode-block" id="UniprotMapping.__init__">
 <a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UniprotMapping.html#pypath.internals.input_formats.UniprotMapping.__init__">[docs]</a>
@@ -881,7 +914,26 @@ document.write(`
         <span class="n">id_type</span> <span class="o">=</span> <span class="n">AC_QUERY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">id_type</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">id_type</span></div>
-</div>
+
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">possible</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">id_type_a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">id_type_b</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_id_types</span> <span class="ow">or</span>
+                <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="ow">or</span>
+                <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;uniprot&#39;</span> <span class="ow">or</span>
+                <span class="n">id_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;xref_&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 
@@ -903,7 +955,7 @@ document.write(`
 <span class="sd">    :arg str uniprot_id_type_b:</span>
 <span class="sd">        Same as above just for the other ID type.</span>
 <span class="sd">    :arg bool swissprot:</span>
-<span class="sd">        DOwnload data only for SwissProt IDs.</span>
+<span class="sd">        Download data only for SwissProt IDs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="n">AC_MAPPING</span>
@@ -998,7 +1050,25 @@ document.write(`
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_uniprotkb_id_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">id_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 
-        <span class="k">return</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_uniprot</span></div>
+        <span class="k">return</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_uniprot</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">possible</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">id_type_a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">id_type_b</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+        <span class="n">id_type_a</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_uniprot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_a</span><span class="p">)</span>
+        <span class="n">id_type_a</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_a</span><span class="p">)</span>
+        <span class="n">id_type_b</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_to_uniprot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type_b</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span>
+        <span class="n">id_type_b</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type_b</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span>
+
+        <span class="n">pairs</span> <span class="o">=</span> <span class="n">uniprot_input</span><span class="o">.</span><span class="n">idmapping_idtypes</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pairs</span></div>
 
 
 
@@ -1057,7 +1127,26 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">pro_id_type</span> <span class="o">=</span> <span class="n">pro_id_type</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_mapping</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id_type_b</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span></div>
-</div>
+
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">possible</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">id_type_a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">id_type_b</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+        <span class="n">id_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">id_type_a</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">id_types</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pro&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">id_types</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_types</span> <span class="ow">or</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">id_types</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 
@@ -1104,6 +1193,11 @@ document.write(`
 <div class="viewcode-block" id="UnichemMapping">
 <a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UnichemMapping.html#pypath.internals.input_formats.UnichemMapping">[docs]</a>
 <span class="k">class</span> <span class="nc">UnichemMapping</span><span class="p">(</span><span class="n">MappingInput</span><span class="p">):</span>
+
+    <span class="n">_resource_id_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">id_type</span><span class="p">:</span> <span class="n">id_type</span>
+        <span class="k">for</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="n">unichem_input</span><span class="o">.</span><span class="n">unichem_sources</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="p">}</span>
 
 <div class="viewcode-block" id="UnichemMapping.__init__">
 <a class="viewcode-back" href="../../../api/pypath.internals.input_formats.UnichemMapping.html#pypath.internals.input_formats.UnichemMapping.__init__">[docs]</a>
@@ -1261,7 +1355,7 @@ document.write(`
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_process_id_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">id_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_process_id_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">id_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fail</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
         <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">id_type</span> <span class="o">=</span> <span class="s1">&#39;affy&#39;</span> <span class="k">if</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;affymetrix&#39;</span> <span class="k">else</span> <span class="n">id_type</span>
@@ -1272,18 +1366,38 @@ document.write(`
             <span class="n">id_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;ensg&#39;</span><span class="p">,</span> <span class="s1">&#39;enst&#39;</span><span class="p">,</span> <span class="s1">&#39;ensp&#39;</span><span class="p">}</span>
         <span class="p">):</span>
 
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s1">&#39;Unknown ID type for microarray probe mapping: `</span><span class="si">%s</span><span class="s1">`. &#39;</span>
-                <span class="s1">&#39;Microarray ID types include `affy`, `illumina`, `agilent`, &#39;</span>
-                <span class="s1">&#39;`codelink` and `phalanx`, all these can be translated to &#39;</span>
-                <span class="s1">&#39;Ensembl gene, transcript or peptide IDs: `ensg`, `enst` &#39;</span>
-                <span class="s1">&#39;or `ensp`. If you translate to some other ID type, do it &#39;</span>
-                <span class="s1">&#39;in multiple steps.&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">id_type</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fail</span><span class="p">:</span>
 
-        <span class="k">return</span> <span class="n">id_type</span></div>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;Unknown ID type for microarray probe mapping: `</span><span class="si">%s</span><span class="s1">`. &#39;</span>
+                    <span class="s1">&#39;Microarray ID types include `affy`, `illumina`, `agilent`, &#39;</span>
+                    <span class="s1">&#39;`codelink` and `phalanx`, all these can be translated to &#39;</span>
+                    <span class="s1">&#39;Ensembl gene, transcript or peptide IDs: `ensg`, `enst` &#39;</span>
+                    <span class="s1">&#39;or `ensp`. If you translate to some other ID type, do it &#39;</span>
+                    <span class="s1">&#39;in multiple steps.&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">id_type</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">id_type</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">possible</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">id_type_a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">id_type_b</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_process_id_type</span><span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">fail</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_process_id_type</span><span class="p">(</span><span class="n">id_type_b</span><span class="p">,</span> <span class="n">fail</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 

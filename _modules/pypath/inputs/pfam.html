@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.pfam &#8212; pypath 0.15.11 documentation</title>
+    <title>pypath.inputs.pfam &#8212; pypath 0.15.12 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../../_static/documentation_options.js?v=5df89558"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -539,7 +539,7 @@ document.write(`
 <span class="k">except</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">urllib.request</span> <span class="k">as</span> <span class="nn">urllib2</span>
 
-<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot_db</span> <span class="k">as</span> <span class="nn">uniprot_db</span>
 <span class="kn">import</span> <span class="nn">pypath.share.progress</span> <span class="k">as</span> <span class="nn">progress</span>
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
@@ -548,7 +548,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
 
-<span class="n">_logger</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;uniprot_input&#39;</span><span class="p">)</span>
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;pfam_input&#39;</span><span class="p">)</span>
 <span class="n">_log</span> <span class="o">=</span> <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span>
 
 
@@ -567,7 +567,7 @@ document.write(`
 <span class="sd">        Pfam ACs, the second the other way around.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span> <span class="ow">or</span> <span class="n">uniprot_input</span><span class="o">.</span><span class="n">all_swissprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+    <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span> <span class="ow">or</span> <span class="n">uniprot_db</span><span class="o">.</span><span class="n">all_swissprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
     <span class="n">uniprots</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">uniprots</span><span class="p">)</span>
     <span class="n">u_pfam</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
     <span class="n">pfam_u</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
@@ -698,7 +698,7 @@ document.write(`
     <span class="k">if</span> <span class="ow">not</span> <span class="n">uniprots</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pfams</span><span class="p">:</span>
 
         <span class="n">organism</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
-        <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprot_input</span><span class="o">.</span><span class="n">all_swissprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+        <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprot_db</span><span class="o">.</span><span class="n">all_swissprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cachefile</span><span class="p">):</span>
 

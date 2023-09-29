@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.threedid &#8212; pypath 0.15.11 documentation</title>
+    <title>pypath.inputs.threedid &#8212; pypath 0.15.12 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../../_static/documentation_options.js?v=5df89558"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -533,7 +533,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.pfam</span> <span class="k">as</span> <span class="nn">pfam_input</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.pdb</span> <span class="k">as</span> <span class="nn">pdb_input</span>
-<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot_db</span> <span class="k">as</span> <span class="nn">uniprot_db</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.pdb</span> <span class="k">as</span> <span class="nn">pdb_utils</span>
 <span class="kn">import</span> <span class="nn">pypath.share.cache</span> <span class="k">as</span> <span class="nn">cache</span>
 <span class="kn">import</span> <span class="nn">pypath.internals.intera</span> <span class="k">as</span> <span class="nn">intera</span>
@@ -766,7 +766,7 @@ document.write(`
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="n">u_pdb</span><span class="p">,</span> <span class="n">pdb_u</span> <span class="o">=</span> <span class="n">pdb_input</span><span class="o">.</span><span class="n">pdb_chains</span><span class="p">()</span>
-    <span class="n">all_unip</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">uniprot_input</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">))</span>
+    <span class="n">all_unip</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">uniprot_db</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">all_unip</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pdb_u</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 

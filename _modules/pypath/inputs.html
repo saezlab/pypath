@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs &#8212; pypath 0.15.11 documentation</title>
+    <title>pypath.inputs &#8212; pypath 0.15.12 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../_static/documentation_options.js?v=5df89558"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -534,20 +534,20 @@ document.write(`
 <span class="k">def</span> <span class="nf">get_method</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">method_name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves a method from a submodule of this module (``inputs``) by its</span>
-<span class="sd">    name. E.g. for ``&#39;uniprot.all_uniprots&#39;`` it returns the ``all_uniprots``</span>
-<span class="sd">    method from the ``pypath.inputs.uniprot`` module.</span>
+<span class="sd">    name. E.g. for ``&#39;uniprot_db.all_uniprots&#39;`` it returns the ``all_uniprots``</span>
+<span class="sd">    method from the ``pypath.inputs.uniprot_db`` module.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Selecting input method (step 1): module `</span><span class="si">%s</span><span class="s1">`, method `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="n">module_name</span><span class="p">,</span>
             <span class="n">method_name</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">module_name</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">module_name</span>
-    
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">method_name</span><span class="p">:</span>
 
         <span class="n">module_method</span> <span class="o">=</span> <span class="n">module_name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
@@ -556,15 +556,15 @@ document.write(`
 
     <span class="n">module_name</span> <span class="o">=</span> <span class="n">module_name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">module_name</span> <span class="o">=</span> <span class="s1">&#39;pypath.inputs.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">module_name</span>
-    
+
     <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Selecting input method (step 2): module `</span><span class="si">%s</span><span class="s1">`, method `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="n">module_name</span><span class="p">,</span>
             <span class="n">method_name</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
-    
+
     <span class="k">try</span><span class="p">:</span>
-        
+
         <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Importing module `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">module_name</span><span class="p">)</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
 

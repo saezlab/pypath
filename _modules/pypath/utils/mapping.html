@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.utils.mapping &#8212; pypath 0.15.11 documentation</title>
+    <title>pypath.utils.mapping &#8212; pypath 0.15.12 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../../_static/documentation_options.js?v=5df89558"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -569,6 +569,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs</span> <span class="k">as</span> <span class="nn">inputs</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.uniprot</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot_db</span> <span class="k">as</span> <span class="nn">uniprot_db</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.pro</span> <span class="k">as</span> <span class="nn">pro_input</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.biomart</span> <span class="k">as</span> <span class="nn">biomart_input</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.unichem</span> <span class="k">as</span> <span class="nn">unichem_input</span>
@@ -1182,12 +1183,23 @@ document.write(`
         <span class="n">uniprot_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_mapping_uniprot_list</span><span class="p">(</span>
             <span class="n">upload_ac_list</span> <span class="o">=</span> <span class="n">upload_ac_list</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">ens</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_a</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;ens&#39;</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_b</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;ens&#39;</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="s1">&#39;ensembl&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_a</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span>
+            <span class="s1">&#39;ensembl&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">id_type_b</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">reens</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(ENS[A-Z]+\d+)\.\d+&#39;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">uniprot_data</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">l</span><span class="p">:</span>
 
                 <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">ens</span><span class="p">:</span>
+
+                <span class="n">l</span> <span class="o">=</span> <span class="n">reens</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
 
             <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
 
@@ -1227,7 +1239,7 @@ document.write(`
 
         <span class="n">swissprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">swissprot</span> <span class="k">if</span> <span class="n">swissprot</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">swissprot</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprot_input</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprot_db</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
             <span class="n">swissprot</span> <span class="o">=</span> <span class="n">swissprot</span><span class="p">,</span>
         <span class="p">)</span></div>
@@ -1301,6 +1313,7 @@ document.write(`
 
             <span class="n">run_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="n">run_url</span><span class="p">,</span> <span class="s1">&#39;post&#39;</span><span class="p">:</span> <span class="n">post</span><span class="p">}</span>
             <span class="n">nocache</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cache&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+            <span class="n">large</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;silent&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
             <span class="n">cache_path</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="o">.</span><span class="n">cache_path</span><span class="p">(</span><span class="o">**</span><span class="n">run_args</span><span class="p">)</span>
 
@@ -1387,13 +1400,12 @@ document.write(`
                     <span class="n">res_c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
                         <span class="n">url</span> <span class="o">=</span> <span class="n">result_url</span><span class="p">,</span>
                         <span class="n">cache</span> <span class="o">=</span> <span class="n">cache_path</span><span class="p">,</span>
-                        <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                        <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">large</span>
                     <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
 
-                <span class="n">res_c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="o">**</span><span class="n">run_args</span><span class="p">)</span>
+                <span class="n">res_c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="o">**</span><span class="n">run_args</span><span class="p">,</span> <span class="o">**</span><span class="n">large</span><span class="p">)</span>
 
             <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">res_c</span><span class="o">.</span><span class="n">fileobj</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span>
 
@@ -2194,11 +2206,12 @@ document.write(`
 
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="p">(</span>
-                            <span class="n">service_id_type</span> <span class="ow">in</span> <span class="n">basic_services</span> <span class="ow">and</span> <span class="p">(</span>
-                                <span class="n">id_type</span> <span class="ow">in</span> <span class="n">service_ids</span> <span class="ow">and</span>
-                                <span class="n">target_id_type</span> <span class="ow">in</span> <span class="n">service_ids</span> <span class="ow">and</span>
-                                <span class="n">id_type</span> <span class="o">!=</span> <span class="n">target_id_type</span>
-                            <span class="p">)</span>
+                            <span class="n">input_cls</span><span class="o">.</span><span class="n">possible</span><span class="p">(</span>
+                                <span class="n">id_type</span><span class="p">,</span>
+                                <span class="n">target_id_type</span><span class="p">,</span>
+                                <span class="n">ncbi_tax_id</span><span class="p">,</span>
+                            <span class="p">)</span> <span class="ow">and</span>
+                            <span class="n">id_type</span> <span class="o">!=</span> <span class="n">target_id_type</span>
                         <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
                             <span class="n">service_id_type</span> <span class="o">==</span> <span class="s1">&#39;pro&#39;</span> <span class="ow">and</span> <span class="p">(</span>
                                 <span class="p">(</span>
@@ -3576,7 +3589,7 @@ document.write(`
 
         <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
 
-        <span class="k">if</span> <span class="n">uniprot_input</span><span class="o">.</span><span class="n">is_uniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">uniprot_db</span><span class="o">.</span><span class="n">is_uniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">):</span>
 
             <span class="k">return</span> <span class="p">{</span><span class="n">uniprot</span><span class="p">}</span>
 
@@ -3636,7 +3649,7 @@ document.write(`
             <span class="k">return</span> <span class="p">{</span>
                 <span class="n">uniprot</span>
                 <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">uniprots</span>
-                <span class="k">if</span> <span class="n">uniprot_input</span><span class="o">.</span><span class="n">is_uniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">uniprot_db</span><span class="o">.</span><span class="n">is_uniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
             <span class="p">}</span>
 
 
@@ -3650,7 +3663,7 @@ document.write(`
 
         <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
 
-        <span class="k">if</span> <span class="n">uniprot_input</span><span class="o">.</span><span class="n">is_uniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">uniprot_db</span><span class="o">.</span><span class="n">is_uniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">):</span>
 
             <span class="k">return</span> <span class="n">uniprot</span></div>
 

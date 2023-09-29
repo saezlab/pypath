@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.share.common &#8212; pypath 0.15.11 documentation</title>
+    <title>pypath.share.common &#8212; pypath 0.15.12 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=7d490fb3"></script>
+    <script src="../../../_static/documentation_options.js?v=5df89558"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1824,7 +1824,7 @@ document.write(`
 
 <div class="viewcode-block" id="swap_dict">
 <a class="viewcode-back" href="../../../api/pypath.share.common.swap_dict.html#pypath.share.common.swap_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">swap_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">force_sets</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">swap_dict</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">force_sets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Swaps a dictionary.</span>
 
@@ -1833,13 +1833,15 @@ document.write(`
 <span class="sd">    will be a key and values sets of the original keys of *d* (see</span>
 <span class="sd">    example below).</span>
 
-<span class="sd">    Args</span>
-<span class="sd">        d (dict): Original dictionary to be swapped.</span>
-<span class="sd">        force_sets (bool): The values of the swapped dict should be sets</span>
+<span class="sd">    Args:</span>
+<span class="sd">        d:</span>
+<span class="sd">            Original dictionary to be swapped.</span>
+<span class="sd">        force_sets:</span>
+<span class="sd">            The values of the swapped dict should be sets</span>
 <span class="sd">            even if all of them have only one item.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">        (dict): The swapped dictionary.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The swapped dictionary.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; d = {&#39;a&#39;: 1, &#39;b&#39;: 2}</span>
@@ -1863,7 +1865,7 @@ document.write(`
 
             <span class="n">_d</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_d</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">force_sets</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_d</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
 
         <span class="n">_d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">_d</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
 
