@@ -24,6 +24,8 @@ import copy
 import pypath.share.settings as settings
 import pypath.share.session as session
 import pypath.share.constants as constants
+import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.unichem as unichem_input
 
 _logger = session.Logger(name = 'input_formats')
 
@@ -50,6 +52,9 @@ AC_QUERY = {
     'enst': 'xref_ensembl',
     'uniprot-entry': 'id',
     'protein-name': 'protein_name',
+    'gene-name': 'gene_names',
+    'gene-orf': 'gene_orf',
+    'gene-oln': 'gene_oln',
     'ec': 'ec',
 }
 
@@ -233,6 +238,22 @@ class MappingInput(object):
         )
 
 
+    @classmethod
+    def possible(
+            cls,
+            id_type_a: str,
+            id_type_b: str,
+            ncbi_tax_id: int | None = None,
+        ) -> bool:
+
+        return all(
+            (
+                id_type in cls._resource_id_types or
+                id_type in cls._resource_id_types.values()
+            )
+            for id_type in (id_type_a, id_type_b)
+        )
+
 
 class FileMapping(MappingInput):
 
@@ -278,9 +299,21 @@ class FileMapping(MappingInput):
         return other_organism
 
 
+    @classmethod
+    def possible(
+            cls,
+            id_type_a: str,
+            id_type_b: str,
+            ncbi_tax_id: int | None = None,
+        ) -> bool:
+
+        raise NotImplementedError
+
+
 class UniprotMapping(MappingInput):
 
     _resource_id_type_b = 'accession'
+    _resource_id_types = AC_QUERY
 
     def __init__(
             self,
@@ -361,6 +394,25 @@ class UniprotMapping(MappingInput):
         return id_type
 
 
+    @classmethod
+    def possible(
+            cls,
+            id_type_a: str,
+            id_type_b: str,
+            ncbi_tax_id: int | None = None,
+        ) -> bool:
+
+        return all(
+            (
+                id_type in cls._resource_id_types or
+                id_type in cls._resource_id_types.values() or
+                id_type == 'uniprot' or
+                id_type.startswith('xref_')
+            )
+            for id_type in (id_type_a, id_type_b)
+        )
+
+
 class UniprotListMapping(MappingInput):
     """
     Provides parameters for downloading mapping table from UniProt
@@ -377,7 +429,7 @@ class UniprotListMapping(MappingInput):
     :arg str uniprot_id_type_b:
         Same as above just for the other ID type.
     :arg bool swissprot:
-        DOwnload data only for SwissProt IDs.
+        Download data only for SwissProt IDs.
     """
 
     _resource_id_types = AC_MAPPING
@@ -472,6 +524,24 @@ class UniprotListMapping(MappingInput):
         return id_type in cls._from_uniprot
 
 
+    @classmethod
+    def possible(
+            cls,
+            id_type_a: str,
+            id_type_b: str,
+            ncbi_tax_id: int | None = None,
+        ) -> bool:
+
+        id_type_a = cls.resource_id_type(id_type_a, id_type_a)
+        id_type_a = cls._from_uniprot.get(id_type_a, id_type_a)
+        id_type_b = cls.resource_id_type(id_type_b, id_type_b)
+        id_type_b = cls._to_uniprot.get(id_type_b, id_type_b)
+
+        pairs = uniprot_input.idmapping_idtypes()
+
+        return (id_type_a, id_type_b) in pairs
+
+
 class ProMapping(MappingInput):
     """
     Provides parameters for mapping table from the Protein Ontology
@@ -525,6 +595,25 @@ class ProMapping(MappingInput):
         self.entity_type = 'protein'
 
 
+    @classmethod
+    def possible(
+            cls,
+            id_type_a: str,
+            id_type_b: str,
+            ncbi_tax_id: int | None = None,
+        ) -> bool:
+
+        id_types = {id_type_a: None, id_type_b: None}
+
+        return (
+            id_types.pop('pro', None) and
+            (
+                list(id_types)[0] in self._resource_id_types or
+                list(id_types)[0] in self._resource_id_types.values()
+            )
+        )
+
+
 class BiomartMapping(MappingInput):
 
     _resource_id_types = BIOMART_MAPPING
@@ -560,6 +649,11 @@ class BiomartMapping(MappingInput):
 
 
 class UnichemMapping(MappingInput):
+
+    _resource_id_types = {
+        id_type: id_type
+        for id_type in unichem_input.unichem_sources().values()
+    }
 
     def __init__(
             self,
@@ -696,7 +790,7 @@ class ArrayMapping(MappingInput):
 
 
     @classmethod
-    def _process_id_type(cls, id_type: str):
+    def _process_id_type(cls, id_type: str, fail: bool = True):
 
         id_type = id_type.lower()
         id_type = 'affy' if id_type == 'affymetrix' else id_type
@@ -707,18 +801,38 @@ class ArrayMapping(MappingInput):
             id_type not in {'ensg', 'enst', 'ensp'}
         ):
 
-            msg = (
-                'Unknown ID type for microarray probe mapping: `%s`. '
-                'Microarray ID types include `affy`, `illumina`, `agilent`, '
-                '`codelink` and `phalanx`, all these can be translated to '
-                'Ensembl gene, transcript or peptide IDs: `ensg`, `enst` '
-                'or `ensp`. If you translate to some other ID type, do it '
-                'in multiple steps.' % str(id_type)
-            )
-            _logger._log(msg)
-            raise ValueError(msg)
+            if fail:
+
+                msg = (
+                    'Unknown ID type for microarray probe mapping: `%s`. '
+                    'Microarray ID types include `affy`, `illumina`, `agilent`, '
+                    '`codelink` and `phalanx`, all these can be translated to '
+                    'Ensembl gene, transcript or peptide IDs: `ensg`, `enst` '
+                    'or `ensp`. If you translate to some other ID type, do it '
+                    'in multiple steps.' % str(id_type)
+                )
+                _logger._log(msg)
+                raise ValueError(msg)
+
+            else:
+
+                return None
 
         return id_type
+
+
+    @classmethod
+    def possible(
+            cls,
+            id_type_a: str,
+            id_type_b: str,
+            ncbi_tax_id: int | None = None,
+        ) -> bool:
+
+        return (
+            cls._process_id_type(id_type_a, fail = False) and
+            cls._process_id_type(id_type_b, fail = False)
+        )
 
 
 class PickleMapping(MappingInput):
