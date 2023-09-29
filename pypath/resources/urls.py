@@ -54,6 +54,7 @@ urls = {
         'run': 'https://rest.uniprot.org/idmapping/run',
         'poll': 'https://rest.uniprot.org/idmapping/status/%s',
         'details': 'https://rest.uniprot.org/idmapping/details/%s',
+        'fields': 'https://rest.uniprot.org/configure/idmapping/fields',
     },
     'corum': {
         'label':
