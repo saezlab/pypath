@@ -532,10 +532,10 @@ class UniprotListMapping(MappingInput):
             ncbi_tax_id: int | None = None,
         ) -> bool:
 
-        id_type_a = cls.resource_id_type(id_type_a, id_type_a)
         id_type_a = cls._from_uniprot.get(id_type_a, id_type_a)
-        id_type_b = cls.resource_id_type(id_type_b, id_type_b)
+        id_type_a = cls._resource_id_types.get(id_type_a, id_type_a)
         id_type_b = cls._to_uniprot.get(id_type_b, id_type_b)
+        id_type_b = cls._resource_id_types.get(id_type_b, id_type_b)
 
         pairs = uniprot_input.idmapping_idtypes()
 
