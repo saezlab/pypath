@@ -649,12 +649,23 @@ class MapReader(session_mod.Logger):
         uniprot_data = self._read_mapping_uniprot_list(
             upload_ac_list = upload_ac_list,
         )
+        ens = (
+            self.param.id_type_a.startswith('ens') or
+            self.param.id_type_b.startswith('ens') or
+            'ensembl' in self.param.id_type_a.lower() or
+            'ensembl' in self.param.id_type_b.lower()
+        )
+        reens = re.compile(r'(ENS[A-Z]+\d+)\.\d+')
 
         for l in uniprot_data:
 
             if not l:
 
                 continue
+
+            if ens:
+
+                l = reens.sub(r'\1', l)
 
             l = l.strip().split('\t')
 
