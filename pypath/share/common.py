@@ -1196,7 +1196,7 @@ def dict_sym_diff(d1, d2): # XXX: Not used
     return diff
 
 
-def swap_dict(d, force_sets = False):
+def swap_dict(d: dict, force_sets: bool = False) -> dict:
     """
     Swaps a dictionary.
 
@@ -1205,13 +1205,15 @@ def swap_dict(d, force_sets = False):
     will be a key and values sets of the original keys of *d* (see
     example below).
 
-    Args
-        d (dict): Original dictionary to be swapped.
-        force_sets (bool): The values of the swapped dict should be sets
+    Args:
+        d:
+            Original dictionary to be swapped.
+        force_sets:
+            The values of the swapped dict should be sets
             even if all of them have only one item.
 
-    Returns
-        (dict): The swapped dictionary.
+    Returns:
+        The swapped dictionary.
 
     Examples:
         >>> d = {'a': 1, 'b': 2}
@@ -1235,7 +1237,7 @@ def swap_dict(d, force_sets = False):
 
             _d.setdefault(val, set()).add(key)
 
-    if all(len(v) <= 1 for v in _d.values()):
+    if not force_sets and all(len(v) <= 1 for v in _d.values()):
 
         _d = dict((k, list(v)[0]) for k, v in iteritems(_d) if len(v))
 
