@@ -764,6 +764,7 @@ class MapReader(session_mod.Logger):
 
             run_args = {'url': run_url, 'post': post}
             nocache = {'cache': False, 'large': False}
+            large = {'silent': False, 'large': True}
 
             cache_path = curl.Curl.cache_path(**run_args)
 
@@ -850,13 +851,12 @@ class MapReader(session_mod.Logger):
                     res_c = curl.Curl(
                         url = result_url,
                         cache = cache_path,
-                        large = True,
-                        silent = False,
+                        **large
                     )
 
             else:
 
-                res_c = curl.Curl(**run_args)
+                res_c = curl.Curl(**run_args, **large)
 
             result.extend(list(res_c.fileobj)[1:])
 
