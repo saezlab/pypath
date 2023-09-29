@@ -22,7 +22,7 @@ import collections
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 
 
 def matrixdb_interactions(organism = 9606):
@@ -110,7 +110,7 @@ def _matrixdb_protein_list(category, organism = 9606):
 
     if organism:
 
-        uniprots = uniprot_input.all_uniprots(
+        uniprots = uniprot_db.all_uniprots(
             organism = organism,
             swissprot = True,
         )

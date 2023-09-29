@@ -29,20 +29,20 @@ _log = _logger._log
 def get_method(module_name, method_name = None):
     """
     Retrieves a method from a submodule of this module (``inputs``) by its
-    name. E.g. for ``'uniprot.all_uniprots'`` it returns the ``all_uniprots``
-    method from the ``pypath.inputs.uniprot`` module.
+    name. E.g. for ``'uniprot_db.all_uniprots'`` it returns the ``all_uniprots``
+    method from the ``pypath.inputs.uniprot_db`` module.
     """
-    
+
     _log('Selecting input method (step 1): module `%s`, method `%s`.' % (
             module_name,
             method_name,
         )
     )
-    
+
     if callable(module_name):
-        
+
         return module_name
-    
+
     if not method_name:
 
         module_method = module_name.rsplit('.', maxsplit = 1)
@@ -51,15 +51,15 @@ def get_method(module_name, method_name = None):
 
     module_name = module_name.rsplit('.', maxsplit = 1)[-1]
     module_name = 'pypath.inputs.%s' % module_name
-    
+
     _log('Selecting input method (step 2): module `%s`, method `%s`.' % (
             module_name,
             method_name,
         )
     )
-    
+
     try:
-        
+
         _log('Importing module `%s`.' % module_name)
         mod = importlib.import_module(module_name)
 

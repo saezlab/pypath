@@ -32,7 +32,7 @@ import pypath.utils.taxonomy as taxonomy
 import pypath.internals.intera as intera
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 import pypath.inputs.common as inputs_common
 import pypath.inputs.homologene as homologene
 import pypath.utils.mapping as mapping
@@ -525,7 +525,7 @@ def phosphosite_regsites_one_organism(organism = 9606):
 
     ptm_homology = phosphosite_ptm_orthology()
 
-    proteome = uniprot_input.all_uniprots(
+    proteome = uniprot_db.all_uniprots(
         organism = organism,
         swissprot = 'YES',
     )
@@ -826,7 +826,7 @@ def phosphosite_interactions(cache = True, ncbi_tax_id = 9606):
 
     if ncbi_tax_id:
 
-        all_uniprots = uniprot_input.all_uniprots(organism = ncbi_tax_id)
+        all_uniprots = uniprot_db.all_uniprots(organism = ncbi_tax_id)
 
     for e in edges:
 
@@ -1110,7 +1110,7 @@ def phosphosite_interactions_new(cache = True):
 
 def _phosphosite_filter_organism(psite_data, ncbi_tax_id = 9606):
 
-    all_uniprots = uniprot_input.all_uniprots(organism = ncbi_tax_id)
+    all_uniprots = uniprot_db.all_uniprots(organism = ncbi_tax_id)
 
     return [
         rec

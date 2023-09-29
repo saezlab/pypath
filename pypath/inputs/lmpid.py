@@ -23,7 +23,7 @@ import pypath.share.curl as curl
 import pypath.share.progress as progress
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 
 
 def load_lmpid(organism = 9606):
@@ -41,7 +41,7 @@ def load_lmpid(organism = 9606):
     c = curl.Curl(url, silent = False, large = False)
 
     soup = bs4.BeautifulSoup(c.result, features = 'xml')
-    uniprots = uniprot_input.get_db(organism = organism, swissprot = None)
+    uniprots = uniprot_db.get_db(organism = organism, swissprot = None)
     prg = progress.Progress(
         len(soup.find_all('record')),
         'Processing data from LMPID',

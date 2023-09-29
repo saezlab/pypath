@@ -31,7 +31,7 @@ try:
 except:
     import urllib.request as urllib2
 
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 import pypath.share.progress as progress
 import pypath.share.curl as curl
 import pypath.share.common as common
@@ -40,7 +40,7 @@ import pypath.share.session as session
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
 
-_logger = session.Logger(name = 'uniprot_input')
+_logger = session.Logger(name = 'pfam_input')
 _log = _logger._log
 
 
@@ -57,7 +57,7 @@ def pfam_uniprot(uniprots = None, organism = 9606):
         Pfam ACs, the second the other way around.
     """
 
-    uniprots = uniprots or uniprot_input.all_swissprots(organism = organism)
+    uniprots = uniprots or uniprot_db.all_swissprots(organism = organism)
     uniprots = common.to_list(uniprots)
     u_pfam = collections.defaultdict(set)
     pfam_u = collections.defaultdict(set)
@@ -185,7 +185,7 @@ def pfam_regions(
     if not uniprots and not pfams:
 
         organism = taxonomy.ensure_ncbi_tax_id(organism)
-        uniprots = uniprot_input.all_swissprots(organism = organism)
+        uniprots = uniprot_db.all_swissprots(organism = organism)
 
     if not os.path.exists(cachefile):
 

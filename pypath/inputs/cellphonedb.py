@@ -31,7 +31,7 @@ import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 import pypath.share.common as common
 import pypath.share.session as session
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 
 _logger = session.Logger(name = 'cellphonedb_input')
 _log = _logger._log
@@ -237,7 +237,7 @@ def _cellphonedb_get_entity(name, complexes):
     if '_' in name:
         name = mapping.map_name0(name, 'name-entry', 'name')
 
-    if not uniprot_input.is_uniprot(name):
+    if not uniprot_db.is_uniprot(name):
         uniprot = mapping.map_name0(name, 'genesymbol', 'uniprot')
         name = uniprot or name
 

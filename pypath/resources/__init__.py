@@ -17,8 +17,6 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from . import controller as _controller_mod
-
 
 def get_controller(reload = False):
     """
@@ -27,6 +25,8 @@ def get_controller(reload = False):
     The controller instantiated only once by default, at the first access
     attempt. The instance is stored in the module and provided on demand.
     """
+
+    from . import controller as _controller_mod
 
     if '_controller' not in globals() or reload:
 

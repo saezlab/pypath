@@ -33,6 +33,7 @@ import collections
 import pypath.share.common as common
 import pypath.inputs.pfam as pfam_input
 import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.taxonomy as taxonomy
@@ -223,7 +224,7 @@ class Pfam(Resource):
 
         def loader(ncbi_tax_id = 9606):
 
-            all_up = uniprot_input.all_uniprots(organism = ncbi_tax_id)
+            all_up = uniprot_db.all_uniprots(organism = ncbi_tax_id)
 
             return (
                 pfam_input.pfam_regions(

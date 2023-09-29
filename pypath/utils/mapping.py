@@ -66,6 +66,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs as inputs
 import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 import pypath.inputs.pro as pro_input
 import pypath.inputs.biomart as biomart_input
 import pypath.inputs.unichem as unichem_input
@@ -690,7 +691,7 @@ class MapReader(session_mod.Logger):
 
         swissprot = self.param.swissprot if swissprot is None else swissprot
 
-        self.uniprots = uniprot_input.all_uniprots(
+        self.uniprots = uniprot_db.all_uniprots(
             self.ncbi_tax_id,
             swissprot = swissprot,
         )
@@ -2947,7 +2948,7 @@ class Mapper(session_mod.Logger):
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        if uniprot_input.is_uniprot(uniprot, organism = ncbi_tax_id):
+        if uniprot_db.is_uniprot(uniprot, organism = ncbi_tax_id):
 
             return {uniprot}
 
@@ -3003,7 +3004,7 @@ class Mapper(session_mod.Logger):
             return {
                 uniprot
                 for uniprot in uniprots
-                if uniprot_input.is_uniprot(uniprot, organism = ncbi_tax_id)
+                if uniprot_db.is_uniprot(uniprot, organism = ncbi_tax_id)
             }
 
 
@@ -3015,7 +3016,7 @@ class Mapper(session_mod.Logger):
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        if uniprot_input.is_uniprot(uniprot, organism = ncbi_tax_id):
+        if uniprot_db.is_uniprot(uniprot, organism = ncbi_tax_id):
 
             return uniprot
 

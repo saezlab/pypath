@@ -36,7 +36,7 @@ import pandas as pd
 
 import pypath.inputs.cellphonedb as cellphonedb
 import pypath.inputs.lrdb as lrdb
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 import pypath.share.common as common
 import pypath.share.settings as settings
 import pypath.share.constants as constants
@@ -2846,7 +2846,7 @@ class AnnotationBase(resource.AbstractResource):
         """
 
         self.uniprots = set(
-            uniprot_input.all_uniprots(organism = self.ncbi_tax_id)
+            uniprot_db.all_uniprots(organism = self.ncbi_tax_id)
         )
 
 
@@ -2868,7 +2868,7 @@ class AnnotationBase(resource.AbstractResource):
         proteins = (
             proteins or
             sorted(
-                uniprot_input.all_uniprots(
+                uniprot_db.all_uniprots(
                     organism = ncbi_tax_id,
                     swissprot = swissprot_only,
                 )

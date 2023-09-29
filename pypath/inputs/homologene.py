@@ -23,7 +23,7 @@ import itertools
 import pypath.utils.mapping as mapping
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 import pypath.share.session as session
 
 _logger = session.Logger(name = 'homologene_input')
@@ -137,14 +137,14 @@ def homologene_uniprot_dict(source, target, only_swissprot = True):
     hge = homologene_dict(source, target, 'entrez')
     hgr = homologene_dict(source, target, 'refseq')
 
-    all_source = set(uniprot_input.all_uniprots(
+    all_source = set(uniprot_db.all_uniprots(
         organism = source,
         swissprot = 'YES',
     ))
 
     if not only_swissprot:
 
-        all_source_trembl = uniprot_input.all_uniprots(
+        all_source_trembl = uniprot_db.all_uniprots(
             organism = source,
             swissprot = 'NO',
         )

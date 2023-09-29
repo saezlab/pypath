@@ -48,6 +48,7 @@ import pypath.internals.intera as intera
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 import pypath.inputs.homologene as homologene_input
 import pypath.inputs.oma as oma_input
 import pypath.inputs.biomart as biomart
@@ -774,7 +775,7 @@ class Proteomes(object):
         if key not in self._proteomes:
 
             self._proteomes[key] = (
-                set(uniprot_input.all_uniprots(*key))
+                set(uniprot_db.all_uniprots(*key))
             )
 
             for protein in self._proteomes[key]:
@@ -793,7 +794,7 @@ class Proteomes(object):
         if (
             only_swissprot and
             ncbi_tax_id and
-            not uniprot_input.is_swissprot(protein, organism = ncbi_tax_id)
+            not uniprot_db.is_swissprot(protein, organism = ncbi_tax_id)
         ):
 
             ncbi_tax_id = None

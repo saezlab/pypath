@@ -25,7 +25,7 @@ import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.inputs.pfam as pfam_input
 import pypath.inputs.pdb as pdb_input
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 import pypath.utils.pdb as pdb_utils
 import pypath.share.cache as cache
 import pypath.internals.intera as intera
@@ -253,7 +253,7 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
         return None
 
     u_pdb, pdb_u = pdb_input.pdb_chains()
-    all_unip = set(uniprot_input.all_uniprots(organism = organism))
+    all_unip = set(uniprot_db.all_uniprots(organism = organism))
 
     if all_unip is None or pdb_u is None:
 

@@ -25,7 +25,7 @@ from lxml import etree
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_db as uniprot_db
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.mapping as mapping
 
@@ -44,7 +44,7 @@ def locate_localizations(
     record.__new__.__defaults__ = (None, None, None)
 
     organism_uniprots = set(
-        uniprot_input.all_uniprots(organism = organism, swissprot = True)
+        uniprot_db.all_uniprots(organism = organism, swissprot = True)
     )
 
     organism_str = taxonomy.taxids[organism]
