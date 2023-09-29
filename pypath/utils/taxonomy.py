@@ -524,7 +524,7 @@ def init_db(key):
 
     if swap:
 
-        this_db = common.swap_dict(this_db)
+        this_db = common.swap_dict(this_db, force_sets = True)
         this_db = {k: min(v, key = len) for k, v in this_db.items()}
 
     else:
