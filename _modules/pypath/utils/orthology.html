@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.utils.orthology &#8212; pypath 0.15.12 documentation</title>
+    <title>pypath.utils.orthology &#8212; pypath 0.15.13 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=5df89558"></script>
+    <script src="../../../_static/documentation_options.js?v=f4b8e13e"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -1595,7 +1595,7 @@ document.write(`
 
         <span class="n">_log</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;Translating data frame column(s) from &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;organism `</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1">` to `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s1">`.&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;organism `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s1">` to `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s1">`.&#39;</span>
         <span class="p">)</span>
 
         <span class="n">ortho_df</span> <span class="o">=</span> <span class="p">(</span>
@@ -1615,7 +1615,7 @@ document.write(`
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
 
             <span class="n">_log</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Translating `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id_type</span><span class="si">}</span><span class="s1">` IDs of organism `</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1">` &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Translating `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id_type</span><span class="si">}</span><span class="s1">` IDs of organism `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s1">` &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;in column `</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s1">` to organism `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s1">`.&#39;</span>
             <span class="p">)</span>
 
@@ -2878,8 +2878,9 @@ document.write(`
 
     <span class="n">args</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;manager&#39;</span><span class="p">)</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;kwargs&#39;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">translate_df</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">translate_df</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 </pre></div>
 
