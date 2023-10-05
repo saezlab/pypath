@@ -2256,5 +2256,6 @@ def translate_df(
 
     args = locals().copy()
     args.pop('manager')
+    args.pop('kwargs')
 
-    return manager.translate_df(**args)
+    return manager.translate_df(**args, **kwargs)
