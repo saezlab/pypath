@@ -816,9 +816,9 @@ urls = {
     },
     'biogrid': {
         'label': 'BioGRID version 2 tab format',
-        'mv': 'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
+        'mv': 'https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/'\
             'BIOGRID-MV-Physical-LATEST.tab2.zip',
-        'all': 'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
+        'all': 'https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/'\
             'BIOGRID-ALL-LATEST.tab2.zip'
     },
     'wang': {
@@ -948,7 +948,7 @@ urls = {
     },
     'intact': {
         'label': 'IntAct entire database PSI-MI tab',
-        'mitab': 'ftp://ftp.ebi.ac.uk/pub/databases/intact/'
+        'mitab': 'https://ftp.ebi.ac.uk/pub/databases/intact/'
         'current/psimitab/intact.zip'
     },
     'death': {
