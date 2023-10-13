@@ -960,11 +960,11 @@ urls = {
         'label': 'STRING',
         'actions': 'https://stringdb-static.org/download/'
             'protein.actions.v11.0/%u.protein.actions.v11.0.txt.gz',
-        'links': 'https://stringdb-static.org/download/protein.links.detailed.v11.5/%u'
-            '.protein.links.detailed.v11.5.txt.gz',
-        'physical_links': 'https://stringdb-static.org/download/protein.physical.links.detailed.v11.5/%u'
-            '.protein.physical.links.detailed.v11.5.txt.gz',
-        'species': 'https://stringdb-static.org/download/species.v11.5.txt'
+        'links': 'https://stringdb-static.org/download/protein.links.detailed.v12.0/%u'
+            '.protein.links.detailed.v12.0.txt.gz',
+        'physical_links': 'https://stringdb-static.org/download/protein.physical.links.detailed.v12.0/%u'
+            '.protein.physical.links.detailed.v12.0.txt.gz',
+        'species': 'https://stringdb-static.org/download/species.v12.0.txt'
     },
     'wikipw': {
         'label': 'WikiPathways human biopax',
