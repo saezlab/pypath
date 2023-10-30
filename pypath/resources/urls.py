@@ -958,13 +958,13 @@ urls = {
     },
     'string': {
         'label': 'STRING',
-        'actions': 'https://stringdb-static.org/download/'
-            'protein.actions.v11.0/%u.protein.actions.v11.0.txt.gz',
-        'links': 'https://stringdb-static.org/download/protein.links.detailed.v12.0/%u'
+        'actions': 'https://stringdb-downloads.org/download/'
+            'protein.actions.v12.0/%u.protein.actions.v12.0.txt.gz',
+        'links': 'https://stringdb-downloads.org/download/protein.links.detailed.v12.0/%u'
             '.protein.links.detailed.v12.0.txt.gz',
-        'physical_links': 'https://stringdb-static.org/download/protein.physical.links.detailed.v12.0/%u'
+        'physical_links': 'https://stringdb-downloads.org/download/protein.physical.links.detailed.v12.0/%u'
             '.protein.physical.links.detailed.v12.0.txt.gz',
-        'species': 'https://stringdb-static.org/download/species.v12.0.txt'
+        'species': 'https://stringdb-downloads.org/download/species.v12.0.txt'
     },
     'wikipw': {
         'label': 'WikiPathways human biopax',
