@@ -65,7 +65,7 @@ def get_method(module_name, method_name = None):
 
     except:
 
-        session.get_log().msg(
+        session.log().msg(
             msg = 'Could not import module `%s`.' % module_name,
             label = 'inputs',
         )
@@ -78,7 +78,7 @@ def get_method(module_name, method_name = None):
 
     except:
 
-        session.get_log().msg(
+        session.log().msg(
             msg = 'Could not find method `%s` in module `%s`.' % (
                 method_name,
                 module_name,
