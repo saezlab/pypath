@@ -21,7 +21,7 @@ from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
 from pypath.share import session as session_mod
-_logger = session_mod.get_log()
+_logger = session_mod.log()
 
 import re
 import sys

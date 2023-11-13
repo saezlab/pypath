@@ -29,7 +29,7 @@ import struct
 
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
-_logger = session_mod.get_log()
+_logger = session_mod.log()
 
 import pycurl
 try:

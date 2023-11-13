@@ -39,7 +39,7 @@ def log():
     Browse the current pypath logfile.
     """
 
-    _session_mod.get_log().browse()
+    _session_mod.log('pypath').browse()
 
 
 def disclaimer():

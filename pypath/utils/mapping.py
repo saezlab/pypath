@@ -78,7 +78,7 @@ import pypath.utils.taxonomy as taxonomy
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
 import pypath.share.constants as constants
-_logger = session_mod.get_log()
+_logger = session_mod.log()
 
 
 __all__ = ['MapReader', 'MappingTable', 'Mapper']
