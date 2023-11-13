@@ -16,3 +16,5 @@
 #
 #  Website: https://pypath.omnipathdb.org/
 #
+
+from pypath_common._misc import *
