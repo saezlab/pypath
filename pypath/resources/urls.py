@@ -20,6 +20,7 @@
 import os
 
 import pypath.share.common as common
+import pypath.share.cache as cache
 import pypath.share.settings as settings
 
 urls = {
@@ -1757,11 +1758,11 @@ urls = {
 files = {
     'phosphosite': {
         'curated': os.path.join(
-            settings.get('cachedir'),
+            cache.get_cachedir(),
             'phosphosite_curated.pickle',
         ),
         'noref': os.path.join(
-            settings.get('cachedir'),
+            cache.get_cachedir(),
             'phosphosite_noref.pickle',
         )
     },
