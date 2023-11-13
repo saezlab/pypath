@@ -18,20 +18,26 @@
 #
 
 """
-``pypath`` is a module primarily for building molecular interaction networks
-but also with several submodules for accessing, preprocessing and serving
-data from various resources.
+``pypath`` is a Python module building molecular biology databases. With
+``pypath`` you can access, process and combine more than 170 public
+resources, build molecular interaction networks, include annotations
+about the function, localization, structure and other properties of
+genes and proteins. ``pypath`` also provides a number of utilities for
+ID translation, orthology translation, handling of taxonomy and sequences,
+serving the combined databases by a web server, etc.
 """
 
 import sys
 import os
+import platform
 
 from pypath._metadata import __version__, __author__, __license__
 from pypath._metadata import metadata as _metadata
-import pypath.share.session as _session_mod
+from pypath.share import session as _session_mod
 
-_session_mod.new_session()
-session = _session_mod.get_session()
+_module_root = os.path.abspath(os.path.dirname(__file__))
+_settings_yaml = os.path.join(_module_root, 'data', 'settings.yaml')
+session = _session_mod.session('pypath', config = _settings_yaml)
 
 
 def log():
@@ -74,17 +80,25 @@ def info(loglevel = -9):
     Prints basic information about the current session.
     """
 
-    _session_mod.get_log().msg(
+    _session_mod.log('pypath').msg(
         (
             '\n'
             '\t- session ID: `%s`\n'
             '\t- working directory: `%s`\n'
             '\t- logfile: `%s`\n'
-            '\t- pypath version: %s' % (
-                _session_mod.get_session().label,
+            '\t- config: `%s`\n'
+            '\t- pypath version: %s\n'
+            '\t- imported from: `%s`\n'
+            '\t- Python version: %s\n'
+            '\t- Platform: %s'% (
+                _session_mod.session('pypath').label,
                 os.getcwd(),
-                _session_mod.get_log().fname,
-                __version__
+                _session_mod.log('pypath').fname,
+                _settings_yaml,
+                __version__,
+                _module_root,
+                sys.version,
+                platform.platform(),
             )
         ),
         label = 'pypath',
