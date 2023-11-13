@@ -158,7 +158,7 @@ def get_moves(bbox1, bbox2):
 
 
 class Plot(object):
-    
+
     def __init__(self,
                  fname=None,
                  font_family='Helvetica Neue LT Std',
@@ -208,30 +208,30 @@ class Plot(object):
                     cols.append(series)
                     series = []
         return cols
-    
-    
+
+
     @staticmethod
     def rgb2hex(rgb):
-        
+
         rgb = tuple(int(i) for i in rgb)
         return '#%02x%02x%02x' % rgb
-    
-    
+
+
     def finish(self):
         '''
         Saves and closes a figure.
         '''
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         self.fig.savefig(self.fname)
         plt.close(self.fig)
 
 
 class MultiBarplot(Plot):
-    
+
     def __init__(self,
                  x,
                  y,
@@ -425,10 +425,10 @@ class MultiBarplot(Plot):
         Sets a list with category indices (integers) of length equal of x,
         and sets dicts to translate between category names and indices.
         """
-        
+
         # setting category names
         self.cnames = None
-        
+
         if type(self.categories) is dict:
             # self.cnames: name -> number dict
             # each category has a number
@@ -461,7 +461,7 @@ class MultiBarplot(Plot):
                         ))))
                     )
                 )
-            
+
             # which element belongs to which category
             # list of integers
             # each category has a number
@@ -471,7 +471,7 @@ class MultiBarplot(Plot):
                     self.x
                 )
             )
-            
+
         elif type(self.categories) is list:
             if type(self.categories[0]) is int:
                 self.cats = self.categories
@@ -491,10 +491,10 @@ class MultiBarplot(Plot):
             self.x = _x
         else:
             self.cats = [0] * len(self.x)
-        
+
         # this is the number of subplots including the summary plot
         self.numof_cats = len(set(self.cats)) + (1 if self.summary else 0)
-        
+
         # if category names provided directly
         if self.cnames is None:
             if self.cat_names is not None:
@@ -505,10 +505,10 @@ class MultiBarplot(Plot):
                         sorted(common.uniq_list(self.cats))))
                 if len(self.cnames) == 1:
                     self.cnames = {self.xlab: 0}
-        
+
         # dict to translate category number to category name
         self.cnums = dict(map(reversed, iteritems(self.cnames)))
-        
+
         self.cats = np.array(self.cats)
 
     def set_colors(self, colseries=''):
@@ -566,20 +566,20 @@ class MultiBarplot(Plot):
         """
         Defines the order of the subplots.
         """
-        
+
         if self.cat_ordr is None and self.cat_names is not None:
-            
+
             self.cat_ordr = common.uniq_ord_list(sorted(self.cat_names))
-        
+
         elif self.cat_ordr is None:
-            
+
             self.cat_ordr = common.uniq_list(sorted(self.cnames.keys()))
 
     def by_plot(self):
         """
         Sets list of lists with x and y values and colors by category.
         """
-        
+
         # print(self.cnames)
         # print(self.cnums)
         # print(self.cats)
@@ -587,29 +587,29 @@ class MultiBarplot(Plot):
         # print(list(sorted(filter(lambda s: type(s[1]) is tuple,
         # zip(self.cats, self.x, self.y)),
         # key = lambda s: self.cat_ordr.index(self.cnums[s[0]]))))
-        
+
         # variables to set
         attrs = ['x', 'y', 'col', 'cats']
-        
+
         # if we have second series of data for shaded bars
         if hasattr(self, 'y2') and self.y2 is not None:
             attrs.extend(['y2', 'col2'])
-        
+
         # for grouped barplot
         if self.grouped:
-            
+
             for i in xrange(len(self.grouped_y)):
-                
+
                 attrs.append('y_g%u' % i)
                 attrs.append('col_g%u' % i)
-        
+
         for dim in attrs:
-            
+
             attr = 'cat_%s' % dim
             # this only if we do summary plot
             # (the one on the left with summary of categories)
             if self.summary:
-                
+
                 setattr(
                     self,
                     attr,
@@ -633,10 +633,10 @@ class MultiBarplot(Plot):
                         )
                     ]
                 )
-                
+
             else:
                 setattr(self, attr, [])
-        
+
         if self.summary:
             # only here we set the elements of the summary subplot
             # to the dummy category of summary
@@ -649,7 +649,7 @@ class MultiBarplot(Plot):
                     self.x
                 )
             )
-        
+
         for dim in attrs:
             attr = 'cat_%s' % dim
             # this is what is always necessary:
@@ -671,8 +671,8 @@ class MultiBarplot(Plot):
                     )
         self.xlabs = ([self.summary_name]
                       if self.summary else []) + self.cat_ordr
-    
-    
+
+
     def sort(self):
         """
         Finds the defined or default order, and
@@ -715,22 +715,22 @@ class MultiBarplot(Plot):
                 colattr = 'col_g%u' % g
                 setattr(self, yattr, getattr(self, yattr)[self.ordr])
                 setattr(self, colattr, getattr(self, colattr)[self.ordr])
-    
-    
+
+
     def set_figsize(self):
         """
         Converts width and height to a tuple which can be used as figsize.
         """
-        
+
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            
+
             self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
         Creates a figure using the object oriented matplotlib interface.
         """
-        
+
         self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
         self.fig = mpl.figure.Figure(figsize=self.figsize)
         self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
@@ -741,7 +741,7 @@ class MultiBarplot(Plot):
         with proportions according to the number of elements
         in each subplot.
         """
-        
+
         self.gs = mpl.gridspec.GridSpec(
             2,
             self.numof_cats,
@@ -902,20 +902,20 @@ class MultiBarplot(Plot):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         if self.maketitle:
             self.fig.subplots_adjust(top=0.85)
-        
+
         self.cvs.draw()
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.cvs.print_figure(self.pdf)
-        
+
         self.pdf.close()
         self.fig.clf()
 
@@ -952,9 +952,9 @@ class Barplot(Plot):
                  **kwargs):
         '''
         y_break : tuple
-        If not None, the y-axis will have a break. 2 floats in the tuple, < 1.0, 
+        If not None, the y-axis will have a break. 2 floats in the tuple, < 1.0,
         mean the lower and upper proportion of the plot shown. The part between
-        them will be hidden. E.g. y_break = (0.3, 0.1) shows the lower 30% and 
+        them will be hidden. E.g. y_break = (0.3, 0.1) shows the lower 30% and
         upper 10%, but 60% in the middle will be cut out.
         '''
         for k, v in iteritems(locals()):
@@ -1430,18 +1430,18 @@ class StackedBarplot(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         self.fig.subplots_adjust(top=0.85)
         self.cvs.draw()
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.cvs.print_figure(self.pdf)
-        
+
         self.pdf.close()
         self.fig.clf()
 
@@ -1598,11 +1598,11 @@ class ScatterPlus(object):
         self.axes_ticklabels()
         self.set_title()
         self.axes_limits()
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         self.axes_limits()
         self.remove_annotation_overlaps()
         self.make_legend()
@@ -1996,11 +1996,11 @@ class ScatterPlus(object):
             self.ax.yaxis.label.set_fontproperties(self.fp_axis_lab)
 
     def remove_annotation_overlaps(self):
-        
+
         return None
-        
+
         if self.labels is not None:
-            
+
             self.fig.savefig(self.fname)
             self.ax.figure.canvas.draw()
             steps = [0] * len(self.annots)
@@ -2010,9 +2010,9 @@ class ScatterPlus(object):
                     for a1 in self.annots[:i]:
                         print(a1, a2)
                         if a1 is None or a2 is None:
-                            
+
                             continue
-                        
+
                         if overlap(a1.get_window_extent(),
                                    a2.get_window_extent()):
                             #print('Overlapping labels: %s and %s' % (a1._text, a2._text))
@@ -2037,11 +2037,11 @@ class ScatterPlus(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         self.fig.subplots_adjust(top=0.92)
         self.cvs.draw()
         self.cvs.print_figure(self.pdf)
@@ -2255,7 +2255,7 @@ class Histogram(Plot):
 
 
 class SimilarityGraph(object):
-    
+
     def __init__(self,
                  pp,
                  fname,
@@ -2420,7 +2420,7 @@ class SimilarityGraph(object):
                               self.layout_method)(**self.layout_param)
 
     def sizes_vertex(self):
-        
+
         self.sgraph.vs['size'] = \
             list(
                 map(
@@ -2442,7 +2442,7 @@ class SimilarityGraph(object):
         """
         Sets the size according to number of edges for each resource.
         """
-        
+
         self.sgraph.vs['size'] = \
             list(
                 map(
@@ -2689,9 +2689,9 @@ class HistoryTree(object):
     def set_styles(self):
         # TikZ styles
         self.tikzstyles = r'''
-            \tikzstyle{omnipath}=[rectangle, anchor = center, inner sep = 2pt, fill = %s, 
+            \tikzstyle{omnipath}=[rectangle, anchor = center, inner sep = 2pt, fill = %s,
                 rotate = 90, text = %s, draw = %s]
-            \tikzstyle{others}=[rectangle, anchor = center, inner sep = 2pt, fill = %s, 
+            \tikzstyle{others}=[rectangle, anchor = center, inner sep = 2pt, fill = %s,
                 rotate = 90, text = %s, draw = %s]
         ''' % (self.nodelabfg, self.nodelabbg, self.nodelabbg, self.nodelabbg,
                self.nodelabfg, self.nodelabbg)
@@ -2755,11 +2755,11 @@ class HistoryTree(object):
         # the background grid and year labels
         self.grid = ''
         for i in self.years:
-            self.grid += r'''        \fill[anchor = south west, fill = %s, 
+            self.grid += r'''        \fill[anchor = south west, fill = %s,
                 inner sep = 0pt, outer sep = 0pt] '''\
                 r'''(%f, %f) rectangle (%f, %f);
-                \node[anchor = north west, rotate = 90, text width = %fcm, 
-                    fill = %s, inner sep = 0pt, outer sep = 0pt, align = center, 
+                \node[anchor = north west, rotate = 90, text width = %fcm,
+                    fill = %s, inner sep = 0pt, outer sep = 0pt, align = center,
                     minimum size = %fcm] at (0.0, %f) {\small{\color{%s}%u}};
                 \fill[fill = red] (%f, %f) circle (0.0pt);
         ''' % (
@@ -2805,7 +2805,7 @@ class HistoryTree(object):
                 self.lineheight[y - self.firstyear] / 2.0 for y in ydots
             ]
             for j, cooy in enumerate(ydots):
-                self.timelines += r'''        \node[circle, fill = %s, minimum size = %f, opacity = %f] 
+                self.timelines += r'''        \node[circle, fill = %s, minimum size = %f, opacity = %f]
                     (%s) at (%f, %f) {};
                 ''' % (
                     self.dotcol,  # fill color for dot
@@ -2837,7 +2837,7 @@ class HistoryTree(object):
     def get_legend(self):
         # legend
         self.legend = ''
-        self.legend += r'''        \node[circle, anchor = south, minimum size = %f, 
+        self.legend += r'''        \node[circle, anchor = south, minimum size = %f,
                 opacity = %f, fill = %s] at (%f, %f) {};
             ''' % (self.dotsize, self.dotlineopacity, self.dotcol,
                    self.width - 1.5, 0.5)
@@ -2845,7 +2845,7 @@ class HistoryTree(object):
             ''' % (self.width - 1.5, 1.2)
 
         self.legend += r'''
-                \draw[-latex, draw = %s, line width = %fpt, opacity = %f] 
+                \draw[-latex, draw = %s, line width = %fpt, opacity = %f]
                 (%f, %f) -- (%f, %f);
                 \node[anchor = west, rotate = 90] at (%f, %f) {\color{teal} Data transfer};
             ''' % (self.dataimportcol, self.linewidth, self.dotlineopacity,
@@ -2870,7 +2870,7 @@ class HistoryTree(object):
             for s in r[3]:
                 if r[0].lower() in self.nodelabels and s.lower(
                 ) in self.nodelabels:
-                    self.connections += r'''        \draw[-latex, draw = %s, line width = %fpt, opacity = %f] 
+                    self.connections += r'''        \draw[-latex, draw = %s, line width = %fpt, opacity = %f]
                         (%s) -- (%s);
                     ''' % (self.dataimportcol, self.linewidth,
                            self.dotlineopacity, s.lower(), r[0].lower())
@@ -3166,24 +3166,24 @@ class HtpCharacteristics(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         self.fig.subplots_adjust(top=0.94)
         self.cvs.draw()
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.cvs.print_figure(self.pdf)
-        
+
         self.pdf.close()
         self.fig.clf()
 
 
 class RefsComposite(object):
-    
+
     def __init__(self,
                  pp,
                  fname,
@@ -3666,18 +3666,18 @@ class RefsComposite(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         self.fig.subplots_adjust(top=0.92)
         self.cvs.draw()
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.cvs.print_figure(self.pdf)
-        
+
         self.pdf.close()
         self.fig.clf()
 
@@ -3886,23 +3886,23 @@ class CurationPlot(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         self.cvs.draw()
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.cvs.print_figure(self.pdf)
-        
+
         self.pdf.close()
         self.fig.clf()
 
 
 class BarplotsGrid(object):
-    
+
     def __init__(self,
                  pp,
                  x,
@@ -4244,18 +4244,18 @@ class BarplotsGrid(object):
         Applies tight layout, draws the figure, writes the file and closes.
         """
         #self.gs.update(wspace=0.1, hspace=0.1)
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         self.fig.subplots_adjust(top=0.94)
         self.cvs.draw()
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.cvs.print_figure(self.pdf)
-        
+
         self.pdf.close()
         self.fig.clf()
 
@@ -4395,13 +4395,13 @@ class Dendrogram(object):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.fig.tight_layout()
-        
+
         #self.fig.subplots_adjust(top = 0.94)
         self.cvs.draw()
-        
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.cvs.print_figure(self.pdf)
-        
+
         self.pdf.close()
         self.fig.clf()
