@@ -29,6 +29,7 @@ import struct
 
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
+import pypath.share.cache as cache_mod
 _logger = session_mod.log()
 
 import pycurl
@@ -91,6 +92,7 @@ from contextlib import closing
 
 import pypath.share.progress as progress
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.settings as settings
 
 try:
@@ -569,9 +571,9 @@ class FileOpener(session_mod.Logger):
         if not hasattr(self, 'large'):
             self.large = large
         self.fname = file_param \
-            if type(file_param) in common.char_types else file_param.name
+            if type(file_param) in _const.CHAR_TYPES else file_param.name
         self.fileobj = None \
-            if type(file_param) in common.char_types else file_param
+            if type(file_param) in _const.CHAR_TYPES else file_param
         if not hasattr(self, 'type'):
             self.get_type()
         if _open:
@@ -1610,13 +1612,7 @@ class Curl(FileOpener):
 
     def cache_dir_exists(self):
 
-        if self.cache_dir is None:
-
-            self.cache_dir = settings.get('cachedir')
-
-        if not os.path.exists(self.cache_dir):
-
-            os.makedirs(self.cache_dir)
+        self.cache_dir = cache_mod.get_cachedir(self.cache_dir)
 
 
     def get_cache_file_name(self):

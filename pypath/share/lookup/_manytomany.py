@@ -27,6 +27,8 @@ import sqlite3
 import tqdm
 
 import pypath.share.common as common
+import pypath_common._constants as _const
+
 
 QUERIES = {
     'list_tables':
@@ -209,7 +211,7 @@ class ManyToMany(object):
             value
                 if common.is_str(value) else
             ','.join(value)
-                if isinstance(value, common.list_like) else
+                if isinstance(value, _const.LIST_LIKE) else
             str(value)
         )
 
@@ -284,7 +286,7 @@ class ManyToMany(object):
         return (
             self.lookup_many_a(key) or
             self.lookup_many_b(key)
-                if isinstance(key, common.list_like) else
+                if isinstance(key, _const.LIST_LIKE) else
             self.lookup_one_a(key) or
             self.lookup_one_b(key)
         )
@@ -347,7 +349,7 @@ class ManyToMany(object):
             value
                 if isinstance(value, tuple) else
             tuple(value)
-                if isinstance(value, common.list_like) else
+                if isinstance(value, _const.LIST_LIKE) else
             (value,)
         )
 
@@ -384,7 +386,7 @@ class ManyToMany(object):
             values_
                 if isinstance(
                     values_,
-                    common.list_like + (
+                    _const.LIST_LIKE + (
                         types.GeneratorType,
                         collections.abc.ItemsView,
                     )
@@ -668,7 +670,7 @@ class ManyToMany(object):
 
             self.remove_one_both(value)
 
-        elif isinstance(value, common.list_like):
+        elif isinstance(value, _const.LIST_LIKE):
 
             self.remove_many_both(value)
 

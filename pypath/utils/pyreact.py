@@ -41,6 +41,7 @@ except:
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.progress as progress
 import pypath.share.curl as curl
 import pypath.internals.intera as intera
@@ -637,7 +638,7 @@ class AttributeHandler(object):
         pass
 
     def add_source(self, source):
-        if type(source) in common.char_types:
+        if type(source) in _const.CHAR_TYPES:
             self._add_source(source)
         else:
             for s in source:

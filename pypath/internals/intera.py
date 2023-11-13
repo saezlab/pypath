@@ -36,6 +36,7 @@ import itertools
 
 # from pypath:
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.utils.mapping as mapping
 import pypath.core.evidence as evidence
 import pypath.core.entity as entity
@@ -893,7 +894,7 @@ class DomainDomain(object):
     def add_sources(self, source):
         if source is None:
             return None
-        elif type(source) in common.char_types:
+        elif type(source) in _const.CHAR_TYPES:
             self._add_source(source)
         else:
             for s in source:
@@ -1175,7 +1176,7 @@ class Regulation(object):
     def add_sources(self, source):
         if source is None:
             return None
-        elif type(source) in common.char_types:
+        elif type(source) in _const.CHAR_TYPES:
             self._add_source(source)
         else:
             for s in source:

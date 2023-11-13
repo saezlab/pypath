@@ -33,6 +33,7 @@ import math
 import time
 
 from pypath.share.common import *
+import pypath_common._constants as _const
 import pypath.share.session as session_mod
 
 __all__ = ['Plot', 'InterSet']
@@ -46,7 +47,7 @@ except ModuleNotFoundError:
 
 
 class Plot(session_mod.Logger):
-    
+
     def __init__(self,
                  graph=None,
                  filename=None,
@@ -260,10 +261,10 @@ class Plot(session_mod.Logger):
         alpha = alpha if alpha is not None else self.default_alpha['%s_%s' % (
             what, attr)]
         pal = self.palettes[what] if palette is None else palette
-        if type(coldef) in char_types and coldef in seq.attributes():
+        if type(coldef) in _const.CHAR_TYPES and coldef in seq.attributes():
             lev = list(set(seq[coldef]))
             seq[attr] = [pal[lev.index(i[coldef])] for i in seq]
-        elif type(coldef) in char_types and len(coldef) <= 9:
+        elif type(coldef) in _const.CHAR_TYPES and len(coldef) <= 9:
             seq[attr] = [coldef for _ in seq]
         elif type(coldef) is list and len(coldef) == len(seq):
             seq[attr] = coldef
@@ -589,9 +590,9 @@ class InterSet(object):
                         vcenter=True,
                         rot=-45)
                     '''
-                    self.label(str(self.intersects[(self.xlabs[xi-2], 
-                        self.ylabs[yi-2])]['size']), x, y, 
-                        self.intersects[(self.xlabs[xi-2], 
+                    self.label(str(self.intersects[(self.xlabs[xi-2],
+                        self.ylabs[yi-2])]['size']), x, y,
+                        self.intersects[(self.xlabs[xi-2],
                             self.ylabs[yi-2])]['ssize'][i] * 0.5 + 3, self.colors['white'])
                     '''
 

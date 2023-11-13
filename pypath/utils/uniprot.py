@@ -36,6 +36,7 @@ import itertools
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.genecards as genecards_input
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.settings as settings
 import pypath.core.entity as entity
 
@@ -582,7 +583,7 @@ def query(*uniprot_ids):
 
     if (
         len(uniprot_ids) > 0 and
-        isinstance(uniprot_ids[0], common.list_like)
+        isinstance(uniprot_ids[0], _const.LIST_LIKE)
     ):
 
         uniprot_ids = uniprot_ids[0]
@@ -740,7 +741,7 @@ def info(
 
     if (
         len(uniprot_ids) == 1 and
-        isinstance(uniprot_ids, common.list_like)
+        isinstance(uniprot_ids, _const.LIST_LIKE)
     ):
 
         uniprot_ids = uniprot_ids[0]

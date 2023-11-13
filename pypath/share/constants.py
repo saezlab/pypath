@@ -17,11 +17,4 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-NO_VALUE = 'PYPATH_NO_VALUE'
-GLOM_ERROR = 'PYPATH_GLOM_ERROR'
-CURSOR_UP_ONE = '\x1b[1A'
-ERASE_LINE = '\x1b[2K'
-NOT_ORGANISM_SPECIFIC = -1
-BOOLEAN_TRUE = frozenset(('1', 'yes', 'true'))
-BOOLEAN_FALSE = frozenset(('0', 'no','false'))
-BOOLEAN_VALUES = BOOLEAN_TRUE.union(BOOLEAN_FALSE)
+from pypath_common._constants import *

@@ -38,6 +38,7 @@ import pypath.inputs.cellphonedb as cellphonedb
 import pypath.inputs.lrdb as lrdb
 import pypath.inputs.uniprot_db as uniprot_db
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.settings as settings
 import pypath.share.constants as constants
 import pypath.utils.mapping as mapping
@@ -2991,7 +2992,7 @@ class AnnotationBase(resource.AbstractResource):
                         # any in common
                         or
                         (
-                            isinstance(getattr(a, name), common.list_like)
+                            isinstance(getattr(a, name), _const.LIST_LIKE)
                             and
                             isinstance(value, set)
                             and
@@ -3010,7 +3011,7 @@ class AnnotationBase(resource.AbstractResource):
                         # the search value
                         or
                         (
-                            isinstance(getattr(a, name), common.list_like)
+                            isinstance(getattr(a, name), _const.LIST_LIKE)
                             and
                             value in getattr(a, name)
                         )
@@ -3489,7 +3490,7 @@ class AnnotationBase(resource.AbstractResource):
             for val in (
                 # to support tuple values
                 getattr(a, name)
-                    if isinstance(getattr(a, name), common.list_like) else
+                    if isinstance(getattr(a, name), _const.LIST_LIKE) else
                 (getattr(a, name),)
             )
         }
@@ -3699,7 +3700,7 @@ class AnnotationBase(resource.AbstractResource):
             # all values of the field
             field = {field: self.get_values(field)}
 
-        elif isinstance(field, common.list_like):
+        elif isinstance(field, _const.LIST_LIKE):
 
             if set(field) & set(self.get_names()):
 

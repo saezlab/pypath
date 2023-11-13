@@ -46,6 +46,7 @@ import pypath.core.evidence as evidence
 import pypath.core.entity as entity_mod
 import pypath.core.common as core_common
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.settings as settings
 import pypath.share.cache as cache_mod
 import pypath.share.constants as constants
@@ -4456,7 +4457,7 @@ class Network(session_mod.Logger):
             # interaction type specific settings from the module level
             resource.networkinput.interaction_type in default
                 if (
-                    isinstance(default, common.list_like) and
+                    isinstance(default, _const.LIST_LIKE) and
                     hasattr(resource, 'networkinput')
                 ) else
             # general settings from the module level

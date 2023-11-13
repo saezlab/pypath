@@ -29,10 +29,10 @@ import importlib as imp
 import collections
 
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.session as session_mod
 import pypath.utils.mapping as mapping
 import pypath.share.settings as settings
-import pypath.share.constants as constants
 import pypath.core.attrs as attrs_mod
 
 
@@ -152,7 +152,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
 
         if entity_type in self._smol_types:
 
-            taxon = constants.NOT_ORGANISM_SPECIFIC
+            taxon = _const.NOT_ORGANISM_SPECIFIC
 
         taxon = settings.get('default_organism') if taxon is None else taxon
 
@@ -357,7 +357,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
         entity_type = common.to_set(entity_type)
         obj_type = (
             type(entities)
-                if isinstance(entities, common.list_like) else
+                if isinstance(entities, _const.LIST_LIKE) else
             lambda x: x
         )
 
@@ -404,7 +404,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
 
         entities = (
             entities
-                if isinstance(entities, common.list_like) else
+                if isinstance(entities, _const.LIST_LIKE) else
             list(entities)
         )
 

@@ -26,6 +26,7 @@ import pypath.inputs.uniprot as uniprot_input
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.utils.taxonomy as taxonomy
 
 
@@ -34,7 +35,7 @@ def get_mirbase_aliases(organism = 9606):
     Downloads and processes mapping tables from miRBase.
     """
 
-    if type(organism) in common.char_types:
+    if type(organism) in _const.CHAR_TYPES:
         mborganism = organism
     elif organism not in taxonomy.mirbase_taxids:
 

@@ -57,6 +57,7 @@ from matplotlib import ticker
 from scipy import stats
 
 import pypath.share.common as common
+import pypath_common._constants as _const
 from pypath.visual.igraph_drawing import DefaultGraphDrawerFFsupport
 import pypath.resources.descriptions
 import pypath.share.progress as progress
@@ -2088,7 +2089,7 @@ class Histogram(Plot):
             if type(d) is list:
                 self.data[i] = np.array(d)
         self.labels = labels
-        if type(self.labels) in common.char_types:
+        if type(self.labels) in _const.CHAR_TYPES:
             self.labels = [labels]
         for k, v in iteritems(locals()):
             setattr(self, k, v)

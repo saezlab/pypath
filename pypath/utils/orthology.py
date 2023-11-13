@@ -44,6 +44,7 @@ import pandas as pd
 
 import pypath.utils.mapping as mapping
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.internals.intera as intera
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -1796,7 +1797,7 @@ class PtmOrthology(Proteomes, SequenceContainer):
 
             result = self.translate_site(*x, **kwargs)
 
-        elif type(x) in common.char_types:
+        elif type(x) in _const.CHAR_TYPES:
 
             ptm = self.reptm.match(x)
 

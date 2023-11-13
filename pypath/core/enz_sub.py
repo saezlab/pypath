@@ -30,6 +30,7 @@ import traceback
 import pandas as pd
 
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.utils.mapping as mapping
 import pypath.utils.orthology as orthology
 import pypath.inputs.uniprot as uniprot_input
@@ -517,7 +518,7 @@ class EnzymeSubstrateProcessor(
     def input_is(self, i, op = '__eq__'):
 
         return (
-            type(self.name) in common.char_types and
+            type(self.name) in _const.CHAR_TYPES and
             getattr(i, op)(self.name.lower())
         )
 

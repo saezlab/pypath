@@ -157,6 +157,7 @@ import pypath.visual.plot as plot
 import pypath.core.enz_sub
 import pypath.omnipath.export as export
 import pypath.share.common as common
+import pypath_common._constants as _const
 from pypath.share.progress import *
 import pypath.share.settings as settings
 import pypath.core.entity as entity_mod
@@ -3278,7 +3279,7 @@ class PyPath(session_mod.Logger):
         default_name_type = self.default_name_type[settings.entity_type]
         mapTbl = ''.join([original_name_type, "_", default_name_type])
 
-        if type(_input) in common.char_types and os.path.isfile(_input):
+        if type(_input) in _const.CHAR_TYPES and os.path.isfile(_input):
 
             _input = curl.Curl(_input, large = True).result
 
@@ -3305,7 +3306,7 @@ class PyPath(session_mod.Logger):
                 lnum += 1
                 continue
 
-            if type(line) in common.char_types:
+            if type(line) in _const.CHAR_TYPES:
                 line = line.rstrip().split(settings.separator)
 
             # in case line has less fields than needed
@@ -5006,7 +5007,7 @@ class PyPath(session_mod.Logger):
                     attr]) in common.simple_types:
 
                 e[attr] = [e[attr]] if (
-                    type(e[attr]) not in common.char_types or
+                    type(e[attr]) not in _const.CHAR_TYPES or
                     len(e[attr]) > 0) else []
 
             if self.edgeAttrs[attr] is set and type(e[attr]) is list:

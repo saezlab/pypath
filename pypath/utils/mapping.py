@@ -60,6 +60,7 @@ import timeloop
 # from pypath:
 import pypath.share.progress as progress
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.cache as cache_mod
 import pypath.internals.maps as maps
 import pypath.resources.urls as urls
@@ -77,7 +78,6 @@ import pypath.utils.reflists as reflists
 import pypath.utils.taxonomy as taxonomy
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
-import pypath.share.constants as constants
 _logger = session_mod.log()
 
 
@@ -1117,7 +1117,7 @@ class MapReader(session_mod.Logger):
 
             self.b_to_a = common.swap_dict(data, force_sets = True)
 
-        self.ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC
+        self.ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC
 
 
     def read_mapping_ramp(self):
@@ -1522,7 +1522,7 @@ class Mapper(session_mod.Logger):
         )
         tbl_key_noorganism = self.get_table_key(
             *tbl_key[:-1],
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
         )
 
         tbl_key_rev = self.get_table_key(
@@ -1532,7 +1532,7 @@ class Mapper(session_mod.Logger):
         )
         tbl_key_rev_noorganism = self.get_table_key(
             *tbl_key_rev[:-1],
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
         )
 
         if tbl_key in self.tables:
@@ -1691,7 +1691,7 @@ class Mapper(session_mod.Logger):
 
                         if service_id_type in {'hmdb', 'ramp', 'unichem'}:
 
-                            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC
+                            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC
                             tbl_key = tbl_key_noorganism
                             tbl_key_rev = tbl_key_rev_noorganism
 
@@ -2608,7 +2608,7 @@ class Mapper(session_mod.Logger):
         Gene Symbols.
         """
 
-        if isinstance(name, common.list_like):
+        if isinstance(name, _const.LIST_LIKE):
 
             return [
                 self.label(
@@ -2632,7 +2632,7 @@ class Mapper(session_mod.Logger):
                 entity_type or
                 (
                     'small_molecule'
-                        if ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC else
+                        if ncbi_tax_id == _const.NOT_ORGANISM_SPECIFIC else
                     'protein'
                 )
             )
@@ -2728,7 +2728,7 @@ class Mapper(session_mod.Logger):
                 entity_type or
                 (
                     'small_molecule'
-                        if ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC else
+                        if ncbi_tax_id == _const.NOT_ORGANISM_SPECIFIC else
                     'protein'
                 )
             )

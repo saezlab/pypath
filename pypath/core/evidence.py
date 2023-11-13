@@ -320,7 +320,7 @@ class Evidence(attrs_mod.AttributeHandler):
 
             return (
                 getattr(self.resource, attr) in value
-                    if isinstance(value, common.list_like) else
+                    if isinstance(value, _const.LIST_LIKE) else
                 getattr(self.resource, attr) == value
             )
 
