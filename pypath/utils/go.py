@@ -316,7 +316,7 @@ class GeneOntology(session_mod.Logger):
 
         relations = relations or self.all_relations
 
-        if isinstance(terms, common.basestring):
+        if isinstance(terms, str):
 
             terms = {terms}
 
@@ -509,7 +509,7 @@ class GeneOntology(session_mod.Logger):
             will be `name`.
         """
 
-        if isinstance(terms_names, common.basestring):
+        if isinstance(terms_names, str):
 
             terms_names = {terms_names}
 
@@ -757,7 +757,7 @@ class GOAnnotation(session_mod.Logger):
             the selected UniProt IDs.
         """
 
-        if isinstance(name, common.basestring):
+        if isinstance(name, str):
 
             term = self.ontology.get_term(name)
 
@@ -903,7 +903,7 @@ class GOAnnotation(session_mod.Logger):
 
         uniprots = uniprots or sorted(self.all_uniprots())
 
-        if isinstance(expr, common.basestring):
+        if isinstance(expr, str):
 
             # tokenizing expression if it is a string
             # (method is recursive)
@@ -1041,7 +1041,7 @@ class GOAnnotation(session_mod.Logger):
 
         # this is not an individual term but an expression
         if (
-            isinstance(terms, common.basestring) and
+            isinstance(terms, str) and
             not terms.startswith('GO')
         ):
 
@@ -1120,7 +1120,7 @@ class GOAnnotation(session_mod.Logger):
 
         pickle_file = pickle_file or self._pickle_file
 
-        if not isinstance(pickle_file, common.basestring):
+        if not isinstance(pickle_file, str):
 
             self._log(
                 'Pickle file path must be a string: `%s`.' % str(pickle_file)

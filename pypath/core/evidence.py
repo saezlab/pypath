@@ -268,7 +268,7 @@ class Evidence(attrs_mod.AttributeHandler):
 
             other = '%u' % other
 
-        if isinstance(other, common.basestring) and other.isdigit():
+        if isinstance(other, str) and other.isdigit():
 
             other = refs.Reference(other)
 
@@ -462,7 +462,7 @@ class Evidences(object):
 
     def __iadd__(self, other):
 
-        if isinstance(other, common.basestring):
+        if isinstance(other, str):
 
             other = Evidence(other)
 
@@ -614,7 +614,7 @@ class Evidences(object):
             {ev.resource.name for ev in self}
                 if (
                     hasattr(other, '__iter__') and
-                    all(isinstance(res, common.basestring) for res in other)
+                    all(isinstance(res, str) for res in other)
                 ) else
             {ev.resource for ev in self}
         )

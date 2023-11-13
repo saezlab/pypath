@@ -121,7 +121,7 @@ class Field(object):
         
         value = record[self.idx]
         
-        if isinstance(self.sep, common.basestring):
+        if isinstance(self.sep, str):
             
             value = value.split(self.sep)
         

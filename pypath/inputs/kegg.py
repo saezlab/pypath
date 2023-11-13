@@ -281,7 +281,7 @@ def kegg_medicus(max_entity_variations = 10):
 
     def process_entity(e):
 
-        if isinstance(e, common.basestring):
+        if isinstance(e, str):
 
             e = renminus2.sub('', e)
             e = reentity.findall(e)
@@ -343,7 +343,7 @@ def kegg_medicus(max_entity_variations = 10):
 
         flat = []
 
-        if isinstance(e, common.basestring):
+        if isinstance(e, str):
 
             flat.append(e)
 
@@ -352,7 +352,7 @@ def kegg_medicus(max_entity_variations = 10):
             flat.extend(
                 itertools.product(*(
                     (c,)
-                        if isinstance(c, common.basestring) else
+                        if isinstance(c, str) else
                     (flatten_entity(c),)
                         if isinstance(c, tuple) else
                     c
@@ -641,7 +641,7 @@ def kegg_medicus_interactions(max_entity_variations = 10, complexes = False):
 
         return (
             process_protein(ids, symbols)
-                if isinstance(ids, common.basestring) else
+                if isinstance(ids, str) else
             process_complex(ids, symbols, types)
         )
 

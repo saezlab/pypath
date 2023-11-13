@@ -517,7 +517,7 @@ class CustomAnnotation(session_mod.Logger):
 
             members = classdef.resource
 
-        elif isinstance(classdef.resource, common.basestring):
+        elif isinstance(classdef.resource, str):
 
             if classdef.resource in self.annotdb.annots:
 
@@ -730,7 +730,7 @@ class CustomAnnotation(session_mod.Logger):
     def _is_short_notation(obj):
 
         return (
-            isinstance(obj, common.basestring) and (
+            isinstance(obj, str) and (
                 obj.startswith('~') or
                 obj.startswith('#')
             )
@@ -1260,7 +1260,7 @@ class CustomAnnotation(session_mod.Logger):
                     uniprot.__str__(),
                     (
                         mapping.map_name0(uniprot, 'uniprot', 'genesymbol')
-                            if isinstance(uniprot, common.basestring) else
+                            if isinstance(uniprot, str) else
                         'COMPLEX:%s' % uniprot.genesymbol_str
                             if hasattr(uniprot, 'genesymbol_str') else
                         uniprot.__str__()
@@ -3097,7 +3097,7 @@ class AnnotationBase(resource.AbstractResource):
 
         return (
             {entity_types}
-                if isinstance(entity_types, common.basestring) else
+                if isinstance(entity_types, str) else
             entity_types
         )
 
@@ -3694,7 +3694,7 @@ class AnnotationBase(resource.AbstractResource):
 
         field = field or self.primary_field
 
-        if isinstance(field, common.basestring):
+        if isinstance(field, str):
 
             # all values of the field
             field = {field: self.get_values(field)}

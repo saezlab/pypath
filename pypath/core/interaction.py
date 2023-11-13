@@ -2233,7 +2233,7 @@ class Interaction(attrs_mod.AttributeHandler):
         return_type = (
             return_type[:-1]
                 if (
-                    isinstance(return_type, common.basestring) and
+                    isinstance(return_type, str) and
                     return_type[-1] == 's'
                 ) else
             return_type
@@ -2860,7 +2860,7 @@ class Interaction(attrs_mod.AttributeHandler):
     @staticmethod
     def _by(method, by = 'resources'):
 
-        by = (by,) if isinstance(by, common.basestring) else by
+        by = (by,) if isinstance(by, str) else by
 
         @functools.wraps(method)
         def by_method(*args, **kwargs):

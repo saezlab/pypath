@@ -154,7 +154,7 @@ class ResourceController(session_mod.Logger):
 
             if 'license' in res_data:
 
-                if isinstance(res_data['license'], common.basestring):
+                if isinstance(res_data['license'], str):
 
                     self._update_license(res_data)
                     self.licenses[res] = res_data['license']

@@ -91,7 +91,7 @@ def cpad_annotations(include_unknown_type = False):
                     else:
                         continue
 
-            if isinstance(regulator_name, common.basestring):
+            if isinstance(regulator_name, str):
                 regulator_name = (regulator_name,)
 
             for regulator_name_0 in regulator_name:

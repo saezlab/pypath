@@ -61,8 +61,8 @@ def italk_interactions():
     for row in rdata.itertuples():
         
         if (
-            not isinstance(row[2], common.basestring) or
-            not isinstance(row[4], common.basestring)
+            not isinstance(row[2], str) or
+            not isinstance(row[4], str)
         ):
             
             continue
@@ -103,12 +103,12 @@ def italk_annotations():
         
         ligands = (
             mapping.map_name(row[2], 'genesymbol', 'uniprot')
-                if isinstance(row[2], common.basestring) else
+                if isinstance(row[2], str) else
             ()
         )
         receptors = (
             mapping.map_name(row[4], 'genesymbol', 'uniprot')
-                if isinstance(row[4], common.basestring) else
+                if isinstance(row[4], str) else
             ()
         )
         subclass = row[6]

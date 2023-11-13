@@ -39,7 +39,7 @@ class Licenses(session.Logger):
 
     def add_license(self, license):
 
-        if isinstance(license, common.basestring) and os.path.exists(license):
+        if isinstance(license, str) and os.path.exists(license):
 
             license = license_mod.License.from_json(
                 path = license,

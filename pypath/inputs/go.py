@@ -944,7 +944,7 @@ def get_goslim(url = None):
     rego = re.compile(r'GO:[0-9]{7}')
     url = (
         url
-            if isinstance(url, common.basestring) else
+            if isinstance(url, str) else
         urls.urls['goslim_gen']['url']
     )
     c = curl.Curl(url, silent = False)

@@ -223,12 +223,12 @@ class DatabaseDefinitionManager(session.Logger):
     
     def load(self):
         
-        if isinstance(self._classes, common.basestring):
+        if isinstance(self._classes, str):
             
             self._log('Reading database classes from `%s`' % self._classes)
             self._classes = DatabaseDefinition._read_json(self._classes)
             
-        if isinstance(self._databases, common.basestring):
+        if isinstance(self._databases, str):
             
             self._log(
                 'Reading database definitions from `%s`' % self._databases
@@ -303,7 +303,7 @@ class DatabaseDefinitionManager(session.Logger):
                     
                     db_class = DatabaseClass(**db_class)
                     
-                elif isinstance(db_class, common.basestring):
+                elif isinstance(db_class, str):
                     
                     db_class = self.get_db_class(db_class)
         

@@ -2624,7 +2624,7 @@ class Mapper(session_mod.Logger):
 
             return name.genesymbol_str
 
-        elif isinstance(name, common.basestring):
+        elif isinstance(name, str):
 
             ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
@@ -2928,7 +2928,7 @@ class Mapper(session_mod.Logger):
             ncbi_tax_id = None,
         ):
 
-        if isinstance(uniprots, common.basestring):
+        if isinstance(uniprots, str):
 
             return self.translate_deleted_uniprot_by_genesymbol(
                 uniprots,
@@ -3006,7 +3006,7 @@ class Mapper(session_mod.Logger):
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        if isinstance(uniprots, common.basestring):
+        if isinstance(uniprots, str):
 
             return self.valid_uniprot(uniprots, ncbi_tax_id = ncbi_tax_id)
 
@@ -3044,7 +3044,7 @@ class Mapper(session_mod.Logger):
         strings are valid).
         """
 
-        if isinstance(uniprots, common.basestring):
+        if isinstance(uniprots, str):
 
             return self._only_uniprot_ac(uniprots)
 

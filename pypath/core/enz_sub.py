@@ -288,7 +288,7 @@ class EnzymeSubstrateProcessor(
         # extremely high number of combinations
         if (
             not p['kinase'] or (
-                isinstance(p['substrate'], common.basestring) and
+                isinstance(p['substrate'], str) and
                 p['substrate'].startswith('HLA')
             )
         ):
@@ -420,7 +420,7 @@ class EnzymeSubstrateProcessor(
         )
         _resources += (
             (self.name,)
-                if isinstance(self.input_param, common.basestring) else
+                if isinstance(self.input_param, str) else
             (self.input_param,)
         )
 

@@ -3259,7 +3259,7 @@ class PyPath(session_mod.Logger):
             return None
 
         if (
-            isinstance(settings.input, common.basestring) and
+            isinstance(settings.input, str) and
             inputs.get_method(settings.input)
         ):
 
@@ -4128,7 +4128,7 @@ class PyPath(session_mod.Logger):
             # not, for example, complexes
             if (
                 keep_original_names and
-                isinstance(original_name, common.basestring)
+                isinstance(original_name, str)
             ):
                 g.vs[n]['original_names'] = {
                     original_name: original_name_type,
@@ -4148,7 +4148,7 @@ class PyPath(session_mod.Logger):
             # not, for example, complexes
             if (
                 keep_original_names and
-                isinstance(original_name, common.basestring)
+                isinstance(original_name, str)
             ):
 
                 this_node['original_names'][original_name] = (
@@ -12825,7 +12825,7 @@ class PyPath(session_mod.Logger):
         interactions_pws = None
 
         if (
-            isinstance(attrname, common.basestring) and
+            isinstance(attrname, str) and
             inputs.get_method(attrname)
         ):
 

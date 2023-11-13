@@ -2858,7 +2858,7 @@ class TableServer(BaseServer):
                         )
                     ))
 
-                        if isinstance(pref_ress, common.basestring) else
+                        if isinstance(pref_ress, str) else
 
                     pref_ress
 
@@ -2914,7 +2914,7 @@ class TableServer(BaseServer):
                                 )
                                 for f in v.split(';')
                             ]
-                            if isinstance(v, common.basestring) else
+                            if isinstance(v, str) else
                             []
                         )
 

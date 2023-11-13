@@ -1583,7 +1583,7 @@ class Curl(FileOpener):
 
     def get_hash(self):
 
-        if isinstance(self.cache, common.basestring):
+        if isinstance(self.cache, str):
 
             return
 
@@ -1623,7 +1623,7 @@ class Curl(FileOpener):
 
         self.cache_file_name = (
             self.cache
-                if isinstance(self.cache, common.basestring) else
+                if isinstance(self.cache, str) else
             os.path.join(
                 os.getcwd(),
                 self.cache_dir,
@@ -1812,7 +1812,7 @@ class Curl(FileOpener):
         def _decode_result(content):
 
             try:
-                if isinstance(content, common.basestring):
+                if isinstance(content, str):
 
                     return content
 

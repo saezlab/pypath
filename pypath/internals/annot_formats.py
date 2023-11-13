@@ -135,7 +135,7 @@ class AnnotDef(
     def _is_resource_name(name):
 
         return (
-            isinstance(name, common.basestring) and
+            isinstance(name, str) and
             not (
                 name.startswith('~') or
                 name.startswith('#')
@@ -150,7 +150,7 @@ class AnnotDef(
             ()
                 if not arg else
             (arg,)
-                if isinstance(arg, (common.basestring, _annot_type)) else
+                if isinstance(arg, (str, _annot_type)) else
             arg
         )
 

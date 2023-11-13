@@ -158,7 +158,7 @@ class LicenseFeature(object):
 
             return other
 
-        elif isinstance(other, common.basestring):
+        elif isinstance(other, str):
 
             return cls.level_to_int(other)
 

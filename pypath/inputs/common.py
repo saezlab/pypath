@@ -56,7 +56,7 @@ def read_xls(
     table = []
     opened_here = False
 
-    if isinstance(xls_file, common.basestring):
+    if isinstance(xls_file, str):
 
         if os.path.exists(xls_file):
 
@@ -89,7 +89,7 @@ def read_xls(
                 sheet = book.sheet_by_index(0)
 
             table = [
-                [common.basestring(c.value) for c in sheet.row(i)]
+                [str(c.value) for c in sheet.row(i)]
                 for i in xrange(sheet.nrows)
             ]
 
@@ -283,7 +283,7 @@ def read_table(
                     sep2[col]
                         if isinstance(sep2, dict) and col in sep2 else
                     sep2
-                        if isinstance(sep2, common.basestring) else
+                        if isinstance(sep2, str) else
                     None
                 )
 

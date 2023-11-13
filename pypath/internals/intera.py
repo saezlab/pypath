@@ -76,7 +76,7 @@ class Residue(object):
         self.name = name
         self.number = (
             number
-                if not isinstance(number, common.basestring) else
+                if not isinstance(number, str) else
             int(non_digit.sub('', number))
         )
 
@@ -466,12 +466,12 @@ class Motif(object):
         )
         self.start = (
             start
-                if not isinstance(start, common.basestring) else
+                if not isinstance(start, str) else
             int(non_digit.sub('', start))
         )
         self.end = (
             end
-                if not isinstance(end, common.basestring) else
+                if not isinstance(end, str) else
             int(non_digit.sub('', end))
         )
         self.regex = None if regex is None else re.compile(regex)

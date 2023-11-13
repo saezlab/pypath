@@ -216,7 +216,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
 
         return (
             entity
-                if isinstance(entity, common.basestring) else
+                if isinstance(entity, str) else
             str(entity)
         )
 
@@ -246,7 +246,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
     def _is_protein(key):
 
         return (
-            isinstance(key, common.basestring) and (
+            isinstance(key, str) and (
                 not key.isdigit() or
                 settings.get('default_name_types')['protein'] == 'entrez'
             ) and
@@ -259,7 +259,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
     def _is_small_molecule(key):
 
         return(
-            isinstance(key, common.basestring) and
+            isinstance(key, str) and
             key.isdigit() and
             settings.get('default_name_types')['protein'] != 'entrez'
         )
@@ -269,7 +269,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
     def _is_mirna(key):
 
         return (
-            isinstance(key, common.basestring) and
+            isinstance(key, str) and
             key.startswith('MIMAT')
         )
 
@@ -278,7 +278,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
     def _is_complex(key):
 
         return key.__class__.__name__ == 'Complex' or (
-            isinstance(key, common.basestring) and
+            isinstance(key, str) and
             key.startswith('COMPLEX')
         )
 

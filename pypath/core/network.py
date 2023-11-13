@@ -306,7 +306,7 @@ class NetworkEntityCollection(object):
     @staticmethod
     def _add_total(dct, key = None):
 
-        if isinstance(key, (common.basestring, tuple)):
+        if isinstance(key, (str, tuple)):
 
             _key = key
 
@@ -322,7 +322,7 @@ class NetworkEntityCollection(object):
 
                 _key = (
                     'Total'
-                        if isinstance(first_key, common.basestring) else
+                        if isinstance(first_key, str) else
                     first_key[:-1] + ('Total',)
                 )
 
@@ -594,7 +594,7 @@ class Network(session_mod.Logger):
         for resource in resources:
 
             if (
-                isinstance(resource, common.basestring) and
+                isinstance(resource, str) and
                 hasattr(network_resources, resource)
             ):
 
@@ -931,7 +931,7 @@ class Network(session_mod.Logger):
                 # reading from remote or local file, or executing import
                 # function:
                 if (
-                    isinstance(networkinput.input, common.basestring) and (
+                    isinstance(networkinput.input, str) and (
                         networkinput.input.startswith('http') or
                         networkinput.input.startswith('ftp')
                     )
@@ -2973,7 +2973,7 @@ class Network(session_mod.Logger):
 
         resources = (
             getattr(network_resources, resources)
-                if isinstance(resources, common.basestring) else
+                if isinstance(resources, str) else
             list(resources)
         )
 
@@ -3827,7 +3827,7 @@ class Network(session_mod.Logger):
                 (entities,)
                     if isinstance(
                         entities,
-                        (common.basestring, entity_mod.Entity)
+                        (str, entity_mod.Entity)
                     ) else
                 entities
             )

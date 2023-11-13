@@ -57,7 +57,7 @@ def guide2pharma_download(
     organism_ = None
     ncbi_tax_id = None
 
-    if isinstance(organism, common.basestring):
+    if isinstance(organism, str):
 
         ncbi_tax_id = get_taxid(organism)
 

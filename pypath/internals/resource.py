@@ -145,7 +145,7 @@ class AbstractResource(session_mod.Logger):
         if self.dump is not None:
 
             if (
-                isinstance(self.dump, common.basestring) and
+                isinstance(self.dump, str) and
                 os.path.exists(self.dump)
             ):
 
@@ -337,7 +337,7 @@ class NetworkResource(ResourceAttributes):
 
         return (
             self.name == other
-                if isinstance(other, common.basestring) else
+                if isinstance(other, str) else
             self.__hash__() == other.__hash__()
         )
 
@@ -602,7 +602,7 @@ class EnzymeSubstrateResource(ResourceAttributes):
 
         return (
             self.name == other
-                if isinstance(other, common.basestring) else
+                if isinstance(other, str) else
             self.__hash__() == other.__hash__()
         )
 

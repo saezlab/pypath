@@ -161,7 +161,7 @@ class AbstractComplexResource(resource.AbstractResource):
 
         # either a UniProt ID or
         # a complex string representation
-        if isinstance(other, common.basestring):
+        if isinstance(other, str):
 
             if len(other) <= 10:
 

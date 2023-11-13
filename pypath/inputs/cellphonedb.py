@@ -126,7 +126,7 @@ def _cellphonedb_annotations(url, name_method):
 
         names = name_method(rec)
 
-        if isinstance(names, (common.basestring, intera.Complex)):
+        if isinstance(names, (str, intera.Complex)):
 
             names = (names,)
 
@@ -243,7 +243,7 @@ def _cellphonedb_get_entity(name, complexes):
 
     name = _cellphonedb_hla(name)
 
-    return (name,) if isinstance(name, common.basestring) else name
+    return (name,) if isinstance(name, str) else name
 
 
 def cellphonedb_interactions():
