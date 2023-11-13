@@ -627,13 +627,13 @@ urls = {
         'url': 'http://lincs.hms.harvard.edu/db/datasets/20000/smallmolecules'
             '?search=&output_type=.csv'
     },
-    'pubmed-eutils': {
-        'label': 'Retrieving summary of PubMed records',
-        'url': 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',
-        'conv': (
+    'eutils': {
+        'label': 'NCBI E-Utils API',
+        'esummary': 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',
+        'pmc-idconv': (
             'https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/'
             'v1.0/?ids=%s&format=json'
-        )
+        ),
     },
     'pubmed': {
         'label': 'PubMed baseurl',

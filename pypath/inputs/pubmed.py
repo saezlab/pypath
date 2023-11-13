@@ -28,6 +28,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.share.progress as progress
+import pypath.inputs.eutils as eutils
 
 
 def open_pubmed(pmid):
@@ -85,7 +86,7 @@ def get_pmid(idList):
     if type(idList) in common.simple_types:
         idList = [idList]
 
-    url = urls.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
+    url = urls.urls['eutils']['pmc-idconv'] % ','.join(str(i) for i in idList)
     c = curl.Curl(url, silent = True)
     data = c.result
 
@@ -128,46 +129,20 @@ def pmids_list(idList):
     return result
 
 
-def get_pubmeds(pmids):
+def get_pubmeds(pmids: list[str], cache_small: int = 10) -> dict:
+    """
+    Metadata about PubMed records.
 
-    pmids = [str(pmid) for pmid in pmids]
-    url = urls.urls['pubmed-eutils']['url']
-    cache = len(pmids) < 10
-    data = {}
-    prg = progress.Progress(
-        len(pmids) / 100 + 1,
-        'Retrieving data from NCBI e-utils',
-        1,
-        percent = False)
+    Args:
+        pmids:
+            One or more PubMed IDs.
+        cache_small:
+            Small requests querying less than 10 IDs by default are not cached,
+            except if this parameter is True or is set to a lower number.
+    """
 
-    for offset in xrange(0, len(pmids), 100):
-        prg.step()
-        post = {
-            'id': ','.join(pmids[offset:offset + 100]),
-            'retmode': 'json',
-            'db': 'pubmed'
-        }
-
-        for i in xrange(3):
-            try:
-                c = curl.Curl(
-                    url,
-                    silent = False,
-                    cache = cache,
-                    post = post,
-                    override_post = True,
-                )
-                res = c.result
-                data = dict([(k, v)
-                             for k, v in iteritems(json.loads(res)['result'])]
-                            + [(k, v) for k, v in iteritems(data)])
-
-                break
-
-            except ValueError:
-                sys.stdout.write('\t:: Error in JSON, retry %u\n' % i)
-                sys.stdout.flush()
-
-    prg.terminate()
-
-    return data
+    return eutils.esummary(
+        ids = pmids,
+        db = 'pubmed',
+        cache_small = cache_small,
+    )
