@@ -38,8 +38,6 @@ __all__ = [
     'ligand_receptor'
 ]
 
-ROOT = common.ROOT
-
 # this is all what is needed to load the resources
 # included in the pypath package
 """

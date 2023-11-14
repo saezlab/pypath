@@ -25,7 +25,6 @@ import itertools
 import json
 
 import pypath.share.session as session
-import pypath.share.common as common
 import pypath.omnipath.databases.build as build
 
 _logger = session.Logger(name = 'db_define')
@@ -65,13 +64,13 @@ class DatabaseDefinition(object):
         data = cls._parse_json(path = path, label = label)
 
         return cls(**data)
-    
-    
+
+
     @staticmethod
     def _parse_json(path, label = None):
-        
+
         data = DatabaseDefinition._read_json(path) or {}
-        
+
         if label:
 
             if label in data:
@@ -87,21 +86,21 @@ class DatabaseDefinition(object):
                         path,
                     )
                 )
-        
+
         return data
-    
-    
+
+
     @staticmethod
     def _read_json(path):
-        
+
         if not os.path.exists(path):
-            
+
             _console('No such file: `%s`.' % path)
-            
+
         else:
-            
+
             with open(path) as json_file:
-                
+
                 return json.load(json_file)
 
 
@@ -120,9 +119,9 @@ class DatabaseDefinition(object):
 
 
     def get(self, attr):
-        
+
         if hasattr(self, attr):
-            
+
             return getattr(self, attr)
 
 
@@ -137,10 +136,10 @@ class DatabaseClass(object):
         self.label = label
         self.module = module
         self.method = method
-    
-    
+
+
     def __repr__(self):
-        
+
         return (
             '<Database class `%s`, module: `%s`, class or method: `%s`>' % (
                 self.label,
@@ -163,78 +162,78 @@ class DatabaseClass(object):
             try:
 
                 mod = importlib.import_module(self.module)
-                
+
                 if hasattr(mod, self.method):
-                    
+
                     return getattr(mod, self.method)
-                    
+
                 else:
-                    
+
                     _console(
                         'Module `%s` has no class or method `%s`.' % (
                             self.module,
                             self.method,
                         )
                     )
-                
+
             except ImportError:
-                
+
                 _console('Failed to import `%s`.' % self.module)
-    
-    
+
+
     @classmethod
     def from_json(self, path, label = None):
-        
+
         data = DatabaseDefinition._parse_json(path = path, label = label)
-        
+
         return cls(**data)
-    
-    
+
+
     @classmethod
     def from_dict(cls, dct, label = None):
-        
+
         if label:
-            
+
             dct['label'] = label
-        
+
         return cls(**dct)
 
 
 class DatabaseDefinitionManager(session.Logger):
-    
-    
+
+
     def __init__(self, classes = None, databases = None):
-        
+
         session.Logger.__init__(self, name = 'db_define')
-        
+
         self._classes = classes or self._default_json('classes')
         self._databases = databases or self._default_json('builtins')
-        
+
         self.load()
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<Database definitions: %u classes and %u definitions>' % (
             len(self.classes),
             len(self.databases),
         )
-    
-    
+
+
     def load(self):
-        
+
         if isinstance(self._classes, str):
-            
+
             self._log('Reading database classes from `%s`' % self._classes)
             self._classes = DatabaseDefinition._read_json(self._classes)
-            
+
         if isinstance(self._databases, str):
-            
+
             self._log(
                 'Reading database definitions from `%s`' % self._databases
             )
             self._databases = DatabaseDefinition._read_json(self._databases)
-        
+
         self.classes = dict(
             (
                 label,
@@ -242,7 +241,7 @@ class DatabaseDefinitionManager(session.Logger):
             )
             for label, param in iteritems(self._classes)
         )
-        
+
         self.databases = dict(
             (
                 label,
@@ -250,85 +249,85 @@ class DatabaseDefinitionManager(session.Logger):
             )
             for label, param in iteritems(self._databases)
         )
-    
-    
+
+
     def get_db_class(self, label):
-        
+
         if label in self.classes:
-            
+
             return self.classes[label]
-            
+
         else:
-            
+
             self._log('No such database class: `%s`.' % label)
-    
-    
+
+
     def get_db_definition(self, label):
-        
+
         if label not in self.databases:
-            
+
             self._log(
                 'Warning: no parameters for label `%s`, '
                 'returning empty dict.' % label
             )
-        
+
         return self.databases[label] if label in self.databases else {}
-    
-    
+
+
     def get_class(self, label):
-        
+
         dbclass = self.get_db_class(label)
-        
+
         if dbclass:
-            
+
             return dbclass.get_class()
-    
-    
+
+
     def class_and_param(self, label):
         """
         For a database definition label returns the class or method and its
         arguments which are necessary to build the database according to
         the definition.
         """
-        
+
         db_def = self.get_db_definition(label)
-        
+
         if db_def:
-            
+
             db_class = db_def.dbclass
-            
+
             if not callable(db_class):
-                
+
                 if isinstance(db_class, dict):
-                    
+
                     db_class = DatabaseClass(**db_class)
-                    
+
                 elif isinstance(db_class, str):
-                    
+
                     db_class = self.get_db_class(db_class)
-        
+
         return db_class, db_def
-    
-    
+
+
     def build(self, label):
         """
         For a database definition label returns an instance of the database:
         creates an instance of the class or calls the method with the
         arguments in the database definition. Returns the database instance.
         """
-        
+
         db_class, db_def = self.class_and_param(label)
-        
+
         if db_class:
-            
+
             return build.build(db_class, db_def)
-    
-    
+
+
     @staticmethod
     def _default_json(name):
-        
+
         return os.path.join(
-            common.ROOT,
+            session.session().module_root,
             'omnipath',
             'databases',
             '%s.json' % name,

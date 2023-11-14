@@ -57,6 +57,7 @@ from matplotlib import ticker
 from scipy import stats
 
 import pypath.share.common as common
+import pypath.share.session as session
 import pypath_common._constants as _const
 from pypath.visual.igraph_drawing import DefaultGraphDrawerFFsupport
 import pypath.resources.descriptions
@@ -198,7 +199,7 @@ class Plot(object):
 
     def embl_palette(self, inFile='embl_colors'):
         cols = []
-        inFile = os.path.join(common.ROOT, 'data', inFile)
+        inFile = os.path.join(session.session().module_root, 'data', inFile)
         with open(inFile, 'r') as f:
             series = []
             for i, l in enumerate(f):

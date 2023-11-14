@@ -55,7 +55,7 @@ class ResourceController(session_mod.Logger):
     def __init__(
             self,
             resource_info_path = (
-                common.ROOT,
+                session_mod.session().module_root,
                 'resources',
                 'data',
                 'resources.json',

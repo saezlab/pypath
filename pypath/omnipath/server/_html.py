@@ -20,7 +20,7 @@
 import bs4
 import os
 
-import pypath.share.common as common
+from pypath.share.session import session
 
 _fonts = open('fonts.css', 'rb').read().decode('utf-8') \
     if os.path.exists('fonts.css') else ''
@@ -1681,7 +1681,9 @@ def main_page():
         '</p>' % _omnipath_logo
     )
 
-    with open(os.path.join(common.ROOT, 'data', 'main.html'), 'r') as f:
+    module_root = session().module_root
+
+    with open(os.path.join(module_root, 'data', 'main.html'), 'r') as f:
         doc = f.read()
 
     tut = ''
@@ -1705,7 +1707,8 @@ def main_page():
 
 def http_500():
 
-    html_path = os.path.join(common.ROOT, 'data', 'www', 'http500.html')
+    module_root = session().module_root
+    html_path = os.path.join(module_root, 'data', 'www', 'http500.html')
 
     with open(html_path, 'r') as f:
 

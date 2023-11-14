@@ -37,7 +37,7 @@ from pypath.share import session as _session_mod
 
 _module_root = os.path.abspath(os.path.dirname(__file__))
 _settings_yaml = os.path.join(_module_root, 'data', 'settings.yaml')
-session = _session_mod.session('pypath', config = _settings_yaml)
+session = _session_mod._session('pypath', config = _settings_yaml)
 
 
 def log():
@@ -45,7 +45,7 @@ def log():
     Browse the current pypath logfile.
     """
 
-    _session_mod.log('pypath').browse()
+    _session_mod.log().browse()
 
 
 def disclaimer():
@@ -80,7 +80,7 @@ def info(loglevel = -9):
     Prints basic information about the current session.
     """
 
-    _session_mod.log('pypath').msg(
+    _session_mod.log().msg(
         (
             '\n'
             '\t- session ID: `%s`\n'
@@ -91,9 +91,9 @@ def info(loglevel = -9):
             '\t- imported from: `%s`\n'
             '\t- Python version: %s\n'
             '\t- Platform: %s'% (
-                _session_mod.session('pypath').label,
+                _session_mod.session().label,
                 os.getcwd(),
-                _session_mod.log('pypath').fname,
+                _session_mod.log().fname,
                 _settings_yaml,
                 __version__,
                 _module_root,

@@ -269,7 +269,11 @@ class BaseServer(TwistedWebResource, session_mod.Logger):
 
     def _set_www_root(self):
 
-        self.wwwbuiltin = os.path.join(common.ROOT, 'data', 'www')
+        self.wwwbuiltin = os.path.join(
+            session_mod.session().module_root,
+            'data',
+            'www',
+        )
         self.wwwroot = settings.get('www_root')
 
         if not os.path.exists(self.wwwroot):
