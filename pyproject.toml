@@ -66,7 +66,7 @@ pyreadr = "*"
 PyYAML = "*"
 rdata = "*"
 requests = "*"
-scipy = "*"
+scipy = ">=1.9.0"
 sqlparse = "*"
 tabulate = "*"
 timeloop = "*"
@@ -114,11 +114,13 @@ sphinx-autodoc-typehints = ">=1.18.0"
 sphinxcontrib-fulltoc = ">=1.2.0"
 sphinx_copybutton = "*"
 jupyterlab = "*"
+notebook = "6.4.12"
 pydata-sphinx-theme = "*"
 sphinx_remove_toctrees = "*"
 jupyter-contrib-nbextensions = { git = "https://github.com/deeenes/jupyter_contrib_nbextensions.git", branch = "master" }
 nbsphinx = { git = "https://github.com/deeenes/nbsphinx.git", branch = "timings" }
 jupyter-server = ">=2.7.2"
+traitlets = "5.9.0"
 
 [tool.poetry.scripts]
 bio2bel_omnipath = "pypath.omnipath.bel:main"
