@@ -40,7 +40,6 @@ import pypath.inputs.uniprot_db as uniprot_db
 import pypath.share.common as common
 import pypath_common._constants as _const
 import pypath.share.settings as settings
-import pypath.share.constants as constants
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
 import pypath.utils.uniprot as utils_uniprot
@@ -2668,7 +2667,7 @@ class AnnotationBase(resource.AbstractResource):
     def _ensure_swissprot(self):
 
         if (
-            self.ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC or
+            self.ncbi_tax_id == _const.NOT_ORGANISM_SPECIFIC or
             not self.check_ids
         ):
 
@@ -2917,7 +2916,7 @@ class AnnotationBase(resource.AbstractResource):
 
         if not self.reference_set:
 
-            if self.ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC:
+            if self.ncbi_tax_id == _const.NOT_ORGANISM_SPECIFIC:
 
                 proteins, complexes, reference_set = (set(),) * 3
 
@@ -6112,7 +6111,7 @@ class Cancerdrugsdb(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'CancerDrugsDB',
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
             input_method = 'cancerdrugsdb.cancerdrugsdb_annotations',
             entity_type = 'small_molecule',
             **kwargs
@@ -6942,7 +6941,7 @@ class HPO(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'HPO',
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
             input_method = 'hpo.hpo_annotations',
             **kwargs
         )

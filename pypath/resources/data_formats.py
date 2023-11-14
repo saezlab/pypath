@@ -26,7 +26,7 @@ import copy
 import pypath.internals.input_formats as input_formats
 import pypath.resources.urls as urls
 import pypath.share.common as common
-import pypath.share.constants as constants
+import pypath_common._constants as _const
 
 
 __all__ = [
@@ -3246,7 +3246,7 @@ small_molecule_protein = {
         entity_type_a = 'small_molecule',
         entity_type_b = 'protein',
         ncbi_tax_id = {
-            'A': constants.NOT_ORGANISM_SPECIFIC,
+            'A': _const.NOT_ORGANISM_SPECIFIC,
             'B': 9606,
         },
         is_directed = True,

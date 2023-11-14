@@ -23,7 +23,7 @@ import copy
 
 import pypath.share.settings as settings
 import pypath.share.session as session
-import pypath.share.constants as constants
+import pypath_common._constants as _const
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.unichem as unichem_input
 
@@ -567,7 +567,7 @@ class ProMapping(MappingInput):
             id_type_b = None,
             pro_id_type_a = None,
             pro_id_type_b = None,
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
         ):
 
         to_pro = id_type_a != 'pro'
@@ -659,7 +659,7 @@ class UnichemMapping(MappingInput):
             self,
             id_type_a,
             id_type_b,
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
         ):
         """
         Paramaters for UniChem based ID translation.
@@ -676,7 +676,7 @@ class UnichemMapping(MappingInput):
             type_ = 'unichem',
             id_type_a = id_type_a,
             id_type_b = id_type_b,
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
         )
 
 
@@ -688,7 +688,7 @@ class RampMapping(MappingInput):
             self,
             id_type_a,
             id_type_b,
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
         ):
         """
         Paramaters for ID translation tables from the RaMP database.
@@ -705,7 +705,7 @@ class RampMapping(MappingInput):
             type_ = 'ramp',
             id_type_a = id_type_a,
             id_type_b = id_type_b,
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
         )
 
 
@@ -717,7 +717,7 @@ class HmdbMapping(MappingInput):
             self,
             id_type_a,
             id_type_b,
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
         ):
         """
         Paramaters for ID translation tables from the
@@ -735,7 +735,7 @@ class HmdbMapping(MappingInput):
             type_ = 'hmdb',
             id_type_a = id_type_a,
             id_type_b = id_type_b,
-            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
             input_method = 'hmdb.metabolites_mapping',
         )
 

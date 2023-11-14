@@ -28,8 +28,8 @@ import pypath.internals.intera as intera
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.session as session
-import pypath.share.constants as constants
 import pypath.core.entity as entity
 
 _logger = session.Logger(name = 'scconnect_input')
@@ -171,7 +171,7 @@ def scconnect_interactions():
         organisms = [
             taxonomy.ensure_ncbi_tax_id(org)
                 if org not in {'', 'None', 'Unknown'} else
-            constants.NOT_ORGANISM_SPECIFIC
+            _const.NOT_ORGANISM_SPECIFIC
             for org in rec['%s_species' % partner].split('|')
         ]
         id_field = (

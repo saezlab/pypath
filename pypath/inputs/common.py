@@ -33,7 +33,7 @@ import glom
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
-import pypath.share.constants as constants
+import pypath_common._constants as _const
 
 _logger = session_mod.Logger(name = 'inputs_common')
 _log = _logger._log
@@ -331,7 +331,7 @@ def json_extract(
 
 
     return [
-        glom.glom(rec, spec, default = constants.GLOM_ERROR)
+        glom.glom(rec, spec, default = _cons.GLOM_ERROR)
         for rec in data
     ]
 

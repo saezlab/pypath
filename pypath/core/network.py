@@ -49,7 +49,6 @@ import pypath.share.common as common
 import pypath_common._constants as _const
 import pypath.share.settings as settings
 import pypath.share.cache as cache_mod
-import pypath.share.constants as constants
 import pypath.utils.mapping as mapping
 import pypath.inputs.pubmed as pubmed_input
 import pypath.share.curl as curl
@@ -1196,12 +1195,12 @@ class Network(session_mod.Logger):
                     if isinstance(networkinput.ncbi_tax_id, int):
 
                         taxon_a = (
-                            constants.NOT_ORGANISM_SPECIFIC
+                            _const.NOT_ORGANISM_SPECIFIC
                                 if entity_type_a in SMOL_TYPES else
                             networkinput.ncbi_tax_id
                         )
                         taxon_b = (
-                            constants.NOT_ORGANISM_SPECIFIC
+                            _const.NOT_ORGANISM_SPECIFIC
                                 if entity_type_b in SMOL_TYPES else
                             networkinput.ncbi_tax_id
                         )
@@ -1225,14 +1224,14 @@ class Network(session_mod.Logger):
                         taxd_a = (
                             networkinput.ncbi_tax_id['A']
                                 if 'A' in networkinput.ncbi_tax_id else
-                            constants.NOT_ORGANISM_SPECIFIC
+                            _const.NOT_ORGANISM_SPECIFIC
                                 if entity_type_a in SMOL_TYPES else
                             networkinput.ncbi_tax_id
                         )
                         taxd_b = (
                             networkinput.ncbi_tax_id['B']
                                 if 'B' in networkinput.ncbi_tax_id else
-                            constants.NOT_ORGANISM_SPECIFIC
+                            _const.NOT_ORGANISM_SPECIFIC
                                 if entity_type_b in SMOL_TYPES else
                             networkinput.ncbi_tax_id
                         )
@@ -1922,7 +1921,7 @@ class Network(session_mod.Logger):
 
         return (
             (
-                taxon == constants.NOT_ORGANISM_SPECIFIC
+                taxon == _const.NOT_ORGANISM_SPECIFIC
             ) or (
                 has_include and
                 taxon in tax_dict['include']
@@ -2232,7 +2231,7 @@ class Network(session_mod.Logger):
 
             if (
                 organisms and
-                node.taxon != constants.NOT_ORGANISM_SPECIFIC and
+                node.taxon != _const.NOT_ORGANISM_SPECIFIC and
                 node.taxon not in organisms
             ):
 

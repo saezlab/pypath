@@ -28,7 +28,7 @@ from typing import Callable, List, Optional, Union
 import glom
 
 import pypath.share.curl as curl
-import pypath.share.constants as constants
+import pypath_common._constants as _const
 import pypath.share.session as session
 import pypath.inputs.common as inputs_common
 
@@ -142,7 +142,7 @@ def ebi_rest(
 
         res = res if isinstance(res, list) else [res]
 
-        if res == [None] or res == [constants.GLOM_ERROR]:
+        if res == [None] or res == [_const.GLOM_ERROR]:
 
             break
 

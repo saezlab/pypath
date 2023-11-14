@@ -33,7 +33,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.progress as progress
 import pypath.share.cache as cache_mod
-from pypath.share.constants import CURSOR_UP_ONE, ERASE_LINE
+import pypath_common._constants as _const
 
 
 def get_ielm_huge(
@@ -199,7 +199,7 @@ def get_ielm(
 
     if data is None:
 
-        sys.stdout.write(ERASE_LINE + CURSOR_UP_ONE)
+        sys.stdout.write(_const.ERASE_LINE + _const.CURSOR_UP_ONE)
         sys.stdout.write(
             '\t:: Initial query failed. No data retrieved from iELM.\n')
         sys.stdout.flush()
@@ -210,7 +210,7 @@ def get_ielm(
 
     while soup.title.text == 'iELM Wait Page' and wait < maxwait:
 
-        sys.stdout.write(ERASE_LINE + CURSOR_UP_ONE)
+        sys.stdout.write(_const.ERASE_LINE + _const.CURSOR_UP_ONE)
         sys.stdout.write('\t:: Waiting for result. Wait time: %u sec. '
                          'Max waiting time: %u sec.\n' % (wait, maxwait))
         sys.stdout.flush()
@@ -239,7 +239,7 @@ def get_ielm(
 
     if len(soup.find_all('table')) == 0:
 
-        sys.stdout.write(ERASE_LINE + CURSOR_UP_ONE)
+        sys.stdout.write(_const.ERASE_LINE + _const.CURSOR_UP_ONE)
         sys.stdout.write('\t:: No data retrieved from iELM. \n')
         sys.stdout.flush()
         soup.title.string = 'http://i.elm.eu.org/proteomic_results/%s' % sessid
@@ -252,7 +252,7 @@ def get_ielm(
 
             f.write(data)
 
-    sys.stdout.write(ERASE_LINE + CURSOR_UP_ONE)
+    sys.stdout.write(_const.ERASE_LINE + _const.CURSOR_UP_ONE)
     sys.stdout.write(
         '\t:: Data retrieved from %s in %u seconds.\n' % (src, wait)
     )

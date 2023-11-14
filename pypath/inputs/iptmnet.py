@@ -22,7 +22,7 @@ import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-import pypath.share.constants as constants
+import pypath_common._constants as _const
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.mapping as mapping
 import pypath.inputs.common as inputs_common
@@ -102,7 +102,7 @@ def iptmnet_interactions(organism = 9606):
         ncbi_tax_id = (
             taxonomy.ensure_ncbi_tax_id(organism_)
                 if organism_ else
-            constants.NOT_ORGANISM_SPECIFIC
+            _const.NOT_ORGANISM_SPECIFIC
         )
 
         if organism and ncbi_tax_id != organism:

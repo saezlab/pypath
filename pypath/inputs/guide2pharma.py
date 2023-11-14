@@ -25,7 +25,7 @@ import itertools
 
 import pypath.share.curl as curl
 import pypath.share.common as common
-import pypath.share.constants as constants
+import pypath_common._constants as _const
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.utils.taxonomy as taxonomy
@@ -50,7 +50,7 @@ def guide2pharma_download(
     """
 
     get_taxid = lambda x: (
-        constants.NOT_ORGANISM_SPECIFIC
+        _const.NOT_ORGANISM_SPECIFIC
             if x in {'', 'None'} else
         taxonomy.ensure_ncbi_tax_id(x)
     )
