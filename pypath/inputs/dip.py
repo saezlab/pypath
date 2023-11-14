@@ -20,6 +20,7 @@
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.mitab as mitab
+import pypath.share.cache as _cache
 
 
 def dip_interactions(
@@ -112,7 +113,7 @@ def dip_login(user, passwd):
     bdr = '---------------------------8945224391427558067125853467'
     useragent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:43.0) '\
         'Gecko/20110304 Firefox/43.0'
-    loginfname = os.path.join(settings.get('cachedir'), 'dip.logindata.tmp')
+    loginfname = os.path.join(_cache.get_cachedir(), 'dip.logindata.tmp')
     url = urls.urls['dip']['login']
     req_hdrs = ['User-Agent: %s' % useragent]
     c = curl.Curl(
