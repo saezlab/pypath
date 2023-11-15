@@ -121,7 +121,7 @@ class BioPaxReader(session_mod.Logger):
         self.cleanup_period = cleanup_period
         self.biopax_tmp_file = None
         self.cachedir = cache.get_cachedir()
-        self.parser_id = common.gen_session_id()
+        self.parser_id = common.random_string()
         self.silent = silent
 
         # string constants

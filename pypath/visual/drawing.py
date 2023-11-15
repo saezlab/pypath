@@ -33,6 +33,7 @@ import math
 import time
 
 from pypath.share.common import *
+import pypath.share.common as common
 import pypath_common._constants as _const
 import pypath.share.session as session_mod
 
@@ -100,7 +101,7 @@ class Plot(session_mod.Logger):
         }
         self.default_vertex_label_size = 6.0
         self.plots = []
-        self.session = gen_session_id()
+        self.session = common.random_string()
         self.name = self.name if self.name is not None else self.session
         self.label_sizes = {
             'small': (15.0, 13.7),

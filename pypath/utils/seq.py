@@ -385,7 +385,7 @@ class Seq(object):
             sys.stdout.flush()
             return
 
-        session = common.gen_session_id()
+        session = common.random_string()
 
         method = method.capitalize()
 

@@ -1118,7 +1118,7 @@ class Curl(FileOpener):
         """
 
         bdr = b'---------------------------%s' % \
-            common.gen_session_id(28).encode('ascii')
+            common.random_string(28).encode('ascii')
         self.binary_data_param = self.binary_data
         self.binary_data = b'\r\n'.join(
             map(lambda i: b'--%s\r\nContent-Disposition: form-data;'
