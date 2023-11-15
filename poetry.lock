@@ -2680,6 +2680,24 @@ files = [
 diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
+name = "pypath-common"
+version = "0.1.0"
+description = "Code shared across pypath modules"
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "pypath_common-0.1.0-py3-none-any.whl", hash = "sha256:47df3c8159fa75ebf069e3481c7be58d629b50768b560fa8bf452624c7a2590d"},
+    {file = "pypath_common-0.1.0.tar.gz", hash = "sha256:615f867d2365ffffbefbbe3ee4eb00f57599a8309d29494f73a594f04990f52b"},
+]
+
+[package.dependencies]
+numpy = "*"
+psutil = "*"
+tabulate = "*"
+timeloop = "*"
+
+[[package]]
 name = "pyreadr"
 version = "0.5.0"
 description = "Reads/writes R RData and Rds files into/from pandas data frames."
@@ -4016,4 +4034,4 @@ pathophenodb = ["sparqlwrapper"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "a504a22ba5ef2a6da0da4734b7ad18569200f4b15d91730b7c7287c23cf05aa3"
+content-hash = "107b9239575dfb7c2c153581f28e985da83523249e98087221d65bb37e68e724"
