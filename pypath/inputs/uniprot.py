@@ -335,29 +335,29 @@ def get_uniprot_sec(organism = 9606):
         NCBI Taxonomy ID of the organism.
     """
 
-    if organism not in (None, _const.NOT_ORGANISM_SPECIFIC):
+    _organism = organism not in (None, _const.NOT_ORGANISM_SPECIFIC)
 
-        proteome = all_uniprots(organism=organism)
+    if _organism:
+
+        from pypath.inputs import uniprot_db
+        proteome = uniprot_db.all_uniprots(organism=organism)
         proteome = set(proteome)
 
     sec_pri = []
     url = urls.urls['uniprot_sec']['url']
     c = curl.Curl(url, silent = False, large = True, timeout = 2400)
 
-    for line in filter(
-        lambda line:
-            len(line) == 2 and (organism is None or line[1] in proteome),
-            map(
-                lambda i:
-                    i[1].split(),
-                filter(
-                    lambda i: i[0] >= 30,
-                    enumerate(c.result)
-                )
-            )
-        ):
+    for i, line in enumerate(c.result):
 
-        yield line
+        if i < 30:
+
+            continue
+
+        line = line.split()
+
+        if len(line) == 2 and (not _organism or line[1] in proteome):
+
+            yield line
 
 
 _uniprot_fields = {
