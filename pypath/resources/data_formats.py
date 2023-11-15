@@ -38,62 +38,6 @@ __all__ = [
     'ligand_receptor'
 ]
 
-# this is all what is needed to load the resources
-# included in the pypath package
-"""
-Old input definitions, should not be used.
-"""
-obsolate = {
-    'signalink2': input_formats.NetworkInput(
-        name = 'SignaLink2',
-        separator = ',',
-        id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = 'uniprot',
-        id_type_b = 'uniprot',
-        entity_type_a = 'protein',
-        entity_type_b = 'protein',
-        is_directed = (7, ['1', '2']),
-        sign = (6, '1', '-1'),
-        input = os.path.join(ROOT, 'data', 'slk01human.csv'),
-        references = (9, ':'),
-        ncbi_tax_id = 9606,
-        extra_edge_attrs = {
-            'effect': 8,
-            'is_direct': 6,
-            'is_directed': 7
-        },
-        extra_node_attrs_a = {
-            'slk_pathways': (4, ':'),
-            'gene_name': 2,
-        },
-        extra_node_attrs_b = {
-            'slk_pathways': (5, ':'),
-            'gene_name': 3,
-        },
-    ),
-    'nci_pid': input_formats.NetworkInput(
-        name = 'NCI-PID',
-        separator = '\t',
-        id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = 'uniprot',
-        id_type_b = 'uniprot',
-        entity_type_a = 'protein',
-        entity_type_b = 'protein',
-        is_directed = (2, ['1', '-1']),
-        input = os.path.join(ROOT, 'data', 'nci-pid-strict.csv'),
-        references = (4, ';'),
-        ncbi_tax_id = 9606,
-        extra_edge_attrs = {
-            'effect': 2,
-            'evidence': (5, ';'),
-            'pathways': (6, ';'),
-        },
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {},
-    ),
-}
 """
 Reaction databases.
 These are not included in OmniPath, because only a minor
@@ -3348,53 +3292,6 @@ negative = {
     ),
 }
 
-biocarta = input_formats.NetworkInput(
-    name = 'BioCarta',
-    separator = ';',
-    id_col_a = 0,
-    id_col_b = 2,
-    id_type_a = 'entrez',
-    id_type_b = 'entrez',
-    entity_type_a = 'protein',
-    entity_type_b = 'protein',
-    is_directed = 1,
-    input = os.path.join(ROOT, 'data', 'biocarta-pid.csv'),
-    extra_edge_attrs = {},
-    extra_node_attrs_a = {'biocarta_pathways': (4, ',')},
-    extra_node_attrs_b = {'biocarta_pathways': (4, ',')},
-)
-
-nci_pid = input_formats.NetworkInput(
-    name = 'NCI-PID',
-    separator = ';',
-    id_col_a = 0,
-    id_col_b = 1,
-    id_type_a = 'uniprot',
-    id_type_b = 'uniprot',
-    entity_type_a = 'protein',
-    entity_type_b = 'protein',
-    is_directed = 1,
-    input = os.path.join(ROOT, 'data', 'nci-pid.csv'),
-    extra_edge_attrs = {},
-    extra_node_attrs_a = {'nci_pid_pathways': (2, ',')},
-    extra_node_attrs_b = {'nci_pid_pathways': (2, ',')})
-
-reactome = input_formats.NetworkInput(
-    name = 'Reactome',
-    separator = ';',
-    id_col_a = 0,
-    id_col_b = 1,
-    id_type_a = 'uniprot',
-    id_type_b = 'uniprot',
-    entity_type_a = 'protein',
-    entity_type_b = 'protein',
-    is_directed = 1,
-    input = os.path.join(ROOT, 'data', 'reactome-pid.csv'),
-    extra_edge_attrs = {},
-    extra_node_attrs_a = {'reactome_pathways': (2, ',')},
-    extra_node_attrs_b = {'reactome_pathways': (2, ',')},
-)
-
 gdsc_comp_target = input_formats.NetworkInput(
     name = 'GDSC',
     separator = ';',
@@ -3409,26 +3306,6 @@ gdsc_comp_target = input_formats.NetworkInput(
     extra_edge_attrs = {},
     extra_node_attrs_a = {'gene_name': 2},
     extra_node_attrs_b = {},
-)
-
-gdsc_lst = input_formats.ReadList(
-    name = 'GDSC',
-    separator = ';',
-    id_col = 0,
-    id_type = 'genesymbol',
-    entity_type = 'protein',
-    input = os.path.join(ROOT, 'data', 'gdsc.sif'),
-    extra_attrs = {'drugs': 2},
-)
-
-gdsc_lst = input_formats.ReadList(
-    name = 'atg',
-    separator = ';',
-    id_col = 0,
-    id_type = 'genesymbol',
-    entity_type = 'protein',
-    input = os.path.join(ROOT, 'data', 'autophagy.list'),
-    extra_attrs = {'drugs': 2},
 )
 
 cgc = input_formats.ReadList(
