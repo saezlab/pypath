@@ -71,7 +71,7 @@ def li2012_interactions():
             'phosphomotif_binding'
         ))
 
-    return [list(l) for l in common.uniq_list(result)]
+    return [list(l) for l in common.unique_list(result)]
 
 
 def li2012_enzyme_substrate():
@@ -111,7 +111,7 @@ def li2012_enzyme_substrate():
                 list(l)
             )
         )
-        for l in common.uniq_list(result)
+        for l in common.unique_list(result)
     ]
 
     return result

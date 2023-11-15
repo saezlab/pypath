@@ -227,7 +227,7 @@ def trip_process(
     result = {}
     data = take_a_trip()
 
-    for uniprots in common.uniq_list(
+    for uniprots in common.unique_list(
             common.flat_list([v.keys() for v in data.values()])):
         to_process = False
         refs = set([])

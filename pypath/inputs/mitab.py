@@ -22,7 +22,7 @@ import pypath.share.common as common
 
 def mitab_field_list(field):
 
-    return common.uniq_list(
+    return common.unique_list(
         map(
             lambda x: x.split('(')[1][:-1],
             field.split('|')

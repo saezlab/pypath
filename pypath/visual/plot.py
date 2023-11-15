@@ -504,7 +504,7 @@ class MultiBarplot(Plot):
             else:
                 self.cnames = dict(
                     map(lambda c: ('#%u' % c, c),
-                        sorted(common.uniq_list(self.cats))))
+                        sorted(common.unique_list(self.cats))))
                 if len(self.cnames) == 1:
                     self.cnames = {self.xlab: 0}
 
@@ -575,7 +575,7 @@ class MultiBarplot(Plot):
 
         elif self.cat_ordr is None:
 
-            self.cat_ordr = common.uniq_list(sorted(self.cnames.keys()))
+            self.cat_ordr = common.unique_list(sorted(self.cnames.keys()))
 
     def by_plot(self):
         """
@@ -2373,12 +2373,12 @@ class SimilarityGraph(object):
     def refs_sim(self):
         self.edges = [(s1, s2, pypath.common.simpson_index([
             r.pmid
-            for r in common.uniq_list(
+            for r in common.unique_list(
                 common.flat_list([[] if s1 not in e['refs_by_source'] else e[
                     'refs_by_source'][s1] for e in self.graph.es]))
         ], [
             r.pmid
-            for r in common.uniq_list(
+            for r in common.unique_list(
                 common.flat_list([[] if s2 not in e['refs_by_source'] else e[
                     'refs_by_source'][s2] for e in self.graph.es]))
         ])) for s1 in self.pp.sources for s2 in self.pp.sources]
@@ -2465,7 +2465,7 @@ class SimilarityGraph(object):
     def sizes_refs(self):
         self.sgraph.vs['size'] = \
             [len(
-                common.uniq_list(
+                common.unique_list(
                     common.flat_list([
                         e['refs_by_source'][v['name']]
                         for e in self.graph.es
@@ -2479,7 +2479,7 @@ class SimilarityGraph(object):
         for v in self.sgraph.vs:
             allrefs = \
                 len(
-                    common.uniq_list(
+                    common.unique_list(
                         common.flat_list(
                             [[r.pmid for r in e1['refs_by_source'][v['name']]]
                                 for e1 in self.graph.es
@@ -3034,7 +3034,7 @@ class HtpCharacteristics(object):
                     set(self.graph.incident(
                         v.index, mode='ALL')) - htedgs) == 0
             ]
-            htsrcs = common.uniq_list(
+            htsrcs = common.unique_list(
                 common.flat_list([self.graph.es[e]['sources'] for e in htedgs]))
             self.htdata[htlim] = {
                 'rnum': len(htrefs),

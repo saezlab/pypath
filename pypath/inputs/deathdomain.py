@@ -70,8 +70,8 @@ def deathdomain_interactions():
             for p2, v2 in iteritems(v1):
                 if p1 != p2:
                     result.append([
-                        p1, p2, ';'.join(common.uniq_list(v2['met'])),
-                        ';'.join(common.uniq_list(v2['ref']))
+                        p1, p2, ';'.join(common.unique_list(v2['met'])),
+                        ';'.join(common.unique_list(v2['ref']))
                     ])
 
     return result

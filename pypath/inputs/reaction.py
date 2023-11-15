@@ -827,7 +827,7 @@ def process_controls(controls, mandatory_refs = True):
         if len(c['refs']) > 0 or not mandatory_refs:
             if c['controller'] is not None and len(c['controller']) > 0:
                 for ctr in c['controller']:
-                    if len(common.uniq_list(ctr['members'])) == 1:
+                    if len(common.unique_list(ctr['members'])) == 1:
                         this_ctr = ctr['members'][0].split('-')[0]
                         ctd = c['controlled']
 
@@ -838,7 +838,7 @@ def process_controls(controls, mandatory_refs = True):
                             for leftInst in itertools.product(*ctd['left']):
                                 for rightInst in itertools.product(
                                         *ctd['right']):
-                                    lr = common.uniq_list(
+                                    lr = common.unique_list(
                                         common.flat_list([
                                             l['members'] for l in leftInst
                                         ] + [r['members'] for r in rightInst]))
@@ -864,7 +864,7 @@ def process_controls(controls, mandatory_refs = True):
                                              for ptms in r['ptms'].items()
                                              for ptm in ptms[1]])
                                         ptmsDiff = ptmsLeft ^ ptmsRight
-                                        diffUniProts = common.uniq_list(
+                                        diffUniProts = common.unique_list(
                                             [ptm[0] for ptm in ptmsDiff])
 
                                         if len(diffUniProts) == 1:
@@ -901,7 +901,7 @@ def process_controls(controls, mandatory_refs = True):
                                                     if len(diff) == 1:
                                                         diffs.append(
                                                             list(diff))
-                                            diffs = common.uniq_list(
+                                            diffs = common.unique_list(
                                                 common.flat_list(diffs))
 
                                             if len(diffs) == 1:
@@ -924,7 +924,7 @@ def process_controls(controls, mandatory_refs = True):
                 if ctd is not None:
                     for leftInst in itertools.product(*ctd['left']):
                         for rightInst in itertools.product(*ctd['right']):
-                            lr = common.uniq_list(
+                            lr = common.unique_list(
                                 common.flat_list([
                                     l['members'] for l in leftInst
                                 ] + [r['members'] for r in rightInst]))
@@ -982,7 +982,7 @@ def _reactome_reactions():
 
                 ids.append(_reactome_res(i))
 
-            ids = sorted(common.uniq_list(ids))
+            ids = sorted(common.unique_list(ids))
             species[si] = {'name': nm, 'comp': cp, 'ids': ids}
 
         for rea in m.find('listofreactions').find_all('reaction'):
@@ -994,21 +994,21 @@ def _reactome_reactions():
 
                 refs.append(_reactome_res(r))
 
-            refs = sorted(common.uniq_list(refs))
+            refs = sorted(common.unique_list(refs))
             reas = []
 
             for r in rea.find('listofreactants').find_all('speciesreference'):
 
                 reas.append(_reactome_id(r, 'species'))
 
-            reas = sorted(common.uniq_list(reas))
+            reas = sorted(common.unique_list(reas))
             prds = []
 
             for p in rea.find('listofproducts').find_all('speciesreference'):
 
                 prds.append(_reactome_id(p, 'species'))
 
-            prds = sorted(common.uniq_list(prds))
+            prds = sorted(common.unique_list(prds))
             note = rea.find('notes').text
             reactions[ri] = {
                 'refs': refs,
@@ -1077,7 +1077,7 @@ def _reactome_species(elem):
     cp = _reactome_extract_id(elem.get('compartment'))
     nm = elem.get('name')
     ids = sorted(
-        common.uniq_list(_reactome_collect_resources(elem, hasPartStr)))
+        common.unique_list(_reactome_collect_resources(elem, hasPartStr)))
 
     return si, {'name': nm, 'comp': cp, 'ids': ids}
 

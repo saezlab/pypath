@@ -4401,7 +4401,7 @@ class PyPath(session_mod.Logger):
         elif not isinstance(e[attr], list):
             e[attr] = [e[attr]]
 
-        e[attr] = common.uniq_list(e[attr] + value)
+        e[attr] = common.unique_list(e[attr] + value)
 
     def add_set_eattr(self, edge, attr, value):
         """
@@ -4473,7 +4473,7 @@ class PyPath(session_mod.Logger):
         elif not isinstance(e[attr][group], list):
             e[attr][group] = [e[attr][group]]
 
-        e[attr][group] = common.uniq_list(e[attr][group] + value)
+        e[attr][group] = common.unique_list(e[attr][group] + value)
 
     def add_grouped_set_eattr(self, edge, attr, group, value):
         """
@@ -7629,17 +7629,17 @@ class PyPath(session_mod.Logger):
                     )
                 )
                 f.write('\t<data key="DirectionAB">%s</data>\n' %
-                        (';'.join(common.uniq_list(e['dirs_by_source'][1]))))
+                        (';'.join(common.unique_list(e['dirs_by_source'][1]))))
                 f.write('\t<data key="DirectionBA">%s</data>\n' %
-                        (';'.join(common.uniq_list(e['dirs_by_source'][2]))))
+                        (';'.join(common.unique_list(e['dirs_by_source'][2]))))
                 f.write('\t<data key="StimulatoryAB">%s</data>\n' %
-                        (';'.join(common.uniq_list(e['signs'][0][0]))))
+                        (';'.join(common.unique_list(e['signs'][0][0]))))
                 f.write('\t<data key="InhibitoryAB">%s</data>\n' %
-                        (';'.join(common.uniq_list(e['signs'][0][1]))))
+                        (';'.join(common.unique_list(e['signs'][0][1]))))
                 f.write('\t<data key="StimulatoryBA">%s</data>\n' %
-                        (';'.join(common.uniq_list(e['signs'][1][0]))))
+                        (';'.join(common.unique_list(e['signs'][1][0]))))
                 f.write('\t<data key="InhibitoryBA">%s</data>\n' %
-                        (';'.join(common.uniq_list(e['signs'][1][1]))))
+                        (';'.join(common.unique_list(e['signs'][1][1]))))
                 f.write('\t<data key="InhibitoryBA">%s</data>\n' % (e['type']))
                 f.write('</edge>\n')
                 prg.step()
@@ -7748,8 +7748,8 @@ class PyPath(session_mod.Logger):
                     node['compounds_chembl'].append(comp['chembl'])
                     node['compounds_names'] += comp['compound_names']
 
-                node['compounds_chembl'] = common.uniq_list(node['compounds_chembl'])
-                node['compounds_names'] = common.uniq_list(node['compounds_names'])
+                node['compounds_chembl'] = common.unique_list(node['compounds_chembl'])
+                node['compounds_names'] = common.unique_list(node['compounds_names'])
 
         prg.terminate()
         percent = hascomp / float(self.graph.vcount())
@@ -10483,7 +10483,7 @@ class PyPath(session_mod.Logger):
                 if source == 'HPRD':
                     substrate_ups_all = mapping.map_name(
                         p['substrate_refseqp'], 'refseqp', 'uniprot')
-                    substrate_ups_all = common.uniq_list(substrate_ups_all)
+                    substrate_ups_all = common.unique_list(substrate_ups_all)
 
                 for k in p['kinase']:
 
@@ -12182,7 +12182,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        return common.uniq_list([
+        return common.unique_list([
             j
             for ssl in [
                 i for sl in [[
@@ -13141,7 +13141,7 @@ class PyPath(session_mod.Logger):
             ])
 
             src_refs = set(
-                common.uniq_list([
+                common.unique_list([
                     r.pmid
                     for r in common.flat_list(
                         [e[rattr][s] for e in self.graph.es if s in e[rattr]])
@@ -13611,7 +13611,7 @@ class PyPath(session_mod.Logger):
                 e.index for e in self.graph.es
                 if len(set([r.pmid for r in e['references']]) - htrefs) == 0
             ]
-            htsrcs = common.uniq_list(
+            htsrcs = common.unique_list(
                 common.flat_list([self.graph.es[e]['sources'] for e in htedgs]))
             htdata[htlim] = {'rnum': len(htrefs), 'enum': len(htedgs),
                              'snum': len(htsrcs), 'htrefs': htrefs}
@@ -13955,7 +13955,7 @@ class PyPath(session_mod.Logger):
             interaction.
         """
 
-        return len(common.uniq_list(common.flat_list(
+        return len(common.unique_list(common.flat_list(
             list(map(lambda e:
                      list(map(lambda r:
                               (e.index, r), e['references'])),

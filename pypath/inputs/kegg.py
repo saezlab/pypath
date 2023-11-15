@@ -122,7 +122,7 @@ def kegg_interactions():
                     for n in gr.attrs['name'].replace('...', '').split(',')
                 ]
 
-        uentries = dict([(eid, common.uniq_list(
+        uentries = dict([(eid, common.unique_list(
             common.flat_list([
                 mapping.map_name(
                     gn, 'genesymbol', 'uniprot', strict = True) for gn in gns
@@ -167,13 +167,13 @@ def kegg_interactions():
 
     prg.terminate()
 
-    return common.uniq_list(interactions)
+    return common.unique_list(interactions)
 
 
 def kegg_pathways():
 
     data = kegg_interactions()
-    pws = common.uniq_list(map(lambda i: i[3], data))
+    pws = common.unique_list(map(lambda i: i[3], data))
     proteins_pws = dict(map(lambda pw: (pw, set([])), pws))
     interactions_pws = dict(map(lambda pw: (pw, set([])), pws))
 
