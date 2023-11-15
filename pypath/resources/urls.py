@@ -817,9 +817,9 @@ urls = {
     },
     'biogrid': {
         'label': 'BioGRID version 2 tab format',
-        'mv': 'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
+        'mv': 'https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/'\
             'BIOGRID-MV-Physical-LATEST.tab2.zip',
-        'all': 'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
+        'all': 'https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/'\
             'BIOGRID-ALL-LATEST.tab2.zip'
     },
     'wang': {
@@ -949,7 +949,7 @@ urls = {
     },
     'intact': {
         'label': 'IntAct entire database PSI-MI tab',
-        'mitab': 'ftp://ftp.ebi.ac.uk/pub/databases/intact/'
+        'mitab': 'https://ftp.ebi.ac.uk/pub/databases/intact/'
         'current/psimitab/intact.zip'
     },
     'death': {
@@ -959,13 +959,13 @@ urls = {
     },
     'string': {
         'label': 'STRING',
-        'actions': 'https://stringdb-static.org/download/'
-            'protein.actions.v11.0/%u.protein.actions.v11.0.txt.gz',
-        'links': 'https://stringdb-static.org/download/protein.links.detailed.v11.5/%u'
-            '.protein.links.detailed.v11.5.txt.gz',
-        'physical_links': 'https://stringdb-static.org/download/protein.physical.links.detailed.v11.5/%u'
-            '.protein.physical.links.detailed.v11.5.txt.gz',
-        'species': 'https://stringdb-static.org/download/species.v11.5.txt'
+        'actions': 'https://stringdb-downloads.org/download/'
+            'protein.actions.v12.0/%u.protein.actions.v12.0.txt.gz',
+        'links': 'https://stringdb-downloads.org/download/protein.links.detailed.v12.0/%u'
+            '.protein.links.detailed.v12.0.txt.gz',
+        'physical_links': 'https://stringdb-downloads.org/download/protein.physical.links.detailed.v12.0/%u'
+            '.protein.physical.links.detailed.v12.0.txt.gz',
+        'species': 'https://stringdb-downloads.org/download/species.v12.0.txt'
     },
     'wikipw': {
         'label': 'WikiPathways human biopax',
@@ -1483,7 +1483,7 @@ urls = {
     'unichem': {
         'label': 'Mapping between drug compound IDs',
         'sources': 'https://www.ebi.ac.uk/unichem/legacy/ucquery/listSources',
-        'mapping': 'ftp://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/'
+        'mapping': 'https://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/'
             'wholeSourceMapping/src_id%s/src%ssrc%s.txt.gz',
     },
     'redhuman': {

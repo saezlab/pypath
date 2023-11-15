@@ -1032,7 +1032,7 @@ class ProteinOrthology(Proteomes):
 
         _log(
             f'Translating data frame column(s) from '
-            f'organism `{source}` to `{self.target}`.'
+            f'organism `{self.source}` to `{self.target}`.'
         )
 
         ortho_df = (
@@ -1052,7 +1052,7 @@ class ProteinOrthology(Proteomes):
         for col in cols:
 
             _log(
-                f'Translating `{self.id_type}` IDs of organism `{source}` '
+                f'Translating `{self.id_type}` IDs of organism `{self.source}` '
                 f'in column `{col}` to organism `{self.target}`.'
             )
 
@@ -2257,5 +2257,6 @@ def translate_df(
 
     args = locals().copy()
     args.pop('manager')
+    args.pop('kwargs')
 
-    return manager.translate_df(**args)
+    return manager.translate_df(**args, **kwargs)

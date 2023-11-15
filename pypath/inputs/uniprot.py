@@ -32,6 +32,7 @@ import pandas as pd
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.settings as settings
 import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath_common._constants as _const
