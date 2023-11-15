@@ -2287,7 +2287,7 @@ class CustomAnnotation(session_mod.Logger):
 
             if val is not None and col in df.columns:
 
-                op = '==' if isinstance(val, common.simple_types) else 'in'
+                op = '==' if isinstance(val, _const.SIMPLE_TYPES) else 'in'
 
                 q = '%s %s %s' % (col, op, '@args["%s"]' % col)
 
@@ -3547,7 +3547,7 @@ class AnnotationBase(resource.AbstractResource):
 
     def __getitem__(self, item):
 
-        if not isinstance(item, common.simple_types):
+        if not isinstance(item, _const.SIMPLE_TYPES):
 
             return set.union(
                 *(
@@ -6860,7 +6860,7 @@ class AnnotationTable(session_mod.Logger):
 
     def __getitem__(self, item):
 
-        if isinstance(item, common.simple_types):
+        if isinstance(item, _const.SIMPLE_TYPES):
 
             if item in self.annots:
 

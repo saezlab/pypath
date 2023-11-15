@@ -38,6 +38,7 @@ import contextlib
 from lxml import etree
 
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.session as session
 
 TRACE: Annotated[
@@ -177,7 +178,7 @@ def step(
             result = simple_step(elem, spec, namespaces)
             _trace(f'result: {result}')
 
-    elif isinstance(elem, common.simple_types):
+    elif isinstance(elem, _const.SIMPLE_TYPES):
 
         result = elem
 

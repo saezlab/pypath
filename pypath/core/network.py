@@ -1051,7 +1051,7 @@ class Network(session_mod.Logger):
                 dir_val = sign[1:3]
                 dir_val = (
                     dir_val
-                        if type(dir_val[0]) in common.simple_types else
+                        if type(dir_val[0]) in _const.SIMPLE_TYPES else
                     common.flat_list(dir_val)
                 )
                 dir_sep = sign[3] if len(sign) > 3 else None

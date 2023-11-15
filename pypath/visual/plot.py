@@ -547,7 +547,7 @@ class MultiBarplot(Plot):
                 for ccols in self.colors:
                     getattr(self, colattr).extend(ccols)
                 setattr(self, colattr, np.array(getattr(self, colattr)))
-        if type(color) not in common.simple_types and \
+        if type(color) not in _const.SIMPLE_TYPES and \
                 len(color) == len(self.x):
             # color is a list of colors for each bar
             setattr(self, colattr, np.array(color))

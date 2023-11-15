@@ -29,6 +29,7 @@ import re
 import pandas as pd
 
 import pypath.share.common as common
+import pypath_common._constants as _const
 
 
 def filter_network_df(
@@ -158,11 +159,11 @@ def filter_network_df(
         if df.dtypes[var].name == 'object':
 
             first, second = second, first
-            op = 'in' if isinstance(val, common.simple_types) else '&'
+            op = 'in' if isinstance(val, _const.SIMPLE_TYPES) else '&'
 
         else:
 
-            op = '==' if isinstance(val, common.simple_types) else 'in'
+            op = '==' if isinstance(val, _const.SIMPLE_TYPES) else 'in'
 
         q = '%s %s %s' % (first, op, second)
 

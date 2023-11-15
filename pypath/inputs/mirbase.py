@@ -158,7 +158,7 @@ def mirbase_ids(organism = 9606):
 
     for ma, mis in iteritems(mat_mir):
 
-        for mi in (mis if type(mis) not in common.simple_types else [mis]):
+        for mi in (mis if type(mis) not in _const.SIMPLE_TYPES else [mis]):
 
             yield ma, mi
 

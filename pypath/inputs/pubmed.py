@@ -26,7 +26,7 @@ import webbrowser
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.share.progress as progress
 import pypath.inputs.eutils as eutils
 
@@ -57,7 +57,7 @@ def only_pmids(idList, strict = True):
         Whether keep in the list those IDs which are not PMIDs,
         neither DOIs or PMC IDs or NIH manuscript IDs.
     """
-    if type(idList) in common.simple_types:
+    if type(idList) in _const.SIMPLE_TYPES:
         idList = [idList]
 
     pmids = {i for i in idList if isinstance(i, int) or i.isdigit()}
@@ -83,7 +83,7 @@ def get_pmid(idList):
     fetches the corresponding PMIDs.
     """
 
-    if type(idList) in common.simple_types:
+    if type(idList) in _const.SIMPLE_TYPES:
         idList = [idList]
 
     url = urls.urls['eutils']['pmc-idconv'] % ','.join(str(i) for i in idList)

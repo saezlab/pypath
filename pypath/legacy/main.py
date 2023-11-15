@@ -1442,7 +1442,7 @@ class _AttrHelper(object):
             sys.stdout.flush()
 
         # if value is constant:
-        elif type(self.value) in common.simple_types:
+        elif type(self.value) in _const.SIMPLE_TYPES:
             return self.value
 
         # if a dictionary given to map some igraph attribute to values:
@@ -2729,7 +2729,7 @@ class PyPath(session_mod.Logger):
                 dir_col = sign[0]
                 dir_val = sign[1:3]
                 dir_val = dir_val if type(dir_val[
-                    0]) in common.simple_types else common.flat_list(dir_val)
+                    0]) in _const.SIMPLE_TYPES else common.flat_list(dir_val)
                 dir_sep = sign[3] if len(sign) > 3 else None
 
             dir_val = common.to_set(dir_val)
@@ -3606,7 +3606,7 @@ class PyPath(session_mod.Logger):
             return set([lst[0], lst[1]])
 
         # one attr is list, the other is simple value:
-        if (isinstance(lst[0], list) and type(lst[1]) in common.simple_types):
+        if (isinstance(lst[0], list) and type(lst[1]) in _const.SIMPLE_TYPES):
 
             if lst[1] in common.numeric_types or len(lst[1]) > 0:
                 return common.add_to_list(lst[0], lst[1])
@@ -3614,7 +3614,7 @@ class PyPath(session_mod.Logger):
             else:
                 return lst[0]
 
-        if (isinstance(lst[1], list) and type(lst[0]) in common.simple_types):
+        if (isinstance(lst[1], list) and type(lst[0]) in _const.SIMPLE_TYPES):
 
             if lst[0] in common.numeric_types or len(lst[0]) > 0:
                 return common.add_to_list(lst[1], lst[0])
@@ -4982,7 +4982,7 @@ class PyPath(session_mod.Logger):
                 v[attr] = self.vertexAttrs[attr]()
 
             if self.vertexAttrs[attr] is list and type(v[
-                    attr]) in common.simple_types:
+                    attr]) in _const.SIMPLE_TYPES:
                 v[attr] = [v[attr]] if len(v[attr]) > 0 else []
 
     def init_edge_attr(self, attr):
@@ -5004,7 +5004,7 @@ class PyPath(session_mod.Logger):
 
             if (self.edgeAttrs[attr] is list or
                 self.edgeAttrs[attr] is set) and type(e[
-                    attr]) in common.simple_types:
+                    attr]) in _const.SIMPLE_TYPES:
 
                 e[attr] = [e[attr]] if (
                     type(e[attr]) not in _const.CHAR_TYPES or
@@ -9107,7 +9107,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        if type(uniprots) in common.simple_types:
+        if type(uniprots) in _const.SIMPLE_TYPES:
             uniprots = [uniprots]
 
         vs = self.uniprots(uniprots)
@@ -9117,7 +9117,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        if type(genesymbols) in common.simple_types:
+        if type(genesymbols) in _const.SIMPLE_TYPES:
             genesymbols = [genesymbols]
 
         vs = self.genesymbols(genesymbols)
@@ -9127,7 +9127,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        if type(identifiers) in common.simple_types:
+        if type(identifiers) in _const.SIMPLE_TYPES:
             identifiers = [identifiers]
 
         vs = self.get_nodes(identifiers)
