@@ -20,6 +20,7 @@
 import os
 
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.internals.input_formats as input_formats
 
 __all__ = ['uniprot', 'mirbase', 'basic']
@@ -143,7 +144,7 @@ basic = {
             col_b = 1,
             separator = None,
             header = 0,
-            ncbi_tax_id = 0,
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC,
         ),
     ('genesymbol', 'trembl'):
         input_formats.UniprotMapping(
@@ -165,5 +166,5 @@ basic = {
         input_formats.UniprotMapping(
             id_type_a = 'genesymbol',
             swissprot = None,
-        )
+        ),
 }
