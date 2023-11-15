@@ -4423,7 +4423,7 @@ class Network(session_mod.Logger):
     @classmethod
     def _add_method(cls, method_name, method, signature = None, doc = None):
 
-        common._add_method(
+        common.add_method(
             cls,
             method_name,
             method,
