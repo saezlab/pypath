@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.share.curl &#8212; pypath 0.15.13 documentation</title>
+    <title>pypath.share.curl &#8212; pypath 0.16.0 documentation</title>
   
   
   
@@ -17,12 +17,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -32,11 +32,11 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css?v=b64fc3cb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../../_static/documentation_options.js?v=f4b8e13e"></script>
+    <script src="../../../_static/documentation_options.js?v=7de89ed4"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -112,6 +112,7 @@
   
 
 <a class="navbar-brand logo" href="../../../contents.html">
+  
   
   
   
@@ -532,7 +533,8 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
 <span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
-<span class="n">_logger</span> <span class="o">=</span> <span class="n">session_mod</span><span class="o">.</span><span class="n">get_log</span><span class="p">()</span>
+<span class="kn">import</span> <span class="nn">pypath.share.cache</span> <span class="k">as</span> <span class="nn">cache_mod</span>
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">session_mod</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
 
 <span class="kn">import</span> <span class="nn">pycurl</span>
 <span class="k">try</span><span class="p">:</span>
@@ -594,6 +596,7 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">pypath.share.progress</span> <span class="k">as</span> <span class="nn">progress</span>
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath_common._constants</span> <span class="k">as</span> <span class="nn">_const</span>
 <span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -1157,9 +1160,9 @@ document.write(`
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">large</span> <span class="o">=</span> <span class="n">large</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fname</span> <span class="o">=</span> <span class="n">file_param</span> \
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">file_param</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">char_types</span> <span class="k">else</span> <span class="n">file_param</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">file_param</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_const</span><span class="o">.</span><span class="n">CHAR_TYPES</span> <span class="k">else</span> <span class="n">file_param</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fileobj</span> <span class="o">=</span> <span class="kc">None</span> \
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">file_param</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">char_types</span> <span class="k">else</span> <span class="n">file_param</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">file_param</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_const</span><span class="o">.</span><span class="n">CHAR_TYPES</span> <span class="k">else</span> <span class="n">file_param</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">_open</span><span class="p">:</span>
@@ -1728,7 +1731,7 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">bdr</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;---------------------------</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> \
-            <span class="n">common</span><span class="o">.</span><span class="n">gen_session_id</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+            <span class="n">common</span><span class="o">.</span><span class="n">random_string</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binary_data_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binary_data</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;--</span><span class="si">%s</span><span class="se">\r\n</span><span class="s1">Content-Disposition: form-data;&#39;</span>
@@ -2199,7 +2202,7 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">get_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
 
             <span class="k">return</span>
 
@@ -2226,20 +2229,14 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">cache_dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cachedir&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">):</span>
-
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="o">=</span> <span class="n">cache_mod</span><span class="o">.</span><span class="n">get_cachedir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">get_cache_file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cache_file_name</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="k">else</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span>
             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
@@ -2437,7 +2434,7 @@ document.write(`
         <span class="k">def</span> <span class="nf">_decode_result</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
 
                     <span class="k">return</span> <span class="n">content</span>
 
@@ -2664,8 +2661,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2695,7 +2692,7 @@ document.write(`
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

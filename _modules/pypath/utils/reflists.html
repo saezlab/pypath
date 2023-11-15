@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.utils.reflists &#8212; pypath 0.15.13 documentation</title>
+    <title>pypath.utils.reflists &#8212; pypath 0.16.0 documentation</title>
   
   
   
@@ -17,12 +17,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -32,11 +32,11 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css?v=b64fc3cb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../../_static/documentation_options.js?v=f4b8e13e"></script>
+    <script src="../../../_static/documentation_options.js?v=7de89ed4"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -112,6 +112,7 @@
   
 
 <a class="navbar-brand logo" href="../../../contents.html">
+  
   
   
   
@@ -535,7 +536,7 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">timeloop</span>
 
-<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot_db</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.mirbase</span> <span class="k">as</span> <span class="nn">mirbase_input</span>
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
 <span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
@@ -560,113 +561,113 @@ document.write(`
 <div class="viewcode-block" id="ReferenceListManager">
 <a class="viewcode-back" href="../../../api/pypath.utils.reflists.ReferenceListManager.html#pypath.utils.reflists.ReferenceListManager">[docs]</a>
 <span class="k">class</span> <span class="nc">ReferenceListManager</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
-    
-    
+
+
 <div class="viewcode-block" id="ReferenceListManager.__init__">
 <a class="viewcode-back" href="../../../api/pypath.utils.reflists.ReferenceListManager.html#pypath.utils.reflists.ReferenceListManager.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cleanup_period</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">lifetime</span> <span class="o">=</span> <span class="mi">300</span><span class="p">):</span>
-        
+
         <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;reflists&#39;</span><span class="p">)</span>
-        
-        
+
+
         <span class="nd">@_reflists_cleanup_timeloop</span><span class="o">.</span><span class="n">job</span><span class="p">(</span>
             <span class="n">interval</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span>
                 <span class="n">seconds</span> <span class="o">=</span> <span class="n">cleanup_period</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="k">def</span> <span class="nf">_cleanup</span><span class="p">():</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_remove_expired</span><span class="p">()</span>
-        
-        
+
+
         <span class="n">_reflists_cleanup_timeloop</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">block</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">lifetime</span> <span class="o">=</span> <span class="n">lifetime</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expiry</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span> <span class="o">=</span> <span class="n">cache_mod</span><span class="o">.</span><span class="n">get_cachedir</span><span class="p">()</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;ReferenceListManager has been created.&#39;</span><span class="p">)</span></div>
 
-    
-    
+
+
     <span class="k">def</span> <span class="nf">which_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        
+
         <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_organism&#39;</span><span class="p">)</span>
-        
+
         <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">expiry</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        
+
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
-            
+
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        
+
         <span class="n">cachefile</span> <span class="o">=</span> <span class="s1">&#39;reflist_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%u</span><span class="s1">.pickle&#39;</span> <span class="o">%</span> <span class="n">key</span>
         <span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">cachefile</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cachefile</span><span class="p">):</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                 <span class="s1">&#39;Reference list for ID type `</span><span class="si">%s</span><span class="s1">` for organism `</span><span class="si">%u</span><span class="s1">` &#39;</span>
                 <span class="s1">&#39;has been loaded from `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="n">cachefile</span><span class="p">,))</span>
             <span class="p">)</span>
-            
+
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                 <span class="s1">&#39;Reference list for ID type `</span><span class="si">%s</span><span class="s1">` for organism `</span><span class="si">%u</span><span class="s1">` &#39;</span>
                 <span class="s1">&#39;has been saved to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="n">cachefile</span><span class="p">,))</span>
             <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        
+
         <span class="n">data</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">input_method</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-        
+
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">input_method</span><span class="p">):</span>
-            
+
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_method</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-                
+
                 <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">readlines</span><span class="p">()}</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                 <span class="s1">&#39;Reference list for ID type `</span><span class="si">%s</span><span class="s1">` for organism `</span><span class="si">%u</span><span class="s1">` has &#39;</span>
                 <span class="s1">&#39;been loaded from `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="n">input_method</span><span class="p">,))</span>
             <span class="p">)</span>
-            
+
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">uniprot_input</span><span class="p">,</span> <span class="n">input_method</span><span class="p">):</span>
-                
+
                 <span class="n">input_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">uniprot_input</span><span class="p">,</span> <span class="n">input_method</span><span class="p">)</span>
-                
+
             <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mirbase_input</span><span class="p">,</span> <span class="n">input_method</span><span class="p">):</span>
-                
+
                 <span class="n">input_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mirbase_input</span><span class="p">,</span> <span class="n">input_method</span><span class="p">)</span>
-            
+
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">data</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">input_func</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                 <span class="s1">&#39;Reference list for ID type `</span><span class="si">%s</span><span class="s1">` for organism `</span><span class="si">%u</span><span class="s1">` has &#39;</span>
                 <span class="s1">&#39;been loaded by method `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">input_method</span><span class="p">),))</span>
             <span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">data</span>
-    
-    
+
+
 <div class="viewcode-block" id="ReferenceListManager.check">
 <a class="viewcode-back" href="../../../api/pypath.utils.reflists.ReferenceListManager.html#pypath.utils.reflists.ReferenceListManager.check">[docs]</a>
     <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -674,13 +675,13 @@ document.write(`
 <span class="sd">        Checks if the identifier ``name`` is in the reference list with</span>
 <span class="sd">        the provided ``id_type`` and organism.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_list</span><span class="p">(</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">lst</span></div>
 
-    
-    
+
+
 <div class="viewcode-block" id="ReferenceListManager.select">
 <a class="viewcode-back" href="../../../api/pypath.utils.reflists.ReferenceListManager.html#pypath.utils.reflists.ReferenceListManager.select">[docs]</a>
     <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -688,15 +689,15 @@ document.write(`
 <span class="sd">        Selects the identifiers in ``names`` which are in the reference list</span>
 <span class="sd">        with the provided ``id_type`` and organism.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
-        
+
         <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_list</span><span class="p">(</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">names</span> <span class="o">&amp;</span> <span class="n">lst</span></div>
 
-    
-    
+
+
 <div class="viewcode-block" id="ReferenceListManager.is_not">
 <a class="viewcode-back" href="../../../api/pypath.utils.reflists.ReferenceListManager.html#pypath.utils.reflists.ReferenceListManager.is_not">[docs]</a>
     <span class="k">def</span> <span class="nf">is_not</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -704,29 +705,29 @@ document.write(`
 <span class="sd">        Returns the identifiers from ``names`` which are not instances of</span>
 <span class="sd">        the provided ``id_type`` and from the given organism.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
-        
+
         <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_list</span><span class="p">(</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">names</span> <span class="o">-</span> <span class="n">lst</span></div>
 
-    
-    
+
+
     <span class="k">def</span> <span class="nf">_remove_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">last_used</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expiry</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-            
+
             <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">last_used</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lifetime</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
-                
+
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">expiry</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    
-    
+
+
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_reflists_cleanup_timeloop</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">):</span>
-            
+
             <span class="n">_reflists_cleanup_timeloop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
 
@@ -734,7 +735,7 @@ document.write(`
 <div class="viewcode-block" id="init">
 <a class="viewcode-back" href="../../../api/pypath.utils.reflists.init.html#pypath.utils.reflists.init">[docs]</a>
 <span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
-    
+
     <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;manager&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ReferenceListManager</span><span class="p">()</span></div>
 
 
@@ -742,11 +743,11 @@ document.write(`
 <div class="viewcode-block" id="get_manager">
 <a class="viewcode-back" href="../../../api/pypath.utils.reflists.get_manager.html#pypath.utils.reflists.get_manager">[docs]</a>
 <span class="k">def</span> <span class="nf">get_manager</span><span class="p">():</span>
-    
+
     <span class="k">if</span> <span class="s1">&#39;manager&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
-        
+
         <span class="n">init</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;manager&#39;</span><span class="p">]</span></div>
 
 
@@ -758,9 +759,9 @@ document.write(`
 <span class="sd">    Checks if the identifier ``name`` is in the reference list with</span>
 <span class="sd">    the provided ``id_type`` and organism.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">manager</span> <span class="o">=</span> <span class="n">get_manager</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">check</span><span class="p">(</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
         <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>
@@ -776,9 +777,9 @@ document.write(`
 <span class="sd">    Selects the identifiers in ``names`` which are in the reference list</span>
 <span class="sd">    with the provided ``id_type`` and organism.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">manager</span> <span class="o">=</span> <span class="n">get_manager</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="p">,</span>
         <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>
@@ -794,9 +795,9 @@ document.write(`
 <span class="sd">    Returns the identifiers from ``names`` which are not instances of</span>
 <span class="sd">    the provided ``id_type`` and from the given organism.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">manager</span> <span class="o">=</span> <span class="n">get_manager</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">is_not</span><span class="p">(</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="p">,</span>
         <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>
@@ -808,9 +809,9 @@ document.write(`
 <div class="viewcode-block" id="get_reflist">
 <a class="viewcode-back" href="../../../api/pypath.utils.reflists.get_reflist.html#pypath.utils.reflists.get_reflist">[docs]</a>
 <span class="k">def</span> <span class="nf">get_reflist</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    
+
     <span class="n">manager</span> <span class="o">=</span> <span class="n">get_manager</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">which_list</span><span class="p">(</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span></div>
 
 </pre></div>
@@ -861,8 +862,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -892,7 +893,7 @@ document.write(`
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

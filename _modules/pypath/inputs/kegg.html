@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.kegg &#8212; pypath 0.15.13 documentation</title>
+    <title>pypath.inputs.kegg &#8212; pypath 0.16.0 documentation</title>
   
   
   
@@ -17,12 +17,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -32,11 +32,11 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css?v=b64fc3cb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../../_static/documentation_options.js?v=f4b8e13e"></script>
+    <script src="../../../_static/documentation_options.js?v=7de89ed4"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -112,6 +112,7 @@
   
 
 <a class="navbar-brand logo" href="../../../contents.html">
+  
   
   
   
@@ -632,7 +633,7 @@ document.write(`
                     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">gr</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;...&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
                 <span class="p">]</span>
 
-        <span class="n">uentries</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">eid</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span>
+        <span class="n">uentries</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">eid</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">unique_list</span><span class="p">(</span>
             <span class="n">common</span><span class="o">.</span><span class="n">flat_list</span><span class="p">([</span>
                 <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
                     <span class="n">gn</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">strict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">gn</span> <span class="ow">in</span> <span class="n">gns</span>
@@ -677,7 +678,7 @@ document.write(`
 
     <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="n">interactions</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">unique_list</span><span class="p">(</span><span class="n">interactions</span><span class="p">)</span></div>
 
 
 
@@ -686,7 +687,7 @@ document.write(`
 <span class="k">def</span> <span class="nf">kegg_pathways</span><span class="p">():</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="n">kegg_interactions</span><span class="p">()</span>
-    <span class="n">pws</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">data</span><span class="p">))</span>
+    <span class="n">pws</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">unique_list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">data</span><span class="p">))</span>
     <span class="n">proteins_pws</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">pw</span><span class="p">:</span> <span class="p">(</span><span class="n">pw</span><span class="p">,</span> <span class="nb">set</span><span class="p">([])),</span> <span class="n">pws</span><span class="p">))</span>
     <span class="n">interactions_pws</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">pw</span><span class="p">:</span> <span class="p">(</span><span class="n">pw</span><span class="p">,</span> <span class="nb">set</span><span class="p">([])),</span> <span class="n">pws</span><span class="p">))</span>
 
@@ -803,7 +804,7 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">process_entity</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
 
             <span class="n">e</span> <span class="o">=</span> <span class="n">renminus2</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">reentity</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -865,7 +866,7 @@ document.write(`
 
         <span class="n">flat</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
 
             <span class="n">flat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
@@ -874,7 +875,7 @@ document.write(`
             <span class="n">flat</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                 <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
                     <span class="p">(</span><span class="n">c</span><span class="p">,)</span>
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="k">else</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span>
                     <span class="p">(</span><span class="n">flatten_entity</span><span class="p">(</span><span class="n">c</span><span class="p">),)</span>
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span>
                     <span class="n">c</span>
@@ -1166,7 +1167,7 @@ document.write(`
 
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">process_protein</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">symbols</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="k">else</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span>
             <span class="n">process_complex</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">types</span><span class="p">)</span>
         <span class="p">)</span>
 
@@ -1384,8 +1385,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1415,7 +1416,7 @@ document.write(`
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

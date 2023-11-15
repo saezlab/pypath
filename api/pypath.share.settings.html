@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>pypath.share.settings &#8212; pypath 0.15.13 documentation</title>
+    <title>pypath.share.settings &#8212; pypath 0.16.0 documentation</title>
   
   
   
@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -33,11 +33,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css?v=b64fc3cb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../_static/documentation_options.js?v=f4b8e13e"></script>
+    <script src="../_static/documentation_options.js?v=7de89ed4"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -47,8 +47,8 @@
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.share.settings.context" href="pypath.share.settings.context.html" />
-    <link rel="prev" title="pypath.share.session.Session" href="pypath.share.session.Session.html" />
+    <link rel="next" title="pypath.utils" href="pypath.utils.html" />
+    <link rel="prev" title="pypath.share.session" href="pypath.share.session.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -115,6 +115,7 @@
   
 
 <a class="navbar-brand logo" href="../contents.html">
+  
   
   
   
@@ -510,35 +511,10 @@ document.write(`
                   
   <section id="module-pypath.share.settings">
 <span id="pypath-share-settings"></span><h1>pypath.share.settings<a class="headerlink" href="#module-pypath.share.settings" title="Link to this heading">§</a></h1>
-<p>This file is part of the <cite>pypath</cite> python module. It provides user
-settings to the remainder of PyPath modules. Settings are gathered from
-<cite>pypath/data/settings.yaml</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">members<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
-<p class="rubric">Functions</p>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.settings.context.html#pypath.share.settings.context" title="pypath.share.settings.context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context</span></code></a>([_dict])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pypath.share.settings.get.html#pypath.share.settings.get" title="pypath.share.settings.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>(param[, override])</p></td>
-<td><p>The current value of a settings parameter.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.settings.setup.html#pypath.share.settings.setup" title="pypath.share.settings.setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup</span></code></a>([_dict])</p></td>
-<td><p>Set the values of various parameters in the settings.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Classes</p>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="pypath.share.settings.Settings.html#pypath.share.settings.Settings" title="pypath.share.settings.Settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Settings</span></code></a>([_dict])</p></td>
-<td><p>Class to provide settings to other modules.</p></td>
-</tr>
-</tbody>
-</table>
 </section>
 
 
@@ -552,20 +528,20 @@ settings to the remainder of PyPath modules. Settings are gathered from
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.share.session.Session.html"
+       href="pypath.share.session.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.share.session.Session</p>
+        <p class="prev-next-title">pypath.share.session</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.share.settings.context.html"
+       href="pypath.utils.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.share.settings.context</p>
+        <p class="prev-next-title">pypath.utils</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -606,8 +582,8 @@ settings to the remainder of PyPath modules. Settings are gathered from
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -637,7 +613,7 @@ settings to the remainder of PyPath modules. Settings are gathered from
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

@@ -5,15 +5,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The pypath book — pypath 0.15.13 documentation</title>
+  <title>The pypath book — pypath 0.16.0 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script><!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet">
-  <link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet">
-  <link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet">
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet">
+  <link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet">
+  <link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
   "../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
@@ -22,12 +22,13 @@
   "../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
   <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=77553476">
   <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b">
+  <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css">
   <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css?v=b64fc3cb">
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794">
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794">
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
-  <script src="../_static/documentation_options.js?v=f4b8e13e"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6">
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../_static/documentation_options.js?v=7de89ed4"></script>
   <script src="../_static/doctools.js?v=888ff710"></script>
   <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
   <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -44,286 +45,10 @@
   <link rel="icon" href="../_static/omnipath-logo.svg">
   <link rel="index" title="Index" href="../genindex.html">
   <link rel="search" title="Search" href="../search.html">
-  <link rel="prev" title="pypath.visual.plot.StackedBarplot" href="../api/pypath.visual.plot.StackedBarplot.html">
+  <link rel="prev" title="pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer" href=
+  "../api/pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.html">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="docsearch:language" content="en">
-  <style>
-  /* CSS for nbsphinx extension */
-
-  /* remove conflicting styling from Sphinx themes */
-  div.nbinput.container div.prompt *,
-  div.nboutput.container div.prompt *,
-  div.nbinput.container div.input_area pre,
-  div.nboutput.container div.output_area pre,
-  div.nbinput.container div.input_area .highlight,
-  div.nboutput.container div.output_area .highlight {
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-  }
-
-  div.nbinput.container > div[class*=highlight],
-  div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-  }
-
-  div.nbinput.container div.prompt *,
-  div.nboutput.container div.prompt * {
-    background: none;
-  }
-
-  div.nboutput.container div.output_area .highlight,
-  div.nboutput.container div.output_area pre {
-    background: unset;
-  }
-
-  div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
-  }
-
-  /* avoid gaps between output lines */
-  div.nboutput.container div[class*=highlight] pre {
-    line-height: normal;
-  }
-
-  /* input/output containers */
-  div.nbinput.container,
-  div.nboutput.container {
-    display: -webkit-flex;
-    display: flex;
-    align-items: flex-start;
-    margin: 7px 0 0 0;
-    width: 100%;
-  }
-  @media (max-width: 540px) {
-    div.nbinput.container,
-    div.nboutput.container {
-        flex-direction: column;
-    }
-  }
-
-  /* input container */
-  div.nbinput.container {
-    padding-top: 5px;
-  }
-
-  /* last container */
-  div.nblast.container {
-    padding-bottom: 5px;
-  }
-
-  /* input prompt */
-  div.nbinput.container div.prompt pre {
-    color: #307FC1;
-  }
-
-  /* output prompt */
-  div.nboutput.container div.prompt pre {
-    color: #BF5B3D;
-  }
-
-  /* all prompts */
-  div.nbinput.container div.prompt,
-  div.nboutput.container div.prompt {
-    width: 4.5ex;
-    padding-top: 5px;
-    position: relative;
-    user-select: none;
-  }
-
-  div.nbinput.container div.prompt > div,
-  div.nboutput.container div.prompt > div {
-    position: absolute;
-    right: 0;
-    margin-right: 0.3ex;
-  }
-
-  @media (max-width: 540px) {
-    div.nbinput.container div.prompt,
-    div.nboutput.container div.prompt {
-        width: unset;
-        text-align: left;
-        padding: 0.4em;
-    }
-    div.nboutput.container div.prompt.empty {
-        padding: 0;
-    }
-
-    div.nbinput.container div.prompt > div,
-    div.nboutput.container div.prompt > div {
-        position: unset;
-    }
-  }
-
-  /* disable scrollbars and line breaks on prompts */
-  div.nbinput.container div.prompt pre,
-  div.nboutput.container div.prompt pre {
-    overflow: hidden;
-    white-space: pre;
-  }
-
-  /* input/output area */
-  div.nbinput.container div.input_area,
-  div.nboutput.container div.output_area {
-    -webkit-flex: 1;
-    flex: 1;
-    overflow: auto;
-  }
-  @media (max-width: 540px) {
-    div.nbinput.container div.input_area,
-    div.nboutput.container div.output_area {
-        width: 100%;
-    }
-  }
-
-  /* input area */
-  div.nbinput.container div.input_area {
-    border: 1px solid #e0e0e0;
-    border-radius: 2px;
-    background: #f5f5f5;
-  }
-
-  /* override MathJax center alignment in output cells */
-  div.nboutput.container div[class*=MathJax] {
-    text-align: left !important;
-  }
-
-  /* override sphinx.ext.imgmath center alignment in output cells */
-  div.nboutput.container div.math p {
-    text-align: left;
-  }
-
-  /* standard error */
-  div.nboutput.container div.output_area.stderr {
-    background: #fdd;
-  }
-
-  /* ANSI colors */
-  .ansi-black-fg { color: #3E424D; }
-  .ansi-black-bg { background-color: #3E424D; }
-  .ansi-black-intense-fg { color: #282C36; }
-  .ansi-black-intense-bg { background-color: #282C36; }
-  .ansi-red-fg { color: #E75C58; }
-  .ansi-red-bg { background-color: #E75C58; }
-  .ansi-red-intense-fg { color: #B22B31; }
-  .ansi-red-intense-bg { background-color: #B22B31; }
-  .ansi-green-fg { color: #00A250; }
-  .ansi-green-bg { background-color: #00A250; }
-  .ansi-green-intense-fg { color: #007427; }
-  .ansi-green-intense-bg { background-color: #007427; }
-  .ansi-yellow-fg { color: #DDB62B; }
-  .ansi-yellow-bg { background-color: #DDB62B; }
-  .ansi-yellow-intense-fg { color: #B27D12; }
-  .ansi-yellow-intense-bg { background-color: #B27D12; }
-  .ansi-blue-fg { color: #208FFB; }
-  .ansi-blue-bg { background-color: #208FFB; }
-  .ansi-blue-intense-fg { color: #0065CA; }
-  .ansi-blue-intense-bg { background-color: #0065CA; }
-  .ansi-magenta-fg { color: #D160C4; }
-  .ansi-magenta-bg { background-color: #D160C4; }
-  .ansi-magenta-intense-fg { color: #A03196; }
-  .ansi-magenta-intense-bg { background-color: #A03196; }
-  .ansi-cyan-fg { color: #60C6C8; }
-  .ansi-cyan-bg { background-color: #60C6C8; }
-  .ansi-cyan-intense-fg { color: #258F8F; }
-  .ansi-cyan-intense-bg { background-color: #258F8F; }
-  .ansi-white-fg { color: #C5C1B4; }
-  .ansi-white-bg { background-color: #C5C1B4; }
-  .ansi-white-intense-fg { color: #A1A6B2; }
-  .ansi-white-intense-bg { background-color: #A1A6B2; }
-
-  .ansi-default-inverse-fg { color: #FFFFFF; }
-  .ansi-default-inverse-bg { background-color: #000000; }
-
-  .ansi-bold { font-weight: bold; }
-  .ansi-underline { text-decoration: underline; }
-
-
-  div.nbinput.container div.input_area div[class*=highlight] > pre,
-  div.nboutput.container div.output_area div[class*=highlight] > pre,
-  div.nboutput.container div.output_area div[class*=highlight].math,
-  div.nboutput.container div.output_area.rendered_html,
-  div.nboutput.container div.output_area > div.output_javascript,
-  div.nboutput.container div.output_area:not(.rendered_html) > img{
-    padding: 5px;
-    margin: 0;
-  }
-
-  /* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
-  div.nbinput.container div.input_area > div[class^='highlight'],
-  div.nboutput.container div.output_area > div[class^='highlight']{
-    overflow-y: hidden;
-  }
-
-  /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-  .prompt .copybtn {
-    display: none;
-  }
-
-  /* Some additional styling taken form the Jupyter notebook CSS */
-  .jp-RenderedHTMLCommon table,
-  div.rendered_html table {
-  border: none;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: black;
-  font-size: 12px;
-  table-layout: fixed;
-  }
-  .jp-RenderedHTMLCommon thead,
-  div.rendered_html thead {
-  border-bottom: 1px solid black;
-  vertical-align: bottom;
-  }
-  .jp-RenderedHTMLCommon tr,
-  .jp-RenderedHTMLCommon th,
-  .jp-RenderedHTMLCommon td,
-  div.rendered_html tr,
-  div.rendered_html th,
-  div.rendered_html td {
-  text-align: right;
-  vertical-align: middle;
-  padding: 0.5em 0.5em;
-  line-height: normal;
-  white-space: normal;
-  max-width: none;
-  border: none;
-  }
-  .jp-RenderedHTMLCommon th,
-  div.rendered_html th {
-  font-weight: bold;
-  }
-  .jp-RenderedHTMLCommon tbody tr:nth-child(odd),
-  div.rendered_html tbody tr:nth-child(odd) {
-  background: #f5f5f5;
-  }
-  .jp-RenderedHTMLCommon tbody tr:hover,
-  div.rendered_html tbody tr:hover {
-  background: rgba(66, 165, 245, 0.2);
-  }
-
-  /* Execution timestamps & timigs */
-  .timing {
-    margin-top: 7px 0 0 0;
-    border-top: 1px solid #CCC;
-    padding-top: 3px;
-    padding-left: 5px!important;
-    background-color: var(--pst-color-surface, transparent);
-    color: var(--pst-color-text-base, #777777);
-  }
-
-  .timing > p {
-    font-size: 70%!important;
-    font-family: monospace;
-    margin-bottom: 0px;
-    padding-bottom: 3px;
-  }
-
-  div[class*="highlight-"] {
-    margin: 0px!important;
-  }
-  </style>
   <style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -928,6 +653,9 @@ data-default-mode="">
                             </li>
                           </ul>
                         </li>
+                        <li class="toctree-l3">
+                          <a class="reference internal" href="#NCBI-E-Utils">NCBI E-Utils</a>
+                        </li>
                       </ul>
                     </li>
                     <li class="toctree-l2">
@@ -1395,6 +1123,9 @@ data-default-mode="">
                               <p>4.2.3&nbsp;&nbsp;ID translation with HMDB</p>
                             </li>
                           </ul>
+                        </li>
+                        <li>
+                          <p>4.3&nbsp;&nbsp;NCBI E-Utils</p>
                         </li>
                       </ul>
                     </li>
@@ -2354,22 +2085,22 @@ data-default-mode="">
                   number of clients is troublesome, hence at any time some of them are broken, you can check them in
                   our <a class="reference external" href="https://status.omnipathdb.org/">daily status report</a>. Each
                   submodule of <code class="docutils literal notranslate"><span class="pre">pypath.inputs</span></code>
-                  is named after its corresponding resource, all lowercase, e.g.&nbsp;“depod” <em>(DEPOD)</em> or
-                  “cytosig” <em>(CytoSig)</em>. Within these modules each function name starts with the name of the
-                  resource, and ends with the kind of data it retrieves. For example, <code class=
+                  is named after its corresponding resource, all lowercase, e.g. “depod” <em>(DEPOD)</em> or “cytosig”
+                  <em>(CytoSig)</em>. Within these modules each function name starts with the name of the resource, and
+                  ends with the kind of data it retrieves. For example, <code class=
                   "docutils literal notranslate"><span class=
                   "pre">pypath.inputs.signor.signor_interactions</span></code> downloads interactions from
-                  <em>SIGNOR.</em> The labels *”_interactions“<em>,</em>”_enz_sub“<em>,</em>”_complexes”* and
+                  <em>SIGNOR.</em> The labels *”_interactions”<em>,</em>”_enz_sub”<em>,</em>”_complexes”* and
                   *”_annotations”* retrieve records intended to these respective databases. However, the records at
-                  this stage are not fully processed yet. Some functions have different postfixes,
-                  e.g.&nbsp;<em>“_raw”* means the data is close to the format provided by the resource itself;
-                  *”_mapping”* means it is intended for a translation table. The purpose of the input functions is to
-                  1) handle the download; 2) read the raw data; 3) extract the relevant parts; 4) do the specific part
-                  of processing, i.e.&nbsp;bring the data to a state when it is suitable for the generic database
-                  classes for further processing. The outputs of these functions is not standard in any ways, though
-                  you may observ repeated patterns. The input functions typically return lists or dictionaries. These
-                  are arbitrarily designed towards the aims of selecting the relevant fields and give straightforward,
-                  accessible Python data structures for processing within or outside of *pypath</em>.</p>
+                  this stage are not fully processed yet. Some functions have different postfixes, e.g. *”_raw”* means
+                  the data is close to the format provided by the resource itself; *”_mapping”* means it is intended
+                  for a translation table. The purpose of the input functions is to 1) handle the download; 2) read the
+                  raw data; 3) extract the relevant parts; 4) do the specific part of processing, i.e. bring the data
+                  to a state when it is suitable for the generic database classes for further processing. The outputs
+                  of these functions is not standard in any ways, though you may observ repeated patterns. The input
+                  functions typically return lists or dictionaries. These are arbitrarily designed towards the aims of
+                  selecting the relevant fields and give straightforward, accessible Python data structures for
+                  processing within or outside of <em>pypath</em>.</p>
                   <p>We use SIGNOR as an example because this resource provides data for almost all OmniPath databases.
                   The <code class="docutils literal notranslate"><span class="pre">signor_complexes</span></code>
                   function returns a set of <code class="docutils literal notranslate"><span class=
@@ -4303,7 +4034,7 @@ data-default-mode="">
                       </div>
                       <p>The above example is simple, as each field has a simple string value. The <code class=
                       "docutils literal notranslate"><span class="pre">synonyms</span></code> is an array within each
-                      record, below first we process it as an array column, i.e.&nbsp;each row contains an array:</p>
+                      record, below first we process it as an array column, i.e. each row contains an array:</p>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
@@ -5349,6 +5080,232 @@ data-default-mode="">
                       </div>
                     </section>
                   </section>
+                  <section id="NCBI-E-Utils">
+                    <h3>NCBI E-Utils<a class="headerlink" href="#NCBI-E-Utils" title="Link to this heading">§</a></h3>
+                    <p>The <a class="reference external" href=
+                    "https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESummary">ESummary endpoint</a> of the NCBI
+                    E-Utils API provides metadata about records in NCBI databases. A client to this API endpoint is
+                    available in the <code class="docutils literal notranslate"><span class=
+                    "pre">pypath.inputs.eutils</span></code> module. The parameter <code class=
+                    "docutils literal notranslate"><span class="pre">ids</span></code> can be one integer, or a list of
+                    integers or strings:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[3]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
+                            "kn">import</span> <span class="n">eutils</span>
+
+<span class="n">eutils</span><span class="o">.</span><span class="n">esummary</span><span class=
+"p">(</span><span class="n">ids</span> <span class="o">=</span> <span class="mi">6063</span><span class=
+"p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="s1">'geoprofiles'</span><span class=
+"p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 22:43:56 2023-11-14</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[3]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'uids': ['6063'],
+ '6063': {'uid': '6063',
+  'gds': '5',
+  'gpl': '13',
+  'erank': '8eSiQ',
+  'evalue': 'joAzE',
+  'title': 'Diurnal and circadian-regulated genes (I)',
+  'taxon': 'Arabidopsis thaliana',
+  'gdstype': 'Expression profiling by array',
+  'valtype': 'log ratio',
+  'idref': '6063',
+  'genename': '',
+  'genedesc': '',
+  'ugname': 'AT4G11560',
+  'ugdesc': 'Bromo-adjacent homology (BAH) domain-containing protein',
+  'nucdesc': '9366 Lambda-PRL2 Arabidopsis thaliana cDNA clone 135J10T7, mRNA sequence',
+  'entrez_gene_id': '',
+  'gbacc': 'T46103',
+  'ptacc': '',
+  'cloneid': '135J10T7',
+  'orf': '',
+  'spotid': '',
+  'vmin': '-0.395000',
+  'vmax': '0.201000',
+  'groups': 'A1B3C1',
+  'abscall': '',
+  'aflag': 20,
+  'aoutl': '',
+  'rstd': 31,
+  'rmean': 50}}
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>A simple wrapper for PubMed is available in the <code class=
+                    "docutils literal notranslate"><span class="pre">pypath.inputs.pubmed</span></code> module:</p>
+                    <div class="nbinput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[ ]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre>
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[2]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
+                            "kn">import</span> <span class="n">pubmed</span>
+
+<span class="n">pubmed</span><span class="o">.</span><span class="n">get_pubmeds</span><span class=
+"p">(</span><span class="s1">'33209674'</span><span class="p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 22:42:02 2023-11-14</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[2]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'uids': ['33209674'],
+ '33209674': {'uid': '33209674',
+  'pubdate': '2020 Oct',
+  'epubdate': '',
+  'source': 'Transl Androl Urol',
+  'authors': [{'name': 'Kim H', 'authtype': 'Author', 'clusterid': ''},
+   {'name': 'Lee SH', 'authtype': 'Author', 'clusterid': ''},
+   {'name': 'Kim DH', 'authtype': 'Author', 'clusterid': ''},
+   {'name': 'Lee JY', 'authtype': 'Author', 'clusterid': ''},
+   {'name': 'Hong SH', 'authtype': 'Author', 'clusterid': ''},
+   {'name': 'Ha US', 'authtype': 'Author', 'clusterid': ''},
+   {'name': 'Kim IH', 'authtype': 'Author', 'clusterid': ''}],
+  'lastauthor': 'Kim IH',
+  'title': 'Gemcitabine maintenance versus observation after first-line chemotherapy in patients with metastatic urothelial carcinoma: a retrospective study.',
+  'sorttitle': 'gemcitabine maintenance versus observation after first line chemotherapy in patients with metastatic urothelial carcinoma a retrospective study',
+  'volume': '9',
+  'issue': '5',
+  'pages': '2113-2121',
+  'lang': ['eng']
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 2263 characters</em>
+                      </div>
+                    </div>
+                    <p>One last example, querying the Entrez Gene database:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[4]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
+                            "kn">import</span> <span class="n">eutils</span>
+
+<span class="n">eutils</span><span class="o">.</span><span class="n">esummary</span><span class=
+"p">(</span><span class="n">ids</span> <span class="o">=</span> <span class="mi">1956</span><span class=
+"p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="s1">'gene'</span><span class="p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 22:48:09 2023-11-14</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[4]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'uids': ['1956'],
+ '1956': {'uid': '1956',
+  'name': 'EGFR',
+  'description': 'epidermal growth factor receptor',
+  'status': '',
+  'currentid': '',
+  'chromosome': '7',
+  'geneticsource': 'genomic',
+  'maplocation': '7p11.2',
+  'otheraliases': 'ERBB, ERBB1, ERRP, HER1, NISBD2, PIG61, mENA',
+  'otherdesignations': 'epidermal growth factor receptor|EGFR vIII|avian erythroblastic leukemia viral (v-erb-b) oncogene homolog|cell growth inhibiting protein 40|cell proliferation-inducing protein 61|epidermal growth factor receptor tyrosine kinase domain|erb-b2 receptor tyrosine kinase 1|proto-oncogene c-ErbB-1|receptor tyrosine-protein kinase erbB-1',
+  'nomenclaturesymbol': 'EGFR',
+  'nomenclaturename': 'epidermal growth factor receptor',
+  'nomenclaturestatus': 'Official',
+  'mim': ['131550'],
+  'genomicinfo': [{'chrloc': '7',
+    'chraccver': 'NC_000007.14',
+    'chrstart': 55019016,
+    'chrstop': 55211627,
+    'exoncount': 32}],
+  'geneweight': 580393,
+  'summary': 'The protein encoded b
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 5417 characters</em>
+                      </div>
+                    </div>
+                  </section>
                 </section>
                 <section id="Download-management">
                   <h2>Download management<a class="headerlink" href="#Download-management" title=
@@ -6230,7 +6187,7 @@ data-default-mode="">
                   "pre">pypath.core.network</span></code> module which takes care about building and querying the
                   network. Also you need the <code class="docutils literal notranslate"><span class=
                   "pre">pypath.resources.network</span></code> module where you find a number of predefined input
-                  settings organized in larger categories (e.g.&nbsp;activity flow, enzyme-substrate, transcriptional
+                  settings organized in larger categories (e.g. activity flow, enzyme-substrate, transcriptional
                   regulation, etc). These input settings will tell <code class=
                   "docutils literal notranslate"><span class="pre">pypath</span></code> how to download and process the
                   data.</p>
@@ -6258,8 +6215,8 @@ data-default-mode="">
                   </div>
                   <p>For example the <code class="docutils literal notranslate"><span class=
                   "pre">netres.pathway</span></code> is a collection of databases which fit into the activity flow
-                  concept, i.e.&nbsp;one protein either stimulates or inhibits the other. It is a dictionary with names
-                  as keys and the input settings as values:</p>
+                  concept, i.e. one protein either stimulates or inhibits the other. It is a dictionary with names as
+                  keys and the input settings as values:</p>
                   <div class="nbinput docutils container">
                     <div class="prompt highlight-none notranslate">
                       <div class="highlight">
@@ -6547,12 +6504,12 @@ data-default-mode="">
                       <li>
                         <p><code class="docutils literal notranslate"><span class=
                         "pre">pypath.resources.network.interaction</span></code>: undirected interactions from both
-                        literature curated and high-throughput collections (e.g.&nbsp;IntAct, BioGRID)</p>
+                        literature curated and high-throughput collections (e.g. IntAct, BioGRID)</p>
                       </li>
                       <li>
                         <p><code class="docutils literal notranslate"><span class=
                         "pre">pypath.resources.network.interaction_misc</span></code>: undirected, high-scale
-                        interaction networks without the constraint of having any literature reference (e.g.&nbsp;the
+                        interaction networks without the constraint of having any literature reference (e.g. the
                         unbiased human interactome screen from the Vidal lab)</p>
                       </li>
                       <li>
@@ -6805,7 +6762,7 @@ dict_keys(['trip', 'spike', 'signalink3', 'guide2pharma', 'ca1', 'arn', 'nrf2', 
                         </div>
                       </div>
                     </div>
-                    <p>Almost all data is stored as a dict node pairs vs.&nbsp;interactions in <code class=
+                    <p>Almost all data is stored as a dict node pairs vs. interactions in <code class=
                     "docutils literal notranslate"><span class="pre">Network.interactions</span></code>:</p>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
@@ -8605,8 +8562,7 @@ False
                         </div>
                       </div>
                     </div>
-                    <p>We can retrieve various information about the complexes in the network, e.g.&nbsp;count
-                    them:</p>
+                    <p>We can retrieve various information about the complexes in the network, e.g. count them:</p>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
@@ -9560,8 +9516,8 @@ Complex: COMPLEX:P15407_P17535
                   <p>Molecules have large variety of identifiers, but in pypath two identifier types are special:</p>
                   <ul class="simple">
                     <li>
-                      <p>The <em>primary identifier</em> defines the molecule category, e.g.&nbsp;if UniProt is the
-                      primary identifier for proteins, then a protein is anything that has a UniProt ID</p>
+                      <p>The <em>primary identifier</em> defines the molecule category, e.g. if UniProt is the primary
+                      identifier for proteins, then a protein is anything that has a UniProt ID</p>
                     </li>
                     <li>
                       <p>The <em>label</em> is a human readable identifier, for proteins it’s gene symbol</p>
@@ -10453,7 +10409,7 @@ False
                     </div>
                   </div>
                   <p>This module uses data from the Orthologous Matrix )OMA), NCBI HomoloGene and Ensembl. The latter
-                  covers more organisms, and accepts some parameters (high confidence, one-to-one vs.&nbsp;one-to-many
+                  covers more organisms, and accepts some parameters (high confidence, one-to-one vs. one-to-many
                   mapping). The default is to use only OMA as that one is the most comprehensive, up to date and easy
                   to use resource. These parameters can be controlled by the settings module, or passed to the
                   functions above and below, for example:</p>
@@ -12244,7 +12200,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   "docutils literal notranslate"><span class="pre">EnzymeSubstrateAggregator.enz_sub</span></code>)
                   with pairs of proteins as keys and a list of special objects representing enzyme-substrate
                   interactions as values. These can be accessed by pairs of labels, identifiers or <code class=
-                  "docutils literal notranslate"><span class="pre">Entity</span></code> objects, e.g.&nbsp;mTOR
+                  "docutils literal notranslate"><span class="pre">Entity</span></code> objects, e.g. mTOR
                   phosphorylates AKT1:</p>
                   <div class="nbinput docutils container">
                     <div class="prompt highlight-none notranslate">
@@ -14028,7 +13984,7 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   <ul class="simple">
                     <li>
                       <p><code class="docutils literal notranslate"><span class="pre">name</span></code>: all
-                      lowercase, human understandable name, without repeating the parent class (e.g.&nbsp;<em>WNT
+                      lowercase, human understandable name, without repeating the parent class (e.g. <em>WNT
                       receptor</em>s will be simply <em>wnt</em>, and the parent class will be <em>receptor</em>)</p>
                     </li>
                     <li>
@@ -14045,13 +14001,13 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                     </li>
                     <li>
                       <p><code class="docutils literal notranslate"><span class="pre">scope</span></code>:
-                      <em>specific</em> or <em>generic</em>; e.g.&nbsp;<em>TGF ligand</em> is specific, <em>ligand</em>
-                      is generic</p>
+                      <em>specific</em> or <em>generic</em>; e.g. <em>TGF ligand</em> is specific, <em>ligand</em> is
+                      generic</p>
                     </li>
                     <li>
                       <p><code class="docutils literal notranslate"><span class="pre">aspect</span></code>:
-                      <em>locational</em> (e.g.&nbsp;<em>plasma membrane</em>) or <em>functional</em>
-                      (e.g.&nbsp;<em>transporter</em>)</p>
+                      <em>locational</em> (e.g. <em>plasma membrane</em>) or <em>functional</em> (e.g.
+                      <em>transporter</em>)</p>
                     </li>
                   </ul>
                   <p>Read more about the design of the intercell database <a class="reference external" href=
@@ -14814,8 +14770,8 @@ OrderedDict([('ac', ['P00533', 'O75385', 'Q14457']),
                   almost standalone module for management of the Gene Ontology tree and annotations. The main objects
                   here are <code class="docutils literal notranslate"><span class="pre">GeneOntology</span></code> and
                   <code class="docutils literal notranslate"><span class="pre">GOAnnotation</span></code>. The former
-                  represents the ontology tree, i.e.&nbsp;terms and their relationships, the latter their assignment to
-                  gene products. Both provides many versatile methods for querying.</p>
+                  represents the ontology tree, i.e. terms and their relationships, the latter their assignment to gene
+                  products. Both provides many versatile methods for querying.</p>
                   <div class="nbinput nblast docutils container">
                     <div class="prompt highlight-none notranslate">
                       <div class="highlight">
@@ -15455,8 +15411,8 @@ Complex CBP/p300: COMPLEX:Q09472_Q92793
                   <h2>Saving datasets as pickles<a class="headerlink" href="#Saving-datasets-as-pickles" title=
                   "Link to this heading">§</a></h2>
                   <p>The large datasets above are compiled from many resources. Even if these are already available in
-                  the cache, the data processing often takes longer than convenient, e.g.&nbsp;from a few minutes up to
-                  half an hour. Most of the data integration objects in <code class=
+                  the cache, the data processing often takes longer than convenient, e.g. from a few minutes up to half
+                  an hour. Most of the data integration objects in <code class=
                   "docutils literal notranslate"><span class="pre">pypath</span></code> provide methods to save and
                   load their contents as pickle dumps. In fact, the database manager does this all the time, in a
                   coordinated way – for this reason, the methods below should be used only with good reason, and
@@ -17122,7 +17078,7 @@ AKT1 - GSK3B
                     <h3>Querying relationships with our without causality<a class="headerlink" href=
                     "#Querying-relationships-with-our-without-causality" title="Link to this heading">§</a></h3>
                     <p>Above you could see how to query the directions and names of individual edges and nodes.
-                    Building on top of these, other methods give a way to query causality, i.e.&nbsp;which proteins are
+                    Building on top of these, other methods give a way to query causality, i.e. which proteins are
                     affected by an other one, and which others are its regulators. The example below returns the nodes
                     PIK3CA is stimulated by, the <code class="docutils literal notranslate"><span class=
                     "pre">gs</span></code> prefix tells we query by the Gene Symbol:</p>
@@ -17566,10 +17522,11 @@ AKT1 - GSK3B
             <footer class="prev-next-footer">
               <!-- Previous / next buttons -->
               <div class="prev-next-area">
-                <a class="left-prev" href="../api/pypath.visual.plot.StackedBarplot.html" title="previous page">
+                <a class="left-prev" href="../api/pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.html" title=
+                "previous page">
                 <div class="prev-next-info">
                   <p class="prev-next-subtitle">previous</p>
-                  <p class="prev-next-title">pypath.visual.plot.StackedBarplot</p>
+                  <p class="prev-next-title">pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer</p>
                 </div></a>
               </div>
             </footer>
@@ -17697,6 +17654,9 @@ AKT1 - GSK3B
                                   translation with HMDB</a>
                                 </li>
                               </ul>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#NCBI-E-Utils">NCBI E-Utils</a>
                             </li>
                           </ul>
                         </li>
@@ -18089,8 +18049,8 @@ AKT1 - GSK3B
       </main>
     </div>
   </div><!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script> 
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script> 
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
   <footer class="bd-footer">
     <div class="bd-footer__inner bd-page-width">
       <div class="footer-items__start">
@@ -18106,7 +18066,7 @@ AKT1 - GSK3B
       <div class="footer-items__end">
         <div class="footer-item">
           <p class="theme-version">Built with the <a href=
-          "https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.</p>
+          "https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.</p>
         </div>
       </div>
     </div>
