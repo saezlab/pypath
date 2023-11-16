@@ -446,11 +446,23 @@ class UniprotQuery:
             this class or the UniProt website:
             https://www.uniprot.org/help/return_fields
 
+        Methods:
+            __iter__:
+                Perform the query and iterate over the lines in the results,
+                skipping the header and the empty lines, stripping the
+                linebreaks and splitting by tab.
+
+                Yields:
+                    A list of fields for each line.
         """
 
         self.fields = common.to_list(fields)
         self._args = query, kwargs
         self._process_main()
+        # tolerate empty result: Curl returns None in case of
+        # empty file but in case of UniProt, especially for under-researched
+        # taxons it can happen there is no result for certain queries
+        self.fail_on_empty = False
 
 
     @classmethod
@@ -607,13 +619,14 @@ class UniprotQuery:
             large = True,
             compr = 'gz',
         )
+        result = c.result if c.result or self.fail_on_empty else [0].__iter__()
         _ = next(c.result)
 
-        for line in c.result:
+        for line in result:
 
             line = line.strip('\n\r')
 
-            if line:
+            if line.strip():
 
                 yield line.split('\t')
 
