@@ -27,6 +27,7 @@ import re
 import json
 import collections
 import itertools
+import urllib.parse
 
 import pandas as pd
 
@@ -361,40 +362,370 @@ def get_uniprot_sec(organism = 9606):
             yield line
 
 
-_uniprot_fields = {
-    'function': 'cc_function',
-    'activity_regulation': 'cc_activity_regulation',
-    'tissue_specificity': 'cc_tissue_specificity',
-    'developmental_stage': 'cc_developmental_stage',
-    'induction': 'cc_induction',
-    'intramembrane': 'ft_intramem',
-    'signal_peptide': 'ft_signal',
-    'subcellular_location': 'cc_subcellular_location',
-    'transmembrane': 'ft_transmem',
-    'comment': 'cc_miscellaneous',
-    'topological_domain': 'ft_topo_dom',
-    'family': 'protein_families',
-    'interactor': 'cc_interaction',
-    'keywords': 'keyword',
-}
+class UniprotQuery:
+
+    _PROCESS = {
+        'dict': '_process_dict',
+        'list': '_process_list',
+    }
+    _OP = ('_AND', '_NOT', '_OR')
+    _OPSTART = re.compile(r'^(OR|AND)')
+    _OPEND = re.compile(r'(OR|AND)$')
+    _SYNONYMS = {
+        'organism': 'organism_id',
+        'ncbi_tax_id': 'organism_id',
+    }
+    _FIELD_SYNONYMS = {
+        'function': 'cc_function',
+        'activity_regulation': 'cc_activity_regulation',
+        'tissue_specificity': 'cc_tissue_specificity',
+        'developmental_stage': 'cc_developmental_stage',
+        'induction': 'cc_induction',
+        'intramembrane': 'ft_intramem',
+        'signal_peptide': 'ft_signal',
+        'subcellular_location': 'cc_subcellular_location',
+        'transmembrane': 'ft_transmem',
+        'comment': 'cc_miscellaneous',
+        'topological_domain': 'ft_topo_dom',
+        'family': 'protein_families',
+        'interactor': 'cc_interaction',
+        'keywords': 'keyword',
+    }
+
+
+    def __init__(
+            self,
+            *query,
+            fields: str | Iterable[str] | None = None,
+            **kwargs
+        ):
+        """
+        Constructs a query for the UniProt REST API.
+
+        Args:
+            query:
+                Query elements: can be a ready query or its components, bypassing
+                the processing in this function or performing only simple
+                concatenation. Alternatively, it can be a nested structure of lists
+                and dicts describing more complex queries. See the examples below.
+            kwargs:
+                Same as passing a dict to ``query``.
+
+        Details:
+            The query can be built in several ways:
+            - Simple string or concatenation of strings:
+              query_builder('kinase AND organism_id:9606')
+              query_builder('kinase', 'organism_id:9606')
+              query_builder('kinase', organism_id = 9606)
+              The above 3 examples all return the same query:
+              `kinase AND organism_id:9606`
+            - The default operator within lists is `OR` and within dicts is `AND`:
+              query_builder(organism = [9606, 10090, 10116])
+              `organism_id:9606 OR organism_id:10090 OR organism_id:10116`
+              query_builder({'organism_id': 9606, 'reviewed': True})
+              `organism_id:9606 AND reviewed:true`
+            - These default operators can be changed by including the `op` key in
+              dicts or including the operator with an underscore in lists:
+              query_builder({'length': (500,), 'mass': (50000,), 'op': 'OR'})
+              `length:[500 TO *] OR mass:[50000 TO *]`
+              query_builder(lit_author = ['Huang', 'Kovac', '_AND'])
+              `lit_author:Huang AND lit_author:Kovac`
+            - The nested structures translate into nested parentheses in the query:
+              query_builder({'organism_id': [9606, 10090], 'reviewed': True})
+              `(organism_id:9606 OR organism_id:10090) AND reviewed:true`
+            - Values are converted to strings, intervals can be provided as tuples:
+              query_builder({'length': (100, None), 'organism_id': 9606})
+              `length:[100 TO *] AND organism_id:9606`
+
+            For a complete reference of the available parameters, see
+            https://www.uniprot.org/help/query-fields and
+            https://www.uniprot.org/help/text-search for additional syntax
+            elements.
+
+            For the available fields refer to the ``_FIELD_SYNONYMS`` attribute of
+            this class or the UniProt website:
+            https://www.uniprot.org/help/return_fields
+
+        """
+
+        self.fields = common.to_list(fields)
+        self._args = query, kwargs
+        self._process_main()
+
+
+    @classmethod
+    def _value(
+            cls,
+            val: str | int | bool | tuple,
+            field: str | None = None,
+        ) -> str:
+
+        field = cls._SYNONYMS.get(field, field)
+
+        if field == 'organism_id':
+
+            result = str(taxonomy.ensure_ncbi_tax_id(val) or val)
+
+        elif isinstance(val, tuple):
+
+            val = (tuple(map(cls._value, val)) + ('*',))[:2]
+            result = '[%s TO %s]' % val
+
+        elif val is None:
+
+            result = '*'
+
+        elif isinstance(val, bool):
+
+            result = str(val).lower()
+
+        else:
+
+            result = str(val)
+
+        if field:
+
+            result = f'{field}:{result}'
+
+        return result
+
+
+    def _process_main(self):
+
+        query, kwargs = self._args
+        op = kwargs.pop('_op', 'AND')
+        query = list(query)
+        query.append(kwargs)
+        result = []
+
+        for q in query:
+
+            q = self._process(q).strip()
+
+            if (
+                result and
+                q and
+                not self._OPEND.match(result[-1]) and
+                not self._OPSTART.match(q)
+            ):
+
+                result.append(op)
+
+            if q:
+
+                result.append(q)
+
+        self.query = ' '.join(result)
+
+
+    @classmethod
+    def _process(
+            cls,
+            query: str | list | dict,
+            field: str | None = None,
+        ) -> str:
+
+        method = cls._PROCESS.get(type(query).__name__, '_value')
+
+        return getattr(cls, method)(query, field)
+
+
+    @classmethod
+    def _process_list(cls, query: list, field: str | None = None) -> str:
+
+        op = '_OR'
+
+        for _op in cls._OP:
+
+            if _op in query:
+
+                op = query.pop(query.index(_op))
+
+        op = f' {op[1:]} '
+
+        query = [cls._process(i, field) for i in query]
+
+        return cls._par(op.join(query))
+
+
+    @classmethod
+    def _process_dict(cls, query: dict, field: str | None = None) -> str:
+
+        query = query.copy()
+        op = ' %s ' % query.pop('op', ' AND ').strip()
+        result = op.join(cls._process(v, k) for k, v in query.items())
+
+        return cls._par(result) if len(query) > 1 else result
+
+
+    @staticmethod
+    def _par(value: str) -> str:
+
+        return f'({value})' if value else ''
+
+
+    @property
+    def _get(self) -> dict[str, str]:
+
+        field_qs = ','.join(
+            ['accession'] +
+            [self._FIELD_SYNONYMS.get(f, f) for f in self.fields]
+        )
+
+        return {
+            'query': self.query,
+            'format': 'tsv',
+            'fields': field_qs,
+            'compressed': 'true',
+        }
+
+
+    @property
+    def _baseurl(self) -> str:
+
+        return urls.urls['uniprot_basic']['url']
+
+
+    @property
+    def url(self) -> str:
+        """
+        UniProt REST API URL.
+
+        Returns:
+            A valid query suitable for the UniProt REST API.
+        """
+
+        return f'{self._baseurl}?{urllib.parse.urlencode(self._get)}'
+
+
+    def __iter__(self):
+
+        c = curl.Curl(
+            self._baseurl,
+            get = self._get,
+            silent = False,
+            large = True,
+            compr = 'gz',
+        )
+        _ = next(c.result)
+
+        for line in c.result:
+
+            line = line.strip('\n\r')
+
+            if line:
+
+                yield line.split('\t')
+
+
+    def perform(self) -> list[str] | dict[str, str] | dict[str, dict[str, str]]:
+        """
+        Perform the query and preprocess the result.
+
+        Returns:
+            - A list of UniProt IDs if no fields were provided.
+            - A dict of UniProt IDs and corresponding field values if
+              exactly one field was provided.
+            - A dict with field names as top level keys and dicts of the
+              kind described in the previous point as values.
+        """
+
+        _id, *variables = zip(*self)
+
+        if variables:
+
+            result = dict(
+                (
+                    f,
+                    dict(id_value for id_value in zip(_id, v) if id_value[1])
+                )
+                for f, v in zip(self.fields, variables)
+            )
+
+            result = (
+                common.first(result.values())
+                    if len(result) == 1 else
+                result
+            )
+
+        else:
+
+            result = list(_id)
+
+        return result
+
+
+def query_builder(*query, **kwargs) -> str:
+    """
+    Build a query for the UniProt web site and REST API.
+
+    Args:
+        query:
+            Query elements: can be a ready query or its components, bypassing
+            the processing in this function or performing only simple
+            concatenation. Alternatively, it can be a nested structure of lists
+            and dicts describing more complex queries. See the examples below.
+        kwargs:
+            Same as passing a dict to ``query``.
+
+    Details:
+        The query can be built in several ways:
+        - Simple string or concatenation of strings:
+          query_builder('kinase AND organism_id:9606')
+          query_builder('kinase', 'organism_id:9606')
+          query_builder('kinase', organism_id = 9606)
+          The above 3 examples all return the same query:
+          `kinase AND organism_id:9606`
+        - The default operator within lists is `OR` and within dicts is `AND`:
+          query_builder(organism = [9606, 10090, 10116])
+          `organism_id:9606 OR organism_id:10090 OR organism_id:10116`
+          query_builder({'organism_id': 9606, 'reviewed': True})
+          `organism_id:9606 AND reviewed:true`
+        - These default operators can be changed by including the `op` key in
+          dicts or including the operator with an underscore in lists:
+          query_builder({'length': (500,), 'mass': (50000,), 'op': 'OR'})
+          `length:[500 TO *] OR mass:[50000 TO *]`
+          query_builder(lit_author = ['Huang', 'Kovac', '_AND'])
+          `lit_author:Huang AND lit_author:Kovac`
+        - The nested structures translate into nested parentheses in the query:
+          query_builder({'organism_id': [9606, 10090], 'reviewed': True})
+          `(organism_id:9606 OR organism_id:10090) AND reviewed:true`
+        - Values are converted to strings, intervals can be provided as tuples:
+          query_builder({'length': (100, None), 'organism_id': 9606})
+          `length:[100 TO *] AND organism_id:9606`
+
+        For a complete reference of the available parameters, see
+        https://www.uniprot.org/help/query-fields and
+        https://www.uniprot.org/help/text-search for additional syntax
+        elements.
+
+    Returns:
+        A query that can be inserted into the UniProt search field.
+    """
+
+    return UniprotQuery(*query, **kwargs).query
 
 
 def uniprot_data(
-        field: str | Iterable[str],
-        organism: str | int = 9606,
-        reviewed: bool = True,
+        *query,
+        fields: str | Iterable[str] | None = None,
+        organism: str | int | None = 9606,
+        reviewed: bool | None = True,
+        **kwargs
     ) -> dict[str, str] | dict[str, dict[str, str]]:
     """
-    Basic client for the main UniProt API.
+    Basic client for the UniProt REST API.
 
-    Retrieves a field from UniProt for all proteins of one organism, by
-    default only the reviewed (SwissProt) proteins.
-    For the available fields refer to the ``_uniprot_fields`` attribute of
-    this module or the UniProt website:
-    https://www.uniprot.org/help/return_fields
+    Retrieves one or more fields from UniProt, by default for all reviewed
+    (SwissProt) proteins of one organism
 
-    Args
-        field:
+    Args:
+        query:
+            Query elements: can be a ready query or its components, bypassing
+            the processing in this function or performing only simple
+            concatenation. Alternatively, it can be a nested structure of lists
+            and dicts describing more complex queries. See the examples below.
+        fields:
             One or more UniProt field name. See details.
         organism:
             Organism name or identifier, e.g. "human", or "Homo sapiens",
@@ -402,58 +733,124 @@ def uniprot_data(
         reviewed:
             Restrict the query to SwissProt (True), to TrEMBL (False), or
             cover both (None).
+        kwargs:
+            Same as passing a dict to ``query``.
 
-    Return
-        A dictionary for each key
+    Details:
+        The query can be built in several ways:
+        - Simple string or concatenation of strings:
+          query_builder('kinase AND organism_id:9606')
+          query_builder('kinase', 'organism_id:9606')
+          query_builder('kinase', organism_id = 9606)
+          The above 3 examples all return the same query:
+          `kinase AND organism_id:9606`
+        - The default operator within lists is `OR` and within dicts is `AND`:
+          query_builder(organism = [9606, 10090, 10116])
+          `organism_id:9606 OR organism_id:10090 OR organism_id:10116`
+          query_builder({'organism_id': 9606, 'reviewed': True})
+          `organism_id:9606 AND reviewed:true`
+        - These default operators can be changed by including the `op` key in
+          dicts or including the operator with an underscore in lists:
+          query_builder({'length': (500,), 'mass': (50000,), 'op': 'OR'})
+          `length:[500 TO *] OR mass:[50000 TO *]`
+          query_builder(lit_author = ['Huang', 'Kovac', '_AND'])
+          `lit_author:Huang AND lit_author:Kovac`
+        - The nested structures translate into nested parentheses in the query:
+          query_builder({'organism_id': [9606, 10090], 'reviewed': True})
+          `(organism_id:9606 OR organism_id:10090) AND reviewed:true`
+        - Values are converted to strings, intervals can be provided as tuples:
+          query_builder({'length': (100, None), 'organism_id': 9606})
+          `length:[100 TO *] AND organism_id:9606`
+
+        For a complete reference of the available parameters, see
+        https://www.uniprot.org/help/query-fields and
+        https://www.uniprot.org/help/text-search for additional syntax
+        elements.
+
+        For the available fields refer to the ``_FIELD_SYNONYMS`` attribute of
+        the UniprotQuery class or the UniProt website:
+        https://www.uniprot.org/help/return_fields
+
+    Returns:
+        - A list of UniProt IDs if no fields were provided.
+        - A dict of UniProt IDs and corresponding field values if
+          exactly one field was provided.
+        - A dict with field names as top level keys and dicts of the
+          kind described in the previous point as values.
     """
 
-    rev = (
-        ' AND reviewed: true'
-            if reviewed == True or reviewed == 'yes' else
-        ' AND reviewed: false'
-        if reviewed == False or reviewed == 'no' else
-        ''
-    )
+    for arg in ('organism', 'reviewed'):
+
+        if locals()[arg] is not None:
+
+            kwargs[arg] = locals()[arg]
+
+    return uniprot_query(*query, fields = fields, **kwargs)
 
 
-    if organism != '*':
+def uniprot_query(
+        *query,
+        fields: str | Iterable[str] | None = None,
+        **kwargs
+    ) -> dict[str, str] | dict[str, dict[str, str]]:
+    """
+    Basic client for the UniProt REST API.
 
-        organism = taxonomy.ensure_ncbi_tax_id(organism)
+    Args:
+        query:
+            Query elements: can be a ready query or its components, bypassing
+            the processing in this function or performing only simple
+            concatenation. Alternatively, it can be a nested structure of lists
+            and dicts describing more complex queries. See the examples below.
+        fields:
+            One or more UniProt field name. See details.
+        kwargs:
+            Same as passing a dict to ``query``.
 
-    field = common.to_list(field)
-    field_qs = ','.join(['accession'] + [_uniprot_fields.get(f, f) for f in field])
+    Details:
+        The query can be built in several ways:
+        - Simple string or concatenation of strings:
+          query_builder('kinase AND organism_id:9606')
+          query_builder('kinase', 'organism_id:9606')
+          query_builder('kinase', organism_id = 9606)
+          The above 3 examples all return the same query:
+          `kinase AND organism_id:9606`
+        - The default operator within lists is `OR` and within dicts is `AND`:
+          query_builder(organism = [9606, 10090, 10116])
+          `organism_id:9606 OR organism_id:10090 OR organism_id:10116`
+          query_builder({'organism_id': 9606, 'reviewed': True})
+          `organism_id:9606 AND reviewed:true`
+        - These default operators can be changed by including the `op` key in
+          dicts or including the operator with an underscore in lists:
+          query_builder({'length': (500,), 'mass': (50000,), 'op': 'OR'})
+          `length:[500 TO *] OR mass:[50000 TO *]`
+          query_builder(lit_author = ['Huang', 'Kovac', '_AND'])
+          `lit_author:Huang AND lit_author:Kovac`
+        - The nested structures translate into nested parentheses in the query:
+          query_builder({'organism_id': [9606, 10090], 'reviewed': True})
+          `(organism_id:9606 OR organism_id:10090) AND reviewed:true`
+        - Values are converted to strings, intervals can be provided as tuples:
+          query_builder({'length': (100, None), 'organism_id': 9606})
+          `length:[100 TO *] AND organism_id:9606`
 
-    url = urls.urls['uniprot_basic']['url']
-    get = {
-        'query': 'organism_id:%s%s' % (str(organism), rev),
-        'format': 'tsv',
-        'fields': field_qs,
-        'compressed': 'true',
-    }
+        For a complete reference of the available parameters, see
+        https://www.uniprot.org/help/query-fields and
+        https://www.uniprot.org/help/text-search for additional syntax
+        elements.
 
-    if organism == '*':
-        get['query'] = rev.strip(' AND ')
+        For the available fields refer to the ``_FIELD_SYNONYMS`` attribute of
+        the UniprotQuery class or the UniProt website:
+        https://www.uniprot.org/help/return_fields
 
-    c = curl.Curl(url, get = get, silent = False, large = True, compr = 'gz')
-    _ = next(c.result)
+    Returns:
+        - A list of UniProt IDs if no fields were provided.
+        - A dict of UniProt IDs and corresponding field values if
+          exactly one field was provided.
+        - A dict with field names as top level keys and dicts of the
+          kind described in the previous point as values.
+    """
 
-
-    _id, *variables = zip(*(
-        line.strip('\n\r').split('\t')
-        for line in c.result if line.strip('\n\r')
-    ))
-
-    result = dict(
-        (
-            f,
-            dict(id_value for id_value in zip(_id, v) if id_value[1])
-        )
-        for f, v in zip(field, variables)
-    )
-
-    result = common.first(result.values()) if len(result) == 1 else result
-
-    return result
+    return UniprotQuery(*query, fields = fields, **kwargs).perform()
 
 
 def uniprot_preprocess(field, organism = 9606, reviewed = True):
@@ -466,7 +863,7 @@ def uniprot_preprocess(field, organism = 9606, reviewed = True):
     result = collections.defaultdict(set)
 
     data = uniprot_data(
-        field = field,
+        fields = field,
         organism = organism,
         reviewed = reviewed,
     )
@@ -550,7 +947,7 @@ def uniprot_keywords(organism = 9606, reviewed = True):
     result = collections.defaultdict(set)
 
     data = uniprot_data(
-        field = 'keywords',
+        fields = 'keywords',
         organism = organism,
         reviewed = reviewed,
     )
@@ -585,7 +982,7 @@ def uniprot_families(organism = 9606, reviewed = True):
     result = collections.defaultdict(set)
 
     data = uniprot_data(
-        field = 'family',
+        fields = 'family',
         organism = organism,
         reviewed = reviewed,
     )
@@ -627,25 +1024,25 @@ def uniprot_topology(organism = 9606, reviewed = True):
     result = collections.defaultdict(set)
 
     transmem = uniprot_data(
-        field = 'transmembrane',
+        fields = 'transmembrane',
         organism = organism,
         reviewed = reviewed,
     )
 
     intramem = uniprot_data(
-        field = 'intramembrane',
+        fields = 'intramembrane',
         organism = organism,
         reviewed = reviewed,
     )
 
     signal = uniprot_data(
-        field = 'signal_peptide',
+        fields = 'signal_peptide',
         organism = organism,
         reviewed = reviewed,
     )
 
     data = uniprot_data(
-        field = 'topological_domain',
+        fields = 'topological_domain',
         organism = organism,
         reviewed = reviewed,
     )
@@ -974,7 +1371,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
 
 
     data = uniprot_data(
-        'tissue_specificity',
+        fields = 'tissue_specificity',
         organism = organism,
         reviewed = reviewed,
     )

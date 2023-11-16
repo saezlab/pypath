@@ -64,7 +64,7 @@ def swissprot_seq(
     """
 
     data = uniprot_input.uniprot_data(
-        field = 'sequence',
+        fields = 'sequence',
         organism = organism,
         reviewed = reviewed or None,
     )
