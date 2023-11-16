@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>pypath.inputs.uniprot.uniprot_data &#8212; pypath 0.16.0 documentation</title>
+    <title>pypath.inputs.uniprot.uniprot_data &#8212; pypath 0.16.1 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../_static/documentation_options.js?v=7de89ed4"></script>
+    <script src="../_static/documentation_options.js?v=d9901acd"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -513,26 +513,74 @@ document.write(`
 <h1>pypath.inputs.uniprot.uniprot_data<a class="headerlink" href="#pypath-inputs-uniprot-uniprot-data" title="Link to this heading">§</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="pypath.inputs.uniprot.uniprot_data">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.uniprot.</span></span><span class="sig-name descname"><span class="pre">uniprot_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organism</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/uniprot.html#uniprot_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.uniprot.uniprot_data" title="Link to this definition">§</a></dt>
-<dd><p>Basic client for the main UniProt API.</p>
-<p>Retrieves a field from UniProt for all proteins of one organism, by
-default only the reviewed (SwissProt) proteins.
-For the available fields refer to the <code class="docutils literal notranslate"><span class="pre">_uniprot_fields</span></code> attribute of
-this module or the UniProt website:
-<a class="reference external" href="https://www.uniprot.org/help/return_fields">https://www.uniprot.org/help/return_fields</a></p>
-<dl class="simple">
-<dt>Args</dt><dd><dl class="simple">
-<dt>field:</dt><dd><p>One or more UniProt field name. See details.</p>
-</dd>
-<dt>organism:</dt><dd><p>Organism name or identifier, e.g. “human”, or “Homo sapiens”,
-or 9606.</p>
-</dd>
-<dt>reviewed:</dt><dd><p>Restrict the query to SwissProt (True), to TrEMBL (False), or
-cover both (None).</p>
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.uniprot.</span></span><span class="sig-name descname"><span class="pre">uniprot_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organism</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">9606</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/uniprot.html#uniprot_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.uniprot.uniprot_data" title="Link to this definition">§</a></dt>
+<dd><p>Basic client for the UniProt REST API.</p>
+<p>Retrieves one or more fields from UniProt, by default for all reviewed
+(SwissProt) proteins of one organism</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – Query elements: can be a ready query or its components, bypassing
+the processing in this function or performing only simple
+concatenation. Alternatively, it can be a nested structure of lists
+and dicts describing more complex queries. See the examples below.</p></li>
+<li><p><strong>fields</strong> – One or more UniProt field name. See details.</p></li>
+<li><p><strong>organism</strong> – Organism name or identifier, e.g. “human”, or “Homo sapiens”,
+or 9606.</p></li>
+<li><p><strong>reviewed</strong> – Restrict the query to SwissProt (True), to TrEMBL (False), or
+cover both (None).</p></li>
+<li><p><strong>kwargs</strong> – Same as passing a dict to <code class="docutils literal notranslate"><span class="pre">query</span></code>.</p></li>
+</ul>
 </dd>
 </dl>
+<dl>
+<dt>Details:</dt><dd><p>The query can be built in several ways:
+- Simple string or concatenation of strings:</p>
+<blockquote>
+<div><p>query_builder(‘kinase AND organism_id:9606’)
+query_builder(‘kinase’, ‘organism_id:9606’)
+query_builder(‘kinase’, organism_id = 9606)
+The above 3 examples all return the same query:
+<cite>kinase AND organism_id:9606</cite></p>
+</div></blockquote>
+<ul class="simple">
+<li><p>The default operator within lists is <cite>OR</cite> and within dicts is <cite>AND</cite>:
+query_builder(organism = [9606, 10090, 10116])
+<cite>organism_id:9606 OR organism_id:10090 OR organism_id:10116</cite>
+query_builder({‘organism_id’: 9606, ‘reviewed’: True})
+<cite>organism_id:9606 AND reviewed:true</cite></p></li>
+<li><p>These default operators can be changed by including the <cite>op</cite> key in
+dicts or including the operator with an underscore in lists:
+query_builder({‘length’: (500,), ‘mass’: (50000,), ‘op’: ‘OR’})
+<cite>length:[500 TO *] OR mass:[50000 TO *]</cite>
+query_builder(lit_author = [‘Huang’, ‘Kovac’, ‘_AND’])
+<cite>lit_author:Huang AND lit_author:Kovac</cite></p></li>
+<li><p>The nested structures translate into nested parentheses in the query:
+query_builder({‘organism_id’: [9606, 10090], ‘reviewed’: True})
+<cite>(organism_id:9606 OR organism_id:10090) AND reviewed:true</cite></p></li>
+<li><p>Values are converted to strings, intervals can be provided as tuples:
+query_builder({‘length’: (100, None), ‘organism_id’: 9606})
+<cite>length:[100 TO *] AND organism_id:9606</cite></p></li>
+</ul>
+<p>For a complete reference of the available parameters, see
+<a class="reference external" href="https://www.uniprot.org/help/query-fields">https://www.uniprot.org/help/query-fields</a> and
+<a class="reference external" href="https://www.uniprot.org/help/text-search">https://www.uniprot.org/help/text-search</a> for additional syntax
+elements.</p>
+<p>For the available fields refer to the <code class="docutils literal notranslate"><span class="pre">_FIELD_SYNONYMS</span></code> attribute of
+the UniprotQuery class or the UniProt website:
+<a class="reference external" href="https://www.uniprot.org/help/return_fields">https://www.uniprot.org/help/return_fields</a></p>
 </dd>
-<dt>Return</dt><dd><p>A dictionary for each key</p>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p>A list of UniProt IDs if no fields were provided.</p></li>
+<li><p>A dict of UniProt IDs and corresponding field values if
+exactly one field was provided.</p></li>
+<li><p>A dict with field names as top level keys and dicts of the
+kind described in the previous point as values.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>

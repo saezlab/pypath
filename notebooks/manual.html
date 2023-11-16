@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The pypath book — pypath 0.16.0 documentation</title>
+  <title>The pypath book — pypath 0.16.1 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -28,7 +28,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6">
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6">
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
-  <script src="../_static/documentation_options.js?v=7de89ed4"></script>
+  <script src="../_static/documentation_options.js?v=d9901acd"></script>
   <script src="../_static/doctools.js?v=888ff710"></script>
   <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
   <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -811,7 +811,7 @@ data-default-mode="">
                               records</a>
                             </li>
                             <li class="toctree-l4">
-                              <a class="reference internal" href="#UniProt-legacy-API">UniProt legacy API</a>
+                              <a class="reference internal" href="#UniProt-REST-API">UniProt REST API</a>
                             </li>
                             <li class="toctree-l4">
                               <a class="reference internal" href="#Processed-UniProt-annotations">Processed UniProt
@@ -1257,7 +1257,7 @@ data-default-mode="">
                               <p>11.1.5&nbsp;&nbsp;History of UniProt records</p>
                             </li>
                             <li>
-                              <p>11.1.6&nbsp;&nbsp;UniProt legacy API</p>
+                              <p>11.1.6&nbsp;&nbsp;UniProt REST API</p>
                             </li>
                             <li>
                               <p>11.1.7&nbsp;&nbsp;Processed UniProt annotations</p>
@@ -5160,22 +5160,6 @@ data-default-mode="">
                     </div>
                     <p>A simple wrapper for PubMed is available in the <code class=
                     "docutils literal notranslate"><span class="pre">pypath.inputs.pubmed</span></code> module:</p>
-                    <div class="nbinput nblast docutils container">
-                      <div class="prompt highlight-none notranslate">
-                        <div class="highlight">
-                          <pre>[ ]:
-</pre>
-                        </div>
-                      </div>
-                      <div class="input_area docutils container">
-                        <div class="highlight-ipython3 notranslate">
-                          <div class="highlight">
-                            <pre>
-</pre>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                     <div class="nbinput docutils container">
                       <div class="prompt highlight-none notranslate">
                         <div class="highlight">
@@ -11322,24 +11306,26 @@ UniprotRecordHistory(entry_version='283', sequence_version='2', entry_name='EGFR
                       <p>The functions above are able to retrieve the latest datasheet of deleted UniProt records.
                       However, they are slow as several queries are performed to process a single protein.</p>
                     </section>
-                    <section id="UniProt-legacy-API">
-                      <h4>UniProt legacy API<a class="headerlink" href="#UniProt-legacy-API" title=
+                    <section id="UniProt-REST-API">
+                      <h4>UniProt REST API<a class="headerlink" href="#UniProt-REST-API" title=
                       "Link to this heading">§</a></h4>
-                      <p>UniProt deployed its new API in the autumn of 2022, since then the old API is available as a
-                      legacy option. In <em>pypath</em> this API is well supported. It is accessed by the <code class=
-                      "docutils literal notranslate"><span class="pre">inputs.uniprot.uniprot_data</span></code>
-                      function, though higher level functions are more convenient for the users. For the function
-                      above, a list of fields can be passed. By default it uses only SwissProt. The output is a dict of
-                      dicts with fields as top level keys and UniProt IDs as second level keys. The results often
-                      contain notes, additional info in parentheses, prefixes and postfixes for identifiers, that are
-                      not needed in every situation. Using <code class="docutils literal notranslate"><span class=
+                      <p>UniProt deployed its new API in the autumn of 2022, since then <em>pypath</em> has fully
+                      transitioned to the new API. It is accessed by the <code class=
+                      "docutils literal notranslate"><span class="pre">inputs.uniprot.uniprot_data</span></code> and
+                      <code class="docutils literal notranslate"><span class=
+                      "pre">inputs.uniprot.uniprot_query</span></code> functions, though for some purposes higher level
+                      functions are more convenient for the users. For the functions above, a list of fields can be
+                      passed. By default it uses only SwissProt. The output is a dict of dicts with fields as top level
+                      keys and UniProt IDs as second level keys. The results often contain notes, additional info in
+                      parentheses, prefixes and postfixes for identifiers, that are not needed in every situation.
+                      Using <code class="docutils literal notranslate"><span class=
                       "pre">uniprot_preprocess</span></code> instead of <code class=
                       "docutils literal notranslate"><span class="pre">uniprot_data</span></code> cleans up some of
                       this clutter.</p>
                       <div class="nbinput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[135]:
+                            <pre>[1]:
 </pre>
                           </div>
                         </div>
@@ -11350,45 +11336,50 @@ UniprotRecordHistory(entry_version='283', sequence_version='2', entry_name='EGFR
                               "kn">import</span> <span class="n">uniprot</span> <span class="k">as</span> <span class=
                               "n">iuniprot</span>
 <span class="n">iuniprot</span><span class="o">.</span><span class="n">uniprot_data</span><span class=
-"p">(</span><span class="n">field</span> <span class="o">=</span> <span class="p">(</span><span class=
+"p">(</span><span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class=
 "s1">'family'</span><span class="p">,</span> <span class="s1">'keywords'</span><span class="p">,</span> <span class=
 "s1">'transmembrane'</span><span class="p">))</span>
 </pre>
                             </div>
                           </div>
                           <div class="timing docutils container">
-                            <p>executed in 8.54s, finished 16:32:47 2022-12-02</p>
+                            <p>executed in 28.47s, finished 03:24:10 2023-11-16</p>
                           </div>
                         </div>
                       </div>
                       <div class="nboutput docutils container">
                         <div class="prompt highlight-none notranslate">
                           <div class="highlight">
-                            <pre>[135]:
+                            <pre>[1]:
 </pre>
                           </div>
                         </div>
                         <div class="output_area docutils container">
                           <div class="highlight">
                             <pre>
-{'family': {'P63120': 'Peptidase A2 family, HERV class-II K(HML-2) subfamily',
-  'Q96EC8': 'YIP1 family',
-  'Q6ZMS4': 'Krueppel C2H2-type zinc-finger protein family',
-  'Q8N8L2': 'Krueppel C2H2-type zinc-finger protein family',
-  'Q3MIS6': 'Krueppel C2H2-type zinc-finger protein family',
-  'Q86UK7': 'ZNF598 family',
-  'Q6P280': 'Krueppel C2H2-type zinc-finger protein family',
-  'Q969W1': 'DHHC palmitoyltransferase family',
-  'O14978': 'Krueppel C2H2-type zinc-finger protein family',
-  'Q15937': 'Krueppel C2H2-type zinc-finger protein family',
-  'Q9P2J8': 'Krueppel C2H2-type zinc-finger protein family',
-  'Q8IUH4': 'DHHC palmitoyltransferase family, AKR/ZDHHC17 subfamily',
-  'Q9Y2D9': 'Krueppel C2H2-type zinc-finger protein family',
-  'Q14588': 'Krueppel C2H2-type zinc-finger protein family',
-  'Q6XR72': 'Cation diffusion facilitator (CDF) transporter (TC 2.A.4) family, SLC30A subfamily',
-  'P58557': 'Endoribonuclease YbeY family',
-  'Q9Y5A9': 'YTHDF family, YTHDF2 subfamily',
-  'Q8N9L1
+{'family': {'A0A087X1C5': 'Cytochrome P450 family',
+  'A0A0B4J2F2': 'Protein kinase superfamily, CAMK Ser/Thr protein kinase family, AMPK subfamily',
+  'A0A0K2S4Q6': 'CD300 family',
+  'A0A1B0GTW7': 'Peptidase M8 family',
+  'A0AV02': 'SLC12A transporter family',
+  'A0AV96': 'RRM RBM47 family',
+  'A0AVF1': 'IFT56 family',
+  'A0AVI4': 'TMEM129 family',
+  'A0AVK6': 'E2F/DP family',
+  'A0AVT1': 'Ubiquitin-activating E1 family',
+  'A0FGR8': 'Extended synaptotagmin family',
+  'A0FGR9': 'Extended synaptotagmin family',
+  'A0JLT2': 'Mediator complex subunit 19 family',
+  'A0JP26': 'POTE family',
+  'A0MZ66': 'Shootin family',
+  'A0PJK1': 'Sodium:solute symporter (SSF) (TC 2.A.21) family',
+  'A0PJY2': 'Krueppel C2H2-type zinc-finger protein family',
+  'A0PK00': 'TMEM120 family',
+  'A0PK11': 'Clarin family',
+  'A1A4Y4': 'TRAFAC class dynamin-like GTPase superfamily, IRG family',
+  'A1A519': 'FAM170 family',
+  'A1A5B4': 'Anoctamin family',
+  'A1A5C7': 'Major facilitator (TC 2.A.1) superfamily, Orga
 </pre>
                           </div>
                         </div>
@@ -11396,9 +11387,335 @@ UniprotRecordHistory(entry_version='283', sequence_version='2', entry_name='EGFR
                       <div class="nboutput nblast docutils container">
                         <div class="prompt empty docutils container"></div>
                         <div class="output_area rendered_html docutils container">
-                          <em>Output truncated: showing 1000 of 501768 characters</em>
+                          <em>Output truncated: showing 1000 of 510530 characters</em>
                         </div>
                       </div>
+                      <p>The <code class="docutils literal notranslate"><span class=
+                      "pre">inputs.uiprot.query_builder</span></code> funcion builds queries for the API.</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[2]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
+                              "kn">import</span> <span class="n">uniprot</span>
+<span class="n">uniprot</span><span class="o">.</span><span class="n">query_builder</span><span class=
+"p">(</span><span class="s1">'kinase'</span><span class="p">,</span> <span class="n">organism_id</span> <span class=
+"o">=</span> <span class="mi">9606</span><span class="p">)</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 03:30:18 2023-11-16</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[2]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+'kinase AND organism_id:9606'
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[3]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">uniprot</span><span class="o">.</span><span class=
+                              "n">query_builder</span><span class="p">(</span><span class=
+                              "n">organism</span> <span class="o">=</span> <span class="p">[</span><span class=
+                              "mi">9606</span><span class="p">,</span> <span class="mi">10090</span><span class=
+                              "p">,</span> <span class="mi">10116</span><span class="p">])</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 03:30:49 2023-11-16</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[3]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+'(organism_id:9606 OR organism_id:10090 OR organism_id:10116)'
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[4]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">uniprot</span><span class="o">.</span><span class=
+                              "n">query_builder</span><span class="p">({</span><span class=
+                              "s1">'organism_id'</span><span class="p">:</span> <span class="mi">9606</span><span class=
+                              "p">,</span> <span class="s1">'reviewed'</span><span class="p">:</span> <span class=
+                              "kc">True</span><span class="p">})</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 03:31:22 2023-11-16</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[4]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+'(organism_id:9606 AND reviewed:true)'
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[5]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">uniprot</span><span class="o">.</span><span class=
+                              "n">query_builder</span><span class="p">({</span><span class=
+                              "s1">'length'</span><span class="p">:</span> <span class="p">(</span><span class=
+                              "mi">500</span><span class="p">,),</span> <span class="s1">'mass'</span><span class=
+                              "p">:</span> <span class="p">(</span><span class="mi">50000</span><span class=
+                              "p">,),</span> <span class="s1">'op'</span><span class="p">:</span> <span class=
+                              "s1">'OR'</span><span class="p">})</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 03:31:41 2023-11-16</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[5]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+'(length:[500 TO *] OR mass:[50000 TO *])'
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[6]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">uniprot</span><span class="o">.</span><span class=
+                              "n">query_builder</span><span class="p">(</span><span class=
+                              "n">lit_author</span> <span class="o">=</span> <span class="p">[</span><span class=
+                              "s1">'Huang'</span><span class="p">,</span> <span class="s1">'Kovac'</span><span class=
+                              "p">,</span> <span class="s1">'_AND'</span><span class="p">])</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 03:32:21 2023-11-16</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[6]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+'(lit_author:Huang AND lit_author:Kovac)'
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[7]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">uniprot</span><span class="o">.</span><span class=
+                              "n">query_builder</span><span class="p">({</span><span class=
+                              "s1">'organism_id'</span><span class="p">:</span> <span class="p">[</span><span class=
+                              "mi">9606</span><span class="p">,</span> <span class="mi">10090</span><span class=
+                              "p">],</span> <span class="s1">'reviewed'</span><span class="p">:</span> <span class=
+                              "kc">True</span><span class="p">})</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 03:32:41 2023-11-16</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[7]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+'((organism_id:9606 OR organism_id:10090) AND reviewed:true)'
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[8]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="n">uniprot</span><span class="o">.</span><span class=
+                              "n">query_builder</span><span class="p">({</span><span class=
+                              "s1">'length'</span><span class="p">:</span> <span class="p">(</span><span class=
+                              "mi">100</span><span class="p">,</span> <span class="kc">None</span><span class=
+                              "p">),</span> <span class="s1">'organism_id'</span><span class="p">:</span> <span class=
+                              "mi">9606</span><span class="p">})</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 03:33:04 2023-11-16</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[8]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+'(length:[100 TO *] AND organism_id:9606)'
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>The query parameters can be passed the same way to <code class=
+                      "docutils literal notranslate"><span class="pre">uniprot_data</span></code> and <code class=
+                      "docutils literal notranslate"><span class="pre">uniprot_query</span></code>. For example, to
+                      query records in one proteome:</p>
+                      <div class="nbinput docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[10]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="input_area docutils container">
+                          <div class="highlight-ipython3 notranslate">
+                            <div class="highlight">
+                              <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
+                              "kn">import</span> <span class="n">uniprot</span>
+<span class="n">uniprot</span><span class="o">.</span><span class="n">uniprot_query</span><span class=
+"p">(</span><span class="n">proteome</span> <span class="o">=</span> <span class="s1">'UP000004102'</span><span class=
+"p">)[:</span><span class="mi">10</span><span class="p">]</span>
+</pre>
+                            </div>
+                          </div>
+                          <div class="timing docutils container">
+                            <p>executed in 0ms, finished 03:36:16 2023-11-16</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="nboutput nblast docutils container">
+                        <div class="prompt highlight-none notranslate">
+                          <div class="highlight">
+                            <pre>[10]:
+</pre>
+                          </div>
+                        </div>
+                        <div class="output_area docutils container">
+                          <div class="highlight">
+                            <pre>
+['D1YM56',
+ 'D1YMJ2',
+ 'D1YN32',
+ 'D1YNB3',
+ 'D1YPZ1',
+ 'D1YR07',
+ 'D1YR15',
+ 'D1YR93',
+ 'D1YRB4',
+ 'D1YRB7']
+</pre>
+                          </div>
+                        </div>
+                      </div>
+                      <p>All these functionalities are performed by the <code class=
+                      "docutils literal notranslate"><span class="pre">pypath.inputs.uniprot.UniprotQuery</span></code>
+                      class.</p>
                     </section>
                     <section id="Processed-UniProt-annotations">
                       <h4>Processed UniProt annotations<a class="headerlink" href="#Processed-UniProt-annotations"
@@ -17824,8 +18141,7 @@ AKT1 - GSK3B
                                   UniProt records</a>
                                 </li>
                                 <li class="toctree-l4 toc-h4 nav-item toc-entry">
-                                  <a class="reference internal nav-link" href="#UniProt-legacy-API">UniProt legacy
-                                  API</a>
+                                  <a class="reference internal nav-link" href="#UniProt-REST-API">UniProt REST API</a>
                                 </li>
                                 <li class="toctree-l4 toc-h4 nav-item toc-entry">
                                   <a class="reference internal nav-link" href=
