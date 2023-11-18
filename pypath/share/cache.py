@@ -23,21 +23,8 @@ import os
 import hashlib
 import pathlib as pl
 
-import platformdirs
-
 import pypath_common._misc as _common
-
 import pypath.share.settings as settings
-
-
-def default_cachedir(module: str = None) -> str:
-    """
-    Returns the default cache directory for a given module.
-    """
-
-    module = module or _common.caller_module()
-
-    return platformdirs.user_cache_dir(module)
 
 
 def get_cachedir(cachedir: str | pl.Path | None = None) -> pl.Path:
@@ -49,7 +36,7 @@ def get_cachedir(cachedir: str | pl.Path | None = None) -> pl.Path:
         settings.get(
             'cachedir',
             override = cachedir,
-            default = default_cachedir(),
+            default = settings.settings._user_cache_dir,
         ),
     )
 
