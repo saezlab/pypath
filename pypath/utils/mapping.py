@@ -881,79 +881,39 @@ class MapReader(session_mod.Logger):
         http://www.uniprot.org/help/programmatic_access
         """
 
-        resep = re.compile(r'[\s;]')
-        recolend = re.compile(r'$;')
-
-        a_to_b = collections.defaultdict(set)
-        b_to_a = collections.defaultdict(set)
-
-
-        rev = (
-            ''
-                if not self.param.swissprot else
-            ' AND reviewed:%s' % self.param.swissprot
+        query = uniprot_input.UniprotQuery(
+            reviewed = True if self.param.swissprot else None,
+            organism = self.ncbi_tax_id,
+            fields = self.param._resource_id_type_a,
         )
-        query = 'organism_id:%u%s' % (int(self.ncbi_tax_id), rev)
+        self._log(f'UniProt REST API call: `{query.url_plain}`.')
+        trembl = 'trembl' in self.param
+        protein_name = self.param.field == 'protein names'
+        query.name_process = not protein_name and not trembl
+        data = query.perform()
 
-        url = urls.urls['uniprot_basic']['url']
-        post = {
-            'query': query,
-            'format': 'tsv',
-            'fields': 'accession,%s' % self.param._resource_id_type_a,
-        }
+        if not query.name_process:
 
-        url = '%s?%s' % (url, urllib.urlencode(post))
-        c = curl.Curl(url, silent = False)
-        # fallback to empty string: Curl returns None in case of
-        # empty file but in case of UniProt, especially for under-researched
-        # taxons it can happen there is no result for certain queries
-        data = c.result or ''
+            def maybe_split(v):
 
-        data = [
-            [
-                [xx]
-                    if (
-                        self.param.field == 'protein names' or
-                        (
-                            'trembl' in self.param and
-                            any(char.islower() for char in xx)
-                        )
-                    ) else
-                [
-                    xxx for xxx in resep.split(recolend.sub('', xx.strip()))
-                    if len(xxx) > 0
-                ]
-                for xx in x.split('\t') if len(xx.strip()) > 0
-            ]
-            for x in data.split('\n') if len(x.strip()) > 0
-        ]
+                if trembl and not any(ch.islower() for ch in v):
+                    v = common.del_empty(query._FIELDSEP.split(v))
+                elif protein_name:
+                    v = self._process_protein_name(v)
 
-        if data:
+                return v
 
-            del data[0]
 
-            for l in data:
+            data = {k: maybe_split(v) for k, v in data.items()}
 
-                if len(l) >= 2:
+        data = {k: common.to_set(v) for k, v in data.items()}
 
-                    l[1] = (
-                        self._process_protein_name(l[1][0])
-                            if self.param.field == 'protein names' else
-                        l[1]
-                    )
-
-                    for other in l[1]:
-
-                        if self.load_a_to_b:
-
-                            a_to_b[other].add(l[0][0])
-
-                        if self.load_b_to_a:
-
-                            b_to_a[l[0][0]].add(other)
-
-        self.a_to_b = a_to_b if self.load_a_to_b else None
-        self.b_to_a = b_to_a if self.load_b_to_a else None
+        self.a_to_b = (
+            common.swap_dict(data, force_sets = True)
+                if self.load_a_to_b else
+            None
+        )
+        self.b_to_a = data if self.load_b_to_a else None
 
 
     def read_mapping_pro(self):
@@ -3242,29 +3202,20 @@ class Mapper(session_mod.Logger):
         a_to_b = reader.mapping_table_a_to_b
         b_to_a = reader.mapping_table_b_to_a
 
-        if a_to_b:
+        for sides in (('a', 'b'), ('b', 'a')):
 
-            self._log(
-                '`%s` to `%s` mapping table for organism `%s` '
-                'successfully loaded.' % (
-                    resource.id_type_a,
-                    resource.id_type_b,
-                    str(resource.ncbi_tax_id),
+            table = locals()['%s_to_%s' % sides]
+
+            if table:
+                self._log(
+                    'Sucessfully loaded mapping table for organism `%s` '
+                    'with identifiers `%s` to `%s`.' % (
+                        str(ncbi_tax_id),
+                        getattr(resource, f'id_type_{sides[0]}'),
+                        getattr(resource, f'id_type_{sides[1]}'),
+                    )
                 )
-            )
-            self.tables[a_to_b.get_key()] = a_to_b
-
-        if b_to_a:
-
-            self._log(
-                '`%s` to `%s` mapping table for organism `%s` '
-                'successfully loaded.' % (
-                    resource.id_type_b,
-                    resource.id_type_a,
-                    str(resource.ncbi_tax_id),
-                )
-            )
-            self.tables[b_to_a.get_key()] = b_to_a
+                self.tables[table.get_key()] = table
 
 
     def swissprots(self, uniprots, ncbi_tax_id = None):
