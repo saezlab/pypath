@@ -27,6 +27,7 @@ import re
 import json
 import collections
 import itertools
+import functools
 import urllib.parse
 
 import pandas as pd
@@ -371,6 +372,8 @@ class UniprotQuery:
     _OP = ('_AND', '_NOT', '_OR')
     _OPSTART = re.compile(r'^(OR|AND)')
     _OPEND = re.compile(r'(OR|AND)$')
+    _FIELDSEP = re.compile(r'[\s;]')
+    _FIELDEND = re.compile(r'$;')
     _SYNONYMS = {
         'organism': 'organism_id',
         'ncbi_tax_id': 'organism_id',
@@ -454,6 +457,15 @@ class UniprotQuery:
 
                 Yields:
                     A list of fields for each line.
+
+        Attributes:
+            fail_on_empty:
+                If set to True, an error will be raised if the UniProt API
+                returns empty response. By default no error is raised.
+            name_process:
+                If set to True, a different processing will be applied on the
+                results. This is appropriate especially for identifier type
+                fields.
         """
 
         self.fields = common.to_list(fields)
@@ -463,6 +475,7 @@ class UniprotQuery:
         # empty file but in case of UniProt, especially for under-researched
         # taxons it can happen there is no result for certain queries
         self.fail_on_empty = False
+        self.name_process = False
 
 
     @classmethod
@@ -629,7 +642,9 @@ class UniprotQuery:
             compr = 'gz',
         )
         result = c.result if c.result or self.fail_on_empty else [0].__iter__()
-        _ = next(c.result)
+        _ = next(result)
+        _proc0 = functools.partial(self._FIELDEND.sub, '')
+        _proc1 = self._FIELDSEP.split if self.name_process else common.identity
 
         for line in result:
 
@@ -637,7 +652,7 @@ class UniprotQuery:
 
             if line.strip():
 
-                yield line.split('\t')
+                yield [_proc1(_proc0(f)) for f in line.split('\t')]
 
 
     def perform(self) -> list[str] | dict[str, str] | dict[str, dict[str, str]]:
@@ -653,16 +668,14 @@ class UniprotQuery:
         """
 
         _id, *variables = zip(*self)
+        _id = list(map(common.sfirst, _id))
 
         if variables:
 
-            result = dict(
-                (
-                    f,
-                    dict(id_value for id_value in zip(_id, v) if id_value[1])
-                )
-                for f, v in zip(self.fields, variables)
-            )
+            result = {
+                f: {i: v for i, v in zip(_id, vs) if i}
+                for f, vs in zip(self.fields, variables)
+            }
 
             result = (
                 common.first(result.values())
