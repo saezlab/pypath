@@ -498,7 +498,14 @@ class UniprotQuery:
 
         elif val is None:
 
-            result = '*'
+            if field == 'reviewed':
+
+                result = ''
+                field = None
+
+            else:
+
+                result = '*'
 
         elif isinstance(val, bool):
 
