@@ -1,0 +1,1641 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.core.intercell &#8212; pypath 0.16.3 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=77553476" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css?v=b64fc3cb" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+
+    <script src="../../../_static/documentation_options.js?v=4a1014be"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/core/intercell';</script>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../contents.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../pypath.html" class="nav-link">pypath</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.core....</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for pypath.core.intercell</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright 2014-2023</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: see the file `README.rst`</span>
+<span class="c1">#  Contact: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      https://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: https://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
+<span class="kn">import</span> <span class="nn">pypath.core.annot</span> <span class="k">as</span> <span class="nn">annot</span>
+<span class="kn">import</span> <span class="nn">pypath.core.intercell_annot</span> <span class="k">as</span> <span class="nn">intercell_annot</span>
+<span class="kn">import</span> <span class="nn">pypath.core.network</span> <span class="k">as</span> <span class="nn">network_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.internals.annot_formats</span> <span class="k">as</span> <span class="nn">af</span>
+
+
+<div class="viewcode-block" id="IntercellAnnotation">
+<a class="viewcode-back" href="../../../api/pypath.core.intercell.IntercellAnnotation.html#pypath.core.intercell.IntercellAnnotation">[docs]</a>
+<span class="k">class</span> <span class="nc">IntercellAnnotation</span><span class="p">(</span><span class="n">annot</span><span class="o">.</span><span class="n">CustomAnnotation</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="IntercellAnnotation.__init__">
+<a class="viewcode-back" href="../../../api/pypath.core.intercell.IntercellAnnotation.html#pypath.core.intercell.IntercellAnnotation.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">class_definitions</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">excludes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">excludes_extra</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">cellphonedb_categories</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">baccin_categories</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">hpmr_categories</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">surfaceome_categories</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">gpcrdb_categories</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">icellnet_categories</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">build</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">composite_resource_name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds a database about roles of proteins and complexes in</span>
+<span class="sd">        intercellular communication. The built-in category definitions</span>
+<span class="sd">        defining the default contents of this database can be found in the</span>
+<span class="sd">        ``pypath.core.intercell_annot`` module.</span>
+
+<span class="sd">        :param tuple class_definitions:</span>
+<span class="sd">            A series of annotation class definitions, each represented by</span>
+<span class="sd">            an instance of ``pypath.internals.annot_formats.AnnotDef``.</span>
+<span class="sd">            These definitions carry the attributes and instructions to</span>
+<span class="sd">            populate the classes.</span>
+<span class="sd">        :param dict excludes:</span>
+<span class="sd">            A dict with parent category names (strings) or category keys</span>
+<span class="sd">            (tuples) as keys and sets if identifiers as values.</span>
+<span class="sd">            The identifiers in this dict will be excluded from all the</span>
+<span class="sd">            respective categories while building the database. E.g. if</span>
+<span class="sd">            the UniProt ID `P00533` (EGFR) is in the set under the key of</span>
+<span class="sd">            `adhesion` it will be excluded from the category `adhesion` and</span>
+<span class="sd">            all it&#39;s direct children.</span>
+<span class="sd">        :param dict excludes_extra:</span>
+<span class="sd">            Same kind of dict as `excludes` but it will be added to the</span>
+<span class="sd">            built-in default. The built in and the provided extra sets</span>
+<span class="sd">            will be merged. If you want to overwrite or modify the built-in</span>
+<span class="sd">            sets provide your custom dict as `excludes`.</span>
+<span class="sd">        :param bool build:</span>
+<span class="sd">            Execute the build upon instantiation or set up an empty object</span>
+<span class="sd">            the build can be executed on later.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_name&#39;</span><span class="p">):</span>
+
+            <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;intercell&#39;</span><span class="p">)</span>
+
+        <span class="n">class_definitions</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">class_definitions</span> <span class="ow">or</span>
+            <span class="n">intercell_annot</span><span class="o">.</span><span class="n">annot_combined_classes</span>
+        <span class="p">)</span>
+        <span class="n">excludes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">excludes</span> <span class="ow">or</span>
+            <span class="n">intercell_annot</span><span class="o">.</span><span class="n">excludes</span>
+        <span class="p">)</span>
+
+        <span class="n">locals_</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resource_categories</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">res</span><span class="p">,</span>
+                <span class="n">locals_</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_categories&#39;</span> <span class="o">%</span> <span class="n">res</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">locals_</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_categories&#39;</span> <span class="o">%</span> <span class="n">res</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;intercell_</span><span class="si">%s</span><span class="s1">_categories&#39;</span> <span class="o">%</span> <span class="n">res</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="s1">&#39;baccin&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;cellphonedb&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;hpmr&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;surfaceome&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;gpcrdb&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;icellnet&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">annot</span><span class="o">.</span><span class="n">CustomAnnotation</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">class_definitions</span> <span class="o">=</span> <span class="n">class_definitions</span><span class="p">,</span>
+            <span class="n">excludes</span> <span class="o">=</span> <span class="n">excludes</span><span class="p">,</span>
+            <span class="n">excludes_extra</span> <span class="o">=</span> <span class="n">excludes_extra</span><span class="p">,</span>
+            <span class="n">build</span> <span class="o">=</span> <span class="n">build</span><span class="p">,</span>
+            <span class="n">composite_resource_name</span> <span class="o">=</span> <span class="n">composite_resource_name</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="IntercellAnnotation.reload">
+<a class="viewcode-back" href="../../../api/pypath.core.intercell.IntercellAnnotation.html#pypath.core.intercell.IntercellAnnotation.reload">[docs]</a>
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reloads the object from the module level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">af</span><span class="p">)</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">annot</span><span class="p">)</span>
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">):</span>
+
+            <span class="n">k</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">af</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">v</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">af</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></div>
+
+
+
+    <span class="k">def</span> <span class="nf">set_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">intercell_annot</span><span class="o">.</span><span class="n">class_types</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_types</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">typ</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">ccls</span> <span class="ow">in</span> <span class="n">intercell_annot</span><span class="o">.</span><span class="n">class_types</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">ccls</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_classes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+
+            <span class="n">mainclass</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">cls_split</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cls_split</span><span class="p">)):</span>
+
+                <span class="n">this_part</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cls_split</span><span class="p">[:</span><span class="n">j</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">this_part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">:</span>
+
+                    <span class="n">mainclass</span> <span class="o">=</span> <span class="n">this_part</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_classes</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">mainclass</span>
+
+
+    <span class="k">def</span> <span class="nf">add_classes_to_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;df&#39;</span><span class="p">):</span>
+
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;mainclass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">main_classes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">category</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;mainclass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;mainclass&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;class_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+                <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">class_types</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_types</span> <span class="k">else</span>
+                    <span class="s1">&#39;sub&#39;</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">category</span>
+            <span class="p">])</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;class_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;class_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">collect_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                <span class="o">*</span><span class="n">intercell_annot</span><span class="o">.</span><span class="n">class_types</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_types</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">typ</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">ccls</span> <span class="ow">in</span> <span class="n">intercell_annot</span><span class="o">.</span><span class="n">class_types</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">ccls</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parents</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_labels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource_labels</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">mainclass</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">intercell_annot</span><span class="o">.</span><span class="n">class_types</span><span class="p">[</span><span class="s1">&#39;misc&#39;</span><span class="p">]:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">cls_split</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cls_split</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+
+                    <span class="n">this_part</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cls_split</span><span class="p">[:</span><span class="n">j</span><span class="p">])</span>
+
+                    <span class="k">if</span> <span class="n">this_part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">:</span>
+
+                        <span class="n">mainclass</span> <span class="o">=</span> <span class="n">this_part</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">mainclass</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">mainclass</span>
+
+                <span class="n">resource</span> <span class="o">=</span> <span class="n">cls_split</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">mainclass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">resource</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mainclass</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">resource_labels</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">intercell_annot</span><span class="o">.</span><span class="n">get_resource_label</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">class_labels</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">intercell_annot</span><span class="o">.</span><span class="n">get_class_label</span><span class="p">(</span><span class="n">mainclass</span> <span class="ow">or</span> <span class="bp">cls</span><span class="p">)</span>
+            <span class="p">)</span>
+
+
+<div class="viewcode-block" id="IntercellAnnotation.make_df">
+<a class="viewcode-back" href="../../../api/pypath.core.intercell.IntercellAnnotation.html#pypath.core.intercell.IntercellAnnotation.make_df">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">annot</span><span class="o">.</span><span class="n">CustomAnnotation</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_add_causality</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_add_locations</span><span class="p">()</span></div>
+
+
+
+    <span class="k">def</span> <span class="nf">load_from_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">):</span>
+
+        <span class="n">annot</span><span class="o">.</span><span class="n">CustomAnnotation</span><span class="o">.</span><span class="n">load_from_pickle</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">pickle_file</span> <span class="o">=</span> <span class="n">pickle_file</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">df_add_causality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;df&#39;</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">causality</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;transmitter&#39;</span><span class="p">,</span> <span class="s1">&#39;receiver&#39;</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">causality</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">causality</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">category</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">database</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">df_add_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;df&#39;</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Adding location columns to data frame.&#39;</span><span class="p">)</span>
+
+        <span class="n">locations</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">locations</span> <span class="ow">or</span>
+            <span class="p">(</span>
+                <span class="s1">&#39;secreted&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;plasma_membrane_transmembrane&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;plasma_membrane_peripheral&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">location_classes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">location</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">location</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">location</span> <span class="ow">in</span> <span class="n">locations</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">location</span><span class="p">,</span> <span class="n">entities</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">location_classes</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">location</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">entities</span>
+                <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">uniprot</span>
+            <span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">pre_build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">annot</span><span class="o">.</span><span class="n">CustomAnnotation</span><span class="o">.</span><span class="n">pre_build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_extra_categories</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">add_extra_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_cellphonedb_categories</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_baccin_categories</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_hpmr_categories</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_surfaceome_categories</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_gpcrdb_categories</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_icellnet_categories</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">add_cellphonedb_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_categories</span><span class="p">[</span><span class="s1">&#39;cellphonedb&#39;</span><span class="p">]:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensure_annotdb</span><span class="p">()</span>
+
+            <span class="n">cellphonedb_categories</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">mainclass</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;receptor&#39;</span><span class="p">,</span> <span class="s1">&#39;secreted&#39;</span><span class="p">):</span>
+
+                <span class="n">cpdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotdb</span><span class="o">.</span><span class="n">annots</span><span class="p">[</span><span class="s1">&#39;CellPhoneDB&#39;</span><span class="p">]</span>
+                <span class="n">attr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_class&#39;</span> <span class="o">%</span> <span class="n">mainclass</span>
+
+                <span class="n">categories</span> <span class="o">=</span> <span class="n">cpdb</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">category</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;secreted&#39;</span><span class="p">,</span> <span class="s1">&#39;receptor&#39;</span><span class="p">}:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">parent</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s1">&#39;receptor&#39;</span>
+                            <span class="k">if</span> <span class="n">mainclass</span> <span class="o">==</span> <span class="s1">&#39;receptor&#39;</span> <span class="k">else</span>
+                        <span class="s1">&#39;ligand&#39;</span>
+                    <span class="p">)</span>
+
+                    <span class="n">cellphonedb_categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">af</span><span class="o">.</span><span class="n">AnnotDef</span><span class="p">(</span>
+                            <span class="n">name</span> <span class="o">=</span> <span class="n">category</span><span class="p">,</span>
+                            <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">,</span>
+                            <span class="n">resource</span> <span class="o">=</span> <span class="s1">&#39;CellPhoneDB&#39;</span><span class="p">,</span>
+                            <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+                                <span class="n">mainclass</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                                <span class="n">attr</span><span class="p">:</span> <span class="n">category</span><span class="p">,</span>
+                            <span class="p">},</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_class_definitions_provided</span> <span class="o">+=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cellphonedb_categories</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_baccin_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_categories</span><span class="p">[</span><span class="s1">&#39;baccin&#39;</span><span class="p">]:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensure_annotdb</span><span class="p">()</span>
+            <span class="n">baccin_categories</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">baccin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotdb</span><span class="o">.</span><span class="n">annots</span><span class="p">[</span><span class="s1">&#39;Baccin2019&#39;</span><span class="p">]</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">baccin</span><span class="o">.</span><span class="n">get_names</span><span class="p">()</span>
+            <span class="n">locations</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;surface&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;membrane&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">},</span>
+                <span class="s1">&#39;secreted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;secreted&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="s1">&#39;ecm&#39;</span><span class="p">},</span>
+            <span class="p">}</span>
+
+            <span class="n">subclasses</span> <span class="o">=</span> <span class="n">baccin</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s1">&#39;subclass&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span><span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">}</span>
+
+            <span class="n">this_fields</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+            <span class="k">for</span> <span class="n">subclass</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">:</span>
+
+                <span class="n">receptor</span> <span class="o">=</span> <span class="s1">&#39;receptor&#39;</span> <span class="ow">in</span> <span class="n">subclass</span>
+
+                <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;subclass&#39;</span><span class="p">:</span> <span class="n">subclass</span><span class="p">}</span>
+
+                <span class="k">for</span> <span class="n">location</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">,</span> <span class="s1">&#39;secreted&#39;</span><span class="p">):</span>
+
+                    <span class="k">if</span> <span class="n">receptor</span> <span class="ow">and</span> <span class="n">location</span> <span class="o">==</span> <span class="s1">&#39;secreted&#39;</span><span class="p">:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">receptor</span><span class="p">:</span>
+
+                        <span class="n">args</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
+
+                    <span class="n">members</span> <span class="o">=</span> <span class="n">baccin</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">members</span><span class="p">:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">parent</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s1">&#39;receptor&#39;</span>
+                        <span class="k">if</span> <span class="n">receptor</span> <span class="k">else</span>
+                        <span class="p">(</span>
+                            <span class="s1">&#39;cell_surface_ligand&#39;</span>
+                                <span class="k">if</span> <span class="n">location</span> <span class="o">==</span> <span class="s1">&#39;surface&#39;</span> <span class="k">else</span>
+                            <span class="s1">&#39;ligand&#39;</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">subclass</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_receptor&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+                    <span class="n">baccin_categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">af</span><span class="o">.</span><span class="n">AnnotDef</span><span class="p">(</span>
+                            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+                            <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">,</span>
+                            <span class="n">resource</span> <span class="o">=</span> <span class="s1">&#39;Baccin2019&#39;</span><span class="p">,</span>
+                            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_class_definitions_provided</span> <span class="o">+=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">baccin_categories</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_hpmr_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">resep</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[- /\(\),]+&#39;</span><span class="p">)</span>
+
+        <span class="n">hpmr_categories</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_categories</span><span class="p">[</span><span class="s1">&#39;hpmr&#39;</span><span class="p">]:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensure_annotdb</span><span class="p">()</span>
+
+            <span class="n">hpmr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotdb</span><span class="p">[</span><span class="s1">&#39;HPMR&#39;</span><span class="p">]</span>
+
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">hpmr</span><span class="o">.</span><span class="n">get_names</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+
+                <span class="n">combinations</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">a</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">annots</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">hpmr</span><span class="o">.</span><span class="n">annot</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">annots</span>
+                <span class="p">}</span>
+
+                <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">this_fields</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">this_values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">this_values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+                        <span class="n">this_fields</span><span class="p">,</span>
+                        <span class="n">this_values</span><span class="p">,</span>
+                    <span class="p">))</span>
+
+                    <span class="n">members</span> <span class="o">=</span> <span class="n">hpmr</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+                    <span class="n">parent</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">members</span><span class="p">:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">name_parts</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">this_values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span>
+                        <span class="n">this_values</span>
+                    <span class="p">)</span>
+
+                    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">name_part</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_receptors&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">name_part</span> <span class="ow">in</span>
+                        <span class="p">(</span>
+                            <span class="n">resep</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">val</span> <span class="k">else</span>
+                            <span class="kc">None</span>
+                            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">name_parts</span><span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">name_part</span>
+                    <span class="p">)</span>
+
+                    <span class="n">hpmr_categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">af</span><span class="o">.</span><span class="n">AnnotDef</span><span class="p">(</span>
+                            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+                            <span class="n">resource</span> <span class="o">=</span> <span class="s1">&#39;HPMR&#39;</span><span class="p">,</span>
+                            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">,</span>
+                            <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_class_definitions_provided</span> <span class="o">+=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">hpmr_categories</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_gpcrdb_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">resep</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[- /\(\),]+&#39;</span><span class="p">)</span>
+
+        <span class="n">gpcrdb_categories</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_categories</span><span class="p">[</span><span class="s1">&#39;gpcrdb&#39;</span><span class="p">]:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensure_annotdb</span><span class="p">()</span>
+
+            <span class="n">gpcrdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotdb</span><span class="p">[</span><span class="s1">&#39;GPCRdb&#39;</span><span class="p">]</span>
+
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">gpcrdb</span><span class="o">.</span><span class="n">get_names</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+
+                <span class="n">combinations</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">a</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">annots</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">gpcrdb</span><span class="o">.</span><span class="n">annot</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">annots</span>
+                <span class="p">}</span>
+
+                <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">this_fields</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">this_values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="n">args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+                        <span class="n">this_fields</span><span class="p">,</span>
+                        <span class="n">this_values</span><span class="p">,</span>
+                    <span class="p">))</span>
+
+                    <span class="n">members</span> <span class="o">=</span> <span class="n">gpcrdb</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">members</span><span class="p">:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">resep</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span>
+                        <span class="n">this_values</span>
+                    <span class="p">)</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_receptors&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+                    <span class="n">gpcrdb_categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">af</span><span class="o">.</span><span class="n">AnnotDef</span><span class="p">(</span>
+                            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+                            <span class="n">resource</span> <span class="o">=</span> <span class="s1">&#39;GPCRdb&#39;</span><span class="p">,</span>
+                            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">,</span>
+                            <span class="n">parent</span> <span class="o">=</span> <span class="s1">&#39;receptor&#39;</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_class_definitions_provided</span> <span class="o">+=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">gpcrdb_categories</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_surfaceome_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">resep</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[- /\(\),\.]+&#39;</span><span class="p">)</span>
+        <span class="n">recls</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;_(?:transporters|receptors|ion_channels)&#39;</span><span class="p">)</span>
+
+        <span class="n">mainclasses</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Receptors&#39;</span><span class="p">:</span> <span class="s1">&#39;receptor&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Transporters&#39;</span><span class="p">:</span> <span class="s1">&#39;transporter&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Enzymes&#39;</span><span class="p">:</span> <span class="s1">&#39;surface_enzyme&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_categories</span><span class="p">[</span><span class="s1">&#39;surfaceome&#39;</span><span class="p">]:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensure_annotdb</span><span class="p">()</span>
+            <span class="n">surfaceome</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotdb</span><span class="p">[</span><span class="s1">&#39;Surfaceome&#39;</span><span class="p">]</span>
+            <span class="n">surfaceome_categories</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">mainclass</span><span class="p">,</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">mainclasses</span><span class="p">):</span>
+
+                <span class="n">subclasses</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">sc</span>
+                    <span class="k">for</span> <span class="n">annots</span> <span class="ow">in</span> <span class="n">surfaceome</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">annots</span>
+                    <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">subclasses</span> <span class="ow">or</span> <span class="p">())</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">a</span><span class="o">.</span><span class="n">mainclass</span> <span class="o">==</span> <span class="n">mainclass</span> <span class="ow">and</span>
+                        <span class="n">sc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
+                        <span class="ow">not</span> <span class="n">sc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="p">}</span>
+
+                <span class="k">for</span> <span class="n">subclass</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">subclass</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Other&#39;</span><span class="p">):</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">resep</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">subclass</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">),</span>
+                        <span class="n">mainclass</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                    <span class="n">_parent</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s1">&#39;ion_channel&#39;</span>
+                            <span class="k">if</span> <span class="s1">&#39;ion_channel&#39;</span> <span class="ow">in</span> <span class="n">name</span> <span class="k">else</span>
+                        <span class="n">parent</span>
+                    <span class="p">)</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">recls</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+                    <span class="n">surfaceome_categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">af</span><span class="o">.</span><span class="n">AnnotDef</span><span class="p">(</span>
+                            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+                            <span class="n">resource</span> <span class="o">=</span> <span class="s1">&#39;Surfaceome&#39;</span><span class="p">,</span>
+                            <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+                                <span class="s1">&#39;mainclass&#39;</span><span class="p">:</span> <span class="n">mainclass</span><span class="p">,</span>
+                                <span class="s1">&#39;subclasses&#39;</span><span class="p">:</span> <span class="n">subclass</span><span class="p">,</span>
+                            <span class="p">},</span>
+                            <span class="n">parent</span> <span class="o">=</span> <span class="n">_parent</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_class_definitions_provided</span> <span class="o">+=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">surfaceome_categories</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">add_icellnet_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">icellnet_categories</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resource_categories</span><span class="p">[</span><span class="s1">&#39;icellnet&#39;</span><span class="p">]:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensure_annotdb</span><span class="p">()</span>
+
+            <span class="n">icellnet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotdb</span><span class="p">[</span><span class="s1">&#39;ICELLNET&#39;</span><span class="p">]</span>
+
+            <span class="n">names</span> <span class="o">=</span> <span class="n">icellnet</span><span class="o">.</span><span class="n">get_names</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]</span>
+
+            <span class="n">combinations</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">a</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">aa</span> <span class="ow">in</span> <span class="n">icellnet</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">aa</span>
+            <span class="p">}</span>
+
+            <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">:</span>
+
+                <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+
+                    <span class="n">_fields</span> <span class="o">=</span> <span class="n">names</span><span class="p">[:</span><span class="n">l</span><span class="p">]</span>
+                    <span class="n">_values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[:</span><span class="n">l</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="n">_values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">_fields</span><span class="p">,</span> <span class="n">_values</span><span class="p">))</span>
+
+                    <span class="n">members</span> <span class="o">=</span> <span class="n">icellnet</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">members</span><span class="p">:</span>
+
+                        <span class="k">continue</span>
+
+                    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">val</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">_values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="p">)</span>
+
+                    <span class="n">icellnet_categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">af</span><span class="o">.</span><span class="n">AnnotDef</span><span class="p">(</span>
+                            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+                            <span class="n">resource</span> <span class="o">=</span> <span class="s1">&#39;ICELLNET&#39;</span><span class="p">,</span>
+                            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">,</span>
+                            <span class="n">parent</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_class_definitions_provided</span> <span class="o">+=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">icellnet_categories</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">post_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s1">&#39;&lt;Intercell annotations: </span><span class="si">%s</span><span class="s1"> records about </span><span class="si">%s</span><span class="s1"> entities&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">numof_records</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">numof_entities</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">filter_df</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">annot_df</span><span class="p">,</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">database</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">scope</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">aspect</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">causality</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">topology</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">postfix</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+
+        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span> <span class="ow">or</span> <span class="n">name</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
+
+        <span class="n">_topologies</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;pmtm&#39;</span><span class="p">:</span> <span class="s1">&#39;plasma_membrane_transmembrane&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pmp&#39;</span><span class="p">:</span> <span class="s1">&#39;plasma_membrane_peripheral&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sec&#39;</span><span class="p">:</span> <span class="s1">&#39;secreted&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">entities</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;entities&#39;</span><span class="p">)</span>
+        <span class="n">causality</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;causality&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">()</span>
+        <span class="n">topology</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;topology&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">()</span>
+
+        <span class="n">topology</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_topologies</span><span class="p">[</span><span class="n">top</span><span class="p">]</span> <span class="k">if</span> <span class="n">top</span> <span class="ow">in</span> <span class="n">_topologies</span> <span class="k">else</span> <span class="n">top</span>
+            <span class="k">for</span> <span class="n">top</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">topology</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_process_query_args</span><span class="p">(</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">annot_df</span><span class="p">,</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="n">entities</span><span class="p">,</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">,</span>
+            <span class="n">postfix</span> <span class="o">=</span> <span class="n">postfix</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">causality</span><span class="p">:</span>
+
+            <span class="n">query</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_process_boolean_group_args</span><span class="p">(</span><span class="n">causality</span><span class="p">,</span> <span class="n">postfix</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">topology</span><span class="p">:</span>
+
+            <span class="n">query</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_process_boolean_group_args</span><span class="p">(</span><span class="n">topology</span><span class="p">,</span> <span class="n">postfix</span><span class="p">))</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_args_add_postfix</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">postfix</span><span class="p">)</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39; and &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">annot_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="k">if</span> <span class="n">query</span> <span class="k">else</span> <span class="n">annot_df</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_process_boolean_group_args</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">postfix</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">postfix</span><span class="p">:</span>
+
+            <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">postfix</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+            <span class="p">}</span>
+
+        <span class="k">return</span> <span class="s1">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="IntercellAnnotation.network_df">
+<a class="viewcode-back" href="../../../api/pypath.core.intercell.IntercellAnnotation.html#pypath.core.intercell.IntercellAnnotation.network_df">[docs]</a>
+    <span class="k">def</span> <span class="nf">network_df</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">annot_df</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">combined_df</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">network_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">annot_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">annot_args_source</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">annot_args_target</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">only_directed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">only_undirected</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">undirected_orientation</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">only_signed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">only_effect</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">only_proteins</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">swap_undirected</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">entities_or</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">transmitter_receiver</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">only_generic</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">only_composite</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">only_functional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">exclude_intracellular</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Combines the annotation data frame and a network data frame.</span>
+<span class="sd">        Creates a ``pandas.DataFrame`` where each record is an interaction</span>
+<span class="sd">        between a pair of molecular enitities labeled by their annotations.</span>
+
+<span class="sd">        network : pypath.network.Network,pandas.DataFrame</span>
+<span class="sd">            A ``pypath.network.Network`` object or a data frame with network</span>
+<span class="sd">            data.</span>
+<span class="sd">        combined_df : pandas.DataFrame</span>
+<span class="sd">            Optional, a network data frame already combined with annotations</span>
+<span class="sd">            for filtering only.</span>
+<span class="sd">        resources : set,None</span>
+<span class="sd">            Use only these network resources.</span>
+<span class="sd">        entities : set,None</span>
+<span class="sd">            Limit the network only to these molecular entities.</span>
+<span class="sd">        entities_source : set,None</span>
+<span class="sd">            Limit the source side of network connections only to these</span>
+<span class="sd">            molecular entities.</span>
+<span class="sd">        entities_target : set,None</span>
+<span class="sd">            Limit the target side of network connections only to these</span>
+<span class="sd">            molecular entities.</span>
+<span class="sd">        annot_args : dict,None</span>
+<span class="sd">            Parameters for filtering annotation classes; note, the defaults</span>
+<span class="sd">            might include some filtering, provide an empty dict if you want</span>
+<span class="sd">            no filtering at all; however this might result in huge data</span>
+<span class="sd">            frame and consequently memory issues. Passed to the ``filtered``</span>
+<span class="sd">            method.</span>
+<span class="sd">        annot_args_source : dict,None</span>
+<span class="sd">            Same as ``annot_args`` but only for the source side of the</span>
+<span class="sd">            network connections.</span>
+<span class="sd">        annot_args_target : dict,None</span>
+<span class="sd">            Same as ``annot_args`` but only for the target side of the</span>
+<span class="sd">            network connections.</span>
+<span class="sd">        only_directed : bool</span>
+<span class="sd">            Use only the directed interactions.</span>
+<span class="sd">        only_undirected : bool</span>
+<span class="sd">            Use only the undirected interactions. Specifically for retrieving</span>
+<span class="sd">            and counting the interactions without direction information.</span>
+<span class="sd">        undirected_orientation : str,None</span>
+<span class="sd">            Ignore the direction at all interactions and make sure all of</span>
+<span class="sd">            them have a uniform orientation. If `id`, all interactions will</span>
+<span class="sd">            be oriented by the identifiers of the partenrs; if `category`,</span>
+<span class="sd">            the interactions will be oriented by the categories of the</span>
+<span class="sd">            partners.</span>
+<span class="sd">        only_effect : int,None</span>
+<span class="sd">            Use only the interactions with this effect. Either -1 or 1.</span>
+<span class="sd">        only_signed : bool</span>
+<span class="sd">            Use only the interactions with effect sign.</span>
+<span class="sd">        only_proteins : bool</span>
+<span class="sd">            Use only the interactions where each of the partners is a protein</span>
+<span class="sd">            (i.e. not complex, miRNA, small molecule or other kind of entity).</span>
+<span class="sd">        transmitter_receiver : bool</span>
+<span class="sd">            On the source side only transmitters, on the target side only</span>
+<span class="sd">            receivers.</span>
+<span class="sd">        only_generic : bool</span>
+<span class="sd">            Use only the generic classes. If specific classes allowed the</span>
+<span class="sd">            size of the combined data frame might be huge.</span>
+<span class="sd">        only_composite : bool</span>
+<span class="sd">            Use only the composite classes. If resource_specific classes</span>
+<span class="sd">            allowed the size of the combined data frame might be huge.</span>
+<span class="sd">        only_functional : bool</span>
+<span class="sd">            Use only the functional classes. Locational classes are often</span>
+<span class="sd">            not relevant and they largely increase the size of the</span>
+<span class="sd">            combined data frame.</span>
+<span class="sd">        exclude_intracellular : bool</span>
+<span class="sd">            Remove the intracellular parent class and it&#39;s children. These</span>
+<span class="sd">            classes are not relevant in intercellular signaling and having</span>
+<span class="sd">            them largely increases the size of the combined data frame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">annot_df</span> <span class="o">=</span> <span class="n">annot_df</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_df</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">exclude_intracellular</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">combined_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="n">annot_df</span> <span class="o">=</span> <span class="n">annot_df</span><span class="p">[</span><span class="n">annot_df</span><span class="o">.</span><span class="n">parent</span> <span class="o">!=</span> <span class="s1">&#39;intracellular&#39;</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">combined_df</span> <span class="o">=</span> <span class="n">combined_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="s1">&#39;parent_a != &quot;intracellular&quot; and &#39;</span>
+                    <span class="s1">&#39;parent_b != &quot;intracellular&quot;&#39;</span>
+                <span class="p">)</span>
+
+        <span class="n">annot_args</span> <span class="o">=</span> <span class="n">annot_args</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">annot_args_source</span> <span class="o">=</span> <span class="n">annot_args_source</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">annot_args_target</span> <span class="o">=</span> <span class="n">annot_args_target</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">only_generic</span><span class="p">:</span>
+
+            <span class="n">annot_args</span><span class="p">[</span><span class="s1">&#39;scope&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;generic&#39;</span>
+
+        <span class="k">if</span> <span class="n">only_composite</span><span class="p">:</span>
+
+            <span class="n">annot_args</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;composite&#39;</span>
+
+        <span class="k">if</span> <span class="n">only_functional</span><span class="p">:</span>
+
+            <span class="n">annot_args</span><span class="p">[</span><span class="s1">&#39;aspect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;functional&#39;</span>
+
+        <span class="k">if</span> <span class="n">transmitter_receiver</span><span class="p">:</span>
+
+            <span class="n">annot_args_source</span><span class="p">[</span><span class="s1">&#39;causality&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;transmitter&#39;</span>
+            <span class="n">annot_args_target</span><span class="p">[</span><span class="s1">&#39;causality&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;receiver&#39;</span>
+
+        <span class="k">return</span> <span class="n">annot</span><span class="o">.</span><span class="n">CustomAnnotation</span><span class="o">.</span><span class="n">network_df</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">annot_df</span> <span class="o">=</span> <span class="n">annot_df</span><span class="p">,</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">network</span><span class="p">,</span>
+            <span class="n">combined_df</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">,</span>
+            <span class="n">network_args</span> <span class="o">=</span> <span class="n">network_args</span><span class="p">,</span>
+            <span class="n">annot_args</span> <span class="o">=</span> <span class="n">annot_args</span><span class="p">,</span>
+            <span class="n">annot_args_source</span> <span class="o">=</span> <span class="n">annot_args_source</span><span class="p">,</span>
+            <span class="n">annot_args_target</span> <span class="o">=</span> <span class="n">annot_args_target</span><span class="p">,</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="n">entities</span><span class="p">,</span>
+            <span class="n">only_directed</span> <span class="o">=</span> <span class="n">only_directed</span><span class="p">,</span>
+            <span class="n">only_undirected</span> <span class="o">=</span> <span class="n">only_undirected</span><span class="p">,</span>
+            <span class="n">only_signed</span> <span class="o">=</span> <span class="n">only_signed</span><span class="p">,</span>
+            <span class="n">only_effect</span> <span class="o">=</span> <span class="n">only_effect</span><span class="p">,</span>
+            <span class="n">only_proteins</span> <span class="o">=</span> <span class="n">only_proteins</span><span class="p">,</span>
+            <span class="n">swap_undirected</span> <span class="o">=</span> <span class="n">swap_undirected</span><span class="p">,</span>
+            <span class="n">entities_or</span> <span class="o">=</span> <span class="n">entities_or</span><span class="p">,</span>
+            <span class="n">undirected_orientation</span> <span class="o">=</span> <span class="n">undirected_orientation</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+    <span class="c1"># this became a synonym</span>
+    <span class="n">filter_interclass_network</span> <span class="o">=</span> <span class="n">network_df</span>
+
+
+    <span class="k">def</span> <span class="nf">update_summaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">summaries</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;resource_specific&#39;</span><span class="p">:</span>
+
+                <span class="k">continue</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">summaries</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;aspect&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">aspect</span><span class="p">,</span>
+                <span class="s1">&#39;transmitter&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">transmitter</span><span class="p">,</span>
+                <span class="s1">&#39;receiver&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">receiver</span><span class="p">,</span>
+                <span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resources_in_category</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+                <span class="s1">&#39;n_proteins&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">n_proteins</span><span class="p">,</span>
+                <span class="s1">&#39;n_mirnas&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">n_mirnas</span><span class="p">,</span>
+                <span class="s1">&#39;n_complexes&#39;</span><span class="p">:</span> <span class="n">group</span><span class="o">.</span><span class="n">n_complexes</span><span class="p">,</span>
+            <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">summaries</span><span class="p">[(</span><span class="s1">&#39;Total&#39;</span><span class="p">,</span> <span class="s1">&#39;Total&#39;</span><span class="p">,</span> <span class="s1">&#39;OmniPath&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Total&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;aspect&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;transmitter&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;receiver&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_resources</span><span class="p">(),</span>
+            <span class="s1">&#39;n_proteins&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">numof_proteins</span><span class="p">(),</span>
+            <span class="s1">&#39;n_mirnas&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">numof_mirnas</span><span class="p">(),</span>
+            <span class="s1">&#39;n_complexes&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">numof_complexes</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+
+    <span class="k">def</span> <span class="nf">summaries_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_table</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;Category&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;aspect&#39;</span><span class="p">,</span> <span class="s1">&#39;Aspect&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;transmitter&#39;</span><span class="p">,</span> <span class="s1">&#39;Transmitter&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;receiver&#39;</span><span class="p">,</span> <span class="s1">&#39;Receiver&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;n_proteins&#39;</span><span class="p">,</span> <span class="s1">&#39;Proteins&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;n_mirnas&#39;</span><span class="p">,</span> <span class="s1">&#39;miRNAs&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;n_complexes&#39;</span><span class="p">,</span> <span class="s1">&#39;Complexes&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;resources&#39;</span><span class="p">,</span> <span class="s1">&#39;Resources&#39;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">tab</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span>
+
+        <span class="n">tab</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+            <span class="p">[</span>
+                <span class="p">(</span>
+                    <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summaries</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summaries</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summaries</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">columns</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">summaries</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;Total&#39;</span> <span class="k">else</span> <span class="s1">&#39;zzzz&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">outfile</span><span class="p">:</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+
+                <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">tab</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">return_table</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">tab</span></div>
+
+
+
+<div class="viewcode-block" id="init_db">
+<a class="viewcode-back" href="../../../api/pypath.core.intercell.init_db.html#pypath.core.intercell.init_db">[docs]</a>
+<span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IntercellAnnotation</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_db">
+<a class="viewcode-back" href="../../../api/pypath.core.intercell.get_db.html#pypath.core.intercell.get_db">[docs]</a>
+<span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="s1">&#39;db&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+
+        <span class="n">init_db</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
