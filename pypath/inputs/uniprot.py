@@ -585,7 +585,10 @@ class UniprotQuery:
 
         query = query.copy()
         op = ' %s ' % query.pop('op', ' AND ').strip()
-        result = op.join(cls._process(v, k) for k, v in query.items())
+        result = op.join(
+            it for k, v in query.items()
+            if (it := cls._process(v, k))
+        )
 
         return cls._par(result) if len(query) > 1 else result
 
