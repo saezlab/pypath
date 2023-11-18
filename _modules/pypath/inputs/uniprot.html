@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.uniprot &#8212; pypath 0.16.1 documentation</title>
+    <title>pypath.inputs.uniprot &#8212; pypath 0.16.2 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../../_static/documentation_options.js?v=d9901acd"></script>
+    <script src="../../../_static/documentation_options.js?v=ee6890a7"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -536,6 +536,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">urllib.parse</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -912,6 +913,8 @@ document.write(`
     <span class="n">_OP</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_AND&#39;</span><span class="p">,</span> <span class="s1">&#39;_NOT&#39;</span><span class="p">,</span> <span class="s1">&#39;_OR&#39;</span><span class="p">)</span>
     <span class="n">_OPSTART</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(OR|AND)&#39;</span><span class="p">)</span>
     <span class="n">_OPEND</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(OR|AND)$&#39;</span><span class="p">)</span>
+    <span class="n">_FIELDSEP</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\s;]&#39;</span><span class="p">)</span>
+    <span class="n">_FIELDEND</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$;&#39;</span><span class="p">)</span>
     <span class="n">_SYNONYMS</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;organism&#39;</span><span class="p">:</span> <span class="s1">&#39;organism_id&#39;</span><span class="p">,</span>
         <span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">:</span> <span class="s1">&#39;organism_id&#39;</span><span class="p">,</span>
@@ -989,11 +992,33 @@ document.write(`
 <span class="sd">            this class or the UniProt website:</span>
 <span class="sd">            https://www.uniprot.org/help/return_fields</span>
 
+<span class="sd">        Methods:</span>
+<span class="sd">            __iter__:</span>
+<span class="sd">                Perform the query and iterate over the lines in the results,</span>
+<span class="sd">                skipping the header and the empty lines, stripping the</span>
+<span class="sd">                linebreaks and splitting by tab.</span>
+
+<span class="sd">                Yields:</span>
+<span class="sd">                    A list of fields for each line.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            fail_on_empty:</span>
+<span class="sd">                If set to True, an error will be raised if the UniProt API</span>
+<span class="sd">                returns empty response. By default no error is raised.</span>
+<span class="sd">            name_process:</span>
+<span class="sd">                If set to True, a different processing will be applied on the</span>
+<span class="sd">                results. This is appropriate especially for identifier type</span>
+<span class="sd">                fields.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="n">query</span><span class="p">,</span> <span class="n">kwargs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_process_main</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_main</span><span class="p">()</span>
+        <span class="c1"># tolerate empty result: Curl returns None in case of</span>
+        <span class="c1"># empty file but in case of UniProt, especially for under-researched</span>
+        <span class="c1"># taxons it can happen there is no result for certain queries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fail_on_empty</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_process</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
 
@@ -1017,7 +1042,14 @@ document.write(`
 
         <span class="k">elif</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 
-            <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="s1">&#39;reviewed&#39;</span><span class="p">:</span>
+
+                <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
 
@@ -1097,7 +1129,10 @@ document.write(`
 
         <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39; </span><span class="si">%s</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="n">query</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;op&#39;</span><span class="p">,</span> <span class="s1">&#39; AND &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_process</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">it</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">it</span> <span class="o">:=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_process</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_par</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span>
 
@@ -1133,7 +1168,7 @@ document.write(`
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        UniProt REST API URL.</span>
+<span class="sd">        UniProt REST API URL (urlencoded).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A valid query suitable for the UniProt REST API.</span>
@@ -1142,6 +1177,17 @@ document.write(`
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseurl</span><span class="si">}</span><span class="s1">?</span><span class="si">{</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
 
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">url_plain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        UniProt REST API URL (plain).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote_plus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="UniprotQuery.__iter__">
+<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.UniprotQuery.html#pypath.inputs.uniprot.UniprotQuery.__iter__">[docs]</a>
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
@@ -1151,15 +1197,19 @@ document.write(`
             <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">compr</span> <span class="o">=</span> <span class="s1">&#39;gz&#39;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">fail_on_empty</span> <span class="k">else</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">_proc0</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_FIELDEND</span><span class="o">.</span><span class="n">sub</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_proc1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FIELDSEP</span><span class="o">.</span><span class="n">split</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_process</span> <span class="k">else</span> <span class="n">common</span><span class="o">.</span><span class="n">identity</span>
 
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
 
             <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\r</span><span class="s1">&#39;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
 
-                <span class="k">yield</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="p">[</span><span class="n">_proc1</span><span class="p">(</span><span class="n">_proc0</span><span class="p">(</span><span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)]</span></div>
+
 
 
 <div class="viewcode-block" id="UniprotQuery.perform">
@@ -1177,16 +1227,14 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">_id</span><span class="p">,</span> <span class="o">*</span><span class="n">variables</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">_id</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">sfirst</span><span class="p">,</span> <span class="n">_id</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">variables</span><span class="p">:</span>
 
-            <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="n">f</span><span class="p">,</span>
-                    <span class="nb">dict</span><span class="p">(</span><span class="n">id_value</span> <span class="k">for</span> <span class="n">id_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">id_value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">f</span><span class="p">:</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">vs</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">vs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+            <span class="p">}</span>
 
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">common</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
