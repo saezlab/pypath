@@ -564,7 +564,7 @@ def _update_methods():
 
         _method = create_method(method_name)
 
-        common._add_method(
+        common.add_method(
             cls = sys.modules[__name__],
             method_name = method_name,
             method = _method,
