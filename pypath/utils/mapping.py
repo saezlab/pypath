@@ -929,7 +929,7 @@ class MapReader(session_mod.Logger):
         self.a_to_b = (
             None
                 if not self.load_a_to_b else
-            common.swap_dict(pro_to_other)
+            common.swap_dict(pro_to_other, force_sets = True)
                 if self.param.to_pro else
             dict(pro_to_other)
         )
@@ -938,7 +938,7 @@ class MapReader(session_mod.Logger):
                 if not self.load_b_to_a else
             dict(pro_to_other)
                 if self.param.to_pro else
-            common.swap_dict(pro_to_other)
+            common.swap_dict(pro_to_other, force_sets = True)
         )
 
 
