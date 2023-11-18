@@ -3184,13 +3184,13 @@ class Mapper(session_mod.Logger):
             )
             return
 
+        ncbi_tax_id = kwargs.get('ncbi_tax_id', resource.ncbi_tax_id)
+
         self._log(
             'Loading mapping table for organism `%s` '
             'with identifiers `%s` and `%s`, '
             'input type `%s`' % (
-                kwargs['ncbi_tax_id']
-                    if 'ncbi_tax_id' in kwargs else
-                resource.ncbi_tax_id,
+                ncbi_tax_id,
                 resource.id_type_a,
                 resource.id_type_b,
                 resource.type,
