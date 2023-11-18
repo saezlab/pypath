@@ -601,13 +601,22 @@ class UniprotQuery:
     @property
     def url(self) -> str:
         """
-        UniProt REST API URL.
+        UniProt REST API URL (urlencoded).
 
         Returns:
             A valid query suitable for the UniProt REST API.
         """
 
         return f'{self._baseurl}?{urllib.parse.urlencode(self._get)}'
+
+
+    @property
+    def url_plain(self) -> str:
+        """
+        UniProt REST API URL (plain).
+        """
+
+        return urllib.parse.unquote_plus(self.url)
 
 
     def __iter__(self):
