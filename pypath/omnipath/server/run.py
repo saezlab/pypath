@@ -2151,7 +2151,7 @@ class TableServer(BaseServer):
                 cls._dataset_included('collectri', args) &
                 tbl.collectri
             ) |
-            tbl.type != 'transcriptional'
+            (tbl.type != 'transcriptional')
         )
 
 
