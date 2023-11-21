@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>pypath.share.cache.default_cachedir &#8212; pypath 0.16.3 documentation</title>
+    <title>pypath.visual.plot.HistoryTree &#8212; pypath 0.16.4 documentation</title>
   
   
   
@@ -37,18 +37,18 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../_static/documentation_options.js?v=4a1014be"></script>
+    <script src="../_static/documentation_options.js?v=81998473"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.share.cache.default_cachedir';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.visual.plot.HistoryTree';</script>
     <link rel="icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.share.cache.get_cachedir" href="pypath.share.cache.get_cachedir.html" />
-    <link rel="prev" title="pypath.share.cache.cache_path" href="pypath.share.cache.cache_path.html" />
+    <link rel="next" title="pypath.visual.plot.HtpCharacteristics" href="pypath.visual.plot.HtpCharacteristics.html" />
+    <link rel="prev" title="pypath.visual.plot.Histogram" href="pypath.visual.plot.Histogram.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -490,9 +490,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="pypath.share.cache.html" class="nav-link">pypath.share.cache</a></li>
+    <li class="breadcrumb-item"><a href="pypath.visual.plot.html" class="nav-link">pypath.visual.plot</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">pypath.share...</li>
+    <li class="breadcrumb-item active" aria-current="page">pypath.visua...</li>
   </ul>
 </nav>
 </div>
@@ -509,12 +509,88 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="pypath-share-cache-default-cachedir">
-<h1>pypath.share.cache.default_cachedir<a class="headerlink" href="#pypath-share-cache-default-cachedir" title="Link to this heading">§</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="pypath.share.cache.default_cachedir">
-<span class="sig-prename descclassname"><span class="pre">pypath.share.cache.</span></span><span class="sig-name descname"><span class="pre">default_cachedir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/pypath/share/cache.html#default_cachedir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.share.cache.default_cachedir" title="Link to this definition">§</a></dt>
-<dd><p>Returns the default cache directory for a given module.</p>
+  <section id="pypath-visual-plot-historytree">
+<h1>pypath.visual.plot.HistoryTree<a class="headerlink" href="#pypath-visual-plot-historytree" title="Link to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.visual.plot.HistoryTree">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.visual.plot.</span></span><span class="sig-name descname"><span class="pre">HistoryTree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/visual/plot.html#HistoryTree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.visual.plot.HistoryTree" title="Link to this definition">§</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.visual.plot.HistoryTree.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/visual/plot.html#HistoryTree.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.visual.plot.HistoryTree.__init__" title="Link to this definition">§</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.visual.plot.HistoryTree.__init__" title="pypath.visual.plot.HistoryTree.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(fname, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_elements</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compose_tikz</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_closing</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_connections</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_layer_lines</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_layer_nodes</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_legend</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timelines</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_years</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.visual.plot.HistoryTree.run_latex" title="pypath.visual.plot.HistoryTree.run_latex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_latex</span></code></a>()</p></td>
+<td><p>Runs LaTeX to compile the TeX file.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_grid</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_latex_header</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_styles</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.visual.plot.HistoryTree.write_tex" title="pypath.visual.plot.HistoryTree.write_tex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_tex</span></code></a>()</p></td>
+<td><p>Writes the TeX markup to file.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.visual.plot.HistoryTree.run_latex">
+<span class="sig-name descname"><span class="pre">run_latex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/visual/plot.html#HistoryTree.run_latex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.visual.plot.HistoryTree.run_latex" title="Link to this definition">§</a></dt>
+<dd><p>Runs LaTeX to compile the TeX file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.visual.plot.HistoryTree.write_tex">
+<span class="sig-name descname"><span class="pre">write_tex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/visual/plot.html#HistoryTree.write_tex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.visual.plot.HistoryTree.write_tex" title="Link to this definition">§</a></dt>
+<dd><p>Writes the TeX markup to file.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -530,20 +606,20 @@ document.write(`
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pypath.share.cache.cache_path.html"
+       href="pypath.visual.plot.Histogram.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">pypath.share.cache.cache_path</p>
+        <p class="prev-next-title">pypath.visual.plot.Histogram</p>
       </div>
     </a>
     <a class="right-next"
-       href="pypath.share.cache.get_cachedir.html"
+       href="pypath.visual.plot.HtpCharacteristics.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pypath.share.cache.get_cachedir</p>
+        <p class="prev-next-title">pypath.visual.plot.HtpCharacteristics</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
