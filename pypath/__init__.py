@@ -35,9 +35,7 @@ from pypath._metadata import __version__, __author__, __license__
 from pypath._metadata import metadata as _metadata
 from pypath.share import session as _session_mod
 
-_module_root = os.path.abspath(os.path.dirname(__file__))
-_settings_yaml = os.path.join(_module_root, 'data', 'settings.yaml')
-session = _session_mod._session('pypath', config = _settings_yaml)
+session = _session_mod._session('pypath', paths = 'pypath_common')
 
 
 def log():
@@ -86,7 +84,7 @@ def info(loglevel = -9):
             '\t- session ID: `%s`\n'
             '\t- working directory: `%s`\n'
             '\t- logfile: `%s`\n'
-            '\t- config: `%s`\n'
+            '\t- config: \n\t\t- %s\n'
             '\t- pypath version: %s\n'
             '\t- imported from: `%s`\n'
             '\t- Python version: %s\n'
@@ -94,9 +92,11 @@ def info(loglevel = -9):
                 _session_mod.session().label,
                 os.getcwd(),
                 _session_mod.log().fname,
-                _settings_yaml,
+                '\n\t\t- '.join(
+                    map(str, _session_mod.session().config._parsed)
+                ),
                 __version__,
-                _module_root,
+                os.path.dirname(__file__),
                 sys.version,
                 platform.platform(),
             )
