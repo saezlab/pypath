@@ -25,7 +25,7 @@ Parse chemical table (SDF) files.
 
 from typing import IO
 
-import imp
+import importlib as imp
 import sys
 import os
 import re
