@@ -1705,6 +1705,14 @@ class Mapper(session_mod.Logger):
 
                     tbl = check_loaded()
 
+        if tbl is None:
+
+            self._log(
+                'Could not find suitable ID translation table '
+                f'between id types `{id_type}` and `{target_id_type}` '
+                f'for organism `{ncbi_tax_id}`.'
+            )
+
         if hasattr(tbl, '_used'):
 
             tbl._used()
