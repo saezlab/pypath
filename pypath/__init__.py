@@ -33,9 +33,9 @@ import platform
 
 from pypath._metadata import __version__, __author__, __license__
 from pypath._metadata import metadata as _metadata
-from pypath.share import session as _session_mod
+from pypath.share import session as _session
 
-session = _session_mod._session('pypath', paths = 'pypath_common')
+session = _session.session()
 
 
 def log():
@@ -43,7 +43,7 @@ def log():
     Browse the current pypath logfile.
     """
 
-    _session_mod.log().browse()
+    session._logger.browse()
 
 
 def disclaimer():
@@ -78,7 +78,7 @@ def info(loglevel = -9):
     Prints basic information about the current session.
     """
 
-    _session_mod.log().msg(
+    session._logger.msg(
         (
             '\n'
             '\t- session ID: `%s`\n'
@@ -89,11 +89,11 @@ def info(loglevel = -9):
             '\t- imported from: `%s`\n'
             '\t- Python version: %s\n'
             '\t- Platform: %s'% (
-                _session_mod.session().label,
+                session.label,
                 os.getcwd(),
-                _session_mod.log().fname,
+                session._logger.fname,
                 '\n\t\t- '.join(
-                    map(str, _session_mod.session().config._parsed)
+                    map(str, session.config._parsed)
                 ),
                 __version__,
                 os.path.dirname(__file__),
