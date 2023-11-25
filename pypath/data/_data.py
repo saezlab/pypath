@@ -17,14 +17,23 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-"""
-Data included in the module:
+from __future__ import annotations
 
-* License collection
-* Web page components
-* Biomart and Goose query templates
-* Configuration file
-"""
+import itertools
+import functools
 
-from pypath.data._data import *
-from pypath_common import data
+from pypath_common import data as _data
+
+_METHODS = ('load', 'path', 'builtins')
+_MODULES = {
+    'pypath': '',
+    'pypath_common': 'common_',
+    'pypath.resources': 'resources_',
+}
+
+for method, (module, prefix) in itertools.product(_METHODS, _MODULES.items()):
+
+    globals()[prefix + method] = functools.partial(
+        getattr(_data, method),
+        module = module,
+    )
