@@ -1192,31 +1192,6 @@ class Mapper(session_mod.Logger):
             trembl_swissprot_by_genesymbol,
         )
 
-        self._mapper_cleanup_timeloop = timeloop.Timeloop()
-        self._mapper_cleanup_timeloop.logger.setLevel(9999)
-
-        for job in self._mapper_cleanup_timeloop.jobs:
-
-            if job.is_alive():
-
-                job.stop()
-                job.stopped.set()
-
-        self._mapper_cleanup_timeloop.jobs = []
-
-
-        @self._mapper_cleanup_timeloop.job(
-            interval = datetime.timedelta(
-                seconds = cleanup_period
-            )
-        )
-        def _cleanup():
-
-            self.remove_expired()
-
-
-        self._mapper_cleanup_timeloop.start(block = False)
-
         # regex for matching UniProt AC format
         self.reuniprot = re.compile(r'^(?:%s)$' % uniprot_input.reac.pattern)
         self.remipreac = re.compile(r'^MI\d{7}$')

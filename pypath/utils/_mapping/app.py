@@ -19,8 +19,6 @@
 
 from __future__ import annotations
 
-import timeloop
-
 
 def init(**kwargs):
     """
@@ -53,5 +51,3 @@ def get_mapper(**kwargs):
         init(**kwargs)
 
     return globals()['mapper']
-
-
