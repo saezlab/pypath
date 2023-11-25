@@ -20,3 +20,8 @@
 from __future__ import annotations
 
 from pypath.utils._mapping.api import *
+
+"""
+Performs mapping between IDs of different consensus systems for
+proteins and genes, miRNAs, and chemical compounds.
+"""

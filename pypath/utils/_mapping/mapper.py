@@ -19,12 +19,6 @@
 
 from __future__ import annotations
 
-"""
-Performs mapping between IDs of different consensus systems for
-proteins and genes, miRNAs, and chemical compounds.
-
-"""
-
 from future.utils import iteritems
 from past.builtins import xrange, range
 
@@ -55,7 +49,6 @@ except:
 from typing import Iterable, List, Literal, Optional, Set, Union
 
 import pandas as pd
-import timeloop
 
 # from pypath:
 import pypath.share.progress as progress
@@ -153,22 +146,6 @@ UNIPROT_ID_TYPES = {
     'uniprot-pri',
     'uniprot-sec',
 }
-
-"""
-Classes for reading and use serving ID mapping data from custom file,
-function, UniProt, UniProt ID Mapping, Ensembl BioMart,
-PRO (Protein Ontology), miRBase or pickle file.
-"""
-
-MappingTableKey = collections.namedtuple(
-    'MappingTableKey',
-    [
-        'id_type',
-        'target_id_type',
-        'ncbi_tax_id',
-    ],
-)
-MappingTableKey.__new__.__defaults__ = ('protein', 9606)
 
 
 class MapReader(session_mod.Logger):
@@ -1141,142 +1118,6 @@ class MapReader(session_mod.Logger):
     def resource_id_type_b(self) -> str | None:
 
         return self.resource_id_type('b')
-
-
-class MappingTable(session_mod.Logger):
-    """
-    This is the class directly handling ID translation data.
-    It does not care about loading it or what kind of IDs these
-    only accepts the translation dictionary.
-
-    lifetime : int
-        If this table has not been used for longer than this preiod it is
-        to be removed at next cleanup. Time in seconds.
-    """
-
-    def __init__(
-            self,
-            data,
-            id_type,
-            target_id_type,
-            ncbi_tax_id,
-            lifetime = 300,
-        ):
-        """
-        Wrapper around a dictionary of identifier mapping. The dictionary
-        is located in the `data` attribute, keys are the source identifiers,
-        values are sets of target identifiers. Most often the mapping is
-        unambigous, which means one target identifier for each source
-        identifier.
-
-        Args
-            data (dict): The identifier translation dictionary.
-            id_type (str): The source ID type.
-            target_id_type (str): The target ID type.
-            ncbi_tax_id (int): NCBI Taxonomy identifier of the organism.
-            lifetime (int): Time in seconds to keep the table loaded in
-                the memory. If not used, the table will be unloaded after
-                this time. Each usage resets the expiry time.
-        """
-
-        session_mod.Logger.__init__(self, name = 'mapping')
-
-        self.id_type = id_type
-        self.target_id_type = target_id_type
-        self.ncbi_tax_id = ncbi_tax_id
-        self.data = data
-        self.lifetime = lifetime
-        self._used()
-
-
-    def reload(self):
-
-        modname = self.__class__.__module__
-        mod = __import__(modname, fromlist = [modname.split('.')[0]])
-        imp.reload(mod)
-        new = getattr(mod, self.__class__.__name__)
-        setattr(self, '__class__', new)
-
-
-    def __getitem__(self, key):
-
-        self._used()
-
-        if key in self.data:
-
-            return self.data[key]
-
-        return set()
-
-
-    def __contains__(self, key):
-
-        self._used()
-
-        return key in self.data
-
-
-    def __len__(self):
-
-        return len(self.data)
-
-
-    def _used(self):
-
-        self._last_used = time.time()
-
-
-    def _expired(self):
-
-        return time.time() - self._last_used > self.lifetime
-
-
-    def get_key(self):
-        """
-        Creates a mapping table key, a tuple with all the defining properties
-        of the mapping table.
-        """
-
-        return MappingTableKey(
-            id_type = self.id_type,
-            target_id_type = self.target_id_type,
-            ncbi_tax_id = self.ncbi_tax_id,
-        )
-
-
-    @property
-    def key(self):
-
-        return MappingTableKey(
-            id_type = self.id_type,
-            target_id_type = self.target_id_type,
-            ncbi_tax_id = self.ncbi_tax_id,
-        )
-
-
-    def __repr__(self):
-
-        return '<MappingTable from=%s, to=%s, taxon=%u (%u IDs)>' % (
-            self.key + (len(self),)
-        )
-
-
-    @property
-    def items(self):
-
-        return self.data.items
-
-
-    @property
-    def keys(self):
-
-        return self.data.keys
-
-
-    @property
-    def values(self):
-
-        return self.data.values
 
 
 class Mapper(session_mod.Logger):
@@ -3451,38 +3292,5 @@ class Mapper(session_mod.Logger):
 
                     job.stop()
                     job.stopped.set()
-
-
-def init(**kwargs):
-    """
-    Create a new `Mapper` instance under the `mapper` attribute of this
-    module.
-
-    Returns
-        None.
-    """
-
-    if 'mapper' in globals():
-
-        globals()['mapper'].__del__()
-
-    globals()['mapper'] = Mapper(**kwargs)
-
-
-def get_mapper(**kwargs):
-    """
-    The module under its `mapper` attribute has an instance of the `Mapper`
-    object, which manages the ID translations. This function creates the
-    instance if does not exist and returns it.
-
-    Returns
-        A Mapper object.
-    """
-
-    if 'mapper' not in globals():
-
-        init(**kwargs)
-
-    return globals()['mapper']
 
 
