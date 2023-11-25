@@ -17,29 +17,75 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
+import weakref
+import datetime
+
 import timeloop
 
-_mapper_cleanup_timeloop = timeloop.Timeloop()
-_mapper_cleanup_timeloop.logger.setLevel(9999)
+import pypath.share.settings as _settings
 
-for job in _mapper_cleanup_timeloop.jobs:
-
-if job.is_alive():
-
-job.stop()
-job.stopped.set()
-
-_mapper_cleanup_timeloop.jobs = []
+"""
+Unload expired (non used) mapping tables.
+"""
 
 
-@_mapper_cleanup_timeloop.job(
-interval = datetime.timedelta(
-seconds = cleanup_period
-)
-)
-def _cleanup():
+class Cleanup:
 
-remove_expired()
+    def __init__(self, period: int = 10):
+
+        self._mappers = []
+        self._loop = timeloop.Timeloop()
+        self._loop.logger.setLevel(9999)
+        self._stop_all_jobs()
+
+        @self._loop.job(interval = datetime.timedelta(seconds = self.period))
+        def _cleanup():
+
+            self.run()
+
+        self._loop.start(block = False)
 
 
-_mapper_cleanup_timeloop.start(block = False)
+    def _stop_all_jobs(self):
+
+        for job in self._loop.jobs:
+
+            if job.is_alive():
+
+                job.stop()
+                job.stopped.set()
+
+        self._loop.jobs = []
+
+
+    def _setup(self):
+
+        self.period = _settings.get(
+            'mapper_cleanup_interval',
+            cleanup_period
+        )
+
+
+    def register(self, mapper):
+
+        self._mappers.append(weakref.ref(mapper))
+
+
+    def run(self):
+
+        self._mappers = [
+            mapper.remove_expired()
+            for ref in self._mappers
+            if mapper := ref()
+        ]
+
+
+def register(mapper):
+
+    key = '_manager'
+
+    if key not in globals():
+
+        globals()[key] = Cleanup()
+
+    globals()[key].register(mapper)

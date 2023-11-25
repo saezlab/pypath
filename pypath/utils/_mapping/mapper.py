@@ -73,6 +73,8 @@ import pypath.share.settings as settings
 import pypath.share.session as session_mod
 _logger = session_mod.log()
 
+import pypath.utils._mapping._cleanup as _cleanup
+
 
 __all__ = ['MapReader', 'MappingTable', 'Mapper']
 
@@ -1146,16 +1148,12 @@ class Mapper(session_mod.Logger):
     def __init__(
             self,
             ncbi_tax_id = None,
-            cleanup_period = 10,
             lifetime = 300,
             translate_deleted_uniprot = None,
             keep_invalid_uniprot = None,
             trembl_swissprot_by_genesymbol = None,
         ):
         """
-        cleanup_period : int
-            Periodically check and remove unused mapping data.
-            Time in seconds. If `None` tables kept forever.
         lifetime : int
             If a table has not been used for longer than this preiod it is
             to be removed at next cleanup.
@@ -1175,10 +1173,6 @@ class Mapper(session_mod.Logger):
 
         session_mod.Logger.__init__(self, name = 'mapping')
 
-        cleanup_period = settings.get(
-            'mapper_cleanup_interval',
-            cleanup_period
-        )
         self._translate_deleted_uniprot = settings.get(
             'mapper_translate_deleted_uniprot',
             translate_deleted_uniprot,
@@ -1230,6 +1224,8 @@ class Mapper(session_mod.Logger):
         self.names_uniprot_static = (
             common.swap_dict_simple(self.uniprot_static_names)
         )
+
+        _cleanup.register(self)
 
 
     def reload(self):
