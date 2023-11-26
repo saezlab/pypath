@@ -50,7 +50,7 @@ class Cleanup:
 
         for job in self._loop.jobs:
 
-            if job.is_alive():
+            if hasattr(job, 'stop') and job.is_alive():
 
                 job.stop()
                 job.stopped.set()
@@ -78,6 +78,11 @@ class Cleanup:
             for ref in self._mappers
             if mapper := ref()
         ]
+
+
+    def __del__(self):
+
+        self._stop_all_jobs()
 
 
 def register(mapper):

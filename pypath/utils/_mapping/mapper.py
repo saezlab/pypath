@@ -2279,15 +2279,3 @@ class Mapper(session_mod.Logger):
         for key in to_remove:
 
             self.remove_key(key)
-
-
-    def __del__(self):
-
-        if hasattr(self._mapper_cleanup_timeloop, 'stop'):
-
-            for job in self._mapper_cleanup_timeloop.jobs:
-
-                if job.is_alive():
-
-                    job.stop()
-                    job.stopped.set()
