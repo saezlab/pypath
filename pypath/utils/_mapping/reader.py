@@ -20,6 +20,9 @@
 from __future__ import annotations
 
 import pypath.share.session as _session
+import pypath_common._constants as _const
+import pypath.utils.taxonomy as _taxonomy
+import pypath.utils._mapping.table as _table
 
 
 class MapReader(_session.Logger):
@@ -994,21 +997,32 @@ class MapReader(_session.Logger):
         return self.resource_id_type('b')
 
 
-class MappingInput(object):
+class MappingInput:
 
-    _resource_id_types = {}
 
     def __init__(
             self,
-            type_,
-            id_type_a,
-            id_type_b,
+
             ncbi_tax_id = None,
-            resource_id_type_a = None,
-            resource_id_type_b = None,
-            input_method = None,
         ):
 
+
+    def table(
+            self,
+            id_type_a: str,
+            id_type_b: str,
+            organism: str | int | None = None,
+        ):
+
+
+        MapReader(
+            id_type_a = self.idtype(id_type_a),
+            id_type_b = self.idtype(id_type_b),
+            organism = (
+                _taxonomy.ensure_ncbi_tax_id(organism) or
+                _const.NOT_ORGANISM_SPECIFIC
+            ),
+        )
         self.type = type_
         self.id_type_a = id_type_a
         self.id_type_b = id_type_b
@@ -1018,66 +1032,118 @@ class MappingInput(object):
         self.input_method = input_method
 
 
-    def _resource_id_type(self, side):
+    def idtype(self, id_type: str) -> str | None:
+        """
+        Ensure valid ID type for the resurce
 
-        return self.resource_id_type(
-            getattr(self, 'id_type_%s' % side),
-            override = getattr(self, 'resource_id_type_%s' % side),
+        Args:
+            id_type:
+                A valid identifier type or synonym.
+        """
+
+        id_type = self._synonyms.get(id_type, id_type)
+
+        if self.valid_idtype(id_type) or not self._idtypes:
+
+            return id_type
+
+
+    def valid_idtype(self, id_type: str) -> bool:
+        """
+        Tells if the ID type is supported by the resource.
+
+        Args:
+            id_type:
+                The ID type to check.
+        """
+
+        return self.valid_from(id_type) or self.valid_to(id_type)
+
+
+    def valid_from(self, id_type: str) -> bool:
+        """
+        Does the resource support translation from this ID type?
+        """
+
+        return self._valid_idtype(id_type, 'from')
+
+
+    def valid_to(self, id_type: str) -> bool:
+        """
+        Does the resource support translation to this ID type?
+        """
+
+        return self._valid_idtype(id_type, 'to')
+
+
+    def _valid_idtype(self, id_type: str, side: Literal['from', 'to']) -> bool:
+
+        return idtype in self._idtypes.get(side, self._idtypes)
+
+
+    def valid_pair(self, id_type_a: str, id_type_b: str) -> bool:
+        """
+        Is translation possible between a pair of identifier types?
+        """
+
+        return (
+            self.valid_from(id_type_a) and
+            self.valid_to(id_type_b)
         )
 
 
-    @property
-    def _resource_id_type_a(self):
+    def possible(
+            self,
+            id_type_a: str,
+            id_type_b: str,
+            organism: str | int | None = None,
+        ) -> bool:
+        """
+        Is the resource able to provide a certain translation table?
+        """
 
-        return self._resource_id_type(side = 'a')
+        return (
+            self.valid_pair(id_type_a, id_type_b) and
+            self.valid_organism(organism)
+        )
 
 
-    @property
-    def _resource_id_type_b(self):
+    def valid_organism(self, organism: str | int | None = None) -> bool:
+        """
+        Does the resource provide translation data for this organism?
 
-        return self._resource_id_type(side = 'b')
+        Args:
+            organism:
+                Name or NCBI Taxonomy ID of the organism.
+        """
 
+        organism = self._ncbi_taxid(organism)
 
-    @classmethod
-    def resource_id_type(cls, id_type, override = None):
-
-        return override or cls._resource_id_types.get(id_type, None)
+        return (
+            self._organisms == _const.NOT_ORGANISM_SPECIFIC or
+            organism in self._organisms
+        )
 
 
     def __contains__(self, other: str) -> bool:
 
-        return (
-            self.id_type_a == other or
-            self.id_type_b == other or
-            self._resource_id_type_a == other or
-            self._resource_id_type_b == other
-        )
+        return self.valid_idtype(other) or self.resource == other
 
 
-    def swap_sides(self):
+    def __eq__(self, other: str) -> bool:
 
-        self.id_type_a, self.id_type_b = self.id_type_b, self.id_type_a
-        self.resource_id_type_a, self.resource_id_type_b = (
-            self.resource_id_type_b,
-            self.resource_id_type_a,
-        )
+        return str(self) == str(other)
 
 
-    @classmethod
-    def possible(
-            cls,
-            id_type_a: str,
-            id_type_b: str,
-            ncbi_tax_id: int | None = None,
-        ) -> bool:
+    def __str__(self) -> str:
 
-        return all(
-            (
-                id_type in cls._resource_id_types or
-                id_type in cls._resource_id_types.values()
-            )
-            for id_type in (id_type_a, id_type_b)
-        )
+        return self.resource
+
+
+    @staticmethod
+    def _ncbi_taxid(organism: str | int | None) -> int | None:
+
+        return _taxonomy.ensure_ncbi_tax_id(organism)
 
 
 class FileMapping(MappingInput):
