@@ -283,7 +283,7 @@ class BaseServer(TwistedWebResource, session_mod.Logger):
 
     def _local_path(self, request):
 
-        if request.postpath and request.postpath[-1].startswith('_'):
+        if request.postpath and request.postpath[-1][0] in ('_', '.'):
 
             return
 
@@ -291,7 +291,7 @@ class BaseServer(TwistedWebResource, session_mod.Logger):
 
             path =  os.path.join(wwwroot, *request.postpath)
 
-            if os.path.exists(path):
+            if os.path.isfile(path):
 
                 return path
 
