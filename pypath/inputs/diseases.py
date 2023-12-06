@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from typing import Generator, Literal
 
-import collections
+from collections import namedtuple
 
 import pandas as pd
 
@@ -75,7 +75,7 @@ def _diseases_general(
 
     query_type = 'filtered' if filtered else 'full'
 
-    url = urls['diseases']['url'] % (data_origin, query_type)
+    url = urls.urls['diseases']['url'] % (data_origin, query_type)
 
     query_fields = {
         'textmining':
@@ -84,7 +84,7 @@ def _diseases_general(
                 'confidence',
                 'url'
             ],
-        'knowlwdge':
+        'knowledge':
             [
                 'resource',
                 'evidence_type',
@@ -118,21 +118,25 @@ def _diseases_general(
             value = value.split('=')[1]
 
         if key in _NUMERIC_FIELDS:
+            
+            if '.' in value:
+                num_type = float
+            else:
+                num_type = int if common.is_int(value) else float
 
-            num_type = int if common.is_int(value) else float
             value = num_type(value)
 
-        return value
+        return (key, value)
 
 
     for line in c.result:
 
         line = line.strip('\n ').split('\t')
 
-        line = [
-            proc_field(v, f)
-            for f, v in zip(fields, line)
-        ]
+        line = dict(
+            proc_field(value, key)
+            for key, value in zip(fields, line)
+        )
 
         yield record(**line)
 
