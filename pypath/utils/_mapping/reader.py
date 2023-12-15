@@ -47,8 +47,8 @@ class MapReader(_session.Logger):
         ):
         """
         Args
-            param (MappingInput): A mapping table definition, any child of
-                the `internals.input_formats.MappingInput` class.
+            param (MappingResource): A mapping table definition, any child of
+                the `internals.input_formats.MappingResource` class.
             ncbi_tax_id (int): NCBI Taxonomy identifier of the organism.
             entity_type (str): An optional, custom string showing the type of
                 the entities,  e.g. `protein`. This is not mandatory for the
@@ -380,73 +380,6 @@ class MapReader(_session.Logger):
 
             self._log('Removing mapping table cache file `%s`.' % cachefile)
             os.remove(cachefile)
-
-
-    def read_mapping_file(self):
-        """
-        Reads a mapping table from a local file or a function.
-        """
-
-        if not os.path.exists(self.param.input):
-
-            method = inputs.get_method(self.param.input)
-
-            if not method:
-
-                return {}
-
-            else:
-
-                input_args = (
-                    self.param.input_args
-                        if hasattr(self.param, 'input_args') else
-                    {}
-                )
-                infile = method(**input_args)
-
-        else:
-
-            infile = open(self.param.input, encoding = 'utf-8', mode = 'r')
-            total = os.path.getsize(self.param.input)
-
-        a_to_b = collections.defaultdict(set)
-        b_to_a = collections.defaultdict(set)
-
-        for i, line in enumerate(infile):
-
-            if self.param.header and i < self.param.header:
-
-                continue
-
-            if hasattr(line, 'decode'):
-
-                line = line.decode('utf-8')
-
-            if hasattr(line, 'rstrip'):
-
-                line = line.rstrip().split(self.param.separator)
-
-            if len(line) < max(self.param.col_a, self.param.col_b):
-
-                continue
-
-            id_a = line[self.param.col_a]
-            id_b = line[self.param.col_b]
-
-            if self.load_a_to_b:
-
-                a_to_b[id_a].add(id_b)
-
-            if self.load_b_to_a:
-
-                b_to_a[id_b].add(id_a)
-
-        if hasattr(infile, 'close'):
-
-            infile.close()
-
-        self.a_to_b = a_to_b if self.load_a_to_b else None
-        self.b_to_a = b_to_a if self.load_b_to_a else None
 
 
     @staticmethod
@@ -997,7 +930,7 @@ class MapReader(_session.Logger):
         return self.resource_id_type('b')
 
 
-class MappingInput:
+class MappingResource:
 
 
     def __init__(
@@ -1146,7 +1079,9 @@ class MappingInput:
         return _taxonomy.ensure_ncbi_tax_id(organism)
 
 
-class FileMapping(MappingInput):
+class FileMapping(MappingResource):
+
+    resource = 'file'
 
     def __init__(
             self,
@@ -1161,7 +1096,7 @@ class FileMapping(MappingInput):
             entity_type = 'protein',
         ):
 
-        MappingInput.__init__(
+        MappingResource.__init__(
             self,
             type_ = 'file',
             id_type_a = id_type_a,
@@ -1201,7 +1136,7 @@ class FileMapping(MappingInput):
         raise NotImplementedError
 
 
-class UniprotMapping(MappingInput):
+class UniprotMapping(MappingResource):
 
     _resource_id_type_b = 'accession'
     _resource_id_types = AC_QUERY
@@ -1236,7 +1171,7 @@ class UniprotMapping(MappingInput):
 
         self.type = 'uniprot'
 
-        MappingInput.__init__(
+        MappingResource.__init__(
             self,
             type_ = 'uniprot',
             id_type_a = id_type_a,
@@ -1247,6 +1182,73 @@ class UniprotMapping(MappingInput):
         self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
         self.swissprot = swissprot
+
+
+    def read(self):
+        """
+        Reads a mapping table from a local file or a function.
+        """
+
+        if not os.path.exists(self.param.input):
+
+            method = inputs.get_method(self.param.input)
+
+            if not method:
+
+                return {}
+
+            else:
+
+                input_args = (
+                    self.param.input_args
+                        if hasattr(self.param, 'input_args') else
+                    {}
+                )
+                infile = method(**input_args)
+
+        else:
+
+            infile = open(self.param.input, encoding = 'utf-8', mode = 'r')
+            total = os.path.getsize(self.param.input)
+
+        a_to_b = collections.defaultdict(set)
+        b_to_a = collections.defaultdict(set)
+
+        for i, line in enumerate(infile):
+
+            if self.param.header and i < self.param.header:
+
+                continue
+
+            if hasattr(line, 'decode'):
+
+                line = line.decode('utf-8')
+
+            if hasattr(line, 'rstrip'):
+
+                line = line.rstrip().split(self.param.separator)
+
+            if len(line) < max(self.param.col_a, self.param.col_b):
+
+                continue
+
+            id_a = line[self.param.col_a]
+            id_b = line[self.param.col_b]
+
+            if self.load_a_to_b:
+
+                a_to_b[id_a].add(id_b)
+
+            if self.load_b_to_a:
+
+                b_to_a[id_b].add(id_a)
+
+        if hasattr(infile, 'close'):
+
+            infile.close()
+
+        self.a_to_b = a_to_b if self.load_a_to_b else None
+        self.b_to_a = b_to_a if self.load_b_to_a else None
 
 
     def set_organism(self, ncbi_tax_id):
@@ -1304,7 +1306,7 @@ class UniprotMapping(MappingInput):
         )
 
 
-class UniprotListMapping(MappingInput):
+class UniprotListMapping(MappingResource):
     """
     Provides parameters for downloading mapping table from UniProt
     `Upload Lists` webservice.
@@ -1345,7 +1347,7 @@ class UniprotListMapping(MappingInput):
             swissprot = None,
         ):
 
-        MappingInput.__init__(
+        MappingResource.__init__(
             self,
             type_ = 'uniprot_list',
             id_type_a = id_type_a,
@@ -1370,7 +1372,7 @@ class UniprotListMapping(MappingInput):
 
     def swap_sides(self):
 
-        MappingInput.swap_sides(self)
+        MappingResource.swap_sides(self)
         self._update_uniprot_types()
 
 
@@ -1433,7 +1435,7 @@ class UniprotListMapping(MappingInput):
         return (id_type_a, id_type_b) in pairs
 
 
-class ProMapping(MappingInput):
+class ProMapping(MappingResource):
     """
     Provides parameters for mapping table from the Protein Ontology
     Consortium.
@@ -1467,7 +1469,7 @@ class ProMapping(MappingInput):
             pro_id_type_a if to_pro else pro_id_type_b
         )
 
-        MappingInput.__init__(
+        MappingResource.__init__(
             self,
             type_ = 'pro',
             id_type_a = 'pro',
@@ -1505,7 +1507,7 @@ class ProMapping(MappingInput):
         )
 
 
-class BiomartMapping(MappingInput):
+class BiomartMapping(MappingResource):
 
     _resource_id_types = BIOMART_MAPPING
 
@@ -1519,7 +1521,7 @@ class BiomartMapping(MappingInput):
             ncbi_tax_id = 9606,
         ):
 
-        MappingInput.__init__(
+        MappingResource.__init__(
             self,
             type_ = 'biomart',
             id_type_a = id_type_a,
@@ -1539,7 +1541,7 @@ class BiomartMapping(MappingInput):
         self.biomart_mapping = BIOMART_MAPPING
 
 
-class UnichemMapping(MappingInput):
+class UnichemMapping(MappingResource):
 
     _resource_id_types = {
         id_type: id_type
@@ -1562,7 +1564,7 @@ class UnichemMapping(MappingInput):
                 Custom name for the other ID type.
         """
 
-        MappingInput.__init__(
+        MappingResource.__init__(
             self,
             type_ = 'unichem',
             id_type_a = id_type_a,
@@ -1571,7 +1573,7 @@ class UnichemMapping(MappingInput):
         )
 
 
-class RampMapping(MappingInput):
+class RampMapping(MappingResource):
 
     _resource_id_types = RAMP_MAPPING
 
@@ -1591,7 +1593,7 @@ class RampMapping(MappingInput):
                 Custom name for the other ID type.
         """
 
-        MappingInput.__init__(
+        MappingResource.__init__(
             self,
             type_ = 'ramp',
             id_type_a = id_type_a,
@@ -1600,7 +1602,7 @@ class RampMapping(MappingInput):
         )
 
 
-class HmdbMapping(MappingInput):
+class HmdbMapping(MappingResource):
 
     _resource_id_types = HMDB_MAPPING
 
@@ -1621,7 +1623,7 @@ class HmdbMapping(MappingInput):
                 Custom name for the other ID type.
         """
 
-        MappingInput.__init__(
+        MappingResource.__init__(
             self,
             type_ = 'hmdb',
             id_type_a = id_type_a,
@@ -1631,7 +1633,7 @@ class HmdbMapping(MappingInput):
         )
 
 
-class ArrayMapping(MappingInput):
+class ArrayMapping(MappingResource):
     """
     Provides parameters for microarray probe mapping tables.
 
@@ -1656,7 +1658,7 @@ class ArrayMapping(MappingInput):
             ncbi_tax_id = 9606,
         ):
 
-        MappingInput.__init__(
+        MappingResource.__init__(
             self,
             type_ = 'array',
             id_type_a = self._get_id_type(id_type_a),
