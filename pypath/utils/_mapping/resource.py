@@ -1079,9 +1079,7 @@ class MappingResource:
         return _taxonomy.ensure_ncbi_tax_id(organism)
 
 
-class FileMapping(MappingResource):
-
-    resource = 'file'
+class MappingInput:
 
     def __init__(
             self,
@@ -1095,6 +1093,38 @@ class FileMapping(MappingResource):
             ncbi_tax_id = None,
             entity_type = 'protein',
         ):
+        """
+        Describe the capabilities of a generic URI of ID translation data.
+
+        Most often one URI provides single translation table, however,
+        sometimes the identifiers might have synonyms, or the organism and ID
+        types can be part of the URI. These cases are also supported here.
+
+        Args:
+            id_type_a:
+                A valid identifier type or synonym.
+            id_type_b:
+                A valid identifier type or synonym.
+            uri:
+                The URI of the data source.
+            col_a:
+                Index of the column with identifier A.
+            col_b:
+                Index of the column with identifier B.
+            separator:
+                Column separator.
+            header:
+                Number of rows to skip.
+            ncbi_tax_id:
+                NCBI Taxonomy ID of the organism.
+            id_synonyms:
+                Synonyms
+        """
+
+
+class FileMapping(MappingResource):
+
+    resource = 'file'
 
         MappingResource.__init__(
             self,
