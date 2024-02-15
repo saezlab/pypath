@@ -263,6 +263,10 @@ def cellphonedb_interactions():
                 if entity in receptors else
             'unknown'
         )
+    
+    def get_bool(rec, attr):
+
+        return attr in rec and rec[attr].upper() == 'TRUE'
 
     CellphonedbInteraction = collections.namedtuple(
         'CellphonedbInteraction',
@@ -274,6 +278,7 @@ def cellphonedb_interactions():
             'interaction_type',
             'type_a',
             'type_b',
+            'is_ppi',
         ]
     )
 
@@ -304,6 +309,7 @@ def cellphonedb_interactions():
             rec['partner_b'],
             complexes = complexes,
         )
+        _is_ppi = get_bool(rec, 'is_ppi')
 
         for partner_a, partner_b in itertools.product(_partner_a, _partner_b):
 
@@ -338,6 +344,7 @@ def cellphonedb_interactions():
                     interaction_type = '%s-%s' % (_type_a, _type_b),
                     type_a = _type_a,
                     type_b = _type_b,
+                    is_ppi = _is_ppi,
                 )
             )
 
