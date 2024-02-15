@@ -1429,7 +1429,7 @@ urls = {
     },
     'cellchatdb': {
         'label': 'Manually curated ligand-receptor interactions',
-        'url': 'https://raw.githubusercontent.com/sqjin/CellChat/'
+        'url': 'https://raw.githubusercontent.com/jinworks/CellChat/'
             'master/data/%s.rda',
     },
     'connectomedb2020': {
