@@ -2945,6 +2945,7 @@ ligand_receptor = {
         header = False,
         extra_edge_attrs = {
             'type': 4,
+            'is_ppi': 7,
         },
         extra_node_attrs_a = {
             'cellphonedb_type': 5,
