@@ -90,7 +90,7 @@ def _cellphonedb_annotations(url, name_method):
 
     def get_bool(rec, attr):
 
-        return attr in rec and rec[attr] == 'True'
+        return attr in rec and rec[attr].upper() == 'TRUE'
 
     def get_desc(rec, attr):
 
@@ -99,7 +99,7 @@ def _cellphonedb_annotations(url, name_method):
         value = (
             ''
                 if (
-                    attr in rec and rec[attr] == 'False' or
+                    attr in rec and rec[attr].upper() == 'FALSE' or
                     attr not in rec and not rec[desc]
                 ) else
             rec[desc]
