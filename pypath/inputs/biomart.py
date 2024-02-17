@@ -135,16 +135,17 @@ def biomart_query(
     xml_query = rewsp.sub('', xml_query)
 
     biomart_url = urls.urls['ensembl']['biomart_url'] % xml_query
-
     c = curl.Curl(biomart_url, large = True, silent = False)
-
     success = False
 
     for line in c.result:
 
         _line = line.strip('\n\r').split('\t')
 
-        success = success or _line[0] == '[success]'
+        if _line[0] == '[success]':
+
+            success = True
+            continue
 
         if line.strip() and len(_line) == len(record._fields):
 
