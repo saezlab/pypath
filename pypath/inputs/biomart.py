@@ -28,6 +28,7 @@ import collections
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
+import pypath_common.data as _data
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
@@ -111,7 +112,7 @@ def biomart_query(
 
     rewsp = re.compile(r'\n\s+')
 
-    xml_template_path = os.path.join(common.DATA, 'ensembl_biomart_query.xml')
+    xml_template_path = _data.path('ensembl_biomart_query.xml')
 
     with open(xml_template_path, 'r') as fp:
 
