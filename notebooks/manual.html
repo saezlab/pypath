@@ -1,34 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-content_root="../">
 <head>
   <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.6.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The pypath book — pypath 0.16.4 documentation</title>
+  <title>The pypath book — pypath 0.16.9 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script><!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet">
-  <link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet">
-  <link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet">
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet">
+  <link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet">
+  <link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet">
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
-  "../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  "../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
-  "../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+  "../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin="" href=
-  "../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  "../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2">
   <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=77553476">
   <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b">
   <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css">
   <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css?v=b64fc3cb">
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6">
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6">
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
-  <script src="../_static/documentation_options.js?v=81998473"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae">
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../_static/documentation_options.js?v=fa0329c2"></script>
   <script src="../_static/doctools.js?v=888ff710"></script>
   <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
   <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -45,7 +45,8 @@
   <link rel="icon" href="../_static/omnipath-logo.svg">
   <link rel="index" title="Index" href="../genindex.html">
   <link rel="search" title="Search" href="../search.html">
-  <link rel="prev" title="pypath.visual.plot.StackedBarplot" href="../api/pypath.visual.plot.StackedBarplot.html">
+  <link rel="prev" title="pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer" href=
+  "../api/pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.html">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="docsearch:language" content="en">
   <style scoped="">
@@ -350,7 +351,7 @@
 </head>
 <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%"
 data-default-mode="">
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   <div id="pst-scroll-pixel-helper"></div><button type="button" class="btn rounded-pill" id="pst-back-to-top"> Back to
   top</button> <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary"> <input type="checkbox"
   class="sidebar-toggle" name="__secondary" id="__secondary">
@@ -364,7 +365,7 @@ data-default-mode="">
       </form>
     </div>
   </div>
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+  <header class="bd-header navbar navbar-expand-lg bd-navbar">
     <div class="bd-header__inner bd-page-width">
       <div class="navbar-header-items__start">
         <div class="navbar-item">
@@ -380,8 +381,6 @@ data-default-mode="">
         <div class="me-auto navbar-header-items__center">
           <div class="navbar-item">
             <nav class="navbar-nav">
-              <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">Site
-              Navigation</p>
               <ul class="bd-navbar-elements navbar-nav">
                 <li class="nav-item">
                   <a class="nav-link nav-internal" href="../index.html">Welcome to pypath!</a>
@@ -463,7 +462,7 @@ data-default-mode="">
         </script>
       </div>
     </div>
-  </nav>
+  </header>
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       <div class="bd-sidebar-primary bd-sidebar">
@@ -471,8 +470,6 @@ data-default-mode="">
           <div class="sidebar-header-items__center">
             <div class="navbar-item">
               <nav class="navbar-nav">
-                <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">Site
-                Navigation</p>
                 <ul class="bd-navbar-elements navbar-nav">
                   <li class="nav-item">
                     <a class="nav-link nav-internal" href="../index.html">Welcome to pypath!</a>
@@ -1034,7 +1031,7 @@ data-default-mode="">
               </div>
             </div>
             <div id="searchbox"></div>
-            <article class="bd-article" role="main">
+            <article class="bd-article">
               <section id="The-pypath-book">
                 <h1>The pypath book<a class="headerlink" href="#The-pypath-book" title=
                 "Link to this heading">§</a></h1>
@@ -17836,12 +17833,12 @@ AKT1 - GSK3B
               </section>
             </article>
             <footer class="prev-next-footer">
-              <!-- Previous / next buttons -->
               <div class="prev-next-area">
-                <a class="left-prev" href="../api/pypath.visual.plot.StackedBarplot.html" title="previous page">
+                <a class="left-prev" href="../api/pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.html" title=
+                "previous page">
                 <div class="prev-next-info">
                   <p class="prev-next-subtitle">previous</p>
-                  <p class="prev-next-title">pypath.visual.plot.StackedBarplot</p>
+                  <p class="prev-next-title">pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer</p>
                 </div></a>
               </div>
             </footer>
@@ -17849,10 +17846,10 @@ AKT1 - GSK3B
           <div class="bd-sidebar-secondary bd-toc">
             <div class="sidebar-secondary-items sidebar-secondary__inner">
               <div class="sidebar-secondary-item">
-                <div class="page-toc tocsection onthispage">
+                <div id="pst-page-navigation-heading-2" class="page-toc tocsection onthispage">
                   On this page
                 </div>
-                <nav class="bd-toc-nav page-toc">
+                <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
                   <ul class="current visible nav section-nav flex-column">
                     <li class="toctree-l1 toc-h1 nav-item toc-entry">
                       <a class="reference internal nav-link" href="../index.html">Welcome to pypath!</a>
@@ -18363,13 +18360,13 @@ AKT1 - GSK3B
       </main>
     </div>
   </div><!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script> 
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script> 
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
   <footer class="bd-footer">
     <div class="bd-footer__inner bd-page-width">
       <div class="footer-items__start">
         <div class="footer-item">
-          <p class="copyright">© Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian
+          <p class="copyright">© Copyright 2024, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian
           Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles
           Tapley Hoyt.<br></p>
         </div>
@@ -18380,7 +18377,7 @@ AKT1 - GSK3B
       <div class="footer-items__end">
         <div class="footer-item">
           <p class="theme-version">Built with the <a href=
-          "https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.</p>
+          "https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.</p>
         </div>
       </div>
     </div>
