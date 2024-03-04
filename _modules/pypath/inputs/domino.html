@@ -1,0 +1,1141 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.inputs.domino &#8212; pypath 0.16.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=77553476" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css?v=b64fc3cb" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../../../_static/documentation_options.js?v=fa0329c2"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/inputs/domino';</script>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../../../contents.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../inputs.html" class="nav-link">pypath.inputs</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.domino</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pypath.inputs.domino</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright 2014-2023</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: see the file `README.rst`</span>
+<span class="c1">#  Contact: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      https://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: https://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="kn">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="nb">range</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
+<span class="kn">import</span> <span class="nn">pypath.share.progress</span> <span class="k">as</span> <span class="nn">progress</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.ontology</span> <span class="k">as</span> <span class="nn">ontology</span>
+<span class="kn">import</span> <span class="nn">pypath.internals.intera</span> <span class="k">as</span> <span class="nn">intera</span>
+<span class="kn">import</span> <span class="nn">pypath.internals.resource</span> <span class="k">as</span> <span class="nn">resource_internals</span>
+<span class="kn">import</span> <span class="nn">pypath.core.evidence</span> <span class="k">as</span> <span class="nn">evidence</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;domino_input&#39;</span><span class="p">)</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span>
+
+
+<div class="viewcode-block" id="get_domino">
+<a class="viewcode-back" href="../../../api/pypath.inputs.domino.get_domino.html#pypath.inputs.domino.get_domino">[docs]</a>
+<span class="k">def</span> <span class="nf">get_domino</span><span class="p">(</span><span class="n">none_values</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns</span>
+<span class="sd">        A list of records with the following fields:</span>
+<span class="sd">        header = [&#39;uniprot_A&#39;, &#39;uniprot_B&#39;, &#39;isoform_A&#39;, &#39;isoform_B&#39;, #3</span>
+<span class="sd">        &#39;exp_method&#39;, &#39;references&#39;, &#39;taxon_A&#39;, &#39;taxon_B&#39;, #7</span>
+<span class="sd">        &#39;role_A&#39;, &#39;role_B&#39;, &#39;binding_site_range_A&#39;, &#39;binding_site_range_B&#39;, #11</span>
+<span class="sd">        &#39;domains_A&#39;, &#39;domains_B&#39;, &#39;ptm_residue_A&#39;, &#39;ptm_residue_B&#39;, #15</span>
+<span class="sd">        &#39;ptm_type_mi_A&#39;, &#39;ptm_type_mi_B&#39;, &#39;ptm_type_A&#39;, &#39;ptm_type_B&#39;, #19</span>
+<span class="sd">        &#39;ptm_res_name_A&#39;, &#39;ptm_res_name_B&#39;, &#39;mutations_A&#39;, &#39;mutations_B&#39;, #23</span>
+<span class="sd">        &#39;mutation_effects_A&#39;, &#39;mutation_effects_B&#39;, &#39;domains_interpro_A&#39;, #26</span>
+<span class="sd">        &#39;domains_interpro_B&#39;, &#39;negative&#39;] #28</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DominoRecord</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;DominoRecord&#39;</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="s1">&#39;uniprot_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;uniprot_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;isoform_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;isoform_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;exp_method&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;references&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;taxon_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;taxon_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;role_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;role_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;binding_site_range_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;binding_site_range_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;domains_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;domains_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_residue_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_residue_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_type_mi_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_type_mi_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_type_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_type_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_res_name_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ptm_res_name_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mutations_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mutations_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mutation_effects_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mutation_effects_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;domains_interpro_A&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;domains_interpro_B&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;negative&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">taxid</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;taxid:(.*)\([a-zA-Z ]*\)&#39;</span><span class="p">)</span>
+    <span class="n">miont</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;MI:[0-9]</span><span class="si">{4}</span><span class="s1">\((.*)\)&#39;</span><span class="p">)</span>
+    <span class="n">binds</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([-0-9]*);.*&#39;</span><span class="p">)</span>
+    <span class="n">domai</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*;.*;.*\((.*)\)&#39;</span><span class="p">)</span>
+    <span class="n">dipro</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*;.*;.+:(IPR[0-9]*).*&#39;</span><span class="p">)</span>
+    <span class="n">ptmrs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([-0-9]*);.*&#39;</span><span class="p">)</span>
+    <span class="n">ptmmi</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[0-9]*;(MI:[0-9]*)\(.*\);.*;.*&#39;</span><span class="p">)</span>
+    <span class="n">ptmrn</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s1">&#39;.*sequence:[\s]*[0-9]+-[0-9]+[\s]*:[\s]*([A-Z]{10,}).*&#39;</span><span class="p">)</span>
+    <span class="n">ptmty</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[0-9]*;MI:[0-9]*\((.*)\);.*;.*&#39;</span><span class="p">)</span>
+    <span class="n">refrs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(pubmed|doi):[&quot;]*([-0-9a-zA-Z\.\(\)/]*)[&quot;]*&#39;</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;domino&#39;</span><span class="p">][</span><span class="s1">&#39;rescued&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">39</span><span class="p">:</span>
+
+            <span class="k">continue</span>
+
+        <span class="n">this_row</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="kc">None</span> <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="kc">None</span> <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;1&#39;</span>  <span class="k">if</span> <span class="s1">&#39;-&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;1&#39;</span>  <span class="k">if</span> <span class="s1">&#39;-&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">miont</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">miont</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">refrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">refrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">taxid</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">9</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">taxid</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">9</span><span class="p">])</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">taxid</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">taxid</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">miont</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">11</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">miont</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">11</span><span class="p">])</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">miont</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">17</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">miont</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">16</span><span class="p">])</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">binds</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">binds</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">binds</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">binds</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">33</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">domai</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">domai</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">domai</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">domai</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">33</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">34</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">35</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmmi</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmmi</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">34</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmmi</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmmi</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">35</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmty</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmty</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">34</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmty</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmty</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">35</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmrn</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmrn</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">34</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmrn</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmrn</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">35</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">36</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmrs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">37</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmty</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmty</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">36</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">ptmty</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ptmty</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="mi">37</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">dipro</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">32</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">dipro</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">32</span><span class="p">])</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">dipro</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">33</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">dipro</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">33</span><span class="p">])</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;0&#39;</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">38</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span> <span class="k">else</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">none_values</span><span class="p">:</span>
+
+            <span class="n">this_row</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">this_row</span><span class="p">]</span>
+            <span class="n">this_row</span> <span class="o">=</span> <span class="n">DominoRecord</span><span class="p">(</span><span class="o">*</span><span class="n">this_row</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_row</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">outfile</span><span class="p">:</span>
+
+        <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Saving data into `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">outfile</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outf</span><span class="p">:</span>
+
+            <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+
+                <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="domino_interactions">
+<a class="viewcode-back" href="../../../api/pypath.inputs.domino.domino_interactions.html#pypath.inputs.domino.domino_interactions">[docs]</a>
+<span class="k">def</span> <span class="nf">domino_interactions</span><span class="p">():</span>
+
+    <span class="n">domino</span> <span class="o">=</span> <span class="n">get_domino</span><span class="p">()</span>
+
+    <span class="n">interactions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">domino</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span>
+            <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+            <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span> <span class="ow">and</span>
+            <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span> <span class="o">+</span> <span class="nb">range</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span> <span class="o">+</span> <span class="nb">range</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">26</span><span class="p">)</span>
+            <span class="p">])</span> <span class="ow">and</span>
+            <span class="n">l</span><span class="p">[</span><span class="mi">28</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;1&#39;</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">interactions</span></div>
+
+
+
+<div class="viewcode-block" id="domino_ddi">
+<a class="viewcode-back" href="../../../api/pypath.inputs.domino.domino_ddi.html#pypath.inputs.domino.domino_ddi">[docs]</a>
+<span class="k">def</span> <span class="nf">domino_ddi</span><span class="p">():</span>
+
+    <span class="n">domi</span> <span class="o">=</span> <span class="n">domino_enzsub</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">domi</span><span class="p">[</span><span class="s1">&#39;ddi&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="domino_enzsub">
+<a class="viewcode-back" href="../../../api/pypath.inputs.domino.domino_enzsub.html#pypath.inputs.domino.domino_enzsub">[docs]</a>
+<span class="k">def</span> <span class="nf">domino_enzsub</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns</span>
+<span class="sd">        A dict of two elements: `ddi` contains domain-domain, while `dmi`</span>
+<span class="sd">        domain-motif interactions. The latter includes protein-PTM</span>
+<span class="sd">        interactions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">domino_resource</span> <span class="o">=</span> <span class="n">resource_internals</span><span class="o">.</span><span class="n">EnzymeSubstrateResource</span><span class="p">(</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;DOMINO&#39;</span><span class="p">,</span>
+        <span class="n">input_method</span> <span class="o">=</span> <span class="s1">&#39;domino.domino_enzsub&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">domino</span> <span class="o">=</span> <span class="n">get_domino</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+
+        <span class="n">miont</span> <span class="o">=</span> <span class="n">ontology</span><span class="o">.</span><span class="n">ontology</span><span class="p">(</span><span class="s1">&#39;MI&#39;</span><span class="p">)</span>
+
+    <span class="k">except</span><span class="p">:</span>
+
+        <span class="n">miont</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">dmi</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ddi</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">domino</span><span class="p">),</span> <span class="s1">&#39;Processing DOMINO&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+
+    <span class="n">ptm_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;o4&#39;-phospho-tyrosine&quot;</span><span class="p">:</span> <span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;phosphorylated residue&#39;</span><span class="p">:</span> <span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;o-phospho-threonine&#39;</span><span class="p">:</span> <span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;o-phospho-serine&#39;</span><span class="p">:</span> <span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;n6-methyl-lysine&#39;</span><span class="p">:</span> <span class="s1">&#39;methylation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;n6,n6,n6-trimethyl-lysine&#39;</span><span class="p">:</span> <span class="s1">&#39;trimethylation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;n6,n6-dimethyl-lysine&#39;</span><span class="p">:</span> <span class="s1">&#39;dimethylation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;acetylated residue&#39;</span><span class="p">:</span> <span class="s1">&#39;acetylation&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">domino</span><span class="p">:</span>
+
+        <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">l</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span>
+                <span class="n">l</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span>
+                <span class="p">(</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span>
+                <span class="p">)</span>
+            <span class="p">)</span> <span class="ow">and</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="p">):</span>
+
+            <span class="n">uniprot1</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">uniprot2</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># ptms</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="s1">&#39;-&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="s1">&#39;-&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span>
+            <span class="p">):</span>
+
+                <span class="n">ptmre12</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span> <span class="k">else</span> <span class="p">[]</span>
+                <span class="n">ptmre21</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)]</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span> <span class="k">else</span> <span class="p">[]</span>
+                <span class="n">ptmty12</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ptmre12</span><span class="p">)</span>
+                <span class="n">ptmty12</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">ptm_types</span><span class="p">[</span><span class="n">miont</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">miont</span> <span class="k">else</span> <span class="kc">None</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ptmty12</span>
+                <span class="p">]</span>
+                <span class="n">ptmrn12</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ptmre12</span><span class="p">)</span>
+
+                <span class="n">ptmrn12</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="kc">None</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
+                            <span class="n">x</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">ptmre12</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+                        <span class="p">)</span> <span class="k">else</span>
+                    <span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">ptmre12</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="k">else</span>
+                    <span class="n">x</span><span class="p">[</span><span class="n">ptmre12</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ptmrn12</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="n">ptmty21</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">17</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">17</span><span class="p">]</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ptmre12</span><span class="p">)</span>
+                <span class="n">ptmty21</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">ptm_types</span><span class="p">[</span><span class="n">miont</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">miont</span> <span class="k">else</span> <span class="kc">None</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ptmty21</span>
+                <span class="p">]</span>
+                <span class="n">ptmrn21</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ptmre21</span><span class="p">)</span>
+                <span class="n">ptmrn21</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="kc">None</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
+                            <span class="n">x</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">ptmre21</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+                        <span class="p">)</span> <span class="k">else</span>
+                    <span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">ptmre21</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="k">else</span>
+                    <span class="n">x</span><span class="p">[</span><span class="n">ptmre21</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ptmrn21</span><span class="p">)</span>
+                <span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">resnum</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ptmre12</span><span class="p">):</span>
+
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Residue</span><span class="p">(</span><span class="n">resnum</span><span class="p">,</span> <span class="n">ptmrn12</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">uniprot2</span><span class="p">)</span>
+                    <span class="n">ptm</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Ptm</span><span class="p">(</span>
+                        <span class="n">uniprot2</span><span class="p">,</span>
+                        <span class="n">typ</span> <span class="o">=</span> <span class="n">ptmty12</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;unknown&#39;</span><span class="p">,</span>
+                        <span class="n">residue</span> <span class="o">=</span> <span class="n">res</span><span class="p">,</span>
+                        <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span>
+                            <span class="n">resource</span> <span class="o">=</span> <span class="n">domino_resource</span><span class="p">,</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                    <span class="n">dom</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span><span class="n">uniprot1</span><span class="p">)</span>
+                    <span class="n">dm</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">DomainMotif</span><span class="p">(</span>
+                        <span class="n">domain</span> <span class="o">=</span> <span class="n">dom</span><span class="p">,</span>
+                        <span class="n">ptm</span> <span class="o">=</span> <span class="n">ptm</span><span class="p">,</span>
+                        <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span>
+                            <span class="n">resource</span> <span class="o">=</span> <span class="n">domino_resource</span><span class="p">,</span>
+                            <span class="n">references</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">),</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                    <span class="n">dmi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dm</span><span class="p">)</span>
+
+            <span class="c1"># binding sites</span>
+            <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="ow">and</span> <span class="n">l</span><span class="p">[</span><span class="mi">11</span><span class="p">]:</span>
+
+                <span class="k">try</span><span class="p">:</span>
+
+                    <span class="n">bssrt1</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span>
+                    <span class="p">]</span>
+                    <span class="n">bsend1</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span>
+                    <span class="p">]</span>
+                    <span class="n">bssrt2</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span>
+                    <span class="p">]</span>
+                    <span class="n">bsend2</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span>
+                    <span class="p">]</span>
+
+                <span class="k">except</span><span class="p">:</span>
+
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Error processing line:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+                    <span class="k">return</span> <span class="kc">None</span>
+
+                <span class="n">bs1</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">bs2</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">26</span><span class="p">]:</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bssrt1</span><span class="p">):</span>
+
+                        <span class="n">bs1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">intera</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+                                <span class="n">protein</span> <span class="o">=</span> <span class="n">uniprot1</span><span class="p">,</span>
+                                <span class="n">domain</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">26</span><span class="p">],</span>
+                                <span class="n">start</span> <span class="o">=</span> <span class="n">bssrt1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">end</span> <span class="o">=</span> <span class="n">bsend1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">domain_id_type</span> <span class="o">=</span> <span class="s1">&#39;interpro&#39;</span><span class="p">,</span>
+                                <span class="n">isoform</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bssrt1</span><span class="p">):</span>
+
+                        <span class="n">mot</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Motif</span><span class="p">(</span>
+                            <span class="n">protein</span> <span class="o">=</span> <span class="n">uniprot1</span><span class="p">,</span>
+                            <span class="n">start</span> <span class="o">=</span> <span class="n">bssrt1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                            <span class="n">end</span> <span class="o">=</span> <span class="n">bsend1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                            <span class="n">isoform</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                        <span class="p">)</span>
+                        <span class="n">bs1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">intera</span><span class="o">.</span><span class="n">Ptm</span><span class="p">(</span>
+                                <span class="n">protein</span> <span class="o">=</span> <span class="n">uniprot1</span><span class="p">,</span>
+                                <span class="n">motif</span> <span class="o">=</span> <span class="n">mot</span><span class="p">,</span>
+                                <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span>
+                                    <span class="n">resource</span> <span class="o">=</span> <span class="n">domino_resource</span><span class="p">,</span>
+                                <span class="p">),</span>
+                                <span class="n">isoform</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">27</span><span class="p">]:</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bssrt2</span><span class="p">):</span>
+
+                        <span class="n">bs2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">intera</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+                                <span class="n">protein</span> <span class="o">=</span> <span class="n">uniprot2</span><span class="p">,</span>
+                                <span class="n">domain</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">27</span><span class="p">],</span>
+                                <span class="n">start</span> <span class="o">=</span> <span class="n">bssrt2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">end</span> <span class="o">=</span> <span class="n">bsend2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">domain_id_type</span> <span class="o">=</span> <span class="s1">&#39;interpro&#39;</span><span class="p">,</span>
+                                <span class="n">isoform</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bssrt2</span><span class="p">):</span>
+
+                        <span class="n">mot</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Motif</span><span class="p">(</span>
+                            <span class="n">protein</span> <span class="o">=</span> <span class="n">uniprot2</span><span class="p">,</span>
+                            <span class="n">start</span> <span class="o">=</span> <span class="n">bssrt2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                            <span class="n">end</span> <span class="o">=</span> <span class="n">bsend2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                            <span class="n">isoform</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                        <span class="p">)</span>
+                        <span class="n">bs2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">intera</span><span class="o">.</span><span class="n">Ptm</span><span class="p">(</span>
+                                <span class="n">protein</span> <span class="o">=</span> <span class="n">uniprot2</span><span class="p">,</span>
+                                <span class="n">motif</span> <span class="o">=</span> <span class="n">mot</span><span class="p">,</span>
+                                <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span>
+                                    <span class="n">resource</span> <span class="o">=</span> <span class="n">domino_resource</span><span class="p">,</span>
+                                <span class="p">),</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">one</span><span class="p">,</span> <span class="n">two</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">bs1</span><span class="p">,</span> <span class="n">bs2</span><span class="p">):</span>
+
+
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">one</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Domain&#39;</span> <span class="ow">and</span>
+                        <span class="n">two</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Domain&#39;</span>
+                    <span class="p">):</span>
+
+                        <span class="n">dd</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">DomainDomain</span><span class="p">(</span>
+                            <span class="n">one</span><span class="p">,</span>
+                            <span class="n">two</span><span class="p">,</span>
+                            <span class="n">sources</span> <span class="o">=</span> <span class="s1">&#39;DOMINO&#39;</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">ddi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">one</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Domain&#39;</span> <span class="ow">and</span>
+                        <span class="n">two</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Ptm&#39;</span>
+                    <span class="p">):</span>
+
+                        <span class="n">dm</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">DomainMotif</span><span class="p">(</span>
+                            <span class="n">domain</span> <span class="o">=</span> <span class="n">one</span><span class="p">,</span>
+                            <span class="n">ptm</span> <span class="o">=</span> <span class="n">two</span><span class="p">,</span>
+                            <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span>
+                                <span class="n">resource</span> <span class="o">=</span> <span class="n">domino_resource</span><span class="p">,</span>
+                                <span class="n">references</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="n">dmi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dm</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">two</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Domain&#39;</span> <span class="ow">and</span>
+                        <span class="n">one</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Ptm&#39;</span>
+                    <span class="p">):</span>
+
+                        <span class="n">dm</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">DomainMotif</span><span class="p">(</span>
+                            <span class="n">domain</span> <span class="o">=</span> <span class="n">two</span><span class="p">,</span>
+                            <span class="n">ptm</span> <span class="o">=</span> <span class="n">one</span><span class="p">,</span>
+                            <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span>
+                                <span class="n">resource</span> <span class="o">=</span> <span class="n">domino_resource</span><span class="p">,</span>
+                                <span class="n">references</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="n">dmi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dm</span><span class="p">)</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;ddi&#39;</span><span class="p">:</span> <span class="n">ddi</span><span class="p">,</span> <span class="s1">&#39;dmi&#39;</span><span class="p">:</span> <span class="n">dmi</span><span class="p">}</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,985 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.inputs.msigdb &#8212; pypath 0.16.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=77553476" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css?v=b64fc3cb" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../../../_static/documentation_options.js?v=fa0329c2"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pypath/inputs/msigdb';</script>
+    <link rel="icon" href="../../../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../../../contents.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/omnipath-logo.svg" class="logo__image only-light" alt="Pypath"/>
+    <script>document.write(`<img src="../../../_static/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath"/>`);</script>
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-university fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">OmniPath</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-solid fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Saez Lab</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../contents.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../inputs.html" class="nav-link">pypath.inputs</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">pypath.inputs.msigdb</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pypath.inputs.msigdb</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright 2014-2023</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: see the file `README.rst`</span>
+<span class="c1">#  Contact: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      https://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: https://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;msigdb_input&#39;</span><span class="p">)</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span>
+
+
+<span class="n">ALL_COLLECTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;hallmark&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;h.all&#39;</span><span class="p">,</span> <span class="s1">&#39;mh.all&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;positional&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c1.all&#39;</span><span class="p">,</span> <span class="s1">&#39;m1.all&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;chemical_and_genetic_perturbations&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cgp&#39;</span><span class="p">,</span> <span class="s1">&#39;m2.cgp&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;biocarta_pathways&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cp.biocarta&#39;</span><span class="p">,</span> <span class="s1">&#39;m2.cp.biocarta&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;kegg_pathways&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cp.kegg&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;pid_pathways&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cp.pid&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;reactome_pathways&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cp.reactome&#39;</span><span class="p">,</span> <span class="s1">&#39;m2.cp.reactome&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;wikipathways&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c2.cp.wikipathways&#39;</span><span class="p">,</span> <span class="s1">&#39;m2.cp.wikipathways&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;mirna_targets_mirdb&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c3.mir.mirdb&#39;</span><span class="p">,</span> <span class="s1">&#39;m3.mirdb&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;mirna_targets_legacy&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c3.mir.mir_legacy&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;tf_targets_gtrf&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c3.tft.gtrd&#39;</span><span class="p">,</span> <span class="s1">&#39;m3.gtrd&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;tf_targets_legacy&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c3.tft.tft_legacy&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;cancer_gene_neighborhoods&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c4.cgn&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;cancer_modules&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c4.cm&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;go_biological_process&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c5.go.bp&#39;</span><span class="p">,</span> <span class="s1">&#39;m5.go.bp&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;go_molecular_function&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c5.go.mf&#39;</span><span class="p">,</span> <span class="s1">&#39;m5.go.mf&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;go_cellular_component&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c5.go.cc&#39;</span><span class="p">,</span> <span class="s1">&#39;m5.go.cc&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;human_phenotype_ontology&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c5.hpo&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;mouse_phenotype_ontology&#39;</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;m5.mpt&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;oncogenic_signatures&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c6.all&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;immunesigdb&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c7.immunesigdb&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;vaccine_response&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c7.vax&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s1">&#39;cell_type_signatures&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;c8.all&#39;</span><span class="p">,</span> <span class="s1">&#39;m8.all&#39;</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="msigdb_download">
+<a class="viewcode-back" href="../../../api/pypath.inputs.msigdb.msigdb_download.html#pypath.inputs.msigdb.msigdb_download">[docs]</a>
+<span class="k">def</span> <span class="nf">msigdb_download</span><span class="p">(</span>
+        <span class="n">registered_email</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="s1">&#39;msigdb&#39;</span><span class="p">,</span>
+        <span class="n">id_type</span> <span class="o">=</span> <span class="s1">&#39;symbols&#39;</span><span class="p">,</span>
+        <span class="n">force_download</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="s1">&#39;human&#39;</span><span class="p">,</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads and preprocesses a collection of gmt format gene sets from</span>
+<span class="sd">    MSigDB. Returns dict of sets with gene set names as keys and molecular</span>
+<span class="sd">    identifiers as values.</span>
+
+<span class="sd">    :arg str,NoneType registered_email:</span>
+<span class="sd">        An email address registered at MSigDB. If `None` the `msigdb_email`</span>
+<span class="sd">        from ``pypath.settings`` will be used.</span>
+<span class="sd">    :arg str collection:</span>
+<span class="sd">        The name of the gene set collection. For available collections (e.g.</span>
+<span class="sd">        `h.all` or `c2.cpg`) refer to the MSigDB website:</span>
+<span class="sd">        http://software.broadinstitute.org/gsea/downloads.jsp#msigdb</span>
+<span class="sd">        The default value `msigdb` contains all the genesets however you</span>
+<span class="sd">        won&#39;t be able to distinguish which geneset comes from which</span>
+<span class="sd">        collection. For this you need to download the collections one by one.</span>
+<span class="sd">    :arg str id_type:</span>
+<span class="sd">        MSigDB provides Gene Symbols (`symbols`) and Entrez Gene IDs</span>
+<span class="sd">        (`entrez`).</span>
+<span class="sd">    :arg bool force_download:</span>
+<span class="sd">        Download even if cache content is available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">registered_email</span> <span class="o">=</span> <span class="n">registered_email</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;msigdb_email&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">registered_email</span><span class="p">:</span>
+
+        <span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;To download MSigDB you must provide an email address &#39;</span>
+            <span class="s1">&#39;you have previously registered at &#39;</span>
+            <span class="s1">&#39;`http://software.broadinstitute.org/gsea/register.jsp`. &#39;</span>
+            <span class="s1">&#39;Could not proceed, returning empty dict.&#39;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="n">organisms</span> <span class="o">=</span> <span class="p">{</span><span class="mi">9606</span><span class="p">:</span> <span class="s1">&#39;Hs&#39;</span><span class="p">,</span> <span class="mi">10090</span><span class="p">:</span> <span class="s1">&#39;Mm&#39;</span><span class="p">}</span>
+    <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
+    <span class="n">msigdb_org</span> <span class="o">=</span> <span class="n">organisms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ncbi_tax_id</span><span class="p">:</span>
+
+        <span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not recognize organism: `</span><span class="si">{</span><span class="n">organism</span><span class="si">}</span><span class="s1">`.&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="n">version</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;msigdb_version&#39;</span><span class="p">)</span>
+
+    <span class="c1">#http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Mm/mh.all.v2022.1.Mm.symbols.gmt</span>
+    <span class="c1">#http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Hs/h.all.v2022.1.Hs.symbols.gmt</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;msigdb&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="n">version</span><span class="p">,</span>
+        <span class="n">msigdb_org</span><span class="p">,</span>
+        <span class="n">collection</span><span class="p">,</span>
+        <span class="n">version</span><span class="p">,</span>
+        <span class="n">msigdb_org</span><span class="p">,</span>
+        <span class="n">id_type</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">req_headers</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># we shouldn&#39;t need this cookie game any more as all files are available</span>
+    <span class="c1"># without any login or cookie from data.broadinstitute.org</span>
+    <span class="n">c_nocall</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">call</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">process</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">bypass_url_encoding</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">c_nocall</span><span class="o">.</span><span class="n">cache_file_name</span><span class="p">)</span> <span class="ow">or</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">c_nocall</span><span class="o">.</span><span class="n">cache_file_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span>
+        <span class="n">force_download</span>
+    <span class="p">):</span>
+
+        <span class="n">c_login_1</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+            <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;msigdb&#39;</span><span class="p">][</span><span class="s1">&#39;login1&#39;</span><span class="p">],</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">write_cache</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">process</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">silent</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">post</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">registered_email</span><span class="p">,</span>
+                <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">empty_attempt_again</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">follow</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">cookies</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c_login_1</span><span class="p">,</span> <span class="s1">&#39;resp_headers&#39;</span><span class="p">):</span>
+
+            <span class="k">for</span> <span class="n">hdr</span> <span class="ow">in</span> <span class="n">c_login_1</span><span class="o">.</span><span class="n">resp_headers</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">hdr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;set-cookie&#39;</span><span class="p">):</span>
+
+                    <span class="n">cookie</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+                    <span class="n">cookie</span> <span class="o">=</span> <span class="n">cookie</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">cookie</span> <span class="o">=</span> <span class="n">cookie</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">cookie</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cookie</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;msigdb cookie: `</span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">cookie</span><span class="p">)</span>
+                    <span class="n">cookies</span><span class="p">[</span><span class="n">cookie</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cookie</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cookies</span><span class="p">:</span>
+
+            <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;msigdb: could not get cookie, returning empty list.&#39;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">{}</span>
+
+        <span class="n">req_headers</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;Cookie: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">cookie</span>
+                <span class="k">for</span> <span class="n">cookie</span> <span class="ow">in</span> <span class="n">cookies</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">c_login_2</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+            <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;msigdb&#39;</span><span class="p">][</span><span class="s1">&#39;login2&#39;</span><span class="p">],</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">write_cache</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">large</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">silent</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">req_headers</span> <span class="o">=</span> <span class="n">req_headers</span><span class="p">,</span>
+            <span class="n">post</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;j_username&#39;</span><span class="p">:</span> <span class="n">registered_email</span><span class="p">,</span>
+                <span class="s1">&#39;j_password&#39;</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">process</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">empty_attempt_again</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">jsessionid_1</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c_login_2</span><span class="p">,</span> <span class="s1">&#39;resp_headers&#39;</span><span class="p">):</span>
+
+            <span class="k">for</span> <span class="n">hdr</span> <span class="ow">in</span> <span class="n">c_login_2</span><span class="o">.</span><span class="n">resp_headers</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">hdr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;set-cookie&#39;</span><span class="p">):</span>
+
+                    <span class="n">jsessionid_1</span> <span class="o">=</span> <span class="n">hdr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">jsessionid_1</span> <span class="o">=</span> <span class="n">jsessionid_1</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+
+            <span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;msigdb: logged in with email `</span><span class="si">%s</span><span class="s1">`, &#39;</span>
+                <span class="s1">&#39;new cookie obtained: `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">registered_email</span><span class="p">,</span>
+                    <span class="n">jsessionid_1</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">_log</span><span class="p">(</span><span class="s1">&#39;msigdb cookies for upcoming request: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">req_headers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">req_headers</span> <span class="o">=</span> <span class="n">req_headers</span><span class="p">,</span>
+        <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">bypass_url_encoding</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">force_download</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">gset</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+
+        <span class="n">gset</span> <span class="o">=</span> <span class="n">gset</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="p">[</span><span class="n">gset</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">gset</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="msigdb_download_collections">
+<a class="viewcode-back" href="../../../api/pypath.inputs.msigdb.msigdb_download_collections.html#pypath.inputs.msigdb.msigdb_download_collections">[docs]</a>
+<span class="k">def</span> <span class="nf">msigdb_download_collections</span><span class="p">(</span>
+        <span class="n">registered_email</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">only_collections</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;c5&#39;</span><span class="p">,</span> <span class="s1">&#39;m5&#39;</span><span class="p">),</span>
+        <span class="n">id_type</span> <span class="o">=</span> <span class="s1">&#39;symbols&#39;</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="s1">&#39;human&#39;</span><span class="p">,</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads all or some MSigDB gene set collections.</span>
+<span class="sd">    Returns a dict of dicts where upper level keys are collections while</span>
+<span class="sd">    lower level keys are geneset names and values are molecular identifiers.</span>
+
+<span class="sd">    :arg str,NoneType registered_email:</span>
+<span class="sd">        An email address registered at MSigDB. If `None` the `msigdb_email`</span>
+<span class="sd">        from ``pypath.settings`` will be used.</span>
+<span class="sd">    :arg set,NoneType only_collections:</span>
+<span class="sd">        Limit the annotations only to these collections. For available</span>
+<span class="sd">        collections e.g. ``{&#39;h.all&#39;, &#39;c2.cgp&#39;}`` refer to the MSigDB webpage:</span>
+<span class="sd">        http://software.broadinstitute.org/gsea/downloads.jsp#msigdb</span>
+<span class="sd">    :arg tuple exclude:</span>
+<span class="sd">        Exclude the collections having their name starting with any of the</span>
+<span class="sd">        strings in this tuple. By default `c5` and `m5` (Gene Ontology and</span>
+<span class="sd">        Human/Mouse Phenotype Ontology) is excluded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">collection_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">organisms</span> <span class="o">=</span> <span class="p">{</span><span class="mi">9606</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10090</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">organisms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">collection</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">ALL_COLLECTIONS</span><span class="p">):</span>
+
+        <span class="n">label</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">label</span> <span class="ow">or</span>
+            <span class="p">(</span>
+                <span class="n">only_collections</span> <span class="ow">and</span>
+                <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">only_collections</span>
+            <span class="p">)</span> <span class="ow">or</span>
+            <span class="nb">any</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">)</span>
+        <span class="p">):</span>
+
+            <span class="k">continue</span>
+
+        <span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;MSigDB: downloading collection `</span><span class="si">%s</span><span class="s1">` (</span><span class="si">%s</span><span class="s1">).&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">collection_data</span><span class="p">[(</span><span class="n">collection</span><span class="p">,</span> <span class="n">label</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">msigdb_download</span><span class="p">(</span>
+                <span class="n">registered_email</span> <span class="o">=</span> <span class="n">registered_email</span><span class="p">,</span>
+                <span class="n">collection</span> <span class="o">=</span> <span class="n">label</span><span class="p">,</span>
+                <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>
+                <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">collection_data</span></div>
+
+
+
+<div class="viewcode-block" id="msigdb_annotations">
+<a class="viewcode-back" href="../../../api/pypath.inputs.msigdb.msigdb_annotations.html#pypath.inputs.msigdb.msigdb_annotations">[docs]</a>
+<span class="k">def</span> <span class="nf">msigdb_annotations</span><span class="p">(</span>
+        <span class="n">registered_email</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">only_collections</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;c5&#39;</span><span class="p">,</span> <span class="s1">&#39;m5&#39;</span><span class="p">),</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="s1">&#39;human&#39;</span><span class="p">,</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads all or some MSigDB gene set collections and processes them</span>
+<span class="sd">    to an annotation type dictionary.</span>
+
+<span class="sd">    :arg str,NoneType registered_email:</span>
+<span class="sd">        An email address registered at MSigDB. If `None` the `msigdb_email`</span>
+<span class="sd">        from ``pypath.settings`` will be used.</span>
+<span class="sd">    :arg set,NoneType only_collections:</span>
+<span class="sd">        Limit the annotations only to these collections. For available</span>
+<span class="sd">        collections e.g. ``{&#39;h.all&#39;, &#39;c2cgp&#39;}`` refer to the MSigDB webpage:</span>
+<span class="sd">        http://software.broadinstitute.org/gsea/downloads.jsp#msigdb</span>
+<span class="sd">    :arg tuple exclude:</span>
+<span class="sd">        Exclude the collections having their name starting with any of the</span>
+<span class="sd">        strings in this tuple. By default `c5` (Gene Ontology) is excluded.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">MsigdbAnnotation</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;MsigdbAnnotation&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;collection&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;geneset&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+
+    <span class="n">annotations</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="n">collection_data</span> <span class="o">=</span> <span class="n">msigdb_download_collections</span><span class="p">(</span>
+        <span class="n">registered_email</span> <span class="o">=</span> <span class="n">registered_email</span><span class="p">,</span>
+        <span class="n">only_collections</span> <span class="o">=</span> <span class="n">only_collections</span><span class="p">,</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span><span class="p">,</span>
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">ensure_ncbi_tax_id</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">label</span><span class="p">),</span> <span class="n">genesets</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">collection_data</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">geneset</span><span class="p">,</span> <span class="n">genesymbols</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">genesets</span><span class="p">):</span>
+
+            <span class="n">this_annot</span> <span class="o">=</span> <span class="n">MsigdbAnnotation</span><span class="p">(</span>
+                <span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span><span class="p">,</span>
+                <span class="n">geneset</span> <span class="o">=</span> <span class="n">geneset</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">map_names</span><span class="p">(</span>
+                <span class="n">genesymbols</span><span class="p">,</span>
+                <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
+                <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
+            <span class="p">):</span>
+
+                <span class="n">annotations</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">this_annot</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../index.html">Welcome to pypath!</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../releasehistory.html">Release history</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1 toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="../../../notebooks/manual.html">The pypath book</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
