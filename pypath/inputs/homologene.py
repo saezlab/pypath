@@ -36,7 +36,7 @@ def get_homologene():
     Returns file pointer.
     """
 
-    url = urls.urls['homologene']['url']
+    url = urls.urls['homologene']['url_rescued']
 
     c = curl.Curl(
         url = url,

@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "pypath-omnipath"
-version = "0.16.4"
+version = "0.16.10"
 description = "Molecular signaling prior knowledge processing"
 license = "GPL-3.0-only"
 authors = [
@@ -62,7 +62,7 @@ openpyxl = "*"
 pandas = "*"
 psutil = "*"
 pycurl = "*"
-pypath_common = ">=0.2.0"
+pypath-common = ">=0.2.0"
 pyreadr = "*"
 PyYAML = "*"
 rdata = "*"

@@ -981,8 +981,9 @@ urls = {
     },
     'homologene': {
         'label': 'NCBI HomoloGene data, recent release',
-        'url': 'https://ftp.ncbi.nih.gov/pub/HomoloGene/'
+        'url_original': 'https://ftp.ncbi.nih.gov/pub/HomoloGene/'
             'current/homologene.data',
+        'url_rescued': 'https://rescued.omnipathdb.org/homologene.data',
     },
     'mirbase' : {
         'label': 'miRBase: miRNA main reference database',
@@ -1428,7 +1429,7 @@ urls = {
     },
     'cellchatdb': {
         'label': 'Manually curated ligand-receptor interactions',
-        'url': 'https://raw.githubusercontent.com/sqjin/CellChat/'
+        'url': 'https://raw.githubusercontent.com/jinworks/CellChat/'
             'master/data/%s.rda',
     },
     'connectomedb2020': {

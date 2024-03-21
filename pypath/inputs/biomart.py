@@ -28,6 +28,7 @@ import collections
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
+import pypath_common.data as _data
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
@@ -111,7 +112,7 @@ def biomart_query(
 
     rewsp = re.compile(r'\n\s+')
 
-    xml_template_path = os.path.join(common.DATA, 'ensembl_biomart_query.xml')
+    xml_template_path = _data.path('ensembl_biomart_query.xml')
 
     with open(xml_template_path, 'r') as fp:
 
@@ -134,16 +135,17 @@ def biomart_query(
     xml_query = rewsp.sub('', xml_query)
 
     biomart_url = urls.urls['ensembl']['biomart_url'] % xml_query
-
     c = curl.Curl(biomart_url, large = True, silent = False)
-
     success = False
 
     for line in c.result:
 
         _line = line.strip('\n\r').split('\t')
 
-        success = success or _line[0] == '[success]'
+        if _line[0] == '[success]':
+
+            success = True
+            continue
 
         if line.strip() and len(_line) == len(record._fields):
 
