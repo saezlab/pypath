@@ -343,7 +343,7 @@ def get_uniprot_sec(organism = 9606):
     if _organism:
 
         from pypath.inputs import uniprot_db
-        proteome = uniprot_db.all_uniprots(organism=organism)
+        proteome = uniprot_db._all_uniprots(organism=organism)
         proteome = set(proteome)
 
     sec_pri = []
