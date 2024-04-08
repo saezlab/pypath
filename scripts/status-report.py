@@ -287,6 +287,7 @@ class StatusReport(object):
             nobuild = None,
             prev_run = None,
             poetry = None,
+            python_version = None,
         ):
 
         self.parse_args()
@@ -298,6 +299,7 @@ class StatusReport(object):
         self.nobuild = nobuild or self.clargs.nobuild
         self.prev_dir = prev_run or self.clargs.prev_run
         self.poetry = poetry or self.clargs.poetry
+        self._python_version = python_version or self.clargs.python
         self.from_git = (
             from_git
                 if from_git is not None else
@@ -377,6 +379,11 @@ class StatusReport(object):
                 'already been installed. Do not try to find or install '
                 'pypath but simply import it and run.',
             action = 'store_true',
+        )
+        self.clargs.add_argument(
+            '-P', '--python',
+            help = 'Python version',
+            type = str,
         )
         self.clargs = self.clargs.parse_args()
 
@@ -714,6 +721,8 @@ class StatusReport(object):
 
                 _log('Entering directory `pypath_git`.')
                 os.chdir('pypath_git')
+                _log(f'Configuring poetry to use Python {self.python_version}')
+                os.system(f'poetry env use {self.python_version}')
                 _log('Running `poetry install`.')
                 os.system('poetry config installer.modern-installation false')
                 os.system('poetry install')
@@ -796,6 +805,15 @@ class StatusReport(object):
             f'{" --prev_run " + self.prev_dir if self.prev_dir else ""}'
             f'{" --nobuild" if self.nobuild else ""}'
         )
+
+
+    @property
+    def python_version(self) -> str:
+
+        return re.match(
+            r'^\d+\.\d+',
+            self._python_version or '.'.join(sys.version[:2]),
+        ).group()
 
 
     @staticmethod
