@@ -19,6 +19,13 @@
 
 from __future__ import annotations
 
+import json
+
+import pandas as pd
+
+import pypath.resources.urls as urls
+import pypath.share.curl as curl
+
 
 def idtypes(
         pairs: bool = True,
