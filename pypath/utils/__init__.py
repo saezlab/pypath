@@ -16,3 +16,5 @@
 #
 #  Website: https://pypath.omnipathdb.org/
 #
+
+from . import orthology as homology
