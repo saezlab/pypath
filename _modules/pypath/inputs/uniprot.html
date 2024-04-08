@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.uniprot &#8212; pypath 0.16.10 documentation</title>
+    <title>pypath.inputs.uniprot &#8212; pypath 0.16.11 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../../_static/documentation_options.js?v=9e32664a"></script>
+    <script src="../../../_static/documentation_options.js?v=3a4ae253"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -547,6 +547,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
 <span class="kn">import</span> <span class="nn">pypath_common._constants</span> <span class="k">as</span> <span class="nn">_const</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
+<span class="kn">from</span> <span class="nn">pypath.inputs.uniprot_idmapping</span> <span class="kn">import</span> <span class="n">idtypes</span> <span class="k">as</span> <span class="n">idmapping_idtypes</span>
 
 <span class="n">_logger</span> <span class="o">=</span> <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;uniprot_input&#39;</span><span class="p">)</span>
 
@@ -2261,80 +2262,6 @@ document.write(`
     <span class="k">if</span> <span class="n">entry</span> <span class="ow">and</span> <span class="s1">&#39;ncbi_id&#39;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
 
         <span class="n">result</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;ncbi_id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">result</span></div>
-
-
-
-<div class="viewcode-block" id="idmapping_idtypes">
-<a class="viewcode-back" href="../../../api/pypath.inputs.uniprot.idmapping_idtypes.html#pypath.inputs.uniprot.idmapping_idtypes">[docs]</a>
-<span class="k">def</span> <span class="nf">idmapping_idtypes</span><span class="p">(</span>
-        <span class="n">pairs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">raw</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Identifier types in the UniProt ID mapping service.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        pairs:</span>
-<span class="sd">            Process the data into pairs of identifiers.</span>
-<span class="sd">        raw:</span>
-<span class="sd">            Return the raw data as extracted from JSON.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        The JSON contents as a dict if `raw` is `True`,</span>
-<span class="sd">        a list of tuples if `pairs` is `True`,</span>
-<span class="sd">        otherwise a set of tuples of ID types.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_idmapping&#39;</span><span class="p">][</span><span class="s1">&#39;fields&#39;</span><span class="p">]</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">raw</span><span class="p">:</span>
-
-        <span class="k">return</span> <span class="n">data</span>
-
-    <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;groups&#39;</span><span class="p">])</span><span class="o">.</span>
-        <span class="n">explode</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">)</span><span class="o">.</span>
-        <span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">groups</span><span class="p">[</span><span class="s1">&#39;groupName&#39;</span><span class="p">],</span>
-                <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-            <span class="p">],</span>
-            <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">.</span>
-        <span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;from_&#39;</span><span class="p">})</span>
-    <span class="p">)</span>
-
-    <span class="n">rules</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rules&#39;</span><span class="p">])</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">pairs</span><span class="p">:</span>
-
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;groups&#39;</span><span class="p">:</span> <span class="n">groups</span><span class="p">,</span> <span class="s1">&#39;rules&#39;</span><span class="p">:</span> <span class="n">rules</span><span class="p">}</span>
-
-    <span class="n">rules</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ruleId</span><span class="p">):</span> <span class="n">r</span><span class="o">.</span><span class="n">tos</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rules</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()}</span>
-    <span class="n">groups</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">idtype</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
-
-        <span class="n">tos</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">idtype</span><span class="o">.</span><span class="n">ruleId</span><span class="p">),</span> <span class="p">[])</span>
-
-        <span class="n">from_to</span> <span class="o">=</span> <span class="p">{(</span><span class="n">idtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tos</span><span class="p">}</span>
-
-        <span class="k">if</span> <span class="n">idtype</span><span class="o">.</span><span class="n">from_</span><span class="p">:</span>
-
-            <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">from_to</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">idtype</span><span class="o">.</span><span class="n">to</span><span class="p">:</span>
-
-            <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">t</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">from_to</span><span class="p">})</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
 

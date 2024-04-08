@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.internals.input_formats &#8212; pypath 0.16.10 documentation</title>
+    <title>pypath.internals.input_formats &#8212; pypath 0.16.11 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../../_static/documentation_options.js?v=9e32664a"></script>
+    <script src="../../../_static/documentation_options.js?v=3a4ae253"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -527,7 +527,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
 <span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
 <span class="kn">import</span> <span class="nn">pypath_common._constants</span> <span class="k">as</span> <span class="nn">_const</span>
-<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot_idmapping</span> <span class="k">as</span> <span class="nn">uniprot_idmapping</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.unichem</span> <span class="k">as</span> <span class="nn">unichem_input</span>
 
 <span class="n">_logger</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;input_formats&#39;</span><span class="p">)</span>
@@ -1066,7 +1066,7 @@ document.write(`
         <span class="n">id_type_b</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_to_uniprot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type_b</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span>
         <span class="n">id_type_b</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_id_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_type_b</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span>
 
-        <span class="n">pairs</span> <span class="o">=</span> <span class="n">uniprot_input</span><span class="o">.</span><span class="n">idmapping_idtypes</span><span class="p">()</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="n">uniprot_idmapping</span><span class="o">.</span><span class="n">idtypes</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">id_type_a</span><span class="p">,</span> <span class="n">id_type_b</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pairs</span></div>
 
