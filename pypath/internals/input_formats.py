@@ -24,7 +24,7 @@ import copy
 import pypath.share.settings as settings
 import pypath.share.session as session
 import pypath_common._constants as _const
-import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.uniprot_idmapping as uniprot_idmapping
 import pypath.inputs.unichem as unichem_input
 
 _logger = session.Logger(name = 'input_formats')
@@ -537,7 +537,7 @@ class UniprotListMapping(MappingInput):
         id_type_b = cls._to_uniprot.get(id_type_b, id_type_b)
         id_type_b = cls._resource_id_types.get(id_type_b, id_type_b)
 
-        pairs = uniprot_input.idmapping_idtypes()
+        pairs = uniprot_idmapping.idtypes()
 
         return (id_type_a, id_type_b) in pairs
 
