@@ -198,6 +198,7 @@ class ResourceAttributes(object):
         self.name = name
         self.data_type = data_type
         self.evidence_types = evidence_types or set()
+        self.resource_attrs = {}
 
         for attr, value in iteritems(kwargs):
 
@@ -368,7 +369,7 @@ class NetworkResource(ResourceAttributes):
     @property
     def license(self) -> license.License | None:
 
-        return getattr(self, 'resource_attrs', None).get('license')
+        return self.resource_attrs.get('license', None)
 
 
 class NetworkDataset(collections.abc.MutableMapping):
