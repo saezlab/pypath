@@ -134,9 +134,7 @@ def dorothea_expand_levels(resources = None, levels = None):
 
         return resources
 
-    else:
-
-        return dorothea
+    return dorothea
 
 
 for dataset_label in dir(data_formats):
