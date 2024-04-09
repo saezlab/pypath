@@ -17,17 +17,13 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from future.utils import iteritems
-from past.builtins import xrange, range
-
 import os
-import sys
 import importlib as imp
 import re
 import json
 import copy
 import itertools
-import collections
+from future.utils import iteritems
 
 import pandas as pd
 
