@@ -37,7 +37,7 @@ import functools
 import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath.internals.resource as resource_base
-import pypath.resources.network as netres
+import pypath.resources._network as netres
 from . import licenses as licenses
 
 
@@ -154,31 +154,21 @@ class ResourceController(session_mod.Logger):
 
             if 'license' in res_data:
 
-                if isinstance(res_data['license'], str):
+                res_data['license'] = self.license_db[res_data]
+                self.licenses[res] = res_data['license']
 
-                    self._update_license(res_data)
-                    self.licenses[res] = res_data['license']
+                for synonym in res_data.get('synonyms', ()):
 
-                    if 'synonyms' in res_data:
+                    self.licenses[synonym] = res_data['license']
+                    self.synonyms[synonym] = res
 
-                        for synonym in res_data['synonyms']:
+                if 'components' in res_data:
 
-                            self.licenses[synonym] = res_data['license']
-                            self.synonyms[synonym] = res
-
-                    if 'components' in res_data:
-
-                        self.secondary[res] = set(res_data['components'])
+                    self.secondary[res] = set(res_data['components'])
 
             else:
 
-                self._log('No license for resource `%s`.' % res)
-
-
-    def _update_license(self, resource_data):
-
-        license_key = resource_data['license']
-        resource_data['license'] = self.license_db[license_key]
+                self._log(f'No license for resource `{res}`.')
 
 
     def __getitem__(self, key):
