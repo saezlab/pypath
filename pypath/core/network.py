@@ -53,9 +53,10 @@ import pypath.utils.mapping as mapping
 import pypath.inputs.pubmed as pubmed_input
 import pypath.share.curl as curl
 import pypath.internals.refs as refs_mod
-import pypath.internals.resource as resource_mod
 import pypath.utils.reflists as reflists
 import pypath.resources.network as network_resources
+import pypath.internals.input_formats as input_formats
+import pypath.internals.resource as resource_formats
 import pypath.inputs as inputs
 
 # Py 2/3
@@ -379,7 +380,7 @@ class Network(session_mod.Logger):
 
     :arg list,dict resources:
         One or more lists or dictionaries containing
-        ``pypath.resource.NetworkResource`` objects.
+        ``pypath.internals.resource.NetworkResource`` objects.
     :arg bool make_df:
         Create a ``pandas.DataFrame`` already when creating the instance.
         If no network data loaded no data frame will be created.
@@ -556,8 +557,8 @@ class Network(session_mod.Logger):
             all resources in the `pathway` collection). If *dict* or *list*
             it will be processed recursively i.e. the ``load`` method will be
             called for each element. If it is a
-            ``pypath.resource.NetworkResource`` object it will be processed
-            and added to the network.
+            ``pypath.internals.resource.NetworkResource`` object it will be
+            processed and added to the network.
         :arg bool make_df:
             Whether to create a ``pandas.DataFrame`` after loading all
             resources.
@@ -614,9 +615,8 @@ class Network(session_mod.Logger):
                 isinstance(
                     resource,
                     (
-                        network_resources.data_formats.\
-                            input_formats.NetworkInput,
-                        network_resources.resource.NetworkResource,
+                        input_formats.NetworkInput,
+                        resource_formats.NetworkResource,
                     )
                 ) and resource.name not in exclude
             ):
@@ -805,15 +805,13 @@ class Network(session_mod.Logger):
         # and NetworkResource type param
         _resource = (
             resource
-                if isinstance(
-                    resource,
-                    network_resources.resource.NetworkResource
-                ) else
-            network_resources.resource.NetworkResource(
+                if isinstance(resource, resource_formats.NetworkResource) else
+            resource_formats.NetworkResource(
                 name = resource.name,
                 interaction_type = resource.interaction_type,
                 networkinput = resource,
                 data_model = resource.data_model or 'unknown',
+                resource_attrs = resource.resource_attrs,
             )
         )
 
@@ -876,17 +874,16 @@ class Network(session_mod.Logger):
                 if not isinstance(
                     resource,
                     (
-                        network_resources.data_formats.\
-                            input_formats.NetworkInput,
-                        network_resources.resource.NetworkResource,
+                        input_formats.NetworkInput,
+                        resource_formats.NetworkResource,
                     )
                 ):
 
                     self._log(
                         '_read_network_data: No proper input file '
                         'definition. `param` should be either '
-                        'a `pypath.input_formats.NetworkInput` or a '
-                        '`pypath.resource.NetworkResource` instance.',
+                        'a `pypath.internals.input_formats.NetworkInput` or a '
+                        '`pypath.internals.resource.NetworkResource` instance.',
                         -5,
                     )
 
@@ -1285,7 +1282,7 @@ class Network(session_mod.Logger):
                     resource = common.to_set(resource)
 
                     _resources_secondary = tuple(
-                        network_resources.resource.NetworkResource(
+                        resource_formats.NetworkResource(
                             name = sec_res,
                             interaction_type = _resource.interaction_type,
                             data_model = _resource.data_model,
@@ -2990,7 +2987,7 @@ class Network(session_mod.Logger):
 
             pass
 
-        resources = resource_mod.NetworkDataset(
+        resources = resource_formats.NetworkDataset(
             name = dataset,
             resources = resources,
         )
@@ -3006,7 +3003,7 @@ class Network(session_mod.Logger):
             pathway_extra = False,
             old_omnipath_resources = False,
             exclude = None,
-        ) -> list[network_resoruces.resource.NetworkResource]:
+        ) -> list[resource_formats.NetworkResource]:
 
 
         def reference_constraints(resources, data_model, relax = True):
@@ -3063,7 +3060,7 @@ class Network(session_mod.Logger):
             if enabled:
 
                 extra = list(
-                    resource_mod.NetworkDataset(
+                    resource_formats.NetworkDataset(
                         name = dataset,
                         resources = reference_constraints(
                             omnipath,
