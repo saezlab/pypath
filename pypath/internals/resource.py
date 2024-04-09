@@ -236,7 +236,7 @@ class ResourceAttributes(object):
 
         if hasattr(self, 'networkinput'):
 
-            netinput_new = copy.deepcopy(self.networkinput)
+            netinput_new = copy.deepcopy(networkinput)
             netinput_new.dataset = dataset
             self.networkinput = netinput_new
 
