@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.core.network &#8212; pypath 0.16.12 documentation</title>
+    <title>pypath.core.network &#8212; pypath 0.16.13 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../../_static/documentation_options.js?v=0db26839"></script>
+    <script src="../../../_static/documentation_options.js?v=a9caec20"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -556,9 +556,10 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pypath.inputs.pubmed</span> <span class="k">as</span> <span class="nn">pubmed_input</span>
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
 <span class="kn">import</span> <span class="nn">pypath.internals.refs</span> <span class="k">as</span> <span class="nn">refs_mod</span>
-<span class="kn">import</span> <span class="nn">pypath.internals.resource</span> <span class="k">as</span> <span class="nn">resource_mod</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.reflists</span> <span class="k">as</span> <span class="nn">reflists</span>
 <span class="kn">import</span> <span class="nn">pypath.resources.network</span> <span class="k">as</span> <span class="nn">network_resources</span>
+<span class="kn">import</span> <span class="nn">pypath.internals.input_formats</span> <span class="k">as</span> <span class="nn">input_formats</span>
+<span class="kn">import</span> <span class="nn">pypath.internals.resource</span> <span class="k">as</span> <span class="nn">resource_formats</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs</span> <span class="k">as</span> <span class="nn">inputs</span>
 
 <span class="c1"># Py 2/3</span>
@@ -890,7 +891,7 @@ document.write(`
 
 <span class="sd">    :arg list,dict resources:</span>
 <span class="sd">        One or more lists or dictionaries containing</span>
-<span class="sd">        ``pypath.resource.NetworkResource`` objects.</span>
+<span class="sd">        ``pypath.internals.resource.NetworkResource`` objects.</span>
 <span class="sd">    :arg bool make_df:</span>
 <span class="sd">        Create a ``pandas.DataFrame`` already when creating the instance.</span>
 <span class="sd">        If no network data loaded no data frame will be created.</span>
@@ -1078,8 +1079,8 @@ document.write(`
 <span class="sd">            all resources in the `pathway` collection). If *dict* or *list*</span>
 <span class="sd">            it will be processed recursively i.e. the ``load`` method will be</span>
 <span class="sd">            called for each element. If it is a</span>
-<span class="sd">            ``pypath.resource.NetworkResource`` object it will be processed</span>
-<span class="sd">            and added to the network.</span>
+<span class="sd">            ``pypath.internals.resource.NetworkResource`` object it will be</span>
+<span class="sd">            processed and added to the network.</span>
 <span class="sd">        :arg bool make_df:</span>
 <span class="sd">            Whether to create a ``pandas.DataFrame`` after loading all</span>
 <span class="sd">            resources.</span>
@@ -1136,9 +1137,8 @@ document.write(`
                 <span class="nb">isinstance</span><span class="p">(</span>
                     <span class="n">resource</span><span class="p">,</span>
                     <span class="p">(</span>
-                        <span class="n">network_resources</span><span class="o">.</span><span class="n">data_formats</span><span class="o">.</span>\
-                            <span class="n">input_formats</span><span class="o">.</span><span class="n">NetworkInput</span><span class="p">,</span>
-                        <span class="n">network_resources</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">,</span>
+                        <span class="n">input_formats</span><span class="o">.</span><span class="n">NetworkInput</span><span class="p">,</span>
+                        <span class="n">resource_formats</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span> <span class="ow">and</span> <span class="n">resource</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span>
             <span class="p">):</span>
@@ -1331,15 +1331,13 @@ document.write(`
         <span class="c1"># and NetworkResource type param</span>
         <span class="n">_resource</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">resource</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-                    <span class="n">resource</span><span class="p">,</span>
-                    <span class="n">network_resources</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">NetworkResource</span>
-                <span class="p">)</span> <span class="k">else</span>
-            <span class="n">network_resources</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">(</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">resource_formats</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">)</span> <span class="k">else</span>
+            <span class="n">resource_formats</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">(</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">interaction_type</span><span class="p">,</span>
                 <span class="n">networkinput</span> <span class="o">=</span> <span class="n">resource</span><span class="p">,</span>
                 <span class="n">data_model</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">data_model</span> <span class="ow">or</span> <span class="s1">&#39;unknown&#39;</span><span class="p">,</span>
+                <span class="n">resource_attrs</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">resource_attrs</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -1402,17 +1400,16 @@ document.write(`
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
                     <span class="n">resource</span><span class="p">,</span>
                     <span class="p">(</span>
-                        <span class="n">network_resources</span><span class="o">.</span><span class="n">data_formats</span><span class="o">.</span>\
-                            <span class="n">input_formats</span><span class="o">.</span><span class="n">NetworkInput</span><span class="p">,</span>
-                        <span class="n">network_resources</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">,</span>
+                        <span class="n">input_formats</span><span class="o">.</span><span class="n">NetworkInput</span><span class="p">,</span>
+                        <span class="n">resource_formats</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">):</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                         <span class="s1">&#39;_read_network_data: No proper input file &#39;</span>
                         <span class="s1">&#39;definition. `param` should be either &#39;</span>
-                        <span class="s1">&#39;a `pypath.input_formats.NetworkInput` or a &#39;</span>
-                        <span class="s1">&#39;`pypath.resource.NetworkResource` instance.&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;a `pypath.internals.input_formats.NetworkInput` or a &#39;</span>
+                        <span class="s1">&#39;`pypath.internals.resource.NetworkResource` instance.&#39;</span><span class="p">,</span>
                         <span class="o">-</span><span class="mi">5</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -1811,7 +1808,7 @@ document.write(`
                     <span class="n">resource</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span>
 
                     <span class="n">_resources_secondary</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-                        <span class="n">network_resources</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">(</span>
+                        <span class="n">resource_formats</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">(</span>
                             <span class="n">name</span> <span class="o">=</span> <span class="n">sec_res</span><span class="p">,</span>
                             <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">_resource</span><span class="o">.</span><span class="n">interaction_type</span><span class="p">,</span>
                             <span class="n">data_model</span> <span class="o">=</span> <span class="n">_resource</span><span class="o">.</span><span class="n">data_model</span><span class="p">,</span>
@@ -3581,7 +3578,7 @@ document.write(`
 
             <span class="k">pass</span>
 
-        <span class="n">resources</span> <span class="o">=</span> <span class="n">resource_mod</span><span class="o">.</span><span class="n">NetworkDataset</span><span class="p">(</span>
+        <span class="n">resources</span> <span class="o">=</span> <span class="n">resource_formats</span><span class="o">.</span><span class="n">NetworkDataset</span><span class="p">(</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">,</span>
             <span class="n">resources</span> <span class="o">=</span> <span class="n">resources</span><span class="p">,</span>
         <span class="p">)</span>
@@ -3598,7 +3595,7 @@ document.write(`
             <span class="n">pathway_extra</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">old_omnipath_resources</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">exclude</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">network_resoruces</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">]:</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">resource_formats</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">]:</span>
 
 
         <span class="k">def</span> <span class="nf">reference_constraints</span><span class="p">(</span><span class="n">resources</span><span class="p">,</span> <span class="n">data_model</span><span class="p">,</span> <span class="n">relax</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
@@ -3655,7 +3652,7 @@ document.write(`
             <span class="k">if</span> <span class="n">enabled</span><span class="p">:</span>
 
                 <span class="n">extra</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                    <span class="n">resource_mod</span><span class="o">.</span><span class="n">NetworkDataset</span><span class="p">(</span>
+                    <span class="n">resource_formats</span><span class="o">.</span><span class="n">NetworkDataset</span><span class="p">(</span>
                         <span class="n">name</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">,</span>
                         <span class="n">resources</span> <span class="o">=</span> <span class="n">reference_constraints</span><span class="p">(</span>
                             <span class="n">omnipath</span><span class="p">,</span>
