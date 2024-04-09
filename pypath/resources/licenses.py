@@ -105,14 +105,12 @@ class Licenses(session.Logger):
 
             return key
 
-        elif key in self:
+        if key in self:
 
             return self.licenses[key]
 
-        else:
-
-            self._log('Missing license: `%s`.' % str(key))
-            return key
+        self._log(f'Missing license: `{key}`.')
+        return key
 
 
     def __contains__(self, key):
