@@ -812,7 +812,7 @@ class StatusReport(object):
 
         return re.match(
             r'^\d+\.\d+',
-            self._python_version or '.'.join(sys.version[:2]),
+            self._python_version or '%d.%d' % sys.version_info[:2]),
         ).group()
 
 
