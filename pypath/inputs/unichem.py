@@ -22,7 +22,7 @@ import sys
 import textwrap
 import collections
 
-import bs4
+import json
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -56,25 +56,18 @@ def unichem_info():
 
     url = urls.urls['unichem']['sources']
     c = curl.Curl(url, large = False, silent = False)
-    soup = bs4.BeautifulSoup(c.result, 'html.parser')
-    result = []
+    response = json.loads(c.result)
 
-    for table in soup.find_all('table'):
-
-        if table.find('tr').text.strip().startswith('src_id'):
-
-            for row in table.find_all('tr')[2:]:
-
-                fields = row.find_all('td')
-
-                result.append(
-                    UnichemSource(
-                        *(
-                            field.text.strip()
-                            for field in fields
-                        )
-                    )
-                )
+    result = [
+        UnichemSource(
+            number = s['sourceID'],
+            label = s['nameLabel'],
+            name = s['name'],
+            description = s['description'],
+            acquisition = s['lastUpdated'],
+        )
+        for s in response['sources']
+    ]
 
     return result
 
