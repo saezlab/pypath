@@ -124,7 +124,7 @@ class ResourceController(session_mod.Logger):
 
         try:
 
-            with open(path) as json_file:
+            with open(path, encoding = 'utf-8') as json_file:
 
                 resources_data = json.load(json_file)
                 self.data = resources_data

@@ -1845,13 +1845,13 @@ class Mapper(session_mod.Logger):
             name (str): The original name to be converted.
             id_type (str): The type of the name. Available by default:
                 - genesymbol (gene name)
-                - entrez (Entrez Gene ID \[#\])
-                - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
-                - ensp (Ensembl protein ID \[ENSP\*\])
-                - enst (Ensembl transcript ID \[ENST\*\])
-                - ensg (Ensembl genomic DNA ID \[ENSG\*\])
-                - hgnc (HGNC ID \[HGNC:#\])
-                - gi (GI number \[#\])
+                - entrez (Entrez Gene ID [#])
+                - refseqp (NCBI RefSeq Protein ID [NP_|XP_*])
+                - ensp (Ensembl protein ID [ENSP*])
+                - enst (Ensembl transcript ID [ENST*])
+                - ensg (Ensembl genomic DNA ID [ENSG*])
+                - hgnc (HGNC ID [HGNC:#])
+                - gi (GI number [#])
                 - embl (DDBJ/EMBL/GeneBank CDS accession)
                 - embl_id (DDBJ/EMBL/GeneBank accession)
                 And many more, see the code of
@@ -2270,13 +2270,13 @@ class Mapper(session_mod.Logger):
             name (str): The original name to be converted.
             id_type (str): The type of the name. Available by default:
                 - genesymbol (gene name)
-                - entrez (Entrez Gene ID \[#\])
-                - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
-                - ensp (Ensembl protein ID \[ENSP\*\])
-                - enst (Ensembl transcript ID \[ENST\*\])
-                - ensg (Ensembl genomic DNA ID \[ENSG\*\])
-                - hgnc (HGNC ID \[HGNC:#\])
-                - gi (GI number \[#\])
+                - entrez (Entrez Gene ID [#])
+                - refseqp (NCBI RefSeq Protein ID [NP_*|XP_*])
+                - ensp (Ensembl protein ID [ENSP*])
+                - enst (Ensembl transcript ID [ENST*])
+                - ensg (Ensembl genomic DNA ID [ENSG*])
+                - hgnc (HGNC ID [HGNC:#])
+                - gi (GI number [#])
                 - embl (DDBJ/EMBL/GeneBank CDS accession)
                 - embl_id (DDBJ/EMBL/GeneBank accession)
                 And many more, see the code of
@@ -3519,13 +3519,13 @@ def map_name(
         name (str): The original name to be converted.
         id_type (str): The type of the name. Available by default:
             - genesymbol (gene name)
-            - entrez (Entrez Gene ID \[#\])
-            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
-            - ensp (Ensembl protein ID \[ENSP\*\])
-            - enst (Ensembl transcript ID \[ENST\*\])
-            - ensg (Ensembl genomic DNA ID \[ENSG\*\])
-            - hgnc (HGNC ID \[HGNC:#\])
-            - gi (GI number \[#\])
+            - entrez (Entrez Gene ID [#])
+            - refseqp (NCBI RefSeq Protein ID [NP_*|XP_*])
+            - ensp (Ensembl protein ID [ENSP*])
+            - enst (Ensembl transcript ID [ENST*])
+            - ensg (Ensembl genomic DNA ID [ENSG*])
+            - hgnc (HGNC ID [HGNC:#])
+            - gi (GI number [#])
             - embl (DDBJ/EMBL/GeneBank CDS accession)
             - embl_id (DDBJ/EMBL/GeneBank accession)
             And many more, see the code of
@@ -3609,13 +3609,13 @@ def map_names(
         name (str): The original name to be converted.
         id_type (str): The type of the name. Available by default:
             - genesymbol (gene name)
-            - entrez (Entrez Gene ID \[#\])
-            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
-            - ensp (Ensembl protein ID \[ENSP\*\])
-            - enst (Ensembl transcript ID \[ENST\*\])
-            - ensg (Ensembl genomic DNA ID \[ENSG\*\])
-            - hgnc (HGNC ID \[HGNC:#\])
-            - gi (GI number \[#\])
+            - entrez (Entrez Gene ID [#])
+            - refseqp (NCBI RefSeq Protein ID [NP_*|XP_*])
+            - ensp (Ensembl protein ID [ENSP*])
+            - enst (Ensembl transcript ID [ENST*])
+            - ensg (Ensembl genomic DNA ID [ENSG*])
+            - hgnc (HGNC ID [HGNC:#])
+            - gi (GI number [#])
             - embl (DDBJ/EMBL/GeneBank CDS accession)
             - embl_id (DDBJ/EMBL/GeneBank accession)
             And many more, see the code of
