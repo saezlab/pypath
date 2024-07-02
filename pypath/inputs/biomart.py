@@ -30,6 +30,7 @@ import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath_common.data as _data
 import pypath.share.curl as curl
+import pypath.share.settings as settings
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
 
@@ -135,7 +136,12 @@ def biomart_query(
     xml_query = rewsp.sub('', xml_query)
 
     biomart_url = urls.urls['ensembl']['biomart_url'] % xml_query
-    c = curl.Curl(biomart_url, large = True, silent = False)
+    c = curl.Curl(
+        biomart_url,
+        req_headers = [settings.get('user_agent')],
+        large = True,
+        silent = False,
+    )
     success = False
 
     for line in c.result:
@@ -231,7 +237,7 @@ def biomart_microarray_types(organism: int | str = 9606):
     organism = taxonomy.ensure_ensembl_name(organism)
 
     url = urls.urls['ensembl']['arraytypes'] % organism
-    c = curl.Curl(url)
+    c = curl.Curl(url, req_headers = [settings.get('user_agent')])
     result = json.loads(c.result)
 
     _ = [

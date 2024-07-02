@@ -24,6 +24,7 @@ import bs4
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.settings as settings
 
 
 """
@@ -43,7 +44,7 @@ def ensembl_organisms():
     record = None
     result = []
     url = urls.urls['ensembl']['species']
-    c = curl.Curl(url)
+    c = curl.Curl(url, req_headers = [settings.get('user_agent')])
 
     with warnings.catch_warnings():
 
