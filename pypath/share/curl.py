@@ -885,7 +885,7 @@ class Curl(FileOpener):
         self.connect_timeout = settings.get('curl_connect_timeout')
         self.ignore_content_length = ignore_content_length
         self.override_post = override_post
-        self.retries = max(retries or settings.get('curl_retries'), 1)
+        self.retries = retries or settings.get('curl_retries') or 3
         self.req_headers = req_headers
         self._req_headers_list()
         self.post = post
