@@ -28,6 +28,7 @@ import pathlib
 import importlib.metadata
 
 import toml
+import itertools
 
 _VERSION = '0.16.16'
 
@@ -51,16 +52,28 @@ def get_metadata():
         if os.path.exists(toml_path):
 
             pyproject = toml.load(toml_path)
+            try:
+                packages = set(
+                    itertools.chain(*(
+                        package.values() 
+                        for package in pyproject['tool']['poetry']['packages']
+                    ))
+                )
+            except KeyError:
+                packages = set()
 
-            meta = {
-                'name': pyproject['tool']['poetry']['name'],
-                'version': pyproject['tool']['poetry']['version'],
-                'author': pyproject['tool']['poetry']['authors'],
-                'license': pyproject['tool']['poetry']['license'],
-                'full_metadata': pyproject,
-            }
+            name = __name__.split('.')[0]
+            if  name == pyproject['tool']['poetry']['name'] or name in packages:
 
-            break
+                meta = {
+                    'name': pyproject['tool']['poetry']['name'],
+                    'version': pyproject['tool']['poetry']['version'],
+                    'author': pyproject['tool']['poetry']['authors'],
+                    'license': pyproject['tool']['poetry']['license'],
+                    'full_metadata': pyproject,
+                }
+
+                break
 
     if not meta:
 
