@@ -122,27 +122,28 @@ def processed(
             Process the first N records only. Useful for peeking into
             the data.
     """
+
     SCHEMA = globals()[f'{dataset.upper()}_SCHEMA']
     fields = [Field(d[0], *d) for d in (common.to_tuple(f) for f in fields)]
     fields.extend(Field(n, *f) for n, f in named_fields.items())
     keys = [f.d[0] for f in fields]
     schema = {k: SCHEMA[k] for k in keys}
+    columns = []
 
     if not fields:
 
         raise ValueError('At least one field must be provided.')
 
-    columns = []
-    data = []
-    result = pd.DataFrame()
-
-    for i, record in enumerate(raw(dataset, schema, head = head)):
+    for record in raw(dataset, schema, head = head):
 
         cols, rows = zip(*(f.process(record) for f in fields))
         columns = columns or list(itertools.chain(*cols))
-        data.extend(itertools.product(*itertools.chain(*rows)))
-        
-    
+
+        for record in itertools.product(*itertools.chain(*rows)):
+
+            yield record, columns
+
+
 def table(
         *fields: str | tuple,
         dataset: Literal['metabolites', 'proteins'],
@@ -174,13 +175,25 @@ def table(
             the data.
     """
 
-        if (i + 1) % 100 == 0:
+    data = []
+    result = pd.DataFrame()
 
-            df = pd.DataFrame.from_records(data, columns = columns)
+    for i, (rec, cols) in enumerate(processed(
+        *fields,
+        dataset = dataset,
+        head = head,
+        **named_fields
+    )):
+
+        data.append(rec)
+
+        if (i + 1) % 1000 == 0:
+
+            df = pd.DataFrame.from_records(data, columns = cols)
             result = pd.concat((result, df))
             data = []
 
-    df = pd.DataFrame.from_records(data, columns = columns)
+    df = pd.DataFrame.from_records(data, columns = cols)
     result = pd.concat((result, df))
 
     return result

@@ -74,6 +74,67 @@ def raw(
     )
 
 
+def processed(
+        *fields: str | tuple,
+        head: int | None = None,
+        **named_fields: str | tuple,
+    ) -> pd.DataFrame:
+    """
+    Parse various simple and nested array fields from HMDB into data frame.
+
+    Args:
+        fields:
+            Fields to include in the data frame. These must be keys in the
+            schema, and will be also used as column names. Alternatively,
+            tuples of sequetial processing steps can be provided: strings
+            will be used as keys in nested dicts, tuples will be used as
+            multiple keys in dicts, each yielding a separate column, the
+            special symbol "*" means all keys in the sub-dict, while "@"
+            means expand arrays into multiple rows. Be careful with this
+            latter option because it is applied in a combinatorial way, i.e.
+            in case of expanding an array to 5 rowns, and another one to 7
+            rows results already 35 rows from a single record. This might
+            result excessive memory use and processing time.
+        named_fields:
+            Same as `fields`, but the column name can be different from the
+            top level key: argument names will be used as column names,
+            values will be used as processing steps.
+        head:
+            Process the first N records only. Useful for peeking into
+            the data.
+
+    Examples:
+
+        ..code-block:: python
+
+           from pypath.inputs import hmdb
+           mets = list(hmdb.metabolites_processed(
+               'accession',
+               'smiles',
+               'state',
+               head = 10,
+           ))
+           mets = list(hmdb.metabolites_processed(
+               'accession',
+               ('synonyms', '@'),
+               head = 10,
+           ))
+           mets = list(hmdb.metabolites_processed(
+               'accession',
+               ('taxonomy', ('class', 'substituents')),
+               head = 10,
+           ))
+
+    """
+
+    return hmdb_common.processed(
+        *fields,
+        dataset = 'metabolites',
+        head = head,
+        **named_fields,
+    )
+
+
 def table(
         *fields: str | tuple,
         head: int | None = None,
@@ -108,18 +169,18 @@ def table(
         ..code-block:: python
 
            from pypath.inputs import hmdb
-           df = hmdb.hmdb_metabolites_table(
+           df = hmdb.metabolites_table(
                'accession',
                'smiles',
                'state',
                head = 10,
            )
-           df = hmdb.hmdb_metabolites_table(
+           df = hmdb.metabolites_table(
                'accession',
                ('synonyms', '@'),
                head = 10,
            )
-           df = hmdb.hmdb_metabolites_table(
+           df = hmdb.metabolites_table(
                'accession',
                ('taxonomy', ('class', 'substituents')),
                head = 10,

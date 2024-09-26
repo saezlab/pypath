@@ -29,6 +29,7 @@ from .schema.common import Field
 from .metabolites import (
     iter as iter_metabolites,
     raw as metabolites_raw,
+    processed as metabolites_processed,
     table as metabolites_table,
     mapping as metabolites_mapping,
 )  # noqa: F401
