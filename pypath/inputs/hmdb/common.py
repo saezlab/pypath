@@ -92,6 +92,57 @@ def raw(
     return result
 
 
+def processed(
+        *fields: str | tuple,
+        dataset: Literal['metabolites', 'proteins'],
+        head: int | None = None,
+        **named_fields: str | tuple,
+    ) -> pd.DataFrame:
+    """
+    Parse various simple and nested array fields from HMDB into data frame.
+
+    Args:
+        fields:
+            Fields to include in the data frame. These must be keys in the
+            schema, and will be also used as column names. Alternatively,
+            tuples of sequetial processing steps can be provided: strings
+            will be used as keys in nested dicts, tuples will be used as
+            multiple keys in dicts, each yielding a separate column, the
+            special symbol "*" means all keys in the sub-dict, while "@"
+            means expand arrays into multiple rows. Be careful with this
+            latter option because it is applied in a combinatorial way, i.e.
+            in case of expanding an array to 5 rowns, and another one to 7
+            rows results already 35 rows from a single record. This might
+            result excessive memory use and processing time.
+        named_fields:
+            Same as `fields`, but the column name can be different from the
+            top level key: argument names will be used as column names,
+            values will be used as processing steps.
+        head:
+            Process the first N records only. Useful for peeking into
+            the data.
+    """
+    SCHEMA = globals()[f'{dataset.upper()}_SCHEMA']
+    fields = [Field(d[0], *d) for d in (common.to_tuple(f) for f in fields)]
+    fields.extend(Field(n, *f) for n, f in named_fields.items())
+    keys = [f.d[0] for f in fields]
+    schema = {k: SCHEMA[k] for k in keys}
+
+    if not fields:
+
+        raise ValueError('At least one field must be provided.')
+
+    columns = []
+    data = []
+    result = pd.DataFrame()
+
+    for i, record in enumerate(raw(dataset, schema, head = head)):
+
+        cols, rows = zip(*(f.process(record) for f in fields))
+        columns = columns or list(itertools.chain(*cols))
+        data.extend(itertools.product(*itertools.chain(*rows)))
+        
+    
 def table(
         *fields: str | tuple,
         dataset: Literal['metabolites', 'proteins'],
@@ -122,26 +173,6 @@ def table(
             Process the first N records only. Useful for peeking into
             the data.
     """
-
-    SCHEMA = globals()[f'{dataset.upper()}_SCHEMA']
-    fields = [Field(d[0], *d) for d in (common.to_tuple(f) for f in fields)]
-    fields.extend(Field(n, *f) for n, f in named_fields.items())
-    keys = [f.d[0] for f in fields]
-    schema = {k: SCHEMA[k] for k in keys}
-
-    if not fields:
-
-        raise ValueError('At least one field must be provided.')
-
-    columns = []
-    data = []
-    result = pd.DataFrame()
-
-    for i, record in enumerate(raw(dataset, schema, head = head)):
-
-        cols, rows = zip(*(f.process(record) for f in fields))
-        columns = columns or list(itertools.chain(*cols))
-        data.extend(itertools.product(*itertools.chain(*rows)))
 
         if (i + 1) % 100 == 0:
 
