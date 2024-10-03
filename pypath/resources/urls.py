@@ -1755,6 +1755,14 @@ urls = {
         'url_human': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-human.txt',
         'url_mouse': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-mouse.txt',
     },
+    'swisslipids': {
+        'label': 'A knowledge resource for lipids and their biology',
+        'url': 'https://swisslipids.org/api/file.php?cas=download_files&file=%s.tsv',
+    },
+    'lipidmaps': {
+        'label': '',
+        'lmsd': 'https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip'
+    },
 }
 
 

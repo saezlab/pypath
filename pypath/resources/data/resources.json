@@ -4882,5 +4882,24 @@
         "https://pubmed.ncbi.nlm.nih.gov/34500458/"
       ]
     }
+  },
+  "SwissLipids": {
+    "license": "CC BY 4.0",
+    "urls": {
+      "webpages": ["https://www.swisslipids.org/"],
+      "articles": [
+        "https://academic.oup.com/bioinformatics/article/31/17/2860/183669"
+      ]
+    }
+  },
+  "LipidMAPS": {
+    "full_name": "LIPID MAPS",
+    "license": "CC BY 4.0",
+    "urls": {
+      "webpages": ["https://lipidmaps.org/"],
+      "articles": [
+        "https://doi.org/10.1093/nar/gkad896"
+      ]
+    }
   }
 }
