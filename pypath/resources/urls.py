@@ -1761,7 +1761,7 @@ urls = {
     },
     'lipidmaps': {
         'label': '',
-        'lmsd': 'https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip'
+        'lmsd': 'https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip',
     },
 }
 
