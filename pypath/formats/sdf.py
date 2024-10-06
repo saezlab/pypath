@@ -24,12 +24,16 @@ Parse chemical table (SDF) files.
 """
 
 from typing import IO
+from collections.abc import Generator, Iterable
 
 import importlib as imp
 import sys
 import os
 import re
 import collections
+import itertools
+import types
+import warnings
 
 from pypath_common import _misc
 import pypath.share.session as session
@@ -54,9 +58,11 @@ class SdfReader(session.Logger):
         'CHEBI_ID': 'chebi',
         'SYNONYMS': 'synonym',
         'INCHI': 'inchi',
-        'INCHIKEY': 'inchikey',
+        'INCHI_KEY': 'inchikey',
         'COMMON_NAME': 'commname',
-        'SYSTEMATIC_NAME': 'sysname'
+        'SYSTEMATIC_NAME': 'sysname',
+        'SMILES': 'smiles',
+        'FORMULA': 'formula',
     }
 
 
@@ -66,6 +72,7 @@ class SdfReader(session.Logger):
             names: dict | None = None,
             fields: set | None = None,
             silent: bool = True,
+            mol: bool = False,
         ):
         """
         Processes and serves data from an SDF file.
@@ -91,28 +98,24 @@ class SdfReader(session.Logger):
                 retrieved with each record. Works the same way as `names`.
             silent:
                 Print number of records at the end of indexing.
+            mol:
+                Include the structure as chemical tab with the records.
         """
 
         session.Logger.__init__(self, name = 'sdf')
 
         self.sdf = sdf
-        self.data = {}
-        self.mainkey = {}
         self.indexed = False
         self.silent = silent
-
-        self.names = names or {}
-        self.names.update(self.names_default)
+        self.name_fields = names or {}
+        self.name_fields.update(self.names_default)
         self.fields = fields or set()
+        self.store_mol = mol
 
-        for name in self.names.values():
-
-            setattr(self, name, {})
-
+        self._empty()
         self._open()
         self._byte_mode()
         self._file_size()
-        self.index()
 
 
     def reload(self):
@@ -125,6 +128,16 @@ class SdfReader(session.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+
+
+    def _empty(self):
+
+        self.data = {}
+        self.synonym = collections.defaultdict(set)
+        self.names = {
+            name: collections.defaultdict(set)
+            for name in itertools.chain(('id',), self.name_fields.values())
+        }
 
 
     def _open(self):
@@ -166,12 +179,11 @@ class SdfReader(session.Logger):
         self.eof = self.fp.tell()
 
 
-    def read(
+    def parse(
             self,
-            index_only = True,
-            one_record = False,
-            go_to = 0,
-        ):
+            go_to: int = 0,
+            store_mol: bool | None = None,
+        ) -> Generator[tuple[dict, int]]:
         """
         Performs all reading operations on the sdf file.
 
@@ -179,28 +191,34 @@ class SdfReader(session.Logger):
         an index of records, and retrieve one record.
 
         Args:
-            index_only:
-                 Do not read the file, only build an index.
-            one_record:
-                 Read only one record.
             go_to:
                 Start reading from this byte offset in the file.
+            store_mol:
+                Include in the records also the structure as chemical tab.
         """
+
+        if not isinstance(store_mol, bool):
+
+            store_mol = self._store_mol(store_mol)
 
         self.fp.seek(go_to)
 
+        # Parser state
         expect_new = True
         molpart = None
         namepart = False
         name_or_id = False
-        _id = None
-        mol = ''
         this_offset = None
         offset = 0
+
+        # Store parsed record
+        _id = None
+        source = None
+        mol = ''
         name = {}
         annot = {}
         namekey = None
-        self.synonym = collections.defaultdict(set)
+
 
         for line in self.fp:
 
@@ -213,7 +231,7 @@ class SdfReader(session.Logger):
 
                     expect_new = True
 
-                if namekey and namekey in self.names:
+                if namekey and namekey in self.name_fields:
 
                     name[namekey] = line
                     namekey = None
@@ -235,6 +253,7 @@ class SdfReader(session.Logger):
 
                 if expect_new and llen:
 
+                    # Start of new record
                     _id = line
                     name = {}
                     annot = {}
@@ -262,7 +281,7 @@ class SdfReader(session.Logger):
 
             if molpart == 3:
 
-                if not index_only:
+                if store_mol:
 
                     mol += line
 
@@ -272,82 +291,148 @@ class SdfReader(session.Logger):
                     namepart = True
                     name_or_id = True
 
-            if expect_new or self.fp.tell() == self.eof:
-
-                if one_record:
-
-                    return {
-                        'id': _id,
-                        'source': source,
-                        'comment': comment,
-                        'mol': mol,
-                        'name': name,
-                        'annot': annot,
-                    }
-
-                # this is indexing: we build dicts of names
-                self.mainkey[_id] = this_offset
-
-                if m := refa2.match(name.get('COMMON_NAME', '')):
-
-                    name['SYNONYMS'] = ';'.join(
-                        _misc.to_list(name.get('SYNONYMS', None)) +
-                        [f'FA({m.groups()[0]})']
-                    )
-
-                for k, v in self.names.items():
-
-                    if k == 'SYNONYMS' and k in name:
-
-                        syns = {syn.strip() for syn in name[k].split(';')}
-
-                        for rexp, templ in zip(
-                            (rehg, resyn, refa),
-                            ('%s%s', '%s(%s/%s)', 'FA(%s)')
-                        ):
-
-                            syns |= {
-                                templ % ((hgsyn.get(g[0], g[0]),) + g[1:])
-                                for syn in syns
-                                if (
-                                    (m := rexp.match(syn)) and
-                                    (g := m.groups())
-                                )
-                            }
-
-                        for syn in syns:
-
-                            self.synonym[syn].add(this_offset)
-
-                    else:
-
-                        getattr(self, v)[name[k]] = this_offset
-
-                if not index_only:
-
-                    self.data[this_offset] = {
-                        'id': _id,
-                        'source': source,
-                        'comment': comment,
-                        'mol': mol,
-                        'name': name,
-                        'annot': annot,
-                    }
-
             offset += llen
 
-        if index_only:
+            if expect_new or self.fp.tell() == self.eof:
 
-            self.indexed = True
+                yield (
+                    {
+                        'id': _id,
+                        'source': source,
+                        'comment': comment,
+                        'mol': mol,
+                        'name': name,
+                        'annot': annot,
+                    },
+                    this_offset,
+                )
 
 
-    def index(self):
+    def __iter__(self):
 
-        self.read(index_only = True)
+        for record, _ in self.parse():
+
+            yield record
+
+
+    def load(
+            self,
+            store_mol: bool | None = None,
+            reload: bool = False,
+        ) -> None:
+        """
+        Loads the data from the SDF file into the dict under `data`.
+
+        Args:
+            store_mol:
+                Include in the records also the structure as chemical tab.
+            reload:
+                Reload even if the `data` dict is already populated.
+        """
+
+        self.index(
+            store = True,
+            store_mol = store_mol,
+            reindex = reload or not self.data,
+        )
+
+
+    def index(
+            self,
+            store: bool = False,
+            store_mol: bool | None = None,
+            reindex: bool = False,
+        ) -> None:
+        """
+        Builds an index of the SDF file.
+
+        Args:
+            store:
+                Store the parsed records in the dict under the `data`
+                attribute.
+            store_mol:
+                Store also the structure as chemical tab.
+            index_only:
+                Do not read the file, only build an index.
+        """
+
+        if self.indexed and not reindex:
+
+            return
+
+        store_mol = self._store_mol(store_mol)
+
+        self._empty()
+
+        for rec, offset in self.parse(store_mol = store and store_mol):
+
+            # this is indexing: we build dicts of names
+            self.names['id'][rec['id']].add(offset)
+            name = rec['name']
+
+            if m := refa2.match(name.get('COMMON_NAME', '')):
+
+                name['SYNONYMS'] = ';'.join(
+                    _misc.to_list(name.get('SYNONYMS', None)) +
+                    [f'FA({m.groups()[0]})']
+                )
+
+            for k, v in self.name_fields.items():
+
+                if k not in name:
+
+                    continue
+
+                if k == 'SYNONYMS':
+
+                    syns = {syn.strip() for syn in name[k].split(';')}
+
+                    for rexp, templ in zip(
+                        (rehg, resyn, refa),
+                        ('%s%s', '%s(%s/%s)', 'FA(%s)')
+                    ):
+
+                        syns |= {
+                            templ % ((hgsyn.get(g[0], g[0]),) + g[1:])
+                            for syn in syns
+                            if (
+                                (m := rexp.match(syn)) and
+                                (g := m.groups())
+                            )
+                        }
+
+                    for syn in syns:
+
+                        self.names['synonym'][syn].add(offset)
+
+                    name['SYNONYMS'] = ';'.join(syns)
+
+                else:
+
+                    self.names[v][name[k]].add(offset)
+
+            if store:
+
+                self.data[offset] = rec
+
         self.index_info()
+        self.indexed = True
 
 
-    def get_record(self, name, typ):
+    def _store_mol(self, store_mol: bool | None = None) -> bool:
+
+        return (
+            bool(self.store_mol)
+                if not isinstance(store_mol, bool) else
+            store_mol
+        )
+
+
+    def get_record(
+            self,
+            name: str | int,
+            typ: str | None = None,
+        ) -> list[dict]:
         """
         Retrieves all records matching `name`.
 
@@ -365,36 +450,26 @@ class SdfReader(session.Logger):
 
         result = []
 
-        if hasattr(self, typ):
+        if isinstance(name, int):
 
-            index = getattr(self, typ)
+            result = [self.by_offset(name)]
 
-            if name in index:
+        if (
+            (index := self.names.get(typ or 'id', None)) and
+            (offsets := index.get(name, None))
+        ):
 
-                if typ == 'synonym':
-
-                    for offset in index[name]:
-
-                        result.append(
-                            self.read(
-                                index_only = False,
-                                one_record = True,
-                                go_to = offset
-                            )
-                        )
-
-                else:
-
-                    offset = index[name]
-                    result.append(
-                        self.read(
-                            index_only = False,
-                            one_record = True,
-                            go_to = offset
-                        )
-                    )
+            result = list(map(self.by_offset, _misc.to_set(offsets)))
 
         return result
+
+
+    def by_offset(self, offset: int) -> dict:
+        """
+        Get a record by its byte offset in the SDF file.
+        """
+
+        return self.data.get(offset, next(self.parse(go_to = offset)))
 
 
     def get_obmol(self, name, typ, use_mol = False):
@@ -444,11 +519,47 @@ class SdfReader(session.Logger):
 
             yield mol
 
+    def _ensure_openbabel(self) -> types.ModuleType:
 
-    def record_to_obmol(self, record):
+        def _log_and_warn(msg):
+
+            self._log_traceback()
+            self._log(msg)
+            warnings.warn(msg)
+
+
+        try:
+
+            import openbabel.pybel as pybel
+
+            if 'ipykernel' not in sys.modules and pybel.tk is None:
+
+                try:
+
+                    import tkinter
+                    import PIL
+                    import PIL.ImageTk
+                    pybel.tk = tkinter
+                    pybel.PIL = PIL.Image
+                    pybel.piltk = PIL.ImageTk
+
+                except Exception as e:
+
+                    self.log_and_warn(
+                        '`PIL` or `tkinter` not available. '
+                        '`pybel` won\'t be able to draw molecules.'
+                    )
+
+        except Exception as e:
+            self.log_and_warn('Module `pybel` not available.')
+
+
+    def to_obmol(self, record):
         """
         Processes a record to `pybel.Molecule` object.
         """
+
+        pybel = self._ensure_openbabel()
 
         if 'INCHI' in record['name']:
 
@@ -462,11 +573,13 @@ class SdfReader(session.Logger):
 
     def record_to_obmol_mol(self, record):
 
+        pybel = self._ensure_openbabel()
+
         return pybel.readstring('mol', self.get_mol(record))
 
 
     @staticmethod
-    def get_mol(record):
+    def format_mol(record):
         """
         Returns structure as a string in mol format.
         """
@@ -519,23 +632,14 @@ class SdfReader(session.Logger):
             return rr
 
 
-    def __iter__(self):
-
-        return self.iter_records()
-
-
     def iter_records(self):
         """
         Iterates over all records in the SDF file.
         """
 
-        for offset in self.mainkey.values():
+        for offset in self.names['id'].values():
 
-            yield self.read(
-                index_only = False,
-                one_record = True,
-                go_to = offset
-            )
+            yield self.get_record(offset)
 
 
     def iter_obmol(self):
@@ -544,9 +648,9 @@ class SdfReader(session.Logger):
         objects.
         """
 
-        for _id in self.mainkey.keys():
+        for _id in self.names['id'].keys():
 
-            for mol in self.get_obmol(_id, typ = 'mainkey'):
+            for mol in self.get_obmol(_id, typ = 'id'):
 
                 yield mol
 
@@ -556,7 +660,7 @@ class SdfReader(session.Logger):
         Prints number of records indexed and name of the source file.
         """
 
-        msg = f'Indexed {len(self.mainkey)} records from `{self.fname}`.'
+        msg = f'Indexed {len(self.names['id'])} records from `{self.fname}`.'
 
         if not self.silent:
 
@@ -594,9 +698,33 @@ class SdfReader(session.Logger):
 
     def __len__(self):
 
-        return len(self.mainkey)
+        return len(self.names['id'])
 
 
     def __repr__(self):
 
         return f'<SDF file `{self.fname}`: {len(self)} records>'
+
+
+    def __contains__(self, name: str) -> bool:
+
+        return any(name in n for n in self.names.values())
+
+
+    def __getitem__(
+            self,
+            key: str | int | Iterable[str | int],
+        ) -> dict | list[dict] | None:
+
+        result = list(itertools.chain(*(
+
+           self.get_record(key, typ)
+
+           for key, typ in itertools.product(
+               _misc.to_list(key),
+               self.names.keys()
+           )
+
+        )))
+
+        return result[0] if len(result) == 1 else result or None
