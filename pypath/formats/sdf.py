@@ -29,7 +29,9 @@ import importlib as imp
 import sys
 import os
 import re
+import collections
 
+from pypath_common import _misc
 import pypath.share.session as session
 
 
@@ -198,42 +200,42 @@ class SdfReader(session.Logger):
         name = {}
         annot = {}
         namekey = None
+        self.synonym = collections.defaultdict(set)
 
-        for l in self.fp:
+        for line in self.fp:
 
-            llen = len(l)
-            l = l.decode('utf-8')
-            sl = l.strip()
+            llen = len(line)
+            line = line.decode('utf-8').strip()
 
             if not molpart:
 
-                if name_or_id and len(sl) and sl[0] != '>' and sl[0] != '$':
+                if name_or_id and line and line[0] != '>' and line[0] != '$':
 
                     expect_new = True
 
                 if namekey and namekey in self.names:
 
-                    name[namekey] = sl
+                    name[namekey] = line
                     namekey = None
 
                 if namekey and (not self.fields or namekey in self.fields):
 
-                    annot[namekey] = sl
+                    annot[namekey] = line
                     namekey = None
 
-                if sl[:3] == '> <':
+                if line[:3] == '> <':
 
                     name_or_id = False
                     namepart = True
-                    namekey = sl[3:-1]
+                    namekey = line[3:-1]
 
-                if namepart and sl == '':
+                if namepart and not line:
 
                     name_or_id = True
 
-                if expect_new and len(l):
+                if expect_new and llen:
 
-                    _id = sl
+                    _id = line
                     name = {}
                     annot = {}
                     this_offset = offset
@@ -243,29 +245,29 @@ class SdfReader(session.Logger):
 
             elif molpart == 1:
 
-                source = sl
+                source = line
                 molpart += 1
 
-            elif molpart == 2 and len(sl):
+            elif molpart == 2 and line:
 
-                if not sl[0].isdigit():
+                if not line[0].isdigit():
 
-                    comment = '%s %s' % (comment, sl)
+                    comment += f' {line}'
 
                 else:
 
                     molpart = 3
 
-            if sl == '$$$$':
-                expect_new = True
+            expect_new = line == '$$$$'
 
             if molpart == 3:
 
                 if not index_only:
 
-                    mol = '%s%s' % (mol, l)
+                    mol += line
 
-                if sl == 'M  END':
+                if line == 'M  END':
+
                     molpart = None
                     namepart = True
                     name_or_id = True
@@ -286,79 +288,40 @@ class SdfReader(session.Logger):
                 # this is indexing: we build dicts of names
                 self.mainkey[_id] = this_offset
 
-                if 'COMMON_NAME' in name:
+                if m := refa2.match(name.get('COMMON_NAME', '')):
 
-                    m = refa2.match(name['COMMON_NAME'])
-
-                    if m:
-
-                        if 'SYNONYMS' not in name:
-
-                            name['SYNONYMS'] = 'FA(%s)' % m.groups()[0]
-
-                        else:
-
-                            name['SYNONYMS'] = '%s;FA(%s)' % (
-                                name['SYNONYMS'],
-                                m.groups()[0]
-                            )
+                    name['SYNONYMS'] = ';'.join(
+                        _misc.to_list(name.get('SYNONYMS', None)) +
+                        [f'FA({m.groups()[0]})']
+                    )
 
                 for k, v in self.names.items():
 
-                    if k in name:
+                    if k == 'SYNONYMS' and k in name:
 
-                        if k == 'SYNONYMS':
+                        syns = {syn.strip() for syn in name[k].split(';')}
 
-                            syns = set(
-                                syn.strip() for syn in name[k].split(';')
-                            )
+                        for rexp, templ in zip(
+                            (rehg, resyn, refa),
+                            ('%s%s', '%s(%s/%s)', 'FA(%s)')
+                        ):
 
-                            syns2 = set()
+                            syns |= {
+                                templ % ((hgsyn.get(g[0], g[0]),) + g[1:])
+                                for syn in syns
+                                if (
+                                    (m := rexp.match(syn)) and
+                                    (g := m.groups())
+                                )
+                            }
 
-                            for syn in syns:
+                        for syn in syns:
 
-                                m = rehg.match(syn)
+                            self.synonym[syn].add(this_offset)
 
-                                if m:
+                    else:
 
-                                    m = m.groups()
-
-                                    if m[0] in hgsyn:
-
-                                        syns2.add(
-                                            '%s%s' % (hgsyn[m[0]], m[1])
-                                        )
-
-                            syns.update(syns2)
-                            syns2 = set()
-
-                            for syn in syns:
-
-                                m = resyn.match(syn)
-
-                                if m:
-
-                                    syns2.add('%s(%s/%s)' % m.groups())
-
-                                m = refa.match(syn)
-
-                                if m:
-
-                                    syns2.add('FA(%s)' % m.groups()[0])
-
-                            syns.update(syns2)
-
-                            for syn in syns:
-
-                                if syn not in self.synonym:
-
-                                    self.synonym[syn] = set()
-
-                                self.synonym[syn].add(this_offset)
-
-                        else:
-
-                            getattr(self, v)[name[k]] = this_offset
+                        getattr(self, v)[name[k]] = this_offset
 
                 if not index_only:
 
