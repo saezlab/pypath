@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The pypath book — pypath 0.16.16 documentation</title>
+  <title>The pypath book — pypath 0.16.18 documentation</title>
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -28,7 +28,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae">
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae">
   <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
-  <script src="../_static/documentation_options.js?v=f1c3729e"></script>
+  <script src="../_static/documentation_options.js?v=bda15545"></script>
   <script src="../_static/doctools.js?v=888ff710"></script>
   <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
   <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -49,6 +49,19 @@
   "../api/pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.html">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="docsearch:language" content="en">
+  <style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+  </style>
   <style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -648,6 +661,12 @@ data-default-mode="">
                               HMDB</a>
                             </li>
                           </ul>
+                        </li>
+                        <li class="toctree-l3">
+                          <a class="reference internal" href="#SwissLipids">SwissLipids</a>
+                        </li>
+                        <li class="toctree-l3">
+                          <a class="reference internal" href="#LIPID-MAPS">LIPID MAPS</a>
                         </li>
                         <li class="toctree-l3">
                           <a class="reference internal" href="#NCBI-E-Utils">NCBI E-Utils</a>
@@ -5075,6 +5094,724 @@ data-default-mode="">
                         </div>
                       </div>
                     </section>
+                  </section>
+                  <section id="SwissLipids">
+                    <h3>SwissLipids<a class="headerlink" href="#SwissLipids" title="Link to this heading">§</a></h3>
+                    <p>The <code class="docutils literal notranslate"><span class=
+                    "pre">pypath.inputs.swisslipids</span></code> module provides access to the <a class=
+                    "reference external" href="https://swisslipids.org/#/downloads">datasets available from SwissLipids
+                    for download</a>. Each function returns a <code class="docutils literal notranslate"><span class=
+                    "pre">csv.DictReader</span></code>, which is a generator that yields rows as dicts:</p>
+                    <div class="nbinput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[5]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
+                            "kn">import</span> <span class="n">swisslipids</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:38:03 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[3]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">tissues</span> <span class="o">=</span> <span class=
+                            "n">swisslipids</span><span class="o">.</span><span class=
+                            "n">swisslipids_tissues</span><span class="p">()</span>
+<span class="n">tissues</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:37:12 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[3]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+&lt;csv.DictReader at 0x6a4f241d0230&gt;
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[4]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="nb">next</span><span class="p">(</span><span class=
+                            "n">tissues</span><span class="p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:37:38 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[4]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'Lipid ID': 'SLM:000056561',
+ 'Lipid name': 'Phosphatidylcholine (40:6)',
+ 'Tissue/Cell ID': 'UBERON:0001969',
+ 'Tissue/Cell name': 'blood plasma',
+ 'Taxon ID': '9606',
+ 'Taxon scientific name': 'Homo sapiens',
+ 'Evidence tag ID': '6814'}
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>Alternatively, the datasets can be retrieved as data frames by the <code class=
+                    "docutils literal notranslate"><span class="pre">return_df</span></code> argument. The “lipids” and
+                    “lipids2uniprot” datasets use a large amount of memory if loaded this way.</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[6]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">swisslipids</span><span class="o">.</span><span class=
+                            "n">swisslipids_tissues</span><span class="p">(</span><span class=
+                            "n">return_df</span> <span class="o">=</span> <span class="kc">True</span><span class=
+                            "p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:40:23 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[6]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area rendered_html docutils container">
+                        <div>
+                          <table border="1" class="dataframe">
+                            <thead>
+                              <tr style="text-align: right;">
+                                <th></th>
+                                <th>Lipid ID</th>
+                                <th>Lipid name</th>
+                                <th>Tissue/Cell ID</th>
+                                <th>Tissue/Cell name</th>
+                                <th>Taxon ID</th>
+                                <th>Taxon scientific name</th>
+                                <th>Evidence tag ID</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th>0</th>
+                                <td>SLM:000056561</td>
+                                <td>Phosphatidylcholine (40:6)</td>
+                                <td>UBERON:0001969</td>
+                                <td>blood plasma</td>
+                                <td>9606</td>
+                                <td>Homo sapiens</td>
+                                <td>6814</td>
+                              </tr>
+                              <tr>
+                                <th>1</th>
+                                <td>SLM:000056510</td>
+                                <td>Phosphatidylcholine (34:3)</td>
+                                <td>UBERON:0001969</td>
+                                <td>blood plasma</td>
+                                <td>9606</td>
+                                <td>Homo sapiens</td>
+                                <td>6806</td>
+                              </tr>
+                              <tr>
+                                <th>2</th>
+                                <td>SLM:000056525</td>
+                                <td>Phosphatidylcholine (36:4)</td>
+                                <td>UBERON:0001969</td>
+                                <td>blood plasma</td>
+                                <td>9606</td>
+                                <td>Homo sapiens</td>
+                                <td>6809</td>
+                              </tr>
+                              <tr>
+                                <th>3</th>
+                                <td>SLM:000056524</td>
+                                <td>Phosphatidylcholine (36:3)</td>
+                                <td>UBERON:0001969</td>
+                                <td>blood plasma</td>
+                                <td>9606</td>
+                                <td>Homo sapiens</td>
+                                <td>6808</td>
+                              </tr>
+                              <tr>
+                                <th>4</th>
+                                <td>SLM:000056509</td>
+                                <td>Phosphatidylcholine (34:2)</td>
+                                <td>UBERON:0001969</td>
+                                <td>blood plasma</td>
+                                <td>9606</td>
+                                <td>Homo sapiens</td>
+                                <td>6805</td>
+                              </tr>
+                              <tr>
+                                <th>...</th>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                              </tr>
+                              <tr>
+                                <th>934</th>
+                                <td>SLM:000098542</td>
+                                <td>Phosphatidylethanolamine (O-18:0/16:0)</td>
+                                <td>UBERON:0000468</td>
+                                <td>multi-cellular organism</td>
+                                <td>6239</td>
+                                <td>Caenorhabditis elegans</td>
+                                <td>15918</td>
+                              </tr>
+                              <tr>
+                                <th>935</th>
+                                <td>SLM:000098543</td>
+                                <td>Phosphatidylethanolamine (O-18:0/16:1)</td>
+                                <td>UBERON:0000468</td>
+                                <td>multi-cellular organism</td>
+                                <td>6239</td>
+                                <td>Caenorhabditis elegans</td>
+                                <td>15917</td>
+                              </tr>
+                              <tr>
+                                <th>936</th>
+                                <td>SLM:000098546</td>
+                                <td>Phosphatidylethanolamine (O-18:0/18:0)</td>
+                                <td>UBERON:0000468</td>
+                                <td>multi-cellular organism</td>
+                                <td>6239</td>
+                                <td>Caenorhabditis elegans</td>
+                                <td>15916</td>
+                              </tr>
+                              <tr>
+                                <th>937</th>
+                                <td>SLM:000098549</td>
+                                <td>Phosphatidylethanolamine (O-18:0/18:3)</td>
+                                <td>UBERON:0000468</td>
+                                <td>multi-cellular organism</td>
+                                <td>6239</td>
+                                <td>Caenorhabditis elegans</td>
+                                <td>15913</td>
+                              </tr>
+                              <tr>
+                                <th>938</th>
+                                <td>SLM:000098557</td>
+                                <td>Phosphatidylethanolamine (O-18:0/20:5)</td>
+                                <td>UBERON:0000468</td>
+                                <td>multi-cellular organism</td>
+                                <td>6239</td>
+                                <td>Caenorhabditis elegans</td>
+                                <td>15910</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <p>939 rows × 7 columns</p>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <section id="LIPID-MAPS">
+                    <h3>LIPID MAPS<a class="headerlink" href="#LIPID-MAPS" title="Link to this heading">§</a></h3>
+                    <p>LIPID MAPS is an international non-profit consortium that develops and maintains standards and
+                    tools for lipid research. Currently <code class="docutils literal notranslate"><span class=
+                    "pre">pypath</span></code> features a client for its Structure Database, called LMSD. Pypath uses
+                    the SDF format, which includes all fields available in the database.</p>
+                    <div class="nbinput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[7]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="kn">from</span> <span class="nn">pypath.inputs</span> <span class=
+                            "kn">import</span> <span class="n">lipidmaps</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:47:28 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>When the function returns, the file is already downloaded and opened, but not parsed yet, hence
+                    the object reports 0 records:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[8]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">lmsd</span> <span class="o">=</span> <span class=
+                            "n">lipidmaps</span><span class="o">.</span><span class="n">lmsd_sdf</span><span class=
+                            "p">()</span>
+<span class="n">lmsd</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 1.29s, finished 19:47:47 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[8]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+&lt;SDF file `structures.sdf`: 0 records&gt;
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>One option to retrieve the records is to simply iterate the object:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[12]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="k">for</span> <span class="n">lipid</span> <span class=
+                            "ow">in</span> <span class="n">lmsd</span><span class="p">:</span>
+    <span class="k">break</span>
+<span class="n">lipid</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:51:42 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[12]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+{'id': 'LMFA00000001',
+ 'source': 'LIPID_MAPS_STRUCTURE_DATABASE',
+ 'comment': '',
+ 'mol': '',
+ 'name': {'LM_ID': 'LMFA00000001',
+  'SYSTEMATIC_NAME': '2-methoxy-12-methyloctadec-17-en-5-ynoyl anhydride',
+  'FORMULA': 'C40H66O5',
+  'INCHI_KEY': 'VOGBKCAANIAXCI-UHFFFAOYSA-N',
+  'INCHI': 'InChI=1S/C40H66O5/c1-7-9-11-23-29-35(3)31-25-19-15-13-17-21-27-33-37(43-5)39(41)45-40(42)38(44-6)34-28-22-18-14-16-20-26-32-36(4)30-24-12-10-8-2/h7-8,35-38H,1-2,9-16,19-20,23-34H2,3-6H3',
+  'SMILES': 'C(C(OC)CCC#CCCCCCC(C)CCCCC=C)(=O)OC(C(OC)CCC#CCCCCCC(C)CCCCC=C)=O',
+  'ABBREVIATION': 'FA 40:7;O3',
+  'SYNONYMS': 'Acetylenic acids',
+  'PUBCHEM_CID': '10930192',
+  'CHEBI_ID': '178363'},
+ 'annot': {'NAME': '2-methoxy-12-methyloctadec-17-en-5-ynoyl anhydride',
+  'CATEGORY': 'Fatty Acyls [FA]',
+  'MAIN_CLASS': 'Other Fatty Acyls [FA00]',
+  'EXACT_MASS': '626.491025'}}
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>The same object is able to index the SDF file, and retrieve records on demand. The indexing
+                    covers all names, synonyms and identifiers used in the database.</p>
+                    <div class="nbinput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[13]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">lmsd</span><span class="o">.</span><span class=
+                            "n">index</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 24.31s, finished 19:54:26 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>After indexing, the database shows its size:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[15]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">lmsd</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:55:54 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[15]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+&lt;SDF file `structures.sdf`: 48116 records&gt;
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[16]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="nb">len</span><span class="p">(</span><span class=
+                            "n">lmsd</span><span class="p">)</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:56:03 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[16]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+48116
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <p>The records can be retrieved by any of their names or identifiers:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[14]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">lmsd</span><span class="p">[</span><span class=
+                            "s1">'LMFA00000001'</span><span class="p">]</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:54:52 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[14]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+[({'id': 'LMFA00000001',
+   'source': 'LIPID_MAPS_STRUCTURE_DATABASE',
+   'comment': '',
+   'mol': '',
+   'name': {'LM_ID': 'LMFA00000001',
+    'SYSTEMATIC_NAME': '2-methoxy-12-methyloctadec-17-en-5-ynoyl anhydride',
+    'FORMULA': 'C40H66O5',
+    'INCHI_KEY': 'VOGBKCAANIAXCI-UHFFFAOYSA-N',
+    'INCHI': 'InChI=1S/C40H66O5/c1-7-9-11-23-29-35(3)31-25-19-15-13-17-21-27-33-37(43-5)39(41)45-40(42)38(44-6)34-28-22-18-14-16-20-26-32-36(4)30-24-12-10-8-2/h7-8,35-38H,1-2,9-16,19-20,23-34H2,3-6H3',
+    'SMILES': 'C(C(OC)CCC#CCCCCCC(C)CCCCC=C)(=O)OC(C(OC)CCC#CCCCCCC(C)CCCCC=C)=O',
+    'ABBREVIATION': 'FA 40:7;O3',
+    'SYNONYMS': 'Acetylenic acids',
+    'PUBCHEM_CID': '10930192',
+    'CHEBI_ID': '178363'},
+   'annot': {'NAME': '2-methoxy-12-methyloctadec-17-en-5-ynoyl anhydride',
+    'CATEGORY': 'Fatty Acyls [FA]',
+    'MAIN_CLASS': 'Other Fatty Acyls [FA00]',
+    'EXACT_MASS': '626.491025'}},
+  0),
+ ({'id': 'LMFA00000001',
+   'source': 'LIPID_MAPS_STRUCTURE_DATABASE',
+   'comment': '',
+   'mol':
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 1803 characters</em>
+                      </div>
+                    </div>
+                    <p>And it also supports the <code class="docutils literal notranslate"><span class=
+                    "pre">in</span></code> operator:</p>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[17]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="s1">'PC(18:1/18:0)'</span> <span class="ow">in</span> <span class=
+                            "n">lmsd</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 19:57:02 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[17]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+True
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[18]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">lmsd</span><span class="p">[</span><span class=
+                            "s1">'PC(18:1/18:0)'</span><span class="p">]</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 1ms, finished 19:57:28 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[18]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+[({'id': 'LMGP01010888',
+   'source': 'LIPID_MAPS_STRUCTURE_DATABASE',
+   'comment': '',
+   'mol': '',
+   'name': {'LM_ID': 'LMGP01010888',
+    'SYSTEMATIC_NAME': '1-(9Z-octadecenoyl)-2-octadecanoyl-sn-glycero-3-phosphocholine',
+    'FORMULA': 'C44H86NO8P',
+    'INCHI_KEY': 'NMJCSTNQFYPVOR-VHONOUADSA-N',
+    'INCHI': 'InChI=1S/C44H86NO8P/c1-6-8-10-12-14-16-18-20-22-24-26-28-30-32-34-36-43(46)50-40-42(41-52-54(48,49)51-39-38-45(3,4)5)53-44(47)37-35-33-31-29-27-25-23-21-19-17-15-13-11-9-7-2/h20,22,42H,6-19,21,23-41H2,1-5H3/b22-20-/t42-/m1/s1',
+    'SMILES': '[C@](COP(=O)([O-])OCC[N+](C)(C)C)([H])(OC(CCCCCCCCCCCCCCCCC)=O)COC(CCCCCCC/C=C\\CCCCCCCC)=O',
+    'ABBREVIATION': 'PC 36:1',
+    'SYNONYMS': 'Choline phosphate, 3-ester with L-1-oleo-2-stearin; L-1-Oleoyl-2-stearoyl lecithin; L-1-Oleoyl-2-stearoyl-3-phosphatidylcholine; OSPC; PC(18:1/18:0); PC(36:1); PC(18:0_18:1)',
+    'PUBCHEM_CID': '24778936',
+    'HMDB_ID': 'HMDB0008102',
+    'CHEBI_ID': '76073',
+    'SWISSLIPIDS_ID': 'SLM:000012
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 2352 characters</em>
+                      </div>
+                    </div>
+                    <p>Finally, the records can be loaded into memory, in this case their retrieval is faster:</p>
+                    <div class="nbinput nblast docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[21]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">lmsd</span><span class="o">.</span><span class=
+                            "n">load</span><span class="p">()</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 0ms, finished 20:02:08 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nbinput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[23]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="input_area docutils container">
+                        <div class="highlight-ipython3 notranslate">
+                          <div class="highlight">
+                            <pre><span class="n">lmsd</span><span class="p">[</span><span class=
+                            "s1">'PC(18:1/18:0)'</span><span class="p">]</span>
+</pre>
+                          </div>
+                        </div>
+                        <div class="timing docutils container">
+                          <p>executed in 1ms, finished 20:02:51 2024-10-06</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput docutils container">
+                      <div class="prompt highlight-none notranslate">
+                        <div class="highlight">
+                          <pre>[23]:
+</pre>
+                        </div>
+                      </div>
+                      <div class="output_area docutils container">
+                        <div class="highlight">
+                          <pre>
+[{'id': 'LMGP01010888',
+  'source': 'LIPID_MAPS_STRUCTURE_DATABASE',
+  'comment': '',
+  'mol': '',
+  'name': {'LM_ID': 'LMGP01010888',
+   'SYSTEMATIC_NAME': '1-(9Z-octadecenoyl)-2-octadecanoyl-sn-glycero-3-phosphocholine',
+   'FORMULA': 'C44H86NO8P',
+   'INCHI_KEY': 'NMJCSTNQFYPVOR-VHONOUADSA-N',
+   'INCHI': 'InChI=1S/C44H86NO8P/c1-6-8-10-12-14-16-18-20-22-24-26-28-30-32-34-36-43(46)50-40-42(41-52-54(48,49)51-39-38-45(3,4)5)53-44(47)37-35-33-31-29-27-25-23-21-19-17-15-13-11-9-7-2/h20,22,42H,6-19,21,23-41H2,1-5H3/b22-20-/t42-/m1/s1',
+   'SMILES': '[C@](COP(=O)([O-])OCC[N+](C)(C)C)([H])(OC(CCCCCCCCCCCCCCCCC)=O)COC(CCCCCCC/C=C\\CCCCCCCC)=O',
+   'ABBREVIATION': 'PC 36:1',
+   'SYNONYMS': 'L-1-Oleoyl-2-stearoyl-3-phosphatidylcholine;PC(36:1);PC(18:0_18:1);PC(18:1/18:0);Choline phosphate, 3-ester with L-1-oleo-2-stearin;OSPC;L-1-Oleoyl-2-stearoyl lecithin',
+   'PUBCHEM_CID': '24778936',
+   'HMDB_ID': 'HMDB0008102',
+   'CHEBI_ID': '76073',
+   'SWISSLIPIDS_ID': 'SLM:000012332'},
+  'annot': {'NA
+</pre>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="nboutput nblast docutils container">
+                      <div class="prompt empty docutils container"></div>
+                      <div class="output_area rendered_html docutils container">
+                        <em>Output truncated: showing 1000 of 2290 characters</em>
+                      </div>
+                    </div>
                   </section>
                   <section id="NCBI-E-Utils">
                     <h3>NCBI E-Utils<a class="headerlink" href="#NCBI-E-Utils" title="Link to this heading">§</a></h3>
@@ -17966,6 +18703,12 @@ AKT1 - GSK3B
                                   translation with HMDB</a>
                                 </li>
                               </ul>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#SwissLipids">SwissLipids</a>
+                            </li>
+                            <li class="toctree-l3 toc-h3 nav-item toc-entry">
+                              <a class="reference internal nav-link" href="#LIPID-MAPS">LIPID MAPS</a>
                             </li>
                             <li class="toctree-l3 toc-h3 nav-item toc-entry">
                               <a class="reference internal nav-link" href="#NCBI-E-Utils">NCBI E-Utils</a>
