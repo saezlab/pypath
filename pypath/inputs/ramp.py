@@ -56,10 +56,11 @@ def _ramp_sqldump() -> IO:
 
 
 def ramp_raw(
-        tables: list[str] = None,
+        tables: str | list[str] = None,
         sqlite: bool = False,
+        return_df: bool = True,
         **kwargs
-    ) -> dict[str, pd.DataFrame, sqlite3.Connection]:
+    ) -> dict[str, list[tuple] | pd.DataFrame | sqlite3.Connection]:
     """
     Retrieve RaMP database contents from raw SQL dump.
 
@@ -68,6 +69,8 @@ def ramp_raw(
             One or more tables to retrieve. If None, all tables are retrieved.
         sqlite:
             Return an SQLite database instead of a pandas DataFrame.
+        return_df:
+            Return a pandas data frame.
         kwargs:
             Options for the SQLite database: this way you can point to a new
             or existing database, while by default, an in-memory, temporary
@@ -83,7 +86,7 @@ def ramp_raw(
     return sqldump.tables(
         sqldump = fp,
         tables = tables,
-        return_df = True,
+        return_df = return_df,
         return_sqlite = sqlite,
         con_param = kwargs,
         source_id = (fp.name, f'{os.path.getmtime(fp.name):.0f}'),
