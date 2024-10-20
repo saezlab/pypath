@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright 2014-2023
+#  Copyright 2014-2024
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: see the file `README.rst`
@@ -37,11 +37,8 @@ import pandas as pd
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-import pypath.share.session as session
 import pypath.share.common as common
 import pypath.formats.sqldump as sqldump
-
-_log = session.Logger(name = 'ramp_input')._log
 
 
 def _ramp_sqldump() -> IO:

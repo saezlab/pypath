@@ -1726,6 +1726,10 @@ urls = {
         'label': 'RaMP metabolomic pathway and metabolite identifier database',
         'url': 'https://figshare.com/ndownloader/files/38534654',
         'api': 'https://rampdb.nih.gov/api/%s',
+        'github_sqlite': (
+            'https://media.githubusercontent.com/media/ncats/RaMP-DB/'
+            'refs/heads/main/db/RaMP_SQLite_v%s.sqlite.gz'
+        ),
     },
     'expasy': {
         'label': 'Enzyme nomenclature database',

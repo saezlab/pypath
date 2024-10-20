@@ -143,7 +143,7 @@ def generate_about_html(descriptions, format = 'b'):
         doc += '\t\t\t<p><b>Category || Subcategory &gt;&gt;&gt;</b> %s || %s</p>\n' % \
             (resource_type, resource_subtype)
         if 'year' in v:
-            doc += '\t\t\t<h3>Last released: %u<\h3>\n' % v['year']
+            doc += '\t\t\t<h3>Last released: %u<\\h3>\n' % v['year']
         if 'releases' in v:
             doc += '\t\t\t<p><b>Released in years: </b>%s</p>\n' % \
                 ', '.join(['%u' % y for y in v['releases']])
@@ -351,10 +351,10 @@ def resource_list_latex(descriptions,
     res2 = zip(res[:int(len(res) / 2)], res[int(len(res) / 2):])
     for r in res2:
         tex += r'%s & %s & %s & %s \\' % (
-            r[0][0].replace('&', '\&'),
-            r[0][1].replace('&', '\&'),
-            (r[1][0] if len(r[1]) else '').replace('&', '\&'),
-            (r[1][1] if len(r[1]) else '').replace('&', '\&'),
+            r[0][0].replace('&', r'\&'),
+            r[0][1].replace('&', r'\&'),
+            (r[1][0] if len(r[1]) else '').replace('&', r'\&'),
+            (r[1][1] if len(r[1]) else '').replace('&', r'\&'),
         ) + '\n'
     tex += r'\bottomrule' + '\n'
     tex += r'\end{tabularx}' + '\n'

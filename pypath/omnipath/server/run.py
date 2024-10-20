@@ -101,7 +101,7 @@ def ignore_pandas_copywarn():
 class BaseServer(TwistedWebResource, session_mod.Logger):
 
 
-    recomment = re.compile(b'<!--\s*Title:(.*?)-->')
+    recomment = re.compile(r'<!--\s*Title:(.*?)-->')
 
 
     def __init__(self):
