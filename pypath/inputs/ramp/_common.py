@@ -17,8 +17,20 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
+import pprint
+
 import pypath.share.session as session
 
-__all__ = ['_log']
+__all__ = ['_log', '_show_tables']
 
 _log = session.Logger(name = 'ramp_input')._log
+
+
+def _show_tables(tables: dict[str, list[str]]) -> None:
+    """
+    Show the tables of the RaMP database from SQL dump.
+    """
+
+    pprint.pprint(tables)
+
+

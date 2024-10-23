@@ -39,6 +39,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.formats.sqldump as sqldump
+from ._common import _log, _show_tables
 
 
 def _ramp_sqldump() -> IO:
@@ -98,64 +99,12 @@ def ramp_list_tables() -> dict[str, list[str]]:
     return sqldump.list_tables(_ramp_sqldump())
 
 
-def ramp_show_tables() -> None:
+def ramp_show_tables():
     """
     Show the tables of the RaMP database from SQL dump.
     """
 
-    pprint.pprint(ramp_list_tables())
-
-
-def ramp_mapping(
-        id_type_a: str,
-        id_type_b: str,
-        return_df: bool = False,
-        curies: bool = False,
-    ) -> dict[str, set[str]] | pd.DataFrame:
-    """
-    Retrieve the mapping between two identifiers.
-
-    Args:
-        id_type_a:
-            The identifier type of the first identifier.
-        id_type_b:
-            The identifier type of the second identifier.
-        return_df:
-            Return a pandas DataFrame instead of a dictionary.
-        curies:
-            Do not remove CURIEs from the identifiers.
-
-    Returns:
-        A dictionary with the mapping between the two identifiers.
-    """
-
-    query = (
-        'SELECT DISTINCT a.sourceId as id_type_a, b.sourceId as id_type_b '
-        'FROM '
-        '   (SELECT sourceId, rampId '
-        '    FROM source '
-        f'   WHERE geneOrCompound = "compound" AND IDtype = "{id_type_a}") a '
-        'JOIN '
-        '   (SELECT sourceId, rampId '
-        '    FROM source '
-        f'   WHERE geneOrCompound = "compound" AND IDtype = "{id_type_b}") b '
-        'ON a.rampId = b.rampId;'
-    )
-
-    con = ramp_raw(tables = 'source', sqlite = True)
-    df = pd.read_sql_query(query, con)
-
-    if not curies:
-
-        df[df.columns] = df[df.columns].apply(
-            lambda y: [x.split(':', maxsplit = 1)[-1] for x in y],
-        )
-
-    return (
-        df
-            if return_df else
-        df.groupby('id_type_a')['id_type_b'].apply(set).to_dict()
-    )
+    return _show_tables(ramp_list_tables())
 
 
 def ramp_id_types(
@@ -173,31 +122,3 @@ def ramp_id_types(
     df = pd.read_sql_query(query, con)
 
     return set(df['id_type'])
-
-
-def ramp_id_types_2(
-        entity_type: Literal['gene', 'compound'] | None = None,
-    ) -> set[str]:
-    """
-    List the identifier types of the RaMP database.
-
-    Same output as `ramp_id_types`, but works by the API while the former
-    extracts the data from the MySQL dump. The API means a fast, small
-    download, while the SQL dump is huge and slow to process, but might
-    be already available in the cache.
-    """
-
-    entity_types = {
-        'compound': 'Metabolites',
-        'gene': 'Genes/Proteins',
-    }
-
-    url = urls.urls['ramp']['api'] % 'id-types'
-    c = curl.Curl(url, silent = True, large = False)
-
-    return {
-        id_type.strip()
-        for i in json.loads(c.result)['data']
-        if not entity_type or i['analyteType'] == entity_types[entity_type]
-        for id_type in i['idTypes'].split(',')
-    }
