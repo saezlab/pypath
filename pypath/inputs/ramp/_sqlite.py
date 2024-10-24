@@ -19,7 +19,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Generator, Any
+from collections.abc import Generator
+from typing import Any
 import os
 import sqlite3
 
