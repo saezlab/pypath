@@ -19,6 +19,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator, Any
 import os
 import sqlite3
 
@@ -33,6 +34,7 @@ from ._common import _log, _show_tables
 
 
 __all__ = [
+    'ramp_iter',
     'ramp_sqlite',
     'ramp_show_tables',
     'ramp_list_tables',
@@ -180,3 +182,35 @@ def ramp_raw(
 
         return result
 
+
+def ramp_iter(table: str) -> Generator[tuple[Any]]:
+    """
+    Retrieve RaMP database contents from its SQLite build.
+
+    Args:
+        tables:
+            One or more tables to retrieve. If None, all tables are retrieved.
+        sqlite:
+            Return an SQLite database instead of a pandas DataFrame.
+        return_df:
+            Return a pandas data frame.
+        kwargs:
+            Options for the SQLite database: this way you can point to a new
+            or existing database, while by default, an in-memory, temporary
+            database is used.
+
+    Returns:
+        Either a dictionary with the table names as keys and pandas dataframes
+        as values, or an SQLite database connection.
+    """
+
+    con = ramp_sqlite()
+    cur = con.cursor()
+
+    cur.execute(f'SELECT * FROM {table}')
+
+    for row in cur:
+
+        yield row
+
+    con.close()
