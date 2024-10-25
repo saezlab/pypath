@@ -651,6 +651,7 @@ class UniprotQuery:
             silent = False,
             large = True,
             compr = 'gz',
+            slow = True,
         )
         result = c.result if c.result or self.fail_on_empty else [0].__iter__()
         _ = next(result)
