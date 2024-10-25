@@ -24,3 +24,5 @@ Access the RaMP metabolomic pathway and metabolite database.
 """
 
 from ._sqlite import *
+from ._rest import *
+from ._mapping import *
