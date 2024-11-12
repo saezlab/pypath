@@ -87,6 +87,7 @@ typing_extensions = "*"
 tornado = ">=3.6.6"
 cryptography = ">=41.0.4"
 certifi = ">=2023.7.22"
+download-manager = {git = "http://www.github.com/saezlab/download-manager"}
 
 [tool.poetry.extras]
 # bel = [
