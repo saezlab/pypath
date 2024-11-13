@@ -9,7 +9,7 @@ description = "Molecular signaling prior knowledge processing"
 license = "GPL-3.0-only"
 authors = [
     "Denes Turei <turei.denes@gmail.com>",
-    "Nicolàs Palacio",
+    "Nicolàs Palacio-Escat",
     "Sebastian Lobentanzer",
     "Olga Ivanova",
     "Melih Darcan",
