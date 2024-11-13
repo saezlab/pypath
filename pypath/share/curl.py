@@ -17,8 +17,6 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from future.utils import iteritems
-from past.builtins import xrange, range
 
 import importlib as imp
 import sys
@@ -30,7 +28,7 @@ import struct
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
 import pypath.share.cache as cache_mod
-_logger = session_mod.log()
+_logger = session_mod.logger
 
 import pycurl
 try:
@@ -490,7 +488,7 @@ class RemoteFile(object):
                  header = True,
                  rownames = True):
 
-        for key, val in iteritems(locals()):
+        for key, val in locals().items():
             setattr(self, key, val)
         self.conf = fabric.config.Config()
         env.keepalive = 60
@@ -1089,7 +1087,7 @@ class Curl(FileOpener):
                                 urllib.quote_plus(param[0]),
                                 urllib.quote_plus(param[1])
                             ),
-                            iteritems(self.get)
+                            self.get.items()
                         )
                     )
                 )
@@ -1283,7 +1281,7 @@ class Curl(FileOpener):
 
         self._log('Setting up and calling pycurl.')
 
-        for attempt in xrange(self.retries):
+        for attempt in range(self.retries):
 
             try:
 
@@ -1595,7 +1593,7 @@ class Curl(FileOpener):
             (
                 '?' + '&'.join(sorted([
                     i[0] + ' = ' + i[1]
-                    for i in iteritems(self.post)
+                    for i in self.post.items()
                 ]))
             )
         )
@@ -1831,7 +1829,7 @@ class Curl(FileOpener):
 
             if type(self.result) is dict:
 
-                for name, content in iteritems(self.result):
+                for name, content in self.result.items():
 
                     self.result[name] = _decode_result(content)
 
