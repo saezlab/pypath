@@ -20,6 +20,8 @@
 import csv
 import collections
 
+import download_manager as dm
+
 import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.resources.urls as urls
@@ -35,9 +37,14 @@ def adhesome_interactions():
 
     url = urls.urls['adhesome']['interactions']
 
-    c = curl.Curl(url, large = True, silent = False)
+    dmanager = dm.DownloadManager(pkg='pypath')
+    desc, item, downloader, dest = dmanager._download(url)
 
-    data = csv.DictReader(c.result, delimiter = ',')
+    #c = curl.Curl(url, large = True, silent = False)
+
+    c = item.open(large=True)
+
+    data = csv.DictReader(c, delimiter = ',')
 
     result = []
 
