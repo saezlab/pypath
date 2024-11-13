@@ -44,7 +44,7 @@ def adhesome_interactions():
 
     c = item.open(large=True)
 
-    data = csv.DictReader(c, delimiter = ',')
+    data = csv.DictReader(c.result, delimiter = ',')
 
     result = []
 
