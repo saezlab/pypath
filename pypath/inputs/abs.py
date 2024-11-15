@@ -17,6 +17,8 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
+import download_manager as dm
+
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
@@ -29,7 +31,12 @@ def abs_interactions():
 
     result = []
     url = urls.urls['abs']['url']
-    c = curl.Curl(url, silent = False)
+
+    dmanager = dm.DownloadManager(pkg='pypath')
+    desc, item, downloader, dest = dmanager._download(url, backend='curl', ssl_verifypeer=0, ssl_verifyhost=0)
+    print(item, dest)
+    c = item.open()
+
     data = c.result
     data = [[x.replace('*', '') for x in xx.split('\t')]
             for xx in data.split('\n')]

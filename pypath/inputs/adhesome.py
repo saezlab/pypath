@@ -40,8 +40,6 @@ def adhesome_interactions():
     dmanager = dm.DownloadManager(pkg='pypath')
     desc, item, downloader, dest = dmanager._download(url)
 
-    #c = curl.Curl(url, large = True, silent = False)
-
     c = item.open(large=True)
 
     data = csv.DictReader(c.result, delimiter = ',')
