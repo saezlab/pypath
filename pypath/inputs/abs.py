@@ -33,13 +33,18 @@ def abs_interactions():
     url = urls.urls['abs']['url']
 
     dmanager = dm.DownloadManager(pkg='pypath')
-    desc, item, downloader, dest = dmanager._download(url, backend='curl', ssl_verifypeer=0, ssl_verifyhost=0)
-    print(item, dest)
+    desc, item, downloader, dest = dmanager._download(
+        url,
+        backend='curl',
+        ssl_verifypeer=0,
+        ssl_verifyhost=0
+    )
+
     c = item.open()
 
     data = c.result
     data = [[x.replace('*', '') for x in xx.split('\t')]
-            for xx in data.split('\n')]
+            for xx in data]
 
     for d in data:
 
