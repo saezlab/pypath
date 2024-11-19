@@ -1359,7 +1359,8 @@ urls = {
             'International Protein Index, a protein reference database '
             'which has been shut down by 2012'
         ),
-        'url': (
+        'url': 'https://rescued.omnipathdb.org/ipi.HUMAN.xrefs.gz',
+        'url_old': (
             'ftp://ftp.ebi.ac.uk/pub/databases/IPI/last_release/'
             'current/ipi.HUMAN.xrefs.gz'
         ),
