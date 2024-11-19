@@ -25,6 +25,8 @@ import collections
 
 import pandas as pd
 
+import download_manager as dm
+
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.inputs.common as inputs_common
@@ -130,11 +132,14 @@ def _adrecs_base(
 
     if isinstance(record, str):
 
-        record = collections.namedtuple(f'Adrecs{record_name}', fields)
+        record = collections.namedtuple(f'Adrecs{record}', fields)
 
     url = urls.urls['adrecs'][url_key]
-    path = curl.Curl(url, silent = False, large = True)
-    contents = inputs_common.read_xls(path.outfile, cell_range = cell_range)
+
+    dmanager = dm.DownloadManager(pkg = 'pypath')
+    *_, dest = dmanager._download(url)
+
+    contents = inputs_common.read_xls(dest, cell_range = cell_range)
     result = []
 
     for line in contents[1:]:
@@ -172,7 +177,12 @@ def adrecs_drug_adr(
 def _adrecs_drug_adr():
 
     url = urls.urls['adrecs']['adrecs_drugs']
-    c = curl.Curl(url, large = True, silent = False)
+
+    dmanager = dm.DownloadManager(pkg = 'pypath')
+    _, item, *_ = dmanager._download(url)
+
+    c = item.open(large=True)
+
     _ = next(c.result)
 
     for line in c.result:

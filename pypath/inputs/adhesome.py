@@ -71,7 +71,11 @@ def adhesome_annotations():
     result = collections.defaultdict(set)
 
     url = urls.urls['adhesome']['components']
-    c = curl.Curl(url, large = True, silent = False)
+
+    dmanager = dm.DownloadManager(pkg = 'pypath')
+    _, item, *_ = dmanager._download(url)
+
+    c = item.open(large=True)
 
     data = csv.DictReader(c.result, delimiter = ',')
 
