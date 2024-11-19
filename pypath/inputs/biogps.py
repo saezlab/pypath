@@ -25,8 +25,9 @@ import collections
 
 import pandas as pd
 
+import download_manager as dm
+
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.mapping as mapping
@@ -83,7 +84,11 @@ def biogps_download(dataset):
     biogps_urls = urls.urls['biogps']
     label = dataset.label if hasattr(dataset, 'label') else dataset
     url = biogps_urls['url'] % biogps_urls['datasets'][label]
-    c = curl.Curl(url, silent = False, large = True)
+
+    dmanager = dm.DownloadManager(pkg = 'pypath')
+    _, item, *_ = dmanager._download(url)
+
+    c = item.open(large = True)
 
     the_file = (
         common.first(c.result.values())
