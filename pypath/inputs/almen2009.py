@@ -22,9 +22,10 @@ from future.utils import iteritems
 import re
 import collections
 
+import download_manager as dm
+
 import pypath.inputs.common as inputs_common
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
 import pypath.utils.mapping as mapping
 
 
@@ -48,13 +49,10 @@ def almen2009_annotations():
 
 
     url = urls.urls['almen2009']['url']
+    manager = dm.DownloadManager(pkg = 'pypath')
+    *_, path = manager._download(url)
 
-    c = curl.Curl(url, silent = False, large = True)
-
-    xls = c.fileobj
-    xlsfile = xls.name
-    xls.close()
-    tbl = inputs_common.read_xls(xlsfile, sheet = 'Data')[1:]
+    tbl = inputs_common.read_xls(path, sheet = 'Data')[1:]
 
     result = collections.defaultdict(set)
 
