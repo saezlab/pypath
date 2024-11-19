@@ -22,9 +22,7 @@ from numbers import Number
 
 import collections
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
-
+import pypath.share.download as dl
 
 def biogrid_interactions(
         organism: int = 9606,
@@ -54,8 +52,7 @@ def biogrid_interactions(
     organism = str(organism)
     interactions = []
     refc = []
-    url = urls.urls['biogrid']['mv']
-    c = curl.Curl(url, silent = False, large = True, slow = True)
+    c = dl.download('biogrid/mv') # TODO: increased timeout
     f = next(iter(c.result.values()))
     nul = f.readline()
 
@@ -137,8 +134,7 @@ def biogrid_all_interactions(
 
         mv_dict[i.partner_a].append(i.partner_b)
 
-    url = urls.urls['biogrid']['all']
-    c = curl.Curl(url, silent = False, large = True, slow = True)
+    c = dl.download('biogrid/all') # TODO: increased timeout
     f = next(iter(c.result.values()))
     nul = f.readline()
 
