@@ -20,6 +20,8 @@
 import re
 import collections
 
+import download_manager as dm
+
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 
@@ -45,8 +47,13 @@ def acsn_interactions(keep_in_complex_interactions = True):
 
     names_url = urls.urls['acsn']['names']
     ppi_url = urls.urls['acsn']['ppi']
-    names_c = curl.Curl(names_url, silent = False, large = True)
-    ppi_c = curl.Curl(ppi_url, silent = False, large = True)
+
+    dmanager = dm.DownloadManager(pkg = 'pypath')
+
+    _, names_item, *_ = dmanager._download(names_url)
+    _, ppi_item, *_ = dmanager._download(ppi_url)
+    names_c = names_item.open(large = True)
+    ppi_c = ppi_item.open(large = True)
 
     names = {}
     interactions = []
