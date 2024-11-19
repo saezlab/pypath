@@ -141,16 +141,7 @@ def read_xls(
             warnings.simplefilter('ignore')
 
             table = [
-                [
-                    (
-                        cell
-                            if isinstance(cell, str) else
-                        cell.value
-                            if cell is not None else
-                        ''
-                    )
-                    for cell in row
-                ]
+                [getattr(cell, 'value', cell or '') for cell in row]
                 for row in (sheet[cell_range] if cell_range else sheet.values)
             ]
 
