@@ -81,11 +81,17 @@ def read_xls(
                 )
 
             try:
+
                 if isinstance(sheet, int):
+
                     sheet = book.sheet_by_index(sheet)
+
                 else:
+
                     sheet = book.sheet_by_name(sheet)
+
             except xlrd.biffh.XLRDError:
+
                 sheet = book.sheet_by_index(0)
 
             table = [

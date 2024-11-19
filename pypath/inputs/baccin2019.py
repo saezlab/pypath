@@ -154,7 +154,7 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
             _ref for _ref in
             (
                 ref.strip().replace('.0', '')
-                for ref in rec[7].split(',')
+                for ref in str(rec[7]).split(',')
             )
             if _ref.isdigit()
         }
