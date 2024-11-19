@@ -21,7 +21,8 @@ import re
 import collections
 import itertools
 
-import pypath.share.curl as curl
+import download_manager as dm
+
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.utils.orthology as orthology_mod
@@ -117,8 +118,11 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
     }
 
     url = urls.urls['baccin2019']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    data = inputs_common.read_xls(c.fileobj.name, sheet = 'SuppTable3')
+
+    dmanager = dm.DownloadManager(pkg='pypath')
+    *_, path = dmanager._download(url)
+
+    data = inputs_common.read_xls(path, sheet = 'SuppTable3')
 
     result = []
 
