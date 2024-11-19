@@ -22,7 +22,6 @@ import collections
 
 import download_manager as dm
 
-import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
@@ -38,7 +37,7 @@ def adhesome_interactions():
     url = urls.urls['adhesome']['interactions']
 
     dmanager = dm.DownloadManager(pkg='pypath')
-    desc, item, downloader, dest = dmanager._download(url)
+    _, item, *_ = dmanager._download(url)
 
     c = item.open(large=True)
 

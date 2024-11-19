@@ -19,7 +19,6 @@
 
 import download_manager as dm
 
-import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
 

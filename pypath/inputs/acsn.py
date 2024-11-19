@@ -23,7 +23,6 @@ import collections
 import download_manager as dm
 
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
 
 
 def acsn_interactions(keep_in_complex_interactions = True):
