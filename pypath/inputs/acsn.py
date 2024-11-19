@@ -112,13 +112,16 @@ def acsn_interactions_sif():
         '_epsilon_': 'E'
     }
     regreek = re.compile(r'\b(' + '|'.join(greek.keys()) + r')\b')
-    result = []
     url = urls.urls['acsn']['sif']
-    c = curl.Curl(url, silent = False)
-    data = c.result
+
+    dmanager = dm.DownloadManager(pkg = 'pypath')
+
+    _, item, *_ = dmanager._download(url)
+
+    data = item.open(large=True)
     data = [
-        x.split('\t')
-        for x in data.replace('\r', '').replace('*', '').strip().split('\n')
+        x.replace('*', '').strip().split('\t')
+        for x in data.result
     ]
 
     for l in data:
