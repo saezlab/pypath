@@ -27,7 +27,6 @@ import pandas as pd
 
 import download_manager as dm
 
-import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.inputs.common as inputs_common
 
