@@ -24,6 +24,9 @@ import json
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 
+__all__ = ['ramp_id_types']
+
+
 def ramp_id_types(
         entity_type: Literal['gene', 'compound'] | None = None,
     ) -> set[str]:

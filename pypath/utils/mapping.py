@@ -126,7 +126,7 @@ RESOURCES_IMPLICIT = (
         dict(
             **{
                 it: it
-                for it in ramp_input.ramp_id_types_2('compound')
+                for it in ramp_input.ramp_id_types('compound')
             },
             **input_formats.RAMP_MAPPING,
         ),

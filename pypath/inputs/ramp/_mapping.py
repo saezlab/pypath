@@ -19,6 +19,12 @@
 
 from __future__ import annotations
 
+import pandas as pd
+
+from ._sqlite import ramp_raw
+
+__all__ = ['ramp_mapping']
+
 
 def ramp_mapping(
         id_type_a: str,

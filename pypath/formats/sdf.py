@@ -660,7 +660,7 @@ class SdfReader(session.Logger):
         Prints number of records indexed and name of the source file.
         """
 
-        msg = f'Indexed {len(self.names['id'])} records from `{self.fname}`.'
+        msg = f"Indexed {len(self.names['id'])} records from `{self.fname}`."
 
         if not self.silent:
 
