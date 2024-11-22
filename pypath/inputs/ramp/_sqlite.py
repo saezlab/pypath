@@ -118,7 +118,8 @@ def ramp_raw(
         tables: str | list[str] = None,
         sqlite: bool = False,
         return_df: bool = True,
-        **kwargs
+        prefixes: bool = True,
+        **kwargs,
     ) -> dict[str, list[tuple] | pd.DataFrame | sqlite3.Connection]:
     """
     Retrieve RaMP database contents from its SQLite build.
@@ -176,6 +177,9 @@ def ramp_raw(
 
         result = {t: callback(t) for t in tables}
 
+        if not prefixes and 'source' in result:
+            result['source'].sourceId = result['source'].sourceId.apply(lambda x: x.split(':', maxsplit = 1)[1])
+    
         if len(result) == 1:
 
             result = _misc.first(result.values())
