@@ -776,14 +776,6 @@ urls = {
         'interactions': 'https://www.dgidb.org/data/monthly_tsvs/'
             '2022-Feb/interactions.tsv',
     },
-    'reactome': {
-        'label': 'The Reactome reaction network database',
-        'sbml':
-        'https://reactome.org/download/current/homo_sapiens.3.1.sbml.tgz',
-        'biopax_l3': 'https://reactome.org/download/current/biopax.zip',
-        'biopax_l2': 'https://reactome.org/download/current/biopax2.zip',
-        'txt': 'https://reactome.org/download/current/%s.txt',
-    },
     'acsn': {
         'label': 'Atlas of Cancer Signaling Networks',
         'biopax_l3': 'https://acsn.curie.fr/files/acsn_v1.1.owl',
@@ -1694,6 +1686,10 @@ urls = {
             'http://ddinter.scbdd.com/ddinter/grapher-datasource/%s',
     },
     'reactome': {
+        'sbml': 'https://reactome.org/download/current/homo_sapiens.3.1.sbml.tgz',
+        'biopax_l3': 'https://reactome.org/download/current/biopax.zip',
+        'biopax_l2': 'https://reactome.org/download/current/biopax2.zip',
+        'txt': 'https://reactome.org/download/current/%s.txt',
         'label': (
             'REACTOME is an open-source, open access, manually curated '
             'and peer-reviewed pathway database.'
