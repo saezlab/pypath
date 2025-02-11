@@ -29,17 +29,42 @@ def reactome_raw(
         'chebi': 'ChEBI',
     }
     EVENT_TYPES = {
-        'lowest': '',
-        'all': '_All_Levels',
+        'lowest': 'Pathway',
+        'all': 'All_Levels',
         'reaction': 'Reactions',
     }
 
-    colnames = ['id', 'pathway_id', 'url', 'pathway_name', 'evidence_code', 'species']
-    id_type = IDTYPES.get(id_type, id_type)
-    event_type = EVENT_TYPES.get(event_type, event_type)
-    physical_entities = '_PE_' if physical_entities else ''
+    fname = [f'{IDTYPES.get(id_type, id_type)}2Reactome']
 
-    fname = f'{id_type}2Reactome{physical_entities}{event_type}'
+    if physical_entities:
+
+        fname.append('PE')
+
+    if physical_entities or event_type != 'pathway':
+
+        fname.append(EVENT_TYPES.get(event_type, event_type))
+
+    fname = '_'.join(fname)
+
+    if not physical_entities and event_type == 'reaction':
+
+        fname = fname.replace('_', '')
+
+    colnames = ['id']
+
+    if physical_entities:
+
+        colnames.extend(['pe_id', 'pe_name'])
+
+    colnames.extend(
+        [
+            'pathway_id',
+            'url',
+            'pathway_name',
+            'evidence_code',
+            'species',
+        ],
+    )
 
     yield from _reactome_txt(
         fname = fname,
