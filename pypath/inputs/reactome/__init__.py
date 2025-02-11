@@ -13,8 +13,33 @@ def _reactome_txt(fname: str, colnames: list[str]) -> Generator[tuple]:
     yield from csv.DictReader(c.fileobj, delimiter='\t', fieldnames=colnames)
 
 
-def reactome_raw():
+def reactome_raw(
+        id_type: str,
+        physical_entities: bool = False,
+        event_type: Literal['all', 'lowest', 'reaction'],
+    ) -> Generator[tuple]:
+
+    IDTYPES = {
+        'uniprot': 'UniProt',
+        'ensembl': 'Ensembl',
+        'entrez': 'NCBI',
+        'mirbase': 'miRBase',
+        'gtop': 'GtoP',
+        'chebi': 'ChEBI',
+    }
+    EVENT_TYPES = {
+        'lowest': 'Pathway',
+        'all': 'All_levels',
+        'reaction': 'Reactions',
+    }
+
     colnames = ['id', 'pathway_id', 'url', 'pathway_name', 'evidence_code', 'species']
-    yield from _reactome_txt(fname='ChEBI2Reactome_PE_All_Levels', colnames=colnames)
+
+    fname = f'{id_type}2Reactome{pe}{event_type}'
+
+    yield from _reactome_txt(
+        fname = 'ChEBI2Reactome_PE_All_Levels',
+        colnames = colnames,
+    )
 
 
