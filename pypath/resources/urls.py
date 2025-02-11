@@ -782,6 +782,7 @@ urls = {
         'https://reactome.org/download/current/homo_sapiens.3.1.sbml.tgz',
         'biopax_l3': 'https://reactome.org/download/current/biopax.zip',
         'biopax_l2': 'https://reactome.org/download/current/biopax2.zip',
+        'txt': 'https://reactome.org/download/current/%s.txt',
     },
     'acsn': {
         'label': 'Atlas of Cancer Signaling Networks',
