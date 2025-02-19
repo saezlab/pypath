@@ -1703,6 +1703,10 @@ urls = {
         'pathway_relations': 'https://reactome.org/download/current/'
             'ReactomePathwaysRelation.txt',
     },
+    'rhea': {
+        'label': 'database of metabolic reactions',
+        'url': 'https://ftp.expasy.org/databases/rhea/tsv/%s.tsv',
+    },
     'compath': {
         'label': (
             'A database of proposed and accepted mappings by the '
