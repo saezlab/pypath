@@ -32,6 +32,8 @@ def reactome_raw(
         'lowest': 'Pathway',
         'all': 'All_Levels',
         'reaction': 'Reactions',
+        'reactions': 'Reactions',
+        'pathway': 'Pathway',
     }
 
     fname = [f'{IDTYPES.get(id_type, id_type)}2Reactome']
