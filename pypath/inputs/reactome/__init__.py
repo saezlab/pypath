@@ -6,12 +6,17 @@ from collections.abc import Generator
 from pypath.resources import urls
 from pypath.share import curl
 
-def _reactome_txt(fname: str, colnames: list[str]) -> Generator[tuple]:
-
-    url = urls.urls['reactome']['txt'] % fname
+def _reactome_txt(url: str, colnames: list[str]) -> Generator[tuple]:
 
     c = curl.Curl(url, large=True)
     yield from csv.DictReader(c.fileobj, delimiter='\t', fieldnames=colnames)
+
+
+def pathway_hierarchy() -> Generator[tuple]:
+
+    url = urls.urls['reactome']['pathway_relations']
+
+    yield from _reactome_txt(url = url, colnames = ['parent', 'child']) 
 
 
 def reactome_raw(
@@ -68,8 +73,10 @@ def reactome_raw(
         ],
     )
 
+    url = urls.urls['reactome']['txt'] % fname
+
     yield from _reactome_txt(
-        fname = fname,
+        url = url,
         colnames = colnames,
     )
 
