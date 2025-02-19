@@ -92,13 +92,14 @@ def _swisslipids(
         compr = 'gz',
     )
 
-    lines = (re.sub('\t\\s+', '\t', ll) for ll in c.result)
+    lines = (re.sub('\t\\s+', '\t', ll).strip() for ll in c.result)
 
     if return_df:
 
-        # lines = [re.sub('\t\\s+', '\t', ll).count('\t') for ll in c.result]
         _log(f'Loading SwissLipids `{dataset}` dataset into data frame.')
-        df = pd.read_table(c._gzfile_mode_r)
+        lines = (l.split('\t') for l in lines)
+        cols = next(lines)
+        df = pd.DataFrame(lines, columns=cols) #c._gzfile_mode_r
         _log(
             f'SwissLipids `{dataset}` data frame '
             f'memory usage: `{_misc.df_memory_usage(df)}`.'
