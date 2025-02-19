@@ -28,6 +28,7 @@ https://swisslipids.org/#/downloads
 from typing import Literal
 from collections.abc import Generator
 
+import re
 import csv
 import functools
 
@@ -91,8 +92,11 @@ def _swisslipids(
         compr = 'gz',
     )
 
+    lines = (re.sub('\t\\s+', '\t', ll) for ll in c.result)
+
     if return_df:
 
+        # lines = [re.sub('\t\\s+', '\t', ll).count('\t') for ll in c.result]
         _log(f'Loading SwissLipids `{dataset}` dataset into data frame.')
         df = pd.read_table(c._gzfile_mode_r)
         _log(
@@ -105,8 +109,8 @@ def _swisslipids(
     else:
 
         _log(f'Iterating records in SwissLipids `{dataset}` dataset.')
+        return csv.DictReader(lines, delimiter = '\t')
 
-        return csv.DictReader(c.result, delimiter = '\t')
 
 
 for _dataset in DATASETS.__args__:
