@@ -14,9 +14,26 @@ RHEA_DATASETS = Literal[
     #'rhea2uniprot_trembl.tsv.gz' # TODO: deal with gz file ending
 ]
 
-def _rhea_txt(dataset: RHEA_DATASETS, colnames: list[str]) -> Generator[tuple]:
+RHEA_COLNAMES = {
+    'rhea-reaction-smiles': ['ID', 'SMILES'],
+    'rhea-chebi-smiles': ['CHEBI', 'SMILES'],
+}
 
-    c = curl.Curl(dataset, large=True)
-    yield from csv.DictReader(c.fileobj, delimiter='\t', fieldnames=colnames)
+
+def rhea_raw(dataset: RHEA_DATASETS) -> Generator[tuple]:
+    """
+    Download a table from the Rhea reaction databas.
+
+    Args:
+        dataset:
+            The dataset to download. See ``RHEA_DATASETS`` for available
+            datasets.
+    """
+
+    url = urls.urls['rhea']['url'] % dataset
+    c = curl.Curl(url, large = True)
+    names = RHEA_COLNAMES.get(dataset, None)
+
+    yield from csv.DictReader(c.fileobj, delimiter = '\t', fieldnames = names)
 
 
