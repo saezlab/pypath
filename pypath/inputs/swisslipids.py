@@ -89,7 +89,7 @@ def _swisslipids(
         large = True,
         silent = False,
         encoding = 'latin-1',
-        compr = 'gz',
+        compr = None if dataset == 'go' else 'gz',
     )
 
     lines = (re.sub('\t\\s+', '\t', ll).strip() for ll in c.result)
