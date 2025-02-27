@@ -52,24 +52,25 @@ def get_metadata():
         if os.path.exists(toml_path):
 
             pyproject = toml.load(toml_path)
-            try:
-                packages = set(
-                    itertools.chain(*(
-                        package.values() 
-                        for package in pyproject['tool']['poetry']['packages']
-                    ))
-                )
-            except KeyError:
-                packages = set()
+
+            project = pyproject.get('project')
+            project = project or pyproject.get('tool', {}).get('poetry', {})
+
+            packages = set(
+                itertools.chain(*(
+                    package.values()
+                    for package in project.get('packages', [])
+                ))
+            )
 
             name = __name__.split('.')[0]
-            if  name == pyproject['tool']['poetry']['name'] or name in packages:
+            if name == project.get('name') or name in packages:
 
                 meta = {
-                    'name': pyproject['tool']['poetry']['name'],
-                    'version': pyproject['tool']['poetry']['version'],
-                    'author': pyproject['tool']['poetry']['authors'],
-                    'license': pyproject['tool']['poetry']['license'],
+                    'name': project.get('name'),
+                    'version': project.get('version'),
+                    'author': project.get('authors'),
+                    'license': project.get('license'),
                     'full_metadata': pyproject,
                 }
 
