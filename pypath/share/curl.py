@@ -1336,14 +1336,28 @@ class Curl(FileOpener):
 
             except pycurl.error as e:
 
-                self.status = 500
-                if self.progress is not None:
-                    self.progress.terminate(status = 'failed')
-                    self.progress = None
-                self.print_debug_info(
-                    'ERROR',
-                    'PycURL error: %s' % str(e.args)
+                err_str = str(e.args)
+                err_ssl_missing_eof = (
+                    "(56, 'OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0')"
                 )
+
+                self.print_debug_info('ERROR', f'PycURL error: {err_str}')
+
+                if err_str == err_ssl_missing_eof:
+
+                    self._log(
+                        'Ignoring OpenSSL error about missing EOF '
+                        '(truncated transmission); in some cases this '
+                        'error is triggered even at successful downloads.'
+                    )
+                    self.status = 200
+
+                else:
+
+                    self.status = 500
+                    if self.progress is not None:
+                        self.progress.terminate(status = 'failed')
+                        self.progress = None
 
         self.curl.close()
         self.target.close()
