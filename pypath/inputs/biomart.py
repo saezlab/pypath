@@ -29,9 +29,9 @@ import collections
 import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath_common.data as _data
-import pypath.share.curl as curl
-import pypath.share.settings as settings
 import pypath.resources.urls as urls
+import pypath.share.download as dl
+import pypath.share.settings as settings
 import pypath.utils.taxonomy as taxonomy
 
 _logger = session_mod.Logger(name = 'biomart_input')
@@ -136,12 +136,8 @@ def biomart_query(
     xml_query = rewsp.sub('', xml_query)
 
     biomart_url = urls.urls['ensembl']['biomart_url'] % xml_query
-    c = curl.Curl(
-        biomart_url,
-        req_headers = [settings.get('user_agent')],
-        large = True,
-        silent = False,
-    )
+    c = dl.download(biomart_url, headers=[settings.get('user_agent')])
+
     success = False
 
     for line in c.result:
