@@ -1412,7 +1412,8 @@ urls = {
         'label': 'Genome and transcript reference database',
         'biomart_url': 'http://www.ensembl.org/biomart/martservice?query=%s',
         'species': 'https://www.ensembl.org/info/about/species.html',
-        'arraytypes': 'https://rest.ensembl.org/regulatory/species/'
+         # XXX: DEPRECATED as of v15.9 (10/2024)
+        'arraytypes': 'https://rest.may2024.archive.ensembl.org/regulatory/species/'
             '%s/microarray?content-type=application/json',
     },
     'wojtowicz2020': {

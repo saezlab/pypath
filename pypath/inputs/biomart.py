@@ -25,6 +25,7 @@ import re
 import os
 import json
 import collections
+from collections.abc import Iterable
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
@@ -181,7 +182,7 @@ def biomart_homology(
         if not organism_ensembl:
 
             msg = 'Could not find Ensembl taxon ID for `%s`.' % str(organism)
-            _log(msg)
+            _logger._log(msg)
             raise ValueError(msg)
 
         return organism_ensembl
@@ -232,8 +233,9 @@ def biomart_microarray_types(organism: int | str = 9606):
 
     organism = taxonomy.ensure_ensembl_name(organism)
 
+    # TODO: URL is deprecated, remove or update/find alternative
     url = urls.urls['ensembl']['arraytypes'] % organism
-    c = curl.Curl(url, req_headers = [settings.get('user_agent')])
+    c = dl.download(url, headers=[settings.get('user_agent')])
     result = json.loads(c.result)
 
     _ = [
