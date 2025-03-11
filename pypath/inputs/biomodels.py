@@ -30,7 +30,7 @@ import pycurl
 import requests
 
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
+import pypath.share.download as dl
 import pypath.share.settings as settings
 import pypath.share.session as session
 
@@ -60,6 +60,7 @@ def get_single_model(model_id):
         dict: dictionary containing model specifics, eg name/id,
         description, associated files
     """
+
     bm = biom.BioModels()
     model = bm.get_model(model_id)
 
@@ -89,6 +90,7 @@ def download_single_model(model_id):
     """
 
 
+# XXX: Couldn't test since login URL does not exists in resources.urls
 def _get_biomodels():
 
     def init_fun(resp_hdr):
@@ -98,6 +100,8 @@ def _get_biomodels():
 
     t = int(time.time() * 1000) - 3600000
 
+    # XXX: URL not defined in resources.urls (checked blame -> previous commit
+    #      and biomodels was not there whatosoever)
     loginurl = urls.urls['biomodels']['login'] % t
 
     hdrs = [
@@ -111,8 +115,7 @@ def _get_biomodels():
         'Accept: */*'
     ]
 
-    c0 = curl.Curl(loginurl, silent = False, large = False,
-                   cache = False, req_headers = hdrs)
+    c2 = dl.download(loginurl, headers=hdrs)
 
     hdrs = hdrs[:-2]
 
@@ -130,14 +133,7 @@ def _get_biomodels():
 
     time.sleep(1)
 
-    c2 = curl.Curl(
-        url,
-        silent = False,
-        large = True,
-        req_headers = hdrs,
-        cache = False,
-        compressed = True,
-    )
+    c0 = dl.download(url, headers=hdrs)
 
     return c0, c2
 

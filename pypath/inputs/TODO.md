@@ -6,8 +6,8 @@
 - [x] baccin2019.py
 - [x] biogps.py
 - [x] biogrid.py
-- [ ] biomart.py
-- [ ] biomodels.py
+- [-] biomart.py
+- [-] biomodels.py
 - [ ] ca1.py
 - [ ] cancercellmap.py
 - [ ] cancerdrugsdb.py
