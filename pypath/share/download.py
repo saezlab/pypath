@@ -30,7 +30,8 @@ def download(url, fmt = 'open', **kwargs):
     """
 
     # Get url from pypath.resources unless actual URL is passed, then bypass
-    res, dataset = None, None if url.startswith('http') else url.split('/')
+    
+    res, dataset = (None, None) if url.startswith('http') else url.split('/')
     url = urls.urls.get(res, {}).get(dataset, None) or url
 
     desc, item, downloader, path = _get_manager()._download(url, **kwargs)
