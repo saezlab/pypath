@@ -38,6 +38,7 @@ import pypath.share.session as session_mod
 import pypath.core.entity as entity
 import pypath.core.attrs as attrs_mod
 import pypath.resources.network as netres
+import pypath_common._constants as _const
 
 _logger = session_mod.Logger(name = 'evidence')
 _log = _logger._log
