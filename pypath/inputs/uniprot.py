@@ -494,12 +494,20 @@ class UniprotQuery:
 
         elif isinstance(val, tuple):
 
-            val = (tuple(map(cls._value, val)) + ('*',))[:2]
-            result = '[%s TO %s]' % val
+            aux = tuple(map(cls._value, val))
+
+            if len(aux) > 1 or field != 'organism_id':
+
+                val = (aux + ('*',))[:2]
+                result = '[%s TO %s]' % val
+
+            else:
+
+                result = aux[0]
 
         elif val is None:
 
-            if field == 'reviewed':
+            if field in ('reviewed', 'organism_id'):
 
                 result = ''
                 field = None
