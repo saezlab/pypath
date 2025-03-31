@@ -1,6 +1,8 @@
 from typing import Literal
 from collections.abc import Generator
 
+import csv
+
 import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.resources.urls as urls
@@ -20,6 +22,7 @@ TABLES = Literal[
     'GtP_to_UniProt_mapping'
 ]
 
+
 def guide2pharma_table(name: TABLES) -> Generator[dict]:
     """
     Downloads the table from Guide2Pharma.
@@ -36,7 +39,6 @@ def guide2pharma_table(name: TABLES) -> Generator[dict]:
 
     c = curl.Curl(url, silent = False, large = True, encoding = 'utf-8')
 
-    return c
+    g2p_version = next(c.result).strip()
 
-    # data = csv.DictReader(c.result)
-
+    return csv.DictReader(c.result)
