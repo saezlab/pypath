@@ -109,7 +109,7 @@ def guide2pharma_download(
     interactions = []
     complexes = {}
 
-    url = urls.urls['gtp']['url']
+    url = urls.urls['gtp']['url'] % 'interactions'
 
     c = curl.Curl(url, silent = False, large = True, encoding = 'utf-8')
 

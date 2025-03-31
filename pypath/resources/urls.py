@@ -659,7 +659,7 @@ urls = {
     },
     'gtp': {
         'label': 'Guide to Pharmacology: ligand-receptor interactions',
-        'url': 'http://www.guidetopharmacology.org/DATA/interactions.csv',
+        'url': 'http://www.guidetopharmacology.org/DATA/%s.csv',
     },
     'giant': {
         'label': 'JSON network from GIANT by gene based query',
