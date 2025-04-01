@@ -58,6 +58,7 @@ G2PInteraction = collections.namedtuple(
     [
         'is_stimulation',
         'is_inhibition',
+        'ligand',
     ],
 )
 
@@ -119,11 +120,17 @@ def guide2pharma_interactions(
             pass  # no organism specified
 
     for row in guide2pharma_table('interactions'):
-
+        
+        _endogenous = row['Endogenous'].lower() == "true"
+        if _endogenous is not None and endogenous != _endogenous:
+            continue
         yield G2PInteraction(
             is_stimulation = row['Action'].lower() in POSITIVE_REGULATION,
             is_inhibition = row['Action'].lower() in NEGATIVE_REGULATION,
+            ligand = row['Ligand ID'],
+
         )
+        
 
 
 
