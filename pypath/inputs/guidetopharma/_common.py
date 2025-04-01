@@ -1,10 +1,12 @@
 from typing import Literal
 from collections.abc import Generator
+import collections
 
 import csv
 
 import pypath.share.curl as curl
 import pypath.share.common as common
+import pypath.utils.taxonomy as taxonomy
 import pypath.resources.urls as urls
 
 TABLES = Literal[
@@ -24,11 +26,11 @@ TABLES = Literal[
 
 POSITIVE_REGULATION = {
     'agonist',
-    'activator', 
-    'potentiation', 
+    'activator',
+    'potentiation',
     'partial agonist',
-    'inverse antagonist', 
-    'full agonist', 
+    'inverse antagonist',
+    'full agonist',
     'activation',
     'irreversible agonist',
     'positive',
@@ -36,13 +38,23 @@ POSITIVE_REGULATION = {
 NEGATIVE_REGULATION = {
     'inhibitor',
     'antagonist',
-    'inhibition', 
+    'inhibition',
     'irreversible inhibition',
-    'inverse agonist', 
-    'negative', 
+    'inverse agonist',
+    'negative',
     'weak inhibition',
     'reversible inhibition',
 }
+
+
+G2PInteraction = collections.namedtuple(
+    'G2PInteraction',
+    [
+        'is_stimulation',
+        'is_inhibition',
+    ],
+)
+
 
 def guide2pharma_table(name: TABLES) -> Generator[dict]:
     """
@@ -99,6 +111,13 @@ def guide2pharma_interactions(
         except KeyError:
 
             pass  # no organism specified
+
+    for row in guide2pharma_table('interactions'):
+
+        yield G2PInteraction(
+            is_stimulation = row['Action'] in POSITIVE_REGULATION,
+            is_inhibition = row['Action'] in NEGATIVE_REGULATION,
+        )
 
 
 
