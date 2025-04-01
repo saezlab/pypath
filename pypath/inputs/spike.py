@@ -98,33 +98,43 @@ def spike_interactions(min_confidence: int = 2) -> List[tuple]:
 
             members = [m.attrib['ref'] for m in grp.findall('Member')]
 
-            if all(
-                m in genes and
-                genes[m][0].type != 'complex'
-                for m in members
-            ):
+            try:
 
-                uniprots = [
-                    mapping.map_name(genes[m][0].entrez, 'entrez', 'uniprot')
+                if all(
+                    m in genes and
+                    genes[m][0].type != 'complex'
                     for m in members
-                ]
+                ):
 
-                genes[grp.attrib['id']] = [
-                    Gene(
-                        entrez = cplex,
-                        genesymbol = cplex,
-                        type = 'complex',
-                    )
-                    for cplex in
-                    (
-                        intera.Complex(
-                            name = grp.attrib['name'],
-                            components = ups,
-                            sources = 'SPIKE',
+                    uniprots = [
+                        mapping.map_name(genes[m][0].entrez, 'entrez', 'uniprot')
+                        for m in members
+                    ]
+
+                    genes[grp.attrib['id']] = [
+                        Gene(
+                            entrez = cplex,
+                            genesymbol = cplex,
+                            type = 'complex',
                         )
-                        for ups in itertools.product(*uniprots)
-                    )
-                ]
+                        for cplex in
+                        (
+                            intera.Complex(
+                                name = grp.attrib['name'],
+                                components = ups,
+                                sources = 'SPIKE',
+                            )
+                            for ups in itertools.product(*uniprots)
+                        )
+                    ]
+
+            except Exception as e:
+
+                for m in members:
+                    # print(m)
+                    # print(genes[m])
+                    pass
+                raise e
 
     for i in itertools.chain(
             rblock.findall('Regulation'),

@@ -136,17 +136,21 @@ def guide2pharma_interactions(
         except KeyError:
             pass  # no organism specified
 
+    ligands = guide2pharma_ligands()
+
     for row in guide2pharma_table("interactions"):
+
         _endogenous = row["Endogenous"].lower() == "true"
 
-        if _endogenous is not None and endogenous != _endogenous:
+        if endogenous is not None and endogenous != _endogenous:
+
             continue
 
         yield G2PInteraction(
-            is_stimulation=row["Action"].lower() in POSITIVE_REGULATION,
-            is_inhibition=row["Action"].lower() in NEGATIVE_REGULATION,
-            ligand=row["Ligand ID"],
-            endogenous=_endogenous,
+            is_stimulation = row["Action"].lower() in POSITIVE_REGULATION,
+            is_inhibition = row["Action"].lower() in NEGATIVE_REGULATION,
+            ligand = ligands.get(row["Ligand ID"]),
+            endogenous = _endogenous,
         )
 
 
@@ -160,10 +164,10 @@ def guide2pharma_ligands() -> dict[str, G2PLigand]:
     """
     return {
         row["Ligand ID"]: G2PLigand(
-            name=row["name"],
+            name=row["Name"],
             pubchem=row["PubChem CID"],
             chembl=row["ChEMBL ID"],
-            iupac=row["IUPAC Name"],
+            iupac=row["IUPAC name"],
             smiles=row["SMILES"],
             inchi=row["InChI"],
         )

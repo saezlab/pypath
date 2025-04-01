@@ -87,6 +87,7 @@ typing_extensions = "*"
 tornado = ">=3.6.6"
 cryptography = ">=41.0.4"
 certifi = ">=2023.7.22"
+cffi = "^1.17.0"
 
 [tool.poetry.extras]
 # bel = [

@@ -180,7 +180,7 @@ def ramp_raw(
 
         if not prefixes and 'source' in result:
             result['source'].sourceId = result['source'].sourceId.apply(lambda x: x.split(':', maxsplit = 1)[1])
-    
+
         if len(result) == 1:
 
             result = _misc.first(result.values())

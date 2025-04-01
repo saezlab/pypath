@@ -35,6 +35,7 @@ import copy
 import pypath.internals.refs as refs
 import pypath.share.common as common
 import pypath.share.session as session_mod
+import pypath.share.constants as _const
 import pypath.core.entity as entity
 import pypath.core.attrs as attrs_mod
 import pypath.resources.network as netres
