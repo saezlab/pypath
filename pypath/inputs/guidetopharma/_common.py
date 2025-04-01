@@ -163,7 +163,13 @@ def guide2pharma_ligands() -> dict[str, G2PLigand]:
         and InChI of each ligand.
     """
     return {
-        row["Ligand ID"]: G2PLigand(
+        row["Ligand ID"]: _entity_record(row)
+        for row in guide2pharma_table("ligands")
+    }
+
+def _entity_record(row: dict) -> G2PProtein | G2PLigand:
+    if row['UniProt ID']:
+        record = G2PLigand(
             name=row["Name"],
             pubchem=row["PubChem CID"],
             chembl=row["ChEMBL ID"],
@@ -171,5 +177,9 @@ def guide2pharma_ligands() -> dict[str, G2PLigand]:
             smiles=row["SMILES"],
             inchi=row["InChI"],
         )
-        for row in guide2pharma_table("ligands")
-    }
+    else:
+        record =G2PProtein(
+            uniprot=row["UniProt ID"],
+        )
+
+    return record
