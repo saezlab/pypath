@@ -22,6 +22,27 @@ TABLES = Literal[
     'GtP_to_UniProt_mapping'
 ]
 
+POSITIVE_REGULATION = {
+    'agonist',
+    'activator', 
+    'potentiation', 
+    'partial agonist',
+    'inverse antagonist', 
+    'full agonist', 
+    'activation',
+    'irreversible agonist',
+    'positive',
+}
+NEGATIVE_REGULATION = {
+    'inhibitor',
+    'antagonist',
+    'inhibition', 
+    'irreversible inhibition',
+    'inverse agonist', 
+    'negative', 
+    'weak inhibition',
+    'reversible inhibition',
+}
 
 def guide2pharma_table(name: TABLES) -> Generator[dict]:
     """
