@@ -115,8 +115,8 @@ def guide2pharma_interactions(
     for row in guide2pharma_table('interactions'):
 
         yield G2PInteraction(
-            is_stimulation = row['Action'] in POSITIVE_REGULATION,
-            is_inhibition = row['Action'] in NEGATIVE_REGULATION,
+            is_stimulation = row['Action'].lower() in POSITIVE_REGULATION,
+            is_inhibition = row['Action'].lower() in NEGATIVE_REGULATION,
         )
 
 
