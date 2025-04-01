@@ -34,16 +34,22 @@ POSITIVE_REGULATION = {
     'activation',
     'irreversible agonist',
     'positive',
+    'biased agonist',
+    'slows inactivation',
 }
 NEGATIVE_REGULATION = {
     'inhibitor',
     'antagonist',
+    'competitive',
+    'feedback inhibition',
     'inhibition',
     'irreversible inhibition',
     'inverse agonist',
     'negative',
     'weak inhibition',
     'reversible inhibition',
+    'voltage-dependent inhibition',
+    'pore blocker',
 }
 
 
