@@ -60,10 +60,11 @@ G2PInteraction = collections.namedtuple(
         "is_inhibition",
         "ligand",
         "endogenous",
+        "target",
     ],
 )
 
-G2PLigand = collections.namedtuple(
+G2PSmallMolecule = collections.namedtuple(
     "G2PLigand",
     [
         "name",
@@ -82,6 +83,30 @@ G2PProtein = collections.namedtuple(
     ],
 )
 
+G2PTarget = collections.namedtuple(
+    "G2PTarget",
+    [
+        "family_name",
+        "hgnc_name",
+        "hgnc_symbol",
+        "hgnc_id",
+        "human_ensembl_gene",
+        "human_entrez_gene",
+        "human_swissprot",
+        "human_nucleotide_refseq",
+        "human_protein_refseq",
+        "target_type",
+        "synonyms",
+    ],
+)
+
+G2PTargetLigand = collections.namedtuple(
+    "G2PTargetLigand",
+    [
+        "target_ligand",
+        "target_ligand_id"
+    ]
+)
 
 def guide2pharma_table(name: TABLES) -> Generator[dict]:
     """
@@ -134,6 +159,8 @@ def guide2pharma_interactions(
 
     ligands = guide2pharma_ligands()
 
+    targets = guide2pharma_targets()
+
     for row in guide2pharma_table("interactions"):
 
         _endogenous = row["Endogenous"].lower() == "true"
@@ -145,8 +172,9 @@ def guide2pharma_interactions(
         yield G2PInteraction(
             is_stimulation = row["Action"].lower() in POSITIVE_REGULATION,
             is_inhibition = row["Action"].lower() in NEGATIVE_REGULATION,
-            ligand = ligands.get(row["Ligand ID"]),
+            ligand = ligands.get(row["Ligand ID"]), # chnage to include Target Protein?
             endogenous = _endogenous,
+            target = targets.get(row["Target ID"]) # change to include Target Ligand?
         )
 
 def get_taxid(organism_input: str) -> int:
@@ -154,17 +182,17 @@ def get_taxid(organism_input: str) -> int:
     Retrieves the NCBI Taxonomy ID for a given organism input.
 
     Args:
-        organism_input (str): The name or identifier of the organism.
+        organism_input: The name or identifier of the organism.
 
     Returns:
-        str: The NCBI Taxonomy ID corresponding to the organism input.
+        int: The NCBI Taxonomy ID corresponding to the organism input.
     """
     if organism_input in {"", "None", None}:
         return _const.NOT_ORGANISM_SPECIFIC
 
     return taxonomy.ensure_ncbi_tax_id(organism_input)
 
-def guide2pharma_ligands() -> dict[str, G2PLigand | G2PProtein]:
+def guide2pharma_ligands() -> dict[str, G2PSmallMolecule | G2PProtein]:
     """
     Downloads ligands from Guide2Pharma.
 
@@ -173,27 +201,65 @@ def guide2pharma_ligands() -> dict[str, G2PLigand | G2PProtein]:
         and InChI of each ligand.
     """
     return {
-        row["Ligand ID"]: _entity_record(row)
+        row["Ligand ID"]: _ligand_record(row)
         for row in guide2pharma_table("ligands")
     }
 
-def _entity_record(row: dict) -> G2PLigand | G2PProtein:
+def guide2pharma_targets() -> dict[str, G2PTarget | G2PTargetLigand]:
     """
-    Creates a G2PProtein or G2PLigand object from a row of the Guide2Pharma
+    Downloads targets from Guide2Pharma. 
+
+    Returns:
+        Named tuples containing target 
+    """
+
+    return {
+        row["Target id"]: _target_record(row)
+        for row in guide2pharma_table("targets_and_families")
+    }
+
+def _target_record(row: dict) -> G2PTargetLigand | G2PTarget:
+    """
+    Creates a G2PTarget or G2PTargetLigand object from a row of the Guide2Pharma table.
+    """
+    if row["Target id"] != "":
+        record = G2PTarget(
+            family_name=row["Family name"],
+            hgnc_name=row["HGNC name"],
+            hgnc_symbol=row["HGNC symbol"],
+            hgnc_id=row["HGNC id"],
+            human_ensembl_gene=row["Human Ensembl Gene"],
+            human_entrez_gene=row["Human Entrez Gene"],
+            human_swissprot=row["Human SwissProt"],
+            human_nucleotide_refseq=row["Human nucleotide RefSeq"],
+            human_protein_refseq=row["Human protein RefSeq"],
+            target_type=row["Type"],
+            synonyms=row["synonyms"]
+        )
+    else:
+        record = G2PTargetLigand(
+            target_ligand=row["Target Ligand"],
+            target_ligand_id=row["Target Ligand ID"],
+        )
+    return record
+
+def _ligand_record(row: dict) -> G2PSmallMolecule | G2PProtein:
+    """
+    Creates a G2PProtein or G2Psmallmolecule object from a row of the Guide2Pharma
     table.
 
     Args:
         row: A dictionary representing a row of the Guide2Pharma table.
 
     Returns:
-        A G2PProtein or G2PLigand object.
+        A G2PProtein or G2Psmall molecule object.
     """
     if row['UniProt ID']:
         record = G2PProtein(
             uniprot = row["UniProt ID"],
         )
     else:
-        record = G2PLigand(
+        record = G2PSmallMolecule(
             name=row["Name"],
             pubchem=row["PubChem CID"],
             chembl=row["ChEMBL ID"],
