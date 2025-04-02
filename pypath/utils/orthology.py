@@ -1846,7 +1846,7 @@ class PtmOrthology(Proteomes, SequenceContainer):
 
         unknown_taxa = set()
 
-        for typ in common.psite_mod_types:
+        for typ in common.psite_mod_types():
 
             groups = {}
 
