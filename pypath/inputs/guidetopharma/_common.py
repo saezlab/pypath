@@ -88,7 +88,7 @@ def guide2pharma_table(name: TABLES) -> Generator[dict]:
     Downloads the table from Guide2Pharma.
 
     Args:
-        name:
+        name
             The name of the table to download.
 
     Returns:
@@ -110,19 +110,15 @@ def guide2pharma_interactions(
 ) -> Generator[tuple]:
     """
     Args:
-        organism
+        organism (str | int | None):
             Name of the organism, e.g. `human`. If None, all organisms will be
-            included.
-        endogenous
+            included.]
+
+        endogenous (bool | None):
             Whether to include only endogenous ligands interactions. If None,
             all ligands will be included.
     """
 
-    get_taxid = lambda x: (
-        _const.NOT_ORGANISM_SPECIFIC
-        if x in {"", "None", None}
-        else taxonomy.ensure_ncbi_tax_id(x)
-    )
     organism_ = None
     ncbi_tax_id = None
 
@@ -153,17 +149,51 @@ def guide2pharma_interactions(
             endogenous = _endogenous,
         )
 
+def get_taxid(organism_input: str) -> int:
+    """
+    Retrieves the NCBI Taxonomy ID for a given organism input.
 
-def guide2pharma_ligands() -> dict[str, G2PLigand]:
+    Args:
+        organism_input (str): The name or identifier of the organism.
+
+    Returns:
+        str: The NCBI Taxonomy ID corresponding to the organism input.
+    """
+    if organism_input in {"", "None", None}:
+        return _const.NOT_ORGANISM_SPECIFIC
+
+    return taxonomy.ensure_ncbi_tax_id(organism_input)
+
+def guide2pharma_ligands() -> dict[str, G2PLigand | G2PProtein]:
     """
     Downloads ligands from Guide2Pharma.
 
-    Yields:
-        Namedtuples containing name, PubChem ID, ChEMBL ID, IUPAC name, SMILES,
+    Returns:
+        Named tuples containing name, PubChem ID, ChEMBL ID, IUPAC name, SMILES,
         and InChI of each ligand.
     """
     return {
-        row["Ligand ID"]: G2PLigand(
+        row["Ligand ID"]: _entity_record(row)
+        for row in guide2pharma_table("ligands")
+    }
+
+def _entity_record(row: dict) -> G2PLigand | G2PProtein:
+    """
+    Creates a G2PProtein or G2PLigand object from a row of the Guide2Pharma
+    table.
+
+    Args:
+        row: A dictionary representing a row of the Guide2Pharma table.
+
+    Returns:
+        A G2PProtein or G2PLigand object.
+    """
+    if row['UniProt ID']:
+        record = G2PProtein(
+            uniprot = row["UniProt ID"],
+        )
+    else:
+        record = G2PLigand(
             name=row["Name"],
             pubchem=row["PubChem CID"],
             chembl=row["ChEMBL ID"],
@@ -171,5 +201,5 @@ def guide2pharma_ligands() -> dict[str, G2PLigand]:
             smiles=row["SMILES"],
             inchi=row["InChI"],
         )
-        for row in guide2pharma_table("ligands")
-    }
+
+    return record
