@@ -58,8 +58,14 @@ G2PInteraction = collections.namedtuple(
     [
         "is_stimulation",
         "is_inhibition",
-        "ligand",
         "endogenous",
+        "affinity_high",
+        "affinity_low",
+        "affinity_median",
+        "affinity_units",
+        "primary_target",
+        "pubmed_id",
+        "ligand",
         "target",
     ],
 )
@@ -110,7 +116,7 @@ G2PTargetLigand = collections.namedtuple(
 
 def guide2pharma_table(name: TABLES) -> Generator[dict]:
     """
-    Downloads the table from Guide2Pharma.
+    Downloads a table from Guide2Pharma.
 
     Args:
         name
@@ -165,15 +171,20 @@ def guide2pharma_interactions(
 
         _endogenous = row["Endogenous"].lower() == "true"
 
-        if endogenous is not None and endogenous != _endogenous:
-
+        if endogenous is not None and endogenous == _endogenous: # check correct
             continue
 
         yield G2PInteraction(
             is_stimulation = row["Action"].lower() in POSITIVE_REGULATION,
             is_inhibition = row["Action"].lower() in NEGATIVE_REGULATION,
-            ligand = ligands.get(row["Ligand ID"]), # chnage to include Target Protein?
             endogenous = _endogenous,
+            affinity_high = row["Affinity High"],
+            affinity_low = row["Affinity Low"],
+            affinity_median = row["Affinity Median"],
+            affinity_units = row["Affinity Units"],
+            primary_target = row["Primary Target"],
+            pubmed_id = row["PubMed ID"],
+            ligand = ligands.get(row["Ligand ID"]), # chnage to include Target Protein?
             target = targets.get(row["Target ID"]) # change to include Target Ligand?
         )
 
@@ -210,9 +221,8 @@ def guide2pharma_targets() -> dict[str, G2PTarget | G2PTargetLigand]:
     Downloads targets from Guide2Pharma. 
 
     Returns:
-        Named tuples containing target 
+        Named tuples containing target. Returns only G2P target
     """
-
     return {
         row["Target id"]: _target_record(row)
         for row in guide2pharma_table("targets_and_families")
@@ -221,8 +231,21 @@ def guide2pharma_targets() -> dict[str, G2PTarget | G2PTargetLigand]:
 def _target_record(row: dict) -> G2PTargetLigand | G2PTarget:
     """
     Creates a G2PTarget or G2PTargetLigand object from a row of the Guide2Pharma table.
+
+    Args:
+        row (dict): A dictionary containing information about the target.
+
+    Returns:
+        G2PTargetLigand | G2PTarget: A named tuple representing either a target or a target ligand.
     """
-    if row["Target id"] != "":
+    if row["Target id"] in {"", "None", None}:
+        # Create a G2PTargetLigand object if there is no valid target ID
+        record = G2PTargetLigand(
+            target_ligand=row["Target Ligand"],
+            target_ligand_id=row["Target Ligand ID"],
+        )
+    else:
+        # Create a G2PTarget object if the row contains a valid target ID
         record = G2PTarget(
             family_name=row["Family name"],
             hgnc_name=row["HGNC name"],
@@ -234,16 +257,12 @@ def _target_record(row: dict) -> G2PTargetLigand | G2PTarget:
             human_nucleotide_refseq=row["Human nucleotide RefSeq"],
             human_protein_refseq=row["Human protein RefSeq"],
             target_type=row["Type"],
-            synonyms=row["synonyms"]
+            synonyms=row["synonyms"],
         )
-    else:
-        record = G2PTargetLigand(
-            target_ligand=row["Target Ligand"],
-            target_ligand_id=row["Target Ligand ID"],
-        )
+
     return record
 
-def _ligand_record(row: dict) -> G2PSmallMolecule | G2PProtein:
+def _ligand_record(row: dict) -> G2PProtein | G2PSmallMolecule:
     """
     Creates a G2PProtein or G2Psmallmolecule object from a row of the Guide2Pharma
     table.
