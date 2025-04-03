@@ -45,6 +45,7 @@ import pandas as pd
 import pypath.utils.mapping as mapping
 import pypath.share.common as common
 import pypath_common._constants as _const
+import pypath.data as _data
 import pypath.internals.intera as intera
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -1846,7 +1847,7 @@ class PtmOrthology(Proteomes, SequenceContainer):
 
         unknown_taxa = set()
 
-        for typ in common.psite_mod_types:
+        for typ in _data.common_load('psite_mod_types'):
 
             groups = {}
 
