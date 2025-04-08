@@ -1,3 +1,5 @@
+# TODO: process cases where Target= None properly (only 257 cases)
+
 from typing import Literal
 from collections.abc import Generator
 import collections
@@ -103,8 +105,8 @@ G2PTargetProtein = collections.namedtuple(
     ],
 )
 
-G2PSourceProtein = collections.namedtuple(
-    "G2PSourceProtein",
+G2PLigandProtein = collections.namedtuple(
+    "G2PLigandProtein",
     [
         "uniprot_id",
         "name",
@@ -117,6 +119,65 @@ G2PSourceProtein = collections.namedtuple(
     ],
 )
 
+def guide2pharma_interactions(
+    organism: str | int | None = "human",
+    endogenous: bool | None = None,
+) -> Generator[tuple]:
+    """
+    Downloads interactions from Guide2Pharma.
+
+    Args:
+        organism (str | int | None):
+            Name of the organism, e.g. `human`. If None, all organisms will be
+            included. The organism name is translated to its NCBI Taxonomy ID
+            using `pypath.utils.taxonomy.get_taxid`.
+
+        endogenous (bool | None):
+            Whether to include only endogenous ligands interactions. If None,
+            all ligands will be included.
+
+    Yields:
+        Named tuples containing information about each interaction.
+    """
+
+    organism_ = None
+    ncbi_tax_id = None
+
+    if isinstance(organism, str):
+        ncbi_tax_id = get_taxid(organism)
+
+        try:
+            organism_ = taxonomy.ensure_common_name(ncbi_tax_id)
+            organism_ = organism_.capitalize() if organism_ else None
+
+        except KeyError:
+            pass  # no organism specified
+
+    compounds = g2p_compounds()
+    protein_targets = g2p_protein_targets()
+
+    for row in guide2pharma_table("interactions"):
+
+        _endogenous = row["Endogenous"].lower() == "true"
+
+        if endogenous is not None and endogenous != _endogenous:
+            continue
+
+        target = g2p_get_target(row, compounds, protein_targets)
+
+        yield G2PInteraction(
+            is_stimulation = row["Action"].lower() in POSITIVE_REGULATION,
+            is_inhibition = row["Action"].lower() in NEGATIVE_REGULATION,
+            endogenous = _endogenous,
+            affinity_high = row["Affinity High"],
+            affinity_low = row["Affinity Low"],
+            affinity_median = row["Affinity Median"],
+            affinity_units = row["Affinity Units"],
+            primary_target = row["Primary Target"],
+            pubmed_id = row["PubMed ID"],
+            ligand = compounds.get(row["Ligand ID"]),
+            target = target,
+        )
 def guide2pharma_table(name: TABLES) -> Generator[dict]:
     """
     Downloads a table from Guide2Pharma.
@@ -138,60 +199,6 @@ def guide2pharma_table(name: TABLES) -> Generator[dict]:
     return csv.DictReader(c.result)
 
 
-def guide2pharma_interactions(
-    organism: str | int | None = "human",
-    endogenous: bool | None = None,
-) -> Generator[tuple]:
-    """
-    Args:
-        organism (str | int | None):
-            Name of the organism, e.g. `human`. If None, all organisms will be
-            included.]
-
-        endogenous (bool | None):
-            Whether to include only endogenous ligands interactions. If None,
-            all ligands will be included.
-    """
-
-    organism_ = None
-    ncbi_tax_id = None
-
-    if isinstance(organism, str):
-        ncbi_tax_id = get_taxid(organism)
-
-        try:
-            organism_ = taxonomy.ensure_common_name(ncbi_tax_id)
-            organism_ = organism_.capitalize() if organism_ else None
-
-        except KeyError:
-            pass  # no organism specified
-
-    compounds = g2p_compounds()
-
-    protein_targets = g2p_protein_targets()
-    for row in guide2pharma_table("interactions"):
-
-        _endogenous = row["Endogenous"].lower() == "true"
-
-        if endogenous is not None and endogenous != _endogenous:
-            continue
-
-        target = g2p_get_target(row, compounds, protein_targets)
-
-        yield G2PInteraction(
-            is_stimulation = row["Action"].lower() in POSITIVE_REGULATION,
-            is_inhibition = row["Action"].lower() in NEGATIVE_REGULATION,
-            endogenous = _endogenous,
-            affinity_high = row["Affinity High"],
-            affinity_low = row["Affinity Low"],
-            affinity_median = row["Affinity Median"],
-            affinity_units = row["Affinity Units"],
-            primary_target = row["Primary Target"],
-            pubmed_id = row["PubMed ID"],
-            ligand = compounds.get(row["Ligand ID"]), # chnage to include Target Protein?
-            target = target,
-        )
-
 def get_taxid(organism_input: str) -> int:
     """
     Retrieves the NCBI Taxonomy ID for a given organism input.
@@ -201,18 +208,21 @@ def get_taxid(organism_input: str) -> int:
 
     Returns:
         int: The NCBI Taxonomy ID corresponding to the organism input.
+        Returns a special constant if the input is empty or None.
     """
+    
+    # Check if the input is empty or None and return a constant value
     if organism_input in {"", "None", None}:
         return _const.NOT_ORGANISM_SPECIFIC
 
+    # Use the taxonomy utility to ensure the input is converted to an NCBI Taxonomy ID
     return taxonomy.ensure_ncbi_tax_id(organism_input)
 
 def g2p_get_target(
         row: dict,
-        compounds: dict[str, G2PSourceProtein | G2PCompound],
+        compounds: dict[str, G2PLigandProtein | G2PCompound],
         protein_targets: dict[str, G2PTargetProtein],
-        ) -> G2PTargetProtein | G2PCompound | None:
-
+        ) -> G2PTargetProtein | G2PLigandProtein | G2PCompound | None:
     """
     Retrieves a target object from the given row in the Guide2Pharma
     interactions table. This object is either a G2PTargetProtein or a G2PCompound,
@@ -226,52 +236,66 @@ def g2p_get_target(
         values as named tuples.
 
     Returns:
-        G2PTargetProtein | G2PCompound | None: The target object
-        corresponding to the given row, or None if the Target ID or Ligand Target ID is missing, 
-        or if the target is defined as G2PSourceProtein.
+        G2PTargetProtein | G2PLigandProtein | G2PCompound | None: The target object
+        corresponding to the given row, or None if the Target ID or Ligand Target ID is missing.
     """
-    target : G2PTargetProtein | G2PCompound | None = None
+
+    target : G2PTargetProtein | G2PLigandProtein | G2PCompound | None = None
+
+    # Check if the target is a protein
     if row["Target ID"]:
         target = protein_targets.get(row["Target ID"]) # protein target
+
+    # Check if the target is a ligand
     elif row["Target Ligand ID"]:
-        potential_target = compounds.get(row["Target Ligand ID"]) # ligand target
-        if isinstance(potential_target, G2PCompound): # should not be G2PSourceProtein
-           target = potential_target
+        target = compounds.get(row["Target Ligand ID"]) # ligand target
+
+    # If neither Target ID nor Ligand Target ID is present, set target to None
     else:
         target = None
 
     return target
-    
 
 
-def g2p_compounds() -> dict[str, G2PSourceProtein | G2PCompound]:
+def g2p_compounds() -> dict[str, G2PLigandProtein | G2PCompound]:
     """
     Downloads ligands from Guide2Pharma.
 
+    Ligands can be either proteins or small molecules. The function returns a
+    dictionary of named tuples containing the name, PubChem ID, ChEMBL ID, IUPAC
+    name, SMILES, and InChI of each ligand.
+
     Returns:
-        Named tuples containing name, PubChem ID, ChEMBL ID, IUPAC name, SMILES,
-        and InChI of each ligand.
+        dict[str, G2PLigandProtein | G2PCompound]: A dictionary of ligands with their
+            IDs as keys and values as named tuples.
     """
 
-    ligands : dict[str, G2PSourceProtein | G2PCompound] = {}
+    ligands : dict[str, G2PLigandProtein | G2PCompound] = {}
     for row in guide2pharma_table("ligands"):
         if row["UniProt ID"]: # check if ligand is a protein
+            # If the ligand has a UniProt ID, it is a protein
             ligands[row["Ligand ID"]] = _source_record(row)
         else:
+            # If the ligand does not have a UniProt ID, it is a small molecule
             ligands[row["Ligand ID"]] = _compound_record(row)
 
     return ligands
 
 def g2p_protein_targets() -> dict[str, G2PTargetProtein]:
     """
-    Downloads protein targets from Guide2Pharma. 
+    Downloads protein targets from Guide2Pharma.
+
+    This function retrieves protein targets from the Guide2Pharma database.
+    It returns a dictionary of named tuples, where the keys are the target IDs
+    and the values are the G2PTargetProtein objects.
 
     Returns:
-        Named tuples containing target. Returns only G2P target
+        dict[str, G2PTargetProtein]: A dictionary of protein targets.
     """
 
     targets = {}
     for row in guide2pharma_table("targets_and_families"):
+        # Create a G2PTargetProtein object from the row
         targets[row["Target id"]] = _target_record(row)
 
     return targets
@@ -284,7 +308,7 @@ def _target_record(row: dict) -> G2PTargetProtein:
         row: A dictionary representing a row of the Guide2Pharma table.
 
     Returns:
-        A G2PProtein object.
+        A G2PTargetProtein object.
     """
     
     record = G2PTargetProtein(
@@ -304,19 +328,19 @@ def _target_record(row: dict) -> G2PTargetProtein:
 
     return record
 
-def _source_record(row: dict) -> G2PSourceProtein:
+def _source_record(row: dict) -> G2PLigandProtein:
     """
-    Creates a G2PSourceProtein object from a row of the Guide2Pharma
+    Creates a G2PLigandProtein object from a row of the Guide2Pharma
     table.
 
     Args:
         row: A dictionary representing a row of the Guide2Pharma table.
 
     Returns:
-        A G2PSourceProtein object.
+        A G2PLigandProtein object.
     """
     
-    record = G2PSourceProtein(
+    record = G2PLigandProtein(
             uniprot_id=row["UniProt ID"],
             name=row["Name"],
             pubchem_cid=row["PubChem CID"],
