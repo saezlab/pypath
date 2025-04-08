@@ -173,7 +173,7 @@ def guide2pharma_interactions(
 
         _endogenous = row["Endogenous"].lower() == "true"
 
-        if endogenous is not None and endogenous == _endogenous: # check correct
+        if endogenous is not None and endogenous != _endogenous:
             continue
 
         target = g2p_get_target(row, compounds, protein_targets)
