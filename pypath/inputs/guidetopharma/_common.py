@@ -29,7 +29,6 @@ TABLES = Literal[
 POSITIVE_REGULATION = {
     "agonist",
     "activator",
-    "potentiation",
     "partial agonist",
     "inverse antagonist",
     "full agonist",
@@ -37,7 +36,6 @@ POSITIVE_REGULATION = {
     "irreversible agonist",
     "positive",
     "biased agonist",
-    "slows inactivation",
 }
 NEGATIVE_REGULATION = {
     "inhibitor",
@@ -139,7 +137,7 @@ def guide2pharma_interactions(
     Yields:
         Named tuples containing information about each interaction.
     """
-
+    # Retrieve the NCBI Taxonomy ID for the given organism
     organism_ = None
     ncbi_tax_id = None
 
@@ -147,24 +145,30 @@ def guide2pharma_interactions(
         ncbi_tax_id = get_taxid(organism)
 
         try:
+            # Get the common name for the organism
             organism_ = taxonomy.ensure_common_name(ncbi_tax_id)
             organism_ = organism_.capitalize() if organism_ else None
 
         except KeyError:
-            pass  # no organism specified
+            # No organism specified
+            pass
 
+    # Download the ligands and protein targets from Guide2Pharma
     compounds = g2p_compounds()
     protein_targets = g2p_protein_targets()
 
     for row in guide2pharma_table("interactions"):
-
+        # Check if the interaction is endogenous
         _endogenous = row["Endogenous"].lower() == "true"
 
+        # filters by users choice for endogenous ligands
         if endogenous is not None and endogenous != _endogenous:
             continue
 
+        # Retrieve correct target object for the interaction
         target = g2p_get_target(row, compounds, protein_targets)
 
+        # Yield the interaction as a named tuple
         yield G2PInteraction(
             is_stimulation = row["Action"].lower() in POSITIVE_REGULATION,
             is_inhibition = row["Action"].lower() in NEGATIVE_REGULATION,
