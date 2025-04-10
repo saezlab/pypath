@@ -6,11 +6,10 @@ import collections
 
 import csv
 
-import pypath.share.curl as curl
-import pypath.share.common as common
 import pypath_common._constants as _const
-import pypath.utils.taxonomy as taxonomy
-import pypath.resources.urls as urls
+from pypath.share import curl
+from pypath.utils import taxonomy
+from pypath.resources import urls
 
 TABLES = Literal[
     "ligands",
@@ -126,13 +125,13 @@ def guide2pharma_interactions(
     endogenous: bool | None = None,
 ) -> Generator[tuple]:
     """
-    Downloads interactions from Guide2Pharma.
+    Downloads interactions from Guide2Pharma and formats the data. Adds information
+    from the Guide2Pharma 'ligands' and 'targets_and_families' tables.
 
     Args:
         organism (str | int | None):
             Name of the organism, e.g. `human`. If None, all organisms will be
-            included. The organism name is translated to its NCBI Taxonomy ID
-            using `pypath.utils.taxonomy.get_taxid`.
+            included.
 
         endogenous (bool | None):
             Whether to include only endogenous ligands interactions. If None,
@@ -142,7 +141,7 @@ def guide2pharma_interactions(
         Named tuples containing information about each interaction.
     """
     # Retrieve the NCBI Taxonomy ID and common name for the given organism
-    organism_, ncbi_tax_id = organism_name(organism)
+    organism_, ncbi_tax_id = organism_sorter(organism)
 
     # Download the ligands and protein targets from Guide2Pharma
     compounds = g2p_compounds()
@@ -155,7 +154,8 @@ def guide2pharma_interactions(
         # filters by users choice for endogenous ligands
         if endogenous is not None and endogenous != _endogenous:
             continue
-
+        
+        # Retrieve the NCBI Taxonomy ID and common name for the Target Species
         g2p_organism, g2p_tax_id = organism_sorter(row["Target Species"])
         # filters by users choice for organism
         if organism_ is not None and g2p_tax_id != ncbi_tax_id:
@@ -181,37 +181,6 @@ def guide2pharma_interactions(
             target = target,
         )
 
-def organism_sorter(
-        organism: str | int | None
-        ) -> tuple[str | None, int | None]:
-    """
-    Obtains the NCBI Taxonomy ID for the organism and ensures the common
-    name is used.
-
-    Args:
-        organism (str | int | None): The name of the organism.
-
-    Returns:
-        tuple: A tuple containing the common name and NCBI Taxonomy ID.
-    """
-
-    organism_ = None
-    ncbi_tax_id = None
-
-    if (isinstance(organism, str)
-        and organism.lower() in taxonomy.taxids.values()):
-
-        ncbi_tax_id = get_taxid(organism)
-
-        try:
-            # Get the common name for the organism
-            organism_ = taxonomy.ensure_common_name(ncbi_tax_id)
-            organism_ = organism_.capitalize() if organism_ else None
-        except KeyError:
-            # No organism specified
-            pass
-    return organism_, ncbi_tax_id
-
 
 def guide2pharma_table(name: TABLES) -> Generator[dict]:
     """
@@ -231,9 +200,38 @@ def guide2pharma_table(name: TABLES) -> Generator[dict]:
 
     g2p_version = next(c.result).strip()
 
-    return csv.DictReader(c.result)
+    yield from csv.DictReader(c.result)
 
+def organism_sorter(
+        organism: str | int | None
+        ) -> tuple[str | None, int | None]:
+    """
+    Takes an organism name or identifier from Guide to Pharmacology 
+    (e.g., "human") and converts it into both the common name and
+    the NCBI Taxonomy ID.
 
+    Args:
+        organism (str | int | None): The name of the organism from Guide to Pharmacology.
+
+    Returns:
+        tuple: A tuple containing the common name and NCBI Taxonomy ID.
+    """
+
+    organism_ = None
+    ncbi_tax_id = None
+
+    if (isinstance(organism, str)
+        and organism.lower() in taxonomy.taxids.values()):
+        # If the organism is a string and it is a valid organism name
+        ncbi_tax_id = get_taxid(organism)
+
+        try:
+            # Get the common name for the organism
+            organism_ = taxonomy.ensure_common_name(ncbi_tax_id)
+            organism_ = organism_.capitalize() if organism_ else None
+        except KeyError:
+            pass
+    return organism_, ncbi_tax_id
 def get_taxid(organism_input: str) -> int:
     """
     Retrieves the NCBI Taxonomy ID for a given organism input.
@@ -258,9 +256,10 @@ def g2p_get_target(
         protein_targets: dict[str, G2PTargetProtein],
         ) -> G2PTargetProtein | G2PLigandProtein | G2PCompound | None:
     """
-    Retrieves a target object from the given row in the Guide2Pharma
-    interactions table. This object is either a G2PTargetProtein or a G2PCompound,
-    depending on whether the target is a protein or a ligand.
+    Retrieves a target object from the compounds or protein_targets dictionaries based on the
+    given row in the Guide2Pharma interactions table. 
+    This object is either a G2PTargetProtein or a G2PCompound, depending on whether the 
+    target is a protein or a ligand.
 
     Args:
         row: A dictionary representing a row of the Guide2Pharma table.
@@ -293,15 +292,14 @@ def g2p_get_target(
 
 def g2p_compounds() -> dict[str, G2PLigandProtein | G2PCompound]:
     """
-    Downloads ligands from Guide2Pharma.
+    Downloads ligands from Guide2Pharma 'ligands' table.
 
     Ligands can be either proteins or small molecules. The function returns a
-    dictionary of named tuples containing the name, PubChem ID, ChEMBL ID, IUPAC
-    name, SMILES, and InChI of each ligand.
+    dictionary of named tuples.
 
     Returns:
         dict[str, G2PLigandProtein | G2PCompound]: A dictionary of ligands with their
-            IDs as keys and values as named tuples.
+            IDs as keys and values as G2PLigandProtein or G2PCompund objects.
     """
 
     ligands : dict[str, G2PLigandProtein | G2PCompound] = {}
@@ -317,14 +315,15 @@ def g2p_compounds() -> dict[str, G2PLigandProtein | G2PCompound]:
 
 def g2p_protein_targets() -> dict[str, G2PTargetProtein]:
     """
-    Downloads protein targets from Guide2Pharma.
+    Downloads protein targets from Guide2Pharma 'targets_and_families' table.
 
     This function retrieves protein targets from the Guide2Pharma database.
     It returns a dictionary of named tuples, where the keys are the target IDs
     and the values are the G2PTargetProtein objects.
 
     Returns:
-        dict[str, G2PTargetProtein]: A dictionary of protein targets.
+        dict[str, G2PTargetProtein]: A dictionary of protein targets with their IDs
+        as keys and G2PTargetProtein as objects.
     """
 
     targets = {}
@@ -335,11 +334,11 @@ def g2p_protein_targets() -> dict[str, G2PTargetProtein]:
     return targets
 def _target_record(row: dict) -> G2PTargetProtein:
     """
-    Creates a G2PProtein object from a row of the Guide2Pharma
+    Creates a G2PProtein object from a row of the Guide2Pharma 'targets_and_families'
     table.
 
     Args:
-        row: A dictionary representing a row of the Guide2Pharma table.
+        row: A dictionary representing a row of the Guide2Pharma 'targets_and_families' table.
 
     Returns:
         A G2PTargetProtein object.
@@ -364,11 +363,11 @@ def _target_record(row: dict) -> G2PTargetProtein:
 
 def _source_record(row: dict) -> G2PLigandProtein:
     """
-    Creates a G2PLigandProtein object from a row of the Guide2Pharma
+    Creates a G2PLigandProtein object from a row of the Guide2Pharma ligands
     table.
 
     Args:
-        row: A dictionary representing a row of the Guide2Pharma table.
+        row: A dictionary representing a row of the Guide2Pharma ligands table.
 
     Returns:
         A G2PLigandProtein object.
@@ -389,11 +388,11 @@ def _source_record(row: dict) -> G2PLigandProtein:
 
 def _compound_record(row: dict) -> G2PCompound:
     """
-    Creates a G2PCompound object from a row of the Guide2Pharma
+    Creates a G2PCompound object from a row of the Guide2Pharma ligands
     table.
 
     Args:
-        row: A dictionary representing a row of the Guide2Pharma table.
+        row: A dictionary representing a row of the Guide2Pharma ligands table.
 
     Returns:
         A G2PCompound object.
