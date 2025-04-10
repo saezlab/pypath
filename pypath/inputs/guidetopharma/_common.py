@@ -8,6 +8,7 @@ import csv
 
 import pypath.share.curl as curl
 import pypath.share.common as common
+import pypath_common._constants as _const
 import pypath.utils.taxonomy as taxonomy
 import pypath.resources.urls as urls
 
@@ -65,6 +66,8 @@ G2PInteraction = collections.namedtuple(
         "affinity_units",
         "primary_target",
         "pubmed_id",
+        "species",
+        "ncbi_taxa_id",  
         "ligand",
         "target",
     ],
@@ -137,21 +140,8 @@ def guide2pharma_interactions(
     Yields:
         Named tuples containing information about each interaction.
     """
-    # Retrieve the NCBI Taxonomy ID for the given organism
-    organism_ = None
-    ncbi_tax_id = None
-
-    if isinstance(organism, str):
-        ncbi_tax_id = get_taxid(organism)
-
-        try:
-            # Get the common name for the organism
-            organism_ = taxonomy.ensure_common_name(ncbi_tax_id)
-            organism_ = organism_.capitalize() if organism_ else None
-
-        except KeyError:
-            # No organism specified
-            pass
+    # Retrieve the NCBI Taxonomy ID and common name for the given organism
+    organism_, ncbi_tax_id = organism_name(organism)
 
     # Download the ligands and protein targets from Guide2Pharma
     compounds = g2p_compounds()
@@ -165,6 +155,10 @@ def guide2pharma_interactions(
         if endogenous is not None and endogenous != _endogenous:
             continue
 
+        g2p_organism, g2p_tax_id = organism_sorter(row["Target Species"])
+        # filters by users choice for organism
+        if organism_ is not None and g2p_tax_id != ncbi_tax_id:
+            continue
         # Retrieve correct target object for the interaction
         target = g2p_get_target(row, compounds, protein_targets)
 
@@ -179,9 +173,44 @@ def guide2pharma_interactions(
             affinity_units = row["Affinity Units"],
             primary_target = row["Primary Target"],
             pubmed_id = row["PubMed ID"],
+            species = g2p_organism,
+            ncbi_taxa_id = g2p_tax_id,
             ligand = compounds.get(row["Ligand ID"]),
             target = target,
         )
+
+def organism_sorter(
+        organism: str | int | None
+        ) -> tuple[str | None, int | None]:
+    """
+    Obtains the NCBI Taxonomy ID for the organism and ensures the common
+    name is used.
+
+    Args:
+        organism (str | int | None): The name of the organism.
+
+    Returns:
+        tuple: A tuple containing the common name and NCBI Taxonomy ID.
+    """
+
+    organism_ = None
+    ncbi_tax_id = None
+
+    if (isinstance(organism, str)
+        and organism.lower() in taxonomy.taxids.values()):
+
+        ncbi_tax_id = get_taxid(organism)
+
+        try:
+            # Get the common name for the organism
+            organism_ = taxonomy.ensure_common_name(ncbi_tax_id)
+            organism_ = organism_.capitalize() if organism_ else None
+        except KeyError:
+            # No organism specified
+            pass
+    return organism_, ncbi_tax_id
+
+
 def guide2pharma_table(name: TABLES) -> Generator[dict]:
     """
     Downloads a table from Guide2Pharma.
@@ -214,13 +243,12 @@ def get_taxid(organism_input: str) -> int:
         int: The NCBI Taxonomy ID corresponding to the organism input.
         Returns a special constant if the input is empty or None.
     """
-    
-    # Check if the input is empty or None and return a constant value
-    if organism_input in {"", "None", None}:
-        return _const.NOT_ORGANISM_SPECIFIC
-
-    # Use the taxonomy utility to ensure the input is converted to an NCBI Taxonomy ID
-    return taxonomy.ensure_ncbi_tax_id(organism_input)
+    # ensure the input is not empty
+    if organism_input:
+        # Use the taxonomy utility to ensure the input is converted to an NCBI Taxonomy ID
+        return taxonomy.ensure_ncbi_tax_id(organism_input)
+    else:
+        return _const.NOT_ORGANISM_SPECIFIC # TODO ask about _const.NOT_ORGANISM_SPECIFIC
 
 def g2p_get_target(
         row: dict,
@@ -248,11 +276,11 @@ def g2p_get_target(
 
     # Check if the target is a protein
     if row["Target ID"]:
-        target = protein_targets.get(row["Target ID"]) # protein target
+        target = protein_targets.get(row["Target ID"])
 
     # Check if the target is a ligand
     elif row["Target Ligand ID"]:
-        target = compounds.get(row["Target Ligand ID"]) # ligand target
+        target = compounds.get(row["Target Ligand ID"]) 
 
     # If neither Target ID nor Ligand Target ID is present, set target to None
     else:
