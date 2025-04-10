@@ -660,7 +660,7 @@ class UniprotQuery:
 
         for line in result:
 
-            line = line.strip('\n\r')
+            line = line.strip('\n\r;')
 
             if line.strip():
 
