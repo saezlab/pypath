@@ -374,7 +374,7 @@ class UniprotQuery:
     _OPSTART = re.compile(r'^(OR|AND)')
     _OPEND = re.compile(r'(OR|AND)$')
     _FIELDSEP = re.compile(r'[\s;]')
-    _FIELDEND = re.compile(r'$;')
+    _FIELDEND = re.compile(r';$')
     _SYNONYMS = {
         'organism': 'organism_id',
         'ncbi_tax_id': 'organism_id',
@@ -660,7 +660,7 @@ class UniprotQuery:
 
         for line in result:
 
-            line = line.strip('\n\r;')
+            line = line.strip('\n\r')
 
             if line.strip():
 
