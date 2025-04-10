@@ -67,7 +67,8 @@ G2PInteraction = collections.namedtuple(
         "primary_target",
         "pubmed_id",
         "species",
-        "ncbi_taxa_id",  
+        "ncbi_taxa_id",
+        "ligand_action",  
         "ligand",
         "target",
     ],
@@ -175,6 +176,7 @@ def guide2pharma_interactions(
             pubmed_id = row["PubMed ID"],
             species = g2p_organism,
             ncbi_taxa_id = g2p_tax_id,
+            ligand_action=row["Type"],
             ligand = compounds.get(row["Ligand ID"]),
             target = target,
         )
