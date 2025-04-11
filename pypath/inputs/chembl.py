@@ -262,8 +262,9 @@ def chembl_molecules() -> list[tuple]:
 
 def chembl_activities(
         #TODO: are these below all the allowed values?
-        standard_relation: Literal['=', '>', '<', '>=', '<='],
+        standard_relation: Literal['=', '>', '<', '>=', '<=', None] = None,
         pchembl_value_none: bool = False,
+        limit: int = 1000
     ) -> list[tuple] :
     """
     Retrieves activities data from ChEMBL.
@@ -312,11 +313,11 @@ def chembl_activities(
             url = (
                 f"{urls.urls['chembl']['url']}"
                 f"{urls.urls['chembl']['activity']}"
-                f"&pchembl_value__isnull={str(pchembl_value_none).lower()}"
-                f"&standard_relation__exact={standard_relation}"
+                #f"&pchembl_value__isnull={str(pchembl_value_none).lower()}"
+                #f"&standard_relation__exact={standard_relation}"
             )
 
-        elif page_dct['page_meta']['next']:
+        elif page_dct['page_meta']['next'] and len(activity_lst) < limit:
 
             url = (
                 f"{urls.urls['chembl']['url']}"
