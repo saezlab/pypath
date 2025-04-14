@@ -18,72 +18,153 @@
 #
 
 from typing import Literal
+from collections.abc import Generator
 
 import json
 import collections
 
-import pypath.share.curl as curl
-import pypath.resources.urls as urls
+from pypath.share import curl
+from pypath.resources import urls
+
+DATA = Literal[
+    "target",
+    "assay",
+    "molecule",
+    "activity",
+    "document",
+    "drug_indication",
+    "mechanism",
+]
+
+#ChemblTarget = collections.namedtuple(
+#    "ChemblTarget",
+#)
+
+def chembl_general(data_type: DATA,
+                   max_pages: int = 10) -> Generator[dict]:
+    """
+    Retrieves general data from ChEMBL.
+    """
+
+    page_dict: dict = {}
+    page_count = 0
+
+    while True:
+
+        if not page_dict:
+
+            url_base = urls.urls['chembl']['url']
+            url_path = urls.urls['chembl'][data_type]
+            url = f"{url_base}{url_path}"
+
+        elif page_dict['page_meta']['next']:
+
+            url_base = urls.urls['chembl']['url']
+            url_path = page_dict['page_meta']['next']
+            url = f"{url_base}{url_path}"
+
+        else:
+            break
+        
+        c = curl.Curl(url, large=True, silent=False)
+        with open(c.fileobj.name, mode="r", encoding='utf-8') as read_file:
+            page_dict =json.load(read_file) # add in yield
+            yield page_dict
+        
+        page_count += 1 # remove after testing
+        if page_count >= max_pages:
+            break
+
 
 
 def chembl_targets() -> list[tuple]:
     """
     Retrieves targets data from ChEMBL.
 
+    The targets data is necessary for fetching the activity data,
+    because the activity data does not contain the UniProt IDs of the
+    proteins.
+
+    The targets data contains the UniProt IDs of the proteins and the
+    corresponding ChEMBL target IDs.
+
     Returns
         List of drug target records as named tuples.
     """
 
+    # define the fields of the ChemblTarget named tuple
     fields_target = (
         'accession',
         'target_chembl_id',
     )
 
+    # create the ChemblTarget named tuple
     ChemblTarget = collections.namedtuple(
         'ChemblTarget',
         fields_target,
         defaults = (None,) * len(fields_target),
     )
 
+    # create an empty list to store the targets
     tgt_lst = []
+
+    # create an empty dictionary to store the page data
     page_dct = {}
 
+    # loop until there are no more pages
     while True:
 
+        # if there is no page data, fetch the first page
         if not page_dct:
 
+            # construct the URL for the first page
             url = (
                 f"{urls.urls['chembl']['url']}"
                 f"{urls.urls['chembl']['target']}"
             )
 
+        # if there is page data and there is a next page, fetch the next page
         elif page_dct['page_meta']['next']:
 
+            # construct the URL for the next page
             url = (
                 f"{urls.urls['chembl']['url']}"
                 f"{page_dct['page_meta']['next']}"
             )
 
+        # if there is no next page, break the loop
         else:
 
             break
 
+        # fetch the page data
         c = curl.Curl(url, large=True, silent=False)
         fileobj = open(c.fileobj.name, encoding='utf-8')
         page_dct = json.loads(fileobj.read())
 
-        tgt_lst.extend(
-            ChemblTarget(
-                accession = (
-                    tgt['target_components'][0]['accession']
-                        if tgt['target_components'] else
-                    None
-                ),
-                target_chembl_id = tgt['target_chembl_id'],
-            )
-            for tgt in page_dct['targets']
-        )
+        # loop through the targets on the page
+        for tgt in page_dct['targets']:
 
+            # extract the UniProt accession from the target data
+            accession = (
+                tgt['target_components'][0]['accession']
+                if tgt['target_components'] else
+                None
+            )
+
+            # extract the ChEMBL target ID from the target data
+            target_chembl_id = tgt['target_chembl_id']
+
+            # create a ChemblTarget named tuple
+            chembl_tgt = ChemblTarget(
+                accession=accession,
+                target_chembl_id=target_chembl_id,
+            )
+
+            # add the ChemblTarget named tuple to the list
+            tgt_lst.append(chembl_tgt)
+
+    # return the list of ChemblTarget named tuples
     return tgt_lst
 
 
