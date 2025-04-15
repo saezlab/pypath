@@ -41,9 +41,19 @@ DATA = Literal[
 #)
 
 def chembl_general(data_type: DATA,
-                   max_pages: int = 10) -> Generator[dict]:
+                   max_pages: int) -> Generator[dict]:
     """
-    Retrieves general data from ChEMBL.
+    Retrieves data from ChEMBL.
+
+    This function will retrieve the specified data from ChEMBL
+    and yield the data as a JSON object.
+
+    Args:
+        data_type (DATA): The type of data to retrieve.
+        max_pages (int): The maximum number of pages to retrieve.
+
+    Yields:
+        dict: The JSON object of the retrieved data.
     """
 
     page_dict: dict = {}
@@ -68,10 +78,11 @@ def chembl_general(data_type: DATA,
         
         c = curl.Curl(url, large=True, silent=False)
         with open(c.fileobj.name, mode="r", encoding='utf-8') as read_file:
-            page_dict =json.load(read_file) # add in yield
-            yield page_dict
+            page_dict = json.load(read_file) # load the json object
+            yield page_dict # yield the json object
         
-        page_count += 1 # remove after testing
+        # allows user to specify maximum number of pages
+        page_count += 1
         if page_count >= max_pages:
             break
 
