@@ -342,8 +342,17 @@ def get_activity(max_pages: int) -> Generator[ChemblActivity]:
 def get_documents(max_pages: int) -> Generator[ChemblDocument]:
     """
     Retrieves the Chembl document information.
-    """
 
+    This function is a wrapper around the `chembl_general` function.
+    It retrieves the document information from ChEMBL and
+    yields the data as named tuples of the type `ChemblDocument`.
+
+    Args:
+        max_pages (int): The maximum number of pages to retrieve.
+
+    Yields:
+        ChemblDocument: The named tuple of the retrieved data.
+    """
     documents = chembl_general(data_type="document", max_pages=max_pages)
 
     yield from (ChemblDocument
