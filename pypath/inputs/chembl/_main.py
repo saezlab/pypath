@@ -93,6 +93,42 @@ ChemblParam = collections.namedtuple(
     ]
 )
 
+ChemblActivity = collections.namedtuple(
+    "ChemblActivity",
+    [
+        "activity_id",
+        "action_type",
+        "standard_relation",
+        "standard_value",
+        "standard_upper_value",
+        "standard_units",
+        "standard_type",
+        "ligand_efficiency",
+        "validity_comment",
+        "potential_duplicate",
+        "pchembl_value",
+        "source_id",
+        "molecule_chembl_id",
+        "target_chembl_id",
+        "target_taxa_id",
+        "assay_id",
+        "document_chembl_id",
+    ]
+)
+
+ChemblDocument = collections.namedtuple(
+    "ChemblDocument",
+    [
+        "document_chembl_id",
+        'pubmed_id',
+        "patent_id",
+        "doc_type",
+        "journal",
+        "year",
+        "doi",
+    ]
+)
+
 def chembl_general(data_type: DATA,
                    max_pages: int) -> Generator[dict]:
     """
@@ -200,15 +236,29 @@ def target_components(target: dict) -> Generator[ChemblComponent]:
 
 def get_assays(max_pages: int) -> Generator[ChemblAssay]:
     """
-    Gets the assay data from Chembl
+    Retrieves assay data from ChEMBL.
+
+    This generator function retrieves the assay data from ChEMBL and
+    yields the data as named tuples of the type `ChemblAssay`.
+
+    The function uses the `chembl_general` function to retrieve the
+    data from ChEMBL.
+
+    Args:
+        max_pages (int): The maximum number of pages to retrieve.
+
+    Yields:
+        ChemblAssay: The named tuple of the retrieved data.
     """
 
     assays = chembl_general(data_type="assay", max_pages=max_pages)
 
     for assay in assays:
         
+        # Get the assay parameters
         parameters = tuple(param_assay(assay['assay_parameters']))
-    
+        
+        # Create the ChemblAssay named tuple
         yield ChemblAssay(
             assay_chembl_id = assay['assay_chembl_id'],
             assay_type = assay['assay_type'],
@@ -230,20 +280,84 @@ def get_assays(max_pages: int) -> Generator[ChemblAssay]:
 
 def param_assay(parameters: dict) -> Generator[ChemblParam]:
     """
-    Retrieves assay parameter data from Chembl
+    Retrieves assay parameter data from ChEMBL.
+
+    Args:
+        parameters (dict): The dictionary of parameters.
+
+    Yields:
+        ChemblParam: The named tuple of the retrieved parameter data.
     """
-    
     if parameters:
-
-            yield from (ChemblParam(
-                    standard_type=parameter["standard_type"],
-                    standard_value=parameter["standard_value"],
-                    standard_units=parameter["standard_units"],
-                    standard_relation=parameter["standard_relation"]
-            )
-            for parameter in parameters
+        yield from (ChemblParam
+        (
+            standard_type=parameter["standard_type"],
+            standard_value=parameter["standard_value"],
+            standard_units=parameter["standard_units"],
+            standard_relation=parameter["standard_relation"]
         )
+        for parameter in parameters
+    )
 
+def get_activity(max_pages: int) -> Generator[ChemblActivity]:
+    """
+    Retrieves activity data from Chembl.
+    This generator function retrieves the assay data from ChEMBL and
+    yields the data as named tuples of the type `ChemblActivity.
+
+    The function uses the `chembl_general` function to retrieve the
+    data from ChEMBL.
+
+    Args:
+        max_pages (int): The maximum number of pages to retrieve.
+
+    Yields:
+        ChemblActivity: The named tuple of the retrieved data.   
+    """
+    activities = chembl_general(data_type="activity", max_pages=max_pages)
+
+    yield from (ChemblActivity
+        (
+            activity_id=activity["activity_id"],
+            action_type=activity["action_type"],
+            standard_relation=activity["standard_relation"],
+            standard_value=activity["standard_value"],
+            standard_upper_value=activity['standard_upper_value'],
+            standard_units=activity["standard_units"],
+            standard_type=activity["standard_type"],
+            ligand_efficiency=activity["ligand_efficiency"],
+            validity_comment=activity["data_validity_comment"],
+            potential_duplicate=activity["potential_duplicate"],
+            pchembl_value=activity["pchembl_value"],
+            source_id=activity["src_id"],
+            molecule_chembl_id=activity["molecule_chembl_id"],
+            target_chembl_id=activity["target_chembl_id"],
+            target_taxa_id=activity["target_tax_id"],
+            assay_id=activity["assay_chembl_id"],
+            document_chembl_id=activity["document_chembl_id"],
+        )
+        for activity in activities
+    )
+
+def get_documents(max_pages: int) -> Generator[ChemblDocument]:
+    """
+    Retrieves the Chembl document information.
+    """
+
+    documents = chembl_general(data_type="document", max_pages=max_pages)
+
+    yield from (ChemblDocument
+        (
+            document_chembl_id=document["document_chembl_id"],
+            pubmed_id=document["pubmed_id"],
+            patent_id=document["patent_id"],
+            doc_type=document["doc_type"],
+            journal=document["journal"],
+            year=document["year"],
+            doi=document["doi"],
+        )
+        for document in documents
+    )
 
 def chembl_molecules() -> list[tuple]:
     """
