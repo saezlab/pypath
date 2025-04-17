@@ -36,9 +36,62 @@ DATA = Literal[
     "mechanism",
 ]
 
-#ChemblTarget = collections.namedtuple(
-#    "ChemblTarget",
-#)
+ChemblTarget = collections.namedtuple(
+    "ChemblTarget",
+    [
+        "chembl_id",
+        "target_type",
+        "preferred_name",
+        "ncbi_taxa_id",
+        "organism",
+        "components",
+        "num_components",
+    ]
+)
+
+ChemblComponent = collections.namedtuple(
+    "ChemblComponent",
+    [
+        "uniprot_accession",
+        "component_type",
+        "component_description",
+        "component_id",
+        "component_relationship",
+        "component_number",
+    ]
+)
+
+ChemblAssay = collections.namedtuple(
+    "ChemblAssay",
+    [
+        "assay_chembl_id",
+        "assay_type",
+        "assay_type_description",
+        "assay_category",
+        "target_chembl_id",
+        "organism",
+        "tax_id",
+        "tissue",
+        "cell_type",
+        "subcellular_fraction",
+        "parameters",
+        "source_id",
+        "confidence_score",
+        "confidence_description",
+        "document_chembl_id",
+        "description",
+    ]
+)
+
+ChemblParam = collections.namedtuple(
+    "ChemblParam",
+    [
+        "standard_type",
+        "standard_value",
+        "standard_units",
+        "standard_relation",
+    ]
+)
 
 def chembl_general(data_type: DATA,
                    max_pages: int) -> Generator[dict]:
@@ -79,167 +132,117 @@ def chembl_general(data_type: DATA,
         c = curl.Curl(url, large=True, silent=False)
         with open(c.fileobj.name, mode="r", encoding='utf-8') as read_file:
             page_dict = json.load(read_file) # load the json object
-            yield page_dict # yield the json object
+
+            # remove unwanted page_meta
+            for key in page_dict.keys():
+                if key == 'page_meta':
+                    continue
+                else:
+                    data_dict = page_dict[key]
+
+                    # extract data from each page
+                    for data in data_dict:
+                        yield data
         
         # allows user to specify maximum number of pages
         page_count += 1
         if page_count >= max_pages:
             break
 
-
-
-def chembl_targets() -> list[tuple]:
+def get_targets(max_pages: int) -> Generator[ChemblTarget]:
     """
-    Retrieves targets data from ChEMBL.
+    Retrieves target data from ChEMBL.
 
-    The targets data is necessary for fetching the activity data,
-    because the activity data does not contain the UniProt IDs of the
-    proteins.
+    This generator function retrieves the target data from ChEMBL and
+    yields the data as named tuples of the type `ChemblTarget`.
 
-    The targets data contains the UniProt IDs of the proteins and the
-    corresponding ChEMBL target IDs.
+    The function uses the `chembl_general` function to retrieve the
+    data from ChEMBL.
 
-    Returns
-        List of drug target records as named tuples.
-    """
-
-    # define the fields of the ChemblTarget named tuple
-    fields_target = (
-        'accession',
-        'target_chembl_id',
-    )
-
-    # create the ChemblTarget named tuple
-    ChemblTarget = collections.namedtuple(
-        'ChemblTarget',
-        fields_target,
-        defaults = (None,) * len(fields_target),
-    )
-
-    # create an empty list to store the targets
-    tgt_lst = []
-
-    # create an empty dictionary to store the page data
-    page_dct = {}
-
-    # loop until there are no more pages
-    while True:
-
-        # if there is no page data, fetch the first page
-        if not page_dct:
-
-            # construct the URL for the first page
-            url = (
-                f"{urls.urls['chembl']['url']}"
-                f"{urls.urls['chembl']['target']}"
-            )
-
-        # if there is page data and there is a next page, fetch the next page
-        elif page_dct['page_meta']['next']:
-
-            # construct the URL for the next page
-            url = (
-                f"{urls.urls['chembl']['url']}"
-                f"{page_dct['page_meta']['next']}"
-            )
-
-        # if there is no next page, break the loop
-        else:
-
-            break
-
-        # fetch the page data
-        c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name, encoding='utf-8')
-        page_dct = json.loads(fileobj.read())
-
-        # loop through the targets on the page
-        for tgt in page_dct['targets']:
-
-            # extract the UniProt accession from the target data
-            accession = (
-                tgt['target_components'][0]['accession']
-                if tgt['target_components'] else
-                None
-            )
-
-            # extract the ChEMBL target ID from the target data
-            target_chembl_id = tgt['target_chembl_id']
-
-            # create a ChemblTarget named tuple
-            chembl_tgt = ChemblTarget(
-                accession=accession,
-                target_chembl_id=target_chembl_id,
-            )
-
-            # add the ChemblTarget named tuple to the list
-            tgt_lst.append(chembl_tgt)
-
-    # return the list of ChemblTarget named tuples
-    return tgt_lst
-
-
-def chembl_assays() -> list[tuple] :
-    """
-    Retrieves assays data from ChEMBL.
-
-    Returns
-        List of assay records as named tuples.
+    Args:
+        max_pages (int): The maximum number of pages to retrieve.
+    Yields:
+        ChemblTarget: The named tuple of the retrieved data.
     """
 
-    fields_assay = (
-        'assay_chembl_id',
-        'assay_organism',
-        'assay_type',
-        'confidence_score',
-        'target_chembl_id',
-    )
+    targets= chembl_general(data_type="target", max_pages=max_pages)
 
-    ChemblAssay = collections.namedtuple(
-        'ChemblAssay',
-        fields_assay,
-        defaults = (None,) * len(fields_assay),
-    )
+    # loop through the pages and yield the target data
+    for target in targets:
 
-    assay_lst = []
-    page_dct = {}
-
-    while True:
-
-        if not page_dct:
-
-            url = (
-                f"{urls.urls['chembl']['url']}"
-                f"{urls.urls['chembl']['assay']}"
-            )
-
-        elif page_dct['page_meta']['next']:
-
-            url = (
-                f"{urls.urls['chembl']['url']}"
-                f"{page_dct['page_meta']['next']}"
-            )
-
-        else:
-
-            break
-
-        c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name, encoding='utf-8')
-        page_dct = json.loads(fileobj.read())
-
-        assay_lst.extend(
-            ChemblAssay(
-                assay_chembl_id = assy_attr['assay_chembl_id'],
-                assay_organism = assy_attr['assay_organism'],
-                assay_type = assy_attr['assay_type'],
-                confidence_score = assy_attr['confidence_score'],
-                target_chembl_id = assy_attr['target_chembl_id'],
-            )
-            for assy_attr in page_dct['assays']
+        # components
+        components = tuple(target_components(target))
+        yield ChemblTarget(
+            chembl_id = target['target_chembl_id'],
+            target_type = target['target_type'],
+            preferred_name = target["pref_name"],
+            ncbi_taxa_id = target["tax_id"],
+            organism = target["organism"],
+            components = components,
+            num_components = len(components),
         )
 
-    return assay_lst
+def target_components(target: dict) -> Generator[ChemblComponent]:
+    """
+    Retrieves target component data from ChEMBL.
+    """
+    comp_count = 0
+    for component in target['target_components']:
+        comp_count += 1
+        yield ChemblComponent(
+            uniprot_accession = component['accession'],
+            component_type = component['component_type'],
+            component_description = component['component_description'],
+            component_id = component['component_id'],
+            component_relationship = component['relationship'],
+            component_number = comp_count,
+        )
+
+def get_assays(max_pages: int) -> Generator[ChemblAssay]:
+    """
+    Gets the assay data from Chembl
+    """
+
+    assays = chembl_general(data_type="assay", max_pages=max_pages)
+
+    for assay in assays:
+        
+        parameters = tuple(param_assay(assay['assay_parameters']))
+    
+        yield ChemblAssay(
+            assay_chembl_id = assay['assay_chembl_id'],
+            assay_type = assay['assay_type'],
+            assay_type_description = assay['assay_type_description'],
+            assay_category = assay['assay_category'],
+            target_chembl_id= assay['target_chembl_id'],
+            organism = assay['assay_organism'],
+            tax_id = assay['assay_tax_id'],
+            tissue = assay['assay_tissue'],
+            cell_type = assay['assay_cell_type'],
+            subcellular_fraction = assay['assay_subcellular_fraction'],
+            parameters = parameters,
+            source_id = assay['src_id'],
+            confidence_score = assay['confidence_score'],
+            confidence_description = assay['confidence_description'],
+            document_chembl_id = assay['document_chembl_id'],
+            description = assay['description'],
+        )
+
+def param_assay(parameters: dict) -> Generator[ChemblParam]:
+    """
+    Retrieves assay parameter data from Chembl
+    """
+    
+    if parameters:
+
+            yield from (ChemblParam(
+                    standard_type=parameter["standard_type"],
+                    standard_value=parameter["standard_value"],
+                    standard_units=parameter["standard_units"],
+                    standard_relation=parameter["standard_relation"]
+            )
+            for parameter in parameters
+        )
 
 
 def chembl_molecules() -> list[tuple]:
