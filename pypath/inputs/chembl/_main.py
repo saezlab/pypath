@@ -129,6 +129,61 @@ ChemblDocument = collections.namedtuple(
     ]
 )
 
+ChemblMolecule = collections.namedtuple(
+    "ChemblMolecule",
+    [
+        "molecule_chembl_id",
+        "preferred_name",
+        "molecule_type",
+        "structure_type",
+        "chirality",
+        "biotherapeutic",
+        "inorganic_flag",
+        "natural_flag",
+        "polymer_flag",
+        "helm_notation",
+        "molecule_properties",
+        "structure",
+    ]
+)
+
+ChemblMolProps = collections.namedtuple(
+    "ChemblMolProps",
+    [
+        "mol_formula",
+        "full_mwt",
+        "monoisotopic_mwt",
+        "molecular_species",
+        "logp",
+        "logd",
+        "alogp",
+    ]
+)
+
+ChemblMolStruct = collections.namedtuple(
+    "ChemblMolStruct",
+    [
+        "canonical_smiles",
+        "inchi",
+        "inchi_key",
+    ]
+)
+
+ChemblMechanism = collections.namedtuple(
+    "ChemblMechanism",
+    [
+        "action_type",
+        "molecule_chembl_id",
+        "target_chembl_id",
+        "mechanism_id",
+        "drug_rec_id",
+        "molregno",
+        "direct_interaction",
+        "variant_sequence",
+        "molecular_mechanism",
+        "mechanism_refs",
+    ]
+)
 def chembl_general(data_type: DATA,
                    max_pages: int) -> Generator[dict]:
     """
@@ -291,10 +346,10 @@ def param_assay(parameters: dict) -> Generator[ChemblParam]:
     if parameters:
         yield from (ChemblParam
         (
-            standard_type=parameter["standard_type"],
-            standard_value=parameter["standard_value"],
-            standard_units=parameter["standard_units"],
-            standard_relation=parameter["standard_relation"]
+            standard_type = parameter["standard_type"],
+            standard_value = parameter["standard_value"],
+            standard_units = parameter["standard_units"],
+            standard_relation = parameter["standard_relation"]
         )
         for parameter in parameters
     )
@@ -318,23 +373,23 @@ def get_activity(max_pages: int) -> Generator[ChemblActivity]:
 
     yield from (ChemblActivity
         (
-            activity_id=activity["activity_id"],
-            action_type=activity["action_type"],
-            standard_relation=activity["standard_relation"],
-            standard_value=activity["standard_value"],
-            standard_upper_value=activity['standard_upper_value'],
-            standard_units=activity["standard_units"],
-            standard_type=activity["standard_type"],
-            ligand_efficiency=activity["ligand_efficiency"],
-            validity_comment=activity["data_validity_comment"],
-            potential_duplicate=activity["potential_duplicate"],
-            pchembl_value=activity["pchembl_value"],
-            source_id=activity["src_id"],
-            molecule_chembl_id=activity["molecule_chembl_id"],
-            target_chembl_id=activity["target_chembl_id"],
-            target_taxa_id=activity["target_tax_id"],
-            assay_id=activity["assay_chembl_id"],
-            document_chembl_id=activity["document_chembl_id"],
+            activity_id = activity["activity_id"],
+            action_type = activity["action_type"],
+            standard_relation = activity["standard_relation"],
+            standard_value = activity["standard_value"],
+            standard_upper_value = activity['standard_upper_value'],
+            standard_units = activity["standard_units"],
+            standard_type = activity["standard_type"],
+            ligand_efficiency = activity["ligand_efficiency"],
+            validity_comment = activity["data_validity_comment"],
+            potential_duplicate = activity["potential_duplicate"],
+            pchembl_value = activity["pchembl_value"],
+            source_id = activity["src_id"],
+            molecule_chembl_id = activity["molecule_chembl_id"],
+            target_chembl_id = activity["target_chembl_id"],
+            target_taxa_id = activity["target_tax_id"],
+            assay_id = activity["assay_chembl_id"],
+            document_chembl_id = activity["document_chembl_id"],
         )
         for activity in activities
     )
@@ -357,258 +412,82 @@ def get_documents(max_pages: int) -> Generator[ChemblDocument]:
 
     yield from (ChemblDocument
         (
-            document_chembl_id=document["document_chembl_id"],
-            pubmed_id=document["pubmed_id"],
-            patent_id=document["patent_id"],
-            doc_type=document["doc_type"],
-            journal=document["journal"],
-            year=document["year"],
-            doi=document["doi"],
+            document_chembl_id = document["document_chembl_id"],
+            pubmed_id = document["pubmed_id"],
+            patent_id = document["patent_id"],
+            doc_type = document["doc_type"],
+            journal = document["journal"],
+            year = document["year"],
+            doi = document["doi"],
         )
         for document in documents
     )
 
-def chembl_molecules() -> list[tuple]:
+def get_molecules(max_pages: int) -> Generator[ChemblMolecule]:
     """
-    Retrieves molecules data from ChEMBL.
-
-    Returns
-        Molecule records as named tuples.
+    Retrieves molecule information from ChEMBL
     """
 
-    def _get(mol, key0, key1):
-    
-        molecule_properties = mol.get(f'molecule_{key0}', {})
-        
-        if molecule_properties:
-        
-            return molecule_properties.get(key1, None)
-            
-        else:
-        
-            return None
+    molecules = chembl_general(data_type="molecule", max_pages=max_pages)
 
+    for molecule in molecules:
 
-    fields_molecule = (
-        'name',
-        'alogp',
-        'canonical_smiles',
-        'chirality',
-        'full_mwt',
-        'heavy_atoms',
-        'species',
-        'qed_weighted',
-        'type',
-        'structure_type',
-        'chembl',
-        'parent_chembl',
-        'prodrug',
-        'std_inchi_key',
-        'std_inchi',
-        'xrefs',
-    )
+        # Get the molecule properties
+        molecule_properties = molecule_props(molecule["molecule_properties"])
 
-    ChemblMolecule = collections.namedtuple(
-        'ChemblMolecule',
-        fields_molecule,
-        defaults = (None,) * len(fields_molecule),
-    )
+        # Get the molecule structures
+        structures = molecule_strucs(molecule["molecule_structures"])
 
-    mol_lst = []
-    page_dct = {}
-
-    while True:
-
-        if not page_dct:
-
-            url = urls.urls['chembl']['url'] + urls.urls['chembl']['molecule']
-            c = curl.Curl(url, large=True, silent=False)
-
-        elif page_dct['page_meta']['next']:
-
-            url = (
-                f"{urls.urls['chembl']['url']}"
-                f"{page_dct['page_meta']['next']}"
-            )
-
-        else:
-
-            break
-
-        c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name, encoding='utf-8')
-        page_dct = json.loads(fileobj.read())
-
-        mol_lst.extend(
-            ChemblMolecule(
-                name = mol['pref_name'],
-                chirality = mol['chirality'],
-                type = mol['molecule_type'],
-                prodrug = mol['prodrug'],
-                structure_type = mol['structure_type'],
-
-                chembl = _get(mol, 'hierarchy', 'molecule_chembl_id'),
-                parent_chembl = _get(mol, 'hierarchy', 'parent_chembl_id'),
-
-                alogp = _get(mol, 'properties', 'alogp'),
-                full_mwt = _get(mol, 'properties', 'full_mwt'),
-                heavy_atoms = _get(mol, 'properties', 'heavy_atoms'),
-                species = _get(mol, 'properties', 'molecular_species'),
-                qed_weighted = _get(mol, 'properties', 'qed_weighted'),
-
-                canonical_smiles = _get(mol, 'structures', 'canonical_smiles'),
-                std_inchi_key = _get(mol, 'structures', 'standard_inchi_key'),
-                std_inchi = _get(mol, 'structures', 'standard_inchi'),
-
-                xrefs = (
-                    [
-                        {
-                            'xref_id': rec['xref_id'],
-                            'xref_src': rec['xref_src'],
-                        }
-                        for rec in mol['cross_references']
-                    ]
-                        if mol['cross_references'] else
-                    None
-                )
-            )
-            for mol in page_dct['molecules']
+        yield ChemblMolecule(
+            molecule_chembl_id = molecule['molecule_chembl_id'],
+            preferred_name = molecule['pref_name'],
+            molecule_type = molecule['molecule_type'],
+            structure_type = molecule['structure_type'],
+            chirality = molecule['chirality'],
+            biotherapeutic = molecule['biotherapeutic'],
+            inorganic_flag = molecule['inorganic_flag'],
+            natural_flag = molecule['natural_product'],
+            polymer_flag = molecule['polymer_flag'],
+            helm_notation = molecule['helm_notation'],
+            molecule_properties = molecule_properties,
+            structure = structures,
         )
-
-    return mol_lst
-
-
-def chembl_activities(
-        #TODO: are these below all the allowed values?
-        standard_relation: Literal['=', '>', '<', '>=', '<=', None] = None,
-        pchembl_value_none: bool = False,
-        limit: int = 1000
-    ) -> list[tuple] :
+def molecule_props(properties: dict) -> ChemblMolProps | None:
     """
-    Retrieves activities data from ChEMBL.
+    Retrieves molecule properties from ChEMBL.
 
-    Args
-        pchembl_value_none:
-            # TODO: it is allowed to be None or must be None?
-            Whether the pchembl value should be none or not.
-        standard_relation:
-            Which standard relation in needed.
+    Args:
+        properties (dict): The dictionary of molecule properties.
 
-    Returns
-        List of activity records as named tuples. 
-        `standard_units` attribute is not included in the returned records.
-        # TODO: then why the data_validity_comment is part of the records?
-        Only records without `data_validity_comment` are returned.
+    Returns:
+        ChemblMolProps: The named tuple of the molecule properties.
     """
+    return ChemblMolProps(
+        mol_formula=properties.get("full_molformula"),
+        full_mwt=properties.get("full_mwt"),
+        monoisotopic_mwt=properties.get("mw_monoisotopic"),
+        molecular_species=properties.get("molecular_species"),
+        logp=properties.get("cx_logp"),
+        logd=properties.get("cx_logd"),
+        alogp=properties.get("alogp"),
+    ) if properties else None
 
-    fields_activity = (
-        'assay_chembl',
-        'data_validity_comment',
-        'chembl',
-        'pchembl',
-        'standard_flag',
-        'standard_relation',
-        'standard_value',
-        'standard_type',
-        'target_chembl',
-        'document'
-    )
-
-    ChemblActivity = collections.namedtuple(
-        'ChemblActivity',
-        fields_activity,
-        defaults = (None,) * len(fields_activity),
-    )
-
-    activity_lst = []
-    page_dct = {}
-
-    while True:
-
-        if not page_dct:
-
-
-            url = (
-                f"{urls.urls['chembl']['url']}"
-                f"{urls.urls['chembl']['activity']}"
-                #f"&pchembl_value__isnull={str(pchembl_value_none).lower()}"
-                #f"&standard_relation__exact={standard_relation}"
-            )
-
-        elif page_dct['page_meta']['next'] and len(activity_lst) < limit:
-
-            url = (
-                f"{urls.urls['chembl']['url']}"
-                f"{page_dct['page_meta']['next']}"
-            )
-
-        else:
-
-            break
-
-        c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name, encoding='utf-8')
-        page_dct = json.loads(fileobj.read())
-
-
-        activity_lst.extend(
-            ChemblActivity(
-                assay_chembl = act['assay_chembl_id'],
-                data_validity_comment = act['data_validity_comment'],
-                chembl = act['molecule_chembl_id'],
-                pchembl = act['pchembl_value'],
-                standard_flag = True if act['standard_flag'] == 1 else False,
-                standard_relation = act['standard_relation'],
-                standard_value = act['standard_value'],
-                standard_type = act['standard_type'],
-                target_chembl = act['target_chembl_id'],
-                document = act['document_chembl_id'],
-            )
-            for act in page_dct['activities']
-            if act['data_validity_comment'] is None
-        )
-
-    return activity_lst
-
-
-def chembl_documents() -> dict[str, str] :
+def molecule_strucs(structure: dict) -> ChemblMolStruct | None:
     """
-    Retrieves ChEMBL document ID to PubMed ID conversion.
+    Retrieves molecule structure from ChEMBL.
 
-    Returns
-        Dictionary of ChEMBL document IDs as keys and PubMed IDs as values.   
+    Args:
+        structure (dict): The dictionary of molecule structure.
+
+    Returns:
+        ChemblMolStruct: The named tuple of the molecule structure.
     """
+    return ChemblMolStruct(
+        canonical_smiles=structure.get("canonical_smiles"),
+        inchi=structure.get("standard_inchi"),
+        inchi_key=structure.get("standard_inchi_key"),
+    ) if structure else None
 
-    page_dct = {}
-    document_dict = {}
-
-    while True:
-        if not page_dct:
-            url = (
-                f"{urls.urls['chembl']['url']}"
-                f"{urls.urls['chembl']['document']}"
-            )
-
-        elif page_dct['page_meta']['next']:
-
-            url = (
-                    f"{urls.urls['chembl']['url']}"
-                    f"{page_dct['page_meta']['next']}"
-                )
-            
-        else:
-                
-            break
-
-        c = curl.Curl(url, large=True, silent=False)
-        fileobj = open(c.fileobj.name, encoding='utf-8')
-        page_dct = json.loads(fileobj.read())
-
-        for doc in page_dct['documents']:
-            if doc['pubmed_id']:
-                document_dict[doc['document_chembl_id']]= doc['pubmed_id']
-    
-    return document_dict
 
 
 def chembl_drug_indications(
