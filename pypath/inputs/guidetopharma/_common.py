@@ -33,6 +33,12 @@ TABLES = Literal[
     "GtP_to_UniProt_mapping",
 ]
 
+NAME_AUTHORITIES = {
+    'Human': 'HGNC',
+    'Rat': 'RGD',
+    'Mouse': 'MGI',
+}
+
 POSITIVE_REGULATION = {
     "agonist",
     "activator",
@@ -103,17 +109,15 @@ G2PLigand.__new__.__defaults__ = ('ligand',)
 G2PTarget = collections.namedtuple(
     "G2PTarget",
     [
-        "family_name",
-        "hgnc_name",
-        "hgnc_symbol",
-        "hgnc_id",
-        "human_ensembl_gene",
-        "human_entrez_gene",
-        "human_swissprot",
-        "human_nucleotide_refseq",
-        "human_protein_refseq",
+        "uniprot",
+        "symbol",
+        "entrez",
+        "ensembl",
+        "refseq",
+        "refseqp",
+        "family",
         "target_type",
-        "synonyms",
+        "organism",
         "entity_type",
         "role",
     ],
@@ -143,7 +147,7 @@ def g2p_interactions(
         Named tuples containing information about each interaction.
     """
     # Retrieve the NCBI Taxonomy ID and common name for the given organism
-    organism_, ncbi_tax_id = _organism_sorter(organism)
+    organism_, ncbi_tax_id = _organism_common_ncbi(organism)
 
     # Download the ligands and protein targets from Guide2Pharma
     compounds = g2p_compounds()
@@ -158,7 +162,7 @@ def g2p_interactions(
             continue
 
         # Retrieve the NCBI Taxonomy ID and common name for the Target Species
-        g2p_organism, g2p_tax_id = _organism_sorter(row["Target Species"])
+        g2p_organism, g2p_tax_id = _organism_common_ncbi(row["Target Species"])
         # filters by users choice for organism
         if organism_ is not None and g2p_tax_id != ncbi_tax_id:
             continue
@@ -205,66 +209,41 @@ def g2p_table(name: TABLES) -> Generator[dict]:
     yield from csv.DictReader(c.result)
 
 
-def _organism_sorter(
+def _organism_common_ncbi(
         organism: str | int | None
-        ) -> tuple[str | None, int | None]:
+    ) -> tuple[str | None, int | None]:
     """
+    Common name and NCBI Taxonomy ID of an organism.
+
     Takes an organism name or identifier from Guide to Pharmacology
     (e.g., "human") and converts it into both the common name and
     the NCBI Taxonomy ID.
 
     Args:
-        organism (str | int | None): The name of the organism from Guide to Pharmacology.
+        organism:
+            The name of the organism from Guide to Pharmacology.
 
     Returns:
-        tuple: A tuple containing the common name and NCBI Taxonomy ID.
+        A tuple of the common name and the NCBI Taxonomy ID. If organism is
+        unknown, the former defaults to None, the latter to -1, which means not
+        organism specific molecule (e.g. a compound).
     """
 
-    organism_ = None
-    ncbi_tax_id = None
+    return (
+        taxonomy.ensure_common_name(organism),
+        taxonomy.ensure_ncbi_tax_id(organism) or _const.NOT_ORGANISM_SPECIFIC
+    )
 
-    if (isinstance(organism, str)
-        and organism.lower() in taxonomy.taxids.values()):
-        # If the organism is a string and it is a valid organism name
-        ncbi_tax_id = _get_taxid(organism)
-
-        try:
-            # Get the common name for the organism
-            organism_ = taxonomy.ensure_common_name(ncbi_tax_id)
-            organism_ = organism_.capitalize() if organism_ else None
-        except KeyError:
-            pass
-
-    return organism_, ncbi_tax_id
-
-
-def _get_taxid(organism_input: str) -> int:
-    """
-    Retrieves the NCBI Taxonomy ID for a given organism input.
-
-    Args:
-        organism_input: The name or identifier of the organism.
-
-    Returns:
-        int: The NCBI Taxonomy ID corresponding to the organism input.
-        Returns a special constant if the input is empty or None.
-    """
-    # ensure the input is not empty
-    if organism_input:
-        # Use the taxonomy utility to ensure the input is converted to an NCBI Taxonomy ID
-        return taxonomy.ensure_ncbi_tax_id(organism_input)
-    else:
-        return _const.NOT_ORGANISM_SPECIFIC # TODO ask about _const.NOT_ORGANISM_SPECIFIC
 
 def _g2p_get_target(
         row: dict,
         ligands: dict[str, G2PLigand],
-        protein_targets: dict[str, G2PTargetProtein],
-        ) -> G2PTargetProtein | G2PLigand | None:
+        protein_targets: dict[str, G2PTarget],
+        ) -> G2PTarget | G2PLigand | None:
     """
     Retrieves a target object from the compounds or protein_targets
     dictionaries based on the given row in the Guide2Pharma interactions table.
-    This object is either a G2PTargetProtein or a G2PCompound, depending on
+    This object is either a G2PTarget or a G2PLigand, depending on
     whether the target is a protein or a ligand.
 
     Args:
@@ -275,9 +254,8 @@ def _g2p_get_target(
             values as named tuples.
 
     Returns:
-        G2PTargetProtein | G2PLigandProtein | G2PCompound | None: The target object
-        corresponding to the given row, or None if the Target ID or Ligand
-        Target ID is missing.
+        The target object corresponding to the given row, or None if the Target
+        ID or Ligand Target ID is missing.
     """
 
     target : G2PTarget | G2PLigand | None = None
@@ -297,7 +275,7 @@ def _g2p_get_target(
     return target
 
 
-def g2p_compounds() -> dict[str, G2PLigandProtein | G2PCompound]:
+def g2p_compounds() -> dict[str, G2PLigand | G2PLigand]:
     """
     Downloads ligands from Guide2Pharma 'ligands' table.
 
@@ -305,67 +283,79 @@ def g2p_compounds() -> dict[str, G2PLigandProtein | G2PCompound]:
     dictionary of named tuples.
 
     Returns:
-        dict[str, G2PLigandProtein | G2PCompound]: A dictionary of ligands with their
-            IDs as keys and values as G2PLigandProtein or G2PCompund objects.
+        dict[str, G2PLigand | G2PLigand]: A dictionary of ligands with their
+            IDs as keys and values as G2PLigand or G2PCompund objects.
     """
 
-    ligands : dict[str, G2PLigandProtein | G2PCompound] = {}
+    ligands: dict[str, G2PLigand | G2PLigand] = {}
+
     for row in g2p_table("ligands"):
         ligands[row["Ligand ID"]] = _ligand(row)
 
     return ligands
 
 
-def g2p_protein_targets() -> dict[str, G2PTargetProtein]:
+def g2p_protein_targets() -> dict[str, G2PTarget]:
     """
     Downloads protein targets from Guide2Pharma 'targets_and_families' table.
 
     This function retrieves protein targets from the Guide2Pharma database.
     It returns a dictionary of named tuples, where the keys are the target IDs
-    and the values are the G2PTargetProtein objects.
+    and the values are the G2PTarget objects.
 
     Returns:
-        dict[str, G2PTargetProtein]: A dictionary of protein targets with their IDs
-        as keys and G2PTargetProtein as objects.
+        dict[str, G2PTarget]: A dictionary of protein targets with their IDs
+        as keys and G2PTarget as objects.
     """
 
     targets = {}
-    for row in g2p_table("targets_and_families"):
-        # Create a G2PTargetProtein object from the row
-        targets[row["Target id"]] = _target_record(row)
+
+    for row in g2p_table('targets_and_families'):
+
+        targets[row['Target id']] = list(_parse_targets(row))
 
     return targets
 
 
-def _target_record(row: dict) -> G2PTargetProtein:
+def _parse_targets(row: dict) -> Generator[G2PTarget]:
     """
-    Creates a G2PProtein object from a row of the Guide2Pharma 'targets_and_families'
-    table.
+    Parse protein target data from a row of the "targets_and_families" table.
+
+    Creates a G2PTarget object from a row of the Guide2Pharma
+    'targets_and_families' table.
 
     Args:
         row: A dictionary representing a row of the Guide2Pharma
             'targets_and_families' table.
 
     Returns:
-        A G2PTargetProtein object.
+        A G2PTarget object.
     """
 
-    record = G2PTargetProtein(
-            family_name=row["Family name"],
-            hgnc_name=row["HGNC name"],
-            hgnc_symbol=row["HGNC symbol"],
-            hgnc_id=row["HGNC id"],
-            human_ensembl_gene=row["Human Ensembl Gene"],
-            human_entrez_gene=row["Human Entrez Gene"],
-            human_swissprot=row["Human SwissProt"],
-            human_nucleotide_refseq=row["Human nucleotide RefSeq"],
-            human_protein_refseq=row["Human protein RefSeq"],
-            target_type=row["Type"],
-            synonyms=row["synonyms"],
-            entity_type="protein",
+    for org in ('Human', 'Mouse', 'Rat'):
+
+        record = G2PTarget(
+            uniprot = _or_none(row, f'{org} SwissProt'),
+            symbol = _or_none(row, f'{NAME_AUTHORITIES[org]} symbol'),
+            entrez = _or_none(row, f'{org} Entrez Gene'),
+            ensembl = _or_none(row, f'{org} Ensembl Gene'),
+            refseq = _or_none(row, f'{org} nucleotide RefSeq'),
+            refseqp = _or_none(row, f'{org} protein RefSeq'),
+            family = row["Family name"],
+            target_type = row["Type"],
+            organism = taxonomy.ensure_ncbi_tax_id(org),
+            entity_type = 'protein',
         )
 
-    return record
+        if any(x is not None for x in record[:6]):
+
+            yield record
+
+
+def _or_none(row, key):
+
+    return row[key] or None
+
 
 def _ligand(row: dict) -> G2PLigand:
     """
