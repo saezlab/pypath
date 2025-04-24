@@ -227,8 +227,12 @@ def ensure_common_name(taxon_id: str | int, lower: bool = False) -> str | None:
         _ensure_name(taxon_id, 'common')
     )
 
-    return common_name.lower() if lower else common_name.capitalize()
+    if common_name:
 
+        method = 'lower' if lower else 'capitalize'
+        common_name = getattr(common_name, method)()
+
+    return common_name
 
 
 def ensure_latin_name(taxon_id):
