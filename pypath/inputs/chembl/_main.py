@@ -177,7 +177,6 @@ ChemblMechanism = collections.namedtuple(
         "target_chembl_id",
         "mechanism_id",
         "drug_rec_id",
-        "molregno",
         "direct_interaction",
         "variant_sequence",
         "molecular_mechanism",
@@ -185,7 +184,7 @@ ChemblMechanism = collections.namedtuple(
     ]
 )
 def chembl_general(data_type: DATA,
-                   max_pages: int) -> Generator[dict]:
+                   max_pages: int | None = None) -> Generator[dict]:
     """
     Retrieves data from ChEMBL.
 
@@ -224,7 +223,7 @@ def chembl_general(data_type: DATA,
         with open(c.fileobj.name, mode="r", encoding='utf-8') as read_file:
             page_dict = json.load(read_file) # load the json object
 
-            # remove unwanted page_meta
+            # remove unwanted page meta data
             for key in page_dict.keys():
                 if key == 'page_meta':
                     continue
@@ -237,10 +236,10 @@ def chembl_general(data_type: DATA,
         
         # allows user to specify maximum number of pages
         page_count += 1
-        if page_count >= max_pages:
+        if max_pages and page_count >= max_pages:
             break
 
-def get_targets(max_pages: int) -> Generator[ChemblTarget]:
+def get_targets(max_pages: int | None = None) -> Generator[ChemblTarget]:
     """
     Retrieves target data from ChEMBL.
 
@@ -289,7 +288,7 @@ def target_components(target: dict) -> Generator[ChemblComponent]:
             component_number = comp_count,
         )
 
-def get_assays(max_pages: int) -> Generator[ChemblAssay]:
+def get_assays(max_pages: int | None = None) -> Generator[ChemblAssay]:
     """
     Retrieves assay data from ChEMBL.
 
@@ -354,7 +353,7 @@ def param_assay(parameters: dict) -> Generator[ChemblParam]:
         for parameter in parameters
     )
 
-def get_activity(max_pages: int) -> Generator[ChemblActivity]:
+def get_activity(max_pages: int | None = None) -> Generator[ChemblActivity]:
     """
     Retrieves activity data from Chembl.
     This generator function retrieves the assay data from ChEMBL and
@@ -394,7 +393,7 @@ def get_activity(max_pages: int) -> Generator[ChemblActivity]:
         for activity in activities
     )
 
-def get_documents(max_pages: int) -> Generator[ChemblDocument]:
+def get_documents(max_pages: int | None = None) -> Generator[ChemblDocument]:
     """
     Retrieves the Chembl document information.
 
@@ -423,7 +422,7 @@ def get_documents(max_pages: int) -> Generator[ChemblDocument]:
         for document in documents
     )
 
-def get_molecules(max_pages: int) -> Generator[ChemblMolecule]:
+def get_molecules(max_pages: int | None = None) -> Generator[ChemblMolecule]:
     """
     Retrieves molecule information from ChEMBL
     """
@@ -488,8 +487,31 @@ def molecule_strucs(structure: dict) -> ChemblMolStruct | None:
         inchi_key=structure.get("standard_inchi_key"),
     ) if structure else None
 
+def get_mechanisms(max_pages: int | None = None) -> Generator[ChemblMechanism]:
+    """
+    Retrieves mechanism data from ChEMBL.
+    """
 
+    mechanisms = chembl_general(data_type="mechanism", max_pages=max_pages)
 
+    for mechanism in mechanisms:
+
+        # Get the mechanism references
+        references = [ref["ref_url"] for ref in mechanism["mechanism_refs"]]
+
+        yield ChemblMechanism(
+            action_type = mechanism["action_type"],
+            molecule_chembl_id = mechanism["molecule_chembl_id"],
+            target_chembl_id = mechanism["target_chembl_id"],
+            mechanism_id = mechanism["mec_id"],
+            drug_rec_id = mechanism["record_id"],
+            direct_interaction = mechanism["direct_interaction"],
+            variant_sequence = mechanism["variant_sequence"],
+            molecular_mechanism = mechanism["molecular_mechanism"],
+            mechanism_refs = references,
+        )
+
+# TODO: check if drug indications are required
 def chembl_drug_indications(
     max_phase_threshold: int = 0,
     ) -> list[tuple]:
