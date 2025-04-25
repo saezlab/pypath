@@ -1,4 +1,7 @@
+from collections.abc import Generator
 
+from ._records import ChemblDocument
+from . import _raw
 def get_documents(max_pages: int | None = None) -> Generator[ChemblDocument]:
     """
     Retrieves the Chembl document information.
@@ -13,7 +16,7 @@ def get_documents(max_pages: int | None = None) -> Generator[ChemblDocument]:
     Yields:
         ChemblDocument: The named tuple of the retrieved data.
     """
-    documents = chembl_general(data_type="document", max_pages=max_pages)
+    documents = _raw.json_pages(data_type="document", max_pages=max_pages)
 
     yield from (ChemblDocument
         (

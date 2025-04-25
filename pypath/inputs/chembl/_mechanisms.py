@@ -1,10 +1,13 @@
+from collections.abc import Generator
 
+from ._records import ChemblMechanism
+from . import _raw
 def get_mechanisms(max_pages: int | None = None) -> Generator[ChemblMechanism]:
     """
     Retrieves mechanism data from ChEMBL.
     """
 
-    mechanisms = chembl_general(data_type="mechanism", max_pages=max_pages)
+    mechanisms = _raw.json_pages(data_type="mechanism", max_pages=max_pages)
 
     for mechanism in mechanisms:
 

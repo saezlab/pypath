@@ -1,3 +1,12 @@
+import collections
+
+__all__ = [
+    "ChemblTarget",
+    "ChemblComponent",
+    "ChemblAssay",
+    "ChemblParam",
+]
+
 
 ChemblTarget = collections.namedtuple(
     "ChemblTarget",

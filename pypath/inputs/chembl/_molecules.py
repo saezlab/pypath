@@ -1,18 +1,21 @@
+from collections.abc import Generator
 
+from ._records import ChemblMolecule, ChemblMolProps, ChemblMolStruct
+from . import _raw
 def get_molecules(max_pages: int | None = None) -> Generator[ChemblMolecule]:
     """
     Retrieves molecule information from ChEMBL
     """
 
-    molecules = chembl_general(data_type="molecule", max_pages=max_pages)
+    molecules = _raw.json_pages(data_type="molecule", max_pages=max_pages)
 
     for molecule in molecules:
 
         # Get the molecule properties
-        molecule_properties = molecule_props(molecule["molecule_properties"])
+        molecule_properties = _molecule_props(molecule["molecule_properties"])
 
         # Get the molecule structures
-        structures = molecule_strucs(molecule["molecule_structures"])
+        structures = _molecule_strucs(molecule["molecule_structures"])
 
         yield ChemblMolecule(
             molecule_chembl_id = molecule['molecule_chembl_id'],
@@ -28,7 +31,7 @@ def get_molecules(max_pages: int | None = None) -> Generator[ChemblMolecule]:
             molecule_properties = molecule_properties,
             structure = structures,
         )
-def molecule_props(properties: dict) -> ChemblMolProps | None:
+def _molecule_props(properties: dict) -> ChemblMolProps | None:
     """
     Retrieves molecule properties from ChEMBL.
 
@@ -48,7 +51,7 @@ def molecule_props(properties: dict) -> ChemblMolProps | None:
         alogp=properties.get("alogp"),
     ) if properties else None
 
-def molecule_strucs(structure: dict) -> ChemblMolStruct | None:
+def _molecule_strucs(structure: dict) -> ChemblMolStruct | None:
     """
     Retrieves molecule structure from ChEMBL.
 

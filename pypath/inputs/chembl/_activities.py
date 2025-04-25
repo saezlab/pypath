@@ -1,4 +1,7 @@
+from collections.abc import Generator
 
+from ._records import ChemblActivity
+from . import _raw
 def get_activity(max_pages: int | None = None) -> Generator[ChemblActivity]:
     """
     Retrieves activity data from Chembl.
@@ -14,7 +17,7 @@ def get_activity(max_pages: int | None = None) -> Generator[ChemblActivity]:
     Yields:
         ChemblActivity: The named tuple of the retrieved data.
     """
-    activities = chembl_general(data_type="activity", max_pages=max_pages)
+    activities = _raw.json_pages(data_type="activity", max_pages=max_pages)
 
     yield from (ChemblActivity
         (

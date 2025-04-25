@@ -1,4 +1,7 @@
+from collections.abc import Generator
 
+from ._records import ChemblAssay, ChemblParam
+from . import _raw
 def get_assays(max_pages: int | None = None) -> Generator[ChemblAssay]:
     """
     Retrieves assay data from ChEMBL.
@@ -16,12 +19,12 @@ def get_assays(max_pages: int | None = None) -> Generator[ChemblAssay]:
         ChemblAssay: The named tuple of the retrieved data.
     """
 
-    assays = chembl_general(data_type="assay", max_pages=max_pages)
+    assays = _raw.json_pages(data_type="assay", max_pages=max_pages)
 
     for assay in assays:
 
         # Get the assay parameters
-        parameters = tuple(param_assay(assay['assay_parameters']))
+        parameters = tuple(_param_assay(assay['assay_parameters']))
 
         # Create the ChemblAssay named tuple
         yield ChemblAssay(
@@ -43,7 +46,7 @@ def get_assays(max_pages: int | None = None) -> Generator[ChemblAssay]:
             description = assay['description'],
         )
 
-def param_assay(parameters: dict) -> Generator[ChemblParam]:
+def _param_assay(parameters: dict) -> Generator[ChemblParam]:
     """
     Retrieves assay parameter data from ChEMBL.
 

@@ -1,3 +1,8 @@
+from collections.abc import Generator
+
+from ._records import ChemblTarget, ChemblComponent
+from . import _raw
+
 def get_targets(max_pages: int | None = None) -> Generator[ChemblTarget]:
     """
     Retrieves target data from ChEMBL.
@@ -14,7 +19,7 @@ def get_targets(max_pages: int | None = None) -> Generator[ChemblTarget]:
         ChemblTarget: The named tuple of the retrieved data.
     """
 
-    targets= chembl_general(data_type="target", max_pages=max_pages)
+    targets= _raw.json_pages(data_type="target", max_pages=max_pages)
 
     # loop through the pages and yield the target data
     for target in targets:

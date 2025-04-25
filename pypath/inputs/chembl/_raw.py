@@ -21,7 +21,6 @@ from typing import Literal
 from collections.abc import Generator
 
 import json
-import collections
 
 from pypath.share import curl
 from pypath.resources import urls
