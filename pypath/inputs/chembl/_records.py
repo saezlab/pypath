@@ -5,6 +5,7 @@ __all__ = [
     "ChemblComponent",
     "ChemblAssay",
     "ChemblParam",
+    "ChemblIndication",
 ]
 
 
@@ -153,5 +154,18 @@ ChemblMechanism = collections.namedtuple(
         "variant_sequence",
         "molecular_mechanism",
         "mechanism_refs",
+    ]
+)
+
+ChemblIndication = collections.namedtuple(
+    "ChemblIndication",
+    [
+        "chembl_id",
+        "efo_id",
+        "efo_term",
+        "mesh_id",
+        "mesh_term",
+        "max_phase",
+        "refs",
     ]
 )

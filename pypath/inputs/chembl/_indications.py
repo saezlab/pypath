@@ -1,4 +1,41 @@
 
+from collections.abc import Generator
+
+from ._records import ChemblIndication
+from . import _raw
+
+def get_indicatons(max_pages: int | None = None) -> Generator[ChemblIndication]:
+    """
+    Retrieves drug indications from ChEMBL.
+
+    This function is a wrapper around the `chembl_general` function.
+    It retrieves the indication information from ChEMBL and
+    yields the data as named tuples of the type `ChemblIndication`.
+
+    Args:
+        max_pages (int): The maximum number of pages to retrieve.
+
+    Yields:
+        ChemblIndication: The named tuple of the retrieved data.
+    """
+    indications = _raw.json_pages(
+        data_type="drug_indication",
+        max_pages=max_pages,
+    )
+
+    yield from (ChemblDocument
+        (
+            indication_chembl_id = indication["document_chembl_id"],
+            pubmed_id = indication["pubmed_id"],
+            patent_id = indication["patent_id"],
+            doc_type = indication["doc_type"],
+            journal = indication["journal"],
+            year = indication["year"],
+            doi = indication["doi"],
+        )
+        for indication in indications
+    )
+
 # TODO: check if drug indications are required
 def chembl_drug_indications(
     max_phase_threshold: int = 0,

@@ -2,6 +2,7 @@ from collections.abc import Generator
 
 from ._records import ChemblDocument
 from . import _raw
+
 def get_documents(max_pages: int | None = None) -> Generator[ChemblDocument]:
     """
     Retrieves the Chembl document information.
