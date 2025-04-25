@@ -2,7 +2,13 @@ from collections.abc import Generator
 
 from ._records import ChemblActivity
 from . import _raw
-def get_activity(max_pages: int | None = None) -> Generator[ChemblActivity]:
+
+__all__ = [
+    "activity",
+]
+
+
+def activity(max_pages: int | None = None) -> Generator[ChemblActivity]:
     """
     Retrieves activity data from Chembl.
     This generator function retrieves the assay data from ChEMBL and

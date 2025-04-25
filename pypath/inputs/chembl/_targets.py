@@ -3,7 +3,12 @@ from collections.abc import Generator
 from ._records import ChemblTarget, ChemblComponent
 from . import _raw
 
-def get_targets(max_pages: int | None = None) -> Generator[ChemblTarget]:
+__all__ = [
+    'target',
+]
+
+
+def target(max_pages: int | None = None) -> Generator[ChemblTarget]:
     """
     Retrieves target data from ChEMBL.
 
@@ -36,6 +41,7 @@ def get_targets(max_pages: int | None = None) -> Generator[ChemblTarget]:
             num_components = len(components),
         )
 
+
 def target_components(target: dict) -> Generator[ChemblComponent]:
     """
     Retrieves target component data from ChEMBL.
@@ -51,4 +57,3 @@ def target_components(target: dict) -> Generator[ChemblComponent]:
             component_relationship = component['relationship'],
             component_number = comp_count,
         )
-

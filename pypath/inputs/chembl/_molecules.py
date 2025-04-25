@@ -2,7 +2,13 @@ from collections.abc import Generator
 
 from ._records import ChemblMolecule, ChemblMolProps, ChemblMolStruct
 from . import _raw
-def get_molecules(max_pages: int | None = None) -> Generator[ChemblMolecule]:
+
+__all__ = [
+    'molecule',
+]
+
+
+def molecule(max_pages: int | None = None) -> Generator[ChemblMolecule]:
     """
     Retrieves molecule information from ChEMBL
     """
@@ -31,6 +37,8 @@ def get_molecules(max_pages: int | None = None) -> Generator[ChemblMolecule]:
             molecule_properties = molecule_properties,
             structure = structures,
         )
+
+
 def _molecule_props(properties: dict) -> ChemblMolProps | None:
     """
     Retrieves molecule properties from ChEMBL.
@@ -50,6 +58,7 @@ def _molecule_props(properties: dict) -> ChemblMolProps | None:
         logd=properties.get("cx_logd"),
         alogp=properties.get("alogp"),
     ) if properties else None
+
 
 def _molecule_strucs(structure: dict) -> ChemblMolStruct | None:
     """

@@ -2,7 +2,12 @@ from collections.abc import Generator
 
 from ._records import ChemblMechanism
 from . import _raw
-def get_mechanisms(max_pages: int | None = None) -> Generator[ChemblMechanism]:
+
+__all__ = [
+    'mechanism',
+]
+
+def mechanism(max_pages: int | None = None) -> Generator[ChemblMechanism]:
     """
     Retrieves mechanism data from ChEMBL.
     """

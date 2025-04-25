@@ -2,7 +2,13 @@ from collections.abc import Generator
 
 from ._records import ChemblAssay, ChemblParam
 from . import _raw
-def get_assays(max_pages: int | None = None) -> Generator[ChemblAssay]:
+
+__all__ = [
+    "assay",
+]
+
+
+def assay(max_pages: int | None = None) -> Generator[ChemblAssay]:
     """
     Retrieves assay data from ChEMBL.
 
