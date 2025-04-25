@@ -23,15 +23,15 @@ def get_indicatons(max_pages: int | None = None) -> Generator[ChemblIndication]:
         max_pages=max_pages,
     )
 
-    yield from (ChemblDocument
+    yield from (ChemblIndication
         (
-            indication_chembl_id = indication["document_chembl_id"],
-            pubmed_id = indication["pubmed_id"],
-            patent_id = indication["patent_id"],
-            doc_type = indication["doc_type"],
-            journal = indication["journal"],
-            year = indication["year"],
-            doi = indication["doi"],
+            chembl_id = indication["molecule_chembl_id"],
+            efo_id = indication["efo_id"],
+            efo_term = indication["efo_term"],
+            mesh_id = indication["mesh_id"],
+            mesh_term = indication["mesh_heading"],
+            max_phase = indication["max_phase_for_ind"],
+            refs = ";".join(ref["ref_id"] for ref in indication["indication_refs"])
         )
         for indication in indications
     )
