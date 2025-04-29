@@ -26,7 +26,7 @@ def activity(max_pages: int | None = None) -> Generator[ChemblActivity]:
     activities = _raw.json_pages(data_type="activity", max_pages=max_pages)
 
     for activ in activities:
-        action_type = action_sorter(activ)     
+        action_type = action_sorter(activ) 
 
         yield (ChemblActivity
                 (
