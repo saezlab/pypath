@@ -34,6 +34,8 @@ import importlib as imp
 import itertools
 import functools
 
+import pandas as pd
+
 import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath.internals.resource as resource_base
@@ -84,6 +86,38 @@ class ResourceController(session_mod.Logger):
         )
 
         self.update()
+
+    
+    def export_licenses(self, path='licenses.tsv'):
+        """
+        Exports all resources' license information as a TSV file
+        """
+        
+        df = pd.DataFrame(
+            [
+                [
+                    k,
+                    v.name,
+                    v.full_name,
+                    v.purpose.level,
+                    v.attrib.level,
+                    v.sharing.level,
+                    v.url,
+                ]
+                for k, v in self.licenses.items()
+            ],
+            columns=[
+                'Resource',
+                'Name',
+                'Full name',
+                'Purpose',
+                'Attribute',
+                'Sharing',
+                'URL',
+            ]
+        )
+
+        df.to_csv(path, sep='\t', index=False)
 
 
     def reload(self):
