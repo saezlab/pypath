@@ -40,6 +40,9 @@ def _record_factory(
     class Record(RecordBase):
 
         def __new__(cls, *args, **kwargs):
+            """
+            Makes sure empty strings are converted to `None`.
+            """
 
             args = [arg if arg != '' else None for arg in args]
             kwargs = {k: (v if v != '' else None) for k, v in kwargs.items()}
@@ -55,7 +58,7 @@ G2PInteraction = _record_factory(
         "ligand",
         "target",
         "action",
-        "action_type",
+        "ligand_type",
         "is_stimulation",
         "is_inhibition",
         "endogenous",
