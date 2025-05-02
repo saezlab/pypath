@@ -89,6 +89,17 @@ ChemblActivity = collections.namedtuple(
     ]
 )
 
+ChemblAction = collections.namedtuple(
+    "ChemblAction",
+    [
+        "action_type",
+        "description",
+        "parent_type",
+        "is_stimulation",
+        "is_inhibition",
+    ]
+)
+
 ChemblDocument = collections.namedtuple(
     "ChemblDocument",
     [

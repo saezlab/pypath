@@ -1118,8 +1118,8 @@ urls = {
     },
     'stitch': {
         'label': 'The STITCH small molecule-protein interaction database',
-        'actions': 'http://stitch.embl.de/download/actions.v5.0/'\
-            '9606.actions.v5.0.tsv.gz',
+        'actions': 'http://stitch.embl.de/download/actions.v5.0/%u'\
+            '.actions.v5.0.tsv.gz',
         'links': 'http://stitch.embl.de/download/protein_chemical.links.detailed.v5.0/%u'\
             '.protein_chemical.links.detailed.v5.0.tsv.gz'
     },
