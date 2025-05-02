@@ -237,11 +237,11 @@
       "domain within the protein."
     ],
     "emails": [
-    "haw2002@med.cornell.edu",
-    "Harel Weinstein",
-    "pdzbase@med.cornell.edu",
-    "PDZBase Team"
-  ],
+      "haw2002@med.cornell.edu",
+      "Harel Weinstein",
+      "pdzbase@med.cornell.edu",
+      "PDZBase Team"
+    ],
     "type": "literature curated",
     "subtype": "activity flow",
     "omnipath": true,
@@ -256,7 +256,7 @@
         "pypath.data_formats.omnipath[\"pdz\"]"
       ]
     },
-    "license": "No license",
+    "license": "Unspecified NC-SA",
     "pathguide": 160,
     "dateUpdated":"Nov 2016"
   },
