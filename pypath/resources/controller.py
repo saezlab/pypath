@@ -87,12 +87,12 @@ class ResourceController(session_mod.Logger):
 
         self.update()
 
-    
+
     def export_licenses(self, path='licenses.tsv'):
         """
         Exports all resources' license information as a TSV file
         """
-        
+
         df = pd.DataFrame(
             [
                 [
@@ -107,13 +107,13 @@ class ResourceController(session_mod.Logger):
                 for k, v in self.licenses.items()
             ],
             columns=[
-                'Resource',
-                'Name',
-                'Full name',
-                'Purpose',
-                'Attribute',
-                'Sharing',
-                'URL',
+                'resource',
+                'name',
+                'full_name',
+                'purpose',
+                'attrib',
+                'sharing',
+                'url',
             ]
         )
 
