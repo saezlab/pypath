@@ -44,7 +44,7 @@ def stitch_actions_interactions(threshold: Number = None) -> List[tuple]:
 
     c = curl.Curl(url, silent = False, large = True, slow = True)
 
-    _ = next(c.result)
+    _ = next(c.result)  
 
     sep = re.compile(r'[sm\.]')
 
