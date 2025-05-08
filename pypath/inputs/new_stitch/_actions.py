@@ -8,6 +8,8 @@ from ._raw import tables
 __all__ = [
     'actions',
 ]
+
+RECHEMICALID = re.compile(r'([sm\.])')
 def actions(max_lines: int | None = None,
             ncbi_tax_id: int = 9606
             ) -> Generator[StitchActions]:
@@ -28,8 +30,6 @@ def actions(max_lines: int | None = None,
     url = urls.urls['stitch']['actions'] % ncbi_tax_id
 
     actions = tables(url, max_lines)
-
-    sep = re.compile(r'([sm\.])')
 
     for action in actions:
 
@@ -66,8 +66,8 @@ def convert_ids(action: dict,
         ParsedIds
     """
 
-    a_id_list = sep.split(action['item_id_a'])
-    b_id_list = sep.split(action['item_id_b'])
+    a_id_list = RECHEMICALID.match(action['item_id_a']).groups()
+    b_id_list = RECHEMICALID.match(action['item_id_b']).groups()
 
     # is partner 'a' a chemical
     if a_id_list[0] == "CID":
