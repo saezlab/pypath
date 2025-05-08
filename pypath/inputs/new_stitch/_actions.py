@@ -2,14 +2,14 @@ from collections.abc import Generator
 import re
 
 import pypath.resources.urls as urls
-from ._records import StitchActions, ParsedIds
+from ._records import StitchActions, Entity
 from ._raw import tables
 
 __all__ = [
     'actions',
 ]
 
-RECHEMICALID = re.compile(r'((?:\d+)?)\.?(CID|ENSP)([ms]?)(\d+)')
+REID = re.compile(r'((?:\d+)?)\.?(CID|ENSP)([ms]?)(\d+)')
 
 
 def actions(max_lines: int | None = None,
@@ -49,7 +49,7 @@ def actions(max_lines: int | None = None,
             ncbi_taxa = parsed_ids.ncbi_taxa
         )
 
-def convert_ids(action: dict) -> ParsedIds:
+def convert_ids(action: dict) -> Entity:
     """
     Converts the STITCH chemical and protein identifiers and
     flags into a ParsedIds named tuple. Also uses "a_is_acting"
@@ -65,32 +65,28 @@ def convert_ids(action: dict) -> ParsedIds:
     Returns
         ParsedIds
     """
+    partners = []
 
-    a_id_list = RECHEMICALID.match(action['item_id_a']).groups()
-    b_id_list = RECHEMICALID.match(action['item_id_b']).groups()
+    for side in ('a', 'b'):
 
-    # is partner 'a' a chemical
-    if a_id_list[0] == "CID":
-        cid, stereospecific = cid_converter(a_id_list)
-        ensembl_id, ncbi_taxa = ensembl_converter(b_id_list)
-        chemical_acting = action["a_is_acting"].lower() == "t" # is the chemical acting
-        protein_acting = False
+        tax, ens, stereo, _id = REID.match(action[f'item_id_{side}']).groups()
+        id_prefix = ens if ens[:3] == 'ENS' else ''
 
-    # partner 'b' is a chemical
-    else:
-        cid, stereospecific = cid_converter(b_id_list)
-        ensembl_id, ncbi_taxa = ensembl_converter(a_id_list)
-        protein_acting = action["a_is_acting"].lower() == "t" # is the protein acting
-        chemical_acting = False
+        partners.append(
+            Entity(
+                id = f'{id_prefix}{_id},
+                type = 'small_molecule' if ens == 'CID' else 'protein',
+                ncbi_tax_id = tax,
+                stereo = stereo == 's',
+            )
+        )
 
-    return ParsedIds(
-        chemical_id = cid,
-        stereospecific = stereospecific,
-        protein_id = ensembl_id,
-        ncbi_taxa = ncbi_taxa,
-        protein_acting = protein_acting,
-        chemical_acting = chemical_acting,
-    )
+    if action['a_is_acting'].lower() == 't':
+
+        partners = reversed(partners)
+
+    return tuple(partners)
+
 
 def cid_converter(cids: list) -> tuple:
     """
