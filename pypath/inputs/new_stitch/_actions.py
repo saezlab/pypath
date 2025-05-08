@@ -2,7 +2,7 @@ from collections.abc import Generator
 import re
 
 import pypath.resources.urls as urls
-from ._records import StitchActions, Entity
+from ._records import StitchAction, Entity
 from ._raw import tables
 
 __all__ = [
@@ -14,7 +14,7 @@ REID = re.compile(r'((?:\d+)?)\.?(CID|ENSP)([ms]?)(\d+)')
 
 def actions(max_lines: int | None = None,
             ncbi_tax_id: int = 9606
-            ) -> Generator[StitchActions]:
+            ) -> Generator[StitchAction]:
     """
     Downloads the 'actions' file from STITCH and formats the data.
 
@@ -39,11 +39,10 @@ def actions(max_lines: int | None = None,
 
         a, b = parse_entities(action)
 
-        yield StitchActions(
-
+        yield StitchAction(
             source = a,
             target = b,
-            directed = action["directed"].lower() == 't',
+            directed = action["a_is_acting"].lower() == 't',
             mode = action["mode"],
             activation = parse_activation(action["action"]),
             score = int(action["score"]),
@@ -73,10 +72,10 @@ def parse_entities(action: dict) -> tuple[Entity, Entity]:
 
         partners.append(
             Entity(
-                id = f'{id_prefix}{_id},
+                id = f'{id_prefix}{_id}',
                 type = 'small_molecule' if ens == 'CID' else 'protein',
-                ncbi_tax_id = tax,
-                stereo = stereo == 's',
+                ncbi_tax_id = int(tax) if tax else None,
+                stereospecific = stereo == 's',
             )
         )
 

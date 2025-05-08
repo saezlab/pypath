@@ -4,7 +4,6 @@ import csv
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-from ._records import StitchActions, ParsedIds, StitchLinks, StitchInteractions
 
 __all__ = [
     'tables'
