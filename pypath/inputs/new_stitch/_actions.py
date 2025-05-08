@@ -35,7 +35,7 @@ def actions(max_lines: int | None = None,
 
     for action in actions:
 
-        parsed_ids = convert_ids(action)
+        a, b = parse_entities(action)
 
         yield StitchActions(
             chemical_id = parsed_ids.chemical_id,
@@ -49,7 +49,7 @@ def actions(max_lines: int | None = None,
             ncbi_taxa = parsed_ids.ncbi_taxa
         )
 
-def convert_ids(action: dict) -> Entity:
+def parse_entities(action: dict) -> tuple[Entity, Entity]:
     """
     Converts the STITCH chemical and protein identifiers and
     flags into a ParsedIds named tuple. Also uses "a_is_acting"
@@ -57,13 +57,11 @@ def convert_ids(action: dict) -> Entity:
     'partner a' can act.
 
     Parameters
-        action : dict
+        action
             A single action record from STITCH.
-        sep : re.Pattern
-            A regex pattern used to split the identifiers.
 
     Returns
-        ParsedIds
+        pair of Entities
     """
     partners = []
 
@@ -86,28 +84,3 @@ def convert_ids(action: dict) -> Entity:
         partners = reversed(partners)
 
     return tuple(partners)
-
-
-def cid_converter(cids: list) -> tuple:
-    """
-    Converts a STITCH CID identifier into a PubChem CID and a boolean indicating
-    whether the compound is stereospecific.
-    """
-    cid = cids[-1]
-
-    if cids[1] == "s":
-        stereospecific = True
-    else:
-        stereospecific = False
-
-    return cid, stereospecific
-
-def ensembl_converter(ensembl_ids: list) -> tuple:
-    """
-    Converts the STITCH Ensembl identifier into an ensembl ID and an NCBI taxon ID
-    """
-
-    ensembl_id = ensembl_ids[-1]
-    ncbi_taxa = ensembl_ids[0]
-
-    return ensembl_id, ncbi_taxa
