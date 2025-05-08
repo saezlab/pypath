@@ -15,17 +15,17 @@ StitchActions = collections.namedtuple(
     ],
 )
 
-ParsedIds = collections.namedtuple(
-    'ParsedIds',
+Entity = collections.namedtuple(
+    'Entity',
     [
-        'chemical_id',
+        'id',
+        'type',
         'stereospecific',
-        'protein_id',
-        'ncbi_taxa',
-        'protein_acting',
-        'chemical_acting',
+        'ncbi_tax_id',
     ],
 )
+Entity.__new__.__defaults__ = (None, None)
+
 
 StitchLinks = collections.namedtuple(
     'StitchLinks',

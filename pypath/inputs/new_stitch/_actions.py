@@ -35,7 +35,7 @@ def actions(max_lines: int | None = None,
 
     for action in actions:
 
-        parsed_ids = convert_ids(action, sep)
+        parsed_ids = convert_ids(action)
 
         yield StitchActions(
             chemical_id = parsed_ids.chemical_id,
@@ -49,9 +49,7 @@ def actions(max_lines: int | None = None,
             ncbi_taxa = parsed_ids.ncbi_taxa
         )
 
-def convert_ids(action: dict,
-                 sep: re.Pattern
-                 ) -> ParsedIds:
+def convert_ids(action: dict) -> ParsedIds:
     """
     Converts the STITCH chemical and protein identifiers and
     flags into a ParsedIds named tuple. Also uses "a_is_acting"
