@@ -47,4 +47,5 @@ def interactions(max_lines: int | None = None,
                 database = link.database,
                 textmining = link.textmining,
                 combined_score = link.combined_score,
+                final_score = action.score
             )

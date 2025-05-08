@@ -56,5 +56,6 @@ StitchInteractions = collections.namedtuple(
         'database',
         'textmining',
         'combined_score',
+        'final_score',
     ],
 )
