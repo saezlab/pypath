@@ -29,6 +29,8 @@ def actions(max_lines: int | None = None,
             A named tuple containing information about each action.
     """
 
+    parse_activation = lambda x: None if x == '' else x == 'activation'
+
     url = urls.urls['stitch']['actions'] % ncbi_tax_id
 
     actions = tables(url, max_lines)
@@ -38,16 +40,15 @@ def actions(max_lines: int | None = None,
         a, b = parse_entities(action)
 
         yield StitchActions(
-            chemical_id = parsed_ids.chemical_id,
-            chemical_acting = parsed_ids.chemical_acting,
-            is_stereospecific = parsed_ids.stereospecific,
-            protein_id = parsed_ids.protein_id,
-            protein_acting = parsed_ids.protein_acting,
+
+            source = a,
+            target = b,
+            directed = action["directed"].lower() == 't',
             mode = action["mode"],
-            action = action["action"],
-            score = action["score"],
-            ncbi_taxa = parsed_ids.ncbi_taxa
+            activation = parse_activation(action["action"]),
+            score = int(action["score"]),
         )
+
 
 def parse_entities(action: dict) -> tuple[Entity, Entity]:
     """

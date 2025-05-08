@@ -1,17 +1,14 @@
 import collections
 
-StitchActions = collections.namedtuple(
-    'StitchActions',
+StitchAction = collections.namedtuple(
+    'StitchAction',
     [
-        'chemical_id',
-        'chemical_acting',
-        'is_stereospecific',
-        'protein_id',
-        'protein_acting',
+        'source',
+        'target',
+        'directed',
         'mode',
-        'action',
+        'activation',
         'score',
-        'ncbi_taxa',
     ],
 )
 
