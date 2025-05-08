@@ -9,19 +9,21 @@ __all__ = [
     'actions',
 ]
 
-RECHEMICALID = re.compile(r'([sm\.])')
+RECHEMICALID = re.compile(r'((?:\d+)?)\.?(CID|ENSP)([ms]?)(\d+)')
+
+
 def actions(max_lines: int | None = None,
             ncbi_tax_id: int = 9606
             ) -> Generator[StitchActions]:
     """
     Downloads the 'actions' file from STITCH and formats the data.
-    
+
     Parameters
         max_lines : int | None
             Maximum number of lines to read from the file.
         ncbi_tax_id : int
             NCBI taxonomy ID of the organism to read actions for.
-    
+
     Yields
         StitchActions
             A named tuple containing information about each action.
@@ -51,9 +53,9 @@ def convert_ids(action: dict,
                  sep: re.Pattern
                  ) -> ParsedIds:
     """
-    Converts the STITCH chemical and protein identifiers and 
+    Converts the STITCH chemical and protein identifiers and
     flags into a ParsedIds named tuple. Also uses "a_is_acting"
-    flag to determine if the chemical or protein is acting. Only 
+    flag to determine if the chemical or protein is acting. Only
     'partner a' can act.
 
     Parameters
