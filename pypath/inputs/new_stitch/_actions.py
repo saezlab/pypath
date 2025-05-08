@@ -35,18 +35,44 @@ def actions(max_lines: int | None = None,
 
     actions = tables(url, max_lines)
 
+    out = []
+
     for action in actions:
 
         a, b = parse_entities(action)
 
-        yield StitchAction(
-            source = a,
-            target = b,
-            directed = action["a_is_acting"].lower() == 't',
-            mode = action["mode"],
-            activation = parse_activation(action["action"]),
-            score = int(action["score"]),
+        out.append(
+            StitchAction(
+                source = a,
+                target = b,
+                directed = action["a_is_acting"].lower() == 't',
+                mode = action["mode"],
+                activation = parse_activation(action["action"]),
+                score = int(action["score"]),
+            )
         )
+
+        if len(out) == 2:
+
+            if set(out[0][:2]) == set(out[1][:2]):
+
+                if not any(a.directed for a in out):
+
+                    yield out[0]
+
+                else:
+
+                    for a in out:
+
+                        if a.directed:
+
+                            yield a
+
+                out = []
+
+            else:
+
+                yield out.pop(0)
 
 
 def parse_entities(action: dict) -> tuple[Entity, Entity]:
