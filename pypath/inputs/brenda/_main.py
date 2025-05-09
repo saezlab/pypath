@@ -7,6 +7,7 @@ import os
 import numpy as np
 import pathlib as pl
 
+REORGANISM = re.compile(r'.*# ([-\w\s\.]+[^\s#\{]).*')
 
 def main(organisms = 'mouse',output_dir = 'brenda_output'):
     #output of directory
@@ -21,7 +22,6 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
     data = [line.decode("utf-8") for line in brenda_gen]
 
     # Prepare for the loop
-
     organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
     length = len(data)
     colums4now = ['ENTRY','Uniprot','Act', 'Inh']
@@ -64,17 +64,18 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
             num_act_thisentry = 0
             id4species_here = []
         elif splitted[0] == 'PR':
-            spname = splitted[1].split('#')[2].strip().split('  ')[0]
-            if contains_element(spname, Name_list):
-                if not 'no activity in' in spname:
-                    splitted_further_pr = re.split(' ', splitted[1])
-                    id4species_here.append(re.sub('#', '', splitted_further_pr[0]))
-                    match = re.search(r'EC ([\d\.]+)', splitted[1])
-                    uni_ID = None
-                    if match:
-                        content = match.group(1)
-                        uni_ID = content.split(';')[0]
-                    df_new.loc[j, 'Uniprot'] = uni_ID
+            organism = REORGANISM.match(splitted[1]).groups()[0]
+            if organism not in organisms:
+                continue
+            if not 'no activity in' in spname:
+                splitted_further_pr = re.split(' ', splitted[1])
+                id4species_here.append(re.sub('#', '', splitted_further_pr[0]))
+                match = re.search(r'EC ([\d\.]+)', splitted[1])
+                uni_ID = None
+                if match:
+                    content = match.group(1)
+                    uni_ID = content.split(';')[0]
+                df_new.loc[j, 'Uniprot'] = uni_ID
         elif splitted[0] == 'IN':
             splitted_further_inh = re.split(r'# | <| [(]', splitted[1])
             prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
