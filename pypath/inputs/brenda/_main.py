@@ -1,5 +1,6 @@
 #
 from pypath.share import curl
+from pypath.utils import mapping
 import pandas as pd
 import re
 import os
@@ -9,8 +10,10 @@ import pathlib as pl
 
 def main(output_dir = 'brenda_output'):
     #output of directory
-    output_dir = pl.path(output_dir)
+    output_dir = pl.Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    outfile0 = output_dir / 'brenda.xlsx'
+    outfile1 = output_dir / 'brenda-translated.xlsx'
     # Download data from BRENDA
     url = "https://www.brenda-enzymes.org/download.php"
     c = curl.Curl(url, post = {'dlfile': 'dl-textfile', 'accept-license': "1"}, large = True,compr = 'tgz')
@@ -18,7 +21,6 @@ def main(output_dir = 'brenda_output'):
     data = [line.decode("utf-8") for line in brenda_gen]
 
     # Prepare for the loop
-    fn_list_4output = 'brenda_Mice.xlsx'
     Name_list = ['Mus musculus']
     length = len(data)
     colums4now = ['ENTRY','Uniprot','Act', 'Inh']
@@ -102,12 +104,11 @@ def main(output_dir = 'brenda_output'):
                     df_new.loc[j, 'Act'] = df_new.loc[j, 'Act'] + ';' + splitted_further_act[1]
                 num_act_thisentry = num_act_thisentry + 1
 
-    fn = output_dir + '/' + fn_list_4output
     # Clean EC with ()
     df_new = df_new[~df_new['ENTRY'].str.contains(r'\(.*\)', na=False)]
     df_new = df_new[1:].reset_index(drop=True)
 
-    df_new.to_excel(fn)
+    df_new.to_excel(outfile0)
 
     # ID conversion
     tmp = []
@@ -137,6 +138,6 @@ def main(output_dir = 'brenda_output'):
     ID_conversion(df_new, "Inh", "Inhibitor", Name_list[0])
     final_df = pd.DataFrame(tmp, columns=[
         "ENTRY", "Uniprot", "metabolite name", "Pubchem ID", "Act/Inh", "Organism"])
-    final_df.to_excel("Brenda_final.xlsx", index=False)
+    final_df.to_excel(outfile1, index=False)
     return final_df
 
