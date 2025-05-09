@@ -51,31 +51,33 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
                 break
             body_now = body_now + ' ' + '/t'.join(orig_nextline_splitted[1:])
             tmp_step = tmp_step + 1
-        splitted = re.split('\t', body_now)
-        if splitted[0] == 'ID':
+        label,line = re.split('\t', body_now)
+      
+        if label == 'ID':
             record_organisms = {}
             j = j + 1
-            df_new.loc[j, 'ENTRY'] = 'ec:' + splitted[1].strip(',')
+            df_new.loc[j, 'ENTRY'] = 'ec:' + line.strip(',')
             num_inh_thisentry = 0
             num_act_thisentry = 0
             id4species_here = []
 
-        elif splitted[0] == 'PR':
+        elif label == 'PR':
 
-            org_id, negation, organism = REORGANISM.match(splitted[1]).groups()[0]
+            org_id, negation, organism = REORGANISM.match(line).groups()[0]
             if organism not in organisms or negation:
                 continue
 
-            ecs = REEC.findall(splitted[1])
-            ids = REID.findall(splitted[1])
+            ecs = REEC.findall(line)
+            ids = REID.findall(line)
             record_organisms[org_id] = (organism, ids, ecs)
 
             df_new.loc[j, 'Uniprot'] = ids
             df_new.loc[j, 'EC'] = ecs
 
-        elif splitted[0] == 'IN':
 
-            splitted_further_inh = re.split(r'# | <| [(]', splitted[1])
+        elif label in {'IN','AC'}:
+            effect = 'Inh' if label == 'IN' else 'Act'
+            splitted_further_inh = re.split(r'# | <| [(]', line)
             prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
             IsThisINisOfthisspecies = False
             for k in range(0, len(prs_now)):
@@ -84,25 +86,11 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
                         IsThisINisOfthisspecies = True
             if IsThisINisOfthisspecies:
                 if num_inh_thisentry == 0:
-                    df_new.loc[j, 'Inh'] = splitted_further_inh[1]
+                    df_new.loc[j, effect] = splitted_further_inh[1]
                 else:
-                    df_new.loc[j, 'Inh'] = df_new.loc[j, 'Inh'] + ';' + splitted_further_inh[1]
+                    df_new.loc[j, effect] = df_new.loc[j, effect] + ';' + splitted_further_inh[1]
                 num_inh_thisentry = num_inh_thisentry + 1
 
-        elif splitted[0] == 'AC':
-            splitted_further_act = re.split(r'# | <| [(]', splitted[1])
-            prs_now = re.split(',', re.sub('#', '', splitted_further_act[0]))
-            IsThisACisOfthisspecies = False
-            for k in range(0, len(prs_now)):
-                for kk in range(0, len(id4species_here)):
-                    if prs_now[k] == id4species_here[kk]:
-                        IsThisACisOfthisspecies = True
-            if IsThisACisOfthisspecies:
-                if num_act_thisentry == 0:
-                    df_new.loc[j, 'Act'] = splitted_further_act[1]
-                else:
-                    df_new.loc[j, 'Act'] = df_new.loc[j, 'Act'] + ';' + splitted_further_act[1]
-                num_act_thisentry = num_act_thisentry + 1
 
     # Clean EC with ()
     df_new = df_new[~df_new['ENTRY'].str.contains(r'\(.*\)', na=False)]
