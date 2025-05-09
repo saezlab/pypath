@@ -7,7 +7,7 @@ import os
 import numpy as np
 import pathlib as pl
 
-REORGANISM = re.compile(r'.*# ((?:no activity in )?)([-\w\s\.]+[^\s#\{]).*')
+REORGANISM = re.compile(r'#(\d+)# ((?:no activity in )?)([-\w\s\.]+[^\s#\{]).*')
 REEC = re.compile(r'EC ([\d\.]+)')
 REID = re.compile(r'\{([\w\.]+); source: (\w+)\}')
 
@@ -27,7 +27,7 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
     # Prepare for the loop
     organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
     length = len(data)
-    colums4now = ['ENTRY','Uniprot','Act', 'Inh']
+    colums4now = ['EC','Uniprot','Act', 'Inh']
     df_new = pd.DataFrame(columns = colums4now)
 
     # Define function
@@ -67,7 +67,7 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
             num_act_thisentry = 0
             id4species_here = []
         elif splitted[0] == 'PR':
-            negation, organism = REORGANISM.match(splitted[1]).groups()[0]
+            species_number, negation, organism = REORGANISM.match(splitted[1]).groups()[0]
             if organism not in organisms or negation:
                 continue
 
@@ -75,10 +75,7 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
             id4species_here.append(re.sub('#', '', splitted_further_pr[0]))
             ecs = REEC.findall(splitted[1])
             ids = REID.findall(splitted[1])
-            uni_ID = None
-            if match:
-                content = match.group(1)
-                uni_ID = content.split(';')[0]
+
             df_new.loc[j, 'Uniprot'] = ids
             df_new.loc[j, 'EC'] = ecs
 
