@@ -30,14 +30,6 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
     colums4now = ['EC','Uniprot','Act', 'Inh']
     df_new = pd.DataFrame(columns = colums4now)
 
-    # Define function
-    def contains_element(A, B):
-        for element in B:
-            if element in A:
-                return True
-        return False
-
-
     # Clean data, extract activator and inhibitor for each enzyme
     j = -1
     for i in range(0, length):
@@ -61,25 +53,28 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
             tmp_step = tmp_step + 1
         splitted = re.split('\t', body_now)
         if splitted[0] == 'ID':
+            record_organisms = {}
             j = j + 1
             df_new.loc[j, 'ENTRY'] = 'ec:' + splitted[1].strip(',')
             num_inh_thisentry = 0
             num_act_thisentry = 0
             id4species_here = []
+
         elif splitted[0] == 'PR':
-            species_number, negation, organism = REORGANISM.match(splitted[1]).groups()[0]
+
+            org_id, negation, organism = REORGANISM.match(splitted[1]).groups()[0]
             if organism not in organisms or negation:
                 continue
 
-            splitted_further_pr = re.split(' ', splitted[1])
-            id4species_here.append(re.sub('#', '', splitted_further_pr[0]))
             ecs = REEC.findall(splitted[1])
             ids = REID.findall(splitted[1])
+            record_organisms[org_id] = (organism, ids, ecs)
 
             df_new.loc[j, 'Uniprot'] = ids
             df_new.loc[j, 'EC'] = ecs
 
         elif splitted[0] == 'IN':
+
             splitted_further_inh = re.split(r'# | <| [(]', splitted[1])
             prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
             IsThisINisOfthisspecies = False
