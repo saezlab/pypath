@@ -84,6 +84,8 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
         elif label in {'IN', 'AC'}:
 
             effect = 'Inh' if label == 'IN' else 'Act'
+            effects = REEFFECT.findall(line)
+            
             splitted_further_inh = re.split(r'# | <| [(]', line)
             prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
             IsThisINisOfthisspecies = False
