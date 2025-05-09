@@ -8,6 +8,9 @@ import numpy as np
 import pathlib as pl
 
 REORGANISM = re.compile(r'.*# ((?:no activity in )?)([-\w\s\.]+[^\s#\{]).*')
+REEC = re.compile(r'EC ([\d\.]+)')
+REID = re.compile(r'\{([\w\.]+); source: (\w+)\}')
+
 
 def main(organisms = 'mouse',output_dir = 'brenda_output'):
     #output of directory
@@ -70,12 +73,15 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
 
             splitted_further_pr = re.split(' ', splitted[1])
             id4species_here.append(re.sub('#', '', splitted_further_pr[0]))
-            match = re.search(r'EC ([\d\.]+)', splitted[1])
+            ecs = REEC.findall(splitted[1])
+            ids = REID.findall(splitted[1])
             uni_ID = None
             if match:
                 content = match.group(1)
                 uni_ID = content.split(';')[0]
-            df_new.loc[j, 'Uniprot'] = uni_ID
+            df_new.loc[j, 'Uniprot'] = ids
+            df_new.loc[j, 'EC'] = ecs
+
         elif splitted[0] == 'IN':
             splitted_further_inh = re.split(r'# | <| [(]', splitted[1])
             prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
