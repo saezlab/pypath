@@ -4,8 +4,13 @@ import pandas as pd
 import re
 import os
 import numpy as np
+import pathlib as pl
 
-def main():
+
+def main(output_dir = 'brenda_output'):
+    #output of directory
+    output_dir = pl.path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
     # Download data from BRENDA
     url = "https://www.brenda-enzymes.org/download.php"
     c = curl.Curl(url, post = {'dlfile': 'dl-textfile', 'accept-license': "1"}, large = True,compr = 'tgz')
@@ -18,7 +23,6 @@ def main():
     length = len(data)
     colums4now = ['ENTRY','Uniprot','Act', 'Inh']
     df_new = pd.DataFrame(columns = colums4now)
-    output_dir = 'brenda_output'
 
     # Define function
     def contains_element(A, B):
@@ -134,5 +138,5 @@ def main():
     final_df = pd.DataFrame(tmp, columns=[
         "ENTRY", "Uniprot", "metabolite name", "Pubchem ID", "Act/Inh", "Organism"])
     final_df.to_excel("Brenda_final.xlsx", index=False)
-
+    return final_df
 
