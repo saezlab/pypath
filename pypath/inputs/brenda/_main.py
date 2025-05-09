@@ -10,6 +10,13 @@ import pathlib as pl
 REORGANISM = re.compile(r'#(\d+)# ((?:no activity in )?)([-\w\s\.]+[^\s#\{]).*')
 REEC = re.compile(r'EC ([\d\.]+)')
 REID = re.compile(r'\{([\w\.]+); source: (\w+)\}')
+REEFFECT = re.compile(
+    r'((?:\()?)\s?#'
+    r'([\d,]+)# '
+    r'([^\(][\w\+\s,%\.]+)'
+    r'((?: \([^\(\)]*\))?) '
+    r'<([\d,]+)>'
+)
 
 
 def main(organisms = 'mouse',output_dir = 'brenda_output'):
@@ -52,7 +59,7 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
             body_now = body_now + ' ' + '/t'.join(orig_nextline_splitted[1:])
             tmp_step = tmp_step + 1
         label,line = re.split('\t', body_now)
-      
+
         if label == 'ID':
             record_organisms = {}
             j = j + 1
@@ -74,8 +81,8 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
             df_new.loc[j, 'Uniprot'] = ids
             df_new.loc[j, 'EC'] = ecs
 
+        elif label in {'IN', 'AC'}:
 
-        elif label in {'IN','AC'}:
             effect = 'Inh' if label == 'IN' else 'Act'
             splitted_further_inh = re.split(r'# | <| [(]', line)
             prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
@@ -129,3 +136,6 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
     final_df.to_excel(outfile1, index=False)
     return final_df
 
+
+# Example of an effects line:
+#7,13,20,101,118,127,153,178# Cu2+ (#20# no effect <75>; #101# 1 mM, 99% loss of activity <168>; #127# 1 mM, 89% of initial activity <218>; #153# 1 mM, no% residual activity <243>; #7# 100 mM, 76% of initial activity <169>; #178# over 90% inhibition at 0.25 mM <307>; #118# 1 mM, 44.2% of initial activity <308>) <45,75,168,169,218,243,307,308>
