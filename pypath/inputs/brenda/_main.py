@@ -62,7 +62,8 @@ def main():
                 if not 'no activity in' in spname:
                     splitted_further_pr = re.split(' ', splitted[1])
                     id4species_here.append(re.sub('#', '', splitted_further_pr[0]))
-                    match = re.search(r'\{([^\}]+)\}', splitted[1])
+                    match = re.search(r'EC ([\d\.]+)', splitted[1])
+                    uni_ID = None
                     if match:
                         content = match.group(1)
                         uni_ID = content.split(';')[0]
