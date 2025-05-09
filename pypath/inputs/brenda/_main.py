@@ -1,6 +1,6 @@
 #
 from pypath.share import curl
-from pypath.utils import mapping
+from pypath.utils import mapping, taxonomy
 import pandas as pd
 import re
 import os
@@ -8,7 +8,7 @@ import numpy as np
 import pathlib as pl
 
 
-def main(output_dir = 'brenda_output'):
+def main(organisms = 'mouse',output_dir = 'brenda_output'):
     #output of directory
     output_dir = pl.Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -21,7 +21,8 @@ def main(output_dir = 'brenda_output'):
     data = [line.decode("utf-8") for line in brenda_gen]
 
     # Prepare for the loop
-    Name_list = ['Mus musculus']
+
+    organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
     length = len(data)
     colums4now = ['ENTRY','Uniprot','Act', 'Inh']
     df_new = pd.DataFrame(columns = colums4now)
