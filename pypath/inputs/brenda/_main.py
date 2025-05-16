@@ -57,7 +57,7 @@ def main(
     organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
     j = -1
 
-    record_stack = []
+
     current_record = []
 
     # Clean data, extract activator and inhibitor for each enzyme
@@ -73,73 +73,76 @@ def main(
 
             if current_record:
 
-                record_stack.append(current_record)
+                yield current_label, "".join(current_record)
 
             current_record = []
+            current_label = label
 
         current_record.append(line)
 
-        tmp_step = 1
-        indent_of_the_line = ''
 
-        while indent_of_the_line == '':
+def rest():
+    tmp_step = 1
+    indent_of_the_line = ''
 
-            if i == length - 1:
-                break
-            orig_nextline_splitted = re.split('\t', data[i + tmp_step])
-            if len(body_now) < 2:
-                body_now = re.sub('\n', '', body_now)
+    while indent_of_the_line == '':
+
+        if i == length - 1:
+            break
+        orig_nextline_splitted = re.split('\t', data[i + tmp_step])
+        if len(body_now) < 2:
+            body_now = re.sub('\n', '', body_now)
+        else:
+            if str.isdigit(body_now[-2]):
+                body_now = re.sub('\n', ',', body_now)
             else:
-                if str.isdigit(body_now[-2]):
-                    body_now = re.sub('\n', ',', body_now)
-                else:
-                    body_now = re.sub('\n', '', body_now)
-            if not orig_nextline_splitted[0] == '':
-                break
-            body_now = body_now + ' ' + '/t'.join(orig_nextline_splitted[1:])
-            tmp_step = tmp_step + 1
+                body_now = re.sub('\n', '', body_now)
+        if not orig_nextline_splitted[0] == '':
+            break
+        body_now = body_now + ' ' + '/t'.join(orig_nextline_splitted[1:])
+        tmp_step = tmp_step + 1
 
 
-        if label == 'ID':
+    if label == 'ID':
 
-            record_organisms = {}
-            j = j + 1
-            df_new.loc[j, 'ENTRY'] = 'ec:' + line.strip(',')
-            num_inh_thisentry = 0
-            num_act_thisentry = 0
-            id4species_here = []
+        record_organisms = {}
+        j = j + 1
+        df_new.loc[j, 'ENTRY'] = 'ec:' + line.strip(',')
+        num_inh_thisentry = 0
+        num_act_thisentry = 0
+        id4species_here = []
 
-        elif label == 'PR':
+    elif label == 'PR':
 
-            org_id, negation, organism = REORGANISM.match(line).groups()[0]
-            if organism not in organisms or negation:
-                continue
+        org_id, negation, organism = REORGANISM.match(line).groups()[0]
+        if organism not in organisms or negation:
+            continue
 
-            ecs = REEC.findall(line)
-            ids = REID.findall(line)
-            record_organisms[org_id] = (organism, ids, ecs)
+        ecs = REEC.findall(line)
+        ids = REID.findall(line)
+        record_organisms[org_id] = (organism, ids, ecs)
 
-            df_new.loc[j, 'Uniprot'] = ids
-            df_new.loc[j, 'EC'] = ecs
+        df_new.loc[j, 'Uniprot'] = ids
+        df_new.loc[j, 'EC'] = ecs
 
-        elif label in {'IN', 'AC'}:
+    elif label in {'IN', 'AC'}:
 
-            effect = 'Inh' if label == 'IN' else 'Act'
-            effects = REEFFECT.findall(line)
+        effect = 'Inh' if label == 'IN' else 'Act'
+        effects = REEFFECT.findall(line)
 
-            splitted_further_inh = re.split(r'# | <| [(]', line)
-            prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
-            IsThisINisOfthisspecies = False
-            for k in range(0, len(prs_now)):
-                for kk in range(0, len(id4species_here)):
-                    if prs_now[k] == id4species_here[kk]:
-                        IsThisINisOfthisspecies = True
-            if IsThisINisOfthisspecies:
-                if num_inh_thisentry == 0:
-                    df_new.loc[j, effect] = splitted_further_inh[1]
-                else:
-                    df_new.loc[j, effect] = df_new.loc[j, effect] + ';' + splitted_further_inh[1]
-                num_inh_thisentry = num_inh_thisentry + 1
+        splitted_further_inh = re.split(r'# | <| [(]', line)
+        prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
+        IsThisINisOfthisspecies = False
+        for k in range(0, len(prs_now)):
+            for kk in range(0, len(id4species_here)):
+                if prs_now[k] == id4species_here[kk]:
+                    IsThisINisOfthisspecies = True
+        if IsThisINisOfthisspecies:
+            if num_inh_thisentry == 0:
+                df_new.loc[j, effect] = splitted_further_inh[1]
+            else:
+                df_new.loc[j, effect] = df_new.loc[j, effect] + ';' + splitted_further_inh[1]
+            num_inh_thisentry = num_inh_thisentry + 1
 
 
     # Clean EC with ()
@@ -172,12 +175,12 @@ def main(
                     tmp.append([entry, uniprot_id, name, metabolite_id, label, organism])
 
 
-    ID_conversion(df_new, "Act", "Activator", Name_list[0])
-    ID_conversion(df_new, "Inh", "Inhibitor", Name_list[0])
-    final_df = pd.DataFrame(tmp, columns=[
+        ID_conversion(df_new, "Act", "Activator", Name_list[0])
+        ID_conversion(df_new, "Inh", "Inhibitor", Name_list[0])
+        final_df = pd.DataFrame(tmp, columns=[
         "ENTRY", "Uniprot", "metabolite name", "Pubchem ID", "Act/Inh", "Organism"])
-    final_df.to_excel(outfile1, index=False)
-    return final_df
+        final_df.to_excel(outfile1, index=False)
+        return final_df
 
 
 # Example of an effects line:
