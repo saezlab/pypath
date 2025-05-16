@@ -1,9 +1,13 @@
 from collections.abc import Generator
-from pypath.share import curl
-from pypath.utils import mapping, taxonomy
-import pandas as pd
+
 import re
 import pathlib as pl
+
+import pandas as pd
+
+from pypath_common import _misc as _common
+from pypath.share import curl
+from pypath.utils import mapping, taxonomy
 
 REORGANISM = re.compile(r'#(\d+)# ((?:no activity in )?)([-\w\s\.]+[^\s#\{]).*')
 REEC = re.compile(r'EC ([\d\.]+)')
@@ -16,7 +20,11 @@ REEFFECT = re.compile(
     r'<([\d,]+)>'
 )
 
-def main(organisms: str | list | int = 'mouse',output_dir: str = 'brenda_output')_->Generator[tuple, None, None]:
+def main(
+        organisms: str | int | list[str | int] = 'mouse',
+        output_dir: str = 'brenda_output',
+    ) -> Generator[tuple[str], None, None]:
+
     #output of directory
     output_dir = pl.Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -24,10 +32,16 @@ def main(organisms: str | list | int = 'mouse',output_dir: str = 'brenda_output'
     outfile1 = output_dir / 'brenda-translated.xlsx'
     # Download data from BRENDA
     url = "https://www.brenda-enzymes.org/download.php"
-    c = curl.Curl(url, post = {'dlfile': 'dl-textfile', 'accept-license': "1"}, large = True,compr = 'tgz')
+    c = curl.Curl(
+        url,
+        post = {'dlfile': 'dl-textfile', 'accept-license': '1'},
+        large = True,
+        compr = 'tgz',
+    )
     infile = c.result['brenda_2024_1.txt']
 
     # Prepare for the loop
+    organisms = _common.to_list(organisms)
     organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
     colums4now = ['EC','Uniprot','Act', 'Inh']
     df_new = pd.DataFrame(columns = colums4now)
