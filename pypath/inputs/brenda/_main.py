@@ -55,9 +55,10 @@ def main(
     # Prepare for the loop
     organisms = _common.to_list(organisms)
     organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
-    colums4now = ['EC','Uniprot','Act', 'Inh']
-    df_new = pd.DataFrame(columns = colums4now)
     j = -1
+
+    record_stack = []
+    current_record = []
 
     # Clean data, extract activator and inhibitor for each enzyme
     for ln in infile:
@@ -67,6 +68,16 @@ def main(
             continue
 
         label, line = ln.split('\t')
+
+        if label:
+
+            if current_record:
+
+                record_stack.append(current_record)
+
+            current_record = []
+
+        current_record.append(line)
 
         tmp_step = 1
         indent_of_the_line = ''
