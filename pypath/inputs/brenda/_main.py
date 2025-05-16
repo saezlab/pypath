@@ -2,6 +2,7 @@ from collections.abc import Generator
 
 import re
 import pathlib as pl
+import collections
 
 import pandas as pd
 
@@ -19,6 +20,17 @@ REEFFECT = re.compile(
     r'((?: \([^\(\)]*\))?) '
     r'<([\d,]+)>'
 )
+
+AllostericRegulation = collections.namedtuple(
+    'AllostericRegulation',
+    [
+        'ec',
+        'uniprot',
+        'regulator',
+        'effect',
+    ]
+)
+
 
 def main(
         organisms: str | int | list[str | int] = 'mouse',
