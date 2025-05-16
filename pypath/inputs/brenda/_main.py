@@ -1,10 +1,8 @@
-#
+from collections.abc import Generator
 from pypath.share import curl
 from pypath.utils import mapping, taxonomy
 import pandas as pd
 import re
-import os
-import numpy as np
 import pathlib as pl
 
 REORGANISM = re.compile(r'#(\d+)# ((?:no activity in )?)([-\w\s\.]+[^\s#\{]).*')
@@ -18,8 +16,7 @@ REEFFECT = re.compile(
     r'<([\d,]+)>'
 )
 
-
-def main(organisms = 'mouse',output_dir = 'brenda_output'):
+def main(organisms: str | list | int = 'mouse',output_dir: str = 'brenda_output')_->Generator[tuple, None, None]:
     #output of directory
     output_dir = pl.Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
