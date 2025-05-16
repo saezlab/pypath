@@ -28,22 +28,28 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
     # Download data from BRENDA
     url = "https://www.brenda-enzymes.org/download.php"
     c = curl.Curl(url, post = {'dlfile': 'dl-textfile', 'accept-license': "1"}, large = True,compr = 'tgz')
-    brenda_gen = c.result['brenda_2024_1.txt']
-    data = [line.decode("utf-8") for line in brenda_gen]
+    infile = c.result['brenda_2024_1.txt']
 
     # Prepare for the loop
     organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
-    length = len(data)
     colums4now = ['EC','Uniprot','Act', 'Inh']
     df_new = pd.DataFrame(columns = colums4now)
+    j = -1
 
     # Clean data, extract activator and inhibitor for each enzyme
-    j = -1
-    for i in range(0, length):
-        body_now = data[i]
+    for ln in infile:
+
+        if not (ln := ln.strip()):
+
+            continue
+
+        label, line = ln.split('\t')
+
         tmp_step = 1
         indent_of_the_line = ''
+
         while indent_of_the_line == '':
+
             if i == length - 1:
                 break
             orig_nextline_splitted = re.split('\t', data[i + tmp_step])
@@ -58,9 +64,10 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
                 break
             body_now = body_now + ' ' + '/t'.join(orig_nextline_splitted[1:])
             tmp_step = tmp_step + 1
-        label,line = re.split('\t', body_now)
+
 
         if label == 'ID':
+
             record_organisms = {}
             j = j + 1
             df_new.loc[j, 'ENTRY'] = 'ec:' + line.strip(',')
@@ -85,7 +92,7 @@ def main(organisms = 'mouse',output_dir = 'brenda_output'):
 
             effect = 'Inh' if label == 'IN' else 'Act'
             effects = REEFFECT.findall(line)
-            
+
             splitted_further_inh = re.split(r'# | <| [(]', line)
             prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
             IsThisINisOfthisspecies = False
