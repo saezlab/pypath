@@ -10,9 +10,14 @@ from pypath_common import _misc as _common
 from pypath.share import curl
 from pypath.utils import mapping, taxonomy
 
-REORGANISM = re.compile(r'#(\d+)# ((?:no activity in )?)([-\w\s\.]+[^\s#\{]).*')
+REORGANISM = re.compile(
+    r'#(\d+)# '
+    r'((?:no activity in )?)'
+    r'([-\w\s\.\[\]]+[^\s#\{<\(]).*'
+)
 REEC = re.compile(r'EC ([\d\.]+)')
 REID = re.compile(r'\{([\w\.]+); source: (\w+)\}')
+REISOFORM = re.compile('isoform ([\d\w/ ]+), cf\. EC ([\d\.]+)')
 REEFFECT = re.compile(
     r'((?:\()?)\s?#'
     r'([\d,]+)# '
@@ -20,6 +25,9 @@ REEFFECT = re.compile(
     r'((?: \([^\(\)]*\))?) '
     r'<([\d,]+)>'
 )
+
+# Example of an effects line:
+#7,13,20,101,118,127,153,178# Cu2+ (#20# no effect <75>; #101# 1 mM, 99% loss of activity <168>; #127# 1 mM, 89% of initial activity <218>; #153# 1 mM, no% residual activity <243>; #7# 100 mM, 76% of initial activity <169>; #178# over 90% inhibition at 0.25 mM <307>; #118# 1 mM, 44.2% of initial activity <308>) <45,75,168,169,218,243,307,308>
 
 AllostericRegulation = collections.namedtuple(
     'AllostericRegulation',
@@ -33,7 +41,6 @@ AllostericRegulation = collections.namedtuple(
 
 
 def main(
-        organisms: str | int | list[str | int] = 'mouse',
         output_dir: str = 'brenda_output',
         limit: int = 20,
     ) -> Generator[tuple[str, str], None, None]:
@@ -54,8 +61,6 @@ def main(
     infile = c.result['brenda_2024_1.txt']
 
     # Prepare for the loop
-    organisms = _common.to_list(organisms)
-    organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
     yielded_records = 0
     current_record = []
 
@@ -70,7 +75,12 @@ def main(
 
             continue
 
-        label, line = ln.decode('utf-8').split('\t')
+        try:
+            label, line = ln.decode('utf-8').split('\t', maxsplit = 1)
+
+        except:
+            print(ln.decode('utf-8').split('\t'))
+            raise
 
         if label:
 
@@ -89,9 +99,16 @@ def main(
         current_record.append(line)
 
 
-def allosteric_regulation(**kwargs):
+def allosteric_regulation(
+        organisms: str | int | list[str | int] = 'mouse',
+        limit: int = 20,
+    ) -> Generator[tuple[str, str], None, None]:
 
-    for ln in main(**kwargs):
+    organisms = _common.to_list(organisms)
+    organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
+    record = None
+
+    for ln in main(limit = limit):
 
         label, data = ln
 
@@ -101,44 +118,58 @@ def allosteric_regulation(**kwargs):
 
         if label == 'ID':
 
+            if record:
+
+                yield record
+
             ec = 'ec:' + data.strip(',')
 
-            id4species_here = []
-            record_organisms = {}
+            record = {
+                'ec': ec,
+                'proteins': {},
+                'actions': [],
+            }
 
         elif label == 'PR':
 
-            org_id, negation, organism = REORGANISM.match(line).groups()[0]
+            print(data)
+            pr_match = REORGANISM.match(data).groups()
+
+            print(pr_match)
+            org_id, negation, organism = REORGANISM.match(data).groups()
+
             if organism not in organisms or negation:
                 continue
 
-            ecs = REEC.findall(line)
-            ids = REID.findall(line)
-            record_organisms[org_id] = (organism, ids, ecs)
-
-            df_new.loc[j, 'Uniprot'] = ids
-            df_new.loc[j, 'EC'] = ecs
+            ecs = REEC.findall(data)
+            ids = REID.findall(data)
+            isoforms = REISOFORM.findall(data)
+            record['proteins'][org_id] = (organism, ids, ecs, isoforms)
 
         elif label in {'IN', 'AC'}:
 
-            effect = 'Inh' if label == 'IN' else 'Act'
-            effects = REEFFECT.findall(line)
+            act_inh = 'Inh' if label == 'IN' else 'Act'
+            effects = REEFFECT.findall(data)
+            effect_conc_time = []
 
-            splitted_further_inh = re.split(r'# | <| [(]', line)
-            prs_now = re.split(',', re.sub('#', '', splitted_further_inh[0]))
-            IsThisINisOfthisspecies = False
-            for k in range(0, len(prs_now)):
-                for kk in range(0, len(id4species_here)):
-                    if prs_now[k] == id4species_here[kk]:
-                        IsThisINisOfthisspecies = True
-            if IsThisINisOfthisspecies:
-                if num_inh_thisentry == 0:
-                    df_new.loc[j, effect] = splitted_further_inh[1]
-                else:
-                    df_new.loc[j, effect] = df_new.loc[j, effect] + ';' + splitted_further_inh[1]
-                num_inh_thisentry = num_inh_thisentry + 1
+            for effect in effects:
+
+                conc_time = None
+
+                if (conc_time := effect[3].strip('() ')):
+
+                    conc_time = REEFFECT.findall(conc_time)
+
+                effect += (conc_time,)
+
+                effect_conc_time.append(effect)
+
+            record['actions'].append((act_inh, effect_conc_time))
+
+    yield record
 
 
+def rest():
     # Clean EC with ()
     df_new = df_new[~df_new['ENTRY'].str.contains(r'\(.*\)', na=False)]
     df_new = df_new[1:].reset_index(drop=True)
@@ -176,6 +207,3 @@ def allosteric_regulation(**kwargs):
         final_df.to_excel(outfile1, index=False)
         return final_df
 
-
-# Example of an effects line:
-#7,13,20,101,118,127,153,178# Cu2+ (#20# no effect <75>; #101# 1 mM, 99% loss of activity <168>; #127# 1 mM, 89% of initial activity <218>; #153# 1 mM, no% residual activity <243>; #7# 100 mM, 76% of initial activity <169>; #178# over 90% inhibition at 0.25 mM <307>; #118# 1 mM, 44.2% of initial activity <308>) <45,75,168,169,218,243,307,308>
