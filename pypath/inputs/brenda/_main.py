@@ -5,6 +5,7 @@ import pathlib as pl
 import collections
 
 import pandas as pd
+import pyparsing
 
 from pypath_common import _misc as _common
 from pypath.share import curl
@@ -19,11 +20,11 @@ REEC = re.compile(r'EC ([\d\.]+)')
 REID = re.compile(r'\{([\w\.]+); source: (\w+)\}')
 REISOFORM = re.compile('isoform ([\d\w/ ]+), cf\. EC ([\d\.]+)')
 REEFFECT = re.compile(
-    r'((?:\()?)\s?#'
-    r'([\d,]+)# '
-    r'([^\(][\w\+\s,%\.]+)'
-    r'((?: \([^\(\)]*\))?) '
-    r'<([\d,]+)>'
+    r'((?:\()?)\s?#'  # starting parenthesis
+    r'([\d,]+)# '     # proteins (by numeric reference)
+    r'([^\(][-\w\+\s,%\.]+)' # compound name
+    r'((?: \([^\(\)]*\))?) ' # within parentheses concentration & time
+    r'<([\d,]+)>'  # literature references (numeric)
 )
 
 # Example of an effects line:
@@ -132,10 +133,7 @@ def allosteric_regulation(
 
         elif label == 'PR':
 
-            print(data)
             pr_match = REORGANISM.match(data).groups()
-
-            print(pr_match)
             org_id, negation, organism = REORGANISM.match(data).groups()
 
             if organism not in organisms or negation:
@@ -148,8 +146,10 @@ def allosteric_regulation(
 
         elif label in {'IN', 'AC'}:
 
+            data = _remove_inner_parenthesis(data)
             act_inh = 'Inh' if label == 'IN' else 'Act'
             effects = REEFFECT.findall(data)
+            print(effects)
             effect_conc_time = []
 
             for effect in effects:
@@ -167,6 +167,26 @@ def allosteric_regulation(
             record['actions'].append((act_inh, effect_conc_time))
 
     yield record
+
+
+def reconstruct(x):
+
+    content = ' '.join(
+        (y if isinstance(y, str) else reconstruct(y))
+        for y in x
+    )
+
+    if any(not isinstance(y, str) for y in x):
+
+        content = f'({content})'
+
+    return content
+
+
+
+def _remove_inner_parenthesis(x):
+    par = pyparsing.nestedExpr('(', ')').parseString(f'({x})')
+    return reconstruct(par)[2:-2]
 
 
 def rest():
