@@ -89,37 +89,22 @@ def main(
         current_record.append(line)
 
 
-def rest():
-    for ln in infile:
-        tmp_step = 1
-        indent_of_the_line = ''
+def allosteric_regulation(**kwargs):
 
-        while indent_of_the_line == '':
+    for ln in main(**kwargs):
 
-            if i == length - 1:
-                break
-            orig_nextline_splitted = re.split('\t', data[i + tmp_step])
-            if len(body_now) < 2:
-                body_now = re.sub('\n', '', body_now)
-            else:
-                if str.isdigit(body_now[-2]):
-                    body_now = re.sub('\n', ',', body_now)
-                else:
-                    body_now = re.sub('\n', '', body_now)
-            if not orig_nextline_splitted[0] == '':
-                break
-            body_now = body_now + ' ' + '/t'.join(orig_nextline_splitted[1:])
-            tmp_step = tmp_step + 1
+        label, data = ln
 
+        if label not in {'ID', 'PR', 'AC', 'IN'}:
+
+            continue
 
         if label == 'ID':
 
-            record_organisms = {}
-            j = j + 1
-            df_new.loc[j, 'ENTRY'] = 'ec:' + line.strip(',')
-            num_inh_thisentry = 0
-            num_act_thisentry = 0
+            ec = 'ec:' + data.strip(',')
+
             id4species_here = []
+            record_organisms = {}
 
         elif label == 'PR':
 
