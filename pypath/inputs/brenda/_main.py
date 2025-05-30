@@ -20,10 +20,9 @@ REEC = re.compile(r'EC ([\d\.]+)')
 REID = re.compile(r'\{([\w\.]+); source: (\w+)\}')
 REISOFORM = re.compile('isoform ([\d\w/ ]+), cf\. EC ([\d\.]+)')
 REEFFECT = re.compile(
-    r'((?:\()?)\s?#'  # starting parenthesis
-    r'([\d,]+)# '     # proteins (by numeric reference)
-    r'([^\(][-\w\+\s,%\.]+)' # compound name
-    r'((?: \([^\(\)]*\))?) ' # within parentheses concentration & time
+    r'#([\d,]+)# '     # proteins (by numeric reference)
+    r'([^\(][-\w\+\s,%\.]+) ' # compound name
+    r' ?\(?((?:[^\(\)]*)?)\)? ' # within parentheses concentration & time
     r'<([\d,]+)>'  # literature references (numeric)
 )
 
@@ -149,13 +148,8 @@ def allosteric_regulation(
 
         elif label in {'IN', 'AC'}:
 
-            print(data)
-            data = _remove_inner_parenthesis(data)
             act_inh = 'Inh' if label == 'IN' else 'Act'
             effects = REEFFECT.findall(data)
-            print(data)
-            print(effects)
-            print('====================')
             effect_conc_time = []
 
             for effect in effects:
