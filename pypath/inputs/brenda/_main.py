@@ -22,7 +22,7 @@ REISOFORM = re.compile('isoform ([\d\w/ ]+), cf\. EC ([\d\.]+)')
 REEFFECT = re.compile(
     r'((?:\()?)\s?#'  # starting parenthesis
     r'([\d,]+)# '     # proteins (by numeric reference)
-    r'([^\(][-\w\+\s,%\.]+)' # compound name
+    r'([^\(][-+\w\+\s,%\.]+)' # compound name
     r'((?: \([^\(\)]*\))?) ' # within parentheses concentration & time
     r'<([\d,]+)>'  # literature references (numeric)
 )
@@ -146,10 +146,13 @@ def allosteric_regulation(
 
         elif label in {'IN', 'AC'}:
 
+            print(data)
             data = _remove_inner_parenthesis(data)
             act_inh = 'Inh' if label == 'IN' else 'Act'
             effects = REEFFECT.findall(data)
+            print(data)
             print(effects)
+            print('====================')
             effect_conc_time = []
 
             for effect in effects:
@@ -164,7 +167,7 @@ def allosteric_regulation(
 
                 effect_conc_time.append(effect)
 
-            record['actions'].append((act_inh, effect_conc_time))
+            record['actions'].append((act_inh, effects))
 
     yield record
 
@@ -186,7 +189,7 @@ def reconstruct(x):
 
 def _remove_inner_parenthesis(x):
     par = pyparsing.nestedExpr('(', ')').parseString(f'({x})')
-    return reconstruct(par)[2:-2]
+    return reconstruct(par).strip('()')
 
 
 def rest():
