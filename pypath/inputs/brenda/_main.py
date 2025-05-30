@@ -25,6 +25,13 @@ REEFFECT = re.compile(
     r' ?\(?((?:[^\(\)]*)?)\)? ' # within parentheses concentration & time
     r'<([\d,]+)>'  # literature references (numeric)
 )
+REKIKM = re.compile(
+    r'#([\d,]+)# '  # proteins (by numeric reference)
+    r'([\d\.]+) '          # concentration
+    r'\{([^\(][-\w\+\s,%\.]+)\} '  # compound name
+    r' ?\(?((?:[^\(\)]*)?)\)? ' # within parentheses concentration & time
+    r'<([\d,]+)>'  # literature references (numeric)
+)
 
 ALLOSTERIC_ROLES = {
     'IN': 'inhibitor',
@@ -161,6 +168,7 @@ def allosteric_regulation(
             record['actions'].append((role, effects))
 
         elif label in {'KI', 'KM'}:
+
 
             pass
 
