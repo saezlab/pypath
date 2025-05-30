@@ -22,7 +22,7 @@ REISOFORM = re.compile('isoform ([\d\w/ ]+), cf\. EC ([\d\.]+)')
 REEFFECT = re.compile(
     r'((?:\()?)\s?#'  # starting parenthesis
     r'([\d,]+)# '     # proteins (by numeric reference)
-    r'([^\(][-+\w\+\s,%\.]+)' # compound name
+    r'([^\(][-\w\+\s,%\.]+)' # compound name
     r'((?: \([^\(\)]*\))?) ' # within parentheses concentration & time
     r'<([\d,]+)>'  # literature references (numeric)
 )
@@ -109,7 +109,8 @@ def allosteric_regulation(
     organisms = {taxonomy.ensure_latin_name(o) for o in organisms}
     record = None
 
-    for ln in main(limit = limit):
+    i = 0
+    for ln in main(limit = None):
 
         label, data = ln
 
@@ -120,7 +121,9 @@ def allosteric_regulation(
         if label == 'ID':
 
             if record:
-
+                i = i +1
+                if i == limit:
+                    break
                 yield record
 
             ec = 'ec:' + data.strip(',')
