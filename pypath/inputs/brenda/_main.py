@@ -26,6 +26,14 @@ REEFFECT = re.compile(
     r'<([\d,]+)>'  # literature references (numeric)
 )
 
+ALLOSTERIC_ROLES = {
+    'IN': 'inhibitor',
+    'AC': 'activator',
+    'CF': 'cofactor',
+}
+
+RECORDS_ENABLED = {'ID', 'PR', 'AC', 'IN', 'CF', 'KI', 'KM'}
+
 # Example of an effects line:
 #7,13,20,101,118,127,153,178# Cu2+ (#20# no effect <75>; #101# 1 mM, 99% loss of activity <168>; #127# 1 mM, 89% of initial activity <218>; #153# 1 mM, no% residual activity <243>; #7# 100 mM, 76% of initial activity <169>; #178# over 90% inhibition at 0.25 mM <307>; #118# 1 mM, 44.2% of initial activity <308>) <45,75,168,169,218,243,307,308>
 
@@ -113,7 +121,7 @@ def allosteric_regulation(
 
         label, data = ln
 
-        if label not in {'ID', 'PR', 'AC', 'IN'}:
+        if label not in RECORDS_ENABLED:
 
             continue
 
@@ -146,11 +154,15 @@ def allosteric_regulation(
             isoforms = REISOFORM.findall(data)
             record['proteins'][org_id] = (organism, ids, ecs, isoforms)
 
-        elif label in {'IN', 'AC'}:
+        elif label in {'IN', 'AC', 'CF'}:
 
-            act_inh = 'Inh' if label == 'IN' else 'Act'
+            role = ALLOSTERIC_ROLES[label]
             effects = REEFFECT.findall(data)
-            record['actions'].append((act_inh, effects))
+            record['actions'].append((role, effects))
+
+        elif label in {'KI', 'KM'}:
+
+            pass
 
     yield record
 
