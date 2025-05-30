@@ -150,43 +150,9 @@ def allosteric_regulation(
 
             act_inh = 'Inh' if label == 'IN' else 'Act'
             effects = REEFFECT.findall(data)
-            effect_conc_time = []
-
-            for effect in effects:
-
-                conc_time = None
-
-                if (conc_time := effect[3].strip('() ')):
-
-                    conc_time = REEFFECT.findall(conc_time)
-
-                effect += (conc_time,)
-
-                effect_conc_time.append(effect)
-
             record['actions'].append((act_inh, effects))
 
     yield record
-
-
-def reconstruct(x):
-
-    content = ' '.join(
-        (y if isinstance(y, str) else reconstruct(y))
-        for y in x
-    )
-
-    if any(not isinstance(y, str) for y in x):
-
-        content = f'({content})'
-
-    return content
-
-
-
-def _remove_inner_parenthesis(x):
-    par = pyparsing.nestedExpr('(', ')').parseString(f'({x})')
-    return reconstruct(par).strip('()')
 
 
 def rest():
