@@ -32,6 +32,12 @@ REKIKM = re.compile(
     r' ?\(?((?:.*)?)(?:>\))? ' # within parentheses concentration & time
     r'<([\d,]+)>'  # literature references (numeric)
 )
+REREFE = re.compile(
+    r'<([\d]+)>'  # literature references (numeric)
+    r'.*'
+    r'(Pubmed:\d+)'
+)
+
 
 ALLOSTERIC_ROLES = {
     'IN': 'inhibitor',
@@ -147,6 +153,7 @@ def allosteric_regulation(
                 'proteins': {},
                 'actions': [],
                 'km_ki': [],
+                'reference': {}
             }
 
         elif label == 'PR':
@@ -172,6 +179,10 @@ def allosteric_regulation(
 
             values = REKIKM.findall(data)
             record['km_ki'].append((label, _common.first(values)))
+
+        elif label == 'RF':
+            ref,pub = REREFE.match(data).groups()
+            record['reference'][ref] = pub
 
 
     yield record
