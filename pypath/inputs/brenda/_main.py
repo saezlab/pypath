@@ -73,7 +73,7 @@ def main(
         large = True,
         compr = 'tgz',
     )
-    infile = c.result['brenda_2024_1.txt']
+    infile = _common.first(c.result.values())
 
     # Prepare for the loop
     yielded_records = 0
