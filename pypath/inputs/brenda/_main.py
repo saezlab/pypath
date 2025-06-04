@@ -146,6 +146,7 @@ def allosteric_regulation(
                 'ec': ec,
                 'proteins': {},
                 'actions': [],
+                'km_ki': [],
             }
 
         elif label == 'PR':
@@ -169,8 +170,12 @@ def allosteric_regulation(
 
         elif label in {'KI', 'KM'}:
 
+            values = REKIKM.findall(data)
+            print(data)
+            print(_common.first(values))
+            print('=============')
+            record['km_ki'].append((label, _common.first(values)))
 
-            pass
 
     yield record
 
