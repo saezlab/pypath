@@ -28,7 +28,7 @@ REEFFECT = re.compile(
 REKIKM = re.compile(
     r'#([\d,]+)# '  # proteins (by numeric reference)
     r'([-\d\.]+) '          # concentration
-    r'\{([^\(][-\w\+\s,%\.]+)\} '  # compound name
+    r'\{([-\w\+\s,%\.\(\)/\'\[\]]+)\} '  # compound name
     r' ?\(?((?:.*)?)(?:>\))? ' # within parentheses concentration & time
     r'<([\d,]+)>'  # literature references (numeric)
 )
@@ -171,9 +171,6 @@ def allosteric_regulation(
         elif label in {'KI', 'KM'}:
 
             values = REKIKM.findall(data)
-            if (match := _common.first(values)) is None:
-                print(data)
-                print('=============')
             record['km_ki'].append((label, _common.first(values)))
 
 
