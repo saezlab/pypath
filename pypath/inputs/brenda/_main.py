@@ -212,19 +212,23 @@ def allosteric_regulation_records(
 
             for k_prot_idx in k_proteins.split(','):
 
+                try:
+                    k_value = float(k_value)
+                except ValueError: pass
                 k_pubmeds = collect_refs(refs)
                 reactions_constants[(k_prot_idx, compound)].append(
-                    (k, float(k_value), k_details, k_pubmeds)
+                    (k, k_value, k_details, k_pubmeds)
                 )
+
 
         for action in actions[1]:
 
             protein_indices = (
                 set(action[0].split(',')) |
-                set(stage0['proteins'].key())
+                set(stage0['proteins'].keys())
             )
 
-            for protein_idx in proteins_indices:
+            for protein_idx in protein_indices:
 
                 protein_data = stage0['proteins'][protein_idx]
                 protein_ids = None
