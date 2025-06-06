@@ -201,16 +201,28 @@ def allosteric_regulation_record(stage0: dict) -> AllostericRegulation:
 
     for actions in stage0['actions']:
 
+        reactions_constants = collections.defaultdict(list)
+
+        for k, (k_proteins, k_value, compound, k_details, refs) in stage0['km_ki']:
+
+            for k_prot_idx in k_proteins.split(','):
+
+                k_pubmeds = [stage0['references'][i] for i in refs.split(',')]
+
+                reactions_constants[(k_prot_idx, compound)].append(
+                    (k, float(k_value), k_details, k_pubmeds)
+                )
+
         for action in actions[1]:
 
-            proteins = (
+            protein_indices = (
                 set(action[0].split(',')) |
                 set(stage0['proteins'].key())
             )
 
-            for protein_id in proteins:
+            for protein_idx in proteins_indices:
 
-                protein_data = stage0['proteins'][protein_id]
+                protein_data = stage0['proteins'][protein_idx]
                 protein_ids = None
                 wrong_ec = None
                 id_type = None
@@ -227,16 +239,20 @@ def allosteric_regulation_record(stage0: dict) -> AllostericRegulation:
                     id_type = 'genesymbol'
 
                 pubmed = [stage0['references'][i] for i in action[3].split(',')]
+                compound = action[1]
 
                 yield AllostericRegulation(
+                    action = actions[0],
+                    compound = compound,
                     organism = protein_data[0],
                     protein = protein_id,
                     id_type = id_type,
                     wrong_ec = wrong_ec,
                     pubmeds = pubmed,
-
+                    reactions_constants = reactions_constants[
+                        (protein_idx, compound)
+                    ],
                 )
-
 
 
 def rest():
