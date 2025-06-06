@@ -176,12 +176,6 @@ def allosteric_regulation(
             effects = REEFFECT.findall(data)
             record['actions'].append((role, effects))
 
-            if label == 'CF' and first_cf:
-
-                first_cf = False
-                print(data)
-                print('=====')
-                print(effects[0])
 
         elif label in {'KI', 'KM'}:
 
@@ -194,10 +188,10 @@ def allosteric_regulation(
             record['references'][ref] = pub
 
 
-    yield record
+    yield from allosteric_regulation_records(record)
 
 
-def allosteric_regulation_record(stage0: dict) -> AllostericRegulation:
+def allosteric_regulation_records(stage0: dict) -> Generator[AllostericRegulation, None, None]:
 
     for actions in stage0['actions']:
 
@@ -206,6 +200,8 @@ def allosteric_regulation_record(stage0: dict) -> AllostericRegulation:
         for k, (k_proteins, k_value, compound, k_details, refs) in stage0['km_ki']:
 
             for k_prot_idx in k_proteins.split(','):
+
+                print(stage0['references'])
 
                 k_pubmeds = [stage0['references'][i] for i in refs.split(',')]
 
@@ -251,7 +247,7 @@ def allosteric_regulation_record(stage0: dict) -> AllostericRegulation:
                     pubmeds = pubmed,
                     reactions_constants = reactions_constants[
                         (protein_idx, compound)
-                    ],
+                    ]
                 )
 
 
