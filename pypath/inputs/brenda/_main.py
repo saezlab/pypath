@@ -22,7 +22,7 @@ REISOFORM = re.compile('isoform ([\d\w/ ]+), cf\. EC ([\d\.]+)')
 REEFFECT = re.compile(
     r'#([\d,]+)# '     # proteins (by numeric reference)
     r'([^\(][-\w\+\s,%\.]+) ' # compound name
-    r' ?\(?((?:[^\(\)]*)?)\)? ' # within parentheses concentration & time
+    r' ?\(?((?:.*)?)\)? ' # within parentheses concentration & time
     r'<([\d,]+)>'  # literature references (numeric)
 )
 REKIKM = re.compile(
@@ -130,6 +130,7 @@ def allosteric_regulation(
     record = None
 
     i = 0
+    first_cf = True
     for ln in main(limit = None):
 
         label, data = ln
@@ -153,7 +154,7 @@ def allosteric_regulation(
                 'proteins': {},
                 'actions': [],
                 'km_ki': [],
-                'reference': {}
+                'references': {}
             }
 
         elif label == 'PR':
@@ -175,18 +176,63 @@ def allosteric_regulation(
             effects = REEFFECT.findall(data)
             record['actions'].append((role, effects))
 
+            if label == 'CF' and first_cf:
+
+                first_cf = False
+                print(data)
+                print('=====')
+                print(effects[0])
+
         elif label in {'KI', 'KM'}:
 
             values = REKIKM.findall(data)
             record['km_ki'].append((label, _common.first(values)))
 
         elif label == 'RF':
-            ref,pub = REREFE.match(data).groups()
-            record['reference'][ref] = pub
+
+            ref, pub = REREFE.match(data).groups()
+            record['references'][ref] = pub
 
 
     yield record
 
+
+def allosteric_regulation_record(stage0: dict) -> AllostericRegulation:
+
+    for actions in stage0['actions']:
+
+        for action in actions[1]:
+
+            proteins = (
+                set(action[0].split(',')) |
+                set(stage0['proteins'].key())
+            )
+
+            for protein_id in proteins:
+
+                protein_data = stage0['proteins'][protein_id]
+                protein_ids = None
+                wrong_ec = None
+                id_type = None
+
+                if uniprots := protein_data[1]:
+
+                    protein_ids = [u[0] for u in uniprots]
+                    id_type = 'uniprot'
+
+                elif genesymbols := protein_data[3]:
+
+                    wrong_ec = protein_data[2]
+                    protein_ids = [g[0] for g in genesymbols]
+                    id_type = 'genesymbol'
+
+                yield AllostericRegulation(
+                    organism = protein_data[0],
+                    protein = protein_id,
+                    id_type = id_type,
+                    wrong_ec = wrong_ec,
+                    pubmeds = stage0['references'],
+                )
 
 def rest():
     # Clean EC with ()
