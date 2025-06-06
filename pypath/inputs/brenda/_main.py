@@ -45,7 +45,7 @@ ALLOSTERIC_ROLES = {
     'CF': 'cofactor',
 }
 
-RECORDS_ENABLED = {'ID', 'PR', 'AC', 'IN', 'CF', 'KI', 'KM'}
+RECORDS_ENABLED = {'ID', 'PR', 'AC', 'IN', 'CF', 'KI', 'KM', 'RF'}
 
 # Example of an effects line:
 #7,13,20,101,118,127,153,178# Cu2+ (#20# no effect <75>; #101# 1 mM, 99% loss of activity <168>; #127# 1 mM, 89% of initial activity <218>; #153# 1 mM, no% residual activity <243>; #7# 100 mM, 76% of initial activity <169>; #178# over 90% inhibition at 0.25 mM <307>; #118# 1 mM, 44.2% of initial activity <308>) <45,75,168,169,218,243,307,308>
@@ -130,7 +130,6 @@ def allosteric_regulation(
     record = None
 
     i = 0
-    first_cf = True
     for ln in main(limit = None):
 
         label, data = ln
@@ -142,10 +141,11 @@ def allosteric_regulation(
         if label == 'ID':
 
             if record:
-                i = i +1
+                i += 1
                 if i == limit:
                     break
-                yield record
+                print(f'Finished datasheet {i} (EC: {ec})')
+                yield from allosteric_regulation_records(record)
 
             ec = 'ec:' + data.strip(',')
 
@@ -184,14 +184,25 @@ def allosteric_regulation(
 
         elif label == 'RF':
 
-            ref, pub = REREFE.match(data).groups()
-            record['references'][ref] = pub
+            if ref_match := REREFE.match(data):
 
+                ref, pub = ref_match.groups()
+                record['references'][ref] = pub
 
     yield from allosteric_regulation_records(record)
 
 
-def allosteric_regulation_records(stage0: dict) -> Generator[AllostericRegulation, None, None]:
+def allosteric_regulation_records(
+        stage0: dict,
+    ) -> Generator[AllostericRegulation, None, None]:
+
+    def collect_refs(ref_idx: str) -> list[str]:
+
+        return [
+            stage0['references'][i]
+            for i in ref_idx.split(',')
+            if i in stage0['references']
+        ]
 
     for actions in stage0['actions']:
 
@@ -201,10 +212,7 @@ def allosteric_regulation_records(stage0: dict) -> Generator[AllostericRegulatio
 
             for k_prot_idx in k_proteins.split(','):
 
-                print(stage0['references'])
-
-                k_pubmeds = [stage0['references'][i] for i in refs.split(',')]
-
+                k_pubmeds = collect_refs(refs)
                 reactions_constants[(k_prot_idx, compound)].append(
                     (k, float(k_value), k_details, k_pubmeds)
                 )
@@ -234,7 +242,7 @@ def allosteric_regulation_records(stage0: dict) -> Generator[AllostericRegulatio
                     protein_ids = [g[0] for g in genesymbols]
                     id_type = 'genesymbol'
 
-                pubmed = [stage0['references'][i] for i in action[3].split(',')]
+                pubmed = collect_refs(action[3])
                 compound = action[1]
 
                 yield AllostericRegulation(
