@@ -226,13 +226,18 @@ def allosteric_regulation_record(stage0: dict) -> AllostericRegulation:
                     protein_ids = [g[0] for g in genesymbols]
                     id_type = 'genesymbol'
 
+                pubmed = [stage0['references'][i] for i in action[3].split(',')]
+
                 yield AllostericRegulation(
                     organism = protein_data[0],
                     protein = protein_id,
                     id_type = id_type,
                     wrong_ec = wrong_ec,
-                    pubmeds = stage0['references'],
+                    pubmeds = pubmed,
+
                 )
+
+
 
 def rest():
     # Clean EC with ()
