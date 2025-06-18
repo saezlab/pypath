@@ -20,11 +20,15 @@
 from __future__ import annotations
 
 import json
+import warnings
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.session as session_mod
 
 __all__ = ['ramp_id_types']
+
+_logger = session_mod.Logger(name = 'ramp')
 
 
 def ramp_id_types(
@@ -40,11 +44,24 @@ def ramp_id_types(
     }
 
     url = urls.urls['ramp']['api'] % 'id-types'
+    _logger._log(f'Loading RaMP the list of ID types from `{url}`.')
     c = curl.Curl(url, silent = True, large = False)
 
-    return {
-        id_type.strip()
-        for i in json.loads(c.result)['data']
-        if not entity_type or i['analyteType'] == entity_types[entity_type]
-        for id_type in i['idTypes'].split(',')
-    }
+    if c.result is None:
+
+        msg = 'Failed to load RaMP ID types.'
+        _logger._log(msg)
+        warnings.warn(msg)
+
+        result = set()
+
+    else:
+
+        result = {
+            id_type.strip()
+            for i in json.loads(c.result)['data']
+            if not entity_type or i['analyteType'] == entity_types[entity_type]
+            for id_type in i['idTypes'].split(',')
+        }
+
+    return result

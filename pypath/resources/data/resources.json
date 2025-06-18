@@ -700,7 +700,7 @@
       "perfetto@live.it",
       "Livia Perfetto"
     ],
-    "license": "CC BY-NC 4.0",
+    "license": "CC BY 4.0",
     "pypath": {
       "data": ["pypath.urls.urls[\"signor\"][\"all_url\"]"],
       "format": ["pypath.data_formats.pathway[\"signor\"]"],
@@ -4828,7 +4828,7 @@
     "license": "CC BY 4.0"
    },
   "DoRothEA-A": {
-    "license": "Composite",
+    "license": "Informal",
     "components": [
       "PAZAR",
       "ORegAnno",
