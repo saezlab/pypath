@@ -3,6 +3,7 @@ import csv
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+from pypath_common import _misc
 
 __all__ = [
     'tables'
@@ -33,7 +34,7 @@ def tables(
     c = curl.Curl(url, silent = False, large = True, slow = True)
 
     line_count = 0
-    for line in csv.DictReader(c.result, delimiter = '\t'):
+    for line in csv.DictReader(_misc.first(c.result.values()), delimiter = '\t'):
 
         yield line
 
