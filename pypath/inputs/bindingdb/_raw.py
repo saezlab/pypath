@@ -6,10 +6,10 @@ import pypath.share.curl as curl
 from pypath_common import _misc
 
 __all__ = [
-    'tables'
+    'table'
 ]
 
-def tables(
+def table(
         dataset: str = 'All',
         max_lines: int | None = None
     ) -> Generator[dict]:
@@ -18,14 +18,14 @@ def tables(
     contents in a generator of dictionaries, where each dictionary represents a
     table row.
 
-    Parameters
-        url : str
-            URL of the file to read.
-        max_lines : int | None
+    Args:
+        dataset:
+            BindingDB dataset: All, Articles, ChEMBL, PubChem, Patents, etc.
+        max_lines:
             Maximum number of lines to read from the file. If None, the entire
             file is read.
 
-    Yields
+    Yields:
         dict
             A dictionary representing a table row.
     """
