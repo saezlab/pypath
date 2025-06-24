@@ -11,7 +11,8 @@ __all__ = [
 
 def table(
         dataset: str = 'All',
-        max_lines: int | None = None
+        max_lines: int | None = None,
+        mapping: bool = False
     ) -> Generator[dict]:
     """
     Reads a tab-separated values file from the given URL and returns its
@@ -30,15 +31,18 @@ def table(
             A dictionary representing a table row.
     """
 
-    url = urls.urls['bindingdb']['url'] % dataset
+    url_key = 'mapping' if mapping else 'url'
+
+    url = urls.urls['bindingdb'][url_key] % dataset
     c = curl.Curl(url, silent = False, large = True, slow = True)
 
     line_count = 0
-    for line in csv.DictReader(_misc.first(c.result.values()), delimiter = '\t'):
+
+    file_iterator = c.result if mapping else _misc.first(c.result.values())
+    for line in csv.DictReader(file_iterator, delimiter = '\t'):
 
         yield line
 
         line_count += 1
         if max_lines is not None and line_count > max_lines:
             break
-
