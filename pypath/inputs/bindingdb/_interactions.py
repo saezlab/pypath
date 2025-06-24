@@ -1,23 +1,13 @@
 import collections
+from collections.abc import Generator
 
 from . import _raw
 
-BindingdbInteraction = colletions.namedtuple(
+BindingdbInteraction = collections.namedtuple(
     "BindingdbInteraction",
     [
         "ligand",
         "target",
-        "action",
-        "action_type",
-        "is_stimulation",
-        "is_inhibition",
-        "endogenous",
-        "affinity_high",
-        "affinity_low",
-        "affinity_median",
-        "affinity_units",
-        "primary_target",
-        "pubmed",
     ],
 )
 
@@ -37,6 +27,7 @@ BindingdbTarget = collections.namedtuple(
     [
         "name",
         "organism",
+        "uniprot",
     ]
 )
 
@@ -64,3 +55,28 @@ ReactionConstant = collections.namedtuple(
     ]
 )
 
+
+def interactions(dataset: str = 'All',
+                 max_lines: int | None = None) -> Generator[BindingdbInteraction]:
+    
+    uniprot_mapping = _raw.mapping()
+
+    for record in _raw.table(dataset = dataset, max_lines = max_lines):
+
+
+
+        yield BindingdbInteraction(
+            ligand = BindingdbLigand(
+                name = record['BindingDB Ligand Name'],
+                smiles = record['Ligand SMILES'],
+                inchi = record['Ligand InChI'],
+                inchi_key = record['Ligand InChI Key'],
+                pubchem = record['PubChem CID'],
+            ),
+            target = BindingdbTarget(
+                name = record['Target Name'],
+                organism = record['Organism'],
+                uniprot = uniprot_mapping.get(record['Target Name']),
+            ),
+        )    
+    
