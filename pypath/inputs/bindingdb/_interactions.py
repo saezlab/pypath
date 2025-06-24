@@ -2,8 +2,8 @@ import collections
 
 from . import _raw
 
-G2PInteraction = colletions.namedtuple(
-    "G2PInteraction",
+BindingdbInteraction = colletions.namedtuple(
+    "BindingdbInteraction",
     [
         "ligand",
         "target",
@@ -19,6 +19,25 @@ G2PInteraction = colletions.namedtuple(
         "primary_target",
         "pubmed",
     ],
+)
+
+BindingdbLigand = collections.namedtuple(
+    "BindingdbLigand",
+    [
+        "name",
+        "smiles",
+        "inchi",
+        "inchi_key",
+        "pubchem",
+    ]
+)
+
+BindingdbTarget = collections.namedtuple(
+    "BindingdbTarget",
+    [
+        "name",
+        "organism",
+    ]
 )
 
 AllostericRegulation = collections.namedtuple(
