@@ -1772,6 +1772,7 @@ urls = {
         'label': 'A database of protein-ligand interactions',
         'url':
         'https://bindingdb.org/rwd/bind/downloads/BindingDB_%s_202506_tsv.zip',
+        'mapping': 'https://bindingdb.org/rwd/bind/BindingDB_%s.txt',
     },
 }
 
