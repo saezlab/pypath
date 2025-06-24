@@ -75,8 +75,8 @@ def interactions(dataset: str = 'All',
             ),
             target = BindingdbTarget(
                 name = record['Target Name'],
-                organism = record['Organism'],
-                uniprot = uniprot_mapping.get(record['Target Name']),
+                organism = record['Target Source Organism According to Curator or DataSource'],
+                uniprot = uniprot_mapping.get(record['Target Name']), #TODO : create regex split to access all uniprots
             ),
         )    
     
