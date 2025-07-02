@@ -1,17 +1,11 @@
 from collections.abc import Generator
-import re
-import pathlib as pl
 import collections
-import pandas as pd
-import pyparsing
-from pypath_common import _misc as _common
 from pypath.share import curl
-from pypath.utils import mapping, taxonomy
 from pypath.resources import urls
 
 
-TcsbSubstrate = collections.namedtuple(
-    'TcsbSubstrate',
+TcdbSubstrate = collections.namedtuple(
+    'TcdbSubstrate',
     ['transporter', 'substrate'],
 )
 
@@ -39,7 +33,7 @@ def tcdb_substrate() -> Generator[tuple[str, str], None, None]:
 
         for uniprot in dic_TCDB_Uni[tcdb]:
 
-            yield TcsbSubstrate(uniprot, substrate)
+            yield TcdbSubstrate(uniprot, substrate)
 
 
 def protein_location():
