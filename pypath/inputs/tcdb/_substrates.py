@@ -6,11 +6,11 @@ from pypath.resources import urls
 
 TcdbSubstrate = collections.namedtuple(
     'TcdbSubstrate',
-    ['transporter', 'substrate'],
+    ['transporter_uniprot', 'substrate_id','substrate_name'],
 )
 
 
-def tcdb_substrate() -> Generator[tuple[str, str], None, None]:
+def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
 
     url_substrates = urls.urls['tcdb']['url_substrates']
     c = curl.Curl(url_substrates, large = True)
@@ -31,11 +31,11 @@ def tcdb_substrate() -> Generator[tuple[str, str], None, None]:
 
     for line in TC2Sub:
 
-        tcdb, substrate = line.strip('\n').split('\t')
-
-        for uniprot in dic_TCDB_Uni[tcdb]:
-
-            yield TcdbSubstrate(uniprot, substrate)
+        tcdb, substrates = line.strip('\n').split('\t')
+        for substrate in substrates.split('|'):
+            substrate_id,substrate_name = substrate.split(';')
+            for transporter_uniprot in dic_TCDB_Uni[tcdb]:
+                yield TcdbSubstrate(transporter_uniprot, substrate_id,substrate_name)
 
 
 def protein_location():
