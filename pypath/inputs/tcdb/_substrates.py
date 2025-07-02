@@ -24,12 +24,14 @@ def tcdb_substrate() -> Generator[tuple[str, str], None, None]:
     dic_TCDB_Uni = collections.defaultdict(list)
     for line in TC2Uni:
 
-        uniprot, tcdb = line.split('\t')
-        dic_TCDB_Uni[tcdb].append(uniprot)
+        uniprot, tcdb = line.strip('\n').split('\t')
+
+        if uniprot:
+            dic_TCDB_Uni[tcdb].append(uniprot)
 
     for line in TC2Sub:
 
-        tcdb, substrate = line.split('\t')
+        tcdb, substrate = line.strip('\n').split('\t')
 
         for uniprot in dic_TCDB_Uni[tcdb]:
 
