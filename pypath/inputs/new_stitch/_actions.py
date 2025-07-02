@@ -9,7 +9,7 @@ __all__ = [
     'actions',
 ]
 
-REID = re.compile(r'((?:\d+)?)\.?(CID|ENSP)([ms]?)(\d+)')
+REID = re.compile(r'((?:\d+)?)\.?(CID|ENSP)([ms]?)(0*)(\d+)')
 
 
 def actions(max_lines: int | None = None,
@@ -29,8 +29,6 @@ def actions(max_lines: int | None = None,
             A named tuple containing information about each action.
     """
 
-    parse_activation = lambda x: None if x == '' else x == 'activation'
-
     url = urls.urls['stitch']['actions'] % ncbi_tax_id
 
     actions = tables(url, max_lines)
@@ -41,38 +39,44 @@ def actions(max_lines: int | None = None,
 
         a, b = parse_entities(action)
 
+        # create variables to check if action is activation or inhibition
+        activation, inhibition = parse_action(action["action"])
+
         out.append(
             StitchAction(
                 source = a,
                 target = b,
                 directed = action["a_is_acting"].lower() == 't',
                 mode = action["mode"],
-                activation = parse_activation(action["action"]),
+                activation = activation,
+                inhibition = inhibition,
                 score = int(action["score"]),
             )
         )
 
         if len(out) == 2:
 
-            if set(out[0][:2]) == set(out[1][:2]):
-
-                if not any(a.directed for a in out):
+            if set(out[0][:2]) == set(out[1][:2]): # interaction has same source and target
+                        
+                if not any(act.directed for act in out):
 
                     yield out[0]
 
                 else:
 
-                    for a in out:
+                    for act in out:
 
-                        if a.directed:
+                        if act.directed:
 
-                            yield a
+                            yield act
 
                 out = []
 
             else:
-
+    
                 yield out.pop(0)
+                
+
 
 
 def parse_entities(action: dict) -> tuple[Entity, Entity]:
@@ -93,20 +97,35 @@ def parse_entities(action: dict) -> tuple[Entity, Entity]:
 
     for side in ('a', 'b'):
 
-        tax, ens, stereo, _id = REID.match(action[f'item_id_{side}']).groups()
+        tax, ens, stereo, zeros, _id = REID.match(action[f'item_id_{side}']).groups()
         id_prefix = ens if ens[:3] == 'ENS' else ''
 
         partners.append(
             Entity(
-                id = f'{id_prefix}{_id}',
+                id = f'{id_prefix}{_id}' if ens == 'CID' else f'{id_prefix}{zeros}{_id}',
                 type = 'small_molecule' if ens == 'CID' else 'protein',
                 ncbi_tax_id = int(tax) if tax else None,
                 stereospecific = stereo == 's',
             )
         )
 
-    if action['a_is_acting'].lower() == 't':
-
-        partners = reversed(partners)
+    #if action['a_is_acting'].lower() == 't': # 
+#
+    #    partners = reversed(partners)
 
     return tuple(partners)
+
+def parse_action(action: str) -> tuple[bool, bool]:
+    """
+    Will parse the action column into boolean values
+    for 'activation' and 'inhibition'
+    """
+
+    if action == 'activation':
+        return True, False
+
+    if action == 'inhibition':
+        return False, True
+    
+    else:
+        return False, False

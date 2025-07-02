@@ -8,6 +8,7 @@ StitchAction = collections.namedtuple(
         'directed',
         'mode',
         'activation',
+        'inhibition',
         'score',
     ],
 )

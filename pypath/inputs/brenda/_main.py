@@ -35,7 +35,7 @@ REKIKM = re.compile(
 REREFE = re.compile(
     r'<([\d]+)>'  # literature references (numeric)
     r'.*'
-    r'(Pubmed:\d+)'
+    r'Pubmed:(\d+)'
 )
 
 
@@ -53,10 +53,24 @@ RECORDS_ENABLED = {'ID', 'PR', 'AC', 'IN', 'CF', 'KI', 'KM', 'RF'}
 AllostericRegulation = collections.namedtuple(
     'AllostericRegulation',
     [
-        'ec',
-        'uniprot',
-        'regulator',
-        'effect',
+        'action',
+        'compound',
+        'organism',
+        'protein',
+        'id_type',
+        'wrong_ec',
+        'pubmeds',
+        'reaction_constants',
+    ]
+)
+
+ReactionConstant = collections.namedtuple(
+    'ReactionConstant',
+    [
+        'type',
+        'value',
+        'conditions',
+        'pubmeds',
     ]
 )
 
@@ -144,7 +158,6 @@ def allosteric_regulation(
                 i += 1
                 if i == limit:
                     break
-                print(f'Finished datasheet {i} (EC: {ec})')
                 yield from allosteric_regulation_records(record)
 
             ec = 'ec:' + data.strip(',')
@@ -198,11 +211,11 @@ def allosteric_regulation_records(
 
     def collect_refs(ref_idx: str) -> list[str]:
 
-        return [
+        return ';'.join(
             stage0['references'][i]
             for i in ref_idx.split(',')
             if i in stage0['references']
-        ]
+        )
 
     for actions in stage0['actions']:
 
@@ -217,14 +230,13 @@ def allosteric_regulation_records(
                 except ValueError: pass
                 k_pubmeds = collect_refs(refs)
                 reactions_constants[(k_prot_idx, compound)].append(
-                    (k, k_value, k_details, k_pubmeds)
+                    ReactionConstant(k, k_value, k_details, k_pubmeds)
                 )
-
 
         for action in actions[1]:
 
             protein_indices = (
-                set(action[0].split(',')) |
+                set(action[0].split(',')) &
                 set(stage0['proteins'].keys())
             )
 
@@ -253,11 +265,11 @@ def allosteric_regulation_records(
                     action = actions[0],
                     compound = compound,
                     organism = protein_data[0],
-                    protein = protein_id,
+                    protein = protein_ids,
                     id_type = id_type,
                     wrong_ec = wrong_ec,
                     pubmeds = pubmed,
-                    reactions_constants = reactions_constants[
+                    reaction_constants = reactions_constants[
                         (protein_idx, compound)
                     ]
                 )

@@ -58,7 +58,7 @@ G2PInteraction = _record_factory(
         "ligand",
         "target",
         "action",
-        "ligand_type",
+        "action_type",
         "is_stimulation",
         "is_inhibition",
         "endogenous",
