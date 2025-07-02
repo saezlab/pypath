@@ -1386,6 +1386,8 @@ urls = {
             'projectv/public/families.py',
         'url_acc2tc': 'http://www.tcdb.org/cgi-bin/'
             'projectv/public/acc2tcid.py',
+        'url_substrates': 'https://www.tcdb.org/cgi-bin/substrates/'
+            'getSubstrates.py',
     },
     'mcam': {
         'label': 'Mammalian Cell Adhesion Molecule Database',

@@ -128,8 +128,10 @@ from pypath.share import curl
 from pypath.utils import mapping, taxonomy
 
 url = "https://www.tcdb.org/cgi-bin/substrates/getSubstrates.py"
+url = urls.urls['tcdb']['url_substrates']
 c = curl.Curl(url)
 TC2Sub = c.result
+url = urls.urls['tcdb']['url_acc2tc']
 url = "https://www.tcdb.org/cgi-bin/projectv/public/acc2tcid.py"
 c = curl.Curl(url)
 TC2Uni = c.result
@@ -186,10 +188,3 @@ for i in interactions:
         fileObject.write("\n")
 fileObject.close()
 
-#SLC table
-import requests
-url = "https://www.embopress.org/action/downloadSupplement?doi=10.15252%2Fmsb.20209652&file=msb209652-sup-0003-TableEV2.xlsx"
-c = curl.Curl(url)
-SLC_table = c.result
-
-url = "https://www.embopress.org/action/downloadSupplement?doi=10.15252%2Fmsb.20209652&file=msb209652-sup-0002-TableEV1.xlsx"
