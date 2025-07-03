@@ -331,7 +331,7 @@ def json_extract(
 
 
     return [
-        glom.glom(rec, spec, default = _cons.GLOM_ERROR)
+        glom.glom(rec, spec, default = _const.GLOM_ERROR)
         for rec in data
     ]
 

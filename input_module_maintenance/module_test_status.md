@@ -54,7 +54,6 @@ Generated: 2025-07-03
 | | dorothea_rda_raw | ❌ | KeyError: 0 - pandas indexing issue |
 | | tfregulons_interactions | ✅ | 309009 records, 0.0s |
 | | tfregulons_interactions_old | ✅ | 0 records (empty result) |
-
 | uniprot | get_uniprot_sec | ✅ | 72333 records, 0.0s |
 | | query_builder | ✅ | 1 records (empty query builder) |
 | | swissprot_deleted | ✅ | 326 records, 0.3s |
@@ -71,50 +70,34 @@ Generated: 2025-07-03
 | | trembl_deleted | ⚠️ | Requires user confirmation (5GB memory) |
 | | uniprot_deleted | ⚠️ | Requires user confirmation (5GB memory) |
 | | *_requires_args | ⚠️ | Functions requiring specific arguments |
-
 | phosphatome | phosphatome_annotations | ❌ | Download blocked - likely 403 Forbidden like ca1 |
-
 | progeny | progeny_annotations | ✅ FIXED | 18581 records, 23.3s - Fixed R data parsing with pyreadr |
 | | progeny_raw | ✅ FIXED | DataFrame returned - Test framework sampling issue only |
-
 | expasy | expasy_enzyme_classes | ✅ | 354 records, 0.2s |
 | | expasy_enzymes | ✅ | 8405 records, 2.6s |
-
 | biogrid | biogrid_all_interactions | ✅ | 8721 records, 80.5s (large dataset) |
 | | biogrid_interactions | ✅ | 7409 records, 0.6s |
-
 | celltypist | celltypist_annotations | ✅ | 460 records, 1.4s |
-
 | oma | oma_orthologs | ⏳ | Skipped - timeout |
 | | oma_table | ⏳ | Skipped - timeout |
-
 | protmapper | get_protmapper | ✅ | 2 records, 2.2s |
 | | protmapper_enzyme_substrate | ✅ | 22139 records, 0.2s |
 | | protmapper_interactions | ✅ | 22139 records, 0.2s |
-
 | uniprot_idmapping | idtypes | ✅ | 481 records, 0.0s |
-
 | pazar | pazar_interactions | ✅ | 16386 records |
-
 | trrust | trrust_human | ✅ | 9396 records |
 | | trrust_interactions | ✅ | 9396 records |
 | | trrust_mouse | ✅ | 7057 records |
-
 | acsn | acsn_interactions | ✅ | 37725 records |
-
 | panglaodb | panglaodb_annotations | ✅ | 4492 records, 2.4s |
 | | panglaodb_raw | ✅ | 8286 records, 0.0s |
-
 | proteinatlas | proteinatlas_annotations | ❌ | NoneType error - URL/API changes |
 | | proteinatlas_secretome_annotations | ❌ | Science.org 403 Forbidden |
 | | proteinatlas_subcellular_annotations | ❌ | Missing files_multipart attribute |
-
 | netbiol | arn_interactions | ✅ | 95 records, 0.0s |
 | | nrf2ome_interactions | ✅ | 109 records, 0.0s |
-
 | lambert2018 | lambert2018_annotations | ❌ | Cell journal 403 Forbidden |
 | | lambert2018_s1_raw | ❌ | Cell journal 403 Forbidden |
-
 | kegg | kegg_interactions | ✅ | 14734 records, 2.4s |
 | | kegg_medicus | ✅ | 12946 records, 0.1s |
 | | kegg_medicus_complexes | ✅ | 539 records, 0.2s |
@@ -123,25 +106,17 @@ Generated: 2025-07-03
 | | kegg_pathways | ✅ | 2 records, 1.5s |
 | | kegg_dbget | ⚠️ | Requires 'entry' parameter |
 | | kegg_pathway_annotations_pathwaycommons | ❌ | Gzip format error |
-
 | ebi | ebi_rest | ⚠️ | Utility function - requires URL parameter |
-
 | comppi | comppi_interaction_locations | ✅ | 587971 records, ~18s |
 | | comppi_locations | ✅ | 22803 records, ~5s |
-
 | encode | encode_tf_mirna_interactions | ✅ | 1237 records, 0.7s |
-
 | homologene | get_homologene | ✅ | 275237 records, 79.1s |
 | | homologene_dict | ⚠️ | Requires organism parameters |
 | | homologene_uniprot_dict | ⚠️ | Requires organism parameters |
-
 | clinvar | clinvar_citations | ⏳ | Skipped - timeout |
 | | clinvar_raw | ⏳ | Skipped - timeout |
-
 | humancellmap | humancellmap_annotations | ✅ | 4384 records, 2.8s |
-
 | pubmed | *_all_functions | ⚠️ | All require specific parameters (PMIDs, DOIs, etc.) |
-
 | cellinker | cellinker_annotations | ✅ | 1920 records |
 | | cellinker_complex_annotations | ✅ | 134 records |
 | | cellinker_complexes | ✅ | 143 records |
@@ -151,6 +126,15 @@ Generated: 2025-07-03
 | | cellinker_protein_annotations | ✅ | 1786 records |
 | | cellinker_smol_interactions | ✅ | 314 records |
 | | cellinker_smol_interactions_raw | ✅ | 341 records |
-
 | cpad | cpad_pathway_cancer | ✅ | 2 records |
 | | cpad_annotations | ❌ | Mirbase dependency failure |
+| phosphoelm | phosphoelm_enzyme_substrate | ✅ | 2426 records |
+| | phosphoelm_interactions | ✅ | 2426 records |
+| | phosphoelm_kinases | ✅ | 247 records |
+| graphviz | graphviz_attrs | ✅ | 3 records, 1.7s |
+| tfcensus | tfcensus_annotations | ✅ | 1871 records, 1.5s |
+| mcam | mcam_cell_adhesion_molecules | ✅ | 112 records, 2.0s |
+| proteins | variants | ✅ FIXED | Fixed _cons -> _const typo, but timeout during test |
+| guide2pharma | guide2pharma_complexes | ✅ | 93 records, 1.1s |
+| | guide2pharma_download | ✅ | 2 records, 0.1s |
+| | guide2pharma_interactions | ✅ | 2620 records, 0.1s |
