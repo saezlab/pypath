@@ -282,11 +282,6 @@ Generated: 2025-07-03
 | | pharos_orthologs | ❌ | gzip.BadGzipFile: Not a gzipped file |
 | | pharos_targets | ❌ | gzip.BadGzipFile: Not a gzipped file |
 | | pharos_xrefs | ❌ | gzip.BadGzipFile: Not a gzipped file |
-
-### Batch 2: BATCH 1 Continuation (Tested: 2025-07-03)
-
-| Module | Functions | Status | Notes |
-|--------|-----------|--------|-------|
 | cancerdrugsdb | cancerdrugsdb_annotations | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | | cancerdrugsdb_download | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | | cancerdrugsdb_interactions | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
@@ -311,3 +306,64 @@ Generated: 2025-07-03
 | phosphonetworks | phosphonetworks_enzyme_substrate | ✅ | 4,417 records, 1.9s |
 | | phosphonetworks_interactions | ✅ | 1,821 records, 0.0s |
 | twosides | twosides_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
+| membranome | membranome_annotations | ✅ | 2,419 records, 68.0s |
+| mirecords | mirecords_interactions | ✅ | 3,106 records, 1.2s |
+| spike | spike_complexes | ❌ | IndexError: list index out of range - empty genes list |
+| | spike_interactions | ❌ | IndexError: list index out of range - empty genes list |
+| pathwaycommons | pathwaycommons_bind_interactions | ✅ | 16,745 records, 0.0s |
+| | pathwaycommons_biogrid_interactions | ✅ | 343,834 records, 0.0s |
+| | pathwaycommons_corum_interactions | ✅ | 41,169 records, 0.0s |
+| | pathwaycommons_dip_interactions | ✅ | 11,518 records, 0.0s |
+| | pathwaycommons_hprd_interactions | ✅ | 57,304 records, 0.0s |
+| | pathwaycommons_inoh_interactions | ✅ | 30,071 records, 0.0s |
+| | pathwaycommons_intact_interactions | ✅ | 291,373 records, 0.0s |
+| | pathwaycommons_kegg_interactions | ✅ | 40,371 records, 0.0s |
+| | pathwaycommons_nci-pid_interactions | ✅ | 28,747 records, 0.0s |
+| | pathwaycommons_netpath_interactions | ✅ | 4,708 records, 0.0s |
+| | pathwaycommons_panther_interactions | ✅ | 30,507 records, 0.0s |
+| | pathwaycommons_phosphosite_interactions | ✅ | 11,688 records, 0.0s |
+| | pathwaycommons_reactome_interactions | ✅ | 353,636 records, 0.0s |
+| | pathwaycommons_interactions | ❌ | NoneType object is not iterable |
+| | pathwaycommons_wikipathways_interactions | ❌ | NoneType object is not iterable |
+| huri | * | ⏳ | Timeout |
+| cellchatdb | cellchatdb_annotations | ❌ | Length mismatch error in R data conversion |
+| | cellchatdb_cofactors | ❌ | Length mismatch error in R data conversion |
+| | cellchatdb_complexes | ❌ | Length mismatch error in R data conversion |
+| | cellchatdb_download | ❌ | Length mismatch error in R data conversion |
+| | cellchatdb_interactions | ❌ | Length mismatch error in R data conversion |
+| oreganno | oreganno_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
+| | oreganno_raw | ⚠️ | 0 records - returns None instead of expected iterator |
+| havugimana | havugimana_complexes | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| gutmgene | gutmgene_annotations | ❌ | URLs redirected to 404 - data source unavailable |
+| | gutmgene_raw | ❌ | URLs redirected to 404 - data source unavailable |
+| cellcall | cellcall_annotations | ✅ | 460 records, 2.5s |
+| | cellcall_download | ✅ | 19,144 records, 0.0s |
+| | cellcall_download_all | ✅ | 38,645 records, 1.6s |
+| | cellcall_interactions | ✅ | 797 records, 0.0s |
+| embopress | embopress_supplementary | ✅ FIXED | 234 records - Fixed attribute access bug |
+| ensembl | ensembl_organisms | ✅ | 342 records, 0.1s |
+| connectomedb | connectomedb_annotations | ✅ | 1,428 records, 0.8s |
+| | connectomedb_interactions | ✅ | 2,293 records, 0.0s |
+| common | csv_sep_change | ⚠️ | Requires csv, old, new parameters |
+| | glom_fields | ✅ | 0 records (utility function) |
+| | json_extract | ⚠️ | Requires data, spec parameters |
+| | json_read | ⚠️ | Requires data parameter |
+| | read_table | ⚠️ | Requires cols parameter |
+| | read_xls | ⚠️ | Requires xls_file parameter |
+| li2012 | li2012_dmi | ❌ | TypeError: NoneType in sequence processing |
+| | li2012_enzyme_substrate | ❌ | AttributeError: common.non_digit missing |
+| | li2012_interactions | ✅ | 503 records, 0.0s |
+| scconnect | scconnect_annotations | ✅ | 3,285 records, 2.3s |
+| | scconnect_complexes | ✅ | 17 records, 0.0s |
+| | scconnect_interactions | ❌ | ValueError: empty result unpacking in mapping |
+| hprd | hprd_enzyme_substrate | ✅ | 4,671 records, 0.7s |
+| | hprd_interactions | ✅ | 4,671 records, 0.6s |
+| | hprd_interactions_htp | ✅ | 39,241 records, 1.0s |
+| ddinter | ddinter_drug_interactions | ⚠️ | Requires drug parameter |
+| | ddinter_identifiers | ⚠️ | Requires drug parameter |
+| | ddinter_interactions | ❌ | JSONDecodeError: API returns invalid JSON |
+| | ddinter_mappings | ❌ | JSONDecodeError: API returns invalid JSON |
+| | ddinter_n_drugs | ❌ | JSONDecodeError: API returns invalid JSON |
+| lincs | lincs_compounds | ❌ | list index out of range - URL returns HTML not CSV |
+| ielm | get_ielm | ✅ FIXED | 0 records - Fixed missing imports |
+| | get_ielm_huge | ✅ FIXED | 0 records - Fixed missing imports |

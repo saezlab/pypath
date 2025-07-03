@@ -93,7 +93,7 @@ def embopress_supplementary(
         alpn = False,
     )
 
-    fname = c.fname
+    fname = c.cache_file_name
     del c
 
     return (
