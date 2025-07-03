@@ -1,0 +1,1430 @@
+{
+  "modules": {
+    "transmir": [
+      "transmir_interactions"
+    ],
+    "lncdisease": [
+      "lncdisease_interactions"
+    ],
+    "icellnet": [
+      "icellnet_annotations",
+      "icellnet_complexes",
+      "icellnet_interactions"
+    ],
+    "ipi": [
+      "ipi_uniprot"
+    ],
+    "ca1": [
+      "ca1_interactions"
+    ],
+    "wang": [
+      "cui_interactions",
+      "hsn_interactions",
+      "wang_annotations",
+      "wang_interactions"
+    ],
+    "ctdbase": [
+      "ctdbase_relations",
+      "ctdbase_vocabulary"
+    ],
+    "hpmr": [
+      "hpmr_annotations",
+      "hpmr_complexes",
+      "hpmr_interactions"
+    ],
+    "laudanna": [
+      "laudanna_directions",
+      "laudanna_effects"
+    ],
+    "compleat": [
+      "compleat_complexes",
+      "compleat_raw"
+    ],
+    "signor": [
+      "signor_complexes",
+      "signor_enzyme_substrate",
+      "signor_interactions",
+      "signor_pathway_annotations",
+      "signor_pathways",
+      "signor_protein_families"
+    ],
+    "dorothea": [
+      "dorothea_full_raw",
+      "dorothea_interactions",
+      "dorothea_interactions_old",
+      "dorothea_old_csv",
+      "dorothea_rda_raw",
+      "tfregulons_interactions",
+      "tfregulons_interactions_old"
+    ],
+    "uniprot": [
+      "uniprot_data",
+      "uniprot_deleted",
+      "uniprot_families",
+      "uniprot_history",
+      "uniprot_history_recent_datasheet",
+      "uniprot_keywords",
+      "uniprot_locations",
+      "uniprot_ncbi_taxids",
+      "uniprot_ncbi_taxids_2",
+      "uniprot_preprocess",
+      "uniprot_query",
+      "uniprot_recent_version",
+      "uniprot_taxonomy",
+      "uniprot_tissues",
+      "uniprot_topology"
+    ],
+    "phosphatome": [
+      "phosphatome_annotations"
+    ],
+    "progeny": [
+      "progeny_annotations",
+      "progeny_raw"
+    ],
+    "expasy": [
+      "expasy_enzyme_classes",
+      "expasy_enzymes"
+    ],
+    "biogrid": [
+      "biogrid_all_interactions",
+      "biogrid_interactions"
+    ],
+    "celltypist": [
+      "celltypist_annotations"
+    ],
+    "oma": [
+      "oma_orthologs",
+      "oma_table"
+    ],
+    "protmapper": [
+      "protmapper_enzyme_substrate",
+      "protmapper_interactions"
+    ],
+    "reactome_old": [
+      "reactome_chebis",
+      "reactome_pathway_relations",
+      "reactome_pathways",
+      "reactome_uniprots"
+    ],
+    "uniprot_idmapping": [
+      "idtypes"
+    ],
+    "pazar": [
+      "pazar_interactions"
+    ],
+    "trrust": [
+      "trrust_human",
+      "trrust_interactions",
+      "trrust_mouse"
+    ],
+    "acsn": [
+      "acsn_interactions"
+    ],
+    "panglaodb": [
+      "panglaodb_annotations",
+      "panglaodb_raw"
+    ],
+    "proteinatlas": [
+      "proteinatlas_annotations",
+      "proteinatlas_secretome_annotations",
+      "proteinatlas_subcellular_annotations"
+    ],
+    "netbiol": [
+      "arn_interactions",
+      "nrf2ome_interactions"
+    ],
+    "lambert2018": [
+      "lambert2018_annotations",
+      "lambert2018_s1_raw"
+    ],
+    "kegg": [
+      "kegg_dbget",
+      "kegg_interactions",
+      "kegg_medicus",
+      "kegg_medicus_complexes",
+      "kegg_medicus_interactions",
+      "kegg_pathway_annotations",
+      "kegg_pathway_annotations_pathwaycommons",
+      "kegg_pathways"
+    ],
+    "ebi": [
+      "ebi_rest"
+    ],
+    "comppi": [
+      "comppi_interaction_locations",
+      "comppi_locations"
+    ],
+    "encode": [
+      "encode_tf_mirna_interactions"
+    ],
+    "homologene": [
+      "homologene_dict",
+      "homologene_uniprot_dict"
+    ],
+    "clinvar": [
+      "clinvar_citations",
+      "clinvar_raw"
+    ],
+    "humancellmap": [
+      "humancellmap_annotations"
+    ],
+    "pubmed": [
+      "get_pmid",
+      "get_pubmeds",
+      "only_pmids",
+      "open_pubmed",
+      "pmids_dict",
+      "pmids_list"
+    ],
+    "cellinker": [
+      "cellinker_annotations",
+      "cellinker_complex_annotations",
+      "cellinker_complexes",
+      "cellinker_complexes_raw",
+      "cellinker_lr_interactions",
+      "cellinker_lr_interactions_raw",
+      "cellinker_protein_annotations",
+      "cellinker_smol_interactions",
+      "cellinker_smol_interactions_raw"
+    ],
+    "cpad": [
+      "cpad_annotations",
+      "cpad_pathway_cancer"
+    ],
+    "phosphoelm": [
+      "phosphoelm_enzyme_substrate",
+      "phosphoelm_interactions",
+      "phosphoelm_kinases"
+    ],
+    "graphviz": [
+      "graphviz_attrs"
+    ],
+    "tfcensus": [
+      "tfcensus_annotations"
+    ],
+    "mcam": [
+      "mcam_cell_adhesion_molecules"
+    ],
+    "proteins": [
+      "variants"
+    ],
+    "guide2pharma": [
+      "guide2pharma_complexes",
+      "guide2pharma_download",
+      "guide2pharma_interactions"
+    ],
+    "credentials": [
+      "credentials"
+    ],
+    "sider": [
+      "sider_drug_names",
+      "sider_meddra_side_effects",
+      "sider_side_effect_frequencies",
+      "sider_side_effects"
+    ],
+    "hippie": [
+      "hippie_interactions"
+    ],
+    "iptmnet": [
+      "iptmnet_interactions"
+    ],
+    "humsavar": [
+      "uniprot_variants"
+    ],
+    "kea": [
+      "kea_enzyme_substrate",
+      "kea_interactions"
+    ],
+    "kegg_api": [
+      "",
+      "disease_to_drug",
+      "disease_to_gene",
+      "disease_to_pathway",
+      "drug_to_disease",
+      "drug_to_drug",
+      "drug_to_gene",
+      "drug_to_pathway",
+      "gene_to_disease",
+      "gene_to_drug",
+      "gene_to_pathway",
+      "kegg_drug_to_chebi",
+      "kegg_gene_to_ncbi_geneid",
+      "kegg_gene_to_uniprot",
+      "pathway_to_disease",
+      "pathway_to_drug",
+      "pathway_to_gene"
+    ],
+    "cellphonedb": [
+      "cellphonedb_complex_annotations",
+      "cellphonedb_complexes",
+      "cellphonedb_interactions",
+      "cellphonedb_ligands_receptors",
+      "cellphonedb_protein_annotations"
+    ],
+    "opm": [
+      "opm_annotations"
+    ],
+    "matrisome": [
+      "matrisome_annotations"
+    ],
+    "intogen": [
+      "intogen_annotations"
+    ],
+    "cellcellinteractions": [
+      "cellcellinteractions_annotations"
+    ],
+    "matrixdb": [
+      "matrixdb_annotations",
+      "matrixdb_ecm_proteins",
+      "matrixdb_interactions",
+      "matrixdb_membrane_proteins",
+      "matrixdb_secreted_proteins"
+    ],
+    "mirdeathdb": [
+      "mirdeathdb_interactions"
+    ],
+    "cell": [
+      "cell_supplementary"
+    ],
+    "almen2009": [
+      "almen2009_annotations"
+    ],
+    "biogps": [
+      "biogps_annotations",
+      "biogps_datasets",
+      "biogps_download",
+      "biogps_download_all"
+    ],
+    "uniprot_db": [
+      "all_swissprots",
+      "all_trembls",
+      "all_uniprots",
+      "get_db",
+      "init_db",
+      "is_swissprot",
+      "is_trembl",
+      "is_uniprot"
+    ],
+    "pubchem": [
+      "pubchem_mapping"
+    ],
+    "corum": [
+      "corum_complexes"
+    ],
+    "deathdomain": [
+      "deathdomain_interactions",
+      "deathdomain_interactions_rescued"
+    ],
+    "integrins": [
+      "get_integrins"
+    ],
+    "adrecs": [
+      "adrecs_adr_ontology",
+      "adrecs_drug_adr",
+      "adrecs_drug_identifiers",
+      "adrecs_hierarchy"
+    ],
+    "msigdb": [
+      "msigdb_annotations",
+      "msigdb_download",
+      "msigdb_download_collections"
+    ],
+    "lmpid": [
+      "lmpid_dmi",
+      "lmpid_interactions"
+    ],
+    "opentargets": [
+      "opentargets_adverse_reactions",
+      "opentargets_baseline_expression",
+      "opentargets_direct_score",
+      "opentargets_general",
+      "opentargets_indirect_score"
+    ],
+    "kirouac2010": [
+      "kirouac2010_interactions"
+    ],
+    "drugcentral": [
+      "drugcentral_drugs",
+      "drugcentral_interactions",
+      "drugcentral_mapping"
+    ],
+    "locate": [
+      "locate_localizations"
+    ],
+    "cytosig": [
+      "cytosig_annotations",
+      "cytosig_df"
+    ],
+    "mppi": [
+      "mppi_interactions"
+    ],
+    "trip": [
+      "trip_find_uniprot",
+      "trip_get_uniprot",
+      "trip_interactions",
+      "trip_process",
+      "trip_process_table"
+    ],
+    "collectri": [
+      "collectri_interactions",
+      "collectri_raw"
+    ],
+    "ncrdeathdb": [
+      "ncrdeathdb_interactions"
+    ],
+    "mirtarbase": [
+      "mirtarbase_interactions"
+    ],
+    "mitab": [
+      "mitab_field_list",
+      "mitab_field_uniprot"
+    ],
+    "cosmic": [
+      "cancer_gene_census_annotations"
+    ],
+    "intact": [
+      "intact_interactions"
+    ],
+    "abs": [
+      "abs_interactions"
+    ],
+    "cancercellmap": [
+      "ccmap_interactions"
+    ],
+    "phobius": [
+      "phobius_annotations"
+    ],
+    "zhong2015": [
+      "zhong2015_annotations"
+    ],
+    "gpcrdb": [
+      "gpcrdb_annotations"
+    ],
+    "pharos": [
+      "pharos_diseases",
+      "pharos_expression",
+      "pharos_general",
+      "pharos_gtex",
+      "pharos_ligands",
+      "pharos_orthologs",
+      "pharos_targets",
+      "pharos_xrefs"
+    ],
+    "hgnc": [
+      "hgnc_genegroups"
+    ],
+    "cancerdrugsdb": [
+      "cancerdrugsdb_annotations",
+      "cancerdrugsdb_download",
+      "cancerdrugsdb_interactions"
+    ],
+    "surfaceome": [
+      "surfaceome_annotations"
+    ],
+    "embrace": [
+      "embrace_annotations",
+      "embrace_interactions",
+      "embrace_raw",
+      "embrace_translated"
+    ],
+    "diseases": [
+      "diseases_general"
+    ],
+    "pathophenodb": [
+      "disease_pathogen_interactions"
+    ],
+    "topdb": [
+      "topdb_annotations"
+    ],
+    "pdb": [
+      "pdb_chains",
+      "pdb_complexes",
+      "pdb_uniprot"
+    ],
+    "compath": [
+      "compath_mappings"
+    ],
+    "italk": [
+      "italk_annotations",
+      "italk_interactions",
+      "italk_raw"
+    ],
+    "phosphonetworks": [
+      "phosphonetworks_enzyme_substrate",
+      "phosphonetworks_interactions"
+    ],
+    "twosides": [
+      "twosides_interactions"
+    ],
+    "membranome": [
+      "membranome_annotations"
+    ],
+    "mirecords": [
+      "mirecords_interactions"
+    ],
+    "spike": [
+      "spike_complexes",
+      "spike_interactions"
+    ],
+    "pathwaycommons": [
+      "pathwaycommons_bind_interactions",
+      "pathwaycommons_biogrid_interactions",
+      "pathwaycommons_corum_interactions",
+      "pathwaycommons_dip_interactions",
+      "pathwaycommons_hprd_interactions",
+      "pathwaycommons_inoh_interactions",
+      "pathwaycommons_intact_interactions",
+      "pathwaycommons_interactions",
+      "pathwaycommons_kegg_interactions",
+      "pathwaycommons_nci-pid_interactions",
+      "pathwaycommons_netpath_interactions",
+      "pathwaycommons_panther_interactions",
+      "pathwaycommons_phosphosite_interactions",
+      "pathwaycommons_reactome_interactions",
+      "pathwaycommons_wikipathways_interactions"
+    ],
+    "huri": [
+      "hi_i_interactions",
+      "hi_ii_interactions",
+      "hi_union_interactions",
+      "huri_interactions",
+      "lit_bm_13_interactions",
+      "lit_bm_17_interactions",
+      "lit_bm_interactions",
+      "yang2016_interactions",
+      "yu2011_interactions"
+    ],
+    "cellchatdb": [
+      "cellchatdb_annotations",
+      "cellchatdb_cofactors",
+      "cellchatdb_complexes",
+      "cellchatdb_download",
+      "cellchatdb_interactions"
+    ],
+    "oreganno": [
+      "oreganno_interactions",
+      "oreganno_raw"
+    ],
+    "havugimana": [
+      "havugimana_complexes"
+    ],
+    "gutmgene": [
+      "gutmgene_annotations",
+      "gutmgene_raw"
+    ],
+    "cellcall": [
+      "cellcall_annotations",
+      "cellcall_download",
+      "cellcall_download_all",
+      "cellcall_interactions"
+    ],
+    "embopress": [
+      "embopress_supplementary"
+    ],
+    "ensembl": [
+      "ensembl_organisms"
+    ],
+    "connectomedb": [
+      "connectomedb_annotations",
+      "connectomedb_interactions"
+    ],
+    "common": [
+      "csv_sep_change",
+      "glom_fields",
+      "json_extract",
+      "json_read",
+      "read_table",
+      "read_xls"
+    ],
+    "li2012": [
+      "li2012_dmi",
+      "li2012_enzyme_substrate",
+      "li2012_interactions"
+    ],
+    "scconnect": [
+      "scconnect_annotations",
+      "scconnect_complexes",
+      "scconnect_interactions"
+    ],
+    "hprd": [
+      "hprd_enzyme_substrate",
+      "hprd_interactions",
+      "hprd_interactions_htp"
+    ],
+    "ddinter": [
+      "ddinter_drug_interactions",
+      "ddinter_identifiers",
+      "ddinter_interactions",
+      "ddinter_mappings",
+      "ddinter_n_drugs"
+    ],
+    "lincs": [
+      "lincs_compounds"
+    ],
+    "ielm": [
+      "get_ielm",
+      "get_ielm_huge"
+    ],
+    "pepcyber": [
+      "pepcyber_details",
+      "pepcyber_interactions"
+    ],
+    "domino": [
+      "domino_ddi",
+      "domino_enzsub",
+      "domino_interactions"
+    ],
+    "switches_elm": [
+      "get_switches_elm"
+    ],
+    "lrdb": [
+      "lrdb_annotations",
+      "lrdb_interactions"
+    ],
+    "signalink": [
+      "signalink_annotations",
+      "signalink_function_annotations",
+      "signalink_interactions",
+      "signalink_pathway_annotations"
+    ],
+    "mimp": [
+      "mimp_enzyme_substrate",
+      "mimp_interactions"
+    ],
+    "cancersea": [
+      "cancersea_annotations"
+    ],
+    "ontology": [
+      "ontology"
+    ],
+    "i3d": [
+      "get_i3d"
+    ],
+    "instruct": [
+      "get_instruct",
+      "get_instruct_offsets"
+    ],
+    "humap": [
+      "humap2_complexes",
+      "humap_complexes"
+    ],
+    "pfam": [
+      "pfam_names",
+      "pfam_pdb",
+      "pfam_regions",
+      "pfam_uniprot"
+    ],
+    "eutils": [
+      "esummary"
+    ],
+    "htri": [
+      "htri_interactions"
+    ],
+    "go": [
+      "go_ancestors",
+      "go_ancestors_goose",
+      "go_ancestors_quickgo",
+      "go_annotations",
+      "go_annotations_all",
+      "go_annotations_goa",
+      "go_annotations_goose",
+      "go_annotations_quickgo",
+      "go_annotations_solr",
+      "go_annotations_uniprot",
+      "go_descendants",
+      "go_descendants_goose",
+      "go_descendants_quickgo",
+      "go_descendants_to_ancestors",
+      "go_terms",
+      "go_terms_goose",
+      "go_terms_quickgo",
+      "go_terms_solr"
+    ],
+    "science": [
+      "science_download"
+    ],
+    "offsides": [
+      "offsides_side_effects"
+    ],
+    "interpro": [
+      "interpro2go_annotations",
+      "interpro_annotations",
+      "interpro_entries",
+      "interpro_xrefs"
+    ],
+    "talklr": [
+      "talklr_annotations",
+      "talklr_interactions",
+      "talklr_raw"
+    ],
+    "csa": [
+      "get_csa"
+    ],
+    "mir2disease": [
+      "mir2disease_interactions"
+    ],
+    "macrophage": [
+      "macrophage_interactions"
+    ],
+    "dgidb": [
+      "dgidb_annotations",
+      "dgidb_interactions"
+    ],
+    "threedid": [
+      "get_3did",
+      "get_3did_ddi",
+      "get_3did_dmi",
+      "process_3did_dmi"
+    ],
+    "lncrnadb": [
+      "lncrnadb_interactions"
+    ],
+    "pro": [
+      "pro_mapping"
+    ],
+    "unichem": [
+      "unichem_info",
+      "unichem_mapping",
+      "unichem_sources"
+    ],
+    "string": [
+      "string_effects",
+      "string_links_interactions",
+      "string_physical_interactions",
+      "string_species"
+    ],
+    "baccin2019": [
+      "baccin2019_annotations",
+      "baccin2019_interactions"
+    ],
+    "stitch": [
+      "stitch_actions_interactions",
+      "stitch_links_interactions"
+    ],
+    "wojtowicz2020": [
+      "wojtowicz2020_interactions",
+      "wojtowicz2020_raw"
+    ],
+    "genecards": [
+      "genecards_datasheet",
+      "genecards_soup",
+      "genecards_summaries"
+    ],
+    "mirbase": [
+      "mirbase_ids",
+      "mirbase_mature",
+      "mirbase_mature_all",
+      "mirbase_precursor",
+      "mirbase_precursor_all",
+      "mirbase_precursor_to_mature"
+    ],
+    "phosphopoint": [
+      "phosphopoint_directions",
+      "phosphopoint_interactions"
+    ],
+    "elm": [
+      "elm_classes",
+      "elm_domains",
+      "elm_instances",
+      "elm_interactions"
+    ],
+    "cspa": [
+      "cspa_annotations",
+      "cspa_cell_type_annotations",
+      "cspa_cell_types"
+    ],
+    "adhesome": [
+      "adhesome_annotations",
+      "adhesome_interactions"
+    ],
+    "cpdb": [
+      "cpdb_interactions",
+      "cpdb_interactions_ltp"
+    ],
+    "exocarta": [
+      "get_exocarta",
+      "get_vesiclepedia"
+    ],
+    "ramilowski2015": [
+      "ramilowski_interactions"
+    ],
+    "complexportal": [
+      "complexportal_complexes"
+    ],
+    "depod": [
+      "depod_enzyme_substrate",
+      "depod_interactions"
+    ],
+    "netpath": [
+      "netpath_interactions",
+      "netpath_names",
+      "netpath_pathway_annotations"
+    ],
+    "negatome": [
+      "negatome_interactions"
+    ],
+    "pisa": [
+      "pisa_bonds",
+      "pisa_interfaces"
+    ],
+    "kinasedotcom": [
+      "kinasedotcom_annotations"
+    ],
+    "phosphosite": [
+      "phosphosite_directions",
+      "phosphosite_enzyme_substrate",
+      "phosphosite_interactions",
+      "phosphosite_interactions_all",
+      "phosphosite_interactions_curated",
+      "phosphosite_interactions_new",
+      "phosphosite_interactions_noref",
+      "phosphosite_ptm_orthology",
+      "phosphosite_ptms",
+      "phosphosite_regsites",
+      "phosphosite_regsites_one_organism"
+    ],
+    "pdzbase": [
+      "pdzbase_interactions"
+    ],
+    "drugbank": [
+      "drugbank_annotations",
+      "drugbank_drugs",
+      "drugbank_interactions",
+      "drugbank_mapping",
+      "drugbank_raw_interactions"
+    ],
+    "biomodels": [
+      "download_single_model",
+      "get_all_models",
+      "get_biomodels",
+      "get_biomodels_req",
+      "get_single_model"
+    ],
+    "celltalkdb": [
+      "celltalkdb_annotations",
+      "celltalkdb_download",
+      "celltalkdb_interactions"
+    ],
+    "threedcomplex": [
+      "threedcomplex_chains",
+      "threedcomplex_complexes",
+      "threedcomplex_contacts",
+      "threedcomplex_ddi",
+      "threedcomplex_nresidues"
+    ],
+    "reaction": [
+      "acsn_interactions_2",
+      "get_interactions",
+      "panther_interactions",
+      "pid_interactions",
+      "reactions_biopax",
+      "reactome_interactions"
+    ],
+    "imweb": [
+      "get_imweb",
+      "get_imweb_req"
+    ],
+    "dip": [
+      "dip_interactions",
+      "dip_login"
+    ],
+    "hpo": [
+      "hpo_annotations",
+      "hpo_diseases",
+      "hpo_ontology",
+      "hpo_terms"
+    ],
+    "dbptm": [
+      "dbptm_enzyme_substrate",
+      "dbptm_enzyme_substrate_old",
+      "dbptm_interactions"
+    ],
+    "biomart": [
+      "biomart_homology",
+      "biomart_microarray",
+      "biomart_microarray_types",
+      "biomart_microarrays",
+      "biomart_query"
+    ],
+    "innatedb": [
+      "innatedb_interactions"
+    ],
+    "lipidmaps/structures": [
+      "sdf"
+    ],
+    "hmdb/metabolites": [
+      "mapping",
+      "raw"
+    ],
+    "hmdb/proteins": [
+      "mapping",
+      "raw"
+    ],
+    "hmdb/xml": [
+      "hmdb_xml"
+    ],
+    "hmdb/common": [
+      "mapping",
+      "raw"
+    ],
+    "hmdb/visual": [
+      "show_structure",
+      "structure_svg"
+    ],
+    "hmdb/structures": [
+      "sdf"
+    ],
+    "new_stitch/actions_test": [
+      "prop_actions",
+      "run_test",
+      "test_actions"
+    ],
+    "disgenet/_api/simple": [
+      "disgenet_annotations",
+      "disgenet_diseases",
+      "disgenet_variants"
+    ],
+    "disgenet/_api/schema": [
+      "ARG_TYPES",
+      "QUERY_PARAM_TYPES",
+      "RETURN_TYPES"
+    ]
+  },
+  "summary": {
+    "total_modules": 190,
+    "total_functions": 509,
+    "common_suffixes": [
+      "2",
+      "3did",
+      "TYPES",
+      "actions",
+      "adr",
+      "all",
+      "ancestors",
+      "annotations",
+      "attrs",
+      "biomodels",
+      "biopax",
+      "bonds",
+      "cancer",
+      "chains",
+      "change",
+      "chebi",
+      "chebis",
+      "citations",
+      "classes",
+      "cofactors",
+      "collections",
+      "complexes",
+      "compounds",
+      "contacts",
+      "csa",
+      "csv",
+      "curated",
+      "data",
+      "datasets",
+      "datasheet",
+      "db",
+      "dbget",
+      "ddi",
+      "deleted",
+      "descendants",
+      "details",
+      "df",
+      "dict",
+      "directions",
+      "disease",
+      "diseases",
+      "dmi",
+      "domains",
+      "download",
+      "drug",
+      "drugs",
+      "effects",
+      "elm",
+      "entries",
+      "enzsub",
+      "enzymes",
+      "exocarta",
+      "expression",
+      "extract",
+      "families",
+      "fields",
+      "frequencies",
+      "gene",
+      "genegroups",
+      "geneid",
+      "general",
+      "goa",
+      "goose",
+      "gtex",
+      "hierarchy",
+      "history",
+      "homology",
+      "htp",
+      "huge",
+      "human",
+      "i3d",
+      "identifiers",
+      "ids",
+      "ielm",
+      "imweb",
+      "info",
+      "instances",
+      "instruct",
+      "integrins",
+      "interactions",
+      "interfaces",
+      "keywords",
+      "kinases",
+      "ligands",
+      "list",
+      "localizations",
+      "locations",
+      "login",
+      "ltp",
+      "mapping",
+      "mappings",
+      "mature",
+      "medicus",
+      "microarray",
+      "microarrays",
+      "model",
+      "models",
+      "molecules",
+      "mouse",
+      "names",
+      "new",
+      "noref",
+      "nresidues",
+      "offsets",
+      "old",
+      "ontology",
+      "organism",
+      "organisms",
+      "orthologs",
+      "orthology",
+      "pathway",
+      "pathwaycommons",
+      "pathways",
+      "pdb",
+      "pmid",
+      "pmids",
+      "precursor",
+      "preprocess",
+      "process",
+      "proteins",
+      "ptms",
+      "pubmed",
+      "pubmeds",
+      "query",
+      "quickgo",
+      "raw",
+      "reactions",
+      "read",
+      "receptors",
+      "regions",
+      "regsites",
+      "relations",
+      "req",
+      "rescued",
+      "rest",
+      "score",
+      "solr",
+      "soup",
+      "sources",
+      "species",
+      "structure",
+      "substrate",
+      "summaries",
+      "supplementary",
+      "svg",
+      "swissprot",
+      "swissprots",
+      "table",
+      "targets",
+      "taxids",
+      "taxonomy",
+      "terms",
+      "test",
+      "tissues",
+      "topology",
+      "translated",
+      "trembl",
+      "trembls",
+      "types",
+      "uniprot",
+      "uniprots",
+      "variants",
+      "version",
+      "vesiclepedia",
+      "vocabulary",
+      "xls",
+      "xml",
+      "xrefs"
+    ],
+    "suffix_counts": {
+      "instances": 1,
+      "login": 1,
+      "pmids": 1,
+      "attrs": 1,
+      "receptors": 1,
+      "pathways": 3,
+      "translated": 1,
+      "mature": 1,
+      "regsites": 1,
+      "frequencies": 1,
+      "topology": 1,
+      "imweb": 1,
+      "enzymes": 1,
+      "taxids": 1,
+      "dbget": 1,
+      "molecules": 1,
+      "homology": 1,
+      "chains": 2,
+      "microarrays": 1,
+      "taxonomy": 1,
+      "swissprot": 1,
+      "ancestors": 1,
+      "relations": 2,
+      "names": 3,
+      "localizations": 1,
+      "biomodels": 1,
+      "all": 5,
+      "req": 2,
+      "df": 1,
+      "huge": 1,
+      "csv": 1,
+      "xrefs": 2,
+      "nresidues": 1,
+      "organism": 1,
+      "data": 1,
+      "descendants": 1,
+      "rescued": 1,
+      "chebis": 1,
+      "history": 1,
+      "compounds": 1,
+      "goa": 1,
+      "interactions": 86,
+      "quickgo": 1,
+      "chebi": 1,
+      "dmi": 3,
+      "interfaces": 1,
+      "model": 1,
+      "keywords": 1,
+      "sources": 1,
+      "biopax": 1,
+      "expression": 2,
+      "variants": 2,
+      "general": 3,
+      "table": 3,
+      "drug": 1,
+      "reactions": 1,
+      "mouse": 1,
+      "info": 1,
+      "medicus": 1,
+      "locations": 2,
+      "read": 1,
+      "species": 1,
+      "query": 2,
+      "gtex": 1,
+      "exocarta": 1,
+      "collections": 1,
+      "elm": 1,
+      "geneid": 1,
+      "pubmeds": 1,
+      "uniprots": 2,
+      "i3d": 1,
+      "noref": 1,
+      "download": 8,
+      "goose": 1,
+      "ltp": 1,
+      "rest": 1,
+      "integrins": 1,
+      "targets": 1,
+      "htp": 1,
+      "orthology": 1,
+      "identifiers": 2,
+      "dict": 2,
+      "version": 1,
+      "structure": 1,
+      "trembls": 1,
+      "change": 1,
+      "entries": 1,
+      "test": 1,
+      "ielm": 1,
+      "gene": 1,
+      "complexes": 17,
+      "score": 1,
+      "terms": 2,
+      "ontology": 2,
+      "trembl": 1,
+      "annotations": 56,
+      "enzsub": 1,
+      "regions": 1,
+      "types": 2,
+      "substrate": 11,
+      "3did": 1,
+      "uniprot": 8,
+      "swissprots": 1,
+      "orthologs": 2,
+      "mappings": 2,
+      "offsets": 1,
+      "microarray": 1,
+      "extract": 1,
+      "vesiclepedia": 1,
+      "process": 1,
+      "effects": 4,
+      "adr": 1,
+      "precursor": 1,
+      "human": 1,
+      "mapping": 5,
+      "list": 2,
+      "ddi": 3,
+      "2": 2,
+      "pdb": 1,
+      "organisms": 1,
+      "solr": 1,
+      "xml": 1,
+      "old": 2,
+      "contacts": 1,
+      "curated": 1,
+      "instruct": 1,
+      "new": 1,
+      "cancer": 1,
+      "actions": 1,
+      "families": 2,
+      "citations": 1,
+      "pathway": 1,
+      "cofactors": 1,
+      "ptms": 1,
+      "genegroups": 1,
+      "classes": 2,
+      "drugs": 3,
+      "pmid": 1,
+      "raw": 14,
+      "hierarchy": 1,
+      "deleted": 1,
+      "db": 1,
+      "details": 1,
+      "domains": 1,
+      "vocabulary": 1,
+      "soup": 1,
+      "preprocess": 1,
+      "supplementary": 2,
+      "csa": 1,
+      "disease": 1,
+      "svg": 1,
+      "datasheet": 2,
+      "fields": 1,
+      "kinases": 1,
+      "proteins": 1,
+      "pathwaycommons": 1,
+      "bonds": 1,
+      "ligands": 1,
+      "models": 1,
+      "directions": 3,
+      "xls": 1,
+      "TYPES": 1,
+      "datasets": 1,
+      "diseases": 3,
+      "tissues": 1,
+      "ids": 1,
+      "summaries": 1,
+      "pubmed": 1
+    },
+    "modules_by_function_count": {
+      "go": 18,
+      "kegg_api": 17,
+      "uniprot": 15,
+      "pathwaycommons": 15,
+      "phosphosite": 11,
+      "cellinker": 9,
+      "huri": 9,
+      "kegg": 8,
+      "uniprot_db": 8,
+      "pharos": 8,
+      "dorothea": 7,
+      "signor": 6,
+      "pubmed": 6,
+      "common": 6,
+      "mirbase": 6,
+      "reaction": 6,
+      "cellphonedb": 5,
+      "matrixdb": 5,
+      "opentargets": 5,
+      "trip": 5,
+      "cellchatdb": 5,
+      "ddinter": 5,
+      "drugbank": 5,
+      "biomodels": 5,
+      "threedcomplex": 5,
+      "biomart": 5,
+      "wang": 4,
+      "reactome_old": 4,
+      "sider": 4,
+      "biogps": 4,
+      "adrecs": 4,
+      "embrace": 4,
+      "cellcall": 4,
+      "signalink": 4,
+      "pfam": 4,
+      "interpro": 4,
+      "threedid": 4,
+      "string": 4,
+      "elm": 4,
+      "hpo": 4,
+      "icellnet": 3,
+      "hpmr": 3,
+      "trrust": 3,
+      "proteinatlas": 3,
+      "phosphoelm": 3,
+      "guide2pharma": 3,
+      "msigdb": 3,
+      "drugcentral": 3,
+      "cancerdrugsdb": 3,
+      "pdb": 3,
+      "italk": 3,
+      "li2012": 3,
+      "scconnect": 3,
+      "hprd": 3,
+      "domino": 3,
+      "talklr": 3,
+      "unichem": 3,
+      "genecards": 3,
+      "cspa": 3,
+      "netpath": 3,
+      "celltalkdb": 3,
+      "dbptm": 3,
+      "new_stitch/actions_test": 3,
+      "disgenet/_api/simple": 3,
+      "disgenet/_api/schema": 3,
+      "ctdbase": 2,
+      "laudanna": 2,
+      "compleat": 2,
+      "progeny": 2,
+      "expasy": 2,
+      "biogrid": 2,
+      "oma": 2,
+      "protmapper": 2,
+      "panglaodb": 2,
+      "netbiol": 2,
+      "lambert2018": 2,
+      "comppi": 2,
+      "homologene": 2,
+      "clinvar": 2,
+      "cpad": 2,
+      "kea": 2,
+      "deathdomain": 2,
+      "lmpid": 2,
+      "cytosig": 2,
+      "collectri": 2,
+      "mitab": 2,
+      "phosphonetworks": 2,
+      "spike": 2,
+      "oreganno": 2,
+      "gutmgene": 2,
+      "connectomedb": 2,
+      "ielm": 2,
+      "pepcyber": 2,
+      "lrdb": 2,
+      "mimp": 2,
+      "instruct": 2,
+      "humap": 2,
+      "dgidb": 2,
+      "baccin2019": 2,
+      "stitch": 2,
+      "wojtowicz2020": 2,
+      "phosphopoint": 2,
+      "adhesome": 2,
+      "cpdb": 2,
+      "exocarta": 2,
+      "depod": 2,
+      "pisa": 2,
+      "imweb": 2,
+      "dip": 2,
+      "hmdb/metabolites": 2,
+      "hmdb/proteins": 2,
+      "hmdb/common": 2,
+      "hmdb/visual": 2,
+      "transmir": 1,
+      "lncdisease": 1,
+      "ipi": 1,
+      "ca1": 1,
+      "phosphatome": 1,
+      "celltypist": 1,
+      "uniprot_idmapping": 1,
+      "pazar": 1,
+      "acsn": 1,
+      "ebi": 1,
+      "encode": 1,
+      "humancellmap": 1,
+      "graphviz": 1,
+      "tfcensus": 1,
+      "mcam": 1,
+      "proteins": 1,
+      "credentials": 1,
+      "hippie": 1,
+      "iptmnet": 1,
+      "humsavar": 1,
+      "opm": 1,
+      "matrisome": 1,
+      "intogen": 1,
+      "cellcellinteractions": 1,
+      "mirdeathdb": 1,
+      "cell": 1,
+      "almen2009": 1,
+      "pubchem": 1,
+      "corum": 1,
+      "integrins": 1,
+      "kirouac2010": 1,
+      "locate": 1,
+      "mppi": 1,
+      "ncrdeathdb": 1,
+      "mirtarbase": 1,
+      "cosmic": 1,
+      "intact": 1,
+      "abs": 1,
+      "cancercellmap": 1,
+      "phobius": 1,
+      "zhong2015": 1,
+      "gpcrdb": 1,
+      "hgnc": 1,
+      "surfaceome": 1,
+      "diseases": 1,
+      "pathophenodb": 1,
+      "topdb": 1,
+      "compath": 1,
+      "twosides": 1,
+      "membranome": 1,
+      "mirecords": 1,
+      "havugimana": 1,
+      "embopress": 1,
+      "ensembl": 1,
+      "lincs": 1,
+      "switches_elm": 1,
+      "cancersea": 1,
+      "ontology": 1,
+      "i3d": 1,
+      "eutils": 1,
+      "htri": 1,
+      "science": 1,
+      "offsides": 1,
+      "csa": 1,
+      "mir2disease": 1,
+      "macrophage": 1,
+      "lncrnadb": 1,
+      "pro": 1,
+      "ramilowski2015": 1,
+      "complexportal": 1,
+      "negatome": 1,
+      "kinasedotcom": 1,
+      "pdzbase": 1,
+      "innatedb": 1,
+      "lipidmaps/structures": 1,
+      "hmdb/xml": 1,
+      "hmdb/structures": 1
+    }
+  },
+  "generated_at": "1751540086.0995746"
+}

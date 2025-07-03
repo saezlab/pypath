@@ -969,7 +969,7 @@ urls = {
     },
     'pwcommons': {
         'label': 'PathwayCommons binary SIF files',
-        'url': 'https://www.pathwaycommons.org/archives/PC2/v%u/'
+        'url': 'https://download.baderlab.org/PathwayCommons/PC2/v%u/'
             'PathwayCommons%u.%s.hgnc.sif.gz',
     },
     'homologene': {
