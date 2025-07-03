@@ -109,16 +109,19 @@ def parse_entities(action: dict) -> tuple[Entity, Entity]:
             )
         )
 
-    #if action['a_is_acting'].lower() == 't': # 
-#
-    #    partners = reversed(partners)
-
     return tuple(partners)
 
 def parse_action(action: str) -> tuple[bool, bool]:
     """
     Will parse the action column into boolean values
-    for 'activation' and 'inhibition'
+    for 'activation' and 'inhibition'.
+
+    Parameters
+        action
+            A single action record from STITCH.
+
+    Returns
+        pair of booleans, one for activation and one for inhibition
     """
 
     if action == 'activation':

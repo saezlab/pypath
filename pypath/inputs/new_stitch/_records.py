@@ -35,20 +35,20 @@ StitchLinks = collections.namedtuple(
         'database',
         'textmining',
         'combined_score',
+        'ncbi_tax_id',
+        'stereospecific',
     ],
 )
 
 StitchInteractions = collections.namedtuple(
     'StitchInteractions',
     [
-        'chemical_id',
-        'chemical_acting',
-        'is_stereospecific',
-        'protein_id',
-        'protein_acting',
+        'source',
+        'target',
+        'directed',
         'mode',
-        'action',
-        'ncbi_taxa',
+        'activation',
+        'inhibition',
         'experimental',
         'prediction',
         'database',
