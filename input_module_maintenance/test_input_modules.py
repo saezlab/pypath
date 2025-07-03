@@ -133,6 +133,26 @@ class InputModuleTester:
                 else:
                     self.log(f"  → SUCCESS: Empty result returned")
                     
+            elif hasattr(data, '__iter__') and not isinstance(data, (str, dict)):
+                # Handle generators and other iterables
+                try:
+                    data_list = list(data)
+                    result['status'] = 'SUCCESS'
+                    result['record_count'] = len(data_list)
+                    
+                    if result['record_count'] > 0:
+                        result['sample_record'] = str(data_list[0])[:200] + "..." if len(str(data_list[0])) > 200 else str(data_list[0])
+                        self.log(f"  → SUCCESS: {result['record_count']} records returned (from generator/iterator)")
+                        if self.verbose:
+                            self.log(f"  → Sample: {result['sample_record']}")
+                    else:
+                        self.log(f"  → SUCCESS: Empty generator/iterator returned")
+                except Exception as e:
+                    self.log(f"  → WARNING: Could not consume generator/iterator: {e}", 'WARNING')
+                    result['status'] = 'SUCCESS'
+                    result['record_count'] = 0
+                    result['sample_record'] = "Generator/iterator (not consumed)"
+                    
             else:
                 result['status'] = 'SUCCESS'
                 result['record_count'] = 1

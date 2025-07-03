@@ -99,6 +99,7 @@ def science_download(url):
         req_headers = req_headers,
     )
     path = c_main.cache_file_name
-    c_main.fileobj.close()
+    if hasattr(c_main, 'fileobj') and c_main.fileobj is not None:
+        c_main.fileobj.close()
 
     return path

@@ -88,7 +88,7 @@ def icellnet_interactions():
                         for cls in
                         line['Classifications'].split('/')
                     ]
-                        if line['Classifications'].strip() else
+                        if 'Classifications' in line and line['Classifications'].strip() else
                     None
                 ),
                 resources = resources,
@@ -221,13 +221,19 @@ def _icellnet_get_entity(components, references):
 
 def _icellnet_get_references(line):
 
+    # Column name changed from 'PubMed ID' to 'Reference'
+    ref_column = 'Reference' if 'Reference' in line else 'PubMed ID'
+    
+    if ref_column not in line or not line[ref_column]:
+        return []
+    
     return [
         str(int(float(ref)))
         for ref in
         pubmed_input.only_pmids(
             ref
             for ref in
-            (_ref.strip() for _ref in re.split(r'[,;]', line['PubMed ID']))
+            (_ref.strip() for _ref in re.split(r'[,;]', line[ref_column]))
             if ref
         )
     ]

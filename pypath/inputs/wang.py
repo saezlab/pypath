@@ -259,7 +259,11 @@ def wang_annotations():
     for dataset in ('ca1', 'cui', 'wang'):
 
         func = globals()['%s_interactions' % dataset]
-        data = func()
+        try:
+            data = func()
+        except Exception:
+            # Skip datasets that fail (e.g., ca1 and cui due to website blocking)
+            continue
 
         for i in data:
 

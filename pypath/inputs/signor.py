@@ -27,6 +27,7 @@ import bs4
 import csv
 
 import pypath.inputs.common as inputs_common
+import pypath.share.common as common
 import pypath.share.progress as progress
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.mapping as mapping
@@ -196,8 +197,14 @@ def signor_enzyme_substrate(organism = 9606):
     """
     reres = re.compile(r'([A-Za-z]{3})([0-9]+)')
     result = []
-    aalet = dict((k.lower().capitalize(), v)
-                 for k, v in iteritems(common.aaletters))
+    # Simple amino acid mapping from three-letter to one-letter codes
+    aalet = {
+        'Ala': 'A', 'Arg': 'R', 'Asn': 'N', 'Asp': 'D',
+        'Cys': 'C', 'Gln': 'Q', 'Glu': 'E', 'Gly': 'G',
+        'His': 'H', 'Ile': 'I', 'Leu': 'L', 'Lys': 'K',
+        'Met': 'M', 'Phe': 'F', 'Pro': 'P', 'Ser': 'S',
+        'Thr': 'T', 'Trp': 'W', 'Tyr': 'Y', 'Val': 'V'
+    }
 
     data = signor_interactions(organism = organism)
 

@@ -49,14 +49,19 @@ mapping.map_name('GENE_ID','src','uniprot',ncbi_tax_id=9606)
 #### 4. Test toolkit  
 
 ```bash
-# Run tests
+# Test single module (RECOMMENDED - process one at a time)
 python input_module_maintenance/test_input_modules.py --module signor
-python input_module_maintenance/test_input_modules.py --batch-test interactions
+
+# Test specific function
+python input_module_maintenance/test_input_modules.py --function signor.signor_interactions
+
+# List available modules
+python input_module_maintenance/test_input_modules.py --list-modules
 
 Report fields: SUCCESS / record-count / sample / time.
 Typical failures: network, format drift, mapping.
 
-Manual smoke-test:
+Manual smoke-test for debugging:
 
 from pypath.inputs import signor
 ints = signor.signor_interactions()
@@ -65,16 +70,25 @@ print(len(ints), ints[0])
 
 ⸻
 
-5. Maintenance workflow (9-step cheat-sheet)
-	1.	Locate failing function (logs / status file)
-	2.	Open URL in browser → verify accessibility & format
-	3.	Clear cache, re-download, diff vs old
-	4.	Patch parser & error handling
-	5.	Re-run automated + manual tests
-	6.	Commit docstring comment on change
-	7.	Update module_test_status.md (✓ count | ✗ reason)
-	8.	Confirm downstream DB build passes
-	9.	Push & PR
+5. Maintenance workflow (module-by-module approach)
+	1.	Test ONE module at a time using test script
+	2.	If test fails, investigate the specific error
+	3.	For download/format errors:
+		• Check URL in browser
+		• Clear cache with curl.cache_delete_on()
+		• Compare column names/format changes
+	4.	Fix the module code (common fixes):
+		• Update column names
+		• Fix imports
+		• Handle missing data gracefully
+	5.	Re-test the specific function
+	6.	Update module_test_status.md immediately:
+		• Mark as ✅ FIXED with details
+		• Note the fix applied
+		• Record number of records returned
+	7.	Commit with clear message about what was fixed
+	8.	Move to next module (don't batch fixes)
+	9.	After all modules tested, create summary PR
 
 ⸻
 
