@@ -908,7 +908,13 @@ def uniprot_query(
     return UniprotQuery(*query, fields = fields, **kwargs).perform()
 
 
-def uniprot_preprocess(field, organism = 9606, reviewed = True):
+def uniprot_preprocess(
+        *query,
+        field,
+        organism = 9606,
+        reviewed = True,
+        **kwargs
+    ):
 
     relabel = re.compile(r'[A-Z\s]+:\s')
     reisoform = re.compile(r'\[[-\w\s]+\]:?\s?')
@@ -918,9 +924,11 @@ def uniprot_preprocess(field, organism = 9606, reviewed = True):
     result = collections.defaultdict(set)
 
     data = uniprot_data(
+        *query,
         fields = field,
         organism = organism,
         reviewed = reviewed,
+        **kwargs
     )
 
     for uniprot, raw in iteritems(data):
@@ -955,7 +963,7 @@ def uniprot_preprocess(field, organism = 9606, reviewed = True):
     return result
 
 
-def uniprot_locations(organism = 9606, reviewed = True):
+def uniprot_locations(*query, organism = 9606, reviewed = True, **kwargs):
 
 
     UniprotLocation = collections.namedtuple(
@@ -970,9 +978,11 @@ def uniprot_locations(organism = 9606, reviewed = True):
     result = collections.defaultdict(set)
 
     data = uniprot_preprocess(
+        *query,
         field = 'subcellular_location',
         organism = organism,
         reviewed = reviewed,
+        **kwargs
     )
 
     for uniprot, locations in iteritems(data):
