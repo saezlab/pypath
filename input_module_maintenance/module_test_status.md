@@ -138,3 +138,23 @@ Generated: 2025-07-03
 | guide2pharma | guide2pharma_complexes | ✅ | 93 records, 1.1s |
 | | guide2pharma_download | ✅ | 2 records, 0.1s |
 | | guide2pharma_interactions | ✅ | 2620 records, 0.1s |
+| credentials | credentials | ⚠️ | Requires resource name or user/password parameters |
+| sider | sider_drug_names | ✅ | 1430 records |
+| | sider_meddra_side_effects | ✅ | 20307 records |
+| | sider_side_effect_frequencies | ✅ | 968 records |
+| | sider_side_effects | ✅ | 1430 records |
+| hippie | hippie_interactions | ✅ | 102410 records, 21.3s |
+| iptmnet | iptmnet_interactions | ✅ | 36109 records |
+| humsavar | uniprot_variants | ✅ | 13122 records, 6.6s |
+| kea | kea_enzyme_substrate | ✅ | 35224 records, 1.5s |
+| | kea_interactions | ✅ | 35224 records, 0.1s |
+| kegg_api | *_all_functions | ⚠️ | All require 'organism' parameter (e.g. 'hsa') |
+| cellphonedb | cellphonedb_complex_annotations | ✅ | 358 records |
+| | cellphonedb_complexes | ✅ | 358 records |
+| | cellphonedb_interactions | ✅ | 2903 records |
+| | cellphonedb_ligands_receptors | ✅ | 2 records |
+| | cellphonedb_protein_annotations | ✅ | 1359 records |
+| opm | opm_annotations | ✅ | 88 records, 19.3s |
+| matrisome | matrisome_annotations | ✅ | 2502 records, 1.6s |
+| intogen | intogen_annotations | ⏳ | Skipped - timeout |
+| cellcellinteractions | cellcellinteractions_annotations | ✅ | 3425 records, 1.9s |
