@@ -201,7 +201,6 @@ Generated: 2025-07-03
 | mppi | mppi_interactions | ✅ | 777 records, 0.2s |
 | adhesome | adhesome_annotations | ✅ | 239 records, 0.8s |
 | | adhesome_interactions | ✅ | 6542 records, 0.3s |
-| tfcheckpoint | N/A | ❌ | Module not found - No module named 'pypath.inputs.tfcheckpoint' |
 | exocarta | get_exocarta | ⚠️ | 0 records - NoneType iterator warning |
 | | get_vesiclepedia | ✅ | 290197 records, 0.14s |
 | mirbase | get_mirbase_aliases | ❌ | TypeError: 'NoneType' object is not iterable |
@@ -229,7 +228,6 @@ Generated: 2025-07-03
 | | string_links_interactions | ✅ | 201712 records, 0.0s |
 | | string_physical_interactions | ✅ | 89862 records, 0.5s |
 | | string_species | ✅ | 12535 records, 0.4s |
-| cellcycle | N/A | ❌ | Module not found - No module named 'pypath.inputs.cellcycle' |
 | cpdb | cpdb_interactions | ✅ | 531371 records, 13.1s |
 | | cpdb_interactions_ltp | ✅ | 482222 records, 1.4s |
 | reactome | pathway_hierarchy | ✅ | 23019 records, 0.0s |
@@ -260,31 +258,27 @@ Generated: 2025-07-03
 | | elm_interactions | ❌ | AttributeError: 'NoneType' object has no attribute 'groups' |
 | intact | intact_interactions | ✅ | 77349 records, 20.1s |
 | go | *_all_functions | ⏳ | Timeout - Functions timed out during testing |
-| mint | N/A | ❌ | Module not found - No module named 'pypath.inputs.mint' |
-| dip | dip_interactions | ✅ | 2283 records, 0.0s |
-| | dip_login | ⚠️ | Requires user and passwd parameters |
-| innatedb | innatedb_interactions | ✅ | 19036 records, 0.2s |
-| matrixdb | matrixdb_annotations | ✅ | 0 records, 0.0s (empty dataset) |
-| | matrixdb_ecm_proteins | ✅ | 0 records, 0.0s (empty dataset) |
-| | matrixdb_membrane_proteins | ✅ | 0 records, 0.0s (empty dataset) |
-| | matrixdb_secreted_proteins | ✅ | 0 records, 0.0s (empty dataset) |
-| | matrixdb_interactions | ❌ | gzip.BadGzipFile: Not a gzipped file |
-| intact_complex | N/A | ❌ | Module not found - No module named 'pypath.inputs.intact_complex' |
-| spike | spike_complexes | ❌ | IndexError: list index out of range |
-| | spike_interactions | ❌ | IndexError: list index out of range |
-| biocarta | N/A | ❌ | Module not found - Available through MSigDB as c2.cp.biocarta collection |
-| nci_pid | N/A | ❌ | Module not found - No module named 'pypath.inputs.nci_pid' |
-| msigdb | *_all_functions | ⏳ | Previously marked timeout - not re-tested |
-| threedcomplex | threedcomplex_chains | ✅ | 174325 records, 0.3s |
-| | threedcomplex_complexes | ❌ | NotImplementedError - function not implemented |
-| | threedcomplex_contacts | ❌ | TypeError: argument of type 'NoneType' is not iterable |
-| | threedcomplex_ddi | ❌ | TypeError: argument of type 'NoneType' is not iterable |
-| | threedcomplex_nresidues | ❌ | TypeError: argument of type 'NoneType' is not iterable |
-| inbiomap | N/A | ❌ | Module not found - No module named 'pypath.inputs.inbiomap' |
-| bioplex | N/A | ❌ | Module not found - No module named 'pypath.inputs.bioplex' |
-| mir2disease | mir2disease_interactions | ✅ | 805 records, 0.2s |
-| lncrnadb | lncrnadb_interactions | ✅ | 0 records, 0.4s (empty dataset) |
-| lncbase | N/A | ❌ | Module not found - No module named 'pypath.inputs.lncbase' |
-| ncrdeathdb | ncrdeathdb_interactions | ✅ | 7305 records, 0.9s |
-| lncreg | N/A | ❌ | Module not found - No module named 'pypath.inputs.lncreg' |
-| evex | N/A | ❌ | Module not found - No module named 'pypath.inputs.evex' |
+| trip | take_a_trip | ✅ | 5 records, 0.0s |
+| | trip_interactions | ✅ | 359 records, 0.0s |
+| | trip_process | ✅ | 359 records, 0.0s |
+| | trip_find_uniprot | ⚠️ | Requires soup parameter |
+| | trip_get_uniprot | ⚠️ | Requires syn parameter |
+| | trip_process_table | ⚠️ | Requires tab, result, intrs, and trp_uniprot parameters |
+| collectri | collectri_interactions | ✅ | 64989 records, 0.0s |
+| | collectri_raw | ✅ | 43416 records, 0.0s |
+| mirtarbase | mirtarbase_interactions | ❌ | AttributeError: 'NoneType' object has no attribute 'name' |
+| mitab | mitab_field_list | ⚠️ | Requires field parameter |
+| | mitab_field_uniprot | ⚠️ | Requires field parameter |
+| cosmic | cancer_gene_census_annotations | ✅ | 0 records, 0.0s (empty dataset) |
+| abs | abs_interactions | ✅ | 650 records, 0.0s |
+| cancercellmap | ccmap_interactions | ❌ | zipfile.BadZipFile: File is not a zip file |
+| phobius | phobius_annotations | ✅ | 20350 records, 0.4s |
+| zhong2015 | zhong2015_annotations | ✅ | 466 records, 1.3s |
+| pharos | pharos_diseases | ❌ | gzip.BadGzipFile: Not a gzipped file |
+| | pharos_expression | ❌ | gzip.BadGzipFile: Not a gzipped file |
+| | pharos_general | ⚠️ | Requires query parameter |
+| | pharos_gtex | ❌ | gzip.BadGzipFile: Not a gzipped file |
+| | pharos_ligands | ❌ | gzip.BadGzipFile: Not a gzipped file |
+| | pharos_orthologs | ❌ | gzip.BadGzipFile: Not a gzipped file |
+| | pharos_targets | ❌ | gzip.BadGzipFile: Not a gzipped file |
+| | pharos_xrefs | ❌ | gzip.BadGzipFile: Not a gzipped file |
