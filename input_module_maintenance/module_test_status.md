@@ -178,3 +178,7 @@ Generated: 2025-07-03
 | | is_swissprot | ⚠️ | Requires 'name' parameter |
 | | is_trembl | ⚠️ | Requires 'name' parameter |
 | | is_uniprot | ⚠️ | Requires 'name' parameter |
+| pubchem | pubchem_mapping | ⏳ | Skipped - timeout |
+| corum | corum_complexes | ✅ | 2734 records, 0.5s |
+| deathdomain | deathdomain_interactions | ❌ | NoneType web scraping error |
+| | deathdomain_interactions_rescued | ✅ | 184 records, 0.0s |
