@@ -70,25 +70,46 @@ print(len(ints), ints[0])
 
 ⸻
 
-5. Maintenance workflow (module-by-module approach)
+5. Maintenance workflow (parallel testing approach)
+
+### 5a. Systematic Testing Phase (RECOMMENDED)
+	1.	Use 10 parallel subagents to test modules efficiently:
+		• Launch 10 Task agents simultaneously with module names
+		• Each agent tests one module and reports back results
+		• Significantly faster than one-by-one testing
+		• Update module_test_status.md with all results at once
+	2.	Document patterns immediately:
+		• ✅ Working modules (no action needed)
+		• ⚠️ Parameter-dependent functions (expected behavior)
+		• ❌ Failed modules (need investigation/fixes)
+		• ⏳ Timeout modules (large datasets or network issues)
+	3.	Commit batch documentation after each round of 10
+
+### 5b. Fix Phase (after systematic testing)
+	1.	Prioritize fixes based on patterns:
+		• Infrastructure issues (missing methods, imports)
+		• Simple typos (like _cons → _const)
+		• URL/API changes
+		• Format parsing errors
+	2.	Fix ONE issue at a time:
+		• Test the specific function manually first
+		• Apply minimal fix
+		• Re-test to confirm
+		• Update module_test_status.md: ✅ FIXED
+		• Commit with clear message
+	3.	Skip non-critical issues:
+		• 403 Forbidden (external site blocks)
+		• Functions requiring parameters (document as ⚠️)
+		• Large dataset timeouts (document as ⏳)
+
+### 5c. Legacy Individual Testing (when needed)
 	1.	Test ONE module at a time using test script
 	2.	If test fails, investigate the specific error
 	3.	For download/format errors:
 		• Check URL in browser
 		• Clear cache with curl.cache_delete_on()
 		• Compare column names/format changes
-	4.	Fix the module code (common fixes):
-		• Update column names
-		• Fix imports
-		• Handle missing data gracefully
-	5.	Re-test the specific function
-	6.	Update module_test_status.md immediately:
-		• Mark as ✅ FIXED with details
-		• Note the fix applied
-		• Record number of records returned
-	7.	Commit with clear message about what was fixed
-	8.	Move to next module (don't batch fixes)
-	9.	After all modules tested, create summary PR
+	4.	Fix the module code and re-test
 
 ⸻
 

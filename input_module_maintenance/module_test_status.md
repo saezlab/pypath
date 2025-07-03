@@ -182,3 +182,20 @@ Generated: 2025-07-03
 | corum | corum_complexes | ✅ | 2734 records, 0.5s |
 | deathdomain | deathdomain_interactions | ❌ | NoneType web scraping error |
 | | deathdomain_interactions_rescued | ✅ | 184 records, 0.0s |
+| integrins | get_integrins | ✅ | 25 records, 1.4s |
+| adrecs | adrecs_adr_ontology | ✅ | 13855 records |
+| | adrecs_drug_adr | ✅ | 809346 records |
+| | adrecs_hierarchy | ✅ | 13828 records |
+| | adrecs_drug_identifiers | ❌ | Excel file corruption error |
+| msigdb | *_all_functions | ⏳ | Skipped - timeout |
+| lmpid | lmpid_dmi | ✅ | 0 records (empty dataset) |
+| | lmpid_interactions | ✅ | 0 records (empty dataset) |
+| opentargets | *_all_functions | ⏳ | Skipped - timeout |
+| kirouac2010 | kirouac2010_interactions | ✅ | 267 records, 0.0s |
+| drugcentral | drugcentral_drugs | ✅ | 4099 records, 1.5s |
+| | drugcentral_interactions | ✅ | 23115 records, 3.5s |
+| | drugcentral_mapping | ⚠️ | Requires id_type and target_id_type parameters |
+| locate | locate_localizations | ✅ | 9466 records, 66.4s |
+| cytosig | cytosig_annotations | ✅ | 4887 records, 5.6s |
+| | cytosig_df | ❌ | DataFrame indexing error - test framework issue |
+| mppi | mppi_interactions | ✅ | 777 records, 0.2s |
