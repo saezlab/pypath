@@ -282,3 +282,32 @@ Generated: 2025-07-03
 | | pharos_orthologs | ❌ | gzip.BadGzipFile: Not a gzipped file |
 | | pharos_targets | ❌ | gzip.BadGzipFile: Not a gzipped file |
 | | pharos_xrefs | ❌ | gzip.BadGzipFile: Not a gzipped file |
+
+### Batch 2: BATCH 1 Continuation (Tested: 2025-07-03)
+
+| Module | Functions | Status | Notes |
+|--------|-----------|--------|-------|
+| cancerdrugsdb | cancerdrugsdb_annotations | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
+| | cancerdrugsdb_download | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
+| | cancerdrugsdb_interactions | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
+| surfaceome | surfaceome_annotations | ❌ | AttributeError: 'float' object has no attribute 'replace' - NaN handling issue |
+| embrace | embrace_annotations | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| | embrace_interactions | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| | embrace_raw | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| | embrace_translated | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| diseases | diseases_general | ⚠️ | Requires data_origin parameter - some combinations work, textmining+unfiltered fails |
+| | experiments_filtered | ✅ | 30,470 records, 0.0s |
+| | experiments_full | ✅ | 345,254 records, 0.0s |
+| | knowledge_filtered | ✅ | 7,671 records, 0.0s |
+| | knowledge_full | ✅ | 97,252 records, 0.0s |
+| | textmining_filtered | ✅ | 288,821 records, 0.0s |
+| | textmining_full | ✅ | 0 records, 0.0s |
+| pathophenodb | disease_pathogen_interactions | ⚠️ | Missing SPARQLWrapper dependency - returns 0 records |
+| topdb | topdb_annotations | ❌ | URL migrated to topdb.unitmp.org - returns HTML instead of XML |
+| compath | compath_mappings | ❌ | Missing return_df parameter, missing pandas import, variable name error |
+| italk | italk_annotations | ✅ | 1,414 records, 1.1s |
+| | italk_interactions | ✅ | 2,706 records, 0.0s |
+| | italk_raw | ✅ | 2,649 records (DataFrame), 0.0s - Test framework issue only |
+| phosphonetworks | phosphonetworks_enzyme_substrate | ✅ | 4,417 records, 1.9s |
+| | phosphonetworks_interactions | ✅ | 1,821 records, 0.0s |
+| twosides | twosides_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
