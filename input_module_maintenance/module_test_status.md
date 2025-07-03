@@ -84,3 +84,42 @@ Generated: 2025-07-03
 | | biogrid_interactions | ✅ | 7409 records, 0.6s |
 
 | celltypist | celltypist_annotations | ✅ | 460 records, 1.4s |
+
+| oma | oma_orthologs | ⏳ | Skipped - timeout |
+| | oma_table | ⏳ | Skipped - timeout |
+
+| protmapper | get_protmapper | ✅ | 2 records, 2.2s |
+| | protmapper_enzyme_substrate | ✅ | 22139 records, 0.2s |
+| | protmapper_interactions | ✅ | 22139 records, 0.2s |
+
+| uniprot_idmapping | idtypes | ✅ | 481 records, 0.0s |
+
+| pazar | pazar_interactions | ✅ | 16386 records |
+
+| trrust | trrust_human | ✅ | 9396 records |
+| | trrust_interactions | ✅ | 9396 records |
+| | trrust_mouse | ✅ | 7057 records |
+
+| acsn | acsn_interactions | ✅ | 37725 records |
+
+| panglaodb | panglaodb_annotations | ✅ | 4492 records, 2.4s |
+| | panglaodb_raw | ✅ | 8286 records, 0.0s |
+
+| proteinatlas | proteinatlas_annotations | ❌ | NoneType error - URL/API changes |
+| | proteinatlas_secretome_annotations | ❌ | Science.org 403 Forbidden |
+| | proteinatlas_subcellular_annotations | ❌ | Missing files_multipart attribute |
+
+| netbiol | arn_interactions | ✅ | 95 records, 0.0s |
+| | nrf2ome_interactions | ✅ | 109 records, 0.0s |
+
+| lambert2018 | lambert2018_annotations | ❌ | Cell journal 403 Forbidden |
+| | lambert2018_s1_raw | ❌ | Cell journal 403 Forbidden |
+
+| kegg | kegg_interactions | ✅ | 14734 records, 2.4s |
+| | kegg_medicus | ✅ | 12946 records, 0.1s |
+| | kegg_medicus_complexes | ✅ | 539 records, 0.2s |
+| | kegg_medicus_interactions | ✅ | 9566 records, 0.1s |
+| | kegg_pathway_annotations | ✅ | 2669 records, 1.4s |
+| | kegg_pathways | ✅ | 2 records, 1.5s |
+| | kegg_dbget | ⚠️ | Requires 'entry' parameter |
+| | kegg_pathway_annotations_pathwaycommons | ❌ | Gzip format error |
