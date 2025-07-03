@@ -165,3 +165,16 @@ Generated: 2025-07-03
 | | matrixdb_interactions | ❌ | Gzip format error - receiving HTML instead |
 | mirdeathdb | mirdeathdb_interactions | ✅ | 462 records, 0.0s |
 | cell | cell_supplementary | ⚠️ | Utility function - requires supp_url and article_url |
+| almen2009 | almen2009_annotations | ✅ | 4244 records, 1.0s |
+| biogps | biogps_datasets | ✅ | 9 records |
+| | biogps_download_all | ✅ | 9 records, 56.7s |
+| | biogps_annotations | ❌ | ArrayMapping._get_id_type method missing |
+| | biogps_download | ⚠️ | Requires dataset parameter |
+| uniprot_db | all_swissprots | ✅ | 20420 records |
+| | all_trembls | ✅ | 184785 records, 40.3s |
+| | all_uniprots | ✅ | 205003 records |
+| | get_db | ✅ | 205003 records |
+| | init_db | ✅ | Function executed |
+| | is_swissprot | ⚠️ | Requires 'name' parameter |
+| | is_trembl | ⚠️ | Requires 'name' parameter |
+| | is_uniprot | ⚠️ | Requires 'name' parameter |
