@@ -123,3 +123,34 @@ Generated: 2025-07-03
 | | kegg_pathways | ✅ | 2 records, 1.5s |
 | | kegg_dbget | ⚠️ | Requires 'entry' parameter |
 | | kegg_pathway_annotations_pathwaycommons | ❌ | Gzip format error |
+
+| ebi | ebi_rest | ⚠️ | Utility function - requires URL parameter |
+
+| comppi | comppi_interaction_locations | ✅ | 587971 records, ~18s |
+| | comppi_locations | ✅ | 22803 records, ~5s |
+
+| encode | encode_tf_mirna_interactions | ✅ | 1237 records, 0.7s |
+
+| homologene | get_homologene | ✅ | 275237 records, 79.1s |
+| | homologene_dict | ⚠️ | Requires organism parameters |
+| | homologene_uniprot_dict | ⚠️ | Requires organism parameters |
+
+| clinvar | clinvar_citations | ⏳ | Skipped - timeout |
+| | clinvar_raw | ⏳ | Skipped - timeout |
+
+| humancellmap | humancellmap_annotations | ✅ | 4384 records, 2.8s |
+
+| pubmed | *_all_functions | ⚠️ | All require specific parameters (PMIDs, DOIs, etc.) |
+
+| cellinker | cellinker_annotations | ✅ | 1920 records |
+| | cellinker_complex_annotations | ✅ | 134 records |
+| | cellinker_complexes | ✅ | 143 records |
+| | cellinker_complexes_raw | ✅ | 145 records |
+| | cellinker_lr_interactions | ✅ | 3811 records |
+| | cellinker_lr_interactions_raw | ✅ | 3744 records |
+| | cellinker_protein_annotations | ✅ | 1786 records |
+| | cellinker_smol_interactions | ✅ | 314 records |
+| | cellinker_smol_interactions_raw | ✅ | 341 records |
+
+| cpad | cpad_pathway_cancer | ✅ | 2 records |
+| | cpad_annotations | ❌ | Mirbase dependency failure |
