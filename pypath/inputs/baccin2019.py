@@ -124,7 +124,7 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
 
     for rec in data[3:]:
 
-        if rec[4].strip().lower() == 'incorrect':
+        if str(rec[4]).strip().lower() == 'incorrect':
 
             continue
 
@@ -140,7 +140,7 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
 
             continue
 
-        sources = {'Baccin2019', rec[3].strip()}
+        sources = {'Baccin2019', str(rec[3]).strip()}
         sources = {
             source_names[s] if s in source_names else s
             for s in sources
@@ -150,7 +150,7 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
             _ref for _ref in
             (
                 ref.strip().replace('.0', '')
-                for ref in rec[7].split(',')
+                for ref in str(rec[7]).split(',')
             )
             if _ref.isdigit()
         }
@@ -163,9 +163,9 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
                 Baccin2019Interaction(
                     ligand = ligand,
                     receptor = receptor,
-                    correct = rec[4].strip(),
-                    ligand_location = camel_to_snake(rec[5]),
-                    ligand_category = camel_to_snake(rec[6]),
+                    correct = str(rec[4]).strip(),
+                    ligand_location = camel_to_snake(str(rec[5])),
+                    ligand_category = camel_to_snake(str(rec[6])),
                     resources = sources,
                     references = references,
                 )

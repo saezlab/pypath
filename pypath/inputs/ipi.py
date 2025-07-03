@@ -29,35 +29,34 @@ import pypath.share.curl as curl
 def ipi_uniprot():
     """
     Retrieves an IPI-UniProt mapping dictionary.
+    Uses GitHub CSV file as alternative source since IPI database is discontinued.
     """
     
     result = collections.defaultdict(set)
     
-    url = urls.urls['ipi']['url']
+    # Use GitHub CSV file as alternative source
+    url = 'https://raw.githubusercontent.com/sacdallago/IPI_to_UniProt/master/ipi_uniprot_mapping.csv'
     
     c = curl.Curl(url, large = True, silent = False)
     
-    for row in c.result:
+    if c.result is None:
+        return dict(result)
+    
+    # Skip header row
+    rows = iter(c.result)
+    next(rows, None)
+    
+    for row in rows:
         
-        row = row.strip('\n\r').split('\t')
+        row = row.strip('\n\r').split(',')
         
-        if len(row) < 3:
-            
+        if len(row) < 2:
             continue
         
-        ipi_id = row[2]
+        ipi_id = row[0].strip()
+        uniprot = row[1].strip()
         
-        uniprot, isoform = inputs_common._try_isoform(row[1])
-        
-        is_uniprot = (
-            not any(
-                uniprot.startswith(pref)
-                for pref in ('NP_', 'OTTH', 'HIT', 'ENSP', 'XP_')
-            )
-        )
-        
-        if is_uniprot:
-            
+        if ipi_id and uniprot:
             result[ipi_id].add(uniprot)
     
     return dict(result)

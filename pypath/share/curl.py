@@ -837,6 +837,7 @@ class Curl(FileOpener):
         self.result = None
         self.download_failed = False
         self.status = 0
+        self.fileobj = None
         self.get = get
         self.large = large
         self.default_mode = default_mode
@@ -1801,7 +1802,8 @@ class Curl(FileOpener):
             for fp in self.result.values():
                 if hasattr(fp, 'close'):
                     fp.close()
-        self.fileobj.close()
+        if hasattr(self, 'fileobj') and self.fileobj is not None:
+            self.fileobj.close()
 
 
     def extract_file(self):

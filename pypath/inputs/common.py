@@ -144,7 +144,7 @@ def read_xls(
                 [
                     (
                         cell
-                            if isinstance(cell, str) else
+                            if isinstance(cell, (str, int, float)) else
                         cell.value
                             if cell is not None else
                         ''
