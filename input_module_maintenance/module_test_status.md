@@ -199,3 +199,78 @@ Generated: 2025-07-03
 | cytosig | cytosig_annotations | ✅ | 4887 records, 5.6s |
 | | cytosig_df | ❌ | DataFrame indexing error - test framework issue |
 | mppi | mppi_interactions | ✅ | 777 records, 0.2s |
+| adhesome | adhesome_annotations | ✅ | 239 records, 0.8s |
+| | adhesome_interactions | ✅ | 6542 records, 0.3s |
+| tfcheckpoint | N/A | ❌ | Module not found - No module named 'pypath.inputs.tfcheckpoint' |
+| exocarta | get_exocarta | ⚠️ | 0 records - NoneType iterator warning |
+| | get_vesiclepedia | ✅ | 290197 records, 0.14s |
+| mirbase | get_mirbase_aliases | ❌ | TypeError: 'NoneType' object is not iterable |
+| | mirbase_ids | ⚠️ | 0 records - NoneType iterator warning |
+| | mirbase_mature | ⚠️ | 0 records - NoneType iterator warning |
+| | mirbase_mature_all | ❌ | TypeError: 'NoneType' object is not iterable |
+| | mirbase_precursor | ⚠️ | 0 records - NoneType iterator warning |
+| | mirbase_precursor_all | ❌ | TypeError: 'NoneType' object is not iterable |
+| | mirbase_precursor_to_mature | ⚠️ | 0 records - NoneType iterator warning |
+| gpcrdb | gpcrdb_annotations | ✅ | 808 records, 0.4s |
+| csa | get_csa | ✅ | 0 records, 0.1s (returns None) |
+| stitch | stitch_actions_interactions | ⚠️ | 0 records - NoneType iterator warning |
+| | stitch_links_interactions | ⚠️ | 0 records - NoneType iterator warning |
+| disgenet | disgenet_annotations | ❌ | NameError: name 'urls' is not defined |
+| | disgenet_diseases | ❌ | NameError: name 'urls' is not defined |
+| | disgenet_variants | ❌ | NameError: name 'urls' is not defined |
+| | disgenet_gene_disease | ❌ | TypeError: unsupported operand type(s) for +: 'NoneType' and 'str' |
+| | disgenet_variant_disease | ❌ | TypeError: unsupported operand type(s) for +: 'NoneType' and 'str' |
+| | disgenet_disease_disease | ❌ | TypeError: unsupported operand type(s) for +: 'NoneType' and 'str' |
+| pfam | pfam_names | ✅ | 2 records, 1.0s |
+| | pfam_pdb | ❌ | AttributeError: module 'pypath.share.common' has no attribute 'non_digit' |
+| | pfam_regions | ⏳ | Timeout - FTP connection timeout |
+| | pfam_uniprot | ❌ | AttributeError: 'NoneType' object has no attribute 'split' |
+| string | string_effects | ❌ | TypeError: 'NoneType' object is not an iterator |
+| | string_links_interactions | ✅ | 201712 records, 0.0s |
+| | string_physical_interactions | ✅ | 89862 records, 0.5s |
+| | string_species | ✅ | 12535 records, 0.4s |
+| cellcycle | N/A | ❌ | Module not found - No module named 'pypath.inputs.cellcycle' |
+| cpdb | cpdb_interactions | ✅ | 531371 records, 13.1s |
+| | cpdb_interactions_ltp | ✅ | 482222 records, 1.4s |
+| reactome | pathway_hierarchy | ✅ | 23019 records, 0.0s |
+| | reactome_raw | ⚠️ | Requires id_type parameter |
+| hgnc | hgnc_genegroups | ✅ | 15590 records, 3.1s |
+| pdb | pdb_chains | ✅ | 2 records, 30.0s |
+| | pdb_complexes | ❌ | AttributeError: 'NoneType' object has no attribute 'items' |
+| | pdb_uniprot | ✅ | 2 records, 1.0s |
+| depod | depod_enzyme_substrate | ❌ | TypeError: argument of type 'function' is not iterable |
+| | depod_interactions | ✅ | 832 records, 0.0s |
+| pisa | pisa_bonds | ⚠️ | Requires bonds and chains parameters |
+| | pisa_interfaces | ⚠️ | Requires pdbs parameter |
+| phosphosite | phosphosite_directions | ✅ | 9094 records, 0.0s |
+| | phosphosite_enzyme_substrate | ✅ | 13459 records, 0.1s |
+| | phosphosite_interactions | ✅ | 2 records, 0.0s |
+| | phosphosite_interactions_all | ✅ | 9164 records, 0.0s |
+| | phosphosite_interactions_curated | ✅ | 4374 records, 0.0s |
+| | phosphosite_interactions_new | ✅ | 2 records, 0.0s |
+| | phosphosite_interactions_noref | ✅ | 4790 records, 0.0s |
+| | phosphosite_ptms | ✅ | 239789 records, 5.7s |
+| | phosphosite_regsites | ✅ | 5435 records, 0.1s |
+| | phosphosite_ptm_orthology | ❌ | TypeError: 'function' object is not iterable |
+| | phosphosite_regsites_one_organism | ❌ | TypeError: 'function' object is not iterable |
+| | regsites_tab | ⚠️ | Requires regsites parameter |
+| elm | elm_classes | ✅ | 353 records, 0.3s |
+| | elm_domains | ✅ | 604 records, 0.1s |
+| | elm_instances | ✅ | 4277 records, 0.6s |
+| | elm_interactions | ❌ | AttributeError: 'NoneType' object has no attribute 'groups' |
+| intact | intact_interactions | ✅ | 77349 records, 20.1s |
+| go | *_all_functions | ⏳ | Timeout - Functions timed out during testing |
+| mint | N/A | ❌ | Module not found - No module named 'pypath.inputs.mint' |
+| dip | dip_interactions | ✅ | 2283 records, 0.0s |
+| | dip_login | ⚠️ | Requires user and passwd parameters |
+| innatedb | innatedb_interactions | ✅ | 19036 records, 0.2s |
+| matrixdb | matrixdb_annotations | ✅ | 0 records, 0.0s (empty dataset) |
+| | matrixdb_ecm_proteins | ✅ | 0 records, 0.0s (empty dataset) |
+| | matrixdb_membrane_proteins | ✅ | 0 records, 0.0s (empty dataset) |
+| | matrixdb_secreted_proteins | ✅ | 0 records, 0.0s (empty dataset) |
+| | matrixdb_interactions | ❌ | gzip.BadGzipFile: Not a gzipped file |
+| intact_complex | N/A | ❌ | Module not found - No module named 'pypath.inputs.intact_complex' |
+| spike | spike_complexes | ❌ | IndexError: list index out of range |
+| | spike_interactions | ❌ | IndexError: list index out of range |
+| biocarta | N/A | ❌ | Module not found - Available through MSigDB as c2.cp.biocarta collection |
+| nci_pid | N/A | ❌ | Module not found - No module named 'pypath.inputs.nci_pid' |
