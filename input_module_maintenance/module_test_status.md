@@ -367,3 +367,61 @@ Generated: 2025-07-03
 | lincs | lincs_compounds | ❌ | list index out of range - URL returns HTML not CSV |
 | ielm | get_ielm | ✅ FIXED | 0 records - Fixed missing imports |
 | | get_ielm_huge | ✅ FIXED | 0 records - Fixed missing imports |
+| pepcyber | * | ⏳ | Timeout |
+| domino | domino_ddi | ❌ | TypeError: NoneType found in string join operation |
+| | domino_enzsub | ✅ | 2 records, 0.2s |
+| | domino_interactions | ✅ | 6,687 records, 0.1s |
+| switches_elm | get_switches_elm | ✅ | 839 records, 5.5s |
+| lrdb | lrdb_annotations | ✅ | 1,536 records, 1.4s |
+| | lrdb_interactions | ✅ | 3,251 records, 0.0s |
+| signalink | signalink_annotations | ✅ | 2 records, 1.7s |
+| | signalink_function_annotations | ✅ | 785 records, 0.1s |
+| | signalink_interactions | ✅ | 1,939 records, 0.1s |
+| | signalink_pathway_annotations | ✅ | 839 records, 0.1s |
+| mimp | mimp_enzyme_substrate | ✅ | 17,030 records, 20.2s |
+| | mimp_interactions | ✅ | 17,030 records, 0.1s |
+| cancersea | cancersea_annotations | ✅ | 1,247 records, 4.7s |
+| ontology | listof_ontologies | ✅ | 268 records, 0.9s |
+| | ontology | ⚠️ | Requires ontology parameter |
+| i3d | get_i3d | ✅ | 22,184 records, 11.0s |
+| instruct | get_instruct | ⚠️ | 0 records - returns None (data source issue) |
+| | get_instruct_offsets | ⚠️ | 0 records - returns None (data source issue) |
+| humap | humap2_complexes | ✅ | 7,044 records, 3.9s |
+| | humap_complexes | ❌ | TypeError: NoneType object is not iterable |
+| eutils | esummary | ⚠️ | Requires ids, db parameters |
+| htri | htri_interactions | ✅ | 18,630 records, 0.0s |
+| science | science_download | ⚠️ | Requires url parameter |
+| offsides | offsides_side_effects | ⚠️ | 0 records - returns None instead of expected iterator |
+| interpro | interpro2go_annotations | ✅ | 14,743 records, 1.8s |
+| | interpro_annotations | ❌ | KeyError: 'protein_subset' |
+| | interpro_entries | ✅ | 48,679 records, 17.0s |
+| | interpro_xrefs | ⚠️ | Requires db_type parameter |
+| talklr | talklr_annotations | ✅ | 1,344 records, 0.9s |
+| | talklr_interactions | ✅ | 2,422 records, 0.0s |
+| | talklr_raw | ❌ | KeyError: 0 - test framework DataFrame issue |
+| mir2disease | mir2disease_interactions | ✅ | 805 records, 0.0s |
+| macrophage | macrophage_interactions | ✅ | 4,516 records, 0.2s |
+| dgidb | dgidb_annotations | ⚠️ | 0 records - function works but returns empty data |
+| | dgidb_interactions | ⚠️ | 0 records - function works but returns empty data |
+| threedid | get_3did | ❌ | EOFError: Compressed file ended before end-of-stream marker |
+| | get_3did_ddi | ❌ | EOFError: Compressed file ended before end-of-stream marker |
+| | get_3did_dmi | ⚠️ | 0 records - returns None (41.6s execution) |
+| | process_3did_dmi | ⚠️ | 0 records - returns None (30.0s execution) |
+| lncrnadb | lncrnadb_interactions | ❌ | 0 records - XML element case sensitivity issues |
+| pro | pro_mapping | ✅ | 394,059 records, 0.5s |
+| unichem | unichem_info | ✅ | 41 records, 0.0s |
+| | unichem_mapping | ⚠️ | Requires id_type_a, id_type_b parameters |
+| | unichem_sources | ✅ | 41 records, 0.0s |
+| baccin2019 | baccin2019_annotations | ✅ | 911 records, 9.3s |
+| | baccin2019_interactions | ✅ | 1,394 records, 0.2s |
+| wojtowicz2020 | wojtowicz2020_interactions | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| | wojtowicz2020_raw | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| genecards | genecards_datasheet | ⚠️ | Requires gene parameter - 403 Forbidden when tested |
+| | genecards_soup | ⚠️ | Requires gene parameter - 403 Forbidden when tested |
+| | genecards_summaries | ⚠️ | Requires gene parameter - 403 Forbidden when tested |
+| phosphopoint | phosphopoint_directions | ✅ | 9,269 records, 0.3s |
+| | phosphopoint_interactions | ✅ | 9,269 records, 0.2s |
+| cspa | cspa_annotations | ✅ | 1,449 records, 3.1s |
+| | cspa_cell_type_annotations | ❌ | TypeError: float received instead of string in is_float() |
+| | cspa_cell_types | ❌ | TypeError: float received instead of string in is_float() |
+| ramilowski2015 | ramilowski_interactions | ✅ | 1,894 records, 0.3s |
