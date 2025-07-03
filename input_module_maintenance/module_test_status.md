@@ -425,6 +425,32 @@ Generated: 2025-07-03
 | | cspa_cell_type_annotations | ❌ | TypeError: float received instead of string in is_float() |
 | | cspa_cell_types | ❌ | TypeError: float received instead of string in is_float() |
 | ramilowski2015 | ramilowski_interactions | ✅ | 1,894 records, 0.3s |
+| complexportal | complexportal_complexes | ⏳ | Timeout during testing |
+| netpath | netpath_interactions | ⏳ | Timeout during testing |
+| | netpath_names | ⏳ | Timeout during testing |
+| | netpath_pathway_annotations | ⏳ | Timeout during testing |
+| negatome | negatome_interactions | ❌ | URL unreachable - mips.helmholtz-muenchen.de timeout |
+| kinasedotcom | kinasedotcom_annotations | ✅ | 503 records, 0.8s |
+| pdzbase | pdzbase_interactions | ✅ | 339 records, 0.1s |
+| drugbank | drugbank_annotations | ❌ | KeyError: 'structure' - missing credentials |
+| | drugbank_drugs | ❌ | KeyError: 'structure' - missing credentials |
+| | drugbank_interactions | ❌ | KeyError: 'structure' - missing credentials |
+| | drugbank_mapping | ⚠️ | Requires id_type and target_id_type parameters |
+| | drugbank_raw_interactions | ✅ | 0 records (no credentials) |
+| biomodels | download_single_model | ❌ | Missing model_id parameter + incomplete implementation |
+| | get_all_models | ❌ | Missing bioservices dependency |
+| | get_biomodels | ❌ | URL malformed - pycurl error |
+| | get_biomodels_req | ❌ | JSON decode error - empty response |
+| | get_single_model | ❌ | Missing model_id parameter + bioservices dependency |
+| celltalkdb | celltalkdb_annotations | ❌ | tcm.zju.edu.cn returns 500 server error |
+| | celltalkdb_download | ❌ | tcm.zju.edu.cn returns 500 server error |
+| | celltalkdb_interactions | ❌ | tcm.zju.edu.cn returns 500 server error |
+| threedcomplex | threedcomplex_chains | ✅ | 174,325 records |
+| | threedcomplex_complexes | ❌ | NotImplementedError - intentionally not implemented |
+| | threedcomplex_contacts | ❌ | TypeError: pdb_u is None - depends on PDB module |
+| | threedcomplex_ddi | ❌ | TypeError: pdb_u is None - depends on PDB module |
+| | threedcomplex_nresidues | ❌ | TypeError: pdb_u is None - depends on PDB module |
+| reaction | * | ⏳ | Timeout during testing |
 | imweb | get_imweb | ❌ | URL malformed ('&_= %u' → '&_=%u') + service discontinued |
 | | get_imweb_req | ❌ | Service discontinued - Intomics redirects to ZS Solutions |
 | dip | dip_interactions | ✅ | 2,283 records, 0.2s |
