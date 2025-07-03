@@ -274,3 +274,17 @@ Generated: 2025-07-03
 | | spike_interactions | ❌ | IndexError: list index out of range |
 | biocarta | N/A | ❌ | Module not found - Available through MSigDB as c2.cp.biocarta collection |
 | nci_pid | N/A | ❌ | Module not found - No module named 'pypath.inputs.nci_pid' |
+| msigdb | *_all_functions | ⏳ | Previously marked timeout - not re-tested |
+| threedcomplex | threedcomplex_chains | ✅ | 174325 records, 0.3s |
+| | threedcomplex_complexes | ❌ | NotImplementedError - function not implemented |
+| | threedcomplex_contacts | ❌ | TypeError: argument of type 'NoneType' is not iterable |
+| | threedcomplex_ddi | ❌ | TypeError: argument of type 'NoneType' is not iterable |
+| | threedcomplex_nresidues | ❌ | TypeError: argument of type 'NoneType' is not iterable |
+| inbiomap | N/A | ❌ | Module not found - No module named 'pypath.inputs.inbiomap' |
+| bioplex | N/A | ❌ | Module not found - No module named 'pypath.inputs.bioplex' |
+| mir2disease | mir2disease_interactions | ✅ | 805 records, 0.2s |
+| lncrnadb | lncrnadb_interactions | ✅ | 0 records, 0.4s (empty dataset) |
+| lncbase | N/A | ❌ | Module not found - No module named 'pypath.inputs.lncbase' |
+| ncrdeathdb | ncrdeathdb_interactions | ✅ | 7305 records, 0.9s |
+| lncreg | N/A | ❌ | Module not found - No module named 'pypath.inputs.lncreg' |
+| evex | N/A | ❌ | Module not found - No module named 'pypath.inputs.evex' |
