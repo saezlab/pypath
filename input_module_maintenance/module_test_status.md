@@ -425,3 +425,26 @@ Generated: 2025-07-03
 | | cspa_cell_type_annotations | ❌ | TypeError: float received instead of string in is_float() |
 | | cspa_cell_types | ❌ | TypeError: float received instead of string in is_float() |
 | ramilowski2015 | ramilowski_interactions | ✅ | 1,894 records, 0.3s |
+| imweb | get_imweb | ❌ | URL malformed ('&_= %u' → '&_=%u') + service discontinued |
+| | get_imweb_req | ❌ | Service discontinued - Intomics redirects to ZS Solutions |
+| dip | dip_interactions | ✅ | 2,283 records, 0.2s |
+| | dip_login | ⚠️ | Requires user/passwd parameters |
+| hpo | hpo_annotations | ✅ | 5,065 records, 14.9s |
+| | hpo_diseases | ✅ | 11,366 records, 11.8s |
+| | hpo_ontology | ✅ | 5 records, 4.2s |
+| | hpo_terms | ✅ | 19,177 records, 0.2s |
+| dbptm | dbptm_enzyme_substrate | ✅ | 223,135 records, 0.5s |
+| | dbptm_enzyme_substrate_old | ❌ | AttributeError: 'NoneType' object has no attribute 'items' |
+| | dbptm_interactions | ✅ | 2,071 records, 0.6s |
+| biomart | biomart_homology | ✅ | 178,379 records, 13.2s |
+| | biomart_microarray | ⚠️ | Requires array_type parameter |
+| | biomart_microarray_types | ❌ | Ensembl API endpoint 404 - URL outdated |
+| | biomart_microarrays | ❌ | Depends on biomart_microarray_types() |
+| | biomart_query | ⚠️ | Requires attrs parameter |
+| innatedb | innatedb_interactions | ✅ | 19,036 records, 0.6s |
+| lipidmaps/structures | sdf | ✅ | 0 records (empty result), 21.9s |
+| hmdb/metabolites | raw | ✅ | 8,292 records |
+| | mapping | ❌ | KeyError: _id_type() only checks METABOLITES_SCHEMA not PROTEINS_SCHEMA |
+| hmdb/proteins | raw | ✅ | 8,292 records |
+| | mapping | ❌ | KeyError: _id_type() only checks METABOLITES_SCHEMA not PROTEINS_SCHEMA |
+| hmdb/xml | hmdb_xml | ❌ | Requires dataset parameter + large file corruption issues |
