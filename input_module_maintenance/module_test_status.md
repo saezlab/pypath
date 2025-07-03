@@ -47,15 +47,40 @@ Generated: 2025-07-03
 | | signor_pathway_annotations | ✅ | 775 records, 37.7s (slow!) |
 | | signor_pathways | ✅ | 2 records |
 | | signor_protein_families | ✅ | 91 records |
+| dorothea | dorothea_full_raw | ❌ | KeyError: 0 - pandas indexing issue |
+| | dorothea_interactions | ✅ | 309009 records, 0.0s |
+| | dorothea_interactions_old | ✅ | 0 records (empty result) |
+| | dorothea_old_csv | ✅ | 0 records (empty result) |
+| | dorothea_rda_raw | ❌ | KeyError: 0 - pandas indexing issue |
+| | tfregulons_interactions | ✅ | 309009 records, 0.0s |
+| | tfregulons_interactions_old | ✅ | 0 records (empty result) |
 
-### Summary for Batch 1:
-- **Total functions tested**: 26
-- **Successful**: 17 (65.4%)
-- **Failed**: 8 (30.8%)
-- **Warnings**: 1 (3.8%)
+| uniprot | get_uniprot_sec | ✅ | 72333 records, 0.0s |
+| | query_builder | ✅ | 1 records (empty query builder) |
+| | swissprot_deleted | ✅ | 326 records, 0.3s |
+| | uniprot_data | ✅ | 20420 records, 8.9s |
+| | uniprot_families | ✅ | 14485 records, 9.9s |
+| | uniprot_keywords | ✅ | 20420 records, 11.0s |
+| | uniprot_locations | ✅ | 17249 records, 12.2s |
+| | uniprot_ncbi_taxids_2 | ✅ | 27781 records, 0.0s |
+| | uniprot_taxonomy | ✅ | 558215 records, 0.7s |
+| | uniprot_tissues | ✅ | 10169 records, 11.5s |
+| | uniprot_topology | ✅ | 5244 records, 50.1s |
+| | uniprot_ncbi_taxids | ❌ | settings.context missing |
+| | uniprot_query | ❌ | empty query causes unpack error |
+| | trembl_deleted | ⚠️ | Requires user confirmation (5GB memory) |
+| | uniprot_deleted | ⚠️ | Requires user confirmation (5GB memory) |
+| | *_requires_args | ⚠️ | Functions requiring specific arguments |
 
-### Common Issues Found:
-1. **Missing required arguments**: ctdbase functions need specific parameters
-2. **File format changes**: icellnet expects 'PubMed ID' column
-3. **Science download issues**: ca1 and wang_annotations have file handling errors
-4. **Attribute errors**: Various modules have changed APIs
+| phosphatome | phosphatome_annotations | ❌ | Download blocked - likely 403 Forbidden like ca1 |
+
+| progeny | progeny_annotations | ✅ FIXED | 18581 records, 23.3s - Fixed R data parsing with pyreadr |
+| | progeny_raw | ✅ FIXED | DataFrame returned - Test framework sampling issue only |
+
+| expasy | expasy_enzyme_classes | ✅ | 354 records, 0.2s |
+| | expasy_enzymes | ✅ | 8405 records, 2.6s |
+
+| biogrid | biogrid_all_interactions | ✅ | 8721 records, 80.5s (large dataset) |
+| | biogrid_interactions | ✅ | 7409 records, 0.6s |
+
+| celltypist | celltypist_annotations | ✅ | 460 records, 1.4s |
