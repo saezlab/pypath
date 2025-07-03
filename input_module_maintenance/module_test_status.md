@@ -158,3 +158,10 @@ Generated: 2025-07-03
 | matrisome | matrisome_annotations | ✅ | 2502 records, 1.6s |
 | intogen | intogen_annotations | ⏳ | Skipped - timeout |
 | cellcellinteractions | cellcellinteractions_annotations | ✅ | 3425 records, 1.9s |
+| matrixdb | matrixdb_annotations | ✅ | 0 records, 1.2s (empty dataset) |
+| | matrixdb_ecm_proteins | ✅ | 0 records (empty dataset) |
+| | matrixdb_membrane_proteins | ✅ | 0 records (empty dataset) |
+| | matrixdb_secreted_proteins | ✅ | 0 records (empty dataset) |
+| | matrixdb_interactions | ❌ | Gzip format error - receiving HTML instead |
+| mirdeathdb | mirdeathdb_interactions | ✅ | 462 records, 0.0s |
+| cell | cell_supplementary | ⚠️ | Utility function - requires supp_url and article_url |
