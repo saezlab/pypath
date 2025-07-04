@@ -34,10 +34,14 @@ def wojtowicz2020_raw():
     (Wojtowicz et al. 2020) as a list of tuples.
     """
 
-    path = cell_input.cell_supplementary(
-        supp_url = urls.urls['wojtowicz2020']['url'],
-        article_url = urls.urls['wojtowicz2020']['article'],
-    )
+    url = urls.urls['wojtowicz2020'].get('url_rescued', urls.urls['wojtowicz2020']['url'])
+    if 'url_rescued' in urls.urls['wojtowicz2020']:
+        path = url  # Use local file path directly
+    else:
+        path = cell_input.cell_supplementary(
+            supp_url = urls.urls['wojtowicz2020']['url'],
+            article_url = urls.urls['wojtowicz2020']['article'],
+        )
 
     content = inputs_common.read_xls(path)
 

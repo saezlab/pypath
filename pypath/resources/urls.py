@@ -1421,6 +1421,7 @@ urls = {
         'article': 'https://www.cell.com/cell/fulltext/S0092-8674(20)30933-8',
         'url': 'https://www.cell.com/cms/10.1016/j.cell.2020.07.025/'
             'attachment/656c4057-8b3b-4aa2-99ce-73278e21d93d/mmc4.xlsx',
+        'url_rescued': 'pypath/data/manual_downloads/mmc4.xlsx',
     },
     'celltalkdb': {
         'label': 'Manually curated ligand-receptor interactions',

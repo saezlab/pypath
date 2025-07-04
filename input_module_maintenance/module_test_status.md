@@ -414,8 +414,8 @@ Generated: 2025-07-03
 | | unichem_sources | ✅ | 41 records, 0.0s |
 | baccin2019 | baccin2019_annotations | ✅ | 911 records, 9.3s |
 | | baccin2019_interactions | ✅ | 1,394 records, 0.2s |
-| wojtowicz2020 | wojtowicz2020_interactions | ❌ | NoneType error in cell.py:128 - file object handling issue |
-| | wojtowicz2020_raw | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| wojtowicz2020 | wojtowicz2020_interactions | ✅ FIXED | 483 records - Using local file pypath/data/manual_downloads/mmc4.xlsx |
+| | wojtowicz2020_raw | ✅ FIXED | 495 records - Using local file pypath/data/manual_downloads/mmc4.xlsx |
 | genecards | genecards_datasheet | ⚠️ | Requires gene parameter - 403 Forbidden when tested |
 | | genecards_soup | ⚠️ | Requires gene parameter - 403 Forbidden when tested |
 | | genecards_summaries | ⚠️ | Requires gene parameter - 403 Forbidden when tested |
