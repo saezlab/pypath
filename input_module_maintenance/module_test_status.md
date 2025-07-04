@@ -298,8 +298,8 @@ Generated: 2025-07-03
 | | textmining_filtered | ✅ | 288,821 records, 0.0s |
 | | textmining_full | ✅ | 0 records, 0.0s |
 | pathophenodb | disease_pathogen_interactions | ✅ FIXED | 4111 records, 1.5s - Updated to use RDF download instead of SPARQL endpoint, optimized parsing (98% faster) |
-| topdb | topdb_annotations | ❌ | URL migrated to topdb.unitmp.org - returns HTML instead of XML |
-| compath | compath_mappings | ❌ | Missing return_df parameter, missing pandas import, variable name error |
+| topdb | topdb_annotations | ⏳ FIXED | URL updated to https://topdb.unitmp.org/data/TOPDB/data/v3.3/sets/topdb_all.xml - timeout during download (large file) |
+| compath | compath_mappings | ✅ FIXED | 1592 records, 0.3s - Fixed missing pandas import, return_df parameter, and variable name error |
 | italk | italk_annotations | ✅ | 1,414 records, 1.1s |
 | | italk_interactions | ✅ | 2,706 records, 0.0s |
 | | italk_raw | ✅ | 2,649 records (DataFrame), 0.0s - Test framework issue only |

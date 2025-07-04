@@ -1224,7 +1224,7 @@ urls = {
     },
     'topdb': {
         'label': 'Membrane protein topology database',
-        'url': 'http://topdb.enzim.hu/?m=download&file=topdb_all.xml',
+        'url': 'https://topdb.unitmp.org/data/TOPDB/data/v3.3/sets/topdb_all.xml',
     },
     'hgnc': {
         'label': 'Web download interface of HGNC (genenames.org).',

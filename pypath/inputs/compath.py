@@ -23,6 +23,8 @@ from typing import Generator, Literal
 
 import collections
 
+import pandas as pd
+
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 
@@ -30,6 +32,7 @@ import pypath.share.curl as curl
 def compath_mappings(
         source_db: Literal['kegg', 'wikipathways', 'reactome'] | None = None,
         target_db: Literal['kegg', 'wikipathways', 'reactome'] | None = None,
+        return_df: bool = False,
     ) -> Generator[tuple] | pd.DataFrame:
     """
     Cross-database pathway to pathway mappings from Compath.
@@ -80,8 +83,8 @@ def _compath_mappings(
         line = line.strip().split('\t')
 
         if (
-            source_db is None or l[2] == source_db and
-            target_db is None or l[6] == target_db
+            source_db is None or line[2] == source_db and
+            target_db is None or line[6] == target_db
         ):
 
             for db_i, pw_i in zip((2, 6), (1, 5)):
