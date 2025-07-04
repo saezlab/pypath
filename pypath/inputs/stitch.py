@@ -17,7 +17,7 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from typing import List, Literal, Union
+from typing import Generator, Literal, Union
 from numbers import Number
 
 import re
@@ -27,7 +27,10 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 
 
-def stitch_actions_interactions(threshold: Number = None) -> List[tuple]:
+def stitch_actions_interactions(
+        ncbi_tax_id: int = 9606,
+        threshold: Number = None
+    ) -> Generator[tuple, None, None]:
 
     StitchActionsInteraction = collections.namedtuple(
         'StitchActionsInteraction',
@@ -40,9 +43,12 @@ def stitch_actions_interactions(threshold: Number = None) -> List[tuple]:
         ),
     )
 
-    url = urls.urls['stitch']['actions']
+    url = urls.urls['stitch']['actions'] % ncbi_tax_id
 
     c = curl.Curl(url, silent = False, large = True, slow = True)
+
+    if c.result is None:
+        return
 
     _ = next(c.result)  
 
@@ -90,7 +96,7 @@ def stitch_links_interactions(
             ]
         ] = 'highest_confidence',
         physical_interaction_score: bool = True,
-    ) -> List[tuple]:
+    ) -> Generator[tuple, None, None]:
     """
     Downloads chemical-protein links (with detailed subscores).
     The combined physical interaction score is defined
@@ -137,6 +143,10 @@ def stitch_links_interactions(
 
     url = urls.urls['stitch']['links'] % ncbi_tax_id
     c = curl.Curl(url, silent = False, large = True)
+    
+    if c.result is None:
+        return
+
     _ = next(c.result)
 
     sep = re.compile(r'[sm\.]')

@@ -212,8 +212,8 @@ Generated: 2025-07-03
 | | mirbase_precursor_to_mature | ✅ FIXED | 4379 records - Fixed with new data format handling |
 | gpcrdb | gpcrdb_annotations | ✅ | 808 records, 0.4s |
 | csa | get_csa | ✅ FIXED | 988 UniProt entries - Updated to use new M-CSA API (https://www.ebi.ac.uk/thornton-srv/m-csa/api/residues/?format=json) |
-| stitch | stitch_actions_interactions | ⚠️ | 0 records - NoneType iterator warning |
-| | stitch_links_interactions | ⚠️ | 0 records - NoneType iterator warning |
+| stitch | stitch_actions_interactions | ✅ FIXED | Fixed URL formatting issue - added ncbi_tax_id parameter (default: 9606), added null result handling, corrected type annotations |
+| | stitch_links_interactions | ✅ FIXED | Fixed null result handling and added error checking for large file downloads |
 | disgenet | disgenet_annotations | ❌ | NameError: name 'urls' is not defined |
 | | disgenet_diseases | ❌ | NameError: name 'urls' is not defined |
 | | disgenet_variants | ❌ | NameError: name 'urls' is not defined |
