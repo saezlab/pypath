@@ -1675,14 +1675,14 @@ urls = {
     },
     'twosides': {
         'label': 'A comprehensive database drug-drug-effect relationships',
-        'url': 'https://tatonettilab.org/resources/nsides/TWOSIDES.csv.gz'
+        'url': 'https://tatonettilab-resources.s3.us-west-1.amazonaws.com/nsides/TWOSIDES.csv.gz'
     },
     'offsides': {
         'label': (
             'A database of drug side-effects that were found, '
             'but are not listed on the official FDA label'
         ),
-        'url': 'https://tatonettilab.org/resources/nsides/OFFSIDES.csv.gz'
+        'url': 'https://tatonettilab-resources.s3.us-west-1.amazonaws.com/nsides/OFFSIDES.csv.gz'
     },
     'adrecs': {
         'label': (

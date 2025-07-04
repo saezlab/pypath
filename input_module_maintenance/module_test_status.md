@@ -305,7 +305,7 @@ Generated: 2025-07-03
 | | italk_raw | ✅ | 2,649 records (DataFrame), 0.0s - Test framework issue only |
 | phosphonetworks | phosphonetworks_enzyme_substrate | ✅ | 4,417 records, 1.9s |
 | | phosphonetworks_interactions | ✅ | 1,821 records, 0.0s |
-| twosides | twosides_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
+| twosides | twosides_interactions | ✅ FIXED | Working with new URL (large dataset, ~30 minutes) |
 | membranome | membranome_annotations | ✅ | 2,419 records, 68.0s |
 | mirecords | mirecords_interactions | ✅ | 3,106 records, 1.2s |
 | spike | spike_complexes | ✅ | 154 complexes, 0.0s |
@@ -391,7 +391,7 @@ Generated: 2025-07-03
 | eutils | esummary | ⚠️ | Requires ids, db parameters |
 | htri | htri_interactions | ✅ | 18,630 records, 0.0s |
 | science | science_download | ⚠️ | Requires url parameter |
-| offsides | offsides_side_effects | ⚠️ | 0 records - returns None instead of expected iterator |
+| offsides | offsides_side_effects | ✅ FIXED | Working with new URL (large dataset, ~5 minutes) |
 | interpro | interpro2go_annotations | ✅ | 14,743 records, 1.8s |
 | | interpro_annotations | ❌ | KeyError: 'protein_subset' |
 | | interpro_entries | ✅ | 48,679 records, 17.0s |
