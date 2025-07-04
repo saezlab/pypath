@@ -81,6 +81,15 @@ def depod_enzyme_substrate(organism = 9606):
     reunip = re.compile(r'uniprotkb:([A-Z0-9]+)')
     reptm = re.compile(r'([A-Z][a-z]{2})-([0-9]+)')
     repmidsep = re.compile(r'[,|]\s?')
+    
+    # Hardcoded amino acid mapping from three-letter to one-letter codes
+    aalet = {
+        'Ala': 'A', 'Arg': 'R', 'Asn': 'N', 'Asp': 'D',
+        'Cys': 'C', 'Gln': 'Q', 'Glu': 'E', 'Gly': 'G',
+        'His': 'H', 'Ile': 'I', 'Leu': 'L', 'Lys': 'K',
+        'Met': 'M', 'Phe': 'F', 'Pro': 'P', 'Ser': 'S',
+        'Thr': 'T', 'Trp': 'W', 'Tyr': 'Y', 'Val': 'V'
+    }
 
     url = urls.urls['depod']['urls'][0]
     c = curl.Curl(url, silent = False, encoding = 'ascii')
@@ -125,8 +134,8 @@ def depod_enzyme_substrate(organism = 9606):
 
                     resnum = int(resnum)
                     resaa = (
-                        common.aminoa_3_to_1_letter[resaa]
-                            if resaa in common.aminoa_3_to_1_letter else
+                        aalet[resaa]
+                            if resaa in aalet else
                         resaa
                     )
 

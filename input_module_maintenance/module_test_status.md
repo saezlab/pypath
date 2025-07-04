@@ -236,7 +236,7 @@ Generated: 2025-07-03
 | pdb | pdb_chains | ✅ | 2 records, 30.0s |
 | | pdb_complexes | ❌ | AttributeError: 'NoneType' object has no attribute 'items' |
 | | pdb_uniprot | ✅ | 2 records, 1.0s |
-| depod | depod_enzyme_substrate | ❌ | TypeError: argument of type 'function' is not iterable |
+| depod | depod_enzyme_substrate | ✅ FIXED | 537 records - Fixed with hardcoded AA mapping |
 | | depod_interactions | ✅ | 832 records, 0.0s |
 | pisa | pisa_bonds | ⚠️ | Requires bonds and chains parameters |
 | | pisa_interfaces | ⚠️ | Requires pdbs parameter |
@@ -249,8 +249,8 @@ Generated: 2025-07-03
 | | phosphosite_interactions_noref | ✅ | 4790 records, 0.0s |
 | | phosphosite_ptms | ✅ | 239789 records, 5.7s |
 | | phosphosite_regsites | ✅ | 5435 records, 0.1s |
-| | phosphosite_ptm_orthology | ❌ | TypeError: 'function' object is not iterable |
-| | phosphosite_regsites_one_organism | ❌ | TypeError: 'function' object is not iterable |
+| | phosphosite_ptm_orthology | ✅ FIXED | 198635 records - Fixed _data.common_load() usage |
+| | phosphosite_regsites_one_organism | ✅ FIXED | 3620 records - Fixed _data.common_load() usage |
 | | regsites_tab | ⚠️ | Requires regsites parameter |
 | elm | elm_classes | ✅ | 353 records, 0.3s |
 | | elm_domains | ✅ | 604 records, 0.1s |
