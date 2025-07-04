@@ -286,10 +286,10 @@ Generated: 2025-07-03
 | | cancerdrugsdb_download | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | | cancerdrugsdb_interactions | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | surfaceome | surfaceome_annotations | ❌ | AttributeError: 'float' object has no attribute 'replace' - NaN handling issue |
-| embrace | embrace_annotations | ❌ | NoneType error in cell.py:128 - file object handling issue |
-| | embrace_interactions | ❌ | NoneType error in cell.py:128 - file object handling issue |
-| | embrace_raw | ❌ | NoneType error in cell.py:128 - file object handling issue |
-| | embrace_translated | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| embrace | embrace_annotations | ✅ FIXED | 831 records - Fixed by using local file pypath/data/manual_downloads/mmc2_embrace.xlsx and correcting orthology translation |
+| | embrace_interactions | ✅ FIXED | 1237 records - Fixed by using local file pypath/data/manual_downloads/mmc2_embrace.xlsx and correcting orthology translation |
+| | embrace_raw | ✅ FIXED | 1710 records - Fixed by using local file pypath/data/manual_downloads/mmc2_embrace.xlsx |
+| | embrace_translated | ✅ FIXED | 1832 records - Fixed by using local file pypath/data/manual_downloads/mmc2_embrace.xlsx and correcting orthology translation |
 | diseases | diseases_general | ⚠️ | Requires data_origin parameter - some combinations work, textmining+unfiltered fails |
 | | experiments_filtered | ✅ | 30,470 records, 0.0s |
 | | experiments_full | ✅ | 345,254 records, 0.0s |

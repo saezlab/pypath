@@ -34,10 +34,14 @@ def embrace_raw():
     (Sheikh et al. 2019) as a list of tuples.
     """
 
-    path = cell_input.cell_supplementary(
-        supp_url = urls.urls['embrace']['url'],
-        article_url = urls.urls['embrace']['article'],
-    )
+    url = urls.urls['embrace'].get('url_rescued', urls.urls['embrace']['url'])
+    if 'url_rescued' in urls.urls['embrace']:
+        path = url  # Use local file path directly
+    else:
+        path = cell_input.cell_supplementary(
+            supp_url = urls.urls['embrace']['url'],
+            article_url = urls.urls['embrace']['article'],
+        )
 
     content = inputs_common.read_xls(path)
 
@@ -62,15 +66,19 @@ def _embrace_id_translation(mouse_genesymbol, organism = 9606):
         ncbi_tax_id = 10090,
     )
 
-    if organism != 10090:
+    if organism != 10090 and uniprots:
 
-        uniprots = orthology.translate(
-            uniprots,
-            target = organism,
-            source = 10090,
-        )
+        translated_uniprots = set()
+        for uniprot in uniprots:
+            orthologs = orthology.translate(
+                uniprot,
+                target = organism,
+                source = 10090,
+            )
+            translated_uniprots.update(orthologs)
+        uniprots = translated_uniprots
 
-    return uniprots or [None]
+    return list(uniprots) if uniprots else [None]
 
 
 def embrace_translated(organism = 9606):

@@ -1398,6 +1398,7 @@ urls = {
             'S2589-0042(19)30405-5',
         'url': 'https://www.cell.com/cms/10.1016/j.isci.2019.10.026/'
             'attachment/a1f66cee-15cb-4690-b95d-2480fa576b86/mmc2.xlsx',
+        'url_rescued': 'pypath/data/manual_downloads/mmc2_embrace.xlsx',
     },
     'tcdb': {
         'label': 'Transporter classification database',
