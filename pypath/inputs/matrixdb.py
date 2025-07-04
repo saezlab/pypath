@@ -26,59 +26,126 @@ import pypath.inputs.uniprot_db as uniprot_db
 
 
 def matrixdb_interactions(organism = 9606):
+    """
+    Downloads and processes MatrixDB interactions in MITAB format.
+    Returns a list of MatrixdbInteraction namedtuples.
+    """
+    
+    MatrixdbInteraction = collections.namedtuple(
+        'MatrixdbInteraction',
+        [
+            'id_a',
+            'id_b', 
+            'alt_ids_a',
+            'alt_ids_b',
+            'aliases_a',
+            'aliases_b',
+            'detection_method',
+            'author',
+            'pmids',
+            'taxid_a',
+            'taxid_b',
+            'interaction_type',
+            'source_db',
+            'interaction_id',
+            'confidence'
+        ]
+    )
 
     url = urls.urls['matrixdb']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    f = c.result
-    i = []
-    lnum = 0
-
-    for l in f:
-        if lnum == 0:
-            lnum += 1
-
+    
+    # Handle ZIP file format for new MatrixDB version
+    if url.endswith('.zip'):
+        c = curl.Curl(url, silent = False, large = True)
+        zipfile = curl.FileOpener(
+            c.fileobj.name,
+            compr = 'zip',
+            files_needed = ['matrixdb_CORE.tab'],
+            large = True,
+        )
+        data = zipfile.result
+        fileobj = data['matrixdb_CORE.tab']
+        content = fileobj.read()
+        if isinstance(content, bytes):
+            content = content.decode('utf-8')
+        f = content.split('\n')
+        c.close()
+    else:
+        c = curl.Curl(url, silent = False, large = True)
+        f = c.result
+    
+    result = []
+    
+    # Skip header line
+    header_skipped = False
+    
+    for line in f:
+        if not header_skipped:
+            header_skipped = True
             continue
+            
+        # Handle both file iterator and list from ZIP
+        if isinstance(line, str):
+            line = line.replace('\n', '').replace('\r', '')
+        else:
+            line = line.decode('utf-8') if isinstance(line, bytes) else str(line)
+            line = line.replace('\n', '').replace('\r', '')
+        
+        if not line.strip():
+            continue
+            
+        fields = line.split('\t')
+        
+        # Skip if not enough fields for basic MITAB format
+        if len(fields) < 15:
+            continue
+            
+        # Extract organism info (taxid fields are at positions 9 and 10)
+        try:
+            taxid_a = fields[9] if fields[9] != '-' else None
+            taxid_b = fields[10] if fields[10] != '-' else None
+            
+            # Extract numeric taxid for organism filtering
+            spec_a = 0
+            spec_b = 0
+            if taxid_a and 'taxid:' in taxid_a:
+                spec_a = int(taxid_a.split(':')[1].split('(')[0])
+            if taxid_b and 'taxid:' in taxid_b:
+                spec_b = int(taxid_b.split(':')[1].split('(')[0])
+        except (IndexError, ValueError):
+            spec_a = spec_b = 0
+            taxid_a = taxid_b = None
 
-        l = l.replace('\n', '').replace('\r', '')
-        l = l.split('\t')
-        specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
-        specB = 0 if l[10] == '-' else int(l[10].split(':')[1].split('(')[0])
+        # Apply organism filter
+        if organism is not None and not (spec_a == organism or spec_b == organism):
+            continue
+            
+        # Create MITAB interaction record
+        interaction = MatrixdbInteraction(
+            id_a=fields[0],
+            id_b=fields[1],
+            alt_ids_a=fields[2] if len(fields) > 2 else '-',
+            alt_ids_b=fields[3] if len(fields) > 3 else '-',
+            aliases_a=fields[4] if len(fields) > 4 else '-',
+            aliases_b=fields[5] if len(fields) > 5 else '-',
+            detection_method=fields[6] if len(fields) > 6 else '-',
+            author=fields[7] if len(fields) > 7 else '-',
+            pmids=fields[8] if len(fields) > 8 else '-',
+            taxid_a=taxid_a,
+            taxid_b=taxid_b,
+            interaction_type=fields[11] if len(fields) > 11 else '-',
+            source_db=fields[12] if len(fields) > 12 else '-',
+            interaction_id=fields[13] if len(fields) > 13 else '-',
+            confidence=fields[14] if len(fields) > 14 else '-'
+        )
+        
+        result.append(interaction)
 
-        if organism is None or (specA == organism and specB == organism):
-            pm = [
-                p.replace('pubmed:', '') for p in l[8].split('|')
-                if p.startswith('pubmed:')
-            ]
-            met = [
-                m.split('(')[1].replace(')', '').strip('"')
-                for m in l[6].split('|')
-                if '(' in m
-            ]
-            l = [l[0], l[1]]
-            interaction = ()
+    # Only close if it's a file object (not a list from ZIP)
+    if hasattr(f, 'close'):
+        f.close()
 
-            for ll in l:
-                ll = ll.split('|')
-                uniprot = ''
-
-                for lll in ll:
-                    nm = lll.split(':')
-
-                    if nm[0] == 'uniprotkb' and len(nm[1]) == 6:
-                        uniprot = nm[1]
-
-                interaction += (uniprot, )
-
-            interaction += ('|'.join(pm), '|'.join(met))
-
-            if len(interaction[0]) > 5 and len(interaction[1]) > 5:
-                i.append(list(interaction))
-
-        lnum += 1
-
-    f.close()
-
-    return i
+    return result
 
 
 def _matrixdb_protein_list(category, organism = 9606):
@@ -93,6 +160,16 @@ def _matrixdb_protein_list(category, organism = 9606):
     url = urls.urls['matrixdb']['%s_proteins' % category]
     c = curl.Curl(url, silent = False, large = True)
 
+    # Handle missing files (only ecm_proteins.csv exists currently)
+    if c.result is None or c.status != 0:
+        import pypath.share.session as session
+        _logger = session.Logger(name = 'matrixdb_input')
+        _logger._log(
+            f'MatrixDB {category} proteins file not available. '
+            f'URL: {url}, Status: {c.status}'
+        )
+        return set()
+
     proteins = set()
 
     # header row
@@ -102,9 +179,10 @@ def _matrixdb_protein_list(category, organism = 9606):
         if not l:
             continue
 
-        proteins.add(
-            l.strip().replace('"', '').split('\t')[0]
-        )
+        # CSV format, not tab-delimited
+        fields = l.strip().replace('"', '').split(',')
+        if len(fields) > 0 and fields[0]:
+            proteins.add(fields[0])
 
     proteins = mapping.map_names(proteins, 'uniprot', 'uniprot')
 

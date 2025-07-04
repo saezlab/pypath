@@ -158,11 +158,11 @@ Generated: 2025-07-03
 | matrisome | matrisome_annotations | ✅ | 2502 records, 1.6s |
 | intogen | intogen_annotations | ⏳ | Skipped - timeout |
 | cellcellinteractions | cellcellinteractions_annotations | ✅ | 3425 records, 1.9s |
-| matrixdb | matrixdb_annotations | ✅ | 0 records, 1.2s (empty dataset) |
-| | matrixdb_ecm_proteins | ✅ | 0 records (empty dataset) |
-| | matrixdb_membrane_proteins | ✅ | 0 records (empty dataset) |
-| | matrixdb_secreted_proteins | ✅ | 0 records (empty dataset) |
-| | matrixdb_interactions | ❌ | Gzip format error - receiving HTML instead |
+| matrixdb | matrixdb_annotations | ✅ FIXED | 2840 ECM protein annotations - Updated to use new MatrixDB v4.0 download URLs |
+| | matrixdb_ecm_proteins | ✅ FIXED | 2840 ECM proteins - Updated to use new MatrixDB v4.0 download URLs |
+| | matrixdb_membrane_proteins | ✅ FIXED | 0 records - File not available in new MatrixDB v4.0 (graceful handling) |
+| | matrixdb_secreted_proteins | ✅ FIXED | 0 records - File not available in new MatrixDB v4.0 (graceful handling) |
+| | matrixdb_interactions | ✅ FIXED | 1660 interactions - Updated to use new MatrixDB v4.0 ZIP format with proper MITAB parsing |
 | mirdeathdb | mirdeathdb_interactions | ✅ | 462 records, 0.0s |
 | cell | cell_supplementary | ⚠️ | Utility function - requires supp_url and article_url |
 | almen2009 | almen2009_annotations | ✅ | 4244 records, 1.0s |
