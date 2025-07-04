@@ -255,7 +255,7 @@ Generated: 2025-07-03
 | elm | elm_classes | ✅ | 353 records, 0.3s |
 | | elm_domains | ✅ | 604 records, 0.1s |
 | | elm_instances | ✅ | 4277 records, 0.6s |
-| | elm_interactions | ❌ | AttributeError: 'NoneType' object has no attribute 'groups' |
+| | elm_interactions | ✅ FIXED | 2797 records, 0.0s - Fixed regex pattern matching with null checks |
 | intact | intact_interactions | ✅ | 77349 records, 20.1s |
 | go | *_all_functions | ⏳ | Timeout - Functions timed out during testing |
 | trip | take_a_trip | ✅ | 5 records, 0.0s |
@@ -364,7 +364,7 @@ Generated: 2025-07-03
 | | ddinter_interactions | ❌ | JSONDecodeError: API returns invalid JSON |
 | | ddinter_mappings | ❌ | JSONDecodeError: API returns invalid JSON |
 | | ddinter_n_drugs | ❌ | JSONDecodeError: API returns invalid JSON |
-| lincs | lincs_compounds | ❌ | list index out of range - URL returns HTML not CSV |
+| lincs | lincs_compounds | ✅ FIXED | 371 records, 0.0s - Updated to use SDF format from LINCS static database |
 | ielm | get_ielm | ✅ FIXED | 0 records - Fixed missing imports |
 | | get_ielm_huge | ✅ FIXED | 0 records - Fixed missing imports |
 | pepcyber | * | ⏳ | Timeout |
@@ -432,11 +432,12 @@ Generated: 2025-07-03
 | negatome | negatome_interactions | ✅ FIXED | 2171 records - Updated to use Negatome 2.0 HTTPS URL |
 | kinasedotcom | kinasedotcom_annotations | ✅ | 503 records, 0.8s |
 | pdzbase | pdzbase_interactions | ✅ | 339 records, 0.1s |
-| drugbank | drugbank_annotations | ❌ | KeyError: 'structure' - missing credentials |
-| | drugbank_drugs | ❌ | KeyError: 'structure' - missing credentials |
-| | drugbank_interactions | ❌ | KeyError: 'structure' - missing credentials |
-| | drugbank_mapping | ⚠️ | Requires id_type and target_id_type parameters |
-| | drugbank_raw_interactions | ✅ | 0 records (no credentials) |
+| drugbank | drugbank_annotations | ✅ FIXED | 8720 records, 0.1s - Fixed with valid credentials |
+| | drugbank_drugs | ✅ FIXED | 11912 records, 0.1s - Fixed with valid credentials |
+| | drugbank_interactions | ✅ FIXED | 27175 records, 0.1s - Fixed with valid credentials |
+| | drugbank_mapping | ✅ FIXED | 8720 records, 0.1s - Fixed with valid credentials (drugbank->pubchem_cid) |
+| | drugbank_raw_interactions | ✅ FIXED | 31602 records, 5.2s - Fixed with valid credentials |
+| | DrugbankFull class | ✅ FIXED | 14594 drugs, 19028 targets - Full XML database access working |
 | biomodels | download_single_model | ❌ | Missing model_id parameter + incomplete implementation |
 | | get_all_models | ❌ | Missing bioservices dependency |
 | | get_biomodels | ❌ | URL malformed - pycurl error |

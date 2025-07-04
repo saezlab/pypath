@@ -628,8 +628,7 @@ urls = {
     'lincs-compounds': {
         'label':
         'List of small molecules in LINCS with synonyms and PubChem IDs',
-        'url': 'http://lincs.hms.harvard.edu/db/datasets/20000/smallmolecules'
-            '?search=&output_type=.csv'
+        'url': 'https://lincs.hms.harvard.edu/_static/db/prod-20200624/small_molecules.sdf'
     },
     'eutils': {
         'label': 'NCBI E-Utils API',
