@@ -92,7 +92,7 @@ Generated: 2025-07-03
 | panglaodb | panglaodb_annotations | ✅ | 4492 records, 2.4s |
 | | panglaodb_raw | ✅ | 8286 records, 0.0s |
 | proteinatlas | proteinatlas_annotations | ✅ FIXED | 15044 records - Updated to use new HPA TSV format |
-| | proteinatlas_secretome_annotations | ❌ | Science.org 403 Forbidden |
+| | proteinatlas_secretome_annotations | ✅ FIXED | 2590 records, 0.8s - Updated to use local file pypath/data/manual_downloads/aaz0274_data_file_s2.xlsx |
 | | proteinatlas_subcellular_annotations | ✅ FIXED | 13335 records - Updated to use new HPA TSV format |
 | netbiol | arn_interactions | ✅ | 95 records, 0.0s |
 | | nrf2ome_interactions | ✅ | 109 records, 0.0s |

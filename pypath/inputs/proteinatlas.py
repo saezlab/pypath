@@ -408,16 +408,30 @@ def proteinatlas_secretome_annotations():
         ],
     )
 
-
-    url = urls.urls['proteinatlas']['secretome']
-    path = science.science_download(url)
+    # Use local rescued file if available, otherwise try to download
+    url = urls.urls['proteinatlas'].get('secretome_rescued', urls.urls['proteinatlas']['secretome'])
+    
+    if 'secretome_rescued' in urls.urls['proteinatlas']:
+        path = url  # Use local file path directly
+    else:
+        path = science.science_download(url)
+        
     reader = inputs_common.read_xls(path)[1:]
     result = collections.defaultdict(set)
 
     for rec in reader:
-
-        for uniprot_original in rec[2].split(','):
-
+        # Skip if not enough columns
+        if len(rec) < 4:
+            continue
+            
+        # Column 2 should contain UniProt IDs
+        uniprot_column = rec[2] if rec[2] else ''
+        
+        for uniprot_original in uniprot_column.split(','):
+            uniprot_original = uniprot_original.strip()
+            if not uniprot_original:
+                continue
+                
             uniprots = mapping.map_name(
                 uniprot_original,
                 'uniprot',
@@ -426,8 +440,8 @@ def proteinatlas_secretome_annotations():
 
             for uniprot in uniprots:
                 result[uniprot].add(ProteinatlasSecretomeAnnotation(
-                    mainclass = rec[3],
-                    secreted = 'secreted' in rec[3].lower(),
+                    mainclass = rec[3] if len(rec) > 3 and rec[3] else '',
+                    secreted = 'secreted' in rec[3].lower() if len(rec) > 3 and rec[3] else False,
                 ))
 
     return dict(result)
