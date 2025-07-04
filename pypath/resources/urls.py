@@ -95,7 +95,7 @@ urls = {
     'pdb_chains': {
         'label': 'Corresponding UniProt IDs and residue numbers '
             'for each chain in PDB structures',
-        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/'
+        'url': 'https://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/'
             'tsv/pdb_chain_uniprot.tsv.gz',
     },
     'complex_portal': {
