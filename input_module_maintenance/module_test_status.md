@@ -466,7 +466,7 @@ Generated: 2025-07-03
 | | dbptm_interactions | ✅ | 2,071 records, 0.6s |
 | biomart | biomart_homology | ✅ | 178,379 records, 13.2s |
 | | biomart_microarray | ⚠️ | Requires array_type parameter |
-| | biomart_microarray_types | ❌ | Ensembl API endpoint 404 - URL outdated |
+| | biomart_microarray_types | ❌ | Ensembl API endpoint 404 - not supported anymore |
 | | biomart_microarrays | ❌ | Depends on biomart_microarray_types() |
 | | biomart_query | ⚠️ | Requires attrs parameter |
 | innatedb | innatedb_interactions | ✅ | 19,036 records, 0.6s |
