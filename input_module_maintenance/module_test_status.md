@@ -333,7 +333,7 @@ Generated: 2025-07-03
 | | cellchatdb_interactions | ✅ FIXED | 12424 interactions - Fixed R data parsing issues |
 | oreganno | oreganno_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
 | | oreganno_raw | ⚠️ | 0 records - returns None instead of expected iterator |
-| havugimana | havugimana_complexes | ❌ | NoneType error in cell.py:128 - file object handling issue |
+| havugimana | havugimana_complexes | ✅ FIXED | 622 complexes - Using local file pypath/data/manual_downloads/mmc3.xls |
 | gutmgene | gutmgene_annotations | ❌ | URLs redirected to 404 - data source unavailable |
 | | gutmgene_raw | ❌ | URLs redirected to 404 - data source unavailable |
 | cellcall | cellcall_annotations | ✅ | 460 records, 2.5s |

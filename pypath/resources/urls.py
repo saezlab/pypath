@@ -890,6 +890,7 @@ urls = {
         'url': 'https://www.cell.com/cms/10.1016/j.cell.2012.08.011/'
             'attachment/852fdb4f-ef77-4001-b513-a6687e6e070f/mmc3.xls',
         'article': 'https://www.cell.com/fulltext/S0092-8674(12)01006-9',
+        'url_rescued': 'pypath/data/manual_downloads/mmc3.xls',
     },
     'matrixdb': {
         'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
