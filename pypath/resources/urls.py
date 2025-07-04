@@ -937,9 +937,17 @@ urls = {
         'url_rescued': 'https://rescued.omnipathdb.org/mppi.gz',
     },
     'negatome': {
-        'label': 'Negatome manually curated non-interacting protein pairs',
-        'manual':
-        'http://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual.txt'
+        'label': 'Negatome 2.0 manually curated non-interacting protein pairs',
+        'base_url': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/',
+        'manual': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual.txt',
+        'manual_stringent': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual_stringent.txt',
+        'manual_pfam': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual_pfam.txt',
+        'pdb': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/pdb.txt',
+        'pdb_stringent': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/pdb_stringent.txt',
+        'pdb_pfam': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/pdb_pfam.txt',
+        'combined': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/combined.txt',
+        'combined_stringent': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/combined_stringent.txt',
+        'combined_pfam': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/combined_pfam.txt',
     },
     'macrophage': {
         'label': 'Macrophage Pathways; Raza 2010, Supplementary Materials 1',

@@ -429,7 +429,7 @@ Generated: 2025-07-03
 | netpath | netpath_interactions | ⏳ | Timeout during testing |
 | | netpath_names | ⏳ | Timeout during testing |
 | | netpath_pathway_annotations | ⏳ | Timeout during testing |
-| negatome | negatome_interactions | ❌ | URL unreachable - mips.helmholtz-muenchen.de timeout |
+| negatome | negatome_interactions | ✅ FIXED | 2171 records - Updated to use Negatome 2.0 HTTPS URL |
 | kinasedotcom | kinasedotcom_annotations | ✅ | 503 records, 0.8s |
 | pdzbase | pdzbase_interactions | ✅ | 339 records, 0.1s |
 | drugbank | drugbank_annotations | ❌ | KeyError: 'structure' - missing credentials |
