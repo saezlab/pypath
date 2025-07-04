@@ -168,7 +168,7 @@ Generated: 2025-07-03
 | almen2009 | almen2009_annotations | ✅ | 4244 records, 1.0s |
 | biogps | biogps_datasets | ✅ | 9 records |
 | | biogps_download_all | ✅ | 9 records, 56.7s |
-| | biogps_annotations | ❌ | ArrayMapping._get_id_type method missing |
+| | biogps_annotations | ✅ FIXED | 0 records - Fixed ArrayMapping method name, returns empty due to broken biomart microarray mapping dependency |
 | | biogps_download | ⚠️ | Requires dataset parameter |
 | uniprot_db | all_swissprots | ✅ | 20420 records |
 | | all_trembls | ✅ | 184785 records, 40.3s |

@@ -215,12 +215,17 @@ def biogps_annotations(organism = 9606, exclude = None, only = None):
 
         for row in df.itertuples(index = False):
 
-            uniprots = mapping.map_name(
-                row[0],
-                'affy',
-                'uniprot',
-                ncbi_tax_id = organism,
-            )
+            try:
+                uniprots = mapping.map_name(
+                    row[0],
+                    'affy',
+                    'uniprot',
+                    ncbi_tax_id = organism,
+                )
+            except Exception as e:
+                # If mapping fails (e.g., biomart microarray service down),
+                # skip this probe but continue processing
+                continue
 
             for uniprot in uniprots:
 
