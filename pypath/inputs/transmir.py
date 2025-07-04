@@ -17,13 +17,10 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import re
 import collections
 
-import bs4
-
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
+from download_manager import DownloadManager
 
 
 
@@ -33,11 +30,14 @@ def transmir_interactions():
     """
 
     url = urls.urls['transmir']['url']
-    c = curl.Curl(
+    
+    # Initialize download manager with cache
+    dm = DownloadManager(pkg='pypath')
+    
+    # Use _download to get the cache item
+    desc, item, downloader, path = dm._download(
         url,
-        silent = False,
-        large = True,
-        encoding = 'iso-8859-1',
+        dest=True,  # Download to cache/file
     )
 
     TransmirInteraction = collections.namedtuple(
@@ -51,18 +51,26 @@ def transmir_interactions():
     )
 
     result = []
-
-    for l in c.result:
-
-        l = l.strip().split('\t')
-
-        result.append(
-            TransmirInteraction(
-                tf_genesymbol = l[0],
-                mirna = l[1],
-                effect = l[4].split('(')[0],
-                pubmed = l[5],
-            )
-        )
+    
+    # Use the cache item's open method which handles decompression automatically
+    if item and item.status == 3:  # Status.READY = 3
+        opener = item.open(large=True, encoding='iso-8859-1')
+        
+        if opener and opener.result:
+            # opener.result is an iterator when large=True
+            for l in opener.result:
+                l = l.strip()
+                if l:  # Skip empty lines
+                    l = l.split('\t')
+                    
+                    if len(l) >= 6:  # Ensure we have enough fields
+                        result.append(
+                            TransmirInteraction(
+                                tf_genesymbol = l[0],
+                                mirna = l[1],
+                                effect = l[4].split('(')[0],
+                                pubmed = l[5],
+                            )
+                        )
 
     return result

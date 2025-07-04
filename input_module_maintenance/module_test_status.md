@@ -203,13 +203,13 @@ Generated: 2025-07-03
 | | adhesome_interactions | ✅ | 6542 records, 0.3s |
 | exocarta | get_exocarta | ⚠️ | 0 records - NoneType iterator warning |
 | | get_vesiclepedia | ✅ | 290197 records, 0.14s |
-| mirbase | get_mirbase_aliases | ❌ | TypeError: 'NoneType' object is not iterable |
-| | mirbase_ids | ⚠️ | 0 records - NoneType iterator warning |
-| | mirbase_mature | ⚠️ | 0 records - NoneType iterator warning |
-| | mirbase_mature_all | ❌ | TypeError: 'NoneType' object is not iterable |
-| | mirbase_precursor | ⚠️ | 0 records - NoneType iterator warning |
-| | mirbase_precursor_all | ❌ | TypeError: 'NoneType' object is not iterable |
-| | mirbase_precursor_to_mature | ⚠️ | 0 records - NoneType iterator warning |
+| mirbase | get_mirbase_aliases | ✅ FIXED | 2 records - Updated URL and parsing for new miRBase site format |
+| | mirbase_ids | ✅ FIXED | 4244 records - Fixed with new data format handling |
+| | mirbase_mature | ✅ FIXED | 9158 records - Fixed with new data format handling |
+| | mirbase_mature_all | ✅ FIXED | 4244 records - Fixed with new data format handling |
+| | mirbase_precursor | ✅ FIXED | 5300 records - Fixed with new data format handling |
+| | mirbase_precursor_all | ✅ FIXED | 4244 records - Fixed with new data format handling |
+| | mirbase_precursor_to_mature | ✅ FIXED | 4379 records - Fixed with new data format handling |
 | gpcrdb | gpcrdb_annotations | ✅ | 808 records, 0.4s |
 | csa | get_csa | ✅ | 0 records, 0.1s (returns None) |
 | stitch | stitch_actions_interactions | ⚠️ | 0 records - NoneType iterator warning |
