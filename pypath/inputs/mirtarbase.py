@@ -72,24 +72,48 @@ def _mirtarbase_interactions(dataset):
     url = urls.urls['mirtarbase'][dataset]
     c = curl.Curl(url, silent = False, large = True)
 
-    tbl = inputs_common.read_xls(c.fileobj.name)
+    if c.fileobj is None:
+        return []
+
+    # Read CSV data instead of Excel
+    import csv
+    
+    # Handle generator result from curl
+    if hasattr(c.result, '__iter__') and not isinstance(c.result, (str, bytes)):
+        # Join generator lines
+        data = ''.join(c.result)
+    else:
+        data = c.result
+    
+    if isinstance(data, bytes):
+        data = data.decode('utf-8')
+    
+    reader = csv.reader(data.splitlines())
+    tbl = list(reader)
 
     c.close()
 
     for i in xrange(len(tbl)):
+        # Handle potential empty cells or short rows
+        if len(tbl[i]) > 4 and tbl[i][4]:
+            tbl[i][4] = tbl[i][4].split('.')[0]
+        if len(tbl[i]) > 8 and tbl[i][8]:
+            tbl[i][8] = tbl[i][8].split('.')[0]
 
-        tbl[i][4] = tbl[i][4].split('.')[0]
-        tbl[i][8] = tbl[i][8].split('.')[0]
-
-    return [
-        MirtarbaseInteraction(
-            *l[:2],
-            taxonomy.ensure_ncbi_tax_id(l[2]),
-            *l[3:5],
-            taxonomy.ensure_ncbi_tax_id(l[5]),
-            l[6] if dataset == 'curated' else None,
-            *l[-3:],
-            dataset,
-        )
-        for l in tbl[1:]
-    ]
+    result = []
+    for l in tbl[1:]:  # Skip header row
+        if len(l) >= 9:  # Ensure minimum required columns
+            try:
+                interaction = MirtarbaseInteraction(
+                    *l[:2],
+                    taxonomy.ensure_ncbi_tax_id(l[2]),
+                    *l[3:5],
+                    taxonomy.ensure_ncbi_tax_id(l[5]),
+                    l[6] if dataset == 'curated' else None,
+                    *l[-3:],
+                    dataset,
+                )
+                result.append(interaction)
+            except (IndexError, ValueError):
+                continue  # Skip malformed rows
+    return result

@@ -266,7 +266,7 @@ Generated: 2025-07-03
 | | trip_process_table | ⚠️ | Requires tab, result, intrs, and trp_uniprot parameters |
 | collectri | collectri_interactions | ✅ | 64989 records, 0.0s |
 | | collectri_raw | ✅ | 43416 records, 0.0s |
-| mirtarbase | mirtarbase_interactions | ❌ | AttributeError: 'NoneType' object has no attribute 'name' |
+| mirtarbase | mirtarbase_interactions | ✅ FIXED | 116026 records - Updated to use miRTarBase 10.0 CSV format, download is very slow (~30+ minutes) |
 | mitab | mitab_field_list | ⚠️ | Requires field parameter |
 | | mitab_field_uniprot | ⚠️ | Requires field parameter |
 | cosmic | cancer_gene_census_annotations | ✅ | 0 records, 0.0s (empty dataset) |
@@ -308,8 +308,8 @@ Generated: 2025-07-03
 | twosides | twosides_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
 | membranome | membranome_annotations | ✅ | 2,419 records, 68.0s |
 | mirecords | mirecords_interactions | ✅ | 3,106 records, 1.2s |
-| spike | spike_complexes | ❌ | IndexError: list index out of range - empty genes list |
-| | spike_interactions | ❌ | IndexError: list index out of range - empty genes list |
+| spike | spike_complexes | ✅ | 154 complexes, 0.0s |
+| | spike_interactions | ✅ | 8903 interactions, 0.0s |
 | pathwaycommons | pathwaycommons_bind_interactions | ✅ | 16,745 records, 0.0s |
 | | pathwaycommons_biogrid_interactions | ✅ | 343,834 records, 0.0s |
 | | pathwaycommons_corum_interactions | ✅ | 41,169 records, 0.0s |
