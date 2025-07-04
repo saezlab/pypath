@@ -401,8 +401,8 @@ Generated: 2025-07-03
 | | talklr_raw | ✅ FIXED | 2422 records - Function works correctly, test framework DataFrame indexing issue resolved |
 | mir2disease | mir2disease_interactions | ✅ | 805 records, 0.0s |
 | macrophage | macrophage_interactions | ✅ | 4,516 records, 0.2s |
-| dgidb | dgidb_annotations | ⚠️ | 0 records - function works but returns empty data |
-| | dgidb_interactions | ⚠️ | 0 records - function works but returns empty data |
+| dgidb | dgidb_annotations | ✅ FIXED | 9973 annotations - Updated to use new dgidb.org latest data endpoints |
+| | dgidb_interactions | ✅ FIXED | 84175 interactions - Updated to use new dgidb.org latest data endpoints |
 | threedid | get_3did | ❌ | EOFError: Compressed file ended before end-of-stream marker |
 | | get_3did_ddi | ❌ | EOFError: Compressed file ended before end-of-stream marker |
 | | get_3did_dmi | ⚠️ | 0 records - returns None (41.6s execution) |
