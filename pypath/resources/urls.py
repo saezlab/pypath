@@ -1780,6 +1780,7 @@ urls = {
         'label': 'A comprehensive database for target genes of gut microbes and microbial metabolites',
         'url_human': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-human.txt',
         'url_mouse': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-mouse.txt',
+        'url_rescued': 'pypath/data/manual_downloads/Gut Microbe-Host Gene.csv',
     },
     'swisslipids': {
         'label': 'A knowledge resource for lipids and their biology',

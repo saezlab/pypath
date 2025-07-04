@@ -334,8 +334,8 @@ Generated: 2025-07-03
 | oreganno | oreganno_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
 | | oreganno_raw | ⚠️ | 0 records - returns None instead of expected iterator |
 | havugimana | havugimana_complexes | ✅ FIXED | 622 complexes - Using local file pypath/data/manual_downloads/mmc3.xls |
-| gutmgene | gutmgene_annotations | ❌ | URLs redirected to 404 - data source unavailable |
-| | gutmgene_raw | ❌ | URLs redirected to 404 - data source unavailable |
+| gutmgene | gutmgene_annotations | ✅ FIXED | 111 UniProt IDs with microbial interactions - Updated to use local file pypath/data/manual_downloads/Gut Microbe-Host Gene.csv |
+| | gutmgene_raw | ✅ FIXED | 243 human records, 1079 mouse records - Updated for gutMGene 2.0 format with proper CSV parsing |
 | cellcall | cellcall_annotations | ✅ | 460 records, 2.5s |
 | | cellcall_download | ✅ | 19,144 records, 0.0s |
 | | cellcall_download_all | ✅ | 38,645 records, 1.6s |
