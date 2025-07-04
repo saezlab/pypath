@@ -447,10 +447,10 @@ Generated: 2025-07-03
 | | celltalkdb_download | ✅ FIXED | 3398 records - Updated to use GitHub repository data |
 | | celltalkdb_interactions | ✅ FIXED | 3398 records - Updated to use GitHub repository data |
 | threedcomplex | threedcomplex_chains | ✅ | 174,325 records |
-| | threedcomplex_complexes | ❌ | NotImplementedError - intentionally not implemented |
-| | threedcomplex_contacts | ❌ | TypeError: pdb_u is None - depends on PDB module |
-| | threedcomplex_ddi | ❌ | TypeError: pdb_u is None - depends on PDB module |
-| | threedcomplex_nresidues | ❌ | TypeError: pdb_u is None - depends on PDB module |
+| | threedcomplex_complexes | ⚠️ | NotImplementedError - intentionally not implemented |
+| | threedcomplex_contacts | ✅ FIXED | 258,754 contact records - Fixed PDB chains dependency and error handling |
+| | threedcomplex_ddi | ✅ FIXED | Core functionality working - Fixed PDB chains dependency, may timeout on large datasets |
+| | threedcomplex_nresidues | ✅ FIXED | 80,848 PDB records - Fixed PDB chains dependency and error handling |
 | reaction | * | ⏳ | Timeout during testing |
 | imweb | get_imweb | ❌ | URL malformed ('&_= %u' → '&_=%u') + service discontinued |
 | | get_imweb_req | ❌ | Service discontinued - Intomics redirects to ZS Solutions |

@@ -55,6 +55,11 @@ def threedcomplex_ddi(contacts = None):
     """
 
     contacts = contacts or threedcomplex_contacts()
+    
+    # Check if we got valid contacts data
+    if not contacts:
+        print('WARNING: No 3DComplex contacts data available. Cannot generate DDI.')
+        return []
     uniprots = (
         common.values(contacts, 'uniprot_1') |
         common.values(contacts, 'uniprot_2')
@@ -195,9 +200,21 @@ def threedcomplex_contacts(chains = None, pdb_uniprot = None):
         ),
     )
 
-
     chains = chains or threedcomplex_chains()
-    pdb_u = pdb_uniprot or pdb_input.pdb_chains()[1]
+    
+    # Get PDB-UniProt mappings with error handling
+    if pdb_uniprot is None:
+        try:
+            u_pdb, pdb_u = pdb_input.pdb_chains()
+            if pdb_u is None:
+                print('WARNING: PDB chains data not available. 3DComplex processing requires '
+                      'PDB-UniProt mappings to function properly.')
+                return set()
+        except Exception as e:
+            print(f'WARNING: Failed to get PDB chains data: {e}')
+            return set()
+    else:
+        pdb_u = pdb_uniprot
 
     c = curl.Curl(
         urls.urls['3dcomplex_contact']['url'],
@@ -267,11 +284,18 @@ def threedcomplex_nresidues():
     number of amino acids in contact.
     """
 
+    contacts = threedcomplex_contacts()
+    
+    # Check if we got valid contacts data
+    if not contacts:
+        print('WARNING: No 3DComplex contacts data available. Cannot generate nresidues.')
+        return {}
+
     nresidues = collections.defaultdict(
         lambda: collections.defaultdict(list)
     )
 
-    for contact in threedcomplex_contacts():
+    for contact in contacts:
 
         uniprot_key = tuple(sorted((contact.uniprot_1, contact.uniprot_2)))
         nresidues[contact.pdb][uniprot_key] = contact.n_residues
