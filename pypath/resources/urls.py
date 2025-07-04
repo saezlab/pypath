@@ -1433,9 +1433,7 @@ urls = {
     },
     'celltalkdb': {
         'label': 'Manually curated ligand-receptor interactions',
-        'url': 'http://tcm.zju.edu.cn/celltalkdb/handler/download.php',
-        'ref_url': 'http://tcm.zju.edu.cn/celltalkdb/',
-        'init_url': 'http://tcm.zju.edu.cn/celltalkdb/download.php',
+        'url': 'https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/%s_lr_pair.rds',
     },
     'cellchatdb': {
         'label': 'Manually curated ligand-receptor interactions',
