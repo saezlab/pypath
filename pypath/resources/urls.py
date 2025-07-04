@@ -1628,7 +1628,7 @@ urls = {
     'pathophenodb': {
         'label': 'A database of pathogens and their phenotypes '
             'for diagnostic support in infections.',
-        'url': 'http://patho.phenomebrowser.net/sparql/',
+        'url': 'http://patho.phenomebrowser.net/media/downloads/patho_pheno_withsymbols.nt',
     },
     'clinvar': {
         'label': 'A database archiving submissions that interpret '

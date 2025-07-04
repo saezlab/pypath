@@ -297,7 +297,7 @@ Generated: 2025-07-03
 | | knowledge_full | ✅ | 97,252 records, 0.0s |
 | | textmining_filtered | ✅ | 288,821 records, 0.0s |
 | | textmining_full | ✅ | 0 records, 0.0s |
-| pathophenodb | disease_pathogen_interactions | ⚠️ | Missing SPARQLWrapper dependency - returns 0 records |
+| pathophenodb | disease_pathogen_interactions | ✅ FIXED | 4111 records, 1.5s - Updated to use RDF download instead of SPARQL endpoint, optimized parsing (98% faster) |
 | topdb | topdb_annotations | ❌ | URL migrated to topdb.unitmp.org - returns HTML instead of XML |
 | compath | compath_mappings | ❌ | Missing return_df parameter, missing pandas import, variable name error |
 | italk | italk_annotations | ✅ | 1,414 records, 1.1s |
