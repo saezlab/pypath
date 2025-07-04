@@ -1069,6 +1069,10 @@ urls = {
         'login': 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u',
         'refresh': 'https://www.intomics.com/inbio/api/refresh?_=%u'
     },
+    'inweb': {
+        'label': 'InWeb protein interaction data from Genoppi',
+        'url': 'https://github.com/lagelab/Genoppi/raw/master/data/inweb_table.rda'
+    },
     'rami': {
         'label': 'Ligand-receptor interactions from Ramilowski 2015',
         'url_old': 'https://media.nature.com/original/nature-assets/ncomms/'\

@@ -145,3 +145,33 @@ def get_imweb_req():
         for block in r1.iter_content(4096):
 
             fp.write(block)
+
+
+def get_inweb():
+    """
+    Downloads and processes the InWeb protein interaction data from the 
+    Genoppi repository as an alternative to the discontinued imweb service.
+    
+    Returns:
+        pandas.DataFrame: A dataframe containing protein interaction data
+    """
+    
+    url = urls.urls['inweb']['url']
+    
+    c = curl.Curl(url, large = True, silent = False)
+    rdata_path = c.fileobj.name
+    c.fileobj.close()
+    
+    # Use pyreadr to read the R data file
+    import pyreadr
+    rdata_converted = pyreadr.read_r(rdata_path)
+    
+    # The inweb_table.rda should contain the interaction data
+    # We'll use the first/main table in the RDA file
+    key = list(rdata_converted.keys())[0]
+    
+    return rdata_converted[key]
+
+
+# Backward compatibility alias
+get_imweb_new = get_inweb

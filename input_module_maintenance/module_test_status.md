@@ -442,9 +442,9 @@ Generated: 2025-07-03
 | | get_biomodels | ❌ | URL malformed - pycurl error |
 | | get_biomodels_req | ❌ | JSON decode error - empty response |
 | | get_single_model | ❌ | Missing model_id parameter + bioservices dependency |
-| celltalkdb | celltalkdb_annotations | ❌ | tcm.zju.edu.cn returns 500 server error |
-| | celltalkdb_download | ❌ | tcm.zju.edu.cn returns 500 server error |
-| | celltalkdb_interactions | ❌ | tcm.zju.edu.cn returns 500 server error |
+| celltalkdb | celltalkdb_annotations | ✅ FIXED | 1598 records - Updated to use GitHub repository data |
+| | celltalkdb_download | ✅ FIXED | 3398 records - Updated to use GitHub repository data |
+| | celltalkdb_interactions | ✅ FIXED | 3398 records - Updated to use GitHub repository data |
 | threedcomplex | threedcomplex_chains | ✅ | 174,325 records |
 | | threedcomplex_complexes | ❌ | NotImplementedError - intentionally not implemented |
 | | threedcomplex_contacts | ❌ | TypeError: pdb_u is None - depends on PDB module |
@@ -453,6 +453,7 @@ Generated: 2025-07-03
 | reaction | * | ⏳ | Timeout during testing |
 | imweb | get_imweb | ❌ | URL malformed ('&_= %u' → '&_=%u') + service discontinued |
 | | get_imweb_req | ❌ | Service discontinued - Intomics redirects to ZS Solutions |
+| | get_inweb | ✅ FIXED | 883,356 records - Fixed using InWeb data from Genoppi repository |
 | dip | dip_interactions | ✅ | 2,283 records, 0.2s |
 | | dip_login | ⚠️ | Requires user/passwd parameters |
 | hpo | hpo_annotations | ✅ | 5,065 records, 14.9s |
