@@ -109,8 +109,7 @@ urls = {
     },
     'catalytic_sites': {
         'label': 'Catalytic Site Atlas',
-        'url': 'http://www.ebi.ac.uk/thornton-'
-            'srv/databases/CSA/downloads/CSA_2_0_121113.txt',
+        'url': 'https://www.ebi.ac.uk/thornton-srv/m-csa/api/residues/?format=json',
     },
     '3did_ddi': {
         'label': 'Domain-domain interactions derived from 3D structures',

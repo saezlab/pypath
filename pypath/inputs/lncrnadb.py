@@ -55,19 +55,19 @@ def lncrnadb_interactions():
 
     result = []
 
-    for res in b.findAll('results'):
+    for res in b.findAll('Results'):
 
-        lncrna = res.find('nomenclature').find('name').text
+        lncrna = res.find('nomenclature').find('Name').text
 
-        for sp in res.find('species').findAll('entry'):
+        for sp in res.find('species').findAll('Entry'):
 
-            organism = sp.attrs['species'].split('(')[0].strip()
+            organism = sp.attrs['Species'].split('(')[0].strip()
 
             for assoc in res.find('association').findAll('association'):
 
-                partner  = assoc.find('componentid').text
-                typ      = assoc.find('componenttype').text.lower()
-                pmid     = renondigit.sub('', assoc.find('pubmedid').text)
+                partner  = assoc.find('ComponentID').text
+                typ      = assoc.find('ComponentType').text.lower()
+                pmid     = renondigit.sub('', assoc.find('pubmedID').text)
 
                 result.append(
                     LncrnadbInteraction(

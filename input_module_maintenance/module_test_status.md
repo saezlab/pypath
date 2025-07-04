@@ -211,7 +211,7 @@ Generated: 2025-07-03
 | | mirbase_precursor_all | ✅ FIXED | 4244 records - Fixed with new data format handling |
 | | mirbase_precursor_to_mature | ✅ FIXED | 4379 records - Fixed with new data format handling |
 | gpcrdb | gpcrdb_annotations | ✅ | 808 records, 0.4s |
-| csa | get_csa | ✅ | 0 records, 0.1s (returns None) |
+| csa | get_csa | ✅ FIXED | 988 UniProt entries - Updated to use new M-CSA API (https://www.ebi.ac.uk/thornton-srv/m-csa/api/residues/?format=json) |
 | stitch | stitch_actions_interactions | ⚠️ | 0 records - NoneType iterator warning |
 | | stitch_links_interactions | ⚠️ | 0 records - NoneType iterator warning |
 | disgenet | disgenet_annotations | ❌ | NameError: name 'urls' is not defined |
@@ -407,7 +407,7 @@ Generated: 2025-07-03
 | | get_3did_ddi | ❌ | EOFError: Compressed file ended before end-of-stream marker |
 | | get_3did_dmi | ⚠️ | 0 records - returns None (41.6s execution) |
 | | process_3did_dmi | ⚠️ | 0 records - returns None (30.0s execution) |
-| lncrnadb | lncrnadb_interactions | ❌ | 0 records - XML element case sensitivity issues |
+| lncrnadb | lncrnadb_interactions | ✅ FIXED | 773 interactions - Fixed XML element case sensitivity issues (mixed case elements) |
 | pro | pro_mapping | ✅ | 394,059 records, 0.5s |
 | unichem | unichem_info | ✅ | 41 records, 0.0s |
 | | unichem_mapping | ⚠️ | Requires id_type_a, id_type_b parameters |
