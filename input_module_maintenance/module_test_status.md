@@ -422,8 +422,8 @@ Generated: 2025-07-03
 | phosphopoint | phosphopoint_directions | ✅ | 9,269 records, 0.3s |
 | | phosphopoint_interactions | ✅ | 9,269 records, 0.2s |
 | cspa | cspa_annotations | ✅ | 1,449 records, 3.1s |
-| | cspa_cell_type_annotations | ❌ | TypeError: float received instead of string in is_float() |
-| | cspa_cell_types | ❌ | TypeError: float received instead of string in is_float() |
+| | cspa_cell_type_annotations | ✅ FIXED | 1410 proteins with cell type annotations - Fixed is_float() TypeError by handling numeric values |
+| | cspa_cell_types | ✅ FIXED | 47 cell types, 1410 proteins - Fixed is_float() TypeError by checking value types |
 | ramilowski2015 | ramilowski_interactions | ✅ | 1,894 records, 0.3s |
 | complexportal | complexportal_complexes | ⏳ | Timeout during testing |
 | netpath | netpath_interactions | ⏳ | Timeout during testing |

@@ -105,7 +105,10 @@ def cspa_cell_types(organism = 9606):
 
                 result[cell_type][uniprot] = (
                     float(value)
-                        if common.is_float(value) else
+                        if (
+                            isinstance(value, (int, float)) or 
+                            (isinstance(value, str) and common.is_float(value))
+                        ) else
                     None
                 )
 
