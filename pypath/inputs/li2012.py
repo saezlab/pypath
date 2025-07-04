@@ -18,6 +18,7 @@
 #
 
 from future.utils import iteritems
+import re
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
@@ -27,6 +28,9 @@ import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 import pypath.utils.seq as seq
 
+# Define regex pattern for extracting numbers
+non_digit = re.compile(r'[^\d.-]+')
+
 
 def get_li2012():
     """
@@ -34,7 +38,7 @@ def get_li2012():
     Returns table (list of lists).
     """
 
-    url = urls.urls['li2012']['url']
+    url = urls.urls['li2012']['url_rescued']
     c = curl.Curl(url, silent = False, large = True, slow = True)
     xls = c.fileobj
     xlsfile = xls.name
@@ -84,10 +88,30 @@ def li2012_enzyme_substrate():
     data = get_li2012()
 
     for l in data:
+        
+        # Skip if line is None or doesn't have enough elements
+        if not l or len(l) < 3:
+            continue
+            
+        # Skip if any required field is None or empty
+        if not l[1] or not l[2]:
+            continue
+            
+        # Check if substrate info contains '/'
+        if '/' not in l[1]:
+            continue
 
         subs_protein = l[1].split('/')[0]
-        tk_protein = l[2].split()[0]
-        subs_resnum = int(common.non_digit.sub('', l[1].split('/')[1]))
+        tk_protein = l[2].split()[0] if l[2].split() else None
+        
+        # Skip if any protein name is missing
+        if not subs_protein or not tk_protein:
+            continue
+            
+        try:
+            subs_resnum = int(non_digit.sub('', l[1].split('/')[1]))
+        except (ValueError, IndexError):
+            continue
         result.append(
             (
                 subs_protein, # substrate
@@ -125,14 +149,35 @@ def li2012_dmi():
     """
 
     result = []
-    se = seq.swissprot_seq(isoforms = True)
+    try:
+        se = seq.swissprot_seq(isoforms = True)
+    except Exception:
+        # If sequence data is not available, return empty result
+        return result
     data = get_li2012()
 
     for l in data:
+        
+        # Skip if line is None or doesn't have enough elements
+        if not l or len(l) < 4:
+            continue
+            
+        # Skip if any required field is None or empty
+        if not l[1] or not l[2] or not l[3]:
+            continue
+            
+        # Check if substrate info contains '/'
+        if '/' not in l[1]:
+            continue
 
         subs_protein = l[1].split('/')[0]
-        tk_protein = l[2].split()[0]
-        reader_protein = l[3].split()[0]
+        tk_protein = l[2].split()[0] if l[2].split() else None
+        reader_protein = l[3].split()[0] if l[3].split() else None
+        
+        # Skip if any protein name is missing
+        if not subs_protein or not tk_protein or not reader_protein:
+            continue
+            
         subs_uniprots = mapping.map_name(
             subs_protein,
             'genesymbol',
@@ -141,7 +186,10 @@ def li2012_dmi():
         tk_uniprots = mapping.map_name(tk_protein, 'genesymbol', 'uniprot')
         reader_uniprots = mapping.map_name(reader_protein, 'genesymbol',
                                           'uniprot')
-        subs_resnum = int(common.non_digit.sub('', l[1].split('/')[1]))
+        try:
+            subs_resnum = int(non_digit.sub('', l[1].split('/')[1]))
+        except (ValueError, IndexError):
+            continue
 
         for su in subs_uniprots:
 

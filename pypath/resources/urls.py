@@ -725,7 +725,8 @@ urls = {
     'li2012': {
         'label': 'Human Phosphotyrosine Signaling Network',
         'url': 'http://genome.cshlp.org/content/suppl/2011/12/27/'
-        'gr.128819.111.DC1/Supplementary_files_S1-S5.xls'
+        'gr.128819.111.DC1/Supplementary_files_S1-S5.xls',
+        'url_rescued': 'pypath/data/manual_downloads/Supplementary_files_S1-S5.xls',
     },
     'trip': {
         'label': 'The TRP channel database',

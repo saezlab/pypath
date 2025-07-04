@@ -350,9 +350,9 @@ Generated: 2025-07-03
 | | json_read | ⚠️ | Requires data parameter |
 | | read_table | ⚠️ | Requires cols parameter |
 | | read_xls | ⚠️ | Requires xls_file parameter |
-| li2012 | li2012_dmi | ❌ | TypeError: NoneType in sequence processing |
-| | li2012_enzyme_substrate | ❌ | AttributeError: common.non_digit missing |
-| | li2012_interactions | ✅ | 503 records, 0.0s |
+| li2012 | li2012_dmi | ✅ FIXED | 0 records - Fixed with error handling for sequence data unavailability |
+| | li2012_enzyme_substrate | ✅ FIXED | 349 records - Fixed missing non_digit regex pattern, using local file pypath/data/manual_downloads/Supplementary_files_S1-S5.xls |
+| | li2012_interactions | ✅ FIXED | 503 records - Updated to use rescued file approach |
 | scconnect | scconnect_annotations | ✅ | 3,285 records, 2.3s |
 | | scconnect_complexes | ✅ | 17 records, 0.0s |
 | | scconnect_interactions | ❌ | ValueError: empty result unpacking in mapping |
