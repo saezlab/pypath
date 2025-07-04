@@ -91,9 +91,9 @@ Generated: 2025-07-03
 | acsn | acsn_interactions | ✅ | 37725 records |
 | panglaodb | panglaodb_annotations | ✅ | 4492 records, 2.4s |
 | | panglaodb_raw | ✅ | 8286 records, 0.0s |
-| proteinatlas | proteinatlas_annotations | ❌ | NoneType error - URL/API changes |
+| proteinatlas | proteinatlas_annotations | ✅ FIXED | 15044 records - Updated to use new HPA TSV format |
 | | proteinatlas_secretome_annotations | ❌ | Science.org 403 Forbidden |
-| | proteinatlas_subcellular_annotations | ❌ | Missing files_multipart attribute |
+| | proteinatlas_subcellular_annotations | ✅ FIXED | 13335 records - Updated to use new HPA TSV format |
 | netbiol | arn_interactions | ✅ | 95 records, 0.0s |
 | | nrf2ome_interactions | ✅ | 109 records, 0.0s |
 | lambert2018 | lambert2018_annotations | ✅ FIXED | 2759 records - Using local file pypath/data/manual_downloads/mmc2.xlsx |

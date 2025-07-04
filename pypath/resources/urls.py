@@ -607,11 +607,15 @@ urls = {
     'proteinatlas': {
         'label': 'Human Protein Atlas: Immuncytochemistry expression data in '
             'healthy human cells or cancer cells or cell lines',
-        'normal': 'http://www.proteinatlas.org/download/'\
+        'normal': 'https://www.proteinatlas.org/download/tsv/normal_ihc_data.tsv.zip',
+        'normal_old': 'http://www.proteinatlas.org/download/'\
             'normal_tissue.tsv.zip',
-        'pathology': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
-        'subcell': 'https://www.proteinatlas.org/download/'\
+        'pathology': 'https://www.proteinatlas.org/download/tsv/cancer_data.tsv.zip',
+        'pathology_old': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
+        'subcell': 'https://www.proteinatlas.org/download/tsv/subcellular_location.tsv.zip',
+        'subcell_old': 'https://www.proteinatlas.org/download/'\
             'subcellular_location.tsv.zip',
+        'interactions': 'https://www.proteinatlas.org/download/tsv/interaction_consensus.tsv.zip',
         'secretome_old': 'https://stke.sciencemag.org/highwire/filestream/'\
             '216463/field_highwire_adjunct_files/1/aaz0274_Data_file_S2.xlsx',
         'secretome': 'https://www.science.org/action/downloadSupplement?'\
