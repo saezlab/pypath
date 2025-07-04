@@ -44,8 +44,11 @@ def phosphatome_annotations():
         ],
     )
 
-    url = urls.urls['phosphatome']['url']
-    path = science_input.science_download(url = url)
+    url = urls.urls['phosphatome'].get('url_rescued', urls.urls['phosphatome']['url'])
+    if 'url_rescued' in urls.urls['phosphatome']:
+        path = url  # Use local file path directly
+    else:
+        path = science_input.science_download(url = url)
     c = curl.FileOpener(
         path,
         compr = 'zip',

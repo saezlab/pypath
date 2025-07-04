@@ -27,7 +27,7 @@ Generated: 2025-07-03
 | | icellnet_complexes | ✅ FIXED | 156 records - Fixed column names |
 | | icellnet_interactions | ✅ FIXED | 1647 records - Fixed column names & generator test |
 | ipi | ipi_uniprot | ✅ | 86754 records, 0.1s |
-| ca1 | ca1_interactions | ❌ | Server returns 403 Forbidden - Science journal blocks automated downloads |
+| ca1 | ca1_interactions | ✅ FIXED | 1788 records - Using local file pypath/data/manual_downloads/maayan_som_external_files.zip |
 | wang | cui_interactions | ❌ | EMBOPress website blocks automated downloads - 'fname' attr fixed |
 | | hsn_interactions | ✅ | 62937 records, 0.6s |
 | | wang_annotations | ✅ FIXED | 1500 records - Added error handling for failed datasets |
@@ -70,7 +70,7 @@ Generated: 2025-07-03
 | | trembl_deleted | ⚠️ | Requires user confirmation (5GB memory) |
 | | uniprot_deleted | ⚠️ | Requires user confirmation (5GB memory) |
 | | *_requires_args | ⚠️ | Functions requiring specific arguments |
-| phosphatome | phosphatome_annotations | ❌ | Download blocked - likely 403 Forbidden like ca1 |
+| phosphatome | phosphatome_annotations | ✅ FIXED | 264 records - Using local file pypath/data/manual_downloads/aag1796_tables_s1_to_s23.zip |
 | progeny | progeny_annotations | ✅ FIXED | 18581 records, 23.3s - Fixed R data parsing with pyreadr |
 | | progeny_raw | ✅ FIXED | DataFrame returned - Test framework sampling issue only |
 | expasy | expasy_enzyme_classes | ✅ | 354 records, 0.2s |
@@ -96,8 +96,8 @@ Generated: 2025-07-03
 | | proteinatlas_subcellular_annotations | ❌ | Missing files_multipart attribute |
 | netbiol | arn_interactions | ✅ | 95 records, 0.0s |
 | | nrf2ome_interactions | ✅ | 109 records, 0.0s |
-| lambert2018 | lambert2018_annotations | ❌ | Cell journal 403 Forbidden |
-| | lambert2018_s1_raw | ❌ | Cell journal 403 Forbidden |
+| lambert2018 | lambert2018_annotations | ✅ FIXED | 2759 records - Using local file pypath/data/manual_downloads/mmc2.xlsx |
+| | lambert2018_s1_raw | ✅ FIXED | Data available - Using local file pypath/data/manual_downloads/mmc2.xlsx |
 | kegg | kegg_interactions | ✅ | 14734 records, 2.4s |
 | | kegg_medicus | ✅ | 12946 records, 0.1s |
 | | kegg_medicus_complexes | ✅ | 539 records, 0.2s |

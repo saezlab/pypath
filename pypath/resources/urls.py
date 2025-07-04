@@ -763,6 +763,7 @@ urls = {
         'url': 'https://www.science.org/action/downloadSupplement?'
             'doi=10.1126%2Fscisignal.aag1796&'
             'file=aag1796_tables_s1_to_s23.zip',
+        'url_rescued': 'pypath/data/manual_downloads/aag1796_tables_s1_to_s23.zip',
     },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
@@ -854,6 +855,7 @@ urls = {
         'url': 'https://www.science.org/action/downloadSupplement?'
             'doi=10.1126%2Fscience.1108876&'
             'file=maayan_som_external_files.zip',
+        'url_rescued': 'pypath/data/manual_downloads/maayan_som_external_files.zip',
     },
     'ccmap': {
         'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',
@@ -1546,6 +1548,7 @@ urls = {
         's1': 'https://www.cell.com/cms/10.1016/j.cell.2018.01.029/'
             'attachment/ede37821-fd6f-41b7-9a0e-9d5410855ae6/mmc2.xlsx',
         'article': 'https://www.cell.com/cell/fulltext/S0092-8674(18)30106-5',
+        's1_rescued': 'pypath/data/manual_downloads/mmc2.xlsx',
     },
     'interpro': {
         'label': 'Protein families, domains and functional sites',

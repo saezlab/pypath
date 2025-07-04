@@ -49,8 +49,11 @@ def ca1_interactions():
         ),
     )
 
-    url = urls.urls['ca1']['url']
-    path = science_input.science_download(url = url)
+    url = urls.urls['ca1'].get('url_rescued', urls.urls['ca1']['url'])
+    if 'url_rescued' in urls.urls['ca1']:
+        path = url  # Use local file path directly
+    else:
+        path = science_input.science_download(url = url)
     zipfile = curl.FileOpener(
         path,
         compr = 'zip',
