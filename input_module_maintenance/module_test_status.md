@@ -285,7 +285,7 @@ Generated: 2025-07-03
 | cancerdrugsdb | cancerdrugsdb_annotations | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | | cancerdrugsdb_download | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | | cancerdrugsdb_interactions | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
-| surfaceome | surfaceome_annotations | ❌ | AttributeError: 'float' object has no attribute 'replace' - NaN handling issue |
+| surfaceome | surfaceome_annotations | ✅ FIXED | 2844 records - Fixed NaN handling by adding isinstance(r[19], str) check |
 | embrace | embrace_annotations | ✅ FIXED | 831 records - Fixed by using local file pypath/data/manual_downloads/mmc2_embrace.xlsx and correcting orthology translation |
 | | embrace_interactions | ✅ FIXED | 1237 records - Fixed by using local file pypath/data/manual_downloads/mmc2_embrace.xlsx and correcting orthology translation |
 | | embrace_raw | ✅ FIXED | 1710 records - Fixed by using local file pypath/data/manual_downloads/mmc2_embrace.xlsx |
