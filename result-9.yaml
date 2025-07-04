@@ -1,0 +1,340 @@
+modules:
+  - module_name: ramilowski2015
+    functions: [ramilowski_interactions]
+    maintenance_status:
+      category: one_time_paper
+      last_known_update: 2015-07
+      notes: "Supplementary data from Nature Communications 2015 paper"
+    module_type: [primary_data]
+    dataset_size: medium
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [xlsx]
+    tags:
+      entity: [protein]
+      annotation: [functional]
+      interaction: [ligand_receptor]
+
+  - module_name: complexportal
+    functions: [complexportal_complexes]
+    maintenance_status:
+      category: frequent
+      last_known_update: unknown
+      notes: "EBI IntAct ComplexPortal - actively maintained database"
+    module_type: [primary_data]
+    dataset_size: medium
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [xml, zip]
+    tags:
+      entity: [protein_complex]
+      annotation: [structural]
+      interaction: [protein_protein_undirected]
+
+  - module_name: depod
+    functions: [depod_enzyme_substrate, depod_interactions]
+    maintenance_status:
+      category: discontinued
+      last_known_update: 2014-08
+      notes: "Database of Protein Phosphatases - last update 2014"
+    module_type: [primary_data]
+    dataset_size: small
+    species_coverage: human_only
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [tsv, mitab]
+    tags:
+      entity: [protein]
+      annotation: [post_translational_modifications]
+      interaction: [enzyme_substrate]
+
+  - module_name: netpath
+    functions: [netpath_interactions, netpath_names, netpath_pathway_annotations]
+    maintenance_status:
+      category: discontinued
+      last_known_update: unknown
+      notes: "Mirror site available, original discontinued"
+    module_type: [primary_data]
+    dataset_size: medium
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download, web_scraping]
+      data_format: [xml, zip]
+    tags:
+      entity: [protein]
+      annotation: [pathway]
+      interaction: [protein_protein_regulation]
+
+  - module_name: negatome
+    functions: [negatome_interactions]
+    maintenance_status:
+      category: infrequent
+      last_known_update: unknown
+      notes: "Negatome 2.0 manually curated non-interacting protein pairs"
+    module_type: [primary_data]
+    dataset_size: small
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [tsv]
+    tags:
+      entity: [protein]
+      annotation: [functional]
+      interaction: [protein_protein_undirected]
+
+  - module_name: pisa
+    functions: [pisa_bonds, pisa_interfaces]
+    maintenance_status:
+      category: frequent
+      last_known_update: unknown
+      notes: "PDBe PISA actively maintained by EBI"
+    module_type: [primary_data]
+    dataset_size: large
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [api]
+      data_format: [xml]
+    tags:
+      entity: [protein]
+      annotation: [structural]
+      interaction: [protein_protein_undirected]
+
+  - module_name: kinasedotcom
+    functions: [kinasedotcom_annotations]
+    maintenance_status:
+      category: discontinued
+      last_known_update: 2008-02
+      notes: "Kinase.com data from rescued archive"
+    module_type: [primary_data]
+    dataset_size: small
+    species_coverage: human_only
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [xls]
+    tags:
+      entity: [protein]
+      annotation: [functional]
+      interaction: []
+
+  - module_name: phosphosite
+    functions: [phosphosite_directions, phosphosite_enzyme_substrate, phosphosite_interactions, phosphosite_interactions_all, phosphosite_interactions_curated, phosphosite_interactions_new, phosphosite_interactions_noref, phosphosite_ptm_orthology, phosphosite_ptms, phosphosite_regsites, phosphosite_regsites_one_organism]
+    maintenance_status:
+      category: frequent
+      last_known_update: unknown
+      notes: "PhosphoSitePlus regularly updated commercial database"
+    module_type: [primary_data]
+    dataset_size: large
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [tsv, owl, biopax]
+    tags:
+      entity: [protein]
+      annotation: [post_translational_modifications]
+      interaction: [enzyme_substrate]
+
+  - module_name: pdzbase
+    functions: [pdzbase_interactions]
+    maintenance_status:
+      category: discontinued
+      last_known_update: unknown
+      notes: "PDZ domain interaction database from rescued archive"
+    module_type: [primary_data]
+    dataset_size: small
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [web_scraping]
+      data_format: [html]
+    tags:
+      entity: [protein]
+      annotation: [structural]
+      interaction: [protein_protein_undirected]
+
+  - module_name: drugbank
+    functions: [drugbank_annotations, drugbank_drugs, drugbank_interactions, drugbank_mapping, drugbank_raw_interactions]
+    maintenance_status:
+      category: frequent
+      last_known_update: unknown
+      notes: "DrugBank regularly updated commercial database"
+    module_type: [primary_data]
+    dataset_size: large
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [csv, xml, zip]
+    tags:
+      entity: [drug, protein]
+      annotation: [functional]
+      interaction: [protein_small_molecule]
+
+  - module_name: biomodels
+    functions: [download_single_model, get_all_models, get_biomodels, get_biomodels_req, get_single_model]
+    maintenance_status:
+      category: frequent
+      last_known_update: unknown
+      notes: "EMBL-EBI BioModels actively maintained"
+    module_type: [primary_data]
+    dataset_size: large
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [api]
+      data_format: [sbml, json]
+    tags:
+      entity: [protein]
+      annotation: [pathway]
+      interaction: [protein_protein_regulation]
+
+  - module_name: celltalkdb
+    functions: [celltalkdb_annotations, celltalkdb_download, celltalkdb_interactions]
+    maintenance_status:
+      category: infrequent
+      last_known_update: unknown
+      notes: "CellTalkDB ligand-receptor database"
+    module_type: [primary_data]
+    dataset_size: medium
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [rds]
+    tags:
+      entity: [protein]
+      annotation: [functional]
+      interaction: [ligand_receptor]
+
+  - module_name: threedcomplex
+    functions: [threedcomplex_chains, threedcomplex_complexes, threedcomplex_contacts, threedcomplex_ddi, threedcomplex_nresidues]
+    maintenance_status:
+      category: discontinued
+      last_known_update: unknown
+      notes: "3DComplex database from Weizmann Institute"
+    module_type: [primary_data]
+    dataset_size: medium
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [tsv]
+    tags:
+      entity: [protein, protein_complex]
+      annotation: [structural]
+      interaction: [protein_protein_undirected]
+
+  - module_name: reaction
+    functions: [acsn_interactions_2, get_interactions, panther_interactions, pid_interactions, reactions_biopax, reactome_interactions]
+    maintenance_status:
+      category: frequent
+      last_known_update: unknown
+      notes: "Multiple pathway databases - Reactome, ACSN, PID, Panther"
+    module_type: [primary_data]
+    dataset_size: large
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [biopax, owl, sbml]
+    tags:
+      entity: [protein, metabolite]
+      annotation: [pathway]
+      interaction: [protein_protein_regulation, enzyme_metabolite]
+
+  - module_name: imweb
+    functions: [get_imweb, get_imweb_req]
+    maintenance_status:
+      category: discontinued
+      last_known_update: 2016-09
+      notes: "InBio Map discontinued, replaced by InWeb"
+    module_type: [primary_data]
+    dataset_size: large
+    species_coverage: human_only
+    technical_aspects:
+      access_method: [api]
+      data_format: [tar.gz, rda]
+    tags:
+      entity: [protein]
+      annotation: [functional]
+      interaction: [protein_protein_undirected]
+
+  - module_name: dip
+    functions: [dip_interactions, dip_login]
+    maintenance_status:
+      category: infrequent
+      last_known_update: 2017-02
+      notes: "Database of Interacting Proteins"
+    module_type: [primary_data]
+    dataset_size: medium
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [mitab]
+    tags:
+      entity: [protein]
+      annotation: [functional]
+      interaction: [protein_protein_undirected]
+
+  - module_name: hpo
+    functions: [hpo_annotations, hpo_diseases, hpo_ontology, hpo_terms]
+    maintenance_status:
+      category: frequent
+      last_known_update: unknown
+      notes: "Human Phenotype Ontology actively maintained"
+    module_type: [primary_data]
+    dataset_size: medium
+    species_coverage: human_only
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [obo, tsv]
+    tags:
+      entity: [protein]
+      annotation: [disease_association]
+      interaction: []
+
+  - module_name: dbptm
+    functions: [dbptm_enzyme_substrate, dbptm_enzyme_substrate_old, dbptm_interactions]
+    maintenance_status:
+      category: discontinued
+      last_known_update: unknown
+      notes: "dbPTM database appears discontinued"
+    module_type: [primary_data]
+    dataset_size: medium
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download, web_scraping]
+      data_format: [tsv, tgz]
+    tags:
+      entity: [protein]
+      annotation: [post_translational_modifications]
+      interaction: [enzyme_substrate]
+
+  - module_name: biomart
+    functions: [biomart_homology, biomart_microarray, biomart_microarray_types, biomart_microarrays, biomart_query]
+    maintenance_status:
+      category: frequent
+      last_known_update: unknown
+      notes: "Ensembl BioMart actively maintained"
+    module_type: [utility, id_mapping]
+    dataset_size: large
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [api]
+      data_format: [xml, json, tsv]
+    tags:
+      entity: [protein, rna]
+      annotation: [functional]
+      interaction: []
+
+  - module_name: innatedb
+    functions: [innatedb_interactions]
+    maintenance_status:
+      category: infrequent
+      last_known_update: unknown
+      notes: "InnateDB innate immunity database"
+    module_type: [primary_data]
+    dataset_size: medium
+    species_coverage: multi_species
+    technical_aspects:
+      access_method: [file_download]
+      data_format: [mitab]
+    tags:
+      entity: [protein]
+      annotation: [functional]
+      interaction: [protein_protein_undirected]
