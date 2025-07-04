@@ -43,6 +43,9 @@ import pypath.utils.taxonomy as taxonomy
 _logger = session.Logger(name = 'pfam_input')
 _log = _logger._log
 
+# Define non_digit regex pattern that was missing from common
+non_digit = re.compile(r'[^0-9]')
+
 
 def pfam_uniprot(uniprots = None, organism = 9606):
     """
@@ -91,6 +94,10 @@ def pfam_uniprot(uniprots = None, organism = 9606):
 
                     break
 
+            if not data:
+                _log('No data received for UniProt batch %d-%d' % (i, min(i + 200, len(uniprots))))
+                continue
+
             data = data.split('\n')
             del data[0]
             del data[-1]
@@ -127,6 +134,10 @@ def pfam_uniprot(uniprots = None, organism = 9606):
             if data_all:
 
                 break
+
+        if not data_all:
+            _log('No data received from UniProt for organism %d' % organism)
+            return {}, {}
 
         data_all = data_all.split('\n')
         del data_all[0]
@@ -313,8 +324,8 @@ def pfam_pdb():
             pfam = common.prefix(l[4], '.')
             pdb = l[0].lower()
             chain = l[1]
-            start = int(common.non_digit.sub('', l[2]))
-            end = int(common.non_digit.sub('', l[3]))
+            start = int(non_digit.sub('', l[2]))
+            end = int(non_digit.sub('', l[3]))
 
             domain = PfamDomain(chain, start, end)
             pdb_pfam[pdb][pfam] = domain

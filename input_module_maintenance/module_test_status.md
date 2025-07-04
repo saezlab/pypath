@@ -220,10 +220,10 @@ Generated: 2025-07-03
 | | disgenet_gene_disease | ❌ | TypeError: unsupported operand type(s) for +: 'NoneType' and 'str' |
 | | disgenet_variant_disease | ❌ | TypeError: unsupported operand type(s) for +: 'NoneType' and 'str' |
 | | disgenet_disease_disease | ❌ | TypeError: unsupported operand type(s) for +: 'NoneType' and 'str' |
-| pfam | pfam_names | ✅ | 2 records, 1.0s |
-| | pfam_pdb | ❌ | AttributeError: module 'pypath.share.common' has no attribute 'non_digit' |
+| pfam | pfam_names | ✅ | 12494 records, 1.0s |
+| | pfam_pdb | ✅ FIXED | 211541 PDB entries, 12493 Pfam entries - Fixed missing non_digit regex pattern |
 | | pfam_regions | ⏳ | Timeout - FTP connection timeout |
-| | pfam_uniprot | ❌ | AttributeError: 'NoneType' object has no attribute 'split' |
+| | pfam_uniprot | ✅ FIXED | Working but requires valid UniProt query - Fixed NoneType handling |
 | string | string_effects | ❌ | TypeError: 'NoneType' object is not an iterator |
 | | string_links_interactions | ✅ | 201712 records, 0.0s |
 | | string_physical_interactions | ✅ | 89862 records, 0.5s |
