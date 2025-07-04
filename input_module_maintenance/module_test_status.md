@@ -326,11 +326,11 @@ Generated: 2025-07-03
 | | pathwaycommons_interactions | ❌ | NoneType object is not iterable |
 | | pathwaycommons_wikipathways_interactions | ❌ | NoneType object is not iterable |
 | huri | * | ⏳ | Timeout |
-| cellchatdb | cellchatdb_annotations | ❌ | Length mismatch error in R data conversion |
-| | cellchatdb_cofactors | ❌ | Length mismatch error in R data conversion |
-| | cellchatdb_complexes | ❌ | Length mismatch error in R data conversion |
-| | cellchatdb_download | ❌ | Length mismatch error in R data conversion |
-| | cellchatdb_interactions | ❌ | Length mismatch error in R data conversion |
+| cellchatdb | cellchatdb_annotations | ✅ FIXED | 1523 entities - Fixed R data parsing issues |
+| | cellchatdb_cofactors | ✅ FIXED | 32 cofactors - Fixed R data parsing issues |
+| | cellchatdb_complexes | ✅ FIXED | 330 complexes - Fixed R data parsing issues |
+| | cellchatdb_download | ✅ FIXED | 4 datasets - Fixed R data parsing issues |
+| | cellchatdb_interactions | ✅ FIXED | 12424 interactions - Fixed R data parsing issues |
 | oreganno | oreganno_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
 | | oreganno_raw | ⚠️ | 0 records - returns None instead of expected iterator |
 | havugimana | havugimana_complexes | ❌ | NoneType error in cell.py:128 - file object handling issue |
