@@ -274,14 +274,14 @@ Generated: 2025-07-03
 | cancercellmap | ccmap_interactions | ❌ | zipfile.BadZipFile: File is not a zip file |
 | phobius | phobius_annotations | ✅ | 20350 records, 0.4s |
 | zhong2015 | zhong2015_annotations | ✅ | 466 records, 1.3s |
-| pharos | pharos_diseases | ❌ | gzip.BadGzipFile: Not a gzipped file |
-| | pharos_expression | ❌ | gzip.BadGzipFile: Not a gzipped file |
-| | pharos_general | ⚠️ | Requires query parameter |
-| | pharos_gtex | ❌ | gzip.BadGzipFile: Not a gzipped file |
-| | pharos_ligands | ❌ | gzip.BadGzipFile: Not a gzipped file |
-| | pharos_orthologs | ❌ | gzip.BadGzipFile: Not a gzipped file |
-| | pharos_targets | ❌ | gzip.BadGzipFile: Not a gzipped file |
-| | pharos_xrefs | ❌ | gzip.BadGzipFile: Not a gzipped file |
+| pharos | pharos_diseases | ✅ FIXED | GraphQL API working - Fixed by removing incorrect gzip compression settings |
+| | pharos_expression | ✅ FIXED | GraphQL API working - Fixed by removing incorrect gzip compression settings |
+| | pharos_general | ✅ FIXED | GraphQL API working - Requires query parameter (now functional) |
+| | pharos_gtex | ✅ FIXED | GraphQL API working - Fixed by removing incorrect gzip compression settings |
+| | pharos_ligands | ✅ FIXED | GraphQL API working - Fixed by removing incorrect gzip compression settings |
+| | pharos_orthologs | ✅ FIXED | GraphQL API working - Fixed by removing incorrect gzip compression settings |
+| | pharos_targets | ✅ FIXED | GraphQL API working - Fixed by removing incorrect gzip compression settings (slow due to large dataset) |
+| | pharos_xrefs | ✅ FIXED | GraphQL API working - Fixed by removing incorrect gzip compression settings |
 | cancerdrugsdb | cancerdrugsdb_annotations | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | | cancerdrugsdb_download | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | | cancerdrugsdb_interactions | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
