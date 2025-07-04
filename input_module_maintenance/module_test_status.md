@@ -127,7 +127,7 @@ Generated: 2025-07-03
 | | cellinker_smol_interactions | ✅ | 314 records |
 | | cellinker_smol_interactions_raw | ✅ | 341 records |
 | cpad | cpad_pathway_cancer | ✅ | 2 records |
-| | cpad_annotations | ❌ | Mirbase dependency failure |
+| | cpad_annotations | ✅ FIXED | 856 records - Fixed by resolving mirbase dependency |
 | phosphoelm | phosphoelm_enzyme_substrate | ✅ | 2426 records |
 | | phosphoelm_interactions | ✅ | 2426 records |
 | | phosphoelm_kinases | ✅ | 247 records |
