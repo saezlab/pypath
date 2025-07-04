@@ -28,7 +28,7 @@ Generated: 2025-07-03
 | | icellnet_interactions | ✅ FIXED | 1647 records - Fixed column names & generator test |
 | ipi | ipi_uniprot | ✅ | 86754 records, 0.1s |
 | ca1 | ca1_interactions | ✅ FIXED | 1788 records - Using local file pypath/data/manual_downloads/maayan_som_external_files.zip |
-| wang | cui_interactions | ❌ | EMBOPress website blocks automated downloads - 'fname' attr fixed |
+| wang | cui_interactions | ✅ FIXED | 5089 interactions - Using local file pypath/data/manual_downloads/msb4100200-sup-0010.xls |
 | | hsn_interactions | ✅ | 62937 records, 0.6s |
 | | wang_annotations | ✅ FIXED | 1500 records - Added error handling for failed datasets |
 | | wang_interactions | ✅ | 62937 records, 0.4s |

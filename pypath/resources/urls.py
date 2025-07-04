@@ -830,6 +830,7 @@ urls = {
             'WangLab_HumanSignalingNetwork_v6-format2.csv',
         'cui': 'https://www.embopress.org/action/downloadSupplement?'
             'doi=10.1038%2Fmsb4100200&file=msb4100200-sup-0010.xls',
+        'cui_rescued': 'pypath/data/manual_downloads/msb4100200-sup-0010.xls',
         'cui_init': 'https://www.embopress.org/doi/full/10.1038/msb4100200',
     },
     'graphviz': {

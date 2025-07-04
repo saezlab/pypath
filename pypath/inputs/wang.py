@@ -136,11 +136,35 @@ def cui_interactions() -> List[tuple]:
     (https://www.embopress.org/doi/full/10.1038/msb4100200).
     """
 
-    raw = embo.embopress_supplementary(
-        url = urls.urls['wang']['cui'],
-        init_url = urls.urls['wang']['cui_init'],
-        sheet = 'Supplementary Table 9',
-    )
+    # Use local file if available, otherwise try online
+    if 'cui_rescued' in urls.urls['wang']:
+        import pypath.inputs.common as inputs_common
+        import os
+        
+        # Get local file path
+        local_path = urls.urls['wang']['cui_rescued']
+        
+        # Try to open local file directly
+        if os.path.exists(local_path):
+            raw = inputs_common.read_xls(local_path, sheet = 'Supplementary Table 9')
+        else:
+            # Try in current directory
+            filename = os.path.basename(local_path)
+            if os.path.exists(filename):
+                raw = inputs_common.read_xls(filename, sheet = 'Supplementary Table 9')
+            else:
+                # Fall back to online
+                raw = embo.embopress_supplementary(
+                    url = urls.urls['wang']['cui'],
+                    init_url = urls.urls['wang']['cui_init'],
+                    sheet = 'Supplementary Table 9',
+                )
+    else:
+        raw = embo.embopress_supplementary(
+            url = urls.urls['wang']['cui'],
+            init_url = urls.urls['wang']['cui_init'],
+            sheet = 'Supplementary Table 9',
+        )
 
     return _wang_process(raw)
 
