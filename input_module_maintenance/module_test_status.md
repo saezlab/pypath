@@ -398,7 +398,7 @@ Generated: 2025-07-03
 | | interpro_xrefs | ⚠️ | Requires db_type parameter |
 | talklr | talklr_annotations | ✅ | 1,344 records, 0.9s |
 | | talklr_interactions | ✅ | 2,422 records, 0.0s |
-| | talklr_raw | ❌ | KeyError: 0 - test framework DataFrame issue |
+| | talklr_raw | ✅ FIXED | 2422 records - Function works correctly, test framework DataFrame indexing issue resolved |
 | mir2disease | mir2disease_interactions | ✅ | 805 records, 0.0s |
 | macrophage | macrophage_interactions | ✅ | 4,516 records, 0.2s |
 | dgidb | dgidb_annotations | ⚠️ | 0 records - function works but returns empty data |
