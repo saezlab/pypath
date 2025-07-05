@@ -18,7 +18,6 @@ modules:
     - tsv
   tags:
     entity:
-    - protein
     annotation: []
     interaction: []
 - module_name: cosmic
@@ -63,8 +62,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction:
-    - protein_protein_undirected
+    interaction: [protein_protein_undirected]
 - module_name: abs
   functions:
   - abs_interactions
@@ -85,7 +83,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_directed]
 - module_name: cancercellmap
   functions:
   - ccmap_interactions
@@ -106,7 +104,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: [protein_protein_undirected]
+    interaction: [protein_protein_directed]
 - module_name: phobius
   functions:
   - phobius_annotations
@@ -126,7 +124,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [subcellular_location]
     interaction: []
 - module_name: zhong2015
   functions:
@@ -147,9 +145,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - functional
-    interaction: []
+    annotation: [functional]
+    interaction:
 - module_name: gpcrdb
   functions:
   - gpcrdb_annotations
@@ -169,7 +166,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [functional]
     interaction: []
 - module_name: pharos
   functions:
@@ -198,8 +195,8 @@ modules:
     entity:
     - protein
     - drug
-    annotation: []
-    interaction: []
+    annotation: [disease, side_effects, tissue_location]
+    interaction:
 - module_name: hgnc
   functions:
   - hgnc_genegroups
@@ -219,9 +216,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - functional
-    interaction: []
+    annotation: [functional]
+    interaction:
 - module_name: cancerdrugsdb
   functions:
   - cancerdrugsdb_annotations
@@ -244,9 +240,8 @@ modules:
     entity:
     - drug
     - protein
-    annotation: []
-    interaction:
-    - protein_small_molecule
+    annotation: [disease_association]
+    interaction: [protein_small_molecule]
 - module_name: surfaceome
   functions:
   - surfaceome_annotations
@@ -266,9 +261,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - subcellular_location
-    interaction: []
+    annotation: [subcellular_location]
+    interaction:
 - module_name: embrace
   functions:
   - embrace_annotations
@@ -291,9 +285,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction:
-    - ligand_receptor
+    annotation: [functional]
+    interaction: [ligand_receptor]
 - module_name: diseases
   functions:
   - diseases_general
@@ -313,8 +306,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [disease_association]
+    interaction:
 - module_name: pathophenodb
   functions:
   - disease_pathogen_interactions
@@ -334,8 +327,7 @@ modules:
     - nt
   tags:
     entity:
-    - protein
-    annotation: []
+    annotation: [disease_pathogen_association]
     interaction: []
 - module_name: topdb
   functions:
@@ -356,10 +348,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - structural
-    - subcellular_location
-    interaction: []
+    annotation: [structural, subcellular_location]
+    interaction:
 - module_name: pdb
   functions:
   - pdb_chains
@@ -382,8 +372,8 @@ modules:
     entity:
     - protein
     - protein_complex
-    annotation: []
-    interaction: []
+    annotation: [structural]
+    interaction:
 - module_name: compath
   functions:
   - compath_mappings
@@ -403,7 +393,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [pathway]
     interaction: []
 - module_name: italk
   functions:
@@ -426,10 +416,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - functional
-    interaction:
-    - ligand_receptor
+    annotation: [functional]
+    interaction: [ligand_receptor]
 - module_name: phosphonetworks
   functions:
   - phosphonetworks_enzyme_substrate
@@ -450,5 +438,5 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [functional]
+    interaction: [enzyme_substrate]

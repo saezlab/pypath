@@ -38,8 +38,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - functional
+    annotation: [functional]
     interaction: []
 - module_name: mcam
   functions:
@@ -60,7 +59,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [functional]
     interaction: []
 - module_name: proteins
   functions:
@@ -81,7 +80,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [variants]
     interaction: []
 - module_name: guide2pharma
   functions:
@@ -104,9 +103,10 @@ modules:
   tags:
     entity:
     - protein
+    - protein_complex
     - drug
     annotation: []
-    interaction: []
+    interaction: [ligand_receptor]
 - module_name: credentials
   functions:
   - credentials
@@ -150,7 +150,7 @@ modules:
     entity:
     - drug
     - protein
-    annotation: []
+    annotation: [side_effects]
     interaction: []
 - module_name: hippie
   functions:
@@ -171,9 +171,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction:
-    - protein_protein_undirected
+    annotation:
+    interaction: [protein_protein_undirected]
 - module_name: iptmnet
   functions:
   - iptmnet_interactions
@@ -194,7 +193,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_directed]
 - module_name: humsavar
   functions:
   - uniprot_variants
@@ -214,7 +213,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [variants]
     interaction: []
 - module_name: kea
   functions:
@@ -236,8 +235,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [enzyme_substrate]
 - module_name: kegg_api
   functions:
   - ''
@@ -277,8 +276,9 @@ modules:
     - protein
     - drug
     - metabolite
-    annotation: []
-    interaction: []
+    - protein_complex
+    annotation: [pathway, functional]
+    interaction: [protein_protein_regulation]
 - module_name: cellphonedb
   functions:
   - cellphonedb_complex_annotations
@@ -303,11 +303,8 @@ modules:
     entity:
     - protein
     - protein_complex
-    annotation:
-    - cellular_location
-    - functional
-    interaction:
-    - ligand_receptor
+    annotation: [functional]
+    interaction: [ligand_receptor]
 - module_name: opm
   functions:
   - opm_annotations
@@ -327,9 +324,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - structural
-    - subcellular_location
+    annotation: [structural, subcellular_location]
     interaction: []
 - module_name: matrisome
   functions:
@@ -350,9 +345,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - functional
-    - subcellular_location
+    annotation: [functional, subcellular_location]
     interaction: []
 - module_name: intogen
   functions:
@@ -374,9 +367,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - disease_association
-    - functional
+    annotation: [disease_association, functional]
     interaction: []
 - module_name: cellcellinteractions
   functions:
@@ -397,8 +388,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [functional]
+    interaction:
 - module_name: matrixdb
   functions:
   - matrixdb_annotations
@@ -424,11 +415,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - subcellular_location
-    - functional
-    interaction:
-    - protein_protein_undirected
+    annotation: [subcellular_location, functional]
+    interaction: [protein_protein_undirected]
 - module_name: mirdeathdb
   functions:
   - mirdeathdb_interactions
@@ -449,8 +437,8 @@ modules:
     entity:
     - rna
     - protein
-    annotation: []
-    interaction: []
+    annotation: [functional]
+    interaction: [miRNA_tf]
 - module_name: cell
   functions:
   - cell_supplementary

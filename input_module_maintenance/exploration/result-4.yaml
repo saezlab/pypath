@@ -18,9 +18,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - structural
-    - subcellular_location
+    annotation: [structural, subcellular_location]
     interaction: []
 - module_name: biogps
   functions:
@@ -46,7 +44,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [tissue_location]
     interaction: []
 - module_name: uniprot_db
   functions:
@@ -144,7 +142,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_undirected]
 - module_name: integrins
   functions:
   - get_integrins
@@ -164,7 +162,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [functional]
     interaction: []
 - module_name: adrecs
   functions:
@@ -189,7 +187,7 @@ modules:
   tags:
     entity:
     - drug
-    annotation: []
+    annotation: [side_effects]
     interaction: []
 - module_name: msigdb
   functions:
@@ -212,9 +210,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - functional
-    - pathway
+    annotation: [functional, pathway]
     interaction: []
 - module_name: lmpid
   functions:
@@ -236,8 +232,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [structural]
+    interaction: [protein_protein_undirected]
 - module_name: opentargets
   functions:
   - opentargets_adverse_reactions
@@ -262,7 +258,7 @@ modules:
     entity:
     - protein
     - drug
-    annotation: []
+    annotation: [disease, side_effects]
     interaction: []
 - module_name: kirouac2010
   functions:
@@ -284,9 +280,7 @@ modules:
     entity:
     - protein
     annotation:
-    - functional
-    interaction:
-    - ligand_receptor
+    interaction: [ligand_receptor]
 - module_name: drugcentral
   functions:
   - drugcentral_drugs
@@ -309,8 +303,8 @@ modules:
     entity:
     - drug
     - protein
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [protein_small_molecule]
 - module_name: locate
   functions:
   - locate_localizations
@@ -331,7 +325,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [subcellular_location]
     interaction: []
 - module_name: cytosig
   functions:
@@ -353,7 +347,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [functional]
     interaction: []
 - module_name: mppi
   functions:
@@ -375,9 +369,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction:
-    - protein_protein_undirected
+    annotation:
+    interaction: [protein_protein_undirected]
 - module_name: trip
   functions:
   - trip_find_uniprot
@@ -402,8 +395,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [protein_protein_undirected]
 - module_name: collectri
   functions:
   - collectri_interactions
@@ -424,8 +417,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [protein_protein_regulation]
 - module_name: ncrdeathdb
   functions:
   - ncrdeathdb_interactions
@@ -446,8 +439,8 @@ modules:
     entity:
     - rna
     - protein
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [miRNA_protein]
 - module_name: mirtarbase
   functions:
   - mirtarbase_interactions
@@ -469,5 +462,5 @@ modules:
     entity:
     - rna
     - protein
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [miRNA_protein]

@@ -20,7 +20,7 @@ modules:
     - protein
     - rna
     annotation: []
-    interaction: []
+    interaction: [miRNA_tf]
 - module_name: lncdisease
   functions:
   - lncdisease_interactions
@@ -41,7 +41,7 @@ modules:
     entity:
     - rna
     annotation: []
-    interaction: []
+    interaction: [lncrna_protein]
 - module_name: icellnet
   functions:
   - icellnet_annotations
@@ -64,8 +64,8 @@ modules:
     entity:
     - protein
     - protein_complex
-    annotation: []
-    interaction: []
+    annotation: [functional]
+    interaction: [ligand_receptor]
 - module_name: ipi
   functions:
   - ipi_uniprot
@@ -107,7 +107,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_regulation]
 - module_name: wang
   functions:
   - cui_interactions
@@ -133,7 +133,7 @@ modules:
     annotation:
     - functional
     - subcellular_location
-    interaction: []
+    interaction: [protein_protein_regulation]
 - module_name: ctdbase
   functions:
   - ctdbase_relations
@@ -156,7 +156,7 @@ modules:
     - protein
     - drug
     - metabolite
-    annotation: []
+    annotation: [disease, pathway]
     interaction: []
 - module_name: hpmr
   functions:
@@ -179,9 +179,9 @@ modules:
   tags:
     entity:
     - protein
-    annotation: [subcellular_location]
-    interaction:
-    - ligand_receptor
+    - protein_complex
+    annotation: [functional]
+    interaction: [ligand_receptor]
 - module_name: laudanna
   functions:
   - laudanna_directions
@@ -203,7 +203,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_regulation]
 - module_name: compleat
   functions:
   - compleat_complexes
@@ -254,9 +254,7 @@ modules:
     - protein
     - protein_complex
     annotation: [pathway, post_translational_modifications]
-    interaction:
-    - protein_protein_regulation
-    - enzyme_substrate
+    interaction: [protein_protein_regulation, enzyme_substrate]
 - module_name: dorothea
   functions:
   - dorothea_full_raw
@@ -284,8 +282,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [functional]
+    interaction: [protein_protein_regulation]
 - module_name: uniprot
   functions:
   - uniprot_data
@@ -393,7 +391,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [functional]
     interaction: []
 - module_name: biogrid
   functions:
@@ -417,8 +415,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction:
-    - protein_protein_undirected
+    interaction: [protein_protein_undirected]
 - module_name: celltypist
   functions:
   - celltypist_annotations
@@ -438,9 +435,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - cellular_location
-    - tissue_location
+    annotation: [cellular_location, tissue_location]
     interaction: []
 - module_name: oma
   functions:
@@ -461,8 +456,7 @@ modules:
     - json
   tags:
     entity:
-    - protein
-    annotation: []
+    annotation: [orthology]
     interaction: []
 - module_name: protmapper
   functions:
@@ -485,5 +479,5 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation:
     interaction: []

@@ -22,7 +22,7 @@ modules:
     entity:
     - protein
     - metabolite
-    annotation: []
+    annotation: [pathway]
     interaction: []
 - module_name: uniprot_idmapping
   functions:
@@ -66,7 +66,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_directed]
 - module_name: trrust
   functions:
   - trrust_human
@@ -89,7 +89,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_regulation]
 - module_name: acsn
   functions:
   - acsn_interactions
@@ -111,9 +111,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction:
-    - protein_protein_undirected
-    - protein_protein_regulation
+    interaction: [protein_protein_directed]
 - module_name: panglaodb
   functions:
   - panglaodb_annotations
@@ -135,9 +133,7 @@ modules:
     entity:
     - protein
     - rna
-    annotation:
-    - cellular_location
-    - tissue_location
+    annotation: [cellular_location, tissue_location]
     interaction: []
 - module_name: proteinatlas
   functions:
@@ -185,7 +181,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_regulation]
 - module_name: lambert2018
   functions:
   - lambert2018_annotations
@@ -206,9 +202,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - functional
-    - structural
+    annotation: [functional, structural]
     interaction: []
 - module_name: kegg
   functions:
@@ -245,7 +239,7 @@ modules:
     - drug
     - protein_complex
     annotation: [pathway, functional]
-    interaction: []
+    interaction: [protein_protein_regulation]
 - module_name: ebi
   functions:
   - ebi_rest
@@ -287,9 +281,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - subcellular_location
-    interaction: []
+    annotation: [subcellular_location]
+    interaction: [protein_protein_undirected]
 - module_name: encode
   functions:
   - encode_tf_mirna_interactions
@@ -310,8 +303,7 @@ modules:
     entity:
     - protein
     - rna
-    annotation: []
-    interaction: []
+    interaction: [miRNA_tf]
 - module_name: homologene
   functions:
   - homologene_dict
@@ -332,7 +324,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [orthology]
     interaction: []
 - module_name: clinvar
   functions:
@@ -355,8 +347,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [disease, variants]
+    interaction:
 - module_name: humancellmap
   functions:
   - humancellmap_annotations
@@ -376,8 +368,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - subcellular_location
+    annotation: [subcellular_location]
     interaction: []
 - module_name: pubmed
   functions:
@@ -436,9 +427,7 @@ modules:
     - protein_complex
     - metabolite
     annotation: []
-    interaction:
-    - ligand_receptor
-    - protein_small_molecule
+    interaction: [ligand_receptor, protein_small_molecule]
 - module_name: cpad
   functions:
   - cpad_annotations
@@ -460,9 +449,7 @@ modules:
     entity:
     - protein
     - rna
-    annotation:
-    - pathway
-    - disease_association
+    annotation: [pathway, disease_association]
     interaction: []
 - module_name: phosphoelm
   functions:
@@ -487,5 +474,5 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [functional]
+    interaction: [protein_protein_regulation, enzyme_substrate]

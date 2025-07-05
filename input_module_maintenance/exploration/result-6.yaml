@@ -18,8 +18,8 @@ modules:
   tags:
     entity:
     - drug
-    annotation: []
-    interaction: []
+    annotation: [side_effects]
+    interaction:
   validation_notes: Correct - provides drug-drug interactions
 - module_name: membranome
   functions:
@@ -40,10 +40,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - subcellular_location
-    - membrane_topology
-    interaction: []
+    annotation: [subcellular_location]
+    interaction:
   validation_notes: Correct - provides membrane protein location annotations
 - module_name: mirecords
   functions:
@@ -65,8 +63,8 @@ modules:
     entity:
     - rna
     - protein
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [miRNA_protein]
   validation_notes: Correct - provides miRNA-target interactions
 - module_name: spike
   functions:
@@ -89,8 +87,8 @@ modules:
     entity:
     - protein
     - protein_complex
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [protein_protein_undirected]
   validation_notes: Correct - provides both interactions and complexes from signaling pathways
 - module_name: pathwaycommons
   functions:
@@ -125,8 +123,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: [protein_protein_undirected]
+    annotation: [pathway]
+    interaction: [protein_protein_regulation]
   validation_notes: Correct - primary function is aggregating interactions from multiple pathway databases
 - module_name: huri
   functions:
@@ -155,9 +153,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction:
-    - protein_protein_undirected
+    annotation:
+    interaction: [protein_protein_undirected]
   validation_notes: Correct - provides high-quality protein-protein interactions from Y2H screens
 - module_name: cellchatdb
   functions:
@@ -183,9 +180,7 @@ modules:
     entity:
     - protein
     - protein_complex
-    annotation:
-    - functional_role
-    - pathway_annotation
+    annotation: [functional]
     interaction: [ligand_receptor]
   validation_notes: Correct - provides both complexes and ligand-receptor interactions with annotations
 - module_name: oreganno
@@ -208,8 +203,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [protein_protein_directed]
   validation_notes: Correct - primary focus on transcription factor-target interactions
 - module_name: havugimana
   functions:
@@ -254,8 +249,8 @@ modules:
     entity:
     - protein
     - microbe
-    annotation: []
-    interaction: []
+    annotation:
+    interaction: [protein_microbe]
   validation_notes: Correct - provides microbiota-gene associations with disease context
 - module_name: cellcall
   functions:
@@ -279,9 +274,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction:
-    - ligand_receptor
+    annotation: [functional]
+    interaction: [ligand_receptor]
   validation_notes: Correct - provides ligand-receptor interactions with functional annotations
 - module_name: embopress
   functions:
@@ -346,8 +340,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [subcellular_location, functional_role]
+    interaction: [ligand_receptor]
   validation_notes: Correct - provides ligand-receptor interactions with location annotations
 - module_name: common
   functions:
@@ -400,8 +394,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [structural]
+    interaction: [enzyme_substrate]
   validation_notes: Correct - provides kinase-substrate relationships with PTM annotations
 - module_name: scconnect
   functions:
@@ -425,8 +419,9 @@ modules:
     entity:
     - protein
     - small_molecule
-    annotation: []
-    interaction: []
+    - protein_complex
+    annotation: [functional_role]
+    interaction: [protein_protein_regulation]
   validation_notes: Correct - provides ligand-receptor interactions, complexes, and annotations
 - module_name: hprd
   functions:
@@ -449,10 +444,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction:
-    - protein_protein_undirected
-    - enzyme_substrate
+    annotation: [structural]
+    interaction: [enzyme_substrate, protein_protein_undirected]
   validation_notes: Correct - provides both protein interactions and PTM data
 - module_name: ddinter
   functions:
@@ -479,8 +472,8 @@ modules:
   tags:
     entity:
     - drug
-    annotation: []
-    interaction: []
+    annotation: [side_effects]
+    interaction:
   validation_notes: Correct - provides drug-drug interactions and drug identifiers
 - module_name: lincs
   functions:

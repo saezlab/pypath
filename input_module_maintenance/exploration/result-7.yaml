@@ -18,7 +18,6 @@ modules:
     - html
   tags:
     entity:
-    - protein
     annotation: []
     interaction: []
 - module_name: pepcyber
@@ -43,7 +42,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [enzyme_substrate]
 - module_name: domino
   functions:
   - domino_ddi
@@ -66,7 +65,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [enzyme_substrate]
 - module_name: switches_elm
   functions:
   - get_switches_elm
@@ -87,7 +86,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_regulation]
 - module_name: lrdb
   functions:
   - lrdb_annotations
@@ -108,10 +107,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - cellular_location
-    interaction:
-    - ligand_receptor
+    annotation: [cellular_location, functional_role]
+    interaction: [ligand_receptor]
 - module_name: signalink
   functions:
   - signalink_annotations
@@ -135,7 +132,7 @@ modules:
     entity:
     - protein
     annotation: [functional, pathway]
-    interaction: []
+    interaction: [protein_protein_regulation]
 - module_name: mimp
   functions:
   - mimp_enzyme_substrate
@@ -157,7 +154,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [enzyme_substrate]
 - module_name: cancersea
   functions:
   - cancersea_annotations
@@ -178,10 +175,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation:
-    - functional
-    - disease_association
-    - cellular_location
+    annotation: [functional, disease_association]
 - module_name: ontology
   functions:
   - ontology
@@ -222,7 +216,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_undirected]
 - module_name: instruct
   functions:
   - get_instruct
@@ -245,7 +239,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_undirected]
 - module_name: humap
   functions:
   - humap2_complexes
@@ -291,7 +285,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [functional, structural]
 - module_name: eutils
   functions:
   - esummary
@@ -310,7 +304,6 @@ modules:
     - json
   tags:
     entity:
-    - protein
 - module_name: htri
   functions:
   - htri_interactions
@@ -331,7 +324,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_directed]
 - module_name: go
   functions:
   - go_ancestors
@@ -372,7 +365,6 @@ modules:
     - gaf
   tags:
     entity:
-    - protein
     annotation: []
 - module_name: science
   functions:
@@ -412,7 +404,7 @@ modules:
   tags:
     entity:
     - drug
-    annotation: []
+    annotation: [side_effects]
 - module_name: interpro
   functions:
   - interpro2go_annotations
@@ -437,7 +429,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [functional]
 - module_name: talklr
   functions:
   - talklr_annotations
@@ -459,5 +451,5 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [functional]
+    interaction: [ligand_receptor]
