@@ -7,7 +7,7 @@ modules:
   - reactome_uniprots
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-06
     notes: Uses official Reactome FTP downloads, actively maintained pathway database
   module_type:
   - primary_data
@@ -29,7 +29,7 @@ modules:
   - idtypes
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: Uses UniProt REST API for ID mapping service
   module_type:
   - id_mapping
@@ -50,7 +50,7 @@ modules:
   - pazar_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2009-01
     notes: Uses rescued URL, original PAZAR database no longer available
   module_type:
   - primary_data
@@ -74,7 +74,7 @@ modules:
   - trrust_mouse
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2021-11
     notes: TRRUST v2 database, appears to be maintained but infrequently updated
   module_type:
   - primary_data
@@ -95,8 +95,8 @@ modules:
   - acsn_interactions
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
-    notes: Atlas of Cancer Signaling Networks, uses rescued data files
+    last_known_update: 2022-08
+    notes: Atlas of Cancer Signaling Networks, uses rescued data files - v2 here? https://www.ndexbio.org/viewer/networks/49488c61-7832-11e9-848d-0ac135e8bacf
   module_type:
   - primary_data
   dataset_size: large
@@ -142,7 +142,7 @@ modules:
   - proteinatlas_subcellular_annotations
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2024-10
     notes: Human Protein Atlas, actively maintained with regular updates
   module_type:
   - primary_data
@@ -166,7 +166,7 @@ modules:
   - nrf2ome_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2013-04
     notes: Uses rescued data from autophagyregulation.org and nrf2ome.org
   module_type:
   - primary_data
@@ -188,7 +188,7 @@ modules:
   - lambert2018_s1_raw
   maintenance_status:
     category: one_time_paper
-    last_known_update: 2018
+    last_known_update: 2018-02
     notes: Data from Lambert et al. 2018 Cell paper on human transcription factors
   module_type:
   - primary_data
@@ -216,7 +216,7 @@ modules:
   - kegg_pathways
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: KEGG database, actively maintained with regular updates
   module_type:
   - primary_data
@@ -245,7 +245,7 @@ modules:
   - ebi_rest
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: Generic EBI REST API utility function, actively maintained
   module_type:
   - utility
@@ -267,7 +267,7 @@ modules:
   - comppi_locations
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2018-10
     notes: ComPPI database, requires web form submission with cookies
   module_type:
   - primary_data
@@ -288,7 +288,7 @@ modules:
   - encode_tf_mirna_interactions
   maintenance_status:
     category: one_time_paper
-    last_known_update: unknown
+    last_known_update: 2020-01
     notes: Data from ENCODE project, specific TF-miRNA dataset
   module_type:
   - primary_data
@@ -332,7 +332,7 @@ modules:
   - clinvar_raw
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: NCBI ClinVar database, actively maintained with regular updates
   module_type:
   - primary_data
@@ -354,7 +354,7 @@ modules:
   - humancellmap_annotations
   maintenance_status:
     category: one_time_paper
-    last_known_update: unknown
+    last_known_update: 2021-06
     notes: BioID screen data from specific publication
   module_type:
   - primary_data
@@ -380,7 +380,7 @@ modules:
   - pmids_list
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: NCBI PubMed interface, actively maintained
   module_type:
   - utility
@@ -408,9 +408,9 @@ modules:
   - cellinker_smol_interactions
   - cellinker_smol_interactions_raw
   maintenance_status:
-    category: discontinued
+    category: infrequently
     last_known_update: unknown
-    notes: Cellinker database, uses rescued data files
+    notes: Cellinker database, uses rescued data files, recently Celllinker 2.0 was released https://www.cellknowledge.com.cn/cellinker/index.html
   module_type:
   - primary_data
   dataset_size: medium
@@ -433,8 +433,8 @@ modules:
   - cpad_annotations
   - cpad_pathway_cancer
   maintenance_status:
-    category: infrequent
-    last_known_update: unknown
+    category: one_time_paper
+    last_known_update: 2019-06
     notes: Literature curated regulator-pathway-cancer relationships
   module_type:
   - primary_data
@@ -457,8 +457,8 @@ modules:
   - phosphoelm_interactions
   - phosphoelm_kinases
   maintenance_status:
-    category: infrequent
-    last_known_update: unknown
+    category: discontinued
+    last_known_update: 2010-11
     notes: PhosphoELM database, appears to be maintained but infrequently updated
   module_type:
   - primary_data
