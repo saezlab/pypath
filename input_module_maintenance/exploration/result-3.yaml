@@ -4,7 +4,7 @@ modules:
   - graphviz_attrs
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-06
     notes: Scrapes graphviz.org for graph attributes - utility for visualization
   module_type:
   - utility
@@ -44,8 +44,8 @@ modules:
   functions:
   - mcam_cell_adhesion_molecules
   maintenance_status:
-    category: infrequent
-    last_known_update: unknown
+    category: discontinued
+    last_known_update: 2008-03
     notes: Cell adhesion molecules database - university hosted
   module_type:
   - primary_data
@@ -66,7 +66,7 @@ modules:
   - variants
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: EBI Proteins API for variant data - actively maintained
   module_type:
   - primary_data
@@ -89,7 +89,7 @@ modules:
   - guide2pharma_interactions
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: IUPHAR/BPS Guide to Pharmacology - actively maintained database
   module_type:
   - primary_data
@@ -111,8 +111,8 @@ modules:
   functions:
   - credentials
   maintenance_status:
-    category: frequent
-    last_known_update: unknown
+    category:
+    last_known_update:
     notes: Utility module for managing database access credentials
   module_type:
   - utility
@@ -157,7 +157,7 @@ modules:
   - hippie_interactions
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2022-04
     notes: HIPPIE protein-protein interaction database - sporadically updated
   module_type:
   - primary_data
@@ -178,7 +178,7 @@ modules:
   - iptmnet_interactions
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2024-01
     notes: iPTMnet post-translational modification database - actively maintained
   module_type:
   - primary_data
@@ -199,7 +199,7 @@ modules:
   - uniprot_variants
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: UniProt HUMSAVAR human variant annotations - regularly updated
   module_type:
   - primary_data
@@ -258,7 +258,7 @@ modules:
   - pathway_to_gene
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: KEGG REST API - actively maintained database with daily updates
   module_type:
   - primary_data
@@ -287,8 +287,8 @@ modules:
   - cellphonedb_ligands_receptors
   - cellphonedb_protein_annotations
   maintenance_status:
-    category: frequent
-    last_known_update: unknown
+    category: infrequent
+    last_known_update: 2023-10
     notes: CellPhoneDB intercellular communication database - actively maintained
   module_type:
   - primary_data
@@ -309,8 +309,8 @@ modules:
   functions:
   - opm_annotations
   maintenance_status:
-    category: frequent
-    last_known_update: unknown
+    category: infrequent
+    last_known_update: 2023-10
     notes: Orientations of Proteins in Membranes database - regularly updated
   module_type:
   - primary_data
@@ -331,7 +331,7 @@ modules:
   - matrisome_annotations
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2014
     notes: MatrisomeDB 2.0 extracellular matrix proteins - infrequently updated
   module_type:
   - primary_data
@@ -351,9 +351,9 @@ modules:
   functions:
   - intogen_annotations
   maintenance_status:
-    category: infrequent
-    last_known_update: 2014-12
-    notes: IntOGen cancer driver genes - updated every few years
+    category: frequent
+    last_known_update: 2024-09
+    notes: IntOGen cancer driver genes
   module_type:
   - primary_data
   dataset_size: small
@@ -374,7 +374,7 @@ modules:
   - cellcellinteractions_annotations
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2023-01
     notes: Cell-cell interaction database from Bader lab - academic resource
   module_type:
   - primary_data
@@ -399,7 +399,7 @@ modules:
   - matrixdb_secreted_proteins
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2024-09
     notes: MatrixDB protein interactions and annotations - actively maintained
   module_type:
   - primary_data
@@ -443,8 +443,8 @@ modules:
   functions:
   - cell_supplementary
   maintenance_status:
-    category: frequent
-    last_known_update: unknown
+    category:
+    last_known_update:
     notes: Utility for downloading Cell journal supplementary materials
   module_type:
   - utility
