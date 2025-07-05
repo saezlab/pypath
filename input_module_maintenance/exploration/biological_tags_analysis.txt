@@ -3,11 +3,8 @@ PyPath Module Biological Tags Analysis
 
 ENTITY TYPE DISTRIBUTION:
 ------------------------------
-protein: 162 modules
-  Modules: abs, acsn, adhesome, almen2009, baccin2019, biogps, biogrid, biomart, biomodels, ca1, cancercellmap, cancerdrugsdb, cancersea, cellcall, cellcellinteractions, cellchatdb, cellinker, cellphonedb, celltalkdb, celltypist, clinvar, collectri, compath, comppi, connectomedb, cosmic, cpad, cpdb, csa, cspa, ctdbase, cytosig, dbptm, deathdomain, depod, dgidb, dip, diseases, disgenet/_api/schema, disgenet/_api/simple, domino, dorothea, drugbank, drugcentral, ebi, elm, embrace, encode, eutils, exocarta, expasy, genecards, go, gpcrdb, guide2pharma, gutmgene, hgnc, hippie, hmdb/common, hmdb/proteins, hmdb/xml, homologene, hpmr, hpo, hprd, htri, humancellmap, humsavar, huri, i3d, icellnet, ielm, imweb, innatedb, instruct, intact, integrins, interpro, intogen, ipi, iptmnet, italk, kea, kegg, kegg_api, kinasedotcom, kirouac2010, lambert2018, laudanna, li2012, lmpid, lncrnadb, locate, lrdb, macrophage, matrisome, matrixdb, mcam, membranome, mimp, mirdeathdb, mirtarbase, mitab, mppi, msigdb, ncrdeathdb, negatome, netbiol, netpath, new_stitch/actions_test, oma, ontology, opentargets, opm, oreganno, panglaodb, pathophenodb, pathwaycommons, pazar, pdb, pdzbase, pepcyber, pfam, pharos, phobius, phosphatome, phosphoelm, phosphonetworks, phosphopoint, phosphosite, pisa, pro, progeny, proteinatlas, proteins, protmapper, ramilowski2015, reaction, reactome_old, scconnect, science, signalink, signor, spike, stitch, string, surfaceome, switches_elm, talklr, tfcensus, threedcomplex, threedid, topdb, transmir, trip, trrust, uniprot, uniprot_db, uniprot_idmapping, wang, wojtowicz2020, zhong2015
-
-protein_complex: 19 modules
-  Modules: baccin2019, cellchatdb, cellinker, cellphonedb, collectri, compleat, complexportal, corum, havugimana, hpmr, humap, icellnet, macrophage, pathwaycommons, pdb, scconnect, signor, spike, threedcomplex
+protein: 164 modules
+  Modules: abs, acsn, adhesome, almen2009, baccin2019, biogps, biogrid, biomart, biomodels, ca1, cancercellmap, cancerdrugsdb, cancersea, cellcall, cellcellinteractions, cellchatdb, cellinker, cellphonedb, celltalkdb, celltypist, clinvar, collectri, compath, comppi, connectomedb, cosmic, cpad, cpdb, csa, cspa, ctdbase, cytosig, dbptm, deathdomain, depod, dgidb, dip, diseases, disgenet/_api/schema, disgenet/_api/simple, domino, dorothea, drugbank, drugcentral, ebi, elm, embrace, encode, eutils, exocarta, expasy, genecards, go, gpcrdb, guide2pharma, gutmgene, hgnc, hippie, hmdb/common, hmdb/proteins, hmdb/xml, homologene, hpmr, hpo, hprd, htri, humancellmap, humsavar, huri, i3d, icellnet, ielm, imweb, innatedb, instruct, intact, integrins, interpro, intogen, ipi, iptmnet, italk, kea, kegg, kegg_api, kinasedotcom, kirouac2010, lambert2018, laudanna, li2012, lmpid, lncrnadb, locate, lrdb, macrophage, matrisome, matrixdb, mcam, membranome, mimp, mirdeathdb, mirecords, mirtarbase, mitab, mppi, msigdb, ncrdeathdb, negatome, netbiol, netpath, new_stitch/actions_test, oma, ontology, opentargets, opm, oreganno, panglaodb, pathophenodb, pathwaycommons, pazar, pdb, pdzbase, pepcyber, pfam, pharos, phobius, phosphatome, phosphoelm, phosphonetworks, phosphopoint, phosphosite, pisa, pro, progeny, proteinatlas, proteins, protmapper, ramilowski2015, reaction, reactome_old, scconnect, science, sider, signalink, signor, spike, stitch, string, surfaceome, switches_elm, talklr, tfcensus, threedcomplex, threedid, topdb, transmir, trip, trrust, uniprot, uniprot_db, uniprot_idmapping, wang, wojtowicz2020, zhong2015
 
 drug: 19 modules
   Modules: adrecs, cancerdrugsdb, ctdbase, ddinter, dgidb, drugbank, drugcentral, guide2pharma, kegg, kegg_api, lincs, offsides, opentargets, pharos, pubchem, sider, stitch, twosides, unichem
@@ -18,72 +15,66 @@ metabolite: 15 modules
 rna: 14 modules
   Modules: biomart, cpad, encode, exocarta, lncdisease, lncrnadb, mir2disease, mirbase, mirdeathdb, mirecords, mirtarbase, ncrdeathdb, panglaodb, transmir
 
+protein_complex: 13 modules
+  Modules: cellchatdb, cellinker, cellphonedb, compleat, complexportal, corum, havugimana, humap, icellnet, kegg, pdb, signor, spike
+
+small_molecule: 2 modules
+  Modules: lincs, scconnect
+
+microbe: 1 modules
+  Modules: gutmgene
+
 
 ANNOTATION TYPE DISTRIBUTION:
 ------------------------------
-functional: 75 modules
-  Modules: adhesome, baccin2019, biomart, ca1, cancersea, cellcellinteractions, cellphonedb, celltalkdb, collectri, corum, csa, cytosig, deathdomain, dgidb, dip, drugbank, drugcentral, ebi, elm, encode, expasy, genecards, go, gpcrdb, guide2pharma, hgnc, hmdb/common, hmdb/metabolites, hmdb/proteins, hmdb/xml, homologene, htri, imweb, innatedb, integrins, interpro, intogen, italk, kegg, kinasedotcom, kirouac2010, lambert2018, lncrnadb, macrophage, matrisome, matrixdb, mcam, mirbase, mirtarbase, msigdb, ncrdeathdb, negatome, netbiol, new_stitch/actions_test, ontology, oreganno, pazar, pfam, pharos, phosphatome, pro, ramilowski2015, scconnect, signalink, stitch, string, switches_elm, talklr, tfcensus, trip, trrust, uniprot, wang, wojtowicz2020, zhong2015
+functional: 20 modules
+  Modules: adhesome, cancersea, cellphonedb, cosmic, dgidb, hgnc, intogen, italk, kegg, kirouac2010, lambert2018, matrisome, matrixdb, msigdb, phosphatome, signalink, tfcensus, uniprot, wang, zhong2015
 
-disease_association: 30 modules
-  Modules: acsn, adrecs, cancercellmap, cancerdrugsdb, cancersea, clinvar, cosmic, cpad, ctdbase, diseases, disgenet/_api/schema, disgenet/_api/simple, genecards, gutmgene, hpo, humsavar, intogen, kegg_api, lncdisease, mir2disease, mirdeathdb, ncrdeathdb, offsides, opentargets, pathophenodb, pharos, proteinatlas, proteins, sider, twosides
+subcellular_location: 15 modules
+  Modules: almen2009, comppi, cspa, exocarta, hpmr, humancellmap, matrisome, matrixdb, membranome, opm, proteinatlas, surfaceome, topdb, uniprot, wang
 
-structural: 30 modules
-  Modules: almen2009, complexportal, csa, domino, elm, hmdb/common, hmdb/metabolites, hmdb/structures, hmdb/visual, hmdb/xml, humap, i3d, ielm, instruct, interpro, lambert2018, lipidmaps/structures, lmpid, opm, pdb, pdzbase, pepcyber, pfam, phobius, pisa, switches_elm, threedcomplex, threedid, topdb, uniprot
+pathway: 7 modules
+  Modules: cpad, kegg, msigdb, netpath, progeny, signalink, signor
 
-subcellular_location: 22 modules
-  Modules: almen2009, ca1, cellinker, comppi, connectomedb, corum, cspa, exocarta, go, hpmr, humancellmap, locate, matrisome, matrixdb, membranome, opm, phobius, proteinatlas, surfaceome, topdb, uniprot, wang
+cellular_location: 7 modules
+  Modules: cancersea, cellphonedb, celltypist, cspa, lrdb, panglaodb, ramilowski2015
 
-pathway: 21 modules
-  Modules: acsn, biomodels, cellcall, compath, cpad, cpdb, dorothea, hmdb/metabolites, hmdb/proteins, kegg, kegg_api, msigdb, netbiol, netpath, pathwaycommons, progeny, reaction, reactome_old, signalink, signor, spike
+disease_association: 6 modules
+  Modules: cancersea, cosmic, cpad, disgenet/_api/simple, intogen, proteinatlas
 
-post_translational_modifications: 16 modules
-  Modules: dbptm, depod, domino, hprd, iptmnet, kea, li2012, mimp, pepcyber, phosphoelm, phosphonetworks, phosphopoint, phosphosite, protmapper, signor, switches_elm
+structural: 5 modules
+  Modules: almen2009, lambert2018, opm, topdb, uniprot
 
-cellular_location: 14 modules
-  Modules: baccin2019, biogps, cancersea, cellcellinteractions, cellchatdb, cellphonedb, celltypist, cspa, embrace, go, icellnet, lrdb, mcam, panglaodb
+tissue_location: 4 modules
+  Modules: celltypist, panglaodb, proteinatlas, uniprot
 
-tissue_location: 7 modules
-  Modules: biogps, celltypist, opentargets, panglaodb, pharos, proteinatlas, uniprot
+post_translational_modifications: 1 modules
+  Modules: signor
 
-variants: 7 modules
-  Modules: clinvar, cosmic, disgenet/_api/schema, disgenet/_api/simple, humsavar, proteins, uniprot
+membrane_topology: 1 modules
+  Modules: membranome
 
-transcriptional_regulation: 1 modules
-  Modules: transmir
+functional_role: 1 modules
+  Modules: cellchatdb
 
-isoforms: 1 modules
-  Modules: uniprot
+pathway_annotation: 1 modules
+  Modules: cellchatdb
 
 
 INTERACTION TYPE DISTRIBUTION:
 ------------------------------
-protein_protein_undirected: 39 modules
-  Modules: acsn, adhesome, biogrid, cancercellmap, complexportal, comppi, cpdb, deathdomain, dip, domino, elm, havugimana, hippie, hprd, huri, i3d, ielm, imweb, innatedb, instruct, intact, li2012, lmpid, lncrnadb, macrophage, matrixdb, mppi, negatome, pathwaycommons, pdb, pdzbase, pisa, proteinatlas, spike, string, threedcomplex, threedid, trip, wojtowicz2020
+protein_protein_undirected: 14 modules
+  Modules: acsn, biogrid, cancercellmap, cpdb, dip, hippie, hprd, huri, innatedb, intact, matrixdb, mppi, pathwaycommons, wojtowicz2020
 
-protein_protein_regulation: 19 modules
-  Modules: acsn, biomodels, ca1, cancercellmap, cpad, cytosig, kegg, laudanna, macrophage, netbiol, netpath, pathwaycommons, reaction, signalink, signor, spike, string, switches_elm, wang
+ligand_receptor: 11 modules
+  Modules: baccin2019, cellcall, cellchatdb, cellinker, cellphonedb, embrace, hpmr, italk, kirouac2010, lrdb, ramilowski2015
 
-ligand_receptor: 17 modules
-  Modules: baccin2019, cellcall, cellchatdb, cellinker, cellphonedb, celltalkdb, connectomedb, embrace, guide2pharma, hpmr, icellnet, italk, kirouac2010, lrdb, ramilowski2015, scconnect, talklr
+protein_protein_regulation: 3 modules
+  Modules: acsn, reaction, signor
 
-enzyme_substrate: 17 modules
-  Modules: dbptm, depod, domino, hprd, iptmnet, kea, kegg, li2012, mimp, pathwaycommons, pepcyber, phosphoelm, phosphonetworks, phosphopoint, phosphosite, protmapper, signor
+enzyme_substrate: 2 modules
+  Modules: hprd, signor
 
-protein_small_molecule: 13 modules
-  Modules: adrecs, cancerdrugsdb, cellinker, ctdbase, dgidb, drugbank, drugcentral, guide2pharma, kegg_api, new_stitch/actions_test, opentargets, pharos, stitch
-
-transcriptional_regulation: 10 modules
-  Modules: abs, collectri, dorothea, encode, htri, ncrdeathdb, oreganno, pazar, transmir, trrust
-
-mirna: 6 modules
-  Modules: encode, mir2disease, mirdeathdb, mirecords, mirtarbase, transmir
-
-enzyme_metabolite: 3 modules
-  Modules: kegg, kegg_api, reaction
-
-drug_drug_interaction: 2 modules
-  Modules: ddinter, twosides
-
-protein_rna: 1 modules
-  Modules: lncdisease
+protein_small_molecule: 2 modules
+  Modules: cancerdrugsdb, cellinker
 

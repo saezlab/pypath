@@ -1,340 +1,473 @@
 modules:
-  - module_name: almen2009
-    functions: [almen2009_annotations]
-    maintenance_status:
-      category: one_time_paper
-      last_known_update: 2009
-      notes: "Membrane protein classification from paper supplement"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [xls]
-    tags:
-      entity: [protein]
-      annotation: [structural, subcellular_location]
-      interaction: []
-
-  - module_name: biogps
-    functions: [biogps_annotations, biogps_datasets, biogps_download, biogps_download_all]
-    maintenance_status:
-      category: discontinued
-      last_known_update: unknown
-      notes: "Gene expression profiles from historical BioGPS database"
-    module_type: [primary_data]
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [csv, tsv, zip]
-    tags:
-      entity: [protein]
-      annotation: [tissue_location, cellular_location]
-      interaction: []
-
-  - module_name: uniprot_db
-    functions: [all_swissprots, all_trembls, all_uniprots, get_db, init_db, is_swissprot, is_trembl, is_uniprot]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Cached UniProt ID lists for validation"
-    module_type: [utility, id_mapping]
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [api]
-      data_format: [tsv]
-    tags:
-      entity: [protein]
-      annotation: []
-      interaction: []
-
-  - module_name: pubchem
-    functions: [pubchem_mapping]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Chemical compound identifier mappings"
-    module_type: [id_mapping]
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [gz]
-    tags:
-      entity: [metabolite, drug]
-      annotation: []
-      interaction: []
-
-  - module_name: corum
-    functions: [corum_complexes]
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Protein complex database with rescued data"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [txt, zip]
-    tags:
-      entity: [protein_complex]
-      annotation: [functional, subcellular_location]
-      interaction: []
-
-  - module_name: deathdomain
-    functions: [deathdomain_interactions, deathdomain_interactions_rescued]
-    maintenance_status:
-      category: discontinued
-      last_known_update: unknown
-      notes: "Death domain protein interactions, uses rescued data"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [web_scraping, file_download]
-      data_format: [html, tsv]
-    tags:
-      entity: [protein]
-      annotation: [functional]
-      interaction: [protein_protein_undirected]
-
-  - module_name: integrins
-    functions: [get_integrins]
-    maintenance_status:
-      category: one_time_paper
-      last_known_update: 2007
-      notes: "Integrin list from Takada et al 2007 paper"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [web_scraping]
-      data_format: [html]
-    tags:
-      entity: [protein]
-      annotation: [functional]
-      interaction: []
-
-  - module_name: adrecs
-    functions: [adrecs_adr_ontology, adrecs_drug_adr, adrecs_drug_identifiers, adrecs_hierarchy]
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Adverse drug reaction database"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [xlsx, txt]
-    tags:
-      entity: [drug]
-      annotation: [disease_association]
-      interaction: [protein_small_molecule]
-
-  - module_name: msigdb
-    functions: [msigdb_annotations, msigdb_download, msigdb_download_collections]
-    maintenance_status:
-      category: frequent
-      last_known_update: 2022-01
-      notes: "Molecular signatures database, regularly updated"
-    module_type: [primary_data]
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [gmt]
-    tags:
-      entity: [protein]
-      annotation: [functional, pathway]
-      interaction: []
-
-  - module_name: lmpid
-    functions: [lmpid_dmi, lmpid_interactions]
-    maintenance_status:
-      category: discontinued
-      last_known_update: unknown
-      notes: "Domain-motif interactions from rescued XML data"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [xml]
-    tags:
-      entity: [protein]
-      annotation: [structural]
-      interaction: [protein_protein_undirected]
-
-  - module_name: opentargets
-    functions: [opentargets_adverse_reactions, opentargets_baseline_expression, opentargets_direct_score, opentargets_general, opentargets_indirect_score]
-    maintenance_status:
-      category: frequent
-      last_known_update: 2022-11
-      notes: "Disease-target associations and drug safety data"
-    module_type: [primary_data]
-    dataset_size: large
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [json]
-    tags:
-      entity: [protein, drug]
-      annotation: [disease_association, tissue_location]
-      interaction: [protein_small_molecule]
-
-  - module_name: kirouac2010
-    functions: [kirouac2010_interactions]
-    maintenance_status:
-      category: one_time_paper
-      last_known_update: 2010
-      notes: "Cytokine-receptor interactions from paper supplement"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [xls]
-    tags:
-      entity: [protein]
-      annotation: [functional]
-      interaction: [ligand_receptor]
-
-  - module_name: drugcentral
-    functions: [drugcentral_drugs, drugcentral_interactions, drugcentral_mapping]
-    maintenance_status:
-      category: infrequent
-      last_known_update: 2021-09
-      notes: "Drug-target interactions and chemical structures"
-    module_type: [primary_data]
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [drug, protein]
-      annotation: [functional]
-      interaction: [protein_small_molecule]
-
-  - module_name: locate
-    functions: [locate_localizations]
-    maintenance_status:
-      category: discontinued
-      last_known_update: 2008-11
-      notes: "Protein subcellular localization from rescued XML data"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [xml, zip]
-    tags:
-      entity: [protein]
-      annotation: [subcellular_location]
-      interaction: []
-
-  - module_name: cytosig
-    functions: [cytosig_annotations, cytosig_df]
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Cytokine perturbation signatures from GitHub"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [protein]
-      annotation: [functional]
-      interaction: [protein_protein_regulation]
-
-  - module_name: mppi
-    functions: [mppi_interactions]
-    maintenance_status:
-      category: discontinued
-      last_known_update: unknown
-      notes: "MIPS protein-protein interactions from rescued data"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [xml, gz]
-    tags:
-      entity: [protein]
-      annotation: []
-      interaction: [protein_protein_undirected]
-
-  - module_name: trip
-    functions: [trip_find_uniprot, trip_get_uniprot, trip_interactions, trip_process, trip_process_table]
-    maintenance_status:
-      category: discontinued
-      last_known_update: unknown
-      notes: "TRP channel interactions from rescued HTML data"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [web_scraping]
-      data_format: [html, csv]
-    tags:
-      entity: [protein]
-      annotation: [functional]
-      interaction: [protein_protein_undirected]
-
-  - module_name: collectri
-    functions: [collectri_interactions, collectri_raw]
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Transcriptional regulatory interactions from rescued data"
-    module_type: [primary_data]
-    dataset_size: large
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [csv]
-    tags:
-      entity: [protein, protein_complex]
-      annotation: [functional]
-      interaction: [transcriptional_regulation]
-
-  - module_name: ncrdeathdb
-    functions: [ncrdeathdb_interactions]
-    maintenance_status:
-      category: discontinued
-      last_known_update: unknown
-      notes: "Non-coding RNA apoptosis regulation from rescued data"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [rna, protein]
-      annotation: [functional, disease_association]
-      interaction: [transcriptional_regulation]
-
-  - module_name: mirtarbase
-    functions: [mirtarbase_interactions]
-    maintenance_status:
-      category: frequent
-      last_known_update: 2025
-      notes: "Experimentally validated miRNA-target interactions"
-    module_type: [primary_data]
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [csv, xls]
-    tags:
-      entity: [rna, protein]
-      annotation: [functional]
-      interaction: [mirna]
+- module_name: almen2009
+  functions:
+  - almen2009_annotations
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2009
+    notes: Membrane protein classification from paper supplement
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xls
+  tags:
+    entity:
+    - protein
+    annotation:
+    - structural
+    - subcellular_location
+    interaction: []
+- module_name: biogps
+  functions:
+  - biogps_annotations
+  - biogps_datasets
+  - biogps_download
+  - biogps_download_all
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: Gene expression profiles from historical BioGPS database
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+    - tsv
+    - zip
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: uniprot_db
+  functions:
+  - all_swissprots
+  - all_trembls
+  - all_uniprots
+  - get_db
+  - init_db
+  - is_swissprot
+  - is_trembl
+  - is_uniprot
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Cached UniProt ID lists for validation
+  module_type:
+  - utility
+  - id_mapping
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: pubchem
+  functions:
+  - pubchem_mapping
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Chemical compound identifier mappings
+  module_type:
+  - id_mapping
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - gz
+  tags:
+    entity:
+    - metabolite
+    - drug
+    annotation: []
+    interaction: []
+- module_name: corum
+  functions:
+  - corum_complexes
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Protein complex database with rescued data
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+    - zip
+  tags:
+    entity:
+    - protein_complex
+    annotation: []
+    interaction: []
+- module_name: deathdomain
+  functions:
+  - deathdomain_interactions
+  - deathdomain_interactions_rescued
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: Death domain protein interactions, uses rescued data
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - web_scraping
+    - file_download
+    data_format:
+    - html
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: integrins
+  functions:
+  - get_integrins
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2007
+    notes: Integrin list from Takada et al 2007 paper
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: adrecs
+  functions:
+  - adrecs_adr_ontology
+  - adrecs_drug_adr
+  - adrecs_drug_identifiers
+  - adrecs_hierarchy
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Adverse drug reaction database
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+    - txt
+  tags:
+    entity:
+    - drug
+    annotation: []
+    interaction: []
+- module_name: msigdb
+  functions:
+  - msigdb_annotations
+  - msigdb_download
+  - msigdb_download_collections
+  maintenance_status:
+    category: frequent
+    last_known_update: 2022-01
+    notes: Molecular signatures database, regularly updated
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - gmt
+  tags:
+    entity:
+    - protein
+    annotation:
+    - functional
+    - pathway
+    interaction: []
+- module_name: lmpid
+  functions:
+  - lmpid_dmi
+  - lmpid_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: Domain-motif interactions from rescued XML data
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xml
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: opentargets
+  functions:
+  - opentargets_adverse_reactions
+  - opentargets_baseline_expression
+  - opentargets_direct_score
+  - opentargets_general
+  - opentargets_indirect_score
+  maintenance_status:
+    category: frequent
+    last_known_update: 2022-11
+    notes: Disease-target associations and drug safety data
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - json
+  tags:
+    entity:
+    - protein
+    - drug
+    annotation: []
+    interaction: []
+- module_name: kirouac2010
+  functions:
+  - kirouac2010_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2010
+    notes: Cytokine-receptor interactions from paper supplement
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xls
+  tags:
+    entity:
+    - protein
+    annotation:
+    - functional
+    interaction:
+    - ligand_receptor
+- module_name: drugcentral
+  functions:
+  - drugcentral_drugs
+  - drugcentral_interactions
+  - drugcentral_mapping
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2021-09
+    notes: Drug-target interactions and chemical structures
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - drug
+    - protein
+    annotation: []
+    interaction: []
+- module_name: locate
+  functions:
+  - locate_localizations
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2008-11
+    notes: Protein subcellular localization from rescued XML data
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xml
+    - zip
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: cytosig
+  functions:
+  - cytosig_annotations
+  - cytosig_df
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Cytokine perturbation signatures from GitHub
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: mppi
+  functions:
+  - mppi_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: MIPS protein-protein interactions from rescued data
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xml
+    - gz
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction:
+    - protein_protein_undirected
+- module_name: trip
+  functions:
+  - trip_find_uniprot
+  - trip_get_uniprot
+  - trip_interactions
+  - trip_process
+  - trip_process_table
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: TRP channel interactions from rescued HTML data
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: collectri
+  functions:
+  - collectri_interactions
+  - collectri_raw
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Transcriptional regulatory interactions from rescued data
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: ncrdeathdb
+  functions:
+  - ncrdeathdb_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: Non-coding RNA apoptosis regulation from rescued data
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - rna
+    - protein
+    annotation: []
+    interaction: []
+- module_name: mirtarbase
+  functions:
+  - mirtarbase_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025
+    notes: Experimentally validated miRNA-target interactions
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+    - xls
+  tags:
+    entity:
+    - rna
+    - protein
+    annotation: []
+    interaction: []

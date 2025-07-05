@@ -1,340 +1,473 @@
 modules:
-  - module_name: graphviz
-    functions: [graphviz_attrs]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Scrapes graphviz.org for graph attributes - utility for visualization"
-    module_type: [utility]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [web_scraping]
-      data_format: [html]
-    tags:
-      entity: []
-      annotation: []
-      interaction: []
-
-  - module_name: tfcensus
-    functions: [tfcensus_annotations]
-    maintenance_status:
-      category: one_time_paper
-      last_known_update: 2009-04
-      notes: "Vaquerizas 2009 Nature Reviews Genetics paper supplement - static dataset"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [txt]
-    tags:
-      entity: [protein]
-      annotation: [functional]
-      interaction: []
-
-  - module_name: mcam
-    functions: [mcam_cell_adhesion_molecules]
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Cell adhesion molecules database - university hosted"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [protein]
-      annotation: [functional, cellular_location]
-      interaction: []
-
-  - module_name: proteins
-    functions: [variants]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "EBI Proteins API for variant data - actively maintained"
-    module_type: [primary_data]
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [api]
-      data_format: [json]
-    tags:
-      entity: [protein]
-      annotation: [variants, disease_association]
-      interaction: []
-
-  - module_name: guide2pharma
-    functions: [guide2pharma_complexes, guide2pharma_download, guide2pharma_interactions]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "IUPHAR/BPS Guide to Pharmacology - actively maintained database"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [csv]
-    tags:
-      entity: [protein, drug]
-      annotation: [functional]
-      interaction: [protein_small_molecule, ligand_receptor]
-
-  - module_name: credentials
-    functions: [credentials]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Utility module for managing database access credentials"
-    module_type: [utility]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [txt]
-    tags:
-      entity: []
-      annotation: []
-      interaction: []
-
-  - module_name: sider
-    functions: [sider_drug_names, sider_meddra_side_effects, sider_side_effect_frequencies, sider_side_effects]
-    maintenance_status:
-      category: discontinued
-      last_known_update: 2015-10
-      notes: "SIDER 4.1 database - no longer updated, archived URLs used"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [drug]
-      annotation: [disease_association]
-      interaction: []
-
-  - module_name: hippie
-    functions: [hippie_interactions]
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "HIPPIE protein-protein interaction database - sporadically updated"
-    module_type: [primary_data]
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [protein]
-      annotation: []
-      interaction: [protein_protein_undirected]
-
-  - module_name: iptmnet
-    functions: [iptmnet_interactions]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "iPTMnet post-translational modification database - actively maintained"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [protein]
-      annotation: [post_translational_modifications]
-      interaction: [enzyme_substrate]
-
-  - module_name: humsavar
-    functions: [uniprot_variants]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "UniProt HUMSAVAR human variant annotations - regularly updated"
-    module_type: [primary_data]
-    dataset_size: large
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [txt]
-    tags:
-      entity: [protein]
-      annotation: [variants, disease_association]
-      interaction: []
-
-  - module_name: kea
-    functions: [kea_enzyme_substrate, kea_interactions]
-    maintenance_status:
-      category: discontinued
-      last_known_update: 2018-01
-      notes: "KEA 2.0 kinase enrichment analysis - dataset from 2018"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [protein]
-      annotation: [post_translational_modifications]
-      interaction: [enzyme_substrate]
-
-  - module_name: kegg_api
-    functions: ["", disease_to_drug, disease_to_gene, disease_to_pathway, drug_to_disease, drug_to_drug, drug_to_gene, drug_to_pathway, gene_to_disease, gene_to_drug, gene_to_pathway, kegg_drug_to_chebi, kegg_gene_to_ncbi_geneid, kegg_gene_to_uniprot, pathway_to_disease, pathway_to_drug, pathway_to_gene]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "KEGG REST API - actively maintained database with daily updates"
-    module_type: [primary_data, id_mapping]
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [api]
-      data_format: [tsv, json]
-    tags:
-      entity: [protein, drug, metabolite]
-      annotation: [pathway, disease_association]
-      interaction: [protein_small_molecule, enzyme_metabolite]
-
-  - module_name: cellphonedb
-    functions: [cellphonedb_complex_annotations, cellphonedb_complexes, cellphonedb_interactions, cellphonedb_ligands_receptors, cellphonedb_protein_annotations]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "CellPhoneDB intercellular communication database - actively maintained"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [csv]
-    tags:
-      entity: [protein, protein_complex]
-      annotation: [cellular_location, functional]
-      interaction: [ligand_receptor]
-
-  - module_name: opm
-    functions: [opm_annotations]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Orientations of Proteins in Membranes database - regularly updated"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [csv]
-    tags:
-      entity: [protein]
-      annotation: [structural, subcellular_location]
-      interaction: []
-
-  - module_name: matrisome
-    functions: [matrisome_annotations]
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "MatrisomeDB 2.0 extracellular matrix proteins - infrequently updated"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [xls]
-    tags:
-      entity: [protein]
-      annotation: [functional, subcellular_location]
-      interaction: []
-
-  - module_name: intogen
-    functions: [intogen_annotations]
-    maintenance_status:
-      category: infrequent
-      last_known_update: 2014-12
-      notes: "IntOGen cancer driver genes - updated every few years"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv, zip]
-    tags:
-      entity: [protein]
-      annotation: [disease_association, functional]
-      interaction: []
-
-  - module_name: cellcellinteractions
-    functions: [cellcellinteractions_annotations]
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Cell-cell interaction database from Bader lab - academic resource"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [protein]
-      annotation: [functional, cellular_location]
-      interaction: []
-
-  - module_name: matrixdb
-    functions: [matrixdb_annotations, matrixdb_ecm_proteins, matrixdb_interactions, matrixdb_membrane_proteins, matrixdb_secreted_proteins]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "MatrixDB protein interactions and annotations - actively maintained"
-    module_type: [primary_data]
-    dataset_size: medium
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv, csv, zip]
-    tags:
-      entity: [protein]
-      annotation: [subcellular_location, functional]
-      interaction: [protein_protein_undirected]
-
-  - module_name: mirdeathdb
-    functions: [mirdeathdb_interactions]
-    maintenance_status:
-      category: discontinued
-      last_known_update: 2012-04
-      notes: "miRDeathDB from 2012 Nature paper - archived, no longer updated"
-    module_type: [primary_data]
-    dataset_size: small
-    species_coverage: multi_species
-    technical_aspects:
-      access_method: [file_download]
-      data_format: [tsv]
-    tags:
-      entity: [rna, protein]
-      annotation: [disease_association]
-      interaction: [mirna]
-
-  - module_name: cell
-    functions: [cell_supplementary]
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Utility for downloading Cell journal supplementary materials"
-    module_type: [utility]
-    dataset_size: small
-    species_coverage: human_only
-    technical_aspects:
-      access_method: [web_scraping]
-      data_format: [various]
-    tags:
-      entity: []
-      annotation: []
-      interaction: []
+- module_name: graphviz
+  functions:
+  - graphviz_attrs
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Scrapes graphviz.org for graph attributes - utility for visualization
+  module_type:
+  - utility
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+  tags:
+    entity: []
+    annotation: []
+    interaction: []
+- module_name: tfcensus
+  functions:
+  - tfcensus_annotations
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2009-04
+    notes: Vaquerizas 2009 Nature Reviews Genetics paper supplement - static dataset
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+  tags:
+    entity:
+    - protein
+    annotation:
+    - functional
+    interaction: []
+- module_name: mcam
+  functions:
+  - mcam_cell_adhesion_molecules
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Cell adhesion molecules database - university hosted
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: proteins
+  functions:
+  - variants
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: EBI Proteins API for variant data - actively maintained
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: guide2pharma
+  functions:
+  - guide2pharma_complexes
+  - guide2pharma_download
+  - guide2pharma_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: IUPHAR/BPS Guide to Pharmacology - actively maintained database
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    - drug
+    annotation: []
+    interaction: []
+- module_name: credentials
+  functions:
+  - credentials
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Utility module for managing database access credentials
+  module_type:
+  - utility
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+  tags:
+    entity: []
+    annotation: []
+    interaction: []
+- module_name: sider
+  functions:
+  - sider_drug_names
+  - sider_meddra_side_effects
+  - sider_side_effect_frequencies
+  - sider_side_effects
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2015-10
+    notes: SIDER 4.1 database - no longer updated, archived URLs used
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - drug
+    - protein
+    annotation: []
+    interaction: []
+- module_name: hippie
+  functions:
+  - hippie_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: HIPPIE protein-protein interaction database - sporadically updated
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction:
+    - protein_protein_undirected
+- module_name: iptmnet
+  functions:
+  - iptmnet_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: iPTMnet post-translational modification database - actively maintained
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: humsavar
+  functions:
+  - uniprot_variants
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: UniProt HUMSAVAR human variant annotations - regularly updated
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: kea
+  functions:
+  - kea_enzyme_substrate
+  - kea_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2018-01
+    notes: KEA 2.0 kinase enrichment analysis - dataset from 2018
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: kegg_api
+  functions:
+  - ''
+  - disease_to_drug
+  - disease_to_gene
+  - disease_to_pathway
+  - drug_to_disease
+  - drug_to_drug
+  - drug_to_gene
+  - drug_to_pathway
+  - gene_to_disease
+  - gene_to_drug
+  - gene_to_pathway
+  - kegg_drug_to_chebi
+  - kegg_gene_to_ncbi_geneid
+  - kegg_gene_to_uniprot
+  - pathway_to_disease
+  - pathway_to_drug
+  - pathway_to_gene
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: KEGG REST API - actively maintained database with daily updates
+  module_type:
+  - primary_data
+  - id_mapping
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - tsv
+    - json
+  tags:
+    entity:
+    - protein
+    - drug
+    - metabolite
+    annotation: []
+    interaction: []
+- module_name: cellphonedb
+  functions:
+  - cellphonedb_complex_annotations
+  - cellphonedb_complexes
+  - cellphonedb_interactions
+  - cellphonedb_ligands_receptors
+  - cellphonedb_protein_annotations
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: CellPhoneDB intercellular communication database - actively maintained
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    - protein_complex
+    annotation:
+    - cellular_location
+    - functional
+    interaction:
+    - ligand_receptor
+- module_name: opm
+  functions:
+  - opm_annotations
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Orientations of Proteins in Membranes database - regularly updated
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation:
+    - structural
+    - subcellular_location
+    interaction: []
+- module_name: matrisome
+  functions:
+  - matrisome_annotations
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: MatrisomeDB 2.0 extracellular matrix proteins - infrequently updated
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xls
+  tags:
+    entity:
+    - protein
+    annotation:
+    - functional
+    - subcellular_location
+    interaction: []
+- module_name: intogen
+  functions:
+  - intogen_annotations
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2014-12
+    notes: IntOGen cancer driver genes - updated every few years
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - zip
+  tags:
+    entity:
+    - protein
+    annotation:
+    - disease_association
+    - functional
+    interaction: []
+- module_name: cellcellinteractions
+  functions:
+  - cellcellinteractions_annotations
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Cell-cell interaction database from Bader lab - academic resource
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: matrixdb
+  functions:
+  - matrixdb_annotations
+  - matrixdb_ecm_proteins
+  - matrixdb_interactions
+  - matrixdb_membrane_proteins
+  - matrixdb_secreted_proteins
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: MatrixDB protein interactions and annotations - actively maintained
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - csv
+    - zip
+  tags:
+    entity:
+    - protein
+    annotation:
+    - subcellular_location
+    - functional
+    interaction:
+    - protein_protein_undirected
+- module_name: mirdeathdb
+  functions:
+  - mirdeathdb_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2012-04
+    notes: miRDeathDB from 2012 Nature paper - archived, no longer updated
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - rna
+    - protein
+    annotation: []
+    interaction: []
+- module_name: cell
+  functions:
+  - cell_supplementary
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Utility for downloading Cell journal supplementary materials
+  module_type:
+  - utility
+  dataset_size: small
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - various
+  tags:
+    entity: []
+    annotation: []
+    interaction: []

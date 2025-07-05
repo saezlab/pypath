@@ -1,518 +1,463 @@
 modules:
-  - module_name: ielm
-    functions:
-      - get_ielm
-      - get_ielm_huge
-    maintenance_status:
-      category: discontinued
-      last_known_update: unknown
-      notes: "Uses proteomic iELM service which appears to be defunct, uses rescued URLs"
-    module_type:
-      - primary_data
-    dataset_size: medium
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - web_scraping
-      data_format:
-        - html
-    tags:
-      entity:
-        - protein
-      annotation:
-        - structural
-      interaction:
-        - protein_protein_undirected
-
-  - module_name: pepcyber
-    functions:
-      - pepcyber_details
-      - pepcyber_interactions
-    maintenance_status:
-      category: discontinued
-      last_known_update: unknown
-      notes: "Uses rescued URLs, original PepCyber website appears defunct"
-    module_type:
-      - primary_data
-    dataset_size: medium
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - web_scraping
-      data_format:
-        - html
-        - tsv
-    tags:
-      entity:
-        - protein
-      annotation:
-        - structural
-        - post_translational_modifications
-      interaction:
-        - enzyme_substrate
-
-  - module_name: domino
-    functions:
-      - domino_ddi
-      - domino_enzsub
-      - domino_interactions
-    maintenance_status:
-      category: one_time_paper
-      last_known_update: 2009-10
-      notes: "Data from 2009 MINT/DOMINO release, uses rescued files"
-    module_type:
-      - primary_data
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - mitab
-    tags:
-      entity:
-        - protein
-      annotation:
-        - structural
-        - post_translational_modifications
-      interaction:
-        - protein_protein_undirected
-        - enzyme_substrate
-
-  - module_name: switches_elm
-    functions:
-      - get_switches_elm
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Molecular switches database, appears to be maintained but infrequently updated"
-    module_type:
-      - primary_data
-    dataset_size: small
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - txt
-    tags:
-      entity:
-        - protein
-      annotation:
-        - structural
-        - functional
-        - post_translational_modifications
-      interaction:
-        - protein_protein_regulation
-
-  - module_name: lrdb
-    functions:
-      - lrdb_annotations
-      - lrdb_interactions
-    maintenance_status:
-      category: infrequent
-      last_known_update: 2019-12
-      notes: "Ligand-receptor database from GitHub, last update in 2019"
-    module_type:
-      - primary_data
-    dataset_size: medium
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - tsv
-    tags:
-      entity:
-        - protein
-      annotation:
-        - cellular_location
-      interaction:
-        - ligand_receptor
-
-  - module_name: signalink
-    functions:
-      - signalink_annotations
-      - signalink_function_annotations
-      - signalink_interactions
-      - signalink_pathway_annotations
-    maintenance_status:
-      category: discontinued
-      last_known_update: 2020-03
-      notes: "Uses rescued files from 2020, SignaLink3 appears to be discontinued"
-    module_type:
-      - primary_data
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - csv
-    tags:
-      entity:
-        - protein
-      annotation:
-        - functional
-        - pathway
-      interaction:
-        - protein_protein_regulation
-
-  - module_name: mimp
-    functions:
-      - mimp_enzyme_substrate
-      - mimp_interactions
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Kinase-substrate relationships, website appears to be maintained but infrequently updated"
-    module_type:
-      - primary_data
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - tab
-    tags:
-      entity:
-        - protein
-      annotation:
-        - post_translational_modifications
-      interaction:
-        - enzyme_substrate
-
-  - module_name: cancersea
-    functions:
-      - cancersea_annotations
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Cancer single cell functional states, uses rescued URLs"
-    module_type:
-      - primary_data
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method:
-        - web_scraping
-      data_format:
-        - html
-        - tsv
-    tags:
-      entity:
-        - protein
-      annotation:
-        - functional
-        - disease_association
-        - cellular_location
-
-  - module_name: ontology
-    functions:
-      - ontology
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Accesses EBI OLS which is actively maintained"
-    module_type:
-      - utility
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - api
-      data_format:
-        - json
-    tags:
-      entity:
-        - protein
-      annotation:
-        - functional
-
-  - module_name: i3d
-    functions:
-      - get_i3d
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Interactome3D structural interactions, appears maintained but infrequently updated"
-    module_type:
-      - primary_data
-    dataset_size: large
-    species_coverage: human_only
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - dat
-    tags:
-      entity:
-        - protein
-      annotation:
-        - structural
-      interaction:
-        - protein_protein_undirected
-
-  - module_name: instruct
-    functions:
-      - get_instruct
-      - get_instruct_offsets
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Structural interaction annotations, appears maintained but infrequently updated"
-    module_type:
-      - primary_data
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - sin
-        - txt
-    tags:
-      entity:
-        - protein
-      annotation:
-        - structural
-      interaction:
-        - protein_protein_undirected
-
-  - module_name: humap
-    functions:
-      - humap2_complexes
-      - humap_complexes
-    maintenance_status:
-      category: infrequent
-      last_known_update: 2020-08
-      notes: "Human protein complexes from mass spectrometry, HuMAP2 last updated 2020"
-    module_type:
-      - primary_data
-    dataset_size: large
-    species_coverage: human_only
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - txt
-    tags:
-      entity:
-        - protein_complex
-      annotation:
-        - structural
-
-  - module_name: pfam
-    functions:
-      - pfam_names
-      - pfam_pdb
-      - pfam_regions
-      - pfam_uniprot
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Pfam database actively maintained at EBI"
-    module_type:
-      - primary_data
-      - id_mapping
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - tsv
-        - txt
-    tags:
-      entity:
-        - protein
-      annotation:
-        - structural
-        - functional
-
-  - module_name: eutils
-    functions:
-      - esummary
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "NCBI E-utilities API actively maintained"
-    module_type:
-      - utility
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - api
-      data_format:
-        - json
-    tags:
-      entity:
-        - protein
-
-  - module_name: htri
-    functions:
-      - htri_interactions
-    maintenance_status:
-      category: discontinued
-      last_known_update: unknown
-      notes: "HTRIdb uses rescued URLs, original database appears defunct"
-    module_type:
-      - primary_data
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - csv
-    tags:
-      entity:
-        - protein
-      annotation:
-        - functional
-      interaction:
-        - transcriptional_regulation
-
-  - module_name: go
-    functions:
-      - go_ancestors
-      - go_ancestors_goose
-      - go_ancestors_quickgo
-      - go_annotations
-      - go_annotations_all
-      - go_annotations_goa
-      - go_annotations_goose
-      - go_annotations_quickgo
-      - go_annotations_solr
-      - go_annotations_uniprot
-      - go_descendants
-      - go_descendants_goose
-      - go_descendants_quickgo
-      - go_descendants_to_ancestors
-      - go_terms
-      - go_terms_goose
-      - go_terms_quickgo
-      - go_terms_solr
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Gene Ontology actively maintained and frequently updated"
-    module_type:
-      - primary_data
-      - utility
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - api
-        - file_download
-      data_format:
-        - obo
-        - tsv
-        - json
-        - gaf
-    tags:
-      entity:
-        - protein
-      annotation:
-        - functional
-        - cellular_location
-        - subcellular_location
-
-  - module_name: science
-    functions:
-      - science_download
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "Utility for downloading Science journal supplements, actively maintained"
-    module_type:
-      - utility
-    dataset_size: small
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - various
-    tags:
-      entity:
-        - protein
-
-  - module_name: offsides
-    functions:
-      - offsides_side_effects
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Drug side effects database, appears maintained but infrequently updated"
-    module_type:
-      - primary_data
-    dataset_size: large
-    species_coverage: human_only
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - csv
-    tags:
-      entity:
-        - drug
-      annotation:
-        - disease_association
-
-  - module_name: interpro
-    functions:
-      - interpro2go_annotations
-      - interpro_annotations
-      - interpro_entries
-      - interpro_xrefs
-    maintenance_status:
-      category: frequent
-      last_known_update: unknown
-      notes: "InterPro database actively maintained at EBI"
-    module_type:
-      - primary_data
-    dataset_size: large
-    species_coverage: multi_species
-    technical_aspects:
-      access_method:
-        - api
-        - file_download
-      data_format:
-        - xml
-        - json
-    tags:
-      entity:
-        - protein
-      annotation:
-        - structural
-        - functional
-
-  - module_name: talklr
-    functions:
-      - talklr_annotations
-      - talklr_interactions
-      - talklr_raw
-    maintenance_status:
-      category: infrequent
-      last_known_update: unknown
-      notes: "Ligand-receptor interactions from GitHub, appears maintained but infrequently updated"
-    module_type:
-      - primary_data
-    dataset_size: medium
-    species_coverage: human_only
-    technical_aspects:
-      access_method:
-        - file_download
-      data_format:
-        - rda
-    tags:
-      entity:
-        - protein
-      annotation:
-        - functional
-      interaction:
-        - ligand_receptor
+- module_name: ielm
+  functions:
+  - get_ielm
+  - get_ielm_huge
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: Uses proteomic iELM service which appears to be defunct, uses rescued URLs
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: pepcyber
+  functions:
+  - pepcyber_details
+  - pepcyber_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: Uses rescued URLs, original PepCyber website appears defunct
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: domino
+  functions:
+  - domino_ddi
+  - domino_enzsub
+  - domino_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2009-10
+    notes: Data from 2009 MINT/DOMINO release, uses rescued files
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - mitab
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: switches_elm
+  functions:
+  - get_switches_elm
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Molecular switches database, appears to be maintained but infrequently updated
+  module_type:
+  - primary_data
+  dataset_size: small
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: lrdb
+  functions:
+  - lrdb_annotations
+  - lrdb_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2019-12
+    notes: Ligand-receptor database from GitHub, last update in 2019
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation:
+    - cellular_location
+    interaction:
+    - ligand_receptor
+- module_name: signalink
+  functions:
+  - signalink_annotations
+  - signalink_function_annotations
+  - signalink_interactions
+  - signalink_pathway_annotations
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2020-03
+    notes: Uses rescued files from 2020, SignaLink3 appears to be discontinued
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: [functional, pathway]
+    interaction: []
+- module_name: mimp
+  functions:
+  - mimp_enzyme_substrate
+  - mimp_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Kinase-substrate relationships, website appears to be maintained but infrequently updated
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tab
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: cancersea
+  functions:
+  - cancersea_annotations
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Cancer single cell functional states, uses rescued URLs
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation:
+    - functional
+    - disease_association
+    - cellular_location
+- module_name: ontology
+  functions:
+  - ontology
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Accesses EBI OLS which is actively maintained
+  module_type:
+  - utility
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+  tags:
+    entity:
+    - protein
+    annotation: []
+- module_name: i3d
+  functions:
+  - get_i3d
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Interactome3D structural interactions, appears maintained but infrequently updated
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - dat
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: instruct
+  functions:
+  - get_instruct
+  - get_instruct_offsets
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Structural interaction annotations, appears maintained but infrequently updated
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - sin
+    - txt
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: humap
+  functions:
+  - humap2_complexes
+  - humap_complexes
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2020-08
+    notes: Human protein complexes from mass spectrometry, HuMAP2 last updated 2020
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+  tags:
+    entity:
+    - protein_complex
+    annotation: []
+- module_name: pfam
+  functions:
+  - pfam_names
+  - pfam_pdb
+  - pfam_regions
+  - pfam_uniprot
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Pfam database actively maintained at EBI
+  module_type:
+  - primary_data
+  - id_mapping
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - txt
+  tags:
+    entity:
+    - protein
+    annotation: []
+- module_name: eutils
+  functions:
+  - esummary
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: NCBI E-utilities API actively maintained
+  module_type:
+  - utility
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+  tags:
+    entity:
+    - protein
+- module_name: htri
+  functions:
+  - htri_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: HTRIdb uses rescued URLs, original database appears defunct
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: go
+  functions:
+  - go_ancestors
+  - go_ancestors_goose
+  - go_ancestors_quickgo
+  - go_annotations
+  - go_annotations_all
+  - go_annotations_goa
+  - go_annotations_goose
+  - go_annotations_quickgo
+  - go_annotations_solr
+  - go_annotations_uniprot
+  - go_descendants
+  - go_descendants_goose
+  - go_descendants_quickgo
+  - go_descendants_to_ancestors
+  - go_terms
+  - go_terms_goose
+  - go_terms_quickgo
+  - go_terms_solr
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Gene Ontology actively maintained and frequently updated
+  module_type:
+  - primary_data
+  - utility
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    - file_download
+    data_format:
+    - obo
+    - tsv
+    - json
+    - gaf
+  tags:
+    entity:
+    - protein
+    annotation: []
+- module_name: science
+  functions:
+  - science_download
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: Utility for downloading Science journal supplements, actively maintained
+  module_type:
+  - utility
+  dataset_size: small
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - various
+  tags:
+    entity:
+    - protein
+- module_name: offsides
+  functions:
+  - offsides_side_effects
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Drug side effects database, appears maintained but infrequently updated
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - drug
+    annotation: []
+- module_name: interpro
+  functions:
+  - interpro2go_annotations
+  - interpro_annotations
+  - interpro_entries
+  - interpro_xrefs
+  maintenance_status:
+    category: frequent
+    last_known_update: unknown
+    notes: InterPro database actively maintained at EBI
+  module_type:
+  - primary_data
+  dataset_size: large
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    - file_download
+    data_format:
+    - xml
+    - json
+  tags:
+    entity:
+    - protein
+    annotation: []
+- module_name: talklr
+  functions:
+  - talklr_annotations
+  - talklr_interactions
+  - talklr_raw
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Ligand-receptor interactions from GitHub, appears maintained but infrequently updated
+  module_type:
+  - primary_data
+  dataset_size: medium
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - rda
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
