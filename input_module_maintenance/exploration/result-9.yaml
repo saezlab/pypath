@@ -18,9 +18,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: [cellular_location]
-    interaction:
-    - ligand_receptor
+    annotation:
+    interaction: [ligand_receptor]
 - module_name: complexportal
   functions:
   - complexportal_complexes
@@ -65,7 +64,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [enzyme_substrate]
 - module_name: netpath
   functions:
   - netpath_interactions
@@ -90,7 +89,7 @@ modules:
     entity:
     - protein
     annotation: [pathway]
-    interaction: []
+    interaction: [protein_protein_undirected]
 - module_name: negatome
   functions:
   - negatome_interactions
@@ -111,7 +110,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_negative]
 - module_name: pisa
   functions:
   - pisa_bonds
@@ -132,7 +131,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [structural]
     interaction: []
 - module_name: kinasedotcom
   functions:
@@ -153,7 +152,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [functional]
     interaction: []
 - module_name: phosphosite
   functions:
@@ -186,8 +185,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [functional, structural]
+    interaction: [enzyme_substrate]
 - module_name: pdzbase
   functions:
   - pdzbase_interactions
@@ -208,7 +207,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_directed]
 - module_name: drugbank
   functions:
   - drugbank_annotations
@@ -236,7 +235,7 @@ modules:
     - drug
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_small_molecule]
 - module_name: biomodels
   functions:
   - download_single_model
@@ -260,7 +259,6 @@ modules:
     - json
   tags:
     entity:
-    - protein
     annotation: []
     interaction: []
 - module_name: celltalkdb
@@ -284,8 +282,8 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
-    interaction: []
+    annotation: [functional, subcellular_location]
+    interaction: [ligand_receptor]
 - module_name: threedcomplex
   functions:
   - threedcomplex_chains
@@ -308,7 +306,7 @@ modules:
     - tsv
   tags:
     entity:
-    - protein
+    - protein_complex
     annotation: []
     interaction: []
 - module_name: reaction
@@ -362,7 +360,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [protein_protein_undirected]
 - module_name: dip
   functions:
   - dip_interactions
@@ -384,8 +382,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction:
-    - protein_protein_undirected
+    interaction: [protein_protein_undirected]
 - module_name: hpo
   functions:
   - hpo_annotations
@@ -409,7 +406,7 @@ modules:
   tags:
     entity:
     - protein
-    annotation: []
+    annotation: [disease_association]
     interaction: []
 - module_name: dbptm
   functions:
@@ -435,7 +432,7 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction: []
+    interaction: [enzyme_substrate]
 - module_name: biomart
   functions:
   - biomart_homology
@@ -461,8 +458,6 @@ modules:
     - tsv
   tags:
     entity:
-    - protein
-    - rna
     annotation: []
     interaction: []
 - module_name: innatedb
@@ -485,5 +480,4 @@ modules:
     entity:
     - protein
     annotation: []
-    interaction:
-    - protein_protein_undirected
+    interaction: [protein_protein_undirected]
