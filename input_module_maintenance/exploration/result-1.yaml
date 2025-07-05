@@ -4,8 +4,8 @@ modules:
   - transmir_interactions
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
-    notes: TF-miRNA interactions from TransmiR database, uses rescued URL suggesting potential data availability issues
+    last_known_update: 2024-08
+    notes: TF-miRNA interactions from TransmiR database, uses rescued URL suggesting potential data availability issues, however recently Transmir 3.0 has been released
   module_type:
   - primary_data
   dataset_size: small
@@ -26,8 +26,8 @@ modules:
   - lncdisease_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
-    notes: Uses rescued URL indicating database is no longer maintained
+    last_known_update: 2023-10
+    notes: Uses rescued URL indicating database is no longer maintained, however recently v3.0 has been released.
   module_type:
   - primary_data
   dataset_size: small
@@ -49,7 +49,7 @@ modules:
   - icellnet_interactions
   maintenance_status:
     category: frequent
-    last_known_update: 2020-03
+    last_known_update: 2023-11
     notes: Active GitHub repository with recent updates for ligand-receptor interactions
   module_type:
   - primary_data
@@ -140,7 +140,7 @@ modules:
   - ctdbase_vocabulary
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: Comparative Toxicogenomics Database, actively maintained
   module_type:
   - primary_data
@@ -165,7 +165,7 @@ modules:
   - hpmr_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2006-06
     notes: Human Plasma Membrane Receptome, uses rescued URLs indicating discontinued maintenance
   module_type:
   - primary_data
@@ -188,7 +188,7 @@ modules:
   - laudanna_effects
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2017-01
     notes: Laudanna Lab signaling flow/direction data, uses rescued URLs
   module_type:
   - primary_data
@@ -210,7 +210,7 @@ modules:
   - compleat_raw
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2013-02
     notes: Compleat protein complex database, uses rescued URL
   module_type:
   - primary_data
@@ -236,7 +236,7 @@ modules:
   - signor_protein_families
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: SIGNOR pathway database, actively maintained
   module_type:
   - primary_data
@@ -265,7 +265,7 @@ modules:
   - tfregulons_interactions
   - tfregulons_interactions_old
   maintenance_status:
-    category: frequent
+    category: discontinued
     last_known_update: unknown
     notes: DoRothEA TF regulons database, actively maintained on GitHub
   module_type:
@@ -303,7 +303,7 @@ modules:
   - uniprot_topology
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: UniProt protein knowledgebase, continuously updated
   module_type:
   - primary_data
@@ -352,7 +352,7 @@ modules:
   - progeny_annotations
   - progeny_raw
   maintenance_status:
-    category: frequent
+    category: discontinued
     last_known_update: unknown
     notes: PROGENy pathway responsive genes, actively maintained on GitHub
   module_type:
@@ -376,7 +376,7 @@ modules:
   - expasy_enzymes
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: ExPASy enzyme nomenclature database, regularly updated
   module_type:
   - primary_data
@@ -399,7 +399,7 @@ modules:
   - biogrid_interactions
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: BioGRID protein interaction database, regularly updated
   module_type:
   - primary_data
@@ -421,7 +421,7 @@ modules:
   - celltypist_annotations
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-01
     notes: Celltypist immune cell markers, actively maintained by Teichmann lab
   module_type:
   - primary_data
@@ -442,8 +442,8 @@ modules:
   - oma_orthologs
   - oma_table
   maintenance_status:
-    category: frequent
-    last_known_update: unknown
+    category: infrequent
+    last_known_update: 2024-07
     notes: OMA orthology database, regularly updated
   module_type:
   - id_mapping
