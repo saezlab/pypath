@@ -58,7 +58,7 @@ modules:
   - is_uniprot
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: Cached UniProt ID lists for validation
   module_type:
   - utility
@@ -80,7 +80,7 @@ modules:
   - pubchem_mapping
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2025-07
     notes: Chemical compound identifier mappings
   module_type:
   - id_mapping
