@@ -26,8 +26,8 @@ modules:
   - mapping
   - raw
   maintenance_status:
-    category: frequent
-    last_known_update: 2022
+    category: infrequent
+    last_known_update: 2021-02
     notes: HMDB 5.0 released January 2022, actively maintained
   module_type:
   - primary_data
@@ -45,129 +45,14 @@ modules:
     - metabolite
     annotation: []
     interaction: []
-- module_name: hmdb/proteins
-  functions:
-  - mapping
-  - raw
-  maintenance_status:
-    category: frequent
-    last_known_update: 2022
-    notes: HMDB 5.0 protein component released January 2022
-  module_type:
-  - primary_data
-  - id_mapping
-  dataset_size: large
-  species_coverage: human_only
-  technical_aspects:
-    access_method:
-    - file_download
-    data_format:
-    - xml
-    - zip
-  tags:
-    entity:
-    - protein
-    annotation: []
-    interaction: []
-- module_name: hmdb/xml
-  functions:
-  - hmdb_xml
-  maintenance_status:
-    category: frequent
-    last_known_update: 2022
-    notes: HMDB XML parser utility for version 5.0
-  module_type:
-  - utility
-  dataset_size: large
-  species_coverage: human_only
-  technical_aspects:
-    access_method:
-    - file_download
-    data_format:
-    - xml
-    - zip
-  tags:
-    entity:
-    - metabolite
-    - protein
-    annotation: []
-    interaction: []
-- module_name: hmdb/common
-  functions:
-  - mapping
-  - raw
-  maintenance_status:
-    category: frequent
-    last_known_update: 2022
-    notes: HMDB common utilities for version 5.0
-  module_type:
-  - utility
-  dataset_size: large
-  species_coverage: human_only
-  technical_aspects:
-    access_method:
-    - file_download
-    data_format:
-    - xml
-    - zip
-  tags:
-    entity:
-    - metabolite
-    - protein
-    annotation: []
-    interaction: []
-- module_name: hmdb/visual
-  functions:
-  - show_structure
-  - structure_svg
-  maintenance_status:
-    category: frequent
-    last_known_update: 2022
-    notes: HMDB visualization utilities for version 5.0
-  module_type:
-  - utility
-  dataset_size: small
-  species_coverage: human_only
-  technical_aspects:
-    access_method:
-    - api
-    data_format:
-    - svg
-  tags:
-    entity:
-    - metabolite
-    annotation: []
-    interaction: []
-- module_name: hmdb/structures
-  functions:
-  - sdf
-  maintenance_status:
-    category: frequent
-    last_known_update: 2022
-    notes: HMDB structure data from version 5.0
-  module_type:
-  - primary_data
-  dataset_size: large
-  species_coverage: human_only
-  technical_aspects:
-    access_method:
-    - file_download
-    data_format:
-    - sdf
-    - zip
-  tags:
-    entity:
-    - metabolite
-    annotation: []
-    interaction: []
 - module_name: new_stitch/actions_test
   functions:
   - prop_actions
   - run_test
   - test_actions
   maintenance_status:
-    category: discontinued
-    last_known_update: 2020
+    category: 
+    last_known_update:
     notes: Test module for STITCH actions, discontinued with STITCH v5.0
   module_type:
   - utility
@@ -191,8 +76,8 @@ modules:
   - disgenet_variants
   maintenance_status:
     category: frequent
-    last_known_update: 2023
-    notes: DisGeNet v7.0 released 2020, actively maintained through 2023
+    last_known_update: 2025
+    notes: DisGeNet recently switched to commercial business model, tbd. whether we can continue to use.
   module_type:
   - primary_data
   dataset_size: large
@@ -207,27 +92,4 @@ modules:
     entity:
     - protein
     annotation: [disease_association]
-    interaction: []
-- module_name: disgenet/_api/schema
-  functions:
-  - ARG_TYPES
-  - QUERY_PARAM_TYPES
-  - RETURN_TYPES
-  maintenance_status:
-    category: frequent
-    last_known_update: 2023
-    notes: DisGeNet API schema definitions for v7.0
-  module_type:
-  - utility
-  dataset_size: small
-  species_coverage: human_only
-  technical_aspects:
-    access_method:
-    - api
-    data_format:
-    - json
-  tags:
-    entity:
-    - protein
-    annotation: []
     interaction: []

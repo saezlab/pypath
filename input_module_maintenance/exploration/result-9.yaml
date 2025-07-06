@@ -117,7 +117,7 @@ modules:
   - pisa_interfaces
   maintenance_status:
     category: frequent
-    last_known_update: 2024
+    last_known_update: 2025
     notes: PDBe PISA updated weekly with new PDB structures
   module_type:
   - primary_data
@@ -169,7 +169,7 @@ modules:
   - phosphosite_regsites_one_organism
   maintenance_status:
     category: frequent
-    last_known_update: 2024
+    last_known_update: 2025
     notes: PhosphoSitePlus continuously updated commercial database
   module_type:
   - primary_data
@@ -191,7 +191,7 @@ modules:
   functions:
   - pdzbase_interactions
   maintenance_status:
-    category: discontinued
+    category: one_time_paper
     last_known_update: 2011
     notes: PDZ domain interaction database from rescued archive
   module_type:
@@ -245,7 +245,7 @@ modules:
   - get_single_model
   maintenance_status:
     category: frequent
-    last_known_update: 2024
+    last_known_update: 2025
     notes: EMBL-EBI BioModels actively maintained with 2024 features
   module_type:
   - primary_data
@@ -319,7 +319,7 @@ modules:
   - reactome_interactions
   maintenance_status:
     category: frequent
-    last_known_update: 2024
+    last_known_update: 2025-06
     notes: Multiple pathway databases - Reactome, ACSN, PID, Panther
   module_type:
   - primary_data
@@ -366,7 +366,7 @@ modules:
   - dip_interactions
   - dip_login
   maintenance_status:
-    category: infrequent
+    category: discontinued
     last_known_update: 2017-02
     notes: Database of Interacting Proteins
   module_type:
@@ -391,7 +391,7 @@ modules:
   - hpo_terms
   maintenance_status:
     category: frequent
-    last_known_update: 2024
+    last_known_update: 2024-09
     notes: Human Phenotype Ontology actively maintained with 2024 updates
   module_type:
   - primary_data
@@ -414,9 +414,9 @@ modules:
   - dbptm_enzyme_substrate_old
   - dbptm_interactions
   maintenance_status:
-    category: discontinued
-    last_known_update: 2016
-    notes: dbPTM database appears discontinued
+    category: infrequent
+    last_known_update: 2025-08
+    notes: dbPTM 2025 has been released
   module_type:
   - primary_data
   dataset_size: medium
@@ -441,8 +441,8 @@ modules:
   - biomart_microarrays
   - biomart_query
   maintenance_status:
-    category: frequent
-    last_known_update: 2025-05
+    category:
+    last_known_update:
     notes: Ensembl BioMart actively maintained with regular Ensembl releases
   module_type:
   - utility
