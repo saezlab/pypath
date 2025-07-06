@@ -8,7 +8,7 @@ modules:
     notes: Membrane protein classification from paper supplement
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -32,7 +32,7 @@ modules:
     notes: Gene expression profiles from BioGPS database
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -63,7 +63,7 @@ modules:
   module_type:
   - utility
   - id_mapping
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -84,7 +84,7 @@ modules:
     notes: Chemical compound identifier mappings
   module_type:
   - id_mapping
-  dataset_size: large
+  status: timeout
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -106,7 +106,7 @@ modules:
     notes: Protein complex database with rescued data
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -129,7 +129,7 @@ modules:
     notes: Death domain protein interactions, actively maintained
   module_type:
   - primary_data
-  dataset_size: small
+  status: error
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -152,7 +152,7 @@ modules:
     notes: Integrin list from Takada et al 2007 paper
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -176,7 +176,7 @@ modules:
     notes: Adverse drug reaction database, maybe switch to adrecs-target?
   module_type:
   - primary_data
-  dataset_size: medium
+  status: error
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -200,7 +200,7 @@ modules:
     notes: Molecular signatures database, regularly updated
   module_type:
   - primary_data
-  dataset_size: large
+  status: timeout
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -222,7 +222,7 @@ modules:
     notes: Domain-motif interactions from rescued XML data
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -247,7 +247,7 @@ modules:
     notes: Disease-target associations and drug safety data
   module_type:
   - primary_data
-  dataset_size: large
+  status: timeout
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -269,7 +269,7 @@ modules:
     notes: Cytokine-receptor interactions from paper supplement
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -292,7 +292,7 @@ modules:
     notes: Drug-target interactions and chemical structures
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -314,7 +314,7 @@ modules:
     notes: Protein subcellular localization from rescued XML data
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -337,7 +337,7 @@ modules:
     notes: Cytokine perturbation signatures from GitHub
   module_type:
   - primary_data
-  dataset_size: medium
+  status: error
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -358,7 +358,7 @@ modules:
     notes: MIPS protein-protein interactions from rescued data
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -384,7 +384,7 @@ modules:
     notes: TRP channel interactions from rescued HTML data
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -407,7 +407,7 @@ modules:
     notes: Transcriptional regulatory interactions from rescued data
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -428,7 +428,7 @@ modules:
     notes: Non-coding RNA apoptosis regulation from rescued data
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -450,7 +450,7 @@ modules:
     notes: Experimentally validated miRNA-target interactions
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:

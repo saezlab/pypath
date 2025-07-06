@@ -8,7 +8,7 @@ modules:
     notes: Drug-drug interaction safety signals from FDA AERS, likely static dataset
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -30,7 +30,7 @@ modules:
     notes: Membrane protein annotations from Membranome database via JSON API
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -52,7 +52,7 @@ modules:
     notes: Literature curated miRNA-target interactions, uses rescued file
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -76,7 +76,7 @@ modules:
     notes: Signaling pathways knowledge base, XML download from 2012
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -113,7 +113,7 @@ modules:
     notes: Central repository aggregating pathway data from multiple sources
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -143,7 +143,7 @@ modules:
     notes: Human Reference Interactome from systematic Y2H screens
   module_type:
   - primary_data
-  dataset_size: large
+  status: timeout
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -169,7 +169,7 @@ modules:
     notes: Cell-cell communication database with ligand-receptor interactions
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -193,7 +193,7 @@ modules:
     notes: Open regulatory annotation database, last update from 2010
   module_type:
   - primary_data
-  dataset_size: medium
+  status: error
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -215,7 +215,7 @@ modules:
     notes: Protein complexes from Havugimana 2012 Cell paper supplement
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -238,7 +238,7 @@ modules:
     notes: Gut microbiota-gene associations, uses rescued file, should switch to 2.0
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -264,7 +264,7 @@ modules:
     notes: Ligand-receptor-TF pathway dataset from GitHub repository
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -286,7 +286,7 @@ modules:
     notes: Utility for downloading EMBO Press supplementary materials
   module_type:
   - utility
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -308,7 +308,7 @@ modules:
     notes: Utility to retrieve organism information from Ensembl
   module_type:
   - utility
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -330,7 +330,7 @@ modules:
     notes: Ligand-receptor interactions from connectomeDB2020
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -357,7 +357,7 @@ modules:
     notes: Common utility functions for file reading and data processing
   module_type:
   - utility
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -383,7 +383,7 @@ modules:
     notes: Kinase-substrate data from Li 2012 paper supplement
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -407,7 +407,7 @@ modules:
     notes: Ligand-receptor interactions from scConnect GitHub repository
   module_type:
   - primary_data
-  dataset_size: medium
+  status: error
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -433,7 +433,7 @@ modules:
     notes: Human Protein Reference Database, discontinued in 2010
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -459,7 +459,7 @@ modules:
     notes: Drug-drug interactions from DDInter database via web scraping
   module_type:
   - primary_data
-  dataset_size: medium
+  status: error
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -483,7 +483,7 @@ modules:
     notes: Small molecule compound identifiers from LINCS database, should switch to lincs dataportal 2.0 https://lincsportal.ccs.miami.edu/signatures/assays
   module_type:
   - id_mapping
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:

@@ -1,29 +1,4 @@
 modules:
-- module_name: reactome_old
-  functions:
-  - reactome_chebis
-  - reactome_pathway_relations
-  - reactome_pathways
-  - reactome_uniprots
-  maintenance_status:
-    category: frequent
-    last_known_update: 2025-06
-    notes: Uses official Reactome FTP downloads, actively maintained pathway database
-  module_type:
-  - primary_data
-  dataset_size: large
-  species_coverage: multi_species
-  technical_aspects:
-    access_method:
-    - file_download
-    data_format:
-    - tsv
-  tags:
-    entity:
-    - protein
-    - metabolite
-    annotation: [pathway]
-    interaction: []
 - module_name: uniprot_idmapping
   functions:
   - idtypes
@@ -33,7 +8,7 @@ modules:
     notes: Uses UniProt REST API for ID mapping service
   module_type:
   - id_mapping
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -54,7 +29,7 @@ modules:
     notes: Uses rescued URL, original PAZAR database no longer available
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -78,7 +53,7 @@ modules:
     notes: TRRUST v2 database, appears to be maintained but infrequently updated
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -99,7 +74,7 @@ modules:
     notes: Atlas of Cancer Signaling Networks, uses rescued data files - v2 here? https://www.ndexbio.org/viewer/networks/49488c61-7832-11e9-848d-0ac135e8bacf
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -122,7 +97,7 @@ modules:
     notes: Cell type marker database, last update March 2020
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -146,7 +121,7 @@ modules:
     notes: Human Protein Atlas, actively maintained with regular updates
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -170,7 +145,7 @@ modules:
     notes: Uses rescued data from autophagyregulation.org and nrf2ome.org
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -192,7 +167,7 @@ modules:
     notes: Data from Lambert et al. 2018 Cell paper on human transcription factors
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -220,7 +195,7 @@ modules:
     notes: KEGG database, actively maintained with regular updates
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -249,7 +224,7 @@ modules:
     notes: Generic EBI REST API utility function, actively maintained
   module_type:
   - utility
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -271,7 +246,7 @@ modules:
     notes: ComPPI database, requires web form submission with cookies
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -292,7 +267,7 @@ modules:
     notes: Data from ENCODE project, specific TF-miRNA dataset
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -314,7 +289,7 @@ modules:
     notes: NCBI HomoloGene discontinued, uses rescued data
   module_type:
   - id_mapping
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -336,7 +311,7 @@ modules:
     notes: NCBI ClinVar database, actively maintained with regular updates
   module_type:
   - primary_data
-  dataset_size: large
+  status: timeout
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -358,7 +333,7 @@ modules:
     notes: BioID screen data from specific publication
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -384,7 +359,7 @@ modules:
     notes: NCBI PubMed interface, actively maintained
   module_type:
   - utility
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -413,7 +388,7 @@ modules:
     notes: Cellinker database, uses rescued data files, recently Celllinker 2.0 was released https://www.cellknowledge.com.cn/cellinker/index.html
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -438,7 +413,7 @@ modules:
     notes: Literature curated regulator-pathway-cancer relationships
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -462,7 +437,7 @@ modules:
     notes: PhosphoELM database, appears to be maintained but infrequently updated
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:

@@ -8,7 +8,7 @@ modules:
     notes: Scrapes graphviz.org for graph attributes - utility for visualization
   module_type:
   - utility
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -28,7 +28,7 @@ modules:
     notes: Vaquerizas 2009 Nature Reviews Genetics paper supplement - static dataset
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -49,7 +49,7 @@ modules:
     notes: Cell adhesion molecules database - university hosted
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -70,7 +70,7 @@ modules:
     notes: EBI Proteins API for variant data - actively maintained
   module_type:
   - primary_data
-  dataset_size: large
+  status: timeout
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -93,7 +93,7 @@ modules:
     notes: IUPHAR/BPS Guide to Pharmacology - actively maintained database
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -116,7 +116,7 @@ modules:
     notes: Utility module for managing database access credentials
   module_type:
   - utility
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -139,7 +139,7 @@ modules:
     notes: SIDER 4.1 database - no longer updated, archived URLs used
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -161,7 +161,7 @@ modules:
     notes: HIPPIE protein-protein interaction database - sporadically updated
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -182,7 +182,7 @@ modules:
     notes: iPTMnet post-translational modification database - actively maintained
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -203,7 +203,7 @@ modules:
     notes: UniProt HUMSAVAR human variant annotations - regularly updated
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -225,7 +225,7 @@ modules:
     notes: KEA 2.0 kinase enrichment analysis - dataset from 2018
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -263,7 +263,7 @@ modules:
   module_type:
   - primary_data
   - id_mapping
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -292,7 +292,7 @@ modules:
     notes: CellPhoneDB intercellular communication database - actively maintained
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -314,7 +314,7 @@ modules:
     notes: Orientations of Proteins in Membranes database - regularly updated
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -335,7 +335,7 @@ modules:
     notes: MatrisomeDB 2.0 extracellular matrix proteins - infrequently updated
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -356,7 +356,7 @@ modules:
     notes: IntOGen cancer driver genes
   module_type:
   - primary_data
-  dataset_size: small
+  status: timeout
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -378,7 +378,7 @@ modules:
     notes: Cell-cell interaction database from Bader lab - academic resource
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -403,7 +403,7 @@ modules:
     notes: MatrixDB protein interactions and annotations - actively maintained
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -426,7 +426,7 @@ modules:
     notes: miRDeathDB from 2012 Nature paper - archived, no longer updated
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -448,7 +448,7 @@ modules:
     notes: Utility for downloading Cell journal supplementary materials
   module_type:
   - utility
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:

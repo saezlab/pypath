@@ -8,7 +8,7 @@ modules:
     notes: Active lipid structure database, regularly updated
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -32,7 +32,7 @@ modules:
   module_type:
   - primary_data
   - id_mapping
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -56,7 +56,7 @@ modules:
     notes: Test module for STITCH actions, discontinued with STITCH v5.0
   module_type:
   - utility
-  dataset_size: medium
+  status: error
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -80,7 +80,7 @@ modules:
     notes: DisGeNet recently switched to commercial business model, tbd. whether we can continue to use.
   module_type:
   - primary_data
-  dataset_size: large
+  status: error
   species_coverage: human_only
   technical_aspects:
     access_method:

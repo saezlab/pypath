@@ -8,7 +8,7 @@ modules:
     notes: TF-miRNA interactions from TransmiR database, uses rescued URL suggesting potential data availability issues, however recently Transmir 3.0 has been released
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -30,7 +30,7 @@ modules:
     notes: Uses rescued URL indicating database is no longer maintained, however recently v3.0 has been released.
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -53,7 +53,7 @@ modules:
     notes: Active GitHub repository with recent updates for ligand-receptor interactions
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -75,7 +75,7 @@ modules:
     notes: IPI database discontinued in 2012, uses GitHub alternative source
   module_type:
   - id_mapping
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -96,7 +96,7 @@ modules:
     notes: Ma'ayan 2005 Science paper supplement, static dataset
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -120,7 +120,7 @@ modules:
     notes: Wang Lab Human Signaling Network v6 from 2014, uses rescued URLs
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -144,7 +144,7 @@ modules:
     notes: Comparative Toxicogenomics Database, actively maintained
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -169,7 +169,7 @@ modules:
     notes: Human Plasma Membrane Receptome, uses rescued URLs indicating discontinued maintenance
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -192,7 +192,7 @@ modules:
     notes: Laudanna Lab signaling flow/direction data, uses rescued URLs
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -214,7 +214,7 @@ modules:
     notes: Compleat protein complex database, uses rescued URL
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -240,7 +240,7 @@ modules:
     notes: SIGNOR pathway database, actively maintained
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -270,7 +270,7 @@ modules:
     notes: DoRothEA TF regulons database, actively maintained on GitHub
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -308,7 +308,7 @@ modules:
   module_type:
   - primary_data
   - id_mapping
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -333,7 +333,7 @@ modules:
     notes: Chen et al Science Signaling 2017 supplement, static dataset
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -357,7 +357,7 @@ modules:
     notes: PROGENy pathway responsive genes, actively maintained on GitHub
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -380,7 +380,7 @@ modules:
     notes: ExPASy enzyme nomenclature database, regularly updated
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -403,7 +403,7 @@ modules:
     notes: BioGRID protein interaction database, regularly updated
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -425,7 +425,7 @@ modules:
     notes: Celltypist immune cell markers, actively maintained by Teichmann lab
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -447,7 +447,7 @@ modules:
     notes: OMA orthology database, regularly updated
   module_type:
   - id_mapping
-  dataset_size: large
+  status: timeout
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -468,7 +468,7 @@ modules:
     notes: Bachman et al 2019 biorxiv supplement, static dataset
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:

@@ -9,7 +9,7 @@ modules:
     notes: iELM web server is currently accessible
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -30,7 +30,7 @@ modules:
     notes: Uses rescued URLs, original PepCyber website appears defunct
   module_type:
   - primary_data
-  dataset_size: medium
+  status: timeout
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -54,7 +54,7 @@ modules:
     notes: Data from 2009 MINT/DOMINO release, uses rescued files
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -75,7 +75,7 @@ modules:
     notes: Switches ELM database is part of ELM resource.
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -97,7 +97,7 @@ modules:
     notes: Ligand-receptor database from GitHub, last update in 2019
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -121,7 +121,7 @@ modules:
     notes: SignaLink3 website is accessible but pypath uses rescued files from 2020
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -143,7 +143,7 @@ modules:
     notes: Kinase-substrate relationships, website appears to be maintained but infrequently updated
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -164,7 +164,7 @@ modules:
     notes: CancerSEA, originally published in 2018
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -185,7 +185,7 @@ modules:
     notes: Accesses EBI OLS which is actively maintained
   module_type:
   - utility
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -205,7 +205,7 @@ modules:
     notes: Interactome3D structural interactions, last modified October 2024
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -227,7 +227,7 @@ modules:
     notes: INstruct database
   module_type:
   - primary_data
-  dataset_size: medium
+  status: error
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -250,7 +250,7 @@ modules:
     notes: Human protein complexes from mass spectrometry, HuMAP2 last updated 2020
   module_type:
   - primary_data
-  dataset_size: large
+  status: error
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -274,7 +274,7 @@ modules:
   module_type:
   - primary_data
   - id_mapping
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -295,7 +295,7 @@ modules:
     notes: NCBI E-utilities API actively maintained, documentation updated December 2024
   module_type:
   - utility
-  dataset_size: large
+  status: error
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -313,7 +313,7 @@ modules:
     notes: HTRIdb uses rescued URLs, original database appears defunct
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -352,7 +352,7 @@ modules:
   module_type:
   - primary_data
   - utility
-  dataset_size: large
+  status: timeout
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -375,7 +375,7 @@ modules:
     notes: Utility for downloading Science journal supplements, actively maintained
   module_type:
   - utility
-  dataset_size: small
+  status:
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -394,7 +394,7 @@ modules:
     notes: OFFSIDES is part of nSIDES platform with related OnSIDES database updated in 2023
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -417,7 +417,7 @@ modules:
     notes: InterPro database actively maintained at EBI, version 103.0 released December 2024
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -441,7 +441,7 @@ modules:
     notes: Ligand-receptor interactions from GitHub, original publication in 2020
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:

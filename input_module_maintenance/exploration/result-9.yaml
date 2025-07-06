@@ -8,7 +8,7 @@ modules:
     notes: Supplementary data from Nature Communications 2015 paper
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -29,7 +29,7 @@ modules:
     notes: EBI IntAct ComplexPortal - actively maintained database, major expansion in May 2024
   module_type:
   - primary_data
-  dataset_size: medium
+  status: timeout
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -52,7 +52,7 @@ modules:
     notes: DEPOD 2.0 update released March 2019
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -76,7 +76,7 @@ modules:
     notes: Mirror site available, original discontinued
   module_type:
   - primary_data
-  dataset_size: medium
+  status: timeout
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -99,7 +99,7 @@ modules:
     notes: Negatome 2.0 manually curated non-interacting protein pairs
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -121,7 +121,7 @@ modules:
     notes: PDBe PISA updated weekly with new PDB structures
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -142,7 +142,7 @@ modules:
     notes: Kinase.com data from rescued archive
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -173,7 +173,7 @@ modules:
     notes: PhosphoSitePlus continuously updated commercial database
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -196,7 +196,7 @@ modules:
     notes: PDZ domain interaction database from rescued archive
   module_type:
   - primary_data
-  dataset_size: small
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -221,7 +221,7 @@ modules:
     notes: DrugBank version 5.1.13 released January 2025
   module_type:
   - primary_data
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -249,7 +249,7 @@ modules:
     notes: EMBL-EBI BioModels actively maintained with 2024 features
   module_type:
   - primary_data
-  dataset_size: large
+  status: error
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -272,7 +272,7 @@ modules:
     notes: CellTalkDB ligand-receptor database
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -297,7 +297,7 @@ modules:
     notes: 3DComplex database from Weizmann Institute
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -323,7 +323,7 @@ modules:
     notes: Multiple pathway databases - Reactome, ACSN, PID, Panther
   module_type:
   - primary_data
-  dataset_size: large
+  status: timeout
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -338,29 +338,6 @@ modules:
     - metabolite
     annotation: []
     interaction: [protein_protein_regulation]
-- module_name: imweb
-  functions:
-  - get_imweb
-  - get_imweb_req
-  maintenance_status:
-    category: discontinued
-    last_known_update: 2016-09
-    notes: InBio Map discontinued, replaced by InWeb
-  module_type:
-  - primary_data
-  dataset_size: large
-  species_coverage: human_only
-  technical_aspects:
-    access_method:
-    - api
-    data_format:
-    - tar.gz
-    - rda
-  tags:
-    entity:
-    - protein
-    annotation: []
-    interaction: [protein_protein_undirected]
 - module_name: dip
   functions:
   - dip_interactions
@@ -371,7 +348,7 @@ modules:
     notes: Database of Interacting Proteins
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -395,7 +372,7 @@ modules:
     notes: Human Phenotype Ontology actively maintained with 2024 updates
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: human_only
   technical_aspects:
     access_method:
@@ -419,7 +396,7 @@ modules:
     notes: dbPTM 2025 has been released
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -447,7 +424,7 @@ modules:
   module_type:
   - utility
   - id_mapping
-  dataset_size: large
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
@@ -469,7 +446,7 @@ modules:
     notes: InnateDB innate immunity database
   module_type:
   - primary_data
-  dataset_size: medium
+  status: success
   species_coverage: multi_species
   technical_aspects:
     access_method:
