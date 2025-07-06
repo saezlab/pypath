@@ -1,0 +1,87 @@
+# HGNC Gene Groups
+hgnc_genegroups:
+  url: "https://www.genenames.org/cgi-bin/genegroup/download-all"
+  format: tsv
+  separator: "\t"
+  
+  field_mapping:
+    group_id: 0        # Group ID
+    group_name: 1      # Group name
+    uniprot_ids: 2     # UniProt IDs (comma-separated)
+    gene_groups: 3     # Gene group hierarchy (pipe-separated)
+  
+  skip_header: 1
+  
+  subfield_separator:
+    uniprot_ids: ","   # Split UniProt IDs by comma
+    gene_groups: "|"   # Split gene groups by pipe
+  
+  transform: "pypath.inputs.hgnc.process_genegroups"
+  
+  description: "HGNC gene family/group annotations"
+  organism: 9606
+  data_type: annotation
+  license: "Custom - free for academic use"
+  citation: "PMID: 33152070"
+
+# HGNC Complete Set
+hgnc_complete:
+  url: "http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/tsv/hgnc_complete_set.txt"
+  format: tsv
+  separator: "\t"
+  
+  field_mapping:
+    hgnc_id: 0         # HGNC ID
+    symbol: 1          # Approved symbol
+    name: 2            # Approved name
+    locus_group: 3     # Locus group
+    locus_type: 4      # Locus type
+    status: 5          # Status
+    location: 6        # Location
+    location_sortable: 7  # Location sortable
+    alias_symbol: 8    # Alias symbols (pipe-separated)
+    alias_name: 9      # Alias names (pipe-separated)
+    prev_symbol: 10    # Previous symbols (pipe-separated)
+    prev_name: 11      # Previous names (pipe-separated)
+    gene_family: 12    # Gene family
+    gene_family_id: 13 # Gene family ID
+    date_approved: 14  # Date approved
+    date_modified: 15  # Date modified
+    date_symbol_changed: 16  # Date symbol changed
+    date_name_changed: 17    # Date name changed
+    accession_numbers: 18    # Accession numbers (pipe-separated)
+    enzyme_id: 19      # Enzyme IDs (pipe-separated)
+    entrez_id: 20      # NCBI Gene ID
+    ensembl_gene_id: 21     # Ensembl gene ID
+    mouse_genome_database_id: 22  # MGD ID
+    specialist_database_links: 23  # Specialist DB links
+    specialist_database_ids: 24    # Specialist DB IDs
+    pubmed_ids: 25     # PubMed IDs (pipe-separated)
+    refseq_ids: 26     # RefSeq IDs (pipe-separated)
+    gene_group: 27     # Gene group
+    gene_group_id: 28  # Gene group ID
+    ccds_ids: 29       # CCDS IDs (pipe-separated)
+    vega_ids: 30       # Vega IDs (pipe-separated)
+    omim_id: 31        # OMIM ID
+    uniprot_ids: 48    # UniProt IDs (pipe-separated)
+  
+  skip_header: 1
+  
+  subfield_separator:
+    alias_symbol: "|"
+    alias_name: "|"
+    prev_symbol: "|"
+    prev_name: "|"
+    accession_numbers: "|"
+    enzyme_id: "|"
+    pubmed_ids: "|"
+    refseq_ids: "|"
+    ccds_ids: "|"
+    vega_ids: "|"
+    uniprot_ids: "|"
+  
+  description: "HGNC complete gene set with all identifiers"
+  organism: 9606
+  data_type: identifier_mapping
+  license: "Custom - free for academic use"
+  citation: "PMID: 33152070"

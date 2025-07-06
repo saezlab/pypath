@@ -1,0 +1,76 @@
+# PyPath Data Source Configuration Schema
+# This file defines the structure for data source YAML configurations
+
+# Example source configuration:
+source_name:
+  # Basic download configuration
+  url: string                      # Required: URL to download from
+  format: string                   # Required: tsv, csv, excel, xml, json, rda
+  compression: string              # Optional: gzip, zip, tar, bz2, xz
+  
+  # HTTP request configuration
+  method: string                   # Optional: GET (default), POST
+  headers:                         # Optional: HTTP headers
+    User-Agent: string
+    Accept: string
+  params:                          # Optional: Query parameters for GET
+    key: value
+  data:                           # Optional: POST body data
+    key: value
+  json_body: object               # Optional: JSON POST body
+  
+  # File format specific options
+  separator: string               # For CSV/TSV: field separator (default: \t for TSV, , for CSV)
+  sheet: string|int              # For Excel: sheet name or index
+  encoding: string               # Text encoding (default: utf-8)
+  
+  # Field mapping configuration
+  field_mapping:                  # Required: maps output fields to input columns/paths
+    # For tabular data (TSV, CSV, Excel):
+    field_name: int|string        # Column index (0-based) or column name
+    
+    # For JSON:
+    field_name: string           # JSONPath or glom spec
+    
+    # For XML:
+    field_name:                  # XPath configuration
+      path: string              # XPath expression
+      attribute: string         # Optional: extract attribute instead of text
+      namespace: object         # Optional: namespace prefixes
+  
+  # Data processing options
+  skip_header: int               # Number of header rows to skip
+  filters:                       # Optional: row filters (applied in order)
+    - field: string             # Field name to filter on
+      operator: string          # eq, ne, gt, lt, gte, lte, in, not_in, regex
+      value: any                # Value to compare against
+  
+  # Subfiled parsing
+  subfield_separator:            # Optional: parse subfields within fields
+    field_name: string          # Separator for this field (e.g., "|", ";")
+  
+  # Custom processing
+  transform: string              # Optional: Python function path (module.function)
+  transform_args:                # Optional: arguments for transform function
+    key: value
+  
+  # Caching and versioning
+  cache_name: string             # Optional: custom cache key (default: auto-generated)
+  version: string                # Optional: version identifier
+  
+  # Change detection
+  check_etag: boolean            # Check ETag header (default: true)
+  check_last_modified: boolean   # Check Last-Modified header (default: true)
+  checksum_url: string           # Optional: URL to checksum file
+  checksum_type: string          # Optional: md5, sha1, sha256
+  
+  # Bronze layer configuration
+  bronze_path: string            # Optional: custom path for bronze parquet file
+  partition_by: list             # Optional: fields to partition by in parquet
+  
+  # Metadata
+  description: string            # Human-readable description
+  organism: int                  # NCBI taxonomy ID (e.g., 9606 for human)
+  data_type: string              # interaction, annotation, sequence, etc.
+  license: string                # Data license
+  citation: string               # Publication reference

@@ -1,0 +1,76 @@
+# BioGRID Physical Interactions
+biogrid_physical:
+  url: "https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/BIOGRID-MV-Physical-LATEST.tab3.zip"
+  format: tsv
+  compression: zip
+  separator: "\t"
+  
+  field_mapping:
+    partner_a: 7      # Systematic Name Interactor A
+    partner_b: 8      # Systematic Name Interactor B
+    pmid: 14          # Publication Identifier
+    taxid_a: 15       # Organism ID Interactor A
+    taxid_b: 16       # Organism ID Interactor B
+    throughput: 17    # Throughput
+    score: 18         # Score
+    modification: 19  # Modification
+    phenotypes: 20    # Phenotypes
+    qualifications: 21 # Qualifications
+    tags: 22          # Tags
+  
+  skip_header: 1
+  
+  filters:
+    # Filter for human interactions only
+    - field: taxid_a
+      operator: eq
+      value: "9606"
+    - field: taxid_b
+      operator: eq
+      value: "9606"
+    # Keep only low throughput interactions by default
+    - field: throughput
+      operator: regex
+      value: "^Low"
+  
+  description: "BioGRID physical protein-protein interactions"
+  organism: 9606
+  data_type: interaction
+  license: "MIT"
+  citation: "PMID: 33070389"
+  
+  check_etag: true
+  check_last_modified: true
+
+# BioGRID All Interactions (including genetic)
+biogrid_all:
+  url: "https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/BIOGRID-ALL-LATEST.tab3.zip"
+  format: tsv
+  compression: zip
+  separator: "\t"
+  
+  field_mapping:
+    partner_a: 7      # Systematic Name Interactor A
+    partner_b: 8      # Systematic Name Interactor B
+    pmid: 14          # Publication Identifier
+    taxid_a: 15       # Organism ID Interactor A
+    taxid_b: 16       # Organism ID Interactor B
+    throughput: 17    # Throughput
+    experimental_system: 11  # Experimental System
+    experimental_system_type: 12  # Experimental System Type
+  
+  skip_header: 1
+  
+  filters:
+    - field: taxid_a
+      operator: eq
+      value: "9606"
+    - field: taxid_b
+      operator: eq
+      value: "9606"
+  
+  description: "BioGRID all interactions including genetic"
+  organism: 9606
+  data_type: interaction
+  license: "MIT"
+  citation: "PMID: 33070389"
