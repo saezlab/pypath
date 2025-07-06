@@ -4,9 +4,9 @@ modules:
   - get_ielm
   - get_ielm_huge
   maintenance_status:
-    category: frequent
-    last_known_update: 2024
-    notes: iELM web server is currently accessible and functioning, part of ELM 2024 update
+    category: discontinued
+    last_known_update: 2012
+    notes: iELM web server is currently accessible
   module_type:
   - primary_data
   dataset_size: medium
@@ -70,9 +70,9 @@ modules:
   functions:
   - get_switches_elm
   maintenance_status:
-    category: frequent
-    last_known_update: 2024
-    notes: Switches ELM database is part of ELM resource with major 2024 updates
+    category: discontinued
+    last_known_update: 2012
+    notes: Switches ELM database is part of ELM resource.
   module_type:
   - primary_data
   dataset_size: small
@@ -117,7 +117,7 @@ modules:
   - signalink_pathway_annotations
   maintenance_status:
     category: infrequent
-    last_known_update: 2020-03
+    last_known_update: 2022-01
     notes: SignaLink3 website is accessible but pypath uses rescued files from 2020
   module_type:
   - primary_data
@@ -159,9 +159,9 @@ modules:
   functions:
   - cancersea_annotations
   maintenance_status:
-    category: frequent
+    category: discontinued
     last_known_update: 2018
-    notes: CancerSEA website is accessible and functional, originally published in 2018
+    notes: CancerSEA, originally published in 2018
   module_type:
   - primary_data
   dataset_size: medium
@@ -180,8 +180,8 @@ modules:
   functions:
   - ontology
   maintenance_status:
-    category: frequent
-    last_known_update: 2024
+    category:
+    last_known_update:
     notes: Accesses EBI OLS which is actively maintained
   module_type:
   - utility
@@ -200,8 +200,8 @@ modules:
   functions:
   - get_i3d
   maintenance_status:
-    category: infrequent
-    last_known_update: 2024-10
+    category: frequent
+    last_known_update: 2024-12
     notes: Interactome3D structural interactions, last modified October 2024
   module_type:
   - primary_data
@@ -222,9 +222,9 @@ modules:
   - get_instruct
   - get_instruct_offsets
   maintenance_status:
-    category: infrequent
-    last_known_update: 2024
-    notes: INstruct database is accessible with related 2024 publications
+    category: discontinued
+    last_known_update: 2013
+    notes: INstruct database
   module_type:
   - primary_data
   dataset_size: medium
@@ -269,8 +269,8 @@ modules:
   - pfam_uniprot
   maintenance_status:
     category: frequent
-    last_known_update: 2024-06
-    notes: Pfam database actively maintained at EBI, Pfam 37.0 released June 2024
+    last_known_update: 2025-06
+    notes: Pfam database actively maintained at EBI, released as part of Interpro
   module_type:
   - primary_data
   - id_mapping
@@ -290,8 +290,8 @@ modules:
   functions:
   - esummary
   maintenance_status:
-    category: frequent
-    last_known_update: 2024-12
+    category:
+    last_known_update:
     notes: NCBI E-utilities API actively maintained, documentation updated December 2024
   module_type:
   - utility
@@ -347,7 +347,7 @@ modules:
   - go_terms_solr
   maintenance_status:
     category: frequent
-    last_known_update: 2024
+    last_known_update: 2025-06
     notes: Gene Ontology actively maintained and frequently updated
   module_type:
   - primary_data
@@ -370,8 +370,8 @@ modules:
   functions:
   - science_download
   maintenance_status:
-    category: frequent
-    last_known_update: 2024
+    category:
+    last_known_update:
     notes: Utility for downloading Science journal supplements, actively maintained
   module_type:
   - utility
@@ -413,7 +413,7 @@ modules:
   - interpro_xrefs
   maintenance_status:
     category: frequent
-    last_known_update: 2024-12
+    last_known_update: 2025-06
     notes: InterPro database actively maintained at EBI, version 103.0 released December 2024
   module_type:
   - primary_data
@@ -436,7 +436,7 @@ modules:
   - talklr_interactions
   - talklr_raw
   maintenance_status:
-    category: infrequent
+    category: one_time_paper
     last_known_update: 2020
     notes: Ligand-receptor interactions from GitHub, original publication in 2020
   module_type:
