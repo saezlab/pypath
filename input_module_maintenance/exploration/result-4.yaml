@@ -4,7 +4,7 @@ modules:
   - almen2009_annotations
   maintenance_status:
     category: one_time_paper
-    last_known_update: 2009
+    last_known_update: 2009-08
     notes: Membrane protein classification from paper supplement
   module_type:
   - primary_data
@@ -29,7 +29,7 @@ modules:
   maintenance_status:
     category: discontinued
     last_known_update: unknown
-    notes: Gene expression profiles from historical BioGPS database
+    notes: Gene expression profiles from BioGPS database
   module_type:
   - primary_data
   dataset_size: large
@@ -58,7 +58,7 @@ modules:
   - is_uniprot
   maintenance_status:
     category: frequent
-    last_known_update: 2025-07
+    last_known_update: 2025-06
     notes: Cached UniProt ID lists for validation
   module_type:
   - utility
@@ -101,8 +101,8 @@ modules:
   functions:
   - corum_complexes
   maintenance_status:
-    category: infrequent
-    last_known_update: unknown
+    category: frequent
+    last_known_update: 2025-01
     notes: Protein complex database with rescued data
   module_type:
   - primary_data
@@ -124,9 +124,9 @@ modules:
   - deathdomain_interactions
   - deathdomain_interactions_rescued
   maintenance_status:
-    category: discontinued
-    last_known_update: unknown
-    notes: Death domain protein interactions, uses rescued data
+    category: frequent
+    last_known_update: 2024-12
+    notes: Death domain protein interactions, actively maintained
   module_type:
   - primary_data
   dataset_size: small
@@ -148,7 +148,7 @@ modules:
   - get_integrins
   maintenance_status:
     category: one_time_paper
-    last_known_update: 2007
+    last_known_update: 2007-06
     notes: Integrin list from Takada et al 2007 paper
   module_type:
   - primary_data
@@ -172,8 +172,8 @@ modules:
   - adrecs_hierarchy
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
-    notes: Adverse drug reaction database
+    last_known_update: 2015-06
+    notes: Adverse drug reaction database, maybe switch to adrecs-target?
   module_type:
   - primary_data
   dataset_size: medium
@@ -196,7 +196,7 @@ modules:
   - msigdb_download_collections
   maintenance_status:
     category: frequent
-    last_known_update: 2022-01
+    last_known_update: 2025-01
     notes: Molecular signatures database, regularly updated
   module_type:
   - primary_data
@@ -218,7 +218,7 @@ modules:
   - lmpid_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2015
     notes: Domain-motif interactions from rescued XML data
   module_type:
   - primary_data
@@ -243,7 +243,7 @@ modules:
   - opentargets_indirect_score
   maintenance_status:
     category: frequent
-    last_known_update: 2022-11
+    last_known_update: 2024-09
     notes: Disease-target associations and drug safety data
   module_type:
   - primary_data
@@ -288,7 +288,7 @@ modules:
   - drugcentral_mapping
   maintenance_status:
     category: infrequent
-    last_known_update: 2021-09
+    last_known_update: 2023-06
     notes: Drug-target interactions and chemical structures
   module_type:
   - primary_data
@@ -333,7 +333,7 @@ modules:
   - cytosig_df
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2021-09
     notes: Cytokine perturbation signatures from GitHub
   module_type:
   - primary_data
@@ -354,7 +354,7 @@ modules:
   - mppi_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2006
     notes: MIPS protein-protein interactions from rescued data
   module_type:
   - primary_data
@@ -380,7 +380,7 @@ modules:
   - trip_process_table
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2012
     notes: TRP channel interactions from rescued HTML data
   module_type:
   - primary_data
@@ -403,7 +403,7 @@ modules:
   - collectri_raw
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2021
     notes: Transcriptional regulatory interactions from rescued data
   module_type:
   - primary_data
@@ -424,7 +424,7 @@ modules:
   - ncrdeathdb_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2016
     notes: Non-coding RNA apoptosis regulation from rescued data
   module_type:
   - primary_data

@@ -25,8 +25,8 @@ modules:
   - complexportal_complexes
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: EBI IntAct ComplexPortal - actively maintained database
+    last_known_update: 2024-05
+    notes: EBI IntAct ComplexPortal - actively maintained database, major expansion in May 2024
   module_type:
   - primary_data
   dataset_size: medium
@@ -47,9 +47,9 @@ modules:
   - depod_enzyme_substrate
   - depod_interactions
   maintenance_status:
-    category: discontinued
-    last_known_update: 2014-08
-    notes: Database of Protein Phosphatases - last update 2014
+    category: active
+    last_known_update: 2019-03
+    notes: DEPOD 2.0 update released March 2019
   module_type:
   - primary_data
   dataset_size: small
@@ -72,7 +72,7 @@ modules:
   - netpath_pathway_annotations
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2014
     notes: Mirror site available, original discontinued
   module_type:
   - primary_data
@@ -95,7 +95,7 @@ modules:
   - negatome_interactions
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2013
     notes: Negatome 2.0 manually curated non-interacting protein pairs
   module_type:
   - primary_data
@@ -117,8 +117,8 @@ modules:
   - pisa_interfaces
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: PDBe PISA actively maintained by EBI
+    last_known_update: 2024
+    notes: PDBe PISA updated weekly with new PDB structures
   module_type:
   - primary_data
   dataset_size: large
@@ -169,8 +169,8 @@ modules:
   - phosphosite_regsites_one_organism
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: PhosphoSitePlus regularly updated commercial database
+    last_known_update: 2024
+    notes: PhosphoSitePlus continuously updated commercial database
   module_type:
   - primary_data
   dataset_size: large
@@ -192,7 +192,7 @@ modules:
   - pdzbase_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2011
     notes: PDZ domain interaction database from rescued archive
   module_type:
   - primary_data
@@ -217,8 +217,8 @@ modules:
   - drugbank_raw_interactions
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: DrugBank regularly updated commercial database
+    last_known_update: 2025-01
+    notes: DrugBank version 5.1.13 released January 2025
   module_type:
   - primary_data
   dataset_size: large
@@ -245,8 +245,8 @@ modules:
   - get_single_model
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: EMBL-EBI BioModels actively maintained
+    last_known_update: 2024
+    notes: EMBL-EBI BioModels actively maintained with 2024 features
   module_type:
   - primary_data
   dataset_size: large
@@ -268,7 +268,7 @@ modules:
   - celltalkdb_interactions
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2021
     notes: CellTalkDB ligand-receptor database
   module_type:
   - primary_data
@@ -293,7 +293,7 @@ modules:
   - threedcomplex_nresidues
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2018
     notes: 3DComplex database from Weizmann Institute
   module_type:
   - primary_data
@@ -319,7 +319,7 @@ modules:
   - reactome_interactions
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2024
     notes: Multiple pathway databases - Reactome, ACSN, PID, Panther
   module_type:
   - primary_data
@@ -391,8 +391,8 @@ modules:
   - hpo_terms
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: Human Phenotype Ontology actively maintained
+    last_known_update: 2024
+    notes: Human Phenotype Ontology actively maintained with 2024 updates
   module_type:
   - primary_data
   dataset_size: medium
@@ -415,7 +415,7 @@ modules:
   - dbptm_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2016
     notes: dbPTM database appears discontinued
   module_type:
   - primary_data
@@ -442,8 +442,8 @@ modules:
   - biomart_query
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: Ensembl BioMart actively maintained
+    last_known_update: 2025-05
+    notes: Ensembl BioMart actively maintained with regular Ensembl releases
   module_type:
   - utility
   - id_mapping
@@ -465,7 +465,7 @@ modules:
   - innatedb_interactions
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2019
     notes: InnateDB innate immunity database
   module_type:
   - primary_data

@@ -4,7 +4,7 @@ modules:
   - get_csa
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2024
     notes: EBI M-CSA API for catalytic sites, active database
   module_type:
   - primary_data
@@ -25,7 +25,7 @@ modules:
   - mir2disease_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2012
     notes: Uses rescued URL, original database likely defunct
   module_type:
   - primary_data
@@ -69,8 +69,8 @@ modules:
   - dgidb_interactions
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: Active druggable genome database with TSV downloads
+    last_known_update: 2024
+    notes: DGIdb version 5.0 released January 2024
   module_type:
   - primary_data
   dataset_size: large
@@ -94,7 +94,7 @@ modules:
   - process_3did_dmi
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2020
     notes: 3D structure-based domain interactions, depends on PDB updates
   module_type:
   - primary_data
@@ -115,7 +115,7 @@ modules:
   - lncrnadb_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2013
     notes: Uses rescued XML data, original site inactive
   module_type:
   - primary_data
@@ -137,8 +137,8 @@ modules:
   - pro_mapping
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: Active Protein Ontology consortium resource
+    last_known_update: 2025
+    notes: PRO version 71.0 released March 2025
   module_type:
   - id_mapping
   dataset_size: medium
@@ -161,7 +161,7 @@ modules:
   - unichem_sources
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2024
     notes: EBI UniChem active chemical identifier mapping service
   module_type:
   - id_mapping
@@ -231,9 +231,9 @@ modules:
   - stitch_actions_interactions
   - stitch_links_interactions
   maintenance_status:
-    category: frequent
+    category: discontinued
     last_known_update: 2020
-    notes: Active STITCH database v5.0 for chemical-protein interactions
+    notes: STITCH database v5.0 discontinued, no longer supported
   module_type:
   - primary_data
   dataset_size: large
@@ -279,8 +279,8 @@ modules:
   - genecards_summaries
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: Active GeneCards database with web scraping
+    last_known_update: 2024
+    notes: GeneCards version 5.23 released December 2024
   module_type:
   - primary_data
   dataset_size: large
@@ -305,8 +305,8 @@ modules:
   - mirbase_precursor_to_mature
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: Active miRBase reference database for miRNAs
+    last_known_update: 2022
+    notes: miRBase release 22.1 from October 2018, regular maintenance
   module_type:
   - id_mapping
   - primary_data
@@ -329,7 +329,7 @@ modules:
   - phosphopoint_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2008
     notes: Uses rescued data file, original database defunct
   module_type:
   - primary_data
@@ -353,8 +353,8 @@ modules:
   - elm_interactions
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: Active ELM database for linear motifs
+    last_known_update: 2024
+    notes: ELM database received major 2024 update with 346 novel motif instances
   module_type:
   - primary_data
   dataset_size: medium
@@ -378,7 +378,7 @@ modules:
   - cspa_cell_types
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2020
     notes: Cell Surface Protein Atlas, academic resource
   module_type:
   - primary_data
@@ -400,7 +400,7 @@ modules:
   - adhesome_interactions
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2015
     notes: Adhesion-related proteins database, academic resource
   module_type:
   - primary_data
@@ -423,7 +423,7 @@ modules:
   - cpdb_interactions_ltp
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2019
     notes: ConsensusPathDB, academic resource with limited updates
   module_type:
   - primary_data
@@ -445,8 +445,8 @@ modules:
   - get_vesiclepedia
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
-    notes: Exosome databases, academic resources with sporadic updates
+    last_known_update: 2024
+    notes: ExoCarta 2024 with new features and updates
   module_type:
   - primary_data
   dataset_size: medium

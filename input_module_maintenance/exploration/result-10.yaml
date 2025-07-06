@@ -4,7 +4,7 @@ modules:
   - sdf
   maintenance_status:
     category: frequent
-    last_known_update: unknown
+    last_known_update: 2024
     notes: Active lipid structure database, regularly updated
   module_type:
   - primary_data
@@ -27,8 +27,8 @@ modules:
   - raw
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: Human Metabolome Database, actively maintained
+    last_known_update: 2022
+    notes: HMDB 5.0 released January 2022, actively maintained
   module_type:
   - primary_data
   - id_mapping
@@ -51,8 +51,8 @@ modules:
   - raw
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: Human Metabolome Database protein component, actively maintained
+    last_known_update: 2022
+    notes: HMDB 5.0 protein component released January 2022
   module_type:
   - primary_data
   - id_mapping
@@ -74,8 +74,8 @@ modules:
   - hmdb_xml
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: HMDB XML parser utility, actively maintained
+    last_known_update: 2022
+    notes: HMDB XML parser utility for version 5.0
   module_type:
   - utility
   dataset_size: large
@@ -98,8 +98,8 @@ modules:
   - raw
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: HMDB common utilities, actively maintained
+    last_known_update: 2022
+    notes: HMDB common utilities for version 5.0
   module_type:
   - utility
   dataset_size: large
@@ -122,8 +122,8 @@ modules:
   - structure_svg
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: HMDB visualization utilities, actively maintained
+    last_known_update: 2022
+    notes: HMDB visualization utilities for version 5.0
   module_type:
   - utility
   dataset_size: small
@@ -143,8 +143,8 @@ modules:
   - sdf
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: HMDB structure data, actively maintained
+    last_known_update: 2022
+    notes: HMDB structure data from version 5.0
   module_type:
   - primary_data
   dataset_size: large
@@ -166,9 +166,9 @@ modules:
   - run_test
   - test_actions
   maintenance_status:
-    category: frequent
-    last_known_update: unknown
-    notes: Test module for STITCH actions, actively maintained
+    category: discontinued
+    last_known_update: 2020
+    notes: Test module for STITCH actions, discontinued with STITCH v5.0
   module_type:
   - utility
   dataset_size: medium
@@ -191,8 +191,8 @@ modules:
   - disgenet_variants
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: DisGeNet disease-gene associations, actively maintained
+    last_known_update: 2023
+    notes: DisGeNet v7.0 released 2020, actively maintained through 2023
   module_type:
   - primary_data
   dataset_size: large
@@ -215,8 +215,8 @@ modules:
   - RETURN_TYPES
   maintenance_status:
     category: frequent
-    last_known_update: unknown
-    notes: DisGeNet API schema definitions, actively maintained
+    last_known_update: 2023
+    notes: DisGeNet API schema definitions for v7.0
   module_type:
   - utility
   dataset_size: small

@@ -3,8 +3,8 @@ modules:
   functions:
   - twosides_interactions
   maintenance_status:
-    category: discontinued
-    last_known_update: unknown
+    category: frequently
+    last_known_update: 2024-03
     notes: Drug-drug interaction safety signals from FDA AERS, likely static dataset
   module_type:
   - primary_data
@@ -26,7 +26,7 @@ modules:
   - membranome_annotations
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2018-05
     notes: Membrane protein annotations from Membranome database via JSON API
   module_type:
   - primary_data
@@ -48,7 +48,7 @@ modules:
   - mirecords_interactions
   maintenance_status:
     category: discontinued
-    last_known_update: unknown
+    last_known_update: 2009-01
     notes: Literature curated miRNA-target interactions, uses rescued file
   module_type:
   - primary_data
@@ -72,7 +72,7 @@ modules:
   - spike_complexes
   maintenance_status:
     category: discontinued
-    last_known_update: 2012
+    last_known_update: 2012-01
     notes: Signaling pathways knowledge base, XML download from 2012
   module_type:
   - primary_data
@@ -165,7 +165,7 @@ modules:
   - cellchatdb_interactions
   maintenance_status:
     category: frequent
-    last_known_update: 2023-12
+    last_known_update: 2025-04
     notes: Cell-cell communication database with ligand-receptor interactions
   module_type:
   - primary_data
@@ -234,8 +234,8 @@ modules:
   - gutmgene_raw
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
-    notes: Gut microbiota-gene associations, uses rescued file
+    last_known_update: 2025-01
+    notes: Gut microbiota-gene associations, uses rescued file, should switch to 2.0
   module_type:
   - primary_data
   dataset_size: medium
@@ -260,7 +260,7 @@ modules:
   - cellcall_interactions
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2021-02
     notes: Ligand-receptor-TF pathway dataset from GitHub repository
   module_type:
   - primary_data
@@ -281,8 +281,8 @@ modules:
   functions:
   - embopress_supplementary
   maintenance_status:
-    category: frequent
-    last_known_update: unknown
+    category:
+    last_known_update:
     notes: Utility for downloading EMBO Press supplementary materials
   module_type:
   - utility
@@ -303,8 +303,8 @@ modules:
   functions:
   - ensembl_organisms
   maintenance_status:
-    category: frequent
-    last_known_update: unknown
+    category:
+    last_known_update:
     notes: Utility to retrieve organism information from Ensembl
   module_type:
   - utility
@@ -352,8 +352,8 @@ modules:
   - read_table
   - read_xls
   maintenance_status:
-    category: frequent
-    last_known_update: unknown
+    category:
+    last_known_update:
     notes: Common utility functions for file reading and data processing
   module_type:
   - utility
@@ -404,7 +404,7 @@ modules:
   - scconnect_interactions
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2021
     notes: Ligand-receptor interactions from scConnect GitHub repository
   module_type:
   - primary_data
@@ -456,7 +456,7 @@ modules:
   - ddinter_n_drugs
   maintenance_status:
     category: infrequent
-    last_known_update: unknown
+    last_known_update: 2024-05
     notes: Drug-drug interactions from DDInter database via web scraping
   module_type:
   - primary_data
@@ -481,7 +481,7 @@ modules:
   maintenance_status:
     category: infrequent
     last_known_update: 2020-06
-    notes: Small molecule compound identifiers from LINCS database
+    notes: Small molecule compound identifiers from LINCS database, should switch to lincs dataportal 2.0 https://lincsportal.ccs.miami.edu/signatures/assays
   module_type:
   - id_mapping
   dataset_size: large
