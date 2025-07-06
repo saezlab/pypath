@@ -408,7 +408,7 @@ modules:
   - cellinker_smol_interactions
   - cellinker_smol_interactions_raw
   maintenance_status:
-    category: infrequently
+    category: infrequent
     last_known_update: unknown
     notes: Cellinker database, uses rescued data files, recently Celllinker 2.0 was released https://www.cellknowledge.com.cn/cellinker/index.html
   module_type:

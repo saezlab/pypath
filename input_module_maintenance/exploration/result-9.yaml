@@ -47,7 +47,7 @@ modules:
   - depod_enzyme_substrate
   - depod_interactions
   maintenance_status:
-    category: active
+    category: infrequent
     last_known_update: 2019-03
     notes: DEPOD 2.0 update released March 2019
   module_type:

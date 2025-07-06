@@ -3,7 +3,7 @@ modules:
   functions:
   - twosides_interactions
   maintenance_status:
-    category: frequently
+    category: frequent
     last_known_update: 2024-03
     notes: Drug-drug interaction safety signals from FDA AERS, likely static dataset
   module_type:
@@ -112,7 +112,7 @@ modules:
     last_known_update: 2023-12
     notes: Central repository aggregating pathway data from multiple sources
   module_type:
-  - aggregator
+  - primary_data
   dataset_size: large
   species_coverage: multi_species
   technical_aspects:
@@ -361,7 +361,6 @@ modules:
   species_coverage: multi_species
   technical_aspects:
     access_method:
-    - file_operations
     data_format:
     - csv
     - tsv

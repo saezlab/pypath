@@ -13,7 +13,6 @@ modules:
   species_coverage: multi_species
   technical_aspects:
     access_method:
-    - utility
     data_format:
     - tsv
   tags:
