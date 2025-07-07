@@ -50,6 +50,7 @@ class BronzeStorage:
         self,
         base_path: Optional[Union[str, Path]] = None,
         pkg: str = 'pypath',
+        use_pypath_data: bool = True,
     ):
         """
         Initialize bronze storage.
@@ -57,10 +58,17 @@ class BronzeStorage:
         Args:
             base_path: Base directory for bronze storage
             pkg: Package name for default directory
+            use_pypath_data: If True and base_path is None, use pypath/data directory
         """
         if base_path is None:
-            # Use platform-specific data directory
-            base_path = platformdirs.user_data_dir(pkg, 'omnipathdb')
+            if use_pypath_data:
+                # Use pypath/data directory
+                import pypath
+                pypath_dir = Path(pypath.__file__).parent
+                base_path = pypath_dir / 'data'
+            else:
+                # Use platform-specific data directory
+                base_path = platformdirs.user_data_dir(pkg, 'omnipathdb')
         
         self.base_path = Path(base_path) / 'bronze'
         self.base_path.mkdir(parents=True, exist_ok=True)
@@ -98,6 +106,12 @@ class BronzeStorage:
             config.get('version', ''),
             str(config.get('organism', '')),
         ]
+        
+        # Include filter values in the key to differentiate cached data
+        filters = config.get('filters', [])
+        for f in sorted(filters, key=lambda x: x.get('field', '')):
+            if f.get('field') in ('organism', 'taxid', 'taxid_a', 'taxid_b'):
+                key_parts.append(f'{f.get("field")}={f.get("value")}')
         
         key_str = '|'.join(key_parts)
         key_hash = hashlib.md5(key_str.encode()).hexdigest()[:8]

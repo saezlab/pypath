@@ -50,7 +50,7 @@ DUCK = duckdb.connect(':memory:')
 
 
 def load_tsv(
-    path: Union[str, Path],
+    path: Union[str, Path, Any],  # Can also be file-like object
     separator: str = '\t',
     skip_header: int = 0,
     encoding: str = 'utf-8',
@@ -71,6 +71,21 @@ def load_tsv(
     Returns:
         PyArrow Table
     """
+    # Check if path is a file-like object
+    if hasattr(path, 'read'):
+        _log(f'Loading TSV from file-like object')
+        # Use pandas for file-like objects
+        df = pd.read_csv(
+            path,
+            sep=separator,
+            skiprows=skip_header,
+            encoding=encoding,
+            names=column_names,
+            header=0 if column_names is None else None,
+            dtype=str,  # Read all columns as strings to avoid type inference issues
+        )
+        return pa.Table.from_pandas(df, preserve_index=False)
+    
     _log(f'Loading TSV file: {path}')
     
     # Build DuckDB query
@@ -108,6 +123,7 @@ def load_tsv(
             encoding=encoding,
             names=column_names,
             header=0 if column_names is None else None,
+            dtype=str,  # Read all columns as strings to avoid type inference issues
         )
         return pa.Table.from_pandas(df, preserve_index=False)
 
@@ -385,7 +401,7 @@ def detect_format(path: Union[str, Path]) -> str:
 
 
 def load_file(
-    path: Union[str, Path],
+    path: Union[str, Path, Any],  # Can be file-like object
     format: Optional[str] = None,
     **kwargs
 ) -> pa.Table:
@@ -393,17 +409,22 @@ def load_file(
     Load any supported file format to Arrow table.
     
     Args:
-        path: File path
+        path: File path or file-like object
         format: File format (auto-detected if None)
         **kwargs: Format-specific arguments
         
     Returns:
         PyArrow Table
     """
-    path = Path(path)
-    
-    if format is None:
-        format = detect_format(path)
+    # Handle file-like objects
+    if hasattr(path, 'read'):
+        # For file-like objects, format must be specified
+        if format is None:
+            format = kwargs.get('format', 'tsv')  # Default to TSV
+    else:
+        path = Path(path)
+        if format is None:
+            format = detect_format(path)
     
     loaders = {
         'tsv': load_tsv,

@@ -33,6 +33,20 @@ from typing import Optional, Dict, Any, List, Union, Callable, Iterator
 import pandas as pd
 import pyarrow as pa
 
+import sys
+import os
+
+# Add download-manager and cache-manager to path if needed
+_this_dir = os.path.dirname(os.path.abspath(__file__))
+_root_dir = os.path.dirname(os.path.dirname(_this_dir))
+_dm_path = os.path.join(_root_dir, 'download-manager')
+_cm_path = os.path.join(_root_dir, 'cache-manager')
+
+if _dm_path not in sys.path:
+    sys.path.insert(0, _dm_path)
+if _cm_path not in sys.path:
+    sys.path.insert(0, _cm_path)
+
 from download_manager import DownloadManager
 from download_manager._manager_extended import DownloadManagerExtended
 
@@ -80,11 +94,24 @@ class InputModule:
         self.use_cache = use_cache
         
         # Initialize storage backends
-        self.bronze_storage = bronze_storage or storage.BronzeStorage()
-        self.download_manager = download_manager or DownloadManagerExtended(
-            pkg='pypath',
-            config={'backend': 'requests'}
-        )
+        if bronze_storage is None:
+            # Default to pypath/data directory
+            import pypath
+            pypath_data = Path(pypath.__file__).parent / 'data'
+            self.bronze_storage = storage.BronzeStorage(base_path=pypath_data)
+        else:
+            self.bronze_storage = bronze_storage
+            
+        if download_manager is None:
+            # Use the same data directory for download cache
+            import pypath
+            pypath_data = Path(pypath.__file__).parent / 'data'
+            self.download_manager = DownloadManagerExtended(
+                path=str(pypath_data / 'cache'),
+                config={'backend': 'requests'}
+            )
+        else:
+            self.download_manager = download_manager
         
         # Cache for loaded data
         self._data_cache = None
@@ -135,29 +162,20 @@ class InputModule:
             'checksum_type': config.get('checksum_type', 'md5'),
         }
         
-        # Download with change detection
-        if hasattr(self.download_manager, 'download_if_changed'):
-            path, was_downloaded, change_info = self.download_manager.download_if_changed(
-                url=url,
-                dest=True,  # Use cache
-                force=force,
-                **check_config,
-                **self._get_download_params()
-            )
-            
-            if was_downloaded:
-                _log(f'Downloaded {self.source_name} from {url}')
-            else:
-                _log(f'Using cached {self.source_name}, no changes detected')
-            
-            return path
-        else:
-            # Fallback to regular download
-            return self.download_manager.download(
-                url=url,
-                dest=True,
-                **self._get_download_params()
-            )
+        # Use _download to get cache item
+        desc, item, downloader, path = self.download_manager._download(
+            url=url,
+            dest=True,  # Use cache
+            **self._get_download_params()
+        )
+        
+        # Store cache item for later use
+        self._last_cache_item = item
+        
+        if path:
+            _log(f'Downloaded/retrieved {self.source_name} from {url}')
+        
+        return path
     
     def _get_download_params(self) -> Dict[str, Any]:
         """Extract download parameters from config."""
@@ -208,7 +226,42 @@ class InputModule:
         
         # Load file based on format
         format_config = self._get_format_config()
-        arrow_table = loaders.load_file(file_path, **format_config)
+        
+        # Check if we have a cache item that can handle decompression
+        if hasattr(self, '_last_cache_item') and self._last_cache_item:
+            # Use cache item's open method for automatic decompression
+            opener = self._last_cache_item.open(large=False)
+            
+            # The opener object has a result attribute with the actual data
+            if opener and hasattr(opener, 'result'):
+                result = opener.result
+                
+                if isinstance(result, dict):
+                    # Multi-file archive - take the first file or find the data file
+                    for fname, content in result.items():
+                        if fname.endswith(('.tsv', '.tab', '.txt', '.csv')):
+                            # Create a temporary file-like object
+                            import io
+                            file_obj = io.BytesIO(content.encode() if isinstance(content, str) else content)
+                            arrow_table = loaders.load_file(file_obj, **format_config)
+                            break
+                else:
+                    # Single file content
+                    import io
+                    if isinstance(result, str):
+                        file_obj = io.BytesIO(result.encode())
+                    elif isinstance(result, bytes):
+                        file_obj = io.BytesIO(result)
+                    else:
+                        # Might be a file-like object already
+                        file_obj = result
+                    arrow_table = loaders.load_file(file_obj, **format_config)
+            else:
+                # Fallback to direct file loading
+                arrow_table = loaders.load_file(file_path, **format_config)
+        else:
+            # Direct file loading
+            arrow_table = loaders.load_file(file_path, **format_config)
         
         # Save to bronze layer
         if self.use_bronze:
@@ -432,16 +485,31 @@ def create_input_function(
         # Create input module
         module = InputModule(config_name, source_name)
         
+        # Update organism filter in config if specified
+        if organism is not None:
+            # Update any existing organism filters in the config
+            for filter_config in module.source_config.get('filters', []):
+                if filter_config.get('field') in ('organism', 'taxid', 'taxid_a', 'taxid_b'):
+                    filter_config['value'] = str(organism)
+        
         # Load data
         records = module.load_processed(**kwargs)
         
-        # Filter by organism if specified
-        if organism is not None:
-            organism = str(organism)
-            records = [
-                r for r in records
-                if hasattr(r, 'organism') and str(r.organism) == organism
-            ]
+        # Post-filter by organism if records have organism attribute
+        # (for cases where filtering wasn't done in the config)
+        if organism is not None and records:
+            organism_str = str(organism)
+            # Check if records have organism-related fields
+            if hasattr(records[0], 'organism'):
+                records = [
+                    r for r in records
+                    if str(getattr(r, 'organism', '')) == organism_str
+                ]
+            elif hasattr(records[0], 'taxid'):
+                records = [
+                    r for r in records
+                    if str(getattr(r, 'taxid', '')) == organism_str
+                ]
         
         # Apply additional processing if provided
         if record_processor:
