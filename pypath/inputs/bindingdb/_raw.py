@@ -53,6 +53,20 @@ def table(
 
 
 def mapping(dataset: str = 'UniProt') -> dict[str, list[str]]:
+    """
+    Reads a tab-separated values file from the given URL and returns its
+    contents in a dictionary, where each key is a BindingDB protein name and each
+    value is a list of UniProt IDs.
+
+    Args:
+        dataset:
+            BindingDB mapping dataset: Uniprot, Pubmed, Drugbank, CID etc.
+
+    Returns:
+        dict
+            A dictionary mapping BindingDB protein names to UniProt IDs.
+        
+    """
 
     return {
         i['BindingDB Name']: i[dataset].split()

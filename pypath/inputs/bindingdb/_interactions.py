@@ -69,6 +69,25 @@ RE_REGION_MUTATION = re.compile(
 def interactions(dataset: str = 'All',
                  max_lines: int | None = None) -> Generator[BindingdbInteraction]:
 
+    """
+    Yields interactions from BindingDB.
+
+    Args:
+        dataset : str, optional
+            BindingDB dataset to read. The default is 'All'.
+        max_lines : int | None, optional
+            Maximum number of lines to read from the file. If None, the entire file
+            is read.
+
+    Yields:
+        BindingdbInteraction
+            Namedtuple with ligand and target information.
+
+    Notes:
+        The uniprot ID is mapped from the name extracted from the target field 
+        according to the regular expression `RE_REGION_MUTATION`.
+
+    """
     uniprot_mapping = _raw.mapping()
 
     for record in _raw.table(dataset = dataset, max_lines = max_lines):
