@@ -74,7 +74,11 @@ def interactions(dataset: str = 'All',
     for record in _raw.table(dataset = dataset, max_lines = max_lines):
 
         organism = record['Target Source Organism According to Curator or DataSource']
-        name = record['Target Name']
+
+        try:
+            name, regions_mutations = RE_REGION_MUTATION.match(record['Target Name']).groups()
+        except AttributeError:
+            print(record['Target Name'])
 
         yield BindingdbInteraction(
             ligand = BindingdbLigand(
@@ -89,6 +93,6 @@ def interactions(dataset: str = 'All',
                 organism = organism,
                 ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism),
                 uniprot = uniprot_mapping.get(record['Target Name'], [None])[0], #TODO : create regex split to access all uniprots
-                regions_mutations =
+                regions_mutations = [x.strip('[]').split(',') for x in regions_mutations.split('/')],
             ),
         )
