@@ -41,6 +41,7 @@ def table(
 
     line_count = 0
 
+    # mapping file is tsv format, table file is zipped
     file_iterator = c.result if id_mapping else _misc.first(c.result.values())
     for line in csv.DictReader(file_iterator, delimiter = '\t'):
 

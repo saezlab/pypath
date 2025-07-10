@@ -78,5 +78,4 @@ def interactions(dataset: str = 'All',
                 organism = record['Target Source Organism According to Curator or DataSource'],
                 uniprot = uniprot_mapping.get(record['Target Name']), #TODO : create regex split to access all uniprots
             ),
-        )    
-    
+        )
