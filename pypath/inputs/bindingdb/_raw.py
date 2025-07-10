@@ -52,9 +52,9 @@ def table(
             break
 
 
-def mapping(dataset: str = 'UniProt') -> dict:
+def mapping(dataset: str = 'UniProt') -> dict[str, list[str]]:
 
     return {
-        i['BindingDB Name']: i[dataset]
+        i['BindingDB Name']: i[dataset].split()
         for i in table(dataset = dataset, id_mapping = True)
     }
