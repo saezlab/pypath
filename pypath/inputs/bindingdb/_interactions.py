@@ -1,4 +1,5 @@
 import collections
+import re
 from collections.abc import Generator
 
 from . import _raw
@@ -31,6 +32,7 @@ BindingdbTarget = collections.namedtuple(
         "organism",
         "ncbi_tax_id",
         "uniprot",
+        "regions_mutations",
     ]
 )
 
@@ -58,6 +60,11 @@ ReactionConstant = collections.namedtuple(
     ]
 )
 
+RE_REGION_MUTATION = re.compile(
+    r'(.+?)\s?((?:\[[-\d,A-Z\[\]/]+\])?$)'
+)
+
+
 
 def interactions(dataset: str = 'All',
                  max_lines: int | None = None) -> Generator[BindingdbInteraction]:
@@ -67,6 +74,7 @@ def interactions(dataset: str = 'All',
     for record in _raw.table(dataset = dataset, max_lines = max_lines):
 
         organism = record['Target Source Organism According to Curator or DataSource']
+        name = record['Target Name']
 
         yield BindingdbInteraction(
             ligand = BindingdbLigand(
@@ -77,9 +85,10 @@ def interactions(dataset: str = 'All',
                 pubchem = record['PubChem CID'],
             ),
             target = BindingdbTarget(
-                name = record['Target Name'],
+                name = name,
                 organism = organism,
                 ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism),
                 uniprot = uniprot_mapping.get(record['Target Name'], [None])[0], #TODO : create regex split to access all uniprots
+                regions_mutations =
             ),
         )
