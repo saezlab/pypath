@@ -6,7 +6,7 @@ from pypath.resources import urls
 
 TcdbSubstrate = collections.namedtuple(
     'TcdbSubstrate',
-    ['transporter_uniprot', 'substrate_id','substrate_name'],
+    ['transporter_uniprot', 'substrate_id', 'substrate_name'],
 )
 
 
@@ -33,7 +33,7 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
 
         tcdb, substrates = line.strip('\n').split('\t')
         for substrate in substrates.split('|'):
-            substrate_id,substrate_name = substrate.split(';')
+            substrate_id, substrate_name = substrate.split(';')
             for transporter_uniprot in dic_TCDB_Uni[tcdb]:
                 yield TcdbSubstrate(transporter_uniprot, substrate_id,substrate_name)
 
