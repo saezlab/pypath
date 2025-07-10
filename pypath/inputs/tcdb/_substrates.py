@@ -32,6 +32,7 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
             tcdb_uniprot[tcdb].append(uniprot_symbol.upper())
 
     all_uniprots = set().union(*tcdb_uniprot.values())
+    return all_uniprots
 
     uniprot_locations = uniprot.uniprot_locations(
         accession=all_uniprots,
@@ -43,13 +44,13 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
         for substrate in substrates.split('|'):
             substrate_id, substrate_name = substrate.split(';')
             for transporter_uniprot in tcdb_uniprot[tcdb]:
-
-                yield TcdbSubstrate(
-                    transporter_uniprot,
-                    substrate_id,
-                    substrate_name,
-                    uniprot_locations.get(transporter_uniprot),
-                )
+                pass
+            #    yield TcdbSubstrate(
+            #        transporter_uniprot,
+            #        substrate_id,
+            #        substrate_name,
+            #        uniprot_locations.get(transporter_uniprot),
+            #    )
 
 
 def slc_table() -> Generator[SLCSubstrate, None, None]:
