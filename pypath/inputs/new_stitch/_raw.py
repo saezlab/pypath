@@ -1,9 +1,7 @@
 from collections.abc import Generator
-import re
 import csv
 
-import pypath.resources.urls as urls
-import pypath.share.curl as curl
+from pypath.share import curl
 
 __all__ = [
     'tables'
