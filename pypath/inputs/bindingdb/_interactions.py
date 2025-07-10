@@ -2,6 +2,8 @@ import collections
 from collections.abc import Generator
 
 from . import _raw
+from pypath.utils import taxonomy
+
 
 BindingdbInteraction = collections.namedtuple(
     "BindingdbInteraction",
@@ -27,6 +29,7 @@ BindingdbTarget = collections.namedtuple(
     [
         "name",
         "organism",
+        "ncbi_tax_id",
         "uniprot",
     ]
 )
@@ -58,12 +61,12 @@ ReactionConstant = collections.namedtuple(
 
 def interactions(dataset: str = 'All',
                  max_lines: int | None = None) -> Generator[BindingdbInteraction]:
-    
+
     uniprot_mapping = _raw.mapping()
 
     for record in _raw.table(dataset = dataset, max_lines = max_lines):
 
-
+        organism = record['Target Source Organism According to Curator or DataSource']
 
         yield BindingdbInteraction(
             ligand = BindingdbLigand(
@@ -75,7 +78,8 @@ def interactions(dataset: str = 'All',
             ),
             target = BindingdbTarget(
                 name = record['Target Name'],
-                organism = record['Target Source Organism According to Curator or DataSource'],
+                organism = organism,
+                ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism),
                 uniprot = uniprot_mapping.get(record['Target Name'], [None])[0], #TODO : create regex split to access all uniprots
             ),
         )
