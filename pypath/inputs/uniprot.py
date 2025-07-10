@@ -905,6 +905,30 @@ def uniprot_query(
           kind described in the previous point as values.
     """
 
+    BATCH_SIZE = 1000
+
+    if (
+        'accession' in kwargs and
+        not isinstance(kwargs['accession'], str) and
+        len(kwargs['accession']) > BATCH_SIZE
+    ):
+
+        accessions = list(kwargs.pop('accession'))
+        result = {}
+
+        for i in range(0, len(accessions), BATCH_SIZE):
+
+            kwargs['accession'] = [
+                accessions[i:i+BATCH_SIZE]
+            ]
+
+            result.update(
+                UniprotQuery(*query, fields = fields, **kwargs).perform()
+            )
+
+        return result
+
+
     return UniprotQuery(*query, fields = fields, **kwargs).perform()
 
 
