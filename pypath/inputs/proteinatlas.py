@@ -51,7 +51,7 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
         for l in fp:
             l = line(l)
-            
+
             if len(l) < 7:  # Skip incomplete lines
                 continue
 
@@ -73,10 +73,10 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
         for l in fp:
 
             l = line(l)
-            
+
             if len(l) < 7:  # Skip incomplete lines
                 continue
-                
+
             uniprots = mapping.map_name(l[1], 'genesymbol', 'uniprot')
             tissue   = l[2]  # Cancer type
 
@@ -236,17 +236,17 @@ def proteinatlas_interactions():
         silent = False,
         default_mode = 'r',
     )
-    
+
     # Find the interaction consensus file
     file_key = None
     for key in c.result.keys():
         if 'interaction_consensus' in key:
             file_key = key
             break
-    
+
     if not file_key:
         raise ValueError('Could not find interaction_consensus.tsv in downloaded files')
-    
+
     reader = csv.DictReader(
         c.result[file_key],
         delimiter = '\t',
@@ -257,7 +257,7 @@ def proteinatlas_interactions():
     for rec in reader:
         result.append(ProteinatlasInteraction(
             uniprot_a = rec.get('Uniprot_A', ''),
-            uniprot_b = rec.get('Uniprot_B', ''), 
+            uniprot_b = rec.get('Uniprot_B', ''),
             gene_a = rec.get('Gene_A', ''),
             gene_b = rec.get('Gene_B', ''),
             interaction_type = rec.get('Interaction_type', ''),
@@ -288,17 +288,17 @@ def proteinatlas_subcellular_annotations():
         silent = False,
         default_mode = 'r',
     )
-    
+
     # Find the correct TSV file in the zip
     file_key = None
     for key in c.result.keys():
         if 'subcellular_location.tsv' in key:
             file_key = key
             break
-    
+
     if not file_key:
         raise ValueError('Could not find subcellular_location.tsv in downloaded files')
-    
+
     reader = csv.DictReader(
         c.result[file_key],
         delimiter = '\t',
@@ -313,9 +313,9 @@ def proteinatlas_subcellular_annotations():
             # Handle the new format with main and additional locations
             main_locations = rec.get('Main location', '').split(';') if rec.get('Main location') else []
             additional_locations = rec.get('Additional location', '').split(';') if rec.get('Additional location') else []
-            
+
             all_locations = main_locations + additional_locations
-            
+
             for location in all_locations:
                 if location.strip():
                     result[uniprot].add(ProteinatlasSubcellularAnnotation(
@@ -325,7 +325,7 @@ def proteinatlas_subcellular_annotations():
                         main_location = rec.get('Main location', ''),
                         additional_location = rec.get('Additional location', ''),
                     ))
-            
+
             # Also handle Enhanced, Supported, Approved, Uncertain columns if they exist
             for status in ('Enhanced', 'Supported', 'Approved', 'Uncertain'):
                 if rec.get(status):
@@ -367,17 +367,17 @@ def proteinatlas_interactions():
         silent = False,
         default_mode = 'r',
     )
-    
+
     # Find the interaction consensus file
     file_key = None
     for key in c.result.keys():
         if 'interaction_consensus' in key:
             file_key = key
             break
-    
+
     if not file_key:
         raise ValueError('Could not find interaction_consensus.tsv in downloaded files')
-    
+
     reader = csv.DictReader(
         c.result[file_key],
         delimiter = '\t',
@@ -388,7 +388,7 @@ def proteinatlas_interactions():
     for rec in reader:
         result.append(ProteinatlasInteraction(
             uniprot_a = rec.get('Uniprot_A', ''),
-            uniprot_b = rec.get('Uniprot_B', ''), 
+            uniprot_b = rec.get('Uniprot_B', ''),
             gene_a = rec.get('Gene_A', ''),
             gene_b = rec.get('Gene_B', ''),
             interaction_type = rec.get('Interaction_type', ''),
@@ -410,12 +410,20 @@ def proteinatlas_secretome_annotations():
 
     # Use local rescued file if available, otherwise try to download
     url = urls.urls['proteinatlas'].get('secretome_rescued', urls.urls['proteinatlas']['secretome'])
-    
+
     if 'secretome_rescued' in urls.urls['proteinatlas']:
-        path = url  # Use local file path directly
+
+        c = curl.Curl(
+            url,
+            large = True,
+            silent = False,
+        )
+        path = c.fileobj.name
+
     else:
+
         path = science.science_download(url)
-        
+
     reader = inputs_common.read_xls(path)[1:]
     result = collections.defaultdict(set)
 
@@ -423,15 +431,15 @@ def proteinatlas_secretome_annotations():
         # Skip if not enough columns
         if len(rec) < 4:
             continue
-            
+
         # Column 2 should contain UniProt IDs
         uniprot_column = rec[2] if rec[2] else ''
-        
+
         for uniprot_original in uniprot_column.split(','):
             uniprot_original = uniprot_original.strip()
             if not uniprot_original:
                 continue
-                
+
             uniprots = mapping.map_name(
                 uniprot_original,
                 'uniprot',
@@ -472,17 +480,17 @@ def proteinatlas_interactions():
         silent = False,
         default_mode = 'r',
     )
-    
+
     # Find the interaction consensus file
     file_key = None
     for key in c.result.keys():
         if 'interaction_consensus' in key:
             file_key = key
             break
-    
+
     if not file_key:
         raise ValueError('Could not find interaction_consensus.tsv in downloaded files')
-    
+
     reader = csv.DictReader(
         c.result[file_key],
         delimiter = '\t',
@@ -493,7 +501,7 @@ def proteinatlas_interactions():
     for rec in reader:
         result.append(ProteinatlasInteraction(
             uniprot_a = rec.get('Uniprot_A', ''),
-            uniprot_b = rec.get('Uniprot_B', ''), 
+            uniprot_b = rec.get('Uniprot_B', ''),
             gene_a = rec.get('Gene_A', ''),
             gene_b = rec.get('Gene_B', ''),
             interaction_type = rec.get('Interaction_type', ''),

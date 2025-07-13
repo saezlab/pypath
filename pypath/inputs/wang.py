@@ -17,9 +17,10 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import collections
-
 from typing import List, Literal, Union
+
+import os
+import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -27,6 +28,7 @@ import pypath.share.settings as settings
 import pypath.inputs.embopress as embo
 import pypath.inputs.ca1 as ca1
 import pypath.utils.mapping as mapping
+import pypath.inputs.common as inputs_common
 
 
 KEY = {
@@ -138,30 +140,22 @@ def cui_interactions() -> List[tuple]:
 
     # Use local file if available, otherwise try online
     if 'cui_rescued' in urls.urls['wang']:
-        import pypath.inputs.common as inputs_common
-        import os
-        
+
         # Get local file path
-        local_path = urls.urls['wang']['cui_rescued']
-        
-        # Try to open local file directly
-        if os.path.exists(local_path):
-            raw = inputs_common.read_xls(local_path, sheet = 'Supplementary Table 9')
-        else:
-            # Try in current directory
-            filename = os.path.basename(local_path)
-            if os.path.exists(filename):
-                raw = inputs_common.read_xls(filename, sheet = 'Supplementary Table 9')
-            else:
-                # Fall back to online
-                raw = embo.embopress_supplementary(
-                    url = urls.urls['wang']['cui'],
-                    init_url = urls.urls['wang']['cui_init'],
-                    sheet = 'Supplementary Table 9',
-                )
+    url = urls.urls['wang'].get('cui_rescued', urls.urls['wang']['cui'])
+
+    # Try to open local file directly
+    if 'cui_rescued' in urls.urls['wang']:
+
+        c = curl.Curl(url, silent = False, large = True)
+        path = c.fileobj.name
+        raw = inputs_common.read_xls(path, sheet = 'Supplementary Table 9')
+
     else:
+
+        # Fall back to online
         raw = embo.embopress_supplementary(
-            url = urls.urls['wang']['cui'],
+            url = url,
             init_url = urls.urls['wang']['cui_init'],
             sheet = 'Supplementary Table 9',
         )

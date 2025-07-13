@@ -620,7 +620,8 @@ urls = {
         'secretome': 'https://www.science.org/action/downloadSupplement?'\
             'doi=10.1126%2Fscisignal.aaz0274&'\
             'file=aaz0274_data_file_s2.xlsx',
-        'secretome_rescued': 'pypath/data/manual_downloads/aaz0274_data_file_s2.xlsx',
+        'secretome_rescued':
+            'https://rescued.omnipathdb.org/proteinatlas-supplementary-S2.xlsx',
         'ig_genes': 'https://stke.sciencemag.org/highwire/filestream/'\
             '216463/field_highwire_adjunct_files/0/aaz0274_Data_file_S1.xlsx',
 
@@ -725,7 +726,8 @@ urls = {
         'label': 'Human Phosphotyrosine Signaling Network',
         'url': 'http://genome.cshlp.org/content/suppl/2011/12/27/'
         'gr.128819.111.DC1/Supplementary_files_S1-S5.xls',
-        'url_rescued': 'pypath/data/manual_downloads/Supplementary_files_S1-S5.xls',
+        'url_rescued':
+            'https://rescued.omnipathdb.org/li2012-supplementary-S1-S5.xls',
     },
     'trip': {
         'label': 'The TRP channel database',
@@ -767,7 +769,8 @@ urls = {
         'url': 'https://www.science.org/action/downloadSupplement?'
             'doi=10.1126%2Fscisignal.aag1796&'
             'file=aag1796_tables_s1_to_s23.zip',
-        'url_rescued': 'pypath/data/manual_downloads/aag1796_tables_s1_to_s23.zip',
+        'url_rescued': 'https://rescued.omnipathdb.org/' \
+            'phosphatome-supplementary-S1-23.zip',
     },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
@@ -829,7 +832,8 @@ urls = {
             'WangLab_HumanSignalingNetwork_v6-format2.csv',
         'cui': 'https://www.embopress.org/action/downloadSupplement?'
             'doi=10.1038%2Fmsb4100200&file=msb4100200-sup-0010.xls',
-        'cui_rescued': 'pypath/data/manual_downloads/msb4100200-sup-0010.xls',
+        'cui_rescued': 'https://rescued.omnipathdb.org/' \
+            'cui2007-supplementary-S10.xls',
         'cui_init': 'https://www.embopress.org/doi/full/10.1038/msb4100200',
     },
     'graphviz': {
@@ -860,7 +864,8 @@ urls = {
         'url': 'https://www.science.org/action/downloadSupplement?'
             'doi=10.1126%2Fscience.1108876&'
             'file=maayan_som_external_files.zip',
-        'url_rescued': 'pypath/data/manual_downloads/maayan_som_external_files.zip',
+        'url_rescued': 'https://rescued.omnipathdb.org/' \
+            'maayan2005_som_external_files.zip',
     },
     'ccmap': {
         'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',
@@ -1395,7 +1400,7 @@ urls = {
             'S2589-0042(19)30405-5',
         'url': 'https://www.cell.com/cms/10.1016/j.isci.2019.10.026/'
             'attachment/a1f66cee-15cb-4690-b95d-2480fa576b86/mmc2.xlsx',
-        'url_rescued': 'pypath/data/manual_downloads/mmc2_embrace.xlsx',
+        'url_rescued': 'https://rescued.omnipathdb.org/mmc2_embrace.xlsx',
     },
     'tcdb': {
         'label': 'Transporter classification database',
@@ -1433,7 +1438,7 @@ urls = {
         'article': 'https://www.cell.com/cell/fulltext/S0092-8674(20)30933-8',
         'url': 'https://www.cell.com/cms/10.1016/j.cell.2020.07.025/'
             'attachment/656c4057-8b3b-4aa2-99ce-73278e21d93d/mmc4.xlsx',
-        'url_rescued': 'pypath/data/manual_downloads/mmc4.xlsx',
+        'url_rescued': 'https://rescued.omnipathdb.org/wojtowicz2020-mmc4.xlsx',
     },
     'celltalkdb': {
         'label': 'Manually curated ligand-receptor interactions',
@@ -1563,7 +1568,8 @@ urls = {
         's1': 'https://www.cell.com/cms/10.1016/j.cell.2018.01.029/'
             'attachment/ede37821-fd6f-41b7-9a0e-9d5410855ae6/mmc2.xlsx',
         'article': 'https://www.cell.com/cell/fulltext/S0092-8674(18)30106-5',
-        's1_rescued': 'pypath/data/manual_downloads/mmc2.xlsx',
+        's1_rescued': 'https://rescued.omnipathdb.org/' \
+            'lambert2018-supplementary-S1.xlsx',
     },
     'interpro': {
         'label': 'Protein families, domains and functional sites',
@@ -1779,7 +1785,8 @@ urls = {
         'label': 'A comprehensive database for target genes of gut microbes and microbial metabolites',
         'url_human': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-human.txt',
         'url_mouse': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-mouse.txt',
-        'url_rescued': 'pypath/data/manual_downloads/Gut Microbe-Host Gene.csv',
+        'url_rescued':
+            'https://rescued.omnipathdb.org/gut-microbe-host-gene.csv',
     },
     'swisslipids': {
         'label': 'A knowledge resource for lipids and their biology',

@@ -44,18 +44,27 @@ def phosphatome_annotations():
         ],
     )
 
-    url = urls.urls['phosphatome'].get('url_rescued', urls.urls['phosphatome']['url'])
-    if 'url_rescued' in urls.urls['phosphatome']:
-        path = url  # Use local file path directly
-    else:
-        path = science_input.science_download(url = url)
-    c = curl.FileOpener(
-        path,
+    url = urls.urls['phosphatome'].get(
+        'url_rescued',
+        urls.urls['phosphatome']['url'],
+    )
+
+    curl_args = dict(
         compr = 'zip',
         files_needed = ['aag1796_Tables S1 to S23.xlsx'],
         large = True,
         default_mode = 'rb',
     )
+
+    if 'url_rescued' in urls.urls['phosphatome']:
+
+        c = curl.Curl(url, **curl_args)
+
+    else:
+
+        path = science_input.science_download(url = url)
+        c = curl.FileOpener(path, **curl_args)
+
     tbl = inputs_common.read_xls(c.result['aag1796_Tables S1 to S23.xlsx'])
     result = []
 

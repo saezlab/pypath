@@ -33,14 +33,17 @@ def get_havugimana():
     # Use url_rescued (local file) if available, otherwise try online download
     url = urls.urls['havugimana'].get('url_rescued', urls.urls['havugimana']['url'])
     if 'url_rescued' in urls.urls['havugimana']:
-        path = url  # Use local file path directly
-        table = inputs_common.read_xls(path)
+
+        c = curl.Curl(url, large = True, silent = False)
+        path = c.fileobj.name
+
     else:
         # Fallback to original method if rescued URL not available
         article_url = urls.urls['havugimana']['article']
         path = cell_input.cell_supplementary(url, article_url)
-        table = inputs_common.read_xls(path)
-        
+
+    table = inputs_common.read_xls(path)
+
     return table[3:]  # Skip header rows
 
 

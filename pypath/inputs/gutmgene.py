@@ -97,20 +97,20 @@ def gutmgene_raw(organism: Literal['human', 'mouse'] = 'human') -> list[tuple]:
     c = curl.Curl(url, silent = False, large = True, encoding = 'iso-8859-1')
 
     result = set()
-    
+
     # Parse CSV content
     csv_content = '\n'.join(c.result)
     csv_reader = csv.reader(io.StringIO(csv_content))
-    
+
     # Skip header
     next(csv_reader, None)
-    
+
     for row in csv_reader:
-        
+
         # Skip if not enough columns
         if len(row) < 18:
             continue
-            
+
         # Filter by organism (column 11 is human/mouse)
         if row[11].lower() != organism_:
             continue
