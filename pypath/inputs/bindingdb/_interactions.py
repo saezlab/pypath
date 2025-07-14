@@ -2,69 +2,14 @@ import collections
 import re
 from collections.abc import Generator
 
-from . import _raw
 from pypath.utils import taxonomy
 
-
-BindingdbInteraction = collections.namedtuple(
-    "BindingdbInteraction",
-    [
-        "ligand",
-        "target",
-    ],
-)
-
-BindingdbLigand = collections.namedtuple(
-    "BindingdbLigand",
-    [
-        "name",
-        "smiles",
-        "inchi",
-        "inchi_key",
-        "pubchem",
-    ]
-)
-
-BindingdbTarget = collections.namedtuple(
-    "BindingdbTarget",
-    [
-        "name",
-        "organism",
-        "ncbi_tax_id",
-        "uniprot",
-        "regions_mutations",
-    ]
-)
-
-AllostericRegulation = collections.namedtuple(
-    'AllostericRegulation',
-    [
-        'action',
-        'compound',
-        'organism',
-        'protein',
-        'id_type',
-        'wrong_ec',
-        'pubmeds',
-        'reaction_constants',
-    ]
-)
-
-ReactionConstant = collections.namedtuple(
-    'ReactionConstant',
-    [
-        'type',
-        'value',
-        'conditions',
-        'pubmeds',
-    ]
-)
+from . import _raw
+from ._records import BindingdbInteraction, BindingdbLigand, BindingdbTarget
 
 RE_REGION_MUTATION = re.compile(
     r'(.+?)\s?((?:\[[-\d,A-Z\[\]/]+\])?$)'
 )
-
-
 
 def interactions(dataset: str = 'All',
                  max_lines: int | None = None) -> Generator[BindingdbInteraction]:
