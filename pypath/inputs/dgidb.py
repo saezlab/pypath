@@ -43,13 +43,15 @@ def dgidb_interactions() -> list[tuple]:
         'DgidbInteraction',
         [
             'genesymbol',
-            'entrez',
+            'gene_concept_id',
             'resource',
             'type',
             'drug_name',
-            'drug_chembl',
+            'drug_concept_id',
             'score',
-            'pmid'
+            'approved',
+            'anti_neoplastic',
+            'immunotherapy'
         ],
     )
 
@@ -63,13 +65,15 @@ def dgidb_interactions() -> list[tuple]:
 
         dgidb_interaction = DgidbInteraction(
             genesymbol = interaction['gene_name'],
-            entrez = interaction['entrez_id'],
-            resource = interaction['interaction_claim_source'],
-            type = interaction['interaction_types'],
-            drug_name = interaction['drug_claim_primary_name'],
-            drug_chembl = interaction['drug_concept_id'],
-            score = interaction['interaction_group_score'],
-            pmid = interaction['PMIDs'],
+            gene_concept_id = interaction['gene_concept_id'],
+            resource = interaction['interaction_source_db_name'],
+            type = interaction['interaction_type'],
+            drug_name = interaction['drug_name'],
+            drug_concept_id = interaction['drug_concept_id'],
+            score = interaction['interaction_score'],
+            approved = interaction['approved'],
+            anti_neoplastic = interaction['anti_neoplastic'],
+            immunotherapy = interaction['immunotherapy'],
         )
 
         result.add(dgidb_interaction)
@@ -84,7 +88,7 @@ def dgidb_annotations():
 
     DgidbAnnotation = collections.namedtuple(
         'DgidbAnnotation',
-        ['category'],
+        ['category', 'source'],
     )
 
 
@@ -97,7 +101,7 @@ def dgidb_annotations():
     for rec in data:
 
         uniprots = mapping.map_name(
-            rec['entrez_gene_symbol'],
+            rec['name'],
             'genesymbol',
             'uniprot',
         )
@@ -105,7 +109,8 @@ def dgidb_annotations():
         for uniprot in uniprots:
             result[uniprot].add(
                 DgidbAnnotation(
-                    category = rec['category']
+                    category = rec['name-2'],
+                    source = rec['source_db_name']
                 )
             )
 

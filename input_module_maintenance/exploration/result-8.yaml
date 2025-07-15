@@ -1,0 +1,465 @@
+modules:
+- module_name: csa
+  functions:
+  - get_csa
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-06
+    notes: EBI M-CSA API for catalytic sites, active database
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+  tags:
+    entity:
+    - protein
+    annotation: [structural]
+    interaction: []
+- module_name: mir2disease
+  functions:
+  - mir2disease_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2012
+    notes: Uses rescued URL, original database still accessible http://www.mir2disease.org/
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - rna
+    - protein
+    annotation: []
+    interaction: [miRNA-protein]
+- module_name: macrophage
+  functions:
+  - macrophage_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2010
+    notes: Raza 2010 supplementary data from static file
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xls
+  tags:
+    entity:
+    - protein
+    annotation:
+    interaction: [protein_protein_regulation]
+- module_name: dgidb
+  functions:
+  - dgidb_annotations
+  - dgidb_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-04
+    notes: DGIdb version 5.0.9
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    - drug
+    annotation: [druggability]
+    interaction: [protein_small_molecule]
+- module_name: threedid
+  functions:
+  - get_3did
+  - get_3did_ddi
+  - get_3did_dmi
+  - process_3did_dmi
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2022-01
+    notes: 3D structure-based domain interactions, depends on PDB updates
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_interactions]
+- module_name: lncrnadb
+  functions:
+  - lncrnadb_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2013
+    notes: Uses rescued XML data, original site inactive
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xml
+  tags:
+    entity:
+    - rna
+    - protein
+    annotation: []
+    interaction: [lncrna_post_transcriptional]
+- module_name: pro
+  functions:
+  - pro_mapping
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-03
+    notes: PRO version 71.0 released March 2025
+  module_type:
+  - id_mapping
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - obo
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: unichem
+  functions:
+  - unichem_info
+  - unichem_mapping
+  - unichem_sources
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025
+    notes: EBI UniChem active chemical identifier mapping service
+  module_type:
+  - id_mapping
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    - file_download
+    data_format:
+    - json
+    - tsv
+  tags:
+    entity:
+    - drug
+    - metabolite
+    annotation: []
+    interaction: []
+- module_name: string
+  functions:
+  - string_effects
+  - string_links_interactions
+  - string_physical_interactions
+  - string_species
+  maintenance_status:
+    category: frequent
+    last_known_update: 2023
+    notes: Active STRING database v12.0, regularly updated
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_undirected]
+- module_name: baccin2019
+  functions:
+  - baccin2019_annotations
+  - baccin2019_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2019
+    notes: Ligand-receptor pairs from Baccin 2019 paper supplementary data
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+  tags:
+    entity:
+    - protein
+    annotation: [structural, functional]
+    interaction: [ligand_receptor]
+- module_name: stitch
+  functions:
+  - stitch_actions_interactions
+  - stitch_links_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2015
+    notes: STITCH database v5.0 discontinued, no longer supported
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    - drug
+    - metabolite
+    annotation: []
+    interaction: [protein_small_molecule]
+- module_name: wojtowicz2020
+  functions:
+  - wojtowicz2020_interactions
+  - wojtowicz2020_raw
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2020
+    notes: Cell 2020 paper supplementary data, static dataset
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [ligand_receptor]
+- module_name: genecards
+  functions:
+  - genecards_datasheet
+  - genecards_soup
+  - genecards_summaries
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024-12
+    notes: GeneCards version 5.23 released December 2024
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: []
+- module_name: mirbase
+  functions:
+  - mirbase_ids
+  - mirbase_mature
+  - mirbase_mature_all
+  - mirbase_precursor
+  - mirbase_precursor_all
+  - mirbase_precursor_to_mature
+  maintenance_status:
+    category: frequent
+    last_known_update: 2018-10
+    notes: miRBase release 22.1 from October 2018, regular maintenance
+  module_type:
+  - id_mapping
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - html
+    - tsv
+  tags:
+    entity:
+    - rna
+    annotation: []
+    interaction: []
+- module_name: phosphopoint
+  functions:
+  - phosphopoint_directions
+  - phosphopoint_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2008
+    notes: Uses rescued data file, original database defunct
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [enzyme_substrate]
+- module_name: elm
+  functions:
+  - elm_classes
+  - elm_domains
+  - elm_instances
+  - elm_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024
+    notes: ELM database received major 2024 update with 346 novel motif instances
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    - web_scraping
+    data_format:
+    - tsv
+    - html
+  tags:
+    entity:
+    - protein
+    annotation: [structural, functional]
+    interaction: [enzyme_substrate]
+- module_name: cspa
+  functions:
+  - cspa_annotations
+  - cspa_cell_type_annotations
+  - cspa_cell_types
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2018-10
+    notes: Cell Surface Protein Atlas, academic resource
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+  tags:
+    entity:
+    - protein
+    annotation: [subcellular_location, cellular_location]
+    interaction: []
+- module_name: adhesome
+  functions:
+  - adhesome_annotations
+  - adhesome_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2015
+    notes: Adhesion-related proteins database, academic resource
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation:
+    - functional
+    interaction: [protein_protein_regulation]
+- module_name: cpdb
+  functions:
+  - cpdb_interactions
+  - cpdb_interactions_ltp
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2021-06
+    notes: ConsensusPathDB, academic resource with limited updates
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_undirected]
+- module_name: exocarta
+  functions:
+  - get_exocarta
+  - get_vesiclepedia
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2024
+    notes: ExoCarta 2024 with new features and updates
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    - rna
+    annotation:
+    - subcellular_location
+    interaction: []

@@ -190,8 +190,6 @@ def pharos_general(
         url=url,
         req_headers=req_headers,
         binary_data=binary_data,
-        compressed=True,
-        compr='gz',
     )
     result = json.loads(c.result)
 

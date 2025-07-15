@@ -1,0 +1,460 @@
+modules:
+- module_name: ramilowski2015
+  functions:
+  - ramilowski_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2015-07
+    notes: Supplementary data from Nature Communications 2015 paper
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+  tags:
+    entity:
+    - protein
+    annotation:
+    interaction: [ligand_receptor]
+- module_name: complexportal
+  functions:
+  - complexportal_complexes
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024-05
+    notes: EBI IntAct ComplexPortal - actively maintained database, major expansion in May 2024
+  module_type:
+  - primary_data
+  status: timeout
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xml
+    - zip
+  tags:
+    entity:
+    - protein_complex
+    annotation: []
+    interaction: []
+- module_name: depod
+  functions:
+  - depod_enzyme_substrate
+  - depod_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2019-03
+    notes: DEPOD 2.0 update released March 2019
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - mitab
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [enzyme_substrate]
+- module_name: netpath
+  functions:
+  - netpath_interactions
+  - netpath_names
+  - netpath_pathway_annotations
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2014
+    notes: Mirror site available, original discontinued
+  module_type:
+  - primary_data
+  status: timeout
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    - web_scraping
+    data_format:
+    - xml
+    - zip
+  tags:
+    entity:
+    - protein
+    annotation: [pathway]
+    interaction: [protein_protein_undirected]
+- module_name: negatome
+  functions:
+  - negatome_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2013
+    notes: Negatome 2.0 manually curated non-interacting protein pairs
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_negative]
+- module_name: pisa
+  functions:
+  - pisa_bonds
+  - pisa_interfaces
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025
+    notes: PDBe PISA updated weekly with new PDB structures
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - xml
+  tags:
+    entity:
+    - protein
+    annotation: [structural]
+    interaction: []
+- module_name: kinasedotcom
+  functions:
+  - kinasedotcom_annotations
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2008-02
+    notes: Kinase.com data from rescued archive
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xls
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: []
+- module_name: phosphosite
+  functions:
+  - phosphosite_directions
+  - phosphosite_enzyme_substrate
+  - phosphosite_interactions
+  - phosphosite_interactions_all
+  - phosphosite_interactions_curated
+  - phosphosite_interactions_new
+  - phosphosite_interactions_noref
+  - phosphosite_ptm_orthology
+  - phosphosite_ptms
+  - phosphosite_regsites
+  - phosphosite_regsites_one_organism
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025
+    notes: PhosphoSitePlus continuously updated commercial database
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - owl
+    - biopax
+  tags:
+    entity:
+    - protein
+    annotation: [functional, structural]
+    interaction: [enzyme_substrate]
+- module_name: pdzbase
+  functions:
+  - pdzbase_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2011
+    notes: PDZ domain interaction database from rescued archive
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_directed]
+- module_name: drugbank
+  functions:
+  - drugbank_annotations
+  - drugbank_drugs
+  - drugbank_interactions
+  - drugbank_mapping
+  - drugbank_raw_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-01
+    notes: DrugBank version 5.1.13 released January 2025
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+    - xml
+    - zip
+  tags:
+    entity:
+    - drug
+    - protein
+    annotation: []
+    interaction: [protein_small_molecule]
+- module_name: biomodels
+  functions:
+  - download_single_model
+  - get_all_models
+  - get_biomodels
+  - get_biomodels_req
+  - get_single_model
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025
+    notes: EMBL-EBI BioModels actively maintained with 2024 features
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - sbml
+    - json
+  tags:
+    entity:
+    annotation: []
+    interaction: []
+- module_name: celltalkdb
+  functions:
+  - celltalkdb_annotations
+  - celltalkdb_download
+  - celltalkdb_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2021
+    notes: CellTalkDB ligand-receptor database
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - rds
+  tags:
+    entity:
+    - protein
+    annotation: [functional, subcellular_location]
+    interaction: [ligand_receptor]
+- module_name: threedcomplex
+  functions:
+  - threedcomplex_chains
+  - threedcomplex_complexes
+  - threedcomplex_contacts
+  - threedcomplex_ddi
+  - threedcomplex_nresidues
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2018
+    notes: 3DComplex database from Weizmann Institute
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein_complex
+    annotation: []
+    interaction: []
+- module_name: reaction
+  functions:
+  - acsn_interactions_2
+  - get_interactions
+  - panther_interactions
+  - pid_interactions
+  - reactions_biopax
+  - reactome_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-06
+    notes: Multiple pathway databases - Reactome, ACSN, PID, Panther
+  module_type:
+  - primary_data
+  status: timeout
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - biopax
+    - owl
+    - sbml
+  tags:
+    entity:
+    - protein
+    - metabolite
+    annotation: []
+    interaction: [protein_protein_regulation]
+- module_name: dip
+  functions:
+  - dip_interactions
+  - dip_login
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2017-02
+    notes: Database of Interacting Proteins
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - mitab
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_undirected]
+- module_name: hpo
+  functions:
+  - hpo_annotations
+  - hpo_diseases
+  - hpo_ontology
+  - hpo_terms
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024-09
+    notes: Human Phenotype Ontology actively maintained with 2024 updates
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - obo
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [disease_association]
+    interaction: []
+- module_name: dbptm
+  functions:
+  - dbptm_enzyme_substrate
+  - dbptm_enzyme_substrate_old
+  - dbptm_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2025-08
+    notes: dbPTM 2025 has been released
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    - web_scraping
+    data_format:
+    - tsv
+    - tgz
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [enzyme_substrate]
+- module_name: biomart
+  functions:
+  - biomart_homology
+  - biomart_microarray
+  - biomart_microarray_types
+  - biomart_microarrays
+  - biomart_query
+  maintenance_status:
+    category:
+    last_known_update:
+    notes: Ensembl BioMart actively maintained with regular Ensembl releases
+  module_type:
+  - utility
+  - id_mapping
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - xml
+    - json
+    - tsv
+  tags:
+    entity:
+    annotation: []
+    interaction: []
+- module_name: innatedb
+  functions:
+  - innatedb_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2019
+    notes: InnateDB innate immunity database
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - mitab
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_undirected]

@@ -25,6 +25,7 @@ import pypath.inputs.common as inputs_common
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.share.common as common
+import pypath.share.curl as curl
 import pypath.inputs.cell as cell_input
 
 
@@ -34,10 +35,19 @@ def wojtowicz2020_raw():
     (Wojtowicz et al. 2020) as a list of tuples.
     """
 
-    path = cell_input.cell_supplementary(
-        supp_url = urls.urls['wojtowicz2020']['url'],
-        article_url = urls.urls['wojtowicz2020']['article'],
-    )
+    url = urls.urls['wojtowicz2020'].get('url_rescued', urls.urls['wojtowicz2020']['url'])
+
+    if 'url_rescued' in urls.urls['wojtowicz2020']:
+
+        c = curl.Curl(url, silent = False, large = True)
+        path = c.fileobj.name
+
+    else:
+
+        path = cell_input.cell_supplementary(
+            supp_url = urls.urls['wojtowicz2020']['url'],
+            article_url = urls.urls['wojtowicz2020']['article'],
+        )
 
     content = inputs_common.read_xls(path)
 

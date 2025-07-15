@@ -1,0 +1,441 @@
+modules:
+- module_name: mitab
+  functions:
+  - mitab_field_list
+  - mitab_field_uniprot
+  maintenance_status:
+    category:
+    last_known_update:
+    notes: Utility module for parsing MI-TAB format, maintained as part of core pypath
+  module_type:
+  - utility
+  status:
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    data_format:
+    - tsv
+  tags:
+    entity:
+    annotation: []
+    interaction: []
+- module_name: cosmic
+  functions:
+  - cancer_gene_census_annotations
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-05
+    notes: COSMIC Cancer Gene Census, actively maintained database
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: [disease_association, functional]
+    interaction: []
+- module_name: intact
+  functions:
+  - intact_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: IntAct database, major PPI database actively maintained by EBI
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - mitab
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_undirected]
+- module_name: abs
+  functions:
+  - abs_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2005
+    notes: ABS database from 2005, appears to be a one-time publication
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - gff
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_directed]
+- module_name: cancercellmap
+  functions:
+  - ccmap_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2011
+    notes: CancerCellMap appears to be an ongoing project, but we use snapshot from pathwaycommons from 2011
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_directed]
+- module_name: phobius
+  functions:
+  - phobius_annotations
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2004
+    notes: Phobius membrane protein topology predictions, appears to be from a specific study
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [subcellular_location]
+    interaction: []
+- module_name: zhong2015
+  functions:
+  - zhong2015_annotations
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2015
+    notes: From 10.1111/nyas.12776 (PMID 25988664), one-time paper dataset
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction:
+- module_name: gpcrdb
+  functions:
+  - gpcrdb_annotations
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024
+    notes: GPCRdb is actively maintained comprehensive GPCR database
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: []
+- module_name: pharos
+  functions:
+  - pharos_diseases
+  - pharos_expression
+  - pharos_general
+  - pharos_gtex
+  - pharos_ligands
+  - pharos_orthologs
+  - pharos_targets
+  - pharos_xrefs
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024-02
+    notes: NIH Pharos database, actively maintained by NCATS
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+  tags:
+    entity:
+    - protein
+    - drug
+    annotation: [disease, side_effects, tissue_location]
+    interaction:
+- module_name: hgnc
+  functions:
+  - hgnc_genegroups
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-06
+    notes: HGNC gene groups, actively maintained by HGNC
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction:
+- module_name: cancerdrugsdb
+  functions:
+  - cancerdrugsdb_annotations
+  - cancerdrugsdb_download
+  - cancerdrugsdb_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-06
+    notes: CancerDrugs_DB by Anticancer Fund, appears to be updated infrequently
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - drug
+    - protein
+    annotation: [disease_association]
+    interaction: [protein_small_molecule]
+- module_name: surfaceome
+  functions:
+  - surfaceome_annotations
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2018-11
+    notes: In silico human surfaceome predictions, appears to be from specific study
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+  tags:
+    entity:
+    - protein
+    annotation: [subcellular_location]
+    interaction:
+- module_name: embrace
+  functions:
+  - embrace_annotations
+  - embrace_interactions
+  - embrace_raw
+  - embrace_translated
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2019
+    notes: From 10.1016/j.isci.2019.10.026, one-time paper dataset
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: [ligand_receptor]
+- module_name: diseases
+  functions:
+  - diseases_general
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024
+    notes: DISEASES database from Jensen Lab, actively maintained
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [disease_association]
+    interaction:
+- module_name: pathophenodb
+  functions:
+  - disease_pathogen_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2019-02
+    notes: PathoPhenoDB for pathogen-disease associations, appears to be updated infrequently
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - rdf
+    - nt
+  tags:
+    entity:
+    annotation: [disease_pathogen_association]
+    interaction: []
+- module_name: topdb
+  functions:
+  - topdb_annotations
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-01
+    notes: TOPDB membrane protein topology database, appears to be updated infrequently
+  module_type:
+  - primary_data
+  status: timeout
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xml
+  tags:
+    entity:
+    - protein
+    annotation: [structural, subcellular_location]
+    interaction:
+- module_name: pdb
+  functions:
+  - pdb_chains
+  - pdb_complexes
+  - pdb_uniprot
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-06
+    notes: PDB structural data, actively maintained by PDB consortium
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    - protein_complex
+    annotation: [structural]
+    interaction:
+- module_name: compath
+  functions:
+  - compath_mappings
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2018
+    notes: ComPath pathway mappings, appears to be updated infrequently
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [pathway]
+    interaction: []
+- module_name: italk
+  functions:
+  - italk_annotations
+  - italk_interactions
+  - italk_raw
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2019-08
+    notes: iTalk intercellular communication database, appears to be updated infrequently
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - rda
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: [ligand_receptor]
+- module_name: phosphonetworks
+  functions:
+  - phosphonetworks_enzyme_substrate
+  - phosphonetworks_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2013
+    notes: PhosphoNetworks kinase-substrate database, appears to be discontinued
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: [enzyme_substrate]

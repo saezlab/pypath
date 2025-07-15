@@ -24,7 +24,6 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.mapping as mapping
-import pypath.inputs.rdata as rdata
 
 _logger = session.Logger(name = 'progeny_input')
 _log = _logger._log
@@ -63,8 +62,9 @@ def progeny_raw(organism = 9606):
     rdata_path = c.fileobj.name
     c.fileobj.close()
 
-    rdata_parsed = rdata.rdata.parser.parse_file(rdata_path)
-    rdata_converted = rdata.rdata.conversion.convert(rdata_parsed)
+    # Use pyreadr directly instead of custom rdata module
+    import pyreadr
+    rdata_converted = pyreadr.read_r(rdata_path)
 
     key = 'model_%s_full' % _organism
 

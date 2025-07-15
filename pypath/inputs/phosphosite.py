@@ -38,6 +38,7 @@ import pypath.inputs.homologene as homologene
 import pypath.utils.mapping as mapping
 import pypath.share.common as common
 import pypath.share.session as session
+import pypath.data as _data
 
 _logger = session.Logger(name = 'phosphosite_input')
 
@@ -210,7 +211,7 @@ def phosphosite_ptm_orthology():
 
     unknown_taxa = set([])
 
-    for typ in common.psite_mod_types:
+    for typ in _data.common_load('psite_mod_types'):
 
         groups = {}
 
@@ -501,7 +502,7 @@ def phosphosite_regsites_one_organism(organism = 9606):
 
     organisms = set([9606, 10090, 10116])
 
-    mod_types = dict(common.psite_mod_types2)
+    mod_types = dict(_data.common_load('psite_mod_types2'))
 
     regsites = phosphosite_regsites()
 

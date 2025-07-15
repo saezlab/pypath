@@ -1,0 +1,453 @@
+modules:
+- module_name: uniprot_idmapping
+  functions:
+  - idtypes
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: Uses UniProt REST API for ID mapping service
+  module_type:
+  - id_mapping
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: pazar
+  functions:
+  - pazar_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2009-01
+    notes: Uses rescued URL, original PAZAR database no longer available
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - zip
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_directed]
+- module_name: trrust
+  functions:
+  - trrust_human
+  - trrust_interactions
+  - trrust_mouse
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2021-11
+    notes: TRRUST v2 database, appears to be maintained but infrequently updated
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_regulation]
+- module_name: acsn
+  functions:
+  - acsn_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2022-08
+    notes: Atlas of Cancer Signaling Networks, uses rescued data files - v2 here? https://www.ndexbio.org/viewer/networks/49488c61-7832-11e9-848d-0ac135e8bacf
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - gmt
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_directed]
+- module_name: panglaodb
+  functions:
+  - panglaodb_annotations
+  - panglaodb_raw
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2020-03
+    notes: Cell type marker database, last update March 2020
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    - rna
+    annotation: [cellular_location, tissue_location]
+    interaction: []
+- module_name: proteinatlas
+  functions:
+  - proteinatlas_annotations
+  - proteinatlas_secretome_annotations
+  - proteinatlas_subcellular_annotations
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024-10
+    notes: Human Protein Atlas, actively maintained with regular updates
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - zip
+    - xlsx
+  tags:
+    entity:
+    - protein
+    annotation: [tissue_location, subcellular_location, disease_association]
+    interaction: []
+- module_name: netbiol
+  functions:
+  - arn_interactions
+  - nrf2ome_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2013-04
+    notes: Uses rescued data from autophagyregulation.org and nrf2ome.org
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_regulation]
+- module_name: lambert2018
+  functions:
+  - lambert2018_annotations
+  - lambert2018_s1_raw
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2018-02
+    notes: Data from Lambert et al. 2018 Cell paper on human transcription factors
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+  tags:
+    entity:
+    - protein
+    annotation: [functional, structural]
+    interaction: []
+- module_name: kegg
+  functions:
+  - kegg_dbget
+  - kegg_interactions
+  - kegg_medicus
+  - kegg_medicus_complexes
+  - kegg_medicus_interactions
+  - kegg_pathway_annotations
+  - kegg_pathway_annotations_pathwaycommons
+  - kegg_pathways
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: KEGG database, actively maintained with regular updates
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - web_scraping
+    - file_download
+    - api
+    data_format:
+    - html
+    - kgml
+    - owl
+    - gmt
+  tags:
+    entity:
+    - protein
+    - metabolite
+    - drug
+    - protein_complex
+    annotation: [pathway, functional]
+    interaction: [protein_protein_regulation]
+- module_name: ebi
+  functions:
+  - ebi_rest
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: Generic EBI REST API utility function, actively maintained
+  module_type:
+  - utility
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: comppi
+  functions:
+  - comppi_interaction_locations
+  - comppi_locations
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2018-10
+    notes: ComPPI database, requires web form submission with cookies
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [subcellular_location]
+    interaction: [protein_protein_undirected]
+- module_name: encode
+  functions:
+  - encode_tf_mirna_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2020-01
+    notes: Data from ENCODE project, specific TF-miRNA dataset
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+  tags:
+    entity:
+    - protein
+    - rna
+    interaction: [miRNA_tf]
+- module_name: homologene
+  functions:
+  - homologene_dict
+  - homologene_uniprot_dict
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: NCBI HomoloGene discontinued, uses rescued data
+  module_type:
+  - id_mapping
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [orthology]
+    interaction: []
+- module_name: clinvar
+  functions:
+  - clinvar_citations
+  - clinvar_raw
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: NCBI ClinVar database, actively maintained with regular updates
+  module_type:
+  - primary_data
+  status: timeout
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - gz
+  tags:
+    entity:
+    - protein
+    annotation: [disease, variants]
+    interaction:
+- module_name: humancellmap
+  functions:
+  - humancellmap_annotations
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2021-06
+    notes: BioID screen data from specific publication
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [subcellular_location]
+    interaction: []
+- module_name: pubmed
+  functions:
+  - get_pmid
+  - get_pubmeds
+  - only_pmids
+  - open_pubmed
+  - pmids_dict
+  - pmids_list
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: NCBI PubMed interface, actively maintained
+  module_type:
+  - utility
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+    - html
+  tags:
+    entity: []
+    annotation: []
+    interaction: []
+- module_name: cellinker
+  functions:
+  - cellinker_annotations
+  - cellinker_complex_annotations
+  - cellinker_complexes
+  - cellinker_complexes_raw
+  - cellinker_lr_interactions
+  - cellinker_lr_interactions_raw
+  - cellinker_protein_annotations
+  - cellinker_smol_interactions
+  - cellinker_smol_interactions_raw
+  maintenance_status:
+    category: infrequent
+    last_known_update: unknown
+    notes: Cellinker database, uses rescued data files, recently Celllinker 2.0 was released https://www.cellknowledge.com.cn/cellinker/index.html
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - csv
+  tags:
+    entity:
+    - protein
+    - protein_complex
+    - metabolite
+    annotation: []
+    interaction: [ligand_receptor, protein_small_molecule]
+- module_name: cpad
+  functions:
+  - cpad_annotations
+  - cpad_pathway_cancer
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2019-06
+    notes: Literature curated regulator-pathway-cancer relationships
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    - rna
+    annotation: [pathway, disease_association]
+    interaction: []
+- module_name: phosphoelm
+  functions:
+  - phosphoelm_enzyme_substrate
+  - phosphoelm_interactions
+  - phosphoelm_kinases
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2010-11
+    notes: PhosphoELM database, appears to be maintained but infrequently updated
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - web_scraping
+    - file_download
+    data_format:
+    - html
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: [protein_protein_regulation, enzyme_substrate]

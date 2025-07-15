@@ -1,0 +1,499 @@
+modules:
+- module_name: twosides
+  functions:
+  - twosides_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024-03
+    notes: Drug-drug interaction safety signals from FDA AERS, likely static dataset
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - drug
+    annotation: [side_effects]
+    interaction:
+  validation_notes: Correct - provides drug-drug interactions
+- module_name: membranome
+  functions:
+  - membranome_annotations
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2018-05
+    notes: Membrane protein annotations from Membranome database via JSON API
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+  tags:
+    entity:
+    - protein
+    annotation: [subcellular_location]
+    interaction:
+  validation_notes: Correct - provides membrane protein location annotations
+- module_name: mirecords
+  functions:
+  - mirecords_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2009-01
+    notes: Literature curated miRNA-target interactions, uses rescued file
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xls
+  tags:
+    entity:
+    - rna
+    - protein
+    annotation:
+    interaction: [miRNA_protein]
+  validation_notes: Correct - provides miRNA-target interactions
+- module_name: spike
+  functions:
+  - spike_interactions
+  - spike_complexes
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2012-01
+    notes: Signaling pathways knowledge base, XML download from 2012
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xml
+  tags:
+    entity:
+    - protein
+    - protein_complex
+    annotation:
+    interaction: [protein_protein_undirected]
+  validation_notes: Correct - provides both interactions and complexes from signaling pathways
+- module_name: pathwaycommons
+  functions:
+  - pathwaycommons_interactions
+  - pathwaycommons_bind_interactions
+  - pathwaycommons_biogrid_interactions
+  - pathwaycommons_corum_interactions
+  - pathwaycommons_dip_interactions
+  - pathwaycommons_hprd_interactions
+  - pathwaycommons_inoh_interactions
+  - pathwaycommons_intact_interactions
+  - pathwaycommons_kegg_interactions
+  - pathwaycommons_nci-pid_interactions
+  - pathwaycommons_netpath_interactions
+  - pathwaycommons_panther_interactions
+  - pathwaycommons_phosphosite_interactions
+  - pathwaycommons_reactome_interactions
+  - pathwaycommons_wikipathways_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2023-12
+    notes: Central repository aggregating pathway data from multiple sources
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [pathway]
+    interaction: [protein_protein_regulation]
+  validation_notes: Correct - primary function is aggregating interactions from multiple pathway databases
+- module_name: huri
+  functions:
+  - hi_i_interactions
+  - hi_ii_interactions
+  - hi_union_interactions
+  - huri_interactions
+  - lit_bm_13_interactions
+  - lit_bm_17_interactions
+  - lit_bm_interactions
+  - yang2016_interactions
+  - yu2011_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2020-07
+    notes: Human Reference Interactome from systematic Y2H screens
+  module_type:
+  - primary_data
+  status: timeout
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - psi
+  tags:
+    entity:
+    - protein
+    annotation:
+    interaction: [protein_protein_undirected]
+  validation_notes: Correct - provides high-quality protein-protein interactions from Y2H screens
+- module_name: cellchatdb
+  functions:
+  - cellchatdb_annotations
+  - cellchatdb_cofactors
+  - cellchatdb_complexes
+  - cellchatdb_download
+  - cellchatdb_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-04
+    notes: Cell-cell communication database with ligand-receptor interactions
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - rda
+  tags:
+    entity:
+    - protein
+    - protein_complex
+    annotation: [functional]
+    interaction: [ligand_receptor]
+  validation_notes: Correct - provides both complexes and ligand-receptor interactions with annotations
+- module_name: oreganno
+  functions:
+  - oreganno_interactions
+  - oreganno_raw
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2010-11
+    notes: Open regulatory annotation database, last update from 2010
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation:
+    interaction: [protein_protein_directed]
+  validation_notes: Correct - primary focus on transcription factor-target interactions
+- module_name: havugimana
+  functions:
+  - havugimana_complexes
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2012-09
+    notes: Protein complexes from Havugimana 2012 Cell paper supplement
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xls
+  tags:
+    entity:
+    - protein_complex
+    annotation: []
+    interaction: []
+  validation_notes: Correct - provides protein complexes, not individual interactions
+- module_name: gutmgene
+  functions:
+  - gutmgene_annotations
+  - gutmgene_raw
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2025-01
+    notes: Gut microbiota-gene associations, uses rescued file, should switch to 2.0
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    - microbe
+    annotation:
+    interaction: [protein_microbe]
+  validation_notes: Correct - provides microbiota-gene associations with disease context
+- module_name: cellcall
+  functions:
+  - cellcall_annotations
+  - cellcall_download
+  - cellcall_download_all
+  - cellcall_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2021-02
+    notes: Ligand-receptor-TF pathway dataset from GitHub repository
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: [ligand_receptor]
+  validation_notes: Correct - provides ligand-receptor interactions with functional annotations
+- module_name: embopress
+  functions:
+  - embopress_supplementary
+  maintenance_status:
+    category:
+    last_known_update:
+    notes: Utility for downloading EMBO Press supplementary materials
+  module_type:
+  - utility
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - xls
+    - xlsx
+  tags:
+    entity: []
+    annotation: []
+    interaction: []
+  validation_notes: Correct - utility module for accessing supplementary data, not a data source itself
+- module_name: ensembl
+  functions:
+  - ensembl_organisms
+  maintenance_status:
+    category:
+    last_known_update:
+    notes: Utility to retrieve organism information from Ensembl
+  module_type:
+  - utility
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+  tags:
+    entity: []
+    annotation: []
+    interaction: []
+  validation_notes: Correct - utility module for organism metadata, not a biological data source
+- module_name: connectomedb
+  functions:
+  - connectomedb_annotations
+  - connectomedb_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2020-01
+    notes: Ligand-receptor interactions from connectomeDB2020
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: [subcellular_location, functional_role]
+    interaction: [ligand_receptor]
+  validation_notes: Correct - provides ligand-receptor interactions with location annotations
+- module_name: common
+  functions:
+  - csv_sep_change
+  - glom_fields
+  - json_extract
+  - json_read
+  - read_table
+  - read_xls
+  maintenance_status:
+    category:
+    last_known_update:
+    notes: Common utility functions for file reading and data processing
+  module_type:
+  - utility
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    data_format:
+    - csv
+    - tsv
+    - xls
+    - xlsx
+    - json
+  tags:
+    entity: []
+    annotation: []
+    interaction: []
+  validation_notes: Correct - utility module for file I/O operations, not a data source
+- module_name: li2012
+  functions:
+  - li2012_dmi
+  - li2012_enzyme_substrate
+  - li2012_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2012-01
+    notes: Kinase-substrate data from Li 2012 paper supplement
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xls
+  tags:
+    entity:
+    - protein
+    annotation: [structural]
+    interaction: [enzyme_substrate]
+  validation_notes: Correct - provides kinase-substrate relationships with PTM annotations
+- module_name: scconnect
+  functions:
+  - scconnect_annotations
+  - scconnect_complexes
+  - scconnect_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2021
+    notes: Ligand-receptor interactions from scConnect GitHub repository
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    - small_molecule
+    - protein_complex
+    annotation: [functional_role]
+    interaction: [protein_protein_regulation]
+  validation_notes: Correct - provides ligand-receptor interactions, complexes, and annotations
+- module_name: hprd
+  functions:
+  - hprd_enzyme_substrate
+  - hprd_interactions
+  - hprd_interactions_htp
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2010-04
+    notes: Human Protein Reference Database, discontinued in 2010
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    annotation: [structural]
+    interaction: [enzyme_substrate, protein_protein_undirected]
+  validation_notes: Correct - provides both protein interactions and PTM data
+- module_name: ddinter
+  functions:
+  - ddinter_drug_interactions
+  - ddinter_identifiers
+  - ddinter_interactions
+  - ddinter_mappings
+  - ddinter_n_drugs
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2024-05
+    notes: Drug-drug interactions from DDInter database via web scraping
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - web_scraping
+    - api
+    data_format:
+    - json
+    - html
+  tags:
+    entity:
+    - drug
+    annotation: [side_effects]
+    interaction:
+  validation_notes: Correct - provides drug-drug interactions and drug identifiers
+- module_name: lincs
+  functions:
+  - lincs_compounds
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2020-06
+    notes: Small molecule compound identifiers from LINCS database, should switch to lincs dataportal 2.0 https://lincsportal.ccs.miami.edu/signatures/assays
+  module_type:
+  - id_mapping
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - sdf
+  tags:
+    entity:
+    - drug
+    - small_molecule
+    annotation: []
+    interaction: []
+  validation_notes: Correct - provides compound identifiers and chemical structure data for mapping

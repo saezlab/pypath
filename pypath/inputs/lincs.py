@@ -44,45 +44,69 @@ def lincs_compounds():
     )
 
     c = curl.Curl(urls.urls['lincs-compounds']['url'], silent = False)
-
-    return dict(
-        [
-            (key, pair[1])
-            for pair in [
-                (
-                    [
-                        it for sl in
-                        [
-                            filter(
-                                lambda z: len(z) > 0,
-                                y.split(';')
-                            )
-                            for y in x[1:4]
-                            if len(y) > 0
-                        ]
-                        for it in sl
-                    ],
-                    LincsCompound(
-                        lincs = x[4],
-                        chembl = 'CHEMBL%s' % x[7] if x[7] else None,
-                        chebi = 'CHEBI:%s' % x[8] if x[8] else None,
-                        inchi = x[9],
-                        inchi_key = x[10],
-                        smiles = x[11],
-                        alternatives = x[3],
-                    )
-                )
-                for x in [
-                    [b.strip() for b in a.split('\t')]
-                    for a in ''.join([
-                        s.replace(',', '\t')
-                            if i % 2 == 0 else
-                        s.replace('\n', '')
-                        for i, s in enumerate(c.result.split('"'))
-                    ]).split('\n')[1:]
-                    if len(a) > 0
-                ]
-            ]
-            for key in pair[0]
-        ]
-    )
+    
+    # Parse SDF file
+    result = {}
+    
+    # SDF files contain molecules separated by $$$$
+    molecules = c.result.split('$$$$')
+    
+    for molecule in molecules:
+        if not molecule.strip():
+            continue
+            
+        # Parse the molecule data
+        lines = molecule.strip().split('\n')
+        if len(lines) < 4:
+            continue
+            
+        # First line is the molecule name
+        name = lines[0].strip()
+        
+        # Parse the property block (after the connection table)
+        properties = {}
+        in_properties = False
+        
+        for line in lines:
+            if line.strip().startswith('>'):
+                # Property header: >  <PROPERTY_NAME>
+                prop_name = line.strip()[3:-1]  # Remove >  < and >
+                in_properties = True
+                current_prop = prop_name
+            elif in_properties and line.strip() and not line.strip().startswith('>'):
+                # Property value
+                properties[current_prop] = line.strip()
+                in_properties = False
+        
+        # Extract names from various fields
+        names = []
+        if name:
+            names.append(name)
+            
+        # Add alternative names from properties
+        for prop in ['name', 'common_name', 'synonym', 'alternative_name']:
+            if prop in properties and properties[prop]:
+                names.append(properties[prop])
+                
+        # Add LINCS ID if available
+        lincs_id = properties.get('lincs_id') or properties.get('LINCS_ID')
+        if lincs_id:
+            names.append(lincs_id)
+            
+        # Create the compound object
+        compound = LincsCompound(
+            lincs = lincs_id,
+            chembl = 'CHEMBL%s' % properties.get('chembl_id', '') if properties.get('chembl_id') else None,
+            chebi = 'CHEBI:%s' % properties.get('chebi_id', '') if properties.get('chebi_id') else None,
+            inchi = properties.get('inchi'),
+            inchi_key = properties.get('inchi_key'),
+            smiles = properties.get('smiles'),
+            alternatives = properties.get('synonym', ''),
+        )
+        
+        # Add each name as a key pointing to the compound
+        for name in names:
+            if name:
+                result[name] = compound
+    
+    return result

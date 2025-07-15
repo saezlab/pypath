@@ -22,6 +22,8 @@ from __future__ import annotations
 from typing import Literal, NamedTuple
 
 import collections
+import csv
+import io
 
 import pypath.share.curl as curl
 import pypath.utils.taxonomy as taxonomy
@@ -33,23 +35,41 @@ _log = session.Logger(name = 'gutmgene_input')._log
 
 
 class GutmgeneRaw(NamedTuple):
-    microbe_taxon: str
-    microbe_ncbi_tax_id: str
-    gut_microbiota_id: str
-    classification: str
-    genesymbol: str
-    entrez: str
-    effect: str
+    index: str
+    pmid: str
+    gut_microbiota: str
+    gut_microbiota_ncbi_id: str
+    rank: str
+    strain: str
+    gene: str
+    gene_id: str
+    alteration: str
     throughput: str
+    associative_mode: str
+    organism: str
+    sample: str
+    experimental_method: str
+    measurement_technique: str
+    description: str
+    condition: str
+    doid: str
 
 
 class GutmgeneAnnotation(NamedTuple):
-    microbe_taxon: str
-    microbe_ncbi_tax_id: str
-    gut_microbiota_id: str
-    classification: str
-    effect: str
+    gut_microbiota: str
+    gut_microbiota_ncbi_id: str
+    rank: str
+    strain: str
+    alteration: str
     throughput: str
+    associative_mode: str
+    sample: str
+    experimental_method: str
+    measurement_technique: str
+    description: str
+    condition: str
+    doid: str
+    pmid: str
 
 
 def gutmgene_raw(organism: Literal['human', 'mouse'] = 'human') -> list[tuple]:
@@ -68,27 +88,41 @@ def gutmgene_raw(organism: Literal['human', 'mouse'] = 'human') -> list[tuple]:
 
     if organism not in ('human', 'mouse'):
 
-        err = '`organism` must be either `human` or `mouse`, not `{organism}`.'
+        err = f'`organism` must be either `human` or `mouse`, not `{organism}`.'
         _log(err)
         raise ValueError(err)
 
-    url = urls.urls['gutmgene'][f'url_{organism_}']
-    c = curl.Curl(url, silent = False, large = True)
+    # Use the rescued file since the original URLs are no longer accessible
+    url = urls.urls['gutmgene']['url_rescued']
+    c = curl.Curl(url, silent = False, large = True, encoding = 'iso-8859-1')
 
     result = set()
 
-    for l in c.result:
+    # Parse CSV content
+    csv_content = '\n'.join(c.result)
+    csv_reader = csv.reader(io.StringIO(csv_content))
 
-        if l.startswith('"'):
+    # Skip header
+    next(csv_reader, None)
+
+    for row in csv_reader:
+
+        # Skip if not enough columns
+        if len(row) < 18:
             continue
 
-        l = l.replace('"', '')
-        l = l.strip().split('\t')
-        l = (None if not i else i for i in l)
+        # Filter by organism (column 11 is human/mouse)
+        if row[11].lower() != organism_:
+            continue
 
-        if l:
+        # Handle empty fields
+        row = [None if not field.strip() else field.strip() for field in row]
 
-            result.add(GutmgeneRaw(*l))
+        try:
+            result.add(GutmgeneRaw(*row))
+        except (TypeError, ValueError):
+            # Skip malformed lines
+            continue
 
     return list(result)
 
@@ -114,8 +148,9 @@ def gutmgene_annotations(
 
     for rec in raw:
 
+        # Use gene symbol for mapping
         uniprots = mapping.map_name(
-            rec.genesymbol,
+            rec.gene,
             'genesymbol',
             'uniprot',
             ncbi_tax_id = ncbi_tax_id,
@@ -125,12 +160,20 @@ def gutmgene_annotations(
 
             result[uniprot].add(
                 GutmgeneAnnotation(
-                    microbe_taxon = rec.microbe_taxon,
-                    microbe_ncbi_tax_id = rec.microbe_ncbi_tax_id,
-                    gut_microbiota_id = rec.gut_microbiota_id,
-                    classification = rec.classification,
-                    effect = rec.effect,
+                    gut_microbiota = rec.gut_microbiota,
+                    gut_microbiota_ncbi_id = rec.gut_microbiota_ncbi_id,
+                    rank = rec.rank,
+                    strain = rec.strain,
+                    alteration = rec.alteration,
                     throughput = rec.throughput,
+                    associative_mode = rec.associative_mode,
+                    sample = rec.sample,
+                    experimental_method = rec.experimental_method,
+                    measurement_technique = rec.measurement_technique,
+                    description = rec.description,
+                    condition = rec.condition,
+                    doid = rec.doid,
+                    pmid = rec.pmid,
                 )
             )
 

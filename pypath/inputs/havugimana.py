@@ -17,10 +17,6 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import collections
-import itertools
-
-import pypath.share.curl as curl
 import pypath.inputs.cell as cell_input
 import pypath.inputs.common as inputs_common
 import pypath.resources.urls as urls
@@ -34,12 +30,21 @@ def get_havugimana():
     Cell. 150(5): 1068–1081.
     """
 
-    supp_url = urls.urls['havugimana']['url']
-    article_url = urls.urls['havugimana']['article']
-    path = cell_input.cell_supplementary(supp_url, article_url)
+    # Use url_rescued (local file) if available, otherwise try online download
+    url = urls.urls['havugimana'].get('url_rescued', urls.urls['havugimana']['url'])
+    if 'url_rescued' in urls.urls['havugimana']:
+
+        c = curl.Curl(url, large = True, silent = False)
+        path = c.fileobj.name
+
+    else:
+        # Fallback to original method if rescued URL not available
+        article_url = urls.urls['havugimana']['article']
+        path = cell_input.cell_supplementary(url, article_url)
+
     table = inputs_common.read_xls(path)
 
-    return table[3:]
+    return table[3:]  # Skip header rows
 
 
 def havugimana_complexes():

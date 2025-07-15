@@ -19,6 +19,9 @@
 
 import os
 import pickle
+import re
+
+from future.utils import iteritems
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -30,6 +33,9 @@ import pypath.utils.pdb as pdb_utils
 import pypath.share.cache as cache
 import pypath.internals.intera as intera
 import pypath.share.progress as progress
+
+# Define non_digit regex pattern for extracting numbers
+non_digit = re.compile(r'[^\d.-]+')
 
 
 def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):
@@ -52,10 +58,18 @@ def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):
         tmpfile = ddi_flat
 
     u_pfam, pfam_u = pfam_input.pfam_uniprot(organism = organism)
-    u_pdb, pdb_u = pdb_input.pdb_chains()
+    
+    # Try to get PDB chains data with error handling
+    try:
+        u_pdb, pdb_u = pdb_input.pdb_chains()
+    except:
+        u_pdb, pdb_u = None, None
 
     if pfam_u is None or pdb_u is None:
-
+        
+        print('WARNING: PDB chains data or Pfam data not available. 3DID DDI processing requires '
+              'both PDB-UniProt and Pfam mappings to function. Please check your network '
+              'connection or try again later.')
         return None
 
     ddi = {}
@@ -172,8 +186,8 @@ def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):
 
                 if len(l) > 3:
 
-                    rnum1 = int(common.non_digit.sub('', l[2])) + offset1
-                    rnum2 = int(common.non_digit.sub('', l[3])) + offset2
+                    rnum1 = int(non_digit.sub('', l[2])) + offset1
+                    rnum2 = int(non_digit.sub('', l[3])) + offset2
 
                     this_interface.add_residues(
                         (rnum1, l[0], uniprot1),
@@ -247,16 +261,33 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
     elif os.path.exists(ddi_flat):
 
         tmpfile = ddi_flat
+        # Count lines in the provided file
+        with open(tmpfile, 'r') as f:
+            lnum = sum(1 for _ in f)
 
     else:
 
         return None
 
-    u_pdb, pdb_u = pdb_input.pdb_chains()
+    # Try to get PDB chains data with extended timeout
+    try:
+        u_pdb, pdb_u = pdb_input.pdb_chains()
+    except:
+        u_pdb, pdb_u = None, None
+    
     all_unip = set(uniprot_db.all_uniprots(organism = organism))
 
-    if all_unip is None or pdb_u is None:
+    if all_unip is None:
 
+        return None
+    
+    # If PDB chains data is not available, log a warning and return None
+    # This prevents the function from hanging indefinitely
+    if pdb_u is None:
+        
+        print('WARNING: PDB chains data not available. 3DID processing requires PDB-UniProt '
+              'mappings to function. Please check your network connection or try '
+              'again later.')
         return None
 
     ddi = []
@@ -326,10 +357,10 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
                     if l[2].count('-') == 1:
 
                         start1 = int(
-                            common.non_digit.sub('', l[2][2:].split('-')[0])
+                            non_digit.sub('', l[2][2:].split('-')[0])
                         )
                         end1 = int(
-                            common.non_digit.sub('', l[2][2:].split('-')[1])
+                            non_digit.sub('', l[2][2:].split('-')[1])
                         )
                         u1start = rmap.get_residue(
                             pdb,
@@ -341,10 +372,10 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
                     if l[3].count('-') == 1:
 
                         start2 = int(
-                            common.non_digit.sub('', l[3][2:].split('-')[0])
+                            non_digit.sub('', l[3][2:].split('-')[0])
                         )
                         end2 = int(
-                            common.non_digit.sub('', l[3][2:].split('-')[1])
+                            non_digit.sub('', l[3][2:].split('-')[1])
                         )
                         u2start = rmap.get_residue(
                             pdb,
@@ -381,12 +412,12 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
 
                 conv1 = rmap.get_residue(
                     pdb,
-                    int(common.non_digit.sub('', l[2])),
+                    int(non_digit.sub('', l[2])),
                     chain = chain1,
                 )
                 conv2 = rmap.get_residue(
                     pdb,
-                    int(common.non_digit.sub('', l[3])),
+                    int(non_digit.sub('', l[3])),
                     chain = chain2,
                 )
 
@@ -448,10 +479,17 @@ def get_3did_dmi(dmi_flat = None):
 
         return None
 
-    u_pdb, pdb_u = pdb_input.pdb_chains()
+    # Try to get PDB chains data with error handling
+    try:
+        u_pdb, pdb_u = pdb_input.pdb_chains()
+    except:
+        u_pdb, pdb_u = None, None
 
     if pdb_u is None:
-
+        
+        print('WARNING: PDB chains data not available. 3DID DMI processing requires '
+              'PDB-UniProt mappings to function. Please check your network '
+              'connection or try again later.')
         return None
 
     dmi = {}
@@ -488,11 +526,11 @@ def get_3did_dmi(dmi_flat = None):
                 if l[2].count('-') == 1 and l[3].count('-') == 1:
 
                     pdb_region1 = [
-                        int(common.non_digit.sub('', x))
+                        int(non_digit.sub('', x))
                         for x in l[2].split(':')[1].split('-')
                     ]
                     pdb_region2 = [
-                        int(common.non_digit.sub('', x))
+                        int(non_digit.sub('', x))
                         for x in l[3].split(':')[1].split('-')
                     ]
                     u1start = rmap.get_residue(

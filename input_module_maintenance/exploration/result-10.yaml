@@ -1,0 +1,95 @@
+modules:
+- module_name: lipidmaps/structures
+  functions:
+  - sdf
+  maintenance_status:
+    category: frequent
+    last_known_update: 2024
+    notes: Active lipid structure database, regularly updated
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - sdf
+    - zip
+  tags:
+    entity:
+    - metabolite
+    annotation: []
+    interaction: []
+- module_name: hmdb/metabolites
+  functions:
+  - mapping
+  - raw
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2021-02
+    notes: HMDB 5.0 released January 2022, actively maintained
+  module_type:
+  - primary_data
+  - id_mapping
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xml
+    - zip
+  tags:
+    entity:
+    - metabolite
+    annotation: []
+    interaction: []
+- module_name: new_stitch/actions_test
+  functions:
+  - prop_actions
+  - run_test
+  - test_actions
+  maintenance_status:
+    category: 
+    last_known_update:
+    notes: Test module for STITCH actions, discontinued with STITCH v5.0
+  module_type:
+  - utility
+  status: error
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - gz
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: disgenet/_api/simple
+  functions:
+  - disgenet_annotations
+  - disgenet_diseases
+  - disgenet_variants
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025
+    notes: DisGeNet recently switched to commercial business model, tbd. whether we can continue to use.
+  module_type:
+  - primary_data
+  status: error
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+    - gz
+  tags:
+    entity:
+    - protein
+    annotation: [disease_association]
+    interaction: []

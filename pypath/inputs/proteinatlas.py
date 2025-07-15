@@ -52,11 +52,15 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
         for l in fp:
             l = line(l)
 
+            if len(l) < 7:  # Skip incomplete lines
+                continue
+
             uniprots = mapping.map_name(l[1], 'genesymbol', 'uniprot')
-            tissue = '%s:%s' % (l[2], l[3])
+            # New format: Gene, Gene name, Tissue, IHC tissue name, Cell type, Level, Reliability
+            tissue = '%s:%s:%s' % (l[2], l[3], l[4])  # Tissue:IHC tissue name:Cell type
 
             for u in uniprots:
-                result['normal'][tissue][u] = (l[4], l[5].strip())
+                result['normal'][tissue][u] = (l[5], l[6].strip())  # Level, Reliability
 
 
     if cancer or pathology:
@@ -69,14 +73,20 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
         for l in fp:
 
             l = line(l)
-            uniprots = mapping.map_name(l[1], 'genesymbol', 'uniprot')
-            tissue   = l[2]
 
-            values = dict(
-                (h, float(l[i + 3]) if '.' in l[i + 3] else int(l[i + 3]))
-                for i, h in enumerate(hdr[3:])
-                if len(l) and len(l[i + 3].strip())
-            )
+            if len(l) < 7:  # Skip incomplete lines
+                continue
+
+            uniprots = mapping.map_name(l[1], 'genesymbol', 'uniprot')
+            tissue   = l[2]  # Cancer type
+
+            # New format: Gene, Gene name, Cancer, High, Medium, Low, Not detected
+            values = {
+                'High': int(l[3]) if l[3].isdigit() else 0,
+                'Medium': int(l[4]) if l[4].isdigit() else 0,
+                'Low': int(l[5]) if l[5].isdigit() else 0,
+                'Not detected': int(l[6]) if l[6].isdigit() else 0,
+            }
 
             for u in uniprots:
 
@@ -95,6 +105,7 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
         [
             'organ',
             'tissue',
+            'cell_type',
             'level',
             'status',
             'n_not_detected',
@@ -108,7 +119,7 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
         ],
     )
     ProteinatlasAnnotation.__new__.__defaults__ = (
-        (None,) * 4 + (False, False, None, False)
+        (None,) * 5 + (False, False, None, False)
     )
 
 
@@ -130,12 +141,20 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
         for tissue, gex in iteritems(data['normal']):
 
             organ = tissue
+            cell_type = ''
 
             if ':' in tissue:
-                organ, tissue = tissue.split(':')
+                parts = tissue.split(':')
+                if len(parts) >= 3:
+                    organ, tissue, cell_type = parts[0], parts[1], parts[2]
+                elif len(parts) == 2:
+                    organ, tissue = parts[0], parts[1]
+                else:
+                    organ = parts[0]
 
             organ = organ.strip()
             tissue = tissue.strip()
+            cell_type = cell_type.strip()
 
             for uniprot, ex in iteritems(gex):
                 uniprots = mapping.map_name(uniprot, 'uniprot', 'uniprot')
@@ -145,6 +164,7 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                         ProteinatlasAnnotation(
                             organ = organ,
                             tissue = tissue,
+                            cell_type = cell_type,
                             level = ex[0],
                             status = ex[1],
                         )
@@ -170,6 +190,7 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                         ProteinatlasAnnotation(
                             organ = condition,
                             tissue = condition,
+                            cell_type = None,
                             level = max(
                                 (i for i in iteritems(ex) if i[0] in LEVELS),
                                 key = lambda i: i[1],
@@ -190,6 +211,62 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
     return dict(result)
 
 
+def proteinatlas_interactions():
+    """
+    Downloads and processes interaction consensus data from Human Protein Atlas.
+    """
+
+    ProteinatlasInteraction = collections.namedtuple(
+        'ProteinatlasInteraction',
+        [
+            'uniprot_a',
+            'uniprot_b',
+            'gene_a',
+            'gene_b',
+            'interaction_type',
+            'evidence',
+        ],
+    )
+
+    url = urls.urls['proteinatlas']['interactions']
+
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        default_mode = 'r',
+    )
+
+    # Find the interaction consensus file
+    file_key = None
+    for key in c.result.keys():
+        if 'interaction_consensus' in key:
+            file_key = key
+            break
+
+    if not file_key:
+        raise ValueError('Could not find interaction_consensus.tsv in downloaded files')
+
+    reader = csv.DictReader(
+        c.result[file_key],
+        delimiter = '\t',
+    )
+
+    result = []
+
+    for rec in reader:
+        result.append(ProteinatlasInteraction(
+            uniprot_a = rec.get('Uniprot_A', ''),
+            uniprot_b = rec.get('Uniprot_B', ''),
+            gene_a = rec.get('Gene_A', ''),
+            gene_b = rec.get('Gene_B', ''),
+            interaction_type = rec.get('Interaction_type', ''),
+            evidence = rec.get('Evidence', ''),
+        ))
+
+    return result
+
+
 def proteinatlas_subcellular_annotations():
 
     ProteinatlasSubcellularAnnotation = collections.namedtuple(
@@ -197,6 +274,9 @@ def proteinatlas_subcellular_annotations():
         [
             'location',
             'status',
+            'reliability',
+            'main_location',
+            'additional_location',
         ],
     )
 
@@ -208,8 +288,19 @@ def proteinatlas_subcellular_annotations():
         silent = False,
         default_mode = 'r',
     )
+
+    # Find the correct TSV file in the zip
+    file_key = None
+    for key in c.result.keys():
+        if 'subcellular_location.tsv' in key:
+            file_key = key
+            break
+
+    if not file_key:
+        raise ValueError('Could not find subcellular_location.tsv in downloaded files')
+
     reader = csv.DictReader(
-        c.files_multipart['subcellular_location.tsv'],
+        c.result[file_key],
         delimiter = '\t',
     )
 
@@ -219,17 +310,92 @@ def proteinatlas_subcellular_annotations():
         uniprots = mapping.map_name(rec['Gene name'], 'genesymbol', 'uniprot')
 
         for uniprot in uniprots:
-            for status in ('Enhanced', 'Supported', 'Uncertain'):
-                if not rec[status]:
-                    continue
+            # Handle the new format with main and additional locations
+            main_locations = rec.get('Main location', '').split(';') if rec.get('Main location') else []
+            additional_locations = rec.get('Additional location', '').split(';') if rec.get('Additional location') else []
 
-                for location in rec[status].split(';'):
+            all_locations = main_locations + additional_locations
+
+            for location in all_locations:
+                if location.strip():
                     result[uniprot].add(ProteinatlasSubcellularAnnotation(
-                        location = location,
-                        status = status,
+                        location = location.strip(),
+                        status = 'main' if location in main_locations else 'additional',
+                        reliability = rec.get('Reliability', ''),
+                        main_location = rec.get('Main location', ''),
+                        additional_location = rec.get('Additional location', ''),
                     ))
 
+            # Also handle Enhanced, Supported, Approved, Uncertain columns if they exist
+            for status in ('Enhanced', 'Supported', 'Approved', 'Uncertain'):
+                if rec.get(status):
+                    for location in rec[status].split(';'):
+                        if location.strip():
+                            result[uniprot].add(ProteinatlasSubcellularAnnotation(
+                                location = location.strip(),
+                                status = status.lower(),
+                                reliability = rec.get('Reliability', ''),
+                                main_location = rec.get('Main location', ''),
+                                additional_location = rec.get('Additional location', ''),
+                            ))
+
     return dict(result)
+
+
+def proteinatlas_interactions():
+    """
+    Downloads and processes interaction consensus data from Human Protein Atlas.
+    """
+
+    ProteinatlasInteraction = collections.namedtuple(
+        'ProteinatlasInteraction',
+        [
+            'uniprot_a',
+            'uniprot_b',
+            'gene_a',
+            'gene_b',
+            'interaction_type',
+            'evidence',
+        ],
+    )
+
+    url = urls.urls['proteinatlas']['interactions']
+
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        default_mode = 'r',
+    )
+
+    # Find the interaction consensus file
+    file_key = None
+    for key in c.result.keys():
+        if 'interaction_consensus' in key:
+            file_key = key
+            break
+
+    if not file_key:
+        raise ValueError('Could not find interaction_consensus.tsv in downloaded files')
+
+    reader = csv.DictReader(
+        c.result[file_key],
+        delimiter = '\t',
+    )
+
+    result = []
+
+    for rec in reader:
+        result.append(ProteinatlasInteraction(
+            uniprot_a = rec.get('Uniprot_A', ''),
+            uniprot_b = rec.get('Uniprot_B', ''),
+            gene_a = rec.get('Gene_A', ''),
+            gene_b = rec.get('Gene_B', ''),
+            interaction_type = rec.get('Interaction_type', ''),
+            evidence = rec.get('Evidence', ''),
+        ))
+
+    return result
 
 
 def proteinatlas_secretome_annotations():
@@ -242,15 +408,37 @@ def proteinatlas_secretome_annotations():
         ],
     )
 
+    # Use local rescued file if available, otherwise try to download
+    url = urls.urls['proteinatlas'].get('secretome_rescued', urls.urls['proteinatlas']['secretome'])
 
-    url = urls.urls['proteinatlas']['secretome']
-    path = science.science_download(url)
+    if 'secretome_rescued' in urls.urls['proteinatlas']:
+
+        c = curl.Curl(
+            url,
+            large = True,
+            silent = False,
+        )
+        path = c.fileobj.name
+
+    else:
+
+        path = science.science_download(url)
+
     reader = inputs_common.read_xls(path)[1:]
     result = collections.defaultdict(set)
 
     for rec in reader:
+        # Skip if not enough columns
+        if len(rec) < 4:
+            continue
 
-        for uniprot_original in rec[2].split(','):
+        # Column 2 should contain UniProt IDs
+        uniprot_column = rec[2] if rec[2] else ''
+
+        for uniprot_original in uniprot_column.split(','):
+            uniprot_original = uniprot_original.strip()
+            if not uniprot_original:
+                continue
 
             uniprots = mapping.map_name(
                 uniprot_original,
@@ -260,8 +448,64 @@ def proteinatlas_secretome_annotations():
 
             for uniprot in uniprots:
                 result[uniprot].add(ProteinatlasSecretomeAnnotation(
-                    mainclass = rec[3],
-                    secreted = 'secreted' in rec[3].lower(),
+                    mainclass = rec[3] if len(rec) > 3 and rec[3] else '',
+                    secreted = 'secreted' in rec[3].lower() if len(rec) > 3 and rec[3] else False,
                 ))
 
     return dict(result)
+
+
+def proteinatlas_interactions():
+    """
+    Downloads and processes interaction consensus data from Human Protein Atlas.
+    """
+
+    ProteinatlasInteraction = collections.namedtuple(
+        'ProteinatlasInteraction',
+        [
+            'uniprot_a',
+            'uniprot_b',
+            'gene_a',
+            'gene_b',
+            'interaction_type',
+            'evidence',
+        ],
+    )
+
+    url = urls.urls['proteinatlas']['interactions']
+
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        default_mode = 'r',
+    )
+
+    # Find the interaction consensus file
+    file_key = None
+    for key in c.result.keys():
+        if 'interaction_consensus' in key:
+            file_key = key
+            break
+
+    if not file_key:
+        raise ValueError('Could not find interaction_consensus.tsv in downloaded files')
+
+    reader = csv.DictReader(
+        c.result[file_key],
+        delimiter = '\t',
+    )
+
+    result = []
+
+    for rec in reader:
+        result.append(ProteinatlasInteraction(
+            uniprot_a = rec.get('Uniprot_A', ''),
+            uniprot_b = rec.get('Uniprot_B', ''),
+            gene_a = rec.get('Gene_A', ''),
+            gene_b = rec.get('Gene_B', ''),
+            interaction_type = rec.get('Interaction_type', ''),
+            evidence = rec.get('Evidence', ''),
+        ))
+
+    return result

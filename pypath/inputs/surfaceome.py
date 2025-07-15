@@ -43,7 +43,7 @@ def surfaceome_annotations():
                 float(r[13]), # score
                 r[18] if r[18] else None, # class
                 set(r[19].replace('KInase', 'Kinase').split(';'))
-                    if r[19] else
+                    if r[19] and isinstance(r[19], str) else
                 set(), # subclass
             )
         )

@@ -199,6 +199,11 @@ def pdb_complexes(organism = None):
     uniprot_pdb, pdb_uniprot = pdb_chains()
     del uniprot_pdb
 
+    # Check if PDB chains data is available
+    if pdb_uniprot is None:
+        print('WARNING: PDB chains data not available. Cannot extract PDB complexes.')
+        return {}
+
     for pdb_id, chains in iteritems(pdb_uniprot):
 
         uniprots = tuple(chain['uniprot'] for chain in chains.values())

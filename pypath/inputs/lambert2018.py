@@ -25,6 +25,7 @@ import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.inputs.cell as cell_input
 import pypath.share.common as common
+import pypath.share.curl as curl
 
 
 def lambert2018_s1_raw():
@@ -36,10 +37,18 @@ def lambert2018_s1_raw():
         return None if f in {'', '#N/A'} else f
 
 
-    path = cell_input.cell_supplementary(
-        supp_url = urls.urls['lambert2018']['s1'],
-        article_url = urls.urls['lambert2018']['article'],
-    )
+    if 's1_rescued' in urls.urls['lambert2018']:
+
+        url = urls.urls['lambert2018']['s1_rescued']
+        c = curl.Curl(url, silent = False, large = True)
+        path = c.fileobj.name
+
+    else:
+
+        path = cell_input.cell_supplementary(
+            supp_url = urls.urls['lambert2018']['s1'],
+            article_url = urls.urls['lambert2018']['article'],
+        )
 
     content = inputs_common.read_xls(path, sheet = 1)
 

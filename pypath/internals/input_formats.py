@@ -768,8 +768,8 @@ class ArrayMapping(MappingInput):
         MappingInput.__init__(
             self,
             type_ = 'array',
-            id_type_a = self._get_id_type(id_type_a),
-            id_type_b = self._get_id_type(id_type_b),
+            id_type_a = self._process_id_type(id_type_a),
+            id_type_b = self._process_id_type(id_type_b),
             ncbi_tax_id = ncbi_tax_id,
             resource_id_type_a = self._process_id_type(id_type_a),
             resource_id_type_b = self._process_id_type(id_type_b),

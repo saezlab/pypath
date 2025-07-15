@@ -174,8 +174,18 @@ def elm_interactions():
 
         l = tuple(x.strip() for x in l.split('\t'))
 
-        uniprot_mofif, isoform_motif = reupi.match(l[2]).groups()
-        uniprot_domain, isoform_domain = reupi.match(l[3]).groups()
+        motif_match = reupi.match(l[2])
+        domain_match = reupi.match(l[3])
+        
+        if not motif_match or not domain_match:
+            continue  # Skip this record if regex doesn't match
+            
+        uniprot_mofif, isoform_motif = motif_match.groups()
+        uniprot_domain, isoform_domain = domain_match.groups()
+        
+        # Parse taxon information
+        taxon_motif_match = retax.match(l[11])
+        taxon_domain_match = retax.match(l[12])
 
         result.append(
             ELMInteraction(
@@ -192,8 +202,16 @@ def elm_interactions():
                 affinity_min = number_or_none(l[8], float),
                 affinity_max = number_or_none(l[9], float),
                 pubmeds = tuple(map(int, l[10].split(','))) if l[10] else (),
-                taxon_motif = int(retax.match(l[11]).groups()[0]),
-                taxon_domain = int(retax.match(l[12]).groups()[0]),
+                taxon_motif = (
+                    int(taxon_motif_match.groups()[0]) 
+                    if taxon_motif_match 
+                    else None
+                ),
+                taxon_domain = (
+                    int(taxon_domain_match.groups()[0]) 
+                    if taxon_domain_match 
+                    else None
+                ),
             )
         )
 

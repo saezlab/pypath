@@ -18,3 +18,8 @@ desc.rst
 biocypher-log/
 biocypher-out/
 *.cprof
+cache-manager/
+cache_manager_log/
+download-manager/
+download_manager_log/
+*.parquet

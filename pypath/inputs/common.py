@@ -144,7 +144,7 @@ def read_xls(
                 [
                     (
                         cell
-                            if isinstance(cell, str) else
+                            if isinstance(cell, (str, int, float)) else
                         cell.value
                             if cell is not None else
                         ''
@@ -331,7 +331,7 @@ def json_extract(
 
 
     return [
-        glom.glom(rec, spec, default = _cons.GLOM_ERROR)
+        glom.glom(rec, spec, default = _const.GLOM_ERROR)
         for rec in data
     ]
 

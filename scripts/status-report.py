@@ -274,6 +274,8 @@ class StatusReport(object):
         cachedir (str): The cache directory. By default a new empty cache
             directory is created at each run.
         first (int): For testing purposes, run only the first some functions.
+        first_n (int): For testing purposes, limit each function to retrieve
+            only the first N records. Default is 10.
     """
 
     def __init__(
@@ -288,6 +290,7 @@ class StatusReport(object):
             prev_run = None,
             poetry = None,
             python_version = None,
+            first_n = 10,
         ):
 
         self.parse_args()
@@ -300,6 +303,7 @@ class StatusReport(object):
         self.prev_dir = prev_run or self.clargs.prev_run
         self.poetry = poetry or self.clargs.poetry
         self._python_version = python_version or self.clargs.python
+        self.first_n = first_n or self.clargs.first_n
         self.from_git = (
             from_git
                 if from_git is not None else
@@ -384,6 +388,12 @@ class StatusReport(object):
             '-P', '--python',
             help = 'Python version',
             type = str,
+        )
+        self.clargs.add_argument(
+            '-n', '--first_n',
+            help = 'Limit each function to retrieve only the first N records',
+            type = int,
+            default = 10,
         )
         self.clargs = self.clargs.parse_args()
 
@@ -802,6 +812,7 @@ class StatusReport(object):
             f'--pickle_dir {self.pickle_dir} '
             f'--build_dir {self.build_dir}'
             f'{" --first " + str(self.first) if self.first else ""}'
+            f'{" --first_n " + str(self.first_n) if self.first_n else ""}'
             f'{" --prev_run " + self.prev_dir if self.prev_dir else ""}'
             f'{" --nobuild" if self.nobuild else ""}'
         )
@@ -812,7 +823,7 @@ class StatusReport(object):
 
         return re.match(
             r'^\d+\.\d+',
-            self._python_version or '%d.%d' % sys.version_info[:2]),
+            self._python_version or '%d.%d' % sys.version_info[:2]
         ).group()
 
 
@@ -847,6 +858,14 @@ class StatusReport(object):
         try:
 
             _args, _kwargs = ARGS.get(fun_name, ((), {}))
+            
+            # Add first_n parameter if the function accepts it and we have a value
+            if (
+                self.first_n is not None and
+                'first_n' in inspect.signature(fun).parameters and
+                'first_n' not in _kwargs
+            ):
+                _kwargs['first_n'] = self.first_n
 
             if (
                 sum(
@@ -1179,6 +1198,7 @@ class StatusReport(object):
 
         self.builder = build.WebserviceTables(
             build_dir = self.build_dir,
+            first_n = self.first_n,
         )
 
         databases = (

@@ -17,9 +17,10 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import collections
-
 from typing import List, Literal, Union
+
+import os
+import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -27,6 +28,7 @@ import pypath.share.settings as settings
 import pypath.inputs.embopress as embo
 import pypath.inputs.ca1 as ca1
 import pypath.utils.mapping as mapping
+import pypath.inputs.common as inputs_common
 
 
 KEY = {
@@ -136,11 +138,27 @@ def cui_interactions() -> List[tuple]:
     (https://www.embopress.org/doi/full/10.1038/msb4100200).
     """
 
-    raw = embo.embopress_supplementary(
-        url = urls.urls['wang']['cui'],
-        init_url = urls.urls['wang']['cui_init'],
-        sheet = 'Supplementary Table 9',
-    )
+    # Use local file if available, otherwise try online
+    if 'cui_rescued' in urls.urls['wang']:
+
+        # Get local file path
+    url = urls.urls['wang'].get('cui_rescued', urls.urls['wang']['cui'])
+
+    # Try to open local file directly
+    if 'cui_rescued' in urls.urls['wang']:
+
+        c = curl.Curl(url, silent = False, large = True)
+        path = c.fileobj.name
+        raw = inputs_common.read_xls(path, sheet = 'Supplementary Table 9')
+
+    else:
+
+        # Fall back to online
+        raw = embo.embopress_supplementary(
+            url = url,
+            init_url = urls.urls['wang']['cui_init'],
+            sheet = 'Supplementary Table 9',
+        )
 
     return _wang_process(raw)
 
@@ -259,7 +277,11 @@ def wang_annotations():
     for dataset in ('ca1', 'cui', 'wang'):
 
         func = globals()['%s_interactions' % dataset]
-        data = func()
+        try:
+            data = func()
+        except Exception:
+            # Skip datasets that fail (e.g., ca1 and cui due to website blocking)
+            continue
 
         for i in data:
 

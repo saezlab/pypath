@@ -33,6 +33,8 @@ import pypath.utils.taxonomy as taxonomy
 def get_mirbase_aliases(organism = 9606):
     """
     Downloads and processes mapping tables from miRBase.
+    NOTE: The miRBase aliases file format has changed. This function
+    now returns a simpler mapping based on available data.
     """
 
     if type(organism) in _const.CHAR_TYPES:
@@ -54,20 +56,54 @@ def get_mirbase_aliases(organism = 9606):
     url = urls.urls['mirbase']['aliases']
     c = curl.Curl(url, silent = False, large = True)
 
-    for l in c.result:
+    if not c.result:
+        return mat, mir
 
-        l = l.strip().strip(';').split('\t')
-
-        if l[1][:3] != mborganism:
-            continue
-
-        d = mat if l[0][:5] == 'MIMAT' else mir
-
-        if l[0] not in d:
-            d[l[0]] = set([])
-
-        for m in l[1].split(';'):
-            d[l[0]].add(m)
+    # Handle HTML-formatted content from new miRBase site
+    # New format: internal_id, db_type, external_id, name
+    for line in c.result:
+        # Remove HTML tags and split by <br> to get individual lines
+        line = line.replace('<p>', '').replace('</p>', '')
+        entries = line.split('<br>')
+        
+        for entry in entries:
+            entry = entry.strip()
+            if not entry:
+                continue
+                
+            parts = entry.split('\t')
+            if len(parts) < 4:
+                continue
+                
+            internal_id, db_type, external_id, name = parts[:4]
+            
+            # Filter for human miRNAs (organism-specific names)
+            # Look for names that start with organism prefix or are typical miRNA names
+            is_organism_specific = (
+                name.lower().startswith(mborganism.lower()) or
+                name.lower().startswith('mir') or
+                name.lower().startswith('let-')
+            )
+            
+            if not is_organism_specific:
+                continue
+                
+            # For NCBI Gene entries (db_type 5), these are likely mature miRNAs
+            # For other types, treat as precursors
+            if db_type == '5' and name.startswith('MIR'):
+                # Mature miRNA - use external_id as key, name as alias
+                if external_id not in mat:
+                    mat[external_id] = set()
+                mat[external_id].add(name)
+                # Also add lowercase version for compatibility
+                if external_id not in mat:
+                    mat[external_id] = set()
+                mat[external_id].add(name.lower())
+            else:
+                # Precursor or other - use internal_id as key, name as alias  
+                if internal_id not in mir:
+                    mir[internal_id] = set()
+                mir[internal_id].add(name)
 
     return mat, mir
 

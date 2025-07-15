@@ -1,0 +1,483 @@
+modules:
+- module_name: transmir
+  functions:
+  - transmir_interactions
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2024-08
+    notes: TF-miRNA interactions from TransmiR database, uses rescued URL suggesting potential data availability issues, however recently Transmir 3.0 has been released
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    - rna
+    annotation: []
+    interaction: [miRNA_tf]
+- module_name: lncdisease
+  functions:
+  - lncdisease_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2023-10
+    notes: Uses rescued URL indicating database is no longer maintained, however recently v3.0 has been released.
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - rna
+    annotation: []
+    interaction: [lncrna_protein]
+- module_name: icellnet
+  functions:
+  - icellnet_annotations
+  - icellnet_complexes
+  - icellnet_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2023-11
+    notes: Active GitHub repository with recent updates for ligand-receptor interactions
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    - protein_complex
+    annotation: [functional]
+    interaction: [ligand_receptor]
+- module_name: ipi
+  functions:
+  - ipi_uniprot
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2012-01
+    notes: IPI database discontinued in 2012, uses GitHub alternative source
+  module_type:
+  - id_mapping
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: []
+- module_name: ca1
+  functions:
+  - ca1_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2005-01
+    notes: Ma'ayan 2005 Science paper supplement, static dataset
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_regulation]
+- module_name: wang
+  functions:
+  - cui_interactions
+  - hsn_interactions
+  - wang_annotations
+  - wang_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2014-01
+    notes: Wang Lab Human Signaling Network v6 from 2014, uses rescued URLs
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+  tags:
+    entity:
+    - protein
+    annotation:
+    - functional
+    - subcellular_location
+    interaction: [protein_protein_regulation]
+- module_name: ctdbase
+  functions:
+  - ctdbase_relations
+  - ctdbase_vocabulary
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: Comparative Toxicogenomics Database, actively maintained
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein
+    - drug
+    - metabolite
+    annotation: [disease, pathway]
+    interaction: []
+- module_name: hpmr
+  functions:
+  - hpmr_annotations
+  - hpmr_complexes
+  - hpmr_interactions
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2006-06
+    notes: Human Plasma Membrane Receptome, uses rescued URLs indicating discontinued maintenance
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - web_scraping
+    data_format:
+    - html
+  tags:
+    entity:
+    - protein
+    - protein_complex
+    annotation: [functional]
+    interaction: [ligand_receptor]
+- module_name: laudanna
+  functions:
+  - laudanna_directions
+  - laudanna_effects
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2017-01
+    notes: Laudanna Lab signaling flow/direction data, uses rescued URLs
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_regulation]
+- module_name: compleat
+  functions:
+  - compleat_complexes
+  - compleat_raw
+  maintenance_status:
+    category: discontinued
+    last_known_update: 2013-02
+    notes: Compleat protein complex database, uses rescued URL
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tsv
+  tags:
+    entity:
+    - protein_complex
+    annotation: []
+    interaction: []
+- module_name: signor
+  functions:
+  - signor_complexes
+  - signor_enzyme_substrate
+  - signor_interactions
+  - signor_pathway_annotations
+  - signor_pathways
+  - signor_protein_families
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: SIGNOR pathway database, actively maintained
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    - file_download
+    data_format:
+    - csv
+    - tsv
+  tags:
+    entity:
+    - protein
+    - protein_complex
+    annotation: [pathway, post_translational_modifications]
+    interaction: [protein_protein_regulation, enzyme_substrate]
+- module_name: dorothea
+  functions:
+  - dorothea_full_raw
+  - dorothea_interactions
+  - dorothea_interactions_old
+  - dorothea_old_csv
+  - dorothea_rda_raw
+  - tfregulons_interactions
+  - tfregulons_interactions_old
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: DoRothEA TF regulons database, actively maintained on GitHub
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+    - rda
+    - zip
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: [protein_protein_regulation]
+- module_name: uniprot
+  functions:
+  - uniprot_data
+  - uniprot_deleted
+  - uniprot_families
+  - uniprot_history
+  - uniprot_history_recent_datasheet
+  - uniprot_keywords
+  - uniprot_locations
+  - uniprot_ncbi_taxids
+  - uniprot_ncbi_taxids_2
+  - uniprot_preprocess
+  - uniprot_query
+  - uniprot_recent_version
+  - uniprot_taxonomy
+  - uniprot_tissues
+  - uniprot_topology
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: UniProt protein knowledgebase, continuously updated
+  module_type:
+  - primary_data
+  - id_mapping
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    - file_download
+    data_format:
+    - tsv
+    - txt
+    - xml
+    - fasta
+  tags:
+    entity:
+    - protein
+    annotation: [functional, subcellular_location, tissue_location, structural]
+    interaction: []
+- module_name: phosphatome
+  functions:
+  - phosphatome_annotations
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2017-01
+    notes: Chen et al Science Signaling 2017 supplement, static dataset
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+    - zip
+  tags:
+    entity:
+    - protein
+    annotation:
+    - functional
+    interaction: []
+- module_name: progeny
+  functions:
+  - progeny_annotations
+  - progeny_raw
+  maintenance_status:
+    category: discontinued
+    last_known_update: unknown
+    notes: PROGENy pathway responsive genes, actively maintained on GitHub
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - rda
+  tags:
+    entity:
+    - protein
+    annotation:
+    - pathway
+    interaction: []
+- module_name: expasy
+  functions:
+  - expasy_enzyme_classes
+  - expasy_enzymes
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: ExPASy enzyme nomenclature database, regularly updated
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - txt
+    - dat
+  tags:
+    entity:
+    - protein
+    annotation: [functional]
+    interaction: []
+- module_name: biogrid
+  functions:
+  - biogrid_all_interactions
+  - biogrid_interactions
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-07
+    notes: BioGRID protein interaction database, regularly updated
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - tab2
+    - zip
+  tags:
+    entity:
+    - protein
+    annotation: []
+    interaction: [protein_protein_undirected]
+- module_name: celltypist
+  functions:
+  - celltypist_annotations
+  maintenance_status:
+    category: frequent
+    last_known_update: 2025-01
+    notes: Celltypist immune cell markers, actively maintained by Teichmann lab
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - xlsx
+  tags:
+    entity:
+    - protein
+    annotation: [cellular_location, tissue_location]
+    interaction: []
+- module_name: oma
+  functions:
+  - oma_orthologs
+  - oma_table
+  maintenance_status:
+    category: infrequent
+    last_known_update: 2024-07
+    notes: OMA orthology database, regularly updated
+  module_type:
+  - id_mapping
+  status: timeout
+  species_coverage: multi_species
+  technical_aspects:
+    access_method:
+    - api
+    data_format:
+    - json
+  tags:
+    entity:
+    annotation: [orthology]
+    interaction: []
+- module_name: protmapper
+  functions:
+  - protmapper_enzyme_substrate
+  - protmapper_interactions
+  maintenance_status:
+    category: one_time_paper
+    last_known_update: 2019-11
+    notes: Bachman et al 2019 biorxiv supplement, static dataset
+  module_type:
+  - primary_data
+  status: success
+  species_coverage: human_only
+  technical_aspects:
+    access_method:
+    - file_download
+    data_format:
+    - csv
+    - zip
+  tags:
+    entity:
+    - protein
+    annotation:
+    interaction: []

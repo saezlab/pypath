@@ -1,0 +1,86 @@
+{
+  "biogrid_physical_38e8388a": {
+    "source_name": "biogrid_physical",
+    "url": "https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/BIOGRID-MV-Physical-LATEST.tab3.zip",
+    "format": "tsv",
+    "saved_at": "2025-07-07T07:47:26.606324",
+    "num_rows": 521176,
+    "num_columns": 37,
+    "schema": "103: string\n6416: string\n2318: string\n112315: string\n108607: string\n-: string\n-.1: string\nMAP2K4: string\nFLNC: string\nJNKK|JNKK1|MAPKK4|MEK4|MKK4|PRKMK4|SAPKK-1|SAPKK1|SEK1|SERK1|SKK1: string\nABP-280|ABP280A|ABPA|ABPL|FLN2|MFM5|MPD4: string\nTwo-hybrid: string\nphysical: string\nMarti A (1997): string\nPUBMED:9006895: string\n9606: string\n9606.1: string\nLow Throughput: string\n-.2: string\n-.3: string\n-.4: string\n-.5: string\nBIOGRID: string\nP45985: string\n-.6: string\nNP_003001|NP_001268364: string\nQ14315: string\nQ59H94: string\nNP_001120959|NP_001449: string\n-.7: string\n-.8: string\n-.9: string\n-.10: string\n-.11: string\n-.12: string\nHomo sapiens: string\nHomo sapiens.1: string\n-- schema metadata --\npandas: '{\"index_columns\": [], \"column_indexes\": [], \"columns\": [{\"name\":' + 4461",
+    "config": {
+      "url": "https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/BIOGRID-MV-Physical-LATEST.tab3.zip",
+      "format": "tsv",
+      "compression": "zip",
+      "separator": "\t",
+      "field_mapping": {
+        "partner_a": 7,
+        "partner_b": 8,
+        "pmid": 14,
+        "taxid_a": 15,
+        "taxid_b": 16,
+        "throughput": 17,
+        "score": 18,
+        "modification": 19,
+        "phenotypes": 20,
+        "qualifications": 21,
+        "tags": 22
+      },
+      "skip_header": 1,
+      "filters": [
+        {
+          "field": "taxid_a",
+          "operator": "eq",
+          "value": "9606"
+        },
+        {
+          "field": "taxid_b",
+          "operator": "eq",
+          "value": "9606"
+        },
+        {
+          "field": "throughput",
+          "operator": "regex",
+          "value": "^Low"
+        }
+      ],
+      "description": "BioGRID physical protein-protein interactions",
+      "organism": 9606,
+      "data_type": "interaction",
+      "license": "MIT",
+      "citation": "PMID: 33070389",
+      "check_etag": true,
+      "check_last_modified": true
+    }
+  },
+  "hgnc_genegroups_d37a4964": {
+    "source_name": "hgnc_genegroups",
+    "url": "https://www.genenames.org/cgi-bin/genegroup/download-all",
+    "format": "tsv",
+    "saved_at": "2025-07-07T07:48:17.899017",
+    "num_rows": 32393,
+    "num_columns": 13,
+    "schema": "HGNC:324: string\nAGPAT1: string\n1-acylglycerol-3-phosphate O-acyltransferase 1: string\nApproved: string\ngene with protein product: string\nUnnamed: 5: string\nLPAAT-alpha, LPLAT1: string\n6p21.32: string\n10554: string\nENSG00000204310: string\nOTTHUMG00000031210: string\n46: string\n1-acylglycerol-3-phosphate O-acyltransferases: string\n-- schema metadata --\npandas: '{\"index_columns\": [], \"column_indexes\": [], \"columns\": [{\"name\":' + 1803",
+    "config": {
+      "url": "https://www.genenames.org/cgi-bin/genegroup/download-all",
+      "format": "tsv",
+      "separator": "\t",
+      "field_mapping": {
+        "group_id": 0,
+        "group_name": 1,
+        "uniprot_ids": 2,
+        "gene_groups": 3
+      },
+      "skip_header": 1,
+      "subfield_separator": {
+        "uniprot_ids": ",",
+        "gene_groups": "|"
+      },
+      "transform": "pypath.inputs.hgnc.process_genegroups",
+      "description": "HGNC gene family/group annotations",
+      "organism": 9606,
+      "data_type": "annotation",
+      "license": "Custom - free for academic use",
+      "citation": "PMID: 33152070"
+    }
+  }
+}

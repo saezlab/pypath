@@ -95,7 +95,7 @@ urls = {
     'pdb_chains': {
         'label': 'Corresponding UniProt IDs and residue numbers '
             'for each chain in PDB structures',
-        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/'
+        'url': 'https://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/'
             'tsv/pdb_chain_uniprot.tsv.gz',
     },
     'complex_portal': {
@@ -109,8 +109,7 @@ urls = {
     },
     'catalytic_sites': {
         'label': 'Catalytic Site Atlas',
-        'url': 'http://www.ebi.ac.uk/thornton-'
-            'srv/databases/CSA/downloads/CSA_2_0_121113.txt',
+        'url': 'https://www.ebi.ac.uk/thornton-srv/m-csa/api/residues/?format=json',
     },
     '3did_ddi': {
         'label': 'Domain-domain interactions derived from 3D structures',
@@ -607,16 +606,22 @@ urls = {
     'proteinatlas': {
         'label': 'Human Protein Atlas: Immuncytochemistry expression data in '
             'healthy human cells or cancer cells or cell lines',
-        'normal': 'http://www.proteinatlas.org/download/'\
+        'normal': 'https://www.proteinatlas.org/download/tsv/normal_ihc_data.tsv.zip',
+        'normal_old': 'http://www.proteinatlas.org/download/'\
             'normal_tissue.tsv.zip',
-        'pathology': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
-        'subcell': 'https://www.proteinatlas.org/download/'\
+        'pathology': 'https://www.proteinatlas.org/download/tsv/cancer_data.tsv.zip',
+        'pathology_old': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
+        'subcell': 'https://www.proteinatlas.org/download/tsv/subcellular_location.tsv.zip',
+        'subcell_old': 'https://www.proteinatlas.org/download/'\
             'subcellular_location.tsv.zip',
+        'interactions': 'https://www.proteinatlas.org/download/tsv/interaction_consensus.tsv.zip',
         'secretome_old': 'https://stke.sciencemag.org/highwire/filestream/'\
             '216463/field_highwire_adjunct_files/1/aaz0274_Data_file_S2.xlsx',
         'secretome': 'https://www.science.org/action/downloadSupplement?'\
             'doi=10.1126%2Fscisignal.aaz0274&'\
             'file=aaz0274_data_file_s2.xlsx',
+        'secretome_rescued':
+            'https://rescued.omnipathdb.org/proteinatlas-supplementary-S2.xlsx',
         'ig_genes': 'https://stke.sciencemag.org/highwire/filestream/'\
             '216463/field_highwire_adjunct_files/0/aaz0274_Data_file_S1.xlsx',
 
@@ -624,8 +629,7 @@ urls = {
     'lincs-compounds': {
         'label':
         'List of small molecules in LINCS with synonyms and PubChem IDs',
-        'url': 'http://lincs.hms.harvard.edu/db/datasets/20000/smallmolecules'
-            '?search=&output_type=.csv'
+        'url': 'https://lincs.hms.harvard.edu/_static/db/prod-20200624/small_molecules.sdf'
     },
     'eutils': {
         'label': 'NCBI E-Utils API',
@@ -721,7 +725,9 @@ urls = {
     'li2012': {
         'label': 'Human Phosphotyrosine Signaling Network',
         'url': 'http://genome.cshlp.org/content/suppl/2011/12/27/'
-        'gr.128819.111.DC1/Supplementary_files_S1-S5.xls'
+        'gr.128819.111.DC1/Supplementary_files_S1-S5.xls',
+        'url_rescued':
+            'https://rescued.omnipathdb.org/li2012-supplementary-S1-S5.xls',
     },
     'trip': {
         'label': 'The TRP channel database',
@@ -763,6 +769,8 @@ urls = {
         'url': 'https://www.science.org/action/downloadSupplement?'
             'doi=10.1126%2Fscisignal.aag1796&'
             'file=aag1796_tables_s1_to_s23.zip',
+        'url_rescued': 'https://rescued.omnipathdb.org/' \
+            'phosphatome-supplementary-S1-23.zip',
     },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
@@ -771,10 +779,10 @@ urls = {
             'sources=BaderLabGenes,CarisMolecularIntelligence,'
             'FoundationOneGenes,GO,GuideToPharmacologyGenes,HopkinsGroom,'
             'MskImpact,RussLampel,dGene',
-        'categories': 'https://www.dgidb.org/data/monthly_tsvs/'
-            '2021-Jan/categories.tsv',
-        'interactions': 'https://www.dgidb.org/data/monthly_tsvs/'
-            '2022-Feb/interactions.tsv',
+        'categories': 'https://dgidb.org/data/latest/categories.tsv',
+        'interactions': 'https://dgidb.org/data/latest/interactions.tsv',
+        'genes': 'https://dgidb.org/data/latest/genes.tsv',
+        'drugs': 'https://dgidb.org/data/latest/drugs.tsv',
     },
     'acsn': {
         'label': 'Atlas of Cancer Signaling Networks',
@@ -824,6 +832,8 @@ urls = {
             'WangLab_HumanSignalingNetwork_v6-format2.csv',
         'cui': 'https://www.embopress.org/action/downloadSupplement?'
             'doi=10.1038%2Fmsb4100200&file=msb4100200-sup-0010.xls',
+        'cui_rescued': 'https://rescued.omnipathdb.org/' \
+            'cui2007-supplementary-S10.xls',
         'cui_init': 'https://www.embopress.org/doi/full/10.1038/msb4100200',
     },
     'graphviz': {
@@ -854,6 +864,8 @@ urls = {
         'url': 'https://www.science.org/action/downloadSupplement?'
             'doi=10.1126%2Fscience.1108876&'
             'file=maayan_som_external_files.zip',
+        'url_rescued': 'https://rescued.omnipathdb.org/' \
+            'maayan2005_som_external_files.zip',
     },
     'ccmap': {
         'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',
@@ -884,17 +896,15 @@ urls = {
         'url': 'https://www.cell.com/cms/10.1016/j.cell.2012.08.011/'
             'attachment/852fdb4f-ef77-4001-b513-a6687e6e070f/mmc3.xls',
         'article': 'https://www.cell.com/fulltext/S0092-8674(12)01006-9',
+        'url_rescued': 'pypath/data/manual_downloads/mmc3.xls',
     },
     'matrixdb': {
         'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
         'old_url': 'http://matrixdb.ibcp.fr/download/matrixdb_CORE.tab.gz',
-        'url': 'http://matrixdb.univ-lyon1.fr/download/matrixdb_CORE.tab.gz',
-        'ecm_proteins': 'http://matrixdb.univ-lyon1.fr/'\
-            'download//proteins_ECM.csv',
-        'secreted_proteins': 'http://matrixdb.univ-lyon1.fr/'
-            'download//proteins_Secreted.csv',
-        'membrane_proteins': 'http://matrixdb.univ-lyon1.fr/'
-            'download//proteins_Membrane.csv',
+        'url': 'https://matrixdb.univ-lyon1.fr/downloads/matrixdb_CORE_4_0.tab.zip',
+        'ecm_proteins': 'https://matrixdb.univ-lyon1.fr/downloads/ecm_proteins.csv',
+        'secreted_proteins': 'https://matrixdb.univ-lyon1.fr/downloads/secreted_proteins.csv',
+        'membrane_proteins': 'https://matrixdb.univ-lyon1.fr/downloads/membrane_proteins.csv',
     },
     'innatedb': {
         'label': 'InnateDB PSI-MI tab',
@@ -931,9 +941,17 @@ urls = {
         'url_rescued': 'https://rescued.omnipathdb.org/mppi.gz',
     },
     'negatome': {
-        'label': 'Negatome manually curated non-interacting protein pairs',
-        'manual':
-        'http://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual.txt'
+        'label': 'Negatome 2.0 manually curated non-interacting protein pairs',
+        'base_url': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/',
+        'manual': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual.txt',
+        'manual_stringent': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual_stringent.txt',
+        'manual_pfam': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual_pfam.txt',
+        'pdb': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/pdb.txt',
+        'pdb_stringent': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/pdb_stringent.txt',
+        'pdb_pfam': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/pdb_pfam.txt',
+        'combined': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/combined.txt',
+        'combined_stringent': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/combined_stringent.txt',
+        'combined_pfam': 'https://mips.helmholtz-muenchen.de/proj/ppi/negatome/combined_pfam.txt',
     },
     'macrophage': {
         'label': 'Macrophage Pathways; Raza 2010, Supplementary Materials 1',
@@ -969,7 +987,7 @@ urls = {
     },
     'pwcommons': {
         'label': 'PathwayCommons binary SIF files',
-        'url': 'https://www.pathwaycommons.org/archives/PC2/v%u/'
+        'url': 'https://download.baderlab.org/PathwayCommons/PC2/v%u/'
             'PathwayCommons%u.%s.hgnc.sif.gz',
     },
     'homologene': {
@@ -981,7 +999,7 @@ urls = {
     'mirbase' : {
         'label': 'miRBase: miRNA main reference database',
         'aliases_old': 'ftp://mirbase.org/pub/mirbase/CURRENT/aliases.txt.gz',
-        'aliases': 'https://mirbase.org/ftp/CURRENT/aliases.txt.gz',
+        'aliases': 'https://mirbase.org/download/CURRENT/database_files/mirna_database_links.txt',
     },
     'mir2dis': {
         'label': 'miR2Disease experimentally validated'\
@@ -1016,14 +1034,14 @@ urls = {
             'miRNA-target interactions',
         'strong_old': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
             '6.1/miRTarBase_SE_WR.xls',
-        'strong': 'https://mirtarbase.cuhk.edu.cn/~miRTarBase/'\
-            'miRTarBase_2019/cache/download/8.0/miRTarBase_SE_WR.xls',
+        'strong': 'https://awi.cuhk.edu.cn/~miRTarBase/'\
+            'miRTarBase_2025/cache/download/10.0/miRTarBase_SE_WR.csv',
         'all_old': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
             '6.1/miRTarBase_MTI.xlsx',
-        'all': 'https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2019/'\
-            'cache/download/8.0/miRTarBase_MTI.xlsx',
-        'curated': 'https://mirtarbase.cuhk.edu.cn/~miRTarBase/'\
-            'miRTarBase_2019/cache/download/8.0/MicroRNA_Target_Sites.xlsx',
+        'all': 'https://awi.cuhk.edu.cn/~miRTarBase/miRTarBase_2025/'\
+            'cache/download/10.0/miRTarBase_MTI.csv',
+        'curated': 'https://awi.cuhk.edu.cn/~miRTarBase/'\
+            'miRTarBase_2025/cache/download/10.0/MicroRNA_Target_Sites.csv',
     },
     'lncdisease': {
         'label': 'lncRNA and disease database: experimentally '\
@@ -1054,6 +1072,10 @@ urls = {
             'get_data?file=InBio_Map_core_2016_09_12.tar.gz',
         'login': 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u',
         'refresh': 'https://www.intomics.com/inbio/api/refresh?_=%u'
+    },
+    'inweb': {
+        'label': 'InWeb protein interaction data from Genoppi',
+        'url': 'https://github.com/lagelab/Genoppi/raw/master/data/inweb_table.rda'
     },
     'rami': {
         'label': 'Ligand-receptor interactions from Ramilowski 2015',
@@ -1204,7 +1226,7 @@ urls = {
     },
     'topdb': {
         'label': 'Membrane protein topology database',
-        'url': 'http://topdb.enzim.hu/?m=download&file=topdb_all.xml',
+        'url': 'https://topdb.unitmp.org/data/TOPDB/data/v3.3/sets/topdb_all.xml',
     },
     'hgnc': {
         'label': 'Web download interface of HGNC (genenames.org).',
@@ -1378,6 +1400,7 @@ urls = {
             'S2589-0042(19)30405-5',
         'url': 'https://www.cell.com/cms/10.1016/j.isci.2019.10.026/'
             'attachment/a1f66cee-15cb-4690-b95d-2480fa576b86/mmc2.xlsx',
+        'url_rescued': 'https://rescued.omnipathdb.org/mmc2_embrace.xlsx',
     },
     'tcdb': {
         'label': 'Transporter classification database',
@@ -1415,12 +1438,11 @@ urls = {
         'article': 'https://www.cell.com/cell/fulltext/S0092-8674(20)30933-8',
         'url': 'https://www.cell.com/cms/10.1016/j.cell.2020.07.025/'
             'attachment/656c4057-8b3b-4aa2-99ce-73278e21d93d/mmc4.xlsx',
+        'url_rescued': 'https://rescued.omnipathdb.org/wojtowicz2020-mmc4.xlsx',
     },
     'celltalkdb': {
         'label': 'Manually curated ligand-receptor interactions',
-        'url': 'http://tcm.zju.edu.cn/celltalkdb/handler/download.php',
-        'ref_url': 'http://tcm.zju.edu.cn/celltalkdb/',
-        'init_url': 'http://tcm.zju.edu.cn/celltalkdb/download.php',
+        'url': 'https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/%s_lr_pair.rds',
     },
     'cellchatdb': {
         'label': 'Manually curated ligand-receptor interactions',
@@ -1546,6 +1568,8 @@ urls = {
         's1': 'https://www.cell.com/cms/10.1016/j.cell.2018.01.029/'
             'attachment/ede37821-fd6f-41b7-9a0e-9d5410855ae6/mmc2.xlsx',
         'article': 'https://www.cell.com/cell/fulltext/S0092-8674(18)30106-5',
+        's1_rescued': 'https://rescued.omnipathdb.org/' \
+            'lambert2018-supplementary-S1.xlsx',
     },
     'interpro': {
         'label': 'Protein families, domains and functional sites',
@@ -1607,7 +1631,7 @@ urls = {
     'pathophenodb': {
         'label': 'A database of pathogens and their phenotypes '
             'for diagnostic support in infections.',
-        'url': 'http://patho.phenomebrowser.net/sparql/',
+        'url': 'http://patho.phenomebrowser.net/media/downloads/patho_pheno_withsymbols.nt',
     },
     'clinvar': {
         'label': 'A database archiving submissions that interpret '
@@ -1656,14 +1680,14 @@ urls = {
     },
     'twosides': {
         'label': 'A comprehensive database drug-drug-effect relationships',
-        'url': 'https://tatonettilab.org/resources/nsides/TWOSIDES.csv.gz'
+        'url': 'https://tatonettilab-resources.s3.us-west-1.amazonaws.com/nsides/TWOSIDES.csv.gz'
     },
     'offsides': {
         'label': (
             'A database of drug side-effects that were found, '
             'but are not listed on the official FDA label'
         ),
-        'url': 'https://tatonettilab.org/resources/nsides/OFFSIDES.csv.gz'
+        'url': 'https://tatonettilab-resources.s3.us-west-1.amazonaws.com/nsides/OFFSIDES.csv.gz'
     },
     'adrecs': {
         'label': (
@@ -1761,6 +1785,8 @@ urls = {
         'label': 'A comprehensive database for target genes of gut microbes and microbial metabolites',
         'url_human': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-human.txt',
         'url_mouse': 'http://bio-annotation.cn/gutmgene/public/res/Gut%20Microbe%20and%20Gene-mouse.txt',
+        'url_rescued':
+            'https://rescued.omnipathdb.org/gut-microbe-host-gene.csv',
     },
     'swisslipids': {
         'label': 'A knowledge resource for lipids and their biology',

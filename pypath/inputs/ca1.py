@@ -49,15 +49,24 @@ def ca1_interactions():
         ),
     )
 
-    url = urls.urls['ca1']['url']
-    path = science_input.science_download(url = url)
-    zipfile = curl.FileOpener(
-        path,
+    url = urls.urls['ca1'].get('url_rescued', urls.urls['ca1']['url'])
+    curl_args = dict(
         compr = 'zip',
         files_needed = ['S1.txt'],
         large = False,
     )
-    data = zipfile.result
+
+    if 'url_rescued' in urls.urls['ca1']:
+
+        path = url  # Use local file path directly
+        c = curl.Curl(url, silent = False, **curl_args)
+
+    else:
+
+        path = science_input.science_download(url = url)
+        c = curl.FileOpener(path, **curl_args)
+
+    data = c.result
     result = []
 
     for l in data['S1.txt'].decode('ascii').split('\n')[1:]:
