@@ -687,7 +687,7 @@ class UniprotQuery:
               kind described in the previous point as values.
         """
 
-        _id, *variables = zip(*self)
+        all_uniprots        _id, *variables = zip(*self)
         _id = list(map(common.sfirst, _id))
 
         if variables:

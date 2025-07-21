@@ -1,9 +1,7 @@
 from collections.abc import Generator
 import collections
 from pypath.share import curl
-from pypath.resources import urls
 from pypath.inputs import uniprot
-import pandas as pd
 
 Homo_receptor = collections.namedtuple(
     'Homo_receptor',
@@ -25,11 +23,35 @@ def homo_receptor() -> Generator[Homo_receptor, None, None]:
     c = curl.Curl(url)
     human_receptor = c.result
     lines = human_receptor.strip('\n').split('\n')
+
+    # ID conversion
+    # bug: Some uniprot has _xxx_!!
+    uniprot = []
+    for line in lines:
+        _, _, _, _, _, _, _, _, _, _, receptor_uniprot_id, _, _, _, _ = line.split('\t')
+        if receptor_uniprot_id:
+            uniprot.append(receptor_uniprot_id)
+
+    uniprot = uniprot[1:]
+    all_uniprots = set(uniprot)
+
+    all_uniprots = [
+        u.split('_', maxsplit=1)[0]
+        for u in all_uniprots
+        if uniprot.valid_uniprot(u)
+    ]
+
+    uniprot_locations = uniprot.uniprot_locations(
+        accession=all_uniprots,
+        organism=None,
+    )
+
     for line in lines:
         _, hmdb_id, metabolite, _, _, _, _, _, _, receptor_gene_id, receptor_uniprot_id, receptor_symbol, _, pubmed_id, source_db = line.split(
             '\t')
         yield Homo_receptor(hmdb_id, metabolite, receptor_gene_id, receptor_uniprot_id, receptor_symbol, pubmed_id,
-                            source_db)
+                            source_db,
+                            uniprot_locations.get(receptor_uniprot_id))
 
 
 def mouse_receptor() -> Generator[Mouse_receptor, None, None]:
