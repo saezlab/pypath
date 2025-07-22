@@ -37,3 +37,14 @@ def rhea_raw(dataset: RHEA_DATASETS) -> Generator[tuple]:
     yield from csv.DictReader(c.fileobj, delimiter = '\t', fieldnames = names)
 
 
+# Helper to fetch the full Rhea TSV export from the web GUI API
+def rhea_gui() -> Generator[dict]:
+    """
+    Download the full Rhea TSV export from the web GUI API.
+
+    Yields:
+        One dict per row, using the header row as fieldnames.
+    """
+    api_url = urls.urls['rhea']['api_url']
+    c = curl.Curl(api_url, large=True)
+    yield from csv.DictReader(c.fileobj, delimiter='\t')

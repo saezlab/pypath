@@ -1732,6 +1732,7 @@ urls = {
     'rhea': {
         'label': 'database of metabolic reactions',
         'url': 'https://ftp.expasy.org/databases/rhea/tsv/%s.tsv',
+        'api_url': 'https://www.rhea-db.org/rhea/?query=&columns=rhea-id,equation,chebi,chebi-id,ec,uniprot,go,pubmed,reaction-xref(EcoCyc),reaction-xref(MetaCyc),reaction-xref(KEGG),reaction-xref(Reactome),reaction-xref(M-CSA)&format=tsv&limit=1000000',
     },
     'compath': {
         'label': (
