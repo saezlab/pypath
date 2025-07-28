@@ -1474,7 +1474,7 @@ urls = {
     },
     'cancerdrugs_db': {
         'label': 'Cancer Drug Database of licensed drugs by the Anticancer Fund',
-        'url': 'https://acfdata.coworks.be/cancerdrugsdb.txt',
+        'url': 'https://data.tp53.org.uk/cancerdrugsdb.txt',
     },
     'biomodels': {
         'label': 'RESTful API base URL of EMBL-EBI BioModels (https://www.ebi.ac.uk/biomodels/)',

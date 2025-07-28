@@ -25,9 +25,9 @@
 | | get_vesiclepedia | ✅ | 290197 records, 0.14s |
 | | pdb_complexes | ✅ FIXED | 0 records (empty with graceful handling) - Fixed NoneType handling when PDB chains unavailable |
 | cancercellmap | ccmap_interactions | ✅ FIXED | Fixed URLs to new PathwayCommons location - 47644 interactions |
-| cancerdrugsdb | cancerdrugsdb_annotations | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
-| | cancerdrugsdb_download | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
-| | cancerdrugsdb_interactions | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
+| cancerdrugsdb | cancerdrugsdb_annotations | ✅ FIXED | Fixed URL + ChEMBL mapping - annotations for 216 drugs |
+| | cancerdrugsdb_download | ✅ FIXED | Fixed URL to data.tp53.org.uk - 330 records |
+| | cancerdrugsdb_interactions | ✅ FIXED | Fixed URL + ChEMBL mapping - 5157 interactions |
 | | pathwaycommons_interactions | ❌ | NoneType object is not iterable |
 | | pathwaycommons_wikipathways_interactions | ❌ | NoneType object is not iterable |
 | oreganno | oreganno_interactions | ⚠️ | 0 records - returns None instead of expected iterator |

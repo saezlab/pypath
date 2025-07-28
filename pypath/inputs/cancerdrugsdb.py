@@ -113,6 +113,15 @@ def cancerdrugsdb_interactions():
 
     data = cancerdrugsdb_download()
 
+    # Download the ChEMBL to PubChem mapping table once
+    try:
+        import pypath.inputs.unichem as unichem
+        chembl_to_pubchem = unichem._unichem_mapping(1, 22)  # ChEMBL(1) to PubChem(22)
+        _log(f'Loaded ChEMBL to PubChem mapping with {len(chembl_to_pubchem)} entries')
+    except Exception as e:
+        _log(f'Failed to load ChEMBL to PubChem mapping: {e}')
+        chembl_to_pubchem = {}
+
     for rec in data:
 
         chembl = strip_id(rec.get('ChEMBL'))
@@ -123,7 +132,12 @@ def cancerdrugsdb_interactions():
             unmapped_drug.append(rec.get('Product'))
             continue
 
-        pubchems = mapping.map_name(chembl, 'chembl', 'pubchem')
+        # Use pre-loaded mapping table
+        if chembl_to_pubchem:
+            pubchems = chembl_to_pubchem.get(chembl, set())
+        else:
+            # Fallback to original mapping if unichem failed
+            pubchems = mapping.map_name(chembl, 'chembl', 'pubchem')
 
         targets = rec.get('Targets')
 

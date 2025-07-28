@@ -138,7 +138,7 @@ def _unichem_mapping(id_type_a, id_type_b):
         id_type = str(id_type)
         _id_type = label_to_src.get(id_type, id_type)
 
-        if not _id_type.isdigit() or _id_type not in src_to_label:
+        if not str(_id_type).isdigit() or int(_id_type) not in src_to_label:
 
             msg = 'No such ID type: `%s`.' % id_type
             _log(msg)
@@ -151,27 +151,39 @@ def _unichem_mapping(id_type_a, id_type_b):
     id_type_b = get_src_id(id_type_b)
 
     url = urls.urls['unichem']['mapping'] % (id_type_a, id_type_a, id_type_b)
-    c = curl.Curl(
-        url,
-        large = True,
-        silent = False,
-        slow = True,
-        http2 = False,
-    )
-
-    if c.status == 404:
-
+    
+    # Use subprocess to download with curl and gunzip like we did successfully before
+    import subprocess
+    import tempfile
+    import os
+    
+    try:
+        # Download and decompress the file using external tools
+        cmd = f'curl -s "{url}" | gunzip'
+        process = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=300)
+        
+        if process.returncode != 0:
+            _log(f'Failed to download UniChem mapping from {url}')
+            return {}
+            
+        lines = process.stdout.strip().split('\n')
+        if not lines or not lines[0]:
+            return {}
+            
+        result = collections.defaultdict(set)
+        # Skip header line
+        for line in lines[1:]:
+            if line.strip():
+                parts = line.strip().split('\t')
+                if len(parts) >= 2:
+                    src_id, tgt_id = parts[0], parts[1]
+                    result[src_id].add(tgt_id)
+                    
+        return dict(result)
+        
+    except (subprocess.TimeoutExpired, subprocess.SubprocessError, OSError) as e:
+        _log(f'UniChem download failed: {e}')
         return {}
-
-    result = collections.defaultdict(set)
-    _ = next(c.result)
-
-    for r in c.result:
-
-        src_id, tgt_id = r.strip().split('\t')
-        result[src_id].add(tgt_id)
-
-    return dict(result)
 
 
 def info(source):
