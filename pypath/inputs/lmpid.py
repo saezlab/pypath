@@ -48,22 +48,22 @@ def load_lmpid(organism = 9606):
         21
     )
 
-    for rec in soup.find_all('record'):
+    for rec in soup.find_all('RECORD'):
 
         prg.step()
-        uniprot_bait = rec.bait_uniprot_id.text
-        uniprot_prey = rec.prey_uniprot_id.text
+        uniprot_bait = rec.find('Bait_UniProt_ID').text
+        uniprot_prey = rec.find('Prey_UniProt_ID').text
 
         if uniprot_bait in uniprots and uniprot_prey in uniprots:
 
             result.append({
                 'bait': uniprot_bait,
                 'prey': uniprot_prey,
-                'refs': [x.strip() for x in rec.references.text.split(',')],
+                'refs': [x.strip() for x in rec.find('References').text.split(',')],
                 'pos':
-                [int(x) for x in rec.sequence_position.text.split('-')],
-                'inst': rec.motif_instance.text,
-                'dom': rec.interacting_domain.text
+                [int(x) for x in rec.find('Sequence_Position').text.split('-')],
+                'inst': rec.find('Motif_Instance').text,
+                'dom': rec.find('Interacting_Domain').text
             })
 
     prg.terminate()

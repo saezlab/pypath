@@ -13,8 +13,8 @@
 | msigdb | msigdb_download | ✅ | Works - 34550 gene sets (requires msigdb_email in settings) |
 | | msigdb_download_collections | ✅ | Works - tested with hallmark collection (50 gene sets) |
 | | msigdb_annotations | ✅ | Works - tested with hallmark, found 4397 proteins |
-| lmpid | lmpid_dmi | ✅ | 0 records (empty dataset) |
-| | lmpid_interactions | ✅ | 0 records (empty dataset) |
+| lmpid | lmpid_dmi | ✅ FIXED | Fixed XML element case - 1170 domain-motif interactions |
+| | lmpid_interactions | ✅ FIXED | Fixed XML element case - 1170 interactions |
 | opentargets | *_all_functions | ⏳ | Skipped - timeout |
 | cytosig | cytosig_annotations | ✅ | 4887 records, 5.6s |
 | | cytosig_df | ❌ | DataFrame indexing error - test framework issue |
