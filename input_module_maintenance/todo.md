@@ -36,7 +36,7 @@
 | | get_instruct_offsets | ⚠️ | 0 records - returns None (data source issue) |
 | | interpro_annotations | ❌ | KeyError: 'protein_subset' |
 | complexportal | complexportal_complexes | ⏳ | Timeout during testing |
-| netpath | netpath_interactions | ⏳ | Timeout during testing |
-| | netpath_names | ⏳ | Timeout during testing |
-| | netpath_pathway_annotations | ⏳ | Timeout during testing |
+| netpath | netpath_interactions | ⚠️ | Works fine (7555 records, 0.3s) but depends on netpath_names which fails |
+| | netpath_names | ❌ | netpath.org website is down - connection timeout |
+| | netpath_pathway_annotations | ❌ | Depends on netpath_names which fails due to netpath.org being down |
 | lipidmaps/structures | sdf | ✅ | 0 records (empty result), 21.9s |
