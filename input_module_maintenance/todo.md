@@ -20,7 +20,7 @@
 | | opentargets_direct_score | ✅ | Works - target-disease association scores (large dataset) |
 | | opentargets_indirect_score | ✅ | Works - indirect target-disease scores (large dataset) |
 | cytosig | cytosig_annotations | ✅ | 4887 records, 5.6s |
-| | cytosig_df | ❌ | DataFrame indexing error - test framework issue |
+| | cytosig_df | ✅ | Works - returns 4881x43 DataFrame or 209883-element Series (long format) |
 | exocarta | get_exocarta | ⚠️ | 0 records - NoneType iterator warning |
 | | get_vesiclepedia | ✅ | 290197 records, 0.14s |
 | | pdb_complexes | ✅ FIXED | 0 records (empty with graceful handling) - Fixed NoneType handling when PDB chains unavailable |
