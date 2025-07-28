@@ -48,15 +48,13 @@ def intogen_annotations():
 
     url = urls.urls['intogen']['db2014_2']
 
-    with settings.context(curl_connect_timeout = 100):
-
-        c = curl.Curl(
-            url,
-            large = True,
-            silent = False,
-            files_needed = ['Drivers_type_role.tsv'],
-            compr = 'zip',
-        )
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        files_needed = ['Drivers_type_role.tsv'],
+        compr = 'zip',
+    )
 
     for _ in xrange(7):
 

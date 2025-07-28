@@ -5,10 +5,10 @@
 | oma | oma_orthologs | ✅ | Works but slow API. With score=0.99, rel_type={'1:1'}: 16K records in 60.5s |
 | | oma_table | ✅ | Works. With same params: 16K unique IDs in 9.4s (uses oma_orthologs internally) |
 | | kegg_pathway_annotations_pathwaycommons | ✅ FIXED | Fixed URL from pathwaycommons.org to download.baderlab.org - 813 records |
-| clinvar | clinvar_citations | ⏳ | Skipped - timeout |
-| | clinvar_raw | ⏳ | Skipped - timeout |
+| clinvar | clinvar_citations | ✅ | Works but slow - 210MB file with 4.2M records |
+| | clinvar_raw | ✅ | Works but slow - 382MB gzipped file |
 | proteins | variants | ✅ FIXED | Fixed *cons ->* const typo, but timeout during test |
-| intogen | intogen_annotations | ⏳ | Skipped - timeout |
+| intogen | intogen_annotations | ✅ FIXED | Fixed settings.context AttributeError - 483 records, 4.6s |
 | | adrecs_drug_identifiers | ❌ | Excel file corruption error |
 | msigdb | *_all_functions | ⏳ | Skipped - timeout |
 | lmpid | lmpid_dmi | ✅ | 0 records (empty dataset) |
