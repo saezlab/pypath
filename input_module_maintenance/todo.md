@@ -21,10 +21,10 @@
 | | opentargets_indirect_score | ✅ | Works - indirect target-disease scores (large dataset) |
 | cytosig | cytosig_annotations | ✅ | 4887 records, 5.6s |
 | | cytosig_df | ✅ | Works - returns 4881x43 DataFrame or 209883-element Series (long format) |
-| exocarta | get_exocarta | ⚠️ | 0 records - NoneType iterator warning |
+| exocarta | get_exocarta | ❌ UPDATED | Updated URLs to version 6 but exocarta.org site is currently down (503 errors) |
 | | get_vesiclepedia | ✅ | 290197 records, 0.14s |
 | | pdb_complexes | ✅ FIXED | 0 records (empty with graceful handling) - Fixed NoneType handling when PDB chains unavailable |
-| cancercellmap | ccmap_interactions | ❌ | zipfile.BadZipFile: File is not a zip file |
+| cancercellmap | ccmap_interactions | ✅ FIXED | Fixed URLs to new PathwayCommons location - 47644 interactions |
 | cancerdrugsdb | cancerdrugsdb_annotations | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | | cancerdrugsdb_download | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |
 | | cancerdrugsdb_interactions | ❌ | URL unreachable - host 'acfdata.coworks.be' cannot be resolved |

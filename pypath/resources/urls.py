@@ -870,10 +870,10 @@ urls = {
     'ccmap': {
         'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',
         'edges':
-        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/'\
+        'https://download.baderlab.org/PathwayCommons/PC1/last_release-2011/'\
             'tab_delim_network/by_source/cell-map-edge-attributes.txt.zip',
         'nodes':
-        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/'\
+        'https://download.baderlab.org/PathwayCommons/PC1/last_release-2011/'\
             'tab_delim_network/by_source/cell-map-node-attributes.txt.zip'
     },
     'pathguide': {
@@ -1176,9 +1176,9 @@ urls = {
     'exocarta': {
         'label': 'Exosome protein, RNA and lipid database',
         'url_protein': 'http://exocarta.org/Archive/'\
-            'EXOCARTA_PROTEIN_MRNA_DETAILS_5.txt',
+            'EXOCARTA_PROTEIN_MRNA_DETAILS_6.txt',
         'url_study': 'http://exocarta.org/Archive/'
-            'EXOCARTA_EXPERIMENT_DETAILS_5.txt',
+            'EXOCARTA_EXPERIMENT_DETAILS_6.txt',
     },
     'vesiclepedia': {
         'label': 'Extracellular vesicle database',
