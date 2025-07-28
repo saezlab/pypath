@@ -15,7 +15,10 @@
 | | msigdb_annotations | ✅ | Works - tested with hallmark, found 4397 proteins |
 | lmpid | lmpid_dmi | ✅ FIXED | Fixed XML element case - 1170 domain-motif interactions |
 | | lmpid_interactions | ✅ FIXED | Fixed XML element case - 1170 interactions |
-| opentargets | *_all_functions | ⏳ | Skipped - timeout |
+| opentargets | opentargets_adverse_reactions | ✅ | Works - 112928 adverse reaction records |
+| | opentargets_baseline_expression | ✅ | Works - baseline expression data (large dataset) |
+| | opentargets_direct_score | ✅ | Works - target-disease association scores (large dataset) |
+| | opentargets_indirect_score | ✅ | Works - indirect target-disease scores (large dataset) |
 | cytosig | cytosig_annotations | ✅ | 4887 records, 5.6s |
 | | cytosig_df | ❌ | DataFrame indexing error - test framework issue |
 | exocarta | get_exocarta | ⚠️ | 0 records - NoneType iterator warning |
