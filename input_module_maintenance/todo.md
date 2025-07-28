@@ -31,8 +31,7 @@
 | | pathwaycommons_interactions | ✅ FIXED | Fixed to use v14 unified file with source filtering - 2.4M interactions |
 | | pathwaycommons_wikipathways_interactions | ❌ UPDATED | WikiPathways not available in v14 - only in older versions |
 | oreganno | oreganno_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
-| | oreganno_raw | ⚠️ | 0 records - returns None instead of expected iterator |
-| | scconnect_interactions | ❌ | ValueError: empty result unpacking in mapping |
+| | scconnect_interactions | ✅ FIXED | Fixed ValueError by properly handling empty gene symbols and species fields |
 | | ddinter_interactions | ❌ | JSONDecodeError: API returns invalid JSON |
 | | ddinter_mappings | ❌ | JSONDecodeError: API returns invalid JSON |
 | | ddinter_n_drugs | ❌ | JSONDecodeError: API returns invalid JSON |
@@ -44,4 +43,3 @@
 | netpath | netpath_interactions | ⚠️ | Works fine (7555 records, 0.3s) but depends on netpath_names which fails |
 | | netpath_names | ❌ | netpath.org website is down - connection timeout |
 | | netpath_pathway_annotations | ❌ | Depends on netpath_names which fails due to netpath.org being down |
-| lipidmaps/structures | sdf | ✅ | 0 records (empty result), 21.9s |

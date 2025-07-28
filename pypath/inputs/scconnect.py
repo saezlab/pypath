@@ -67,7 +67,7 @@ def scconnect_annotations(organism = 9606):
     )
 
     result = collections.defaultdict(set)
-    reinf = re.compile('inferred from (\w+)')
+    reinf = re.compile(r'inferred from (\w+)')
 
     for role in ('ligand', 'receptor'):
 
@@ -193,6 +193,10 @@ def scconnect_interactions():
                 if _org == organism or organism is None
             ]
 
+            # Skip if no valid IDs (empty or all empty strings)
+            if not ids_raw or all(not _id.strip() for _id in ids_raw):
+                continue
+
             ids = (
                 [
                     mapping.map_name(
@@ -202,10 +206,15 @@ def scconnect_interactions():
                         ncbi_tax_id = organism,
                     )
                     for _id in ids_raw
+                    if _id.strip()  # Skip empty strings
                 ]
                     if organism else
                 [(rec[partner],)]
             )
+
+            # Skip if mapping returned no results
+            if not ids or (organism and all(not mapped_ids for mapped_ids in ids)):
+                continue
 
             ids = [
                 (
