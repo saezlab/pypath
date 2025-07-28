@@ -1706,10 +1706,9 @@ urls = {
             'DDInter is a comprehensive, professional, and open-access '
             'database specific to drug-drug interactions.'
         ),
-        'source': 'http://ddinter.scbdd.com/ddinter/data-source/',
-        'mapping': 'http://ddinter.scbdd.com/ddinter/drug-detail/%s',
-        'interaction':
-            'http://ddinter.scbdd.com/ddinter/grapher-datasource/%s',
+        'source': 'https://ddinter2.scbdd.com/download/',
+        'mapping': 'https://ddinter2.scbdd.com/server/drug-detail/%s',
+        'interaction': 'https://ddinter2.scbdd.com/static/media/download/ddinter_downloads_code_%s.csv',
     },
     'reactome': {
         'sbml': 'https://reactome.org/download/current/homo_sapiens.3.1.sbml.tgz',

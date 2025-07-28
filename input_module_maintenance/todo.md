@@ -32,9 +32,9 @@
 | | pathwaycommons_wikipathways_interactions | ❌ UPDATED | WikiPathways not available in v14 - only in older versions |
 | oreganno | oreganno_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
 | | scconnect_interactions | ✅ FIXED | Fixed ValueError by properly handling empty gene symbols and species fields |
-| | ddinter_interactions | ❌ | JSONDecodeError: API returns invalid JSON |
-| | ddinter_mappings | ❌ | JSONDecodeError: API returns invalid JSON |
-| | ddinter_n_drugs | ❌ | JSONDecodeError: API returns invalid JSON |
+| | ddinter_interactions | ✅ FIXED | Updated to use DDinter2 CSV-based API - 160K interactions |
+| | ddinter_mappings | ✅ FIXED | Updated to use DDinter2 CSV-based API - 1939 drugs |
+| | ddinter_n_drugs | ✅ FIXED | Updated to use DDinter2 CSV-based API - 1939 drugs |
 | domino | domino_ddi | ❌ | TypeError: NoneType found in string join operation |
 | instruct | get_instruct | ⚠️ | 0 records - returns None (data source issue) |
 | | get_instruct_offsets | ⚠️ | 0 records - returns None (data source issue) |
