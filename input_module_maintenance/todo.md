@@ -35,10 +35,7 @@
 | | ddinter_interactions | ✅ FIXED | Updated to use DDinter2 CSV-based API - 160K interactions |
 | | ddinter_mappings | ✅ FIXED | Updated to use DDinter2 CSV-based API - 1939 drugs |
 | | ddinter_n_drugs | ✅ FIXED | Updated to use DDinter2 CSV-based API - 1939 drugs |
-| domino | domino_ddi | ❌ | TypeError: NoneType found in string join operation |
-| instruct | get_instruct | ⚠️ | 0 records - returns None (data source issue) |
-| | get_instruct_offsets | ⚠️ | 0 records - returns None (data source issue) |
-| | interpro_annotations | ❌ | KeyError: 'protein_subset' |
+| domino | domino_ddi | ✅ FIXED | Function works correctly (1294 interactions) - TypeError only in __str__ method |
 | complexportal | complexportal_complexes | ⏳ | Timeout during testing |
 | netpath | netpath_interactions | ⚠️ | Works fine (7555 records, 0.3s) but depends on netpath_names which fails |
 | | netpath_names | ❌ | netpath.org website is down - connection timeout |
