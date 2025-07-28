@@ -28,8 +28,8 @@
 | cancerdrugsdb | cancerdrugsdb_annotations | ✅ FIXED | Fixed URL + ChEMBL mapping - annotations for 216 drugs |
 | | cancerdrugsdb_download | ✅ FIXED | Fixed URL to data.tp53.org.uk - 330 records |
 | | cancerdrugsdb_interactions | ✅ FIXED | Fixed URL + ChEMBL mapping - 5157 interactions |
-| | pathwaycommons_interactions | ❌ | NoneType object is not iterable |
-| | pathwaycommons_wikipathways_interactions | ❌ | NoneType object is not iterable |
+| | pathwaycommons_interactions | ✅ FIXED | Fixed to use v14 unified file with source filtering - 2.4M interactions |
+| | pathwaycommons_wikipathways_interactions | ❌ UPDATED | WikiPathways not available in v14 - only in older versions |
 | oreganno | oreganno_interactions | ⚠️ | 0 records - returns None instead of expected iterator |
 | | oreganno_raw | ⚠️ | 0 records - returns None instead of expected iterator |
 | | scconnect_interactions | ❌ | ValueError: empty result unpacking in mapping |
