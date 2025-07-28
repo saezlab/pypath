@@ -9,8 +9,10 @@
 | | clinvar_raw | ✅ | Works but slow - 382MB gzipped file |
 | proteins | variants | ✅ FIXED | Fixed *cons ->* const typo, but timeout during test |
 | intogen | intogen_annotations | ✅ FIXED | Fixed settings.context AttributeError - 483 records, 4.6s |
-| | adrecs_drug_identifiers | ❌ | Excel file corruption error |
-| msigdb | *_all_functions | ⏳ | Skipped - timeout |
+| | adrecs_drug_identifiers | ✅ | Works - 2526 records from Drug_information.xlsx |
+| msigdb | msigdb_download | ✅ | Works - 34550 gene sets (requires msigdb_email in settings) |
+| | msigdb_download_collections | ✅ | Works - tested with hallmark collection (50 gene sets) |
+| | msigdb_annotations | ✅ | Works - tested with hallmark, found 4397 proteins |
 | lmpid | lmpid_dmi | ✅ | 0 records (empty dataset) |
 | | lmpid_interactions | ✅ | 0 records (empty dataset) |
 | opentargets | *_all_functions | ⏳ | Skipped - timeout |
