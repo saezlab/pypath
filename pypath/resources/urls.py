@@ -398,7 +398,7 @@ urls = {
         'kgml_url_2': 'http://rest.kegg.jp/get/%s/kgml',
         'medicus': 'ftp://ftp.genome.jp/pub/kegg/medicus/network/network',
         'dbget': 'https://www.kegg.jp/dbget-bin/www_bget?%s',
-        'pw_annot': 'https://www.pathwaycommons.org/archives/PC2/v12/'
+        'pw_annot': 'https://download.baderlab.org/PathwayCommons/PC2/v12/'
             'PathwayCommons12.kegg.uniprot.gmt.gz',
     },
     'kegg_api': {

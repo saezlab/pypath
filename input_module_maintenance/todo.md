@@ -1,10 +1,10 @@
 | Module | Functions | Status | Notes |
 |--------|-----------|--------|-------|
-| ctdbase | ctdbase_relations | ⚠️ | Requires relation_type: 'chemical_gene', 'chemical_disease', 'disease_pathway', 'chemical_phenotype', or 'gene_disease' |
-| | ctdbase_vocabulary | ⚠️ | Requires vocabulary_type: 'chemical', 'gene', 'disease', 'pathway', 'anatomy', or 'phenotype' |
-| oma | oma_orthologs | ⏳ | Skipped - timeout |
-| | oma_table | ⏳ | Skipped - timeout |
-| | kegg_pathway_annotations_pathwaycommons | ❌ | Gzip format error |
+| ctdbase | ctdbase_relations | ✅ | Works with all relation types when provided: 'chemical_gene' (2.9M records in 12.4s) |
+| | ctdbase_vocabulary | ⚠️ | Works with 5/6 vocabulary types. 'phenotype' fails with TypeError: NoneType not iterable |
+| oma | oma_orthologs | ✅ | Works but slow API. With score=0.99, rel_type={'1:1'}: 16K records in 60.5s |
+| | oma_table | ✅ | Works. With same params: 16K unique IDs in 9.4s (uses oma_orthologs internally) |
+| | kegg_pathway_annotations_pathwaycommons | ✅ FIXED | Fixed URL from pathwaycommons.org to download.baderlab.org - 813 records |
 | clinvar | clinvar_citations | ⏳ | Skipped - timeout |
 | | clinvar_raw | ⏳ | Skipped - timeout |
 | proteins | variants | ✅ FIXED | Fixed *cons ->* const typo, but timeout during test |
