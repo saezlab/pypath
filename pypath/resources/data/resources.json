@@ -4901,5 +4901,15 @@
         "https://doi.org/10.1093/nar/gkad896"
       ]
     }
+  },
+  "HINT": {
+    "full_name": "High Quality Interactomes",
+    "license": "Unspecified NC-SA",
+    "urls": {
+      "webpages": ["https://hint.yulab.org/"],
+      "articles": [
+        "https://doi.org/10.1186/1752-0509-6-92"
+      ]
+    }
   }
 }
