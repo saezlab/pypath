@@ -35,11 +35,19 @@ def rolland_hi_ii_14():
     Returns list of interactions.
     """
 
-    xlsname = cell.cell_supplementary(
-        supp_url = urls.urls['hiii14']['url'],
-        article_url = urls.urls['hiii14']['article_url'],
-    )
-    tbl = inputs_common.read_xls(xlsname, sheet = '2G')
+    if 'url_rescued' in urls.urls['hiii14']:
+
+        c = curl.Curl(urls.urls['hiii14']['url_rescued'], silent = False)
+        path = c.fileobj.name
+
+    else:
+
+        path = cell.cell_supplementary(
+            supp_url = urls.urls['hiii14']['url'],
+            article_url = urls.urls['hiii14']['article_url'],
+        )
+
+    tbl = inputs_common.read_xls(path, sheet = '2G')
 
     for row in tbl[1:]:
 
