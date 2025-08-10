@@ -54,6 +54,7 @@ def intogen_annotations():
         silent = False,
         files_needed = ['Drivers_type_role.tsv'],
         compr = 'zip',
+        connect_timeout = 100,
     )
 
     for _ in xrange(7):
