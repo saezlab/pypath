@@ -66,7 +66,7 @@ def msigdb_download(
         id_type = 'symbols',
         force_download = False,
         organism = 'human',
-        version = None,
+        version = '2025.1',
     ):
     """
     Downloads and preprocesses a collection of gmt format gene sets from
