@@ -49,8 +49,9 @@ complex_resources = (
     'ComplexPortal',
     'Pdb',
     'GuideToPharmacology',
-    'Humap',
+    'Humap1',
     'Humap2',
+    'Humap3',
     'Icellnet',
     'Kegg',
     'Cellchatdb',
@@ -472,15 +473,15 @@ class Hpmr(AbstractComplexResource):
         )
 
 
-class Humap(AbstractComplexResource):
+class Humap1(AbstractComplexResource):
 
 
     def __init__(self, input_args = None, **kwargs):
 
         AbstractComplexResource.__init__(
             self,
-            name = 'hu.MAP',
-            input_method = 'humap.humap_complexes',
+            name = 'hu.MAP1',
+            input_method = 'humap.humap1_complexes',
         )
 
 
@@ -492,7 +493,20 @@ class Humap2(AbstractComplexResource):
         AbstractComplexResource.__init__(
             self,
             name = 'hu.MAP2',
-            input_method = 'humap.humap2_complexes',
+            input_method = 'humap.humap2and3_complexes',
+            input_args = {'humap_version': 2},
+        )
+
+
+class Humap3(AbstractComplexResource):
+
+
+    def __init__(self, input_args = None, **kwargs):
+
+        AbstractComplexResource.__init__(
+            self,
+            name = 'hu.MAP3',
+            input_method = 'humap.humap2and3_complexes',
         )
 
 
