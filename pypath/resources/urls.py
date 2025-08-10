@@ -978,7 +978,7 @@ urls = {
     'string': {
         'label': 'STRING',
         'actions': 'https://stringdb-downloads.org/download/'
-            'protein.actions.v12.0/%u.protein.actions.v12.0.txt.gz',
+            'protein.actions.v11.0/%u.protein.actions.v11.0.txt.gz',
         'links': 'https://stringdb-downloads.org/download/protein.links.detailed.v12.0/%u'
             '.protein.links.detailed.v12.0.txt.gz',
         'physical_links': 'https://stringdb-downloads.org/download/protein.physical.links.detailed.v12.0/%u'
