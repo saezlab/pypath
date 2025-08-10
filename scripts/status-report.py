@@ -528,7 +528,11 @@ class StatusReport(object):
 
                 if fun.__module__ == mod.__name__:
 
-                    if fun_name in EXCLUDE or mod_fun_name in EXCLUDE:
+                    if (
+                        fun_name in EXCLUDE or
+                        mod_fun_name in EXCLUDE or
+                        fun_name.startswith('_')
+                    ):
 
                         _log('Ignoring function `%s`.' % mod_fun_name)
                         continue
