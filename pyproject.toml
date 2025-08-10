@@ -61,6 +61,7 @@ numpy = "*"
 openpyxl = "*"
 pandas = "*"
 psutil = "*"
+pyarrow = "*"
 pycurl = "*"
 pypath-common = ">=0.2.6"
 pyreadr = "*"
@@ -99,6 +100,7 @@ graph = [
     "python-igraph",
 ]
 pathophenodb = [
+    "rdflib",
     "sparqlwrapper",
 ]
 metabo = [
