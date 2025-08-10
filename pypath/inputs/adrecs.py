@@ -172,7 +172,7 @@ def adrecs_drug_adr(
 def _adrecs_drug_adr():
 
     url = urls.urls['adrecs']['adrecs_drugs']
-    c = curl.Curl(url, large = True, silent = False)
+    c = curl.Curl(url, large = True, silent = False, slow = True)
     _ = next(c.result)
 
     for line in c.result:
