@@ -30,6 +30,12 @@ import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 
 
+NetpathPathway = collections.namedtuple(
+    'NetpathPathway',
+    ['pathway'],
+)
+
+
 def netpath_interactions():
 
     result = []
@@ -145,7 +151,7 @@ def netpath_names():
 
     repwnum = re.compile(r'_([0-9]+)$')
     result = {}
-    url = urls.urls['netpath_names']['url']
+    url = urls.urls['netpath_names']['url_rescued']
     c = curl.Curl(url, silent = False)
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -161,12 +167,8 @@ def netpath_names():
     return result
 
 
-def netpath_pathway_annotations():
+def _netpath_pathway_annotations_old():
 
-    NetpathPathway = collections.namedtuple(
-        'NetpathPathway',
-        ['pathway'],
-    )
 
     result = collections.defaultdict(set)
 
@@ -219,5 +221,26 @@ def netpath_pathway_annotations():
                             pathway = pathway
                         )
                     )
+
+    return dict(result)
+
+
+def netpath_pathway_annotations():
+
+    url = urls.urls['netpath_pw']['url_rescued']
+    c = curl.Curl(url, large = True, silent = False)
+    _ = next(c.result)
+
+    result = collections.defaultdict(set)
+
+    for line in c.result:
+
+        line = line.split('\t')
+
+        result[line[0]].add(
+            NetpathPathway(
+                pathway = line[2].strip(),
+            )
+        )
 
     return dict(result)

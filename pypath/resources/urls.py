@@ -581,12 +581,14 @@ urls = {
     'netpath_names': {
         'label': 'NetPath numeric pathway IDs can be translated to '
         'pathway names only by extracting them from HTML....',
-        'url': 'http://www.netpath.org/browse'
+        'url': 'http://www.netpath.org/browse',
+        'url_rescued': 'https://rescued.omnipathdb.org/netpath-browse.html',
     },
     'netpath_pw': {
         'label': 'NetPath pathway page',
         'mainpage': 'http://mirror.netpath.org/index.html',
-        'url': 'http://mirror.netpath.org/pathways?path_id=NetPath_%u'
+        'url': 'http://mirror.netpath.org/pathways?path_id=NetPath_%u',
+        'url_rescued': 'https://rescued.omnipathdb.org/netpath-pathways.tsv',
     },
     'netpath_psimi': {
         'label': 'Batch download of NetPath pathways in PSI-MI format',
@@ -1099,7 +1101,9 @@ urls = {
             'inline-supplementary-material-3.xls?download=true',
         'init_url': 'https://www.embopress.org/doi/full/10.1038/msb.2010.71',
         'url': r'https://www.embopress.org/action/downloadSupplement?doi='\
-            r'10.1038%2Fmsb.2010.71&file=msb201071-sup-0003.xls'
+            r'10.1038%2Fmsb.2010.71&file=msb201071-sup-0003.xls',
+        'url_rescued': 'http://rescued.omnipathdb.org/'\
+            'kirouac2010-supplement.xls',
     },
     'dorothea': {
         'label': 'A comprehensive resource of TF-target interactions',
