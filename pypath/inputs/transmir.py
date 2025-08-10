@@ -30,10 +30,10 @@ def transmir_interactions():
     """
 
     url = urls.urls['transmir']['url']
-    
+
     # Initialize download manager with cache
     dm = DownloadManager(pkg='pypath')
-    
+
     # Use _download to get the cache item
     desc, item, downloader, path = dm._download(
         url,
@@ -51,18 +51,18 @@ def transmir_interactions():
     )
 
     result = []
-    
+
     # Use the cache item's open method which handles decompression automatically
     if item and item.status == 3:  # Status.READY = 3
         opener = item.open(large=True, encoding='iso-8859-1')
-        
+
         if opener and opener.result:
             # opener.result is an iterator when large=True
             for l in opener.result:
                 l = l.strip()
                 if l:  # Skip empty lines
                     l = l.split('\t')
-                    
+
                     if len(l) >= 6:  # Ensure we have enough fields
                         result.append(
                             TransmirInteraction(
