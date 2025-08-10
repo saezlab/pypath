@@ -129,6 +129,7 @@ urls = {
         'label':
         'Protein interactome networks annotated to 3D structural resolution',
         'url': 'http://instruct.yulab.org/download/sapiens.sin',
+        'url_rescued': 'https://rescued.omnipathdb.org/instruct-sapiens.sin',
     },
     'i3d_human': {
         'label': 'Interactome3D representative dataset for human proteins',
@@ -566,7 +567,7 @@ urls = {
     },
     'golr': {
         'label': 'AmiGO Solr service URL',
-        'url': 'http://golr.berkeleybop.org/select%s'
+        'url': 'http://golr.berkeleybop.org/select%s',
     },
     'goslim_gen': {
         'label': 'Generic GOSlim from GO Consortium',
@@ -754,6 +755,8 @@ urls = {
         'http://www.cell.com/cms/attachment/2021150198/2041343422/mmc3.xlsx',
         'article_url': 'https://www.cell.com/cell/fulltext/'
             'S0092-8674(14)01422-6',
+        'url_rescued': 'https://rescued.omnipathdb.org/'\
+            'rolland2014-human-interactome-II.xlsx',
     },
     'kinome': {
         'label': 'List of human kinases',
@@ -896,7 +899,7 @@ urls = {
         'url': 'https://www.cell.com/cms/10.1016/j.cell.2012.08.011/'
             'attachment/852fdb4f-ef77-4001-b513-a6687e6e070f/mmc3.xls',
         'article': 'https://www.cell.com/fulltext/S0092-8674(12)01006-9',
-        'url_rescued': 'pypath/data/manual_downloads/mmc3.xls',
+        'url_rescued': 'https://rescued.omnipathdb.org/havugimana2012-mmc3.xls',
     },
     'matrixdb': {
         'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
@@ -1199,8 +1202,12 @@ urls = {
             'integration of 9,000 MS experiments',
         'humap_url': 'http://proteincomplexes.org/static/'\
             'downloads/clusters.txt',
+        'humap_rescued': 'https://rescued.omnipathdb.org/humap1-clusters.txt',
         'humap2_url': 'http://humap2.proteincomplexes.org/static/'\
             'downloads/humap2/humap2_complexes_20200809.txt',
+        'humap3_url': 'https://humap3.proteincomplexes.org/static/'\
+            'downloads/humap3/hu.MAP3.0_complexes_wConfidenceScores'\
+            '_total15326_wGenenames_20240922.csv',
     },
     'adhesome': {
         'label': 'Literature curated database about adhesion related '\
@@ -1429,8 +1436,10 @@ urls = {
         'label': 'Genome and transcript reference database',
         'biomart_url': 'http://www.ensembl.org/biomart/martservice?query=%s',
         'species': 'https://www.ensembl.org/info/about/species.html',
-        'arraytypes': 'https://rest.ensembl.org/regulatory/species/'
+        'arraytypes_old': 'https://rest.ensembl.org/regulatory/species/'
             '%s/microarray?content-type=application/json',
+        'arraytypes':
+            'https://rescued.omnipathdb.org/biomart-microarray-types-%s.json',
     },
     'wojtowicz2020': {
         'label': 'Ligand-receptor interactions from a screen of human'
@@ -1578,6 +1587,7 @@ urls = {
         'annotations': 'https://www.ebi.ac.uk/interpro/api/entry/InterPro/'
             'protein/%s/taxonomy/uniprot/%s?page_size=%u',
         'interpro2go': 'http://www.geneontology.org/external2go/interpro2go',
+        'annot_rescued': 'https://rescued.omnipathdb.org/interpro-%u.tsv',
     },
     'drugcentral': {
         'label': 'Drug-target interactions',
@@ -1801,6 +1811,10 @@ urls = {
         'url':
         'https://bindingdb.org/rwd/bind/downloads/BindingDB_%s_202506_tsv.zip',
         'mapping': 'https://bindingdb.org/rwd/bind/BindingDB_%s.txt',
+    },
+    'hint': {
+        'label': 'High quality interactomes',
+        'url': 'https://hint.yulab.org/download-raw/2024-06/%s_binary_hq.txt',
     },
 }
 
