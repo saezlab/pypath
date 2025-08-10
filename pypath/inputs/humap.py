@@ -27,7 +27,7 @@ import pypath.internals.intera as intera
 
 def humap_complexes():
 
-    url = urls.urls['humap']['humap_url']
+    url = urls.urls['humap']['humap_rescued']
     c = curl.Curl(url, large = True)
 
     complexes = {}
@@ -51,9 +51,9 @@ def humap_complexes():
     return complexes
 
 
-def humap2_complexes(min_confidence = 0):
+def humap2and3_complexes(humap_version = 3, min_confidence = 0):
 
-    url = urls.urls['humap']['humap2_url']
+    url = urls.urls['humap']['humap%i_url' % humap_version]
     c = curl.Curl(url, large = True)
 
     complexes = {}
@@ -81,8 +81,8 @@ def humap2_complexes(min_confidence = 0):
 
             cplex = intera.Complex(
                 components = uniprots,
-                sources = 'hu.MAP2',
-                attrs = {'humap2_confidence': confidence},
+                sources = 'hu.MAP%i' % humap_version,
+                attrs = {'humap%i_confidence' % humap_version: confidence},
             )
 
             complexes[cplex.__str__()] = cplex
