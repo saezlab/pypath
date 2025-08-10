@@ -32,7 +32,7 @@ def get_instruct():
     """
 
     non_digit = re.compile(r'[^\d.-]+')
-    c = curl.Curl(urls.urls['instruct_human']['url'], silent = False)
+    c = curl.Curl(urls.urls['instruct_human']['url_rescued'], silent = False)
     data = c.result
 
     if data is None:
