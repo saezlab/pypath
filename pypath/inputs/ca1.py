@@ -69,7 +69,7 @@ def ca1_interactions():
     data = c.result
     result = []
 
-    for l in data['S1.txt'].decode('ascii').split('\n')[1:]:
+    for l in data['S1.txt'].split('\n')[1:]:
 
         l = l.strip().split()
 
