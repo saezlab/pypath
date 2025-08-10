@@ -135,7 +135,7 @@ def reactome_bs():
 
     for k, v in sbml.items():
 
-        yield k[:-5], bs4.BeautifulSoup(v.read(), 'html.parser')
+        yield k[:-5], bs4.BeautifulSoup(v.read(), features = 'xml')
 
 
 # Process Reactome BioPAX level 3
