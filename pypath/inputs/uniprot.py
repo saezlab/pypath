@@ -687,7 +687,23 @@ class UniprotQuery:
               kind described in the previous point as values.
         """
 
-        _id, *variables = zip(*self)
+        maybe_empty, raw_result = itertools.tee(self)
+
+        try:
+
+            _ = next(maybe_empty)
+
+        except StopIteration:
+
+            if self.fields:
+
+                return {}
+
+            else:
+
+                return []
+
+        _id, *variables = zip(*raw_result)
         _id = list(map(common.sfirst, _id))
 
         if variables:
