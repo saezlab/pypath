@@ -873,7 +873,7 @@ class StatusReport(object):
         try:
 
             _args, _kwargs = ARGS.get(fun_name, ((), {}))
-            
+
             # Add first_n parameter if the function accepts it and we have a value
             if (
                 self.first_n is not None and
@@ -1213,7 +1213,6 @@ class StatusReport(object):
 
         self.builder = build.WebserviceTables(
             build_dir = self.build_dir,
-            first_n = self.first_n,
         )
 
         databases = (
