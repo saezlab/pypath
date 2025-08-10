@@ -58,10 +58,21 @@ import bs4
 EXCLUDE = {
     'biogps_annotations', # calls biomart_microarrays
     'biomart_microarrays', # takes too long
+    'biomodels',
     'common',
+    'dbptm_enzyme_substrate_old',
+    'deathdomain_interactions',
+    'dorothea_old_csv',
+    'drugbank',
     'get_3did_dmi', # takes too long
     'get_csa', # takes too long
+    'get_dgidb_old',
+    'get_dorothea_old',
     'go_annotations_quickgo',
+    'go_annotations_solr',
+    'go_terms_solr',
+    'hi_iii_old',
+    'imweb',
     'process_3did_dmi', # calls get_3did_dmi
     'threedcomplex_complexes',
     '_uniprot_deleted',
