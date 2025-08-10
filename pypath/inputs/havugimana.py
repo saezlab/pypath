@@ -20,6 +20,7 @@
 import pypath.inputs.cell as cell_input
 import pypath.inputs.common as inputs_common
 import pypath.resources.urls as urls
+import pypath.share.curl as curl
 import pypath.internals.intera as intera
 
 
