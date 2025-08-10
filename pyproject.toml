@@ -89,6 +89,8 @@ tornado = ">=3.6.6"
 cryptography = ">=41.0.4"
 certifi = ">=2023.7.22"
 cffi = "^1.17.0"
+download-manager = {git = "https://github.com/saezlab/download-manager.git", rev = "main"}
+cachemanager = {git = "https://github.com/saezlab/cache-manager.git", rev = "main"}
 
 [tool.poetry.extras]
 # bel = [
