@@ -90,19 +90,22 @@ def pathwaycommons_interactions(
     # For v14+, use unified file with source information; for older versions, use individual resource files
     if version >= 14:
         # Use unified txt file from v14 which has source information
-        unified_url = f'https://download.baderlab.org/PathwayCommons/PC2/v{version}/pc-hgnc.txt.gz'
-        c = curl.Curl(unified_url, silent = False, large = True)
+        unified_url = (
+            'https://download.baderlab.org/PathwayCommons/PC2/'
+            f'v{version}/pc-hgnc.txt.gz'
+        )
+        c = curl.Curl(unified_url, silent = False, large = True, slow = True)
 
         if c.result is None:
             return interactions
 
         # Skip header line
         header_line = next(c.result, None)
-        
+
         # Map resource names for filtering
         resource_map = {
             'wikipathways': 'WikiPathways',
-            'kegg': 'KEGG', 
+            'kegg': 'KEGG',
             'biogrid': 'BioGRID',
             'reactome': 'Reactome',
             'intact': 'IntAct',
@@ -115,7 +118,7 @@ def pathwaycommons_interactions(
             'netpath': 'NetPath',
             'inoh': 'INOH',
         }
-        
+
         # Convert requested resources to expected format
         if resources:
             filtered_resources = set()
@@ -139,16 +142,16 @@ def pathwaycommons_interactions(
             if len(l) >= 4:  # Now we have: [A, interaction_type, B, data_source, pubmed, pathways, ...]
                 interaction_type = l[1]
                 data_sources = l[3].split(';') if l[3] else []
-                
+
                 # Filter by data source if resources specified
                 if filtered_resources:
                     source_match = any(
-                        src.lower() in filtered_resources or src in filtered_resources 
+                        src.lower() in filtered_resources or src in filtered_resources
                         for src in data_sources
                     )
                     if not source_match:
                         continue
-                
+
                 # Filter by interaction type
                 if types and interaction_type not in types:
                     continue
