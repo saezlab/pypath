@@ -27,6 +27,7 @@ from typing import List
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.inputs.embopress as embo
+import pypath.inputs.common as inputs_common
 
 
 def kirouac2010_interactions() -> List[tuple]:
@@ -84,11 +85,21 @@ def kirouac2010_interactions() -> List[tuple]:
         return names
 
 
-    tbl = embo.embopress_supplementary(
-        url = urls.urls['kirouac2010']['url'],
-        init_url = urls.urls['kirouac2010']['init_url'],
-        sheet = 'S12',
+    if False:
+
+        # when the embopress web page still worked
+        tbl = embo.embopress_supplementary(
+            url = urls.urls['kirouac2010']['url'],
+            init_url = urls.urls['kirouac2010']['init_url'],
+            sheet = 'S12',
+        )
+
+    c = curl.Curl(
+        urls.urls['kirouac2010']['url_rescued'],
+        silent = False,
+        large = True,
     )
+    tbl = inputs_common.read_xls(c.fileobj.name, sheet = 'S12')
 
     result = []
 
