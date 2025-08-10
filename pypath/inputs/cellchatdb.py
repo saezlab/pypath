@@ -27,6 +27,8 @@ import pypath.utils.taxonomy as taxonomy
 import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 import pypath.inputs.pubmed as pubmed
+
+
 def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
     """
     Retrieves data from CellChatDB, extracts the R objects from the RDA
@@ -58,33 +60,33 @@ def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
     try:
         import pyreadr
         rdata_converted = pyreadr.read_r(rdata_path)
-        
+
         if rdata_converted:
             return rdata_converted
         else:
             raise ValueError("pyreadr returned empty data")
-            
+
     except Exception:
         # Fall back to manual extraction without full conversion
         import pypath.inputs.rdata as rdata
         import pandas as pd
-        
+
         rdata_parsed = rdata.rdata.parser.parse_file(rdata_path)
-        
+
         # Extract data manually to avoid the conversion error
         result = {}
-        
+
         if dataset == 'CellChatDB':
             # Get the list names
             try:
                 df_names = rdata._rdata_list_get_names(rdata_parsed.object.value[0])
-                
+
                 # Extract each dataframe manually
                 for i, name in enumerate(df_names):
                     try:
                         # Get the raw data frame object
                         df_obj = rdata_parsed.object.value[0].value[i]
-                        
+
                         # Try to convert individual dataframes with error handling
                         try:
                             df_converted = rdata.rdata.conversion.convert(df_obj)
@@ -93,17 +95,17 @@ def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
                             # If conversion fails, create a placeholder
                             print(f"Warning: Could not convert {name}: {conv_err}")
                             result[name] = pd.DataFrame()  # Empty dataframe as placeholder
-                            
+
                     except Exception as df_err:
                         print(f"Warning: Could not process dataframe {name}: {df_err}")
                         result[name] = pd.DataFrame()
-                        
+
             except Exception as names_err:
                 print(f"Warning: Could not get dataframe names: {names_err}")
                 # Return minimal structure
-                result = {'interaction': pd.DataFrame(), 'complex': pd.DataFrame(), 
+                result = {'interaction': pd.DataFrame(), 'complex': pd.DataFrame(),
                          'cofactor': pd.DataFrame(), 'geneInfo': pd.DataFrame()}
-        
+
         return result
 
 
@@ -135,7 +137,7 @@ def _cellchatdb_process_complexes(raw, organism = 9606):
     for idx, row in raw.iterrows():
         # Get the complex name from the index
         complex_name = idx if isinstance(idx, str) else str(idx)
-        
+
         # Extract gene symbols from all subunit columns
         genesymbols = []
         for col in raw.columns:
@@ -188,7 +190,7 @@ def _cellchatdb_process_cofactors(raw, organism = 9606):
     for idx, row in raw.iterrows():
         # Get the cofactor name from the index
         cofactor_name = idx if isinstance(idx, str) else str(idx)
-        
+
         # Extract gene symbols from all cofactor columns
         genesymbols = []
         for col in raw.columns:
@@ -282,7 +284,7 @@ def cellchatdb_interactions(
             set(pubmed.only_pmids(repmcid.findall(str(row.get('evidence', '')))))
         )
         # PMIDs starting with 23209 are a mistake in CellChatDB
-        refs = sorted(pmid for pmid in refs if not pmid.startswith('23209'))
+        refs = sorted(pmid for pmid in refs if not str(pmid).startswith('23209'))
 
         ligands = process_name(str(row.get('ligand', '')))
         receptors = process_name(str(row.get('receptor', '')))
