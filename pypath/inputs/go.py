@@ -35,8 +35,10 @@ import pypath.share.progress as progress
 import pypath.share.session as session
 import pypath.share.common as common
 import pypath.utils.taxonomy as taxonomy
+import pypath.data as pypath_data
+import pypath.inputs.uniprot as uniprot_input
 
-_logger = session.Logger(name = 'uniprot_input')
+_logger = session.Logger(name = 'go_input')
 _log = _logger._log
 
 
@@ -46,20 +48,26 @@ HEADER_ACCEPT_JSON = {'Accept': 'application/json'}
 
 def go_annotations_uniprot(organism = 9606, swissprot = 'yes'):
     """
-    Deprecated, should be removed soon.
+    Downloads GO annotation from UniProt.
+
+    Args:
+        organism:
+            NCBI Taxonomy ID of an organism.
+        swissprot:
+            Include only SwissProt entries.
     """
 
-    rev = '' if swissprot is None \
-        else ' AND reviewed:%s' % swissprot
-    query = 'organism:%u%s' % (int(organism), rev)
-    url = urls.urls['uniprot_basic']['url']
-    get = {'query': query, 'format': 'tab', 'columns': 'id,go-id'}
-    c = curl.Curl(url, get = get, silent = False)
-    data = c.result
+    uniprot_result = uniprot_input.uniprot_query(
+        organism = organism,
+        reviewed = swissprot == 'yes',
+        fields = ['go_id'],
+    )
 
-    return dict([(x[0], [go.strip() for go in x[1].split(';')])
-                 for x in [x.split('\t') for x in data.split('\n')]
-                 if len(x) > 1])
+    return {
+        k: [_id.strip() for _id in v.split(';')]
+        for k, v in uniprot_result.items()
+        if v
+    }
 
 
 def go_annotations_goa(
@@ -187,7 +195,7 @@ def go_ancestors_goose(aspects = ('C','F','P')):
             )
         )
 
-    sql_path = os.path.join(common.DATA, 'goose_ancestors.sql')
+    sql_path = pypath_data.builtins()['goose_ancestors']
 
     with open(sql_path, 'r') as fp:
 
@@ -830,7 +838,7 @@ def go_annotations_goose(organism = 9606, aspects = ('C', 'F', 'P'),
             ','.join('"%s"' % uniprot for uniprot in uniprots)
         )
 
-    sql_path = os.path.join(common.DATA, 'goose_annotations.sql')
+    sql_path = pypath_data.builtins()['goose_annotations']
 
     with open(sql_path, 'r') as fp:
         query = fp.read()
