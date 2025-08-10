@@ -36,6 +36,17 @@ _logger = session.Logger(name = 'inputs.interpro')
 _log = _logger._log
 
 
+InterproAnnotation = collections.namedtuple(
+    'InterproAnnotation',
+    (
+        'interpro_id',
+        'organism',
+        'start',
+        'end',
+    ),
+)
+
+
 def interpro_entries() -> List[tuple]:
     """
     Downloads detailed InterPro entry information.
@@ -234,15 +245,25 @@ def interpro_annotations(
     """
 
 
-    InterproAnnotation = collections.namedtuple(
-        'InterproAnnotation',
-        (
-            'interpro_id',
-            'organism',
-            'start',
-            'end',
-        ),
-    )
+    url = urls.urls['interpro']['annot_rescued'] % tax_id
+    c = curl.Curl(url, large = True, silent = False)
+    _ = next(c.result)
+    annotations = collections.defaultdict(set)
+
+    for line in c.result:
+
+        line = line.strip().split('\t')
+
+        annotations[line[0]].add(InterproAnnotation(*line[1:]))
+
+    return annotations
+
+
+def _interpro_annotations_old(
+        page_size: int = 200,
+        reviewed: bool = True,
+        tax_id: str | int = 9606,
+    ) ->  dict:
 
     annotations = collections.defaultdict(set)
     page = 0
@@ -278,6 +299,7 @@ def interpro_annotations(
 
         for entry in res['results']:
 
+            print(entry)
             entry_info = entry['metadata']
 
             for protein in entry['protein_subset']:
