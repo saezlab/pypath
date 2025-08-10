@@ -142,7 +142,7 @@ def cui_interactions() -> List[tuple]:
     if 'cui_rescued' in urls.urls['wang']:
 
         # Get local file path
-    url = urls.urls['wang'].get('cui_rescued', urls.urls['wang']['cui'])
+        url = urls.urls['wang'].get('cui_rescued', urls.urls['wang']['cui'])
 
     # Try to open local file directly
     if 'cui_rescued' in urls.urls['wang']:
