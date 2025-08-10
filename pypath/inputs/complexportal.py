@@ -52,7 +52,7 @@ def complexportal_complexes(organism = 9606, return_details = False):
 
     for xmlname, xml in iteritems(c.result):
 
-        soup = bs4.BeautifulSoup(xml, 'html.parser')
+        soup = bs4.BeautifulSoup(xml, features = 'xml')
         interactors_xml = soup.find_all('interactor')
         interactors = {}
         interactions = {}
