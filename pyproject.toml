@@ -111,7 +111,7 @@ metabo = [
     "rdkit",
 ]
 
-[tool.poetry.dev-dependencies]
+[poetry.group.dev.dependencies]
 bump2version = "*"
 sphinx = ">=5.0.0"
 insipid-sphinx-theme = ">=0.3.6"
