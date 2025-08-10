@@ -33,7 +33,7 @@ def oreganno_raw():
         Tuples of raw records.
     """
 
-    url = urls.urls['oreganno']['url']
+    url = urls.urls['oreganno']['url_rescued']
     c = curl.Curl(url, silent = False, large = True, slow = True)
     data = c.result
     _ = next(data)

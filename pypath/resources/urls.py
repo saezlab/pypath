@@ -510,6 +510,8 @@ urls = {
         'downloads/ORegAnno_Combined_2015.09.16.tsv',
         'url': 'http://www.oreganno.org/dump/'\
             'ORegAnno_Combined_2016.01.19.tsv',
+        'url_rescued': 'http://rescued.omnipathdb.org/'\
+            'ORegAnno_Combined_2016.01.19.tsv',
     },
     'cpdb': {
         'label': 'All human interactions from ConsensusPathDB',
