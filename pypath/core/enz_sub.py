@@ -639,8 +639,6 @@ class EnzymeSubstrateOrthologyProcessor(
                 )
             )
 
-            self.set_default_source(source_taxon)
-
             EnzymeSubstrateProcessor.__init__(
                 self,
                 input_param = self.input_param,
