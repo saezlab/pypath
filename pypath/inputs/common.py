@@ -102,7 +102,15 @@ def read_xls(
         except Exception as e:
 
             _log('Failed to read by xlrd, falling back to openpyxl.')
-            _logger._log_traceback()
+
+            ex_type, ex_value, ex_traceback = sys.exc_info()
+
+            _log(f'The error was: {ex_type}: {ex_value}')
+
+            if 'Excel xlsx file; not supported' not in ex_value:
+
+                _logger._log_traceback()
+
             use_openpyxl = True
 
     if use_openpyxl:
