@@ -59,11 +59,16 @@ def complexportal_complexes(organism = 9606, return_details = False):
 
         for i in interactors_xml:
 
-            if i.find('primaryref').attrs['db'] == 'uniprotkb':
+            if (
+                (primref := i.find('primaryRef')) is not None and
+                primref.attrs['db'] == 'uniprotkb'
+            ):
 
-                interactors[i.attrs['id']] = i.find('primaryref').attrs['id']
+                interactors[i.attrs['id']] = primref.attrs['id']
 
         interactions_xml = soup.find_all('interaction')
+
+        # return interactors_xml, interactors, interactions_xml
 
         for i in interactions_xml:
 
@@ -79,23 +84,23 @@ def complexportal_complexes(organism = 9606, return_details = False):
                 if a.attrs['name'] == 'curated-complex':
                     description = a.text
 
-            for sr in i.find_all('secondaryref'):
+            for sr in i.find_all('secondaryRef'):
                 if sr.attrs['db'] == 'pubmed':
                     pubmeds.append(sr.attrs['id'])
 
                 if sr.attrs['db'] == 'wwpdb':
                     pdbs.append(sr.attrs['id'])
 
-            for pr in i.find_all('primaryref'):
+            for pr in i.find_all('primaryRef'):
                 if pr.attrs['db'] in {'wwpdb', 'rcsb pdb', 'pdbe'}:
                     pdbs.append(pr.attrs['id'])
 
-            for sr in i.find('xref').find_all('secondaryref'):
+            for sr in i.find('xref').find_all('secondaryRef'):
 
                 if (
-                    'reftype' in sr.attrs and
+                    'refType' in sr.attrs and
                     sr.attrs['db'] in {'intact', 'reactome'} and
-                    sr.attrs['reftype'] == 'identity'
+                    sr.attrs['refType'] == 'identity'
                 ):
 
                     ids[sr.attrs['db']].add(sr.attrs['id'])
@@ -104,14 +109,14 @@ def complexportal_complexes(organism = 9606, return_details = False):
             pdbs = list(set(pdbs))
             fullname = (
                 None
-                    if i.find('fullname') is None else
-                i.find('fullname').text
+                    if i.find('fullName') is None else
+                i.find('fullName').text
             )
 
             for a in i.find_all('alias'):
                 names[a.attrs['type']] = a.text
 
-            for intref in i.find_all('interactorref'):
+            for intref in i.find_all('interactorRef'):
                 int_id = intref.text
 
                 if int_id in interactors:
