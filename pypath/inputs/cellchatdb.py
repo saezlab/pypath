@@ -284,7 +284,11 @@ def cellchatdb_interactions(
             set(pubmed.only_pmids(repmcid.findall(str(row.get('evidence', '')))))
         )
         # PMIDs starting with 23209 are a mistake in CellChatDB
-        refs = sorted(pmid for pmid in refs if not str(pmid).startswith('23209'))
+        refs = sorted(
+            pmid_str
+            for pmid in refs
+            if not (pmid_str := str(pmid)).startswith('23209')
+        )
 
         ligands = process_name(str(row.get('ligand', '')))
         receptors = process_name(str(row.get('receptor', '')))
