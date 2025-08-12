@@ -24,6 +24,7 @@ from future.utils import iteritems
 import time
 import datetime
 import itertools
+import collections
 
 import timeloop
 
@@ -42,6 +43,7 @@ _cleanup_period = settings.get('mapper_cleanup_interval')
 _lifetime = 300
 _last_used = {}
 NOT_ORGANISM_SPECIFIC = _const.NOT_ORGANISM_SPECIFIC
+failed = collections.defaultdict(set)
 
 # XXX: Shouldn't we keep all functions and variables separated
 #      (together among them)?
@@ -382,7 +384,7 @@ def ensure_ncbi_tax_id(taxon_id):
 
         if not ncbi_tax_id:
 
-            _log('Could not map to NCBI Taxonomy ID: `%s`.' % str(taxon_id))
+            failed['ncbi_tax_id'].add(str(taxon_id))
 
         return ncbi_tax_id
 
