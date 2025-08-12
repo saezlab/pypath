@@ -2092,14 +2092,14 @@ class Interaction(attrs_mod.AttributeHandler):
             (self.a.identifier,)
                 if self.a.taxon in exclude else
             orthology.translate(
-                source_id = self.a.identifier,
+                identifiers = self.a.identifier,
                 target = taxon,
                 source = self.a.taxon,
             ),
             (self.b.identifier,)
                 if self.b.taxon in exclude else
             orthology.translate(
-                source_id = self.b.identifier,
+                identifiers = self.b.identifier,
                 target = taxon,
                 source = self.b.taxon,
             ),
