@@ -49,11 +49,11 @@ def get_protmapper():
 
     evidences = collections.defaultdict(list)
 
-    for rec in csv.DictReader(c.files_multipart['evidences.csv']):
+    for rec in csv.DictReader(c.result['evidences.csv']):
 
         evidences[rec['ID']].append(rec)
 
-    records = list(csv.DictReader(c.files_multipart['export.csv']))
+    records = list(csv.DictReader(c.result['export.csv']))
 
     return records, evidences
 
