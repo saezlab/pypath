@@ -35,9 +35,24 @@ def rolland_hi_ii_14():
     Returns list of interactions.
     """
 
+    record = collections.namedtuple(
+        'Rolland2014Interaction',
+        [
+            'entrez_a',
+            'entrez_b',
+            'genesymbol_a',
+            'genesymbol_b',
+            'numof_screens',
+        ],
+    )
+
     if 'url_rescued' in urls.urls['hiii14']:
 
-        c = curl.Curl(urls.urls['hiii14']['url_rescued'], silent = False)
+        c = curl.Curl(
+            urls.urls['hiii14']['url_rescued'],
+            silent = False,
+            large = True,
+        )
         path = c.fileobj.name
 
     else:
@@ -51,7 +66,7 @@ def rolland_hi_ii_14():
 
     for row in tbl[1:]:
 
-        yield [c.split('.')[0] for c in row]
+        yield record(*(str(c).split('.')[0] for c in row[:-1]), row[-1])
 
 
 def vidal_hi_iii_old(fname):
