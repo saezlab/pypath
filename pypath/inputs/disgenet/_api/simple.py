@@ -26,6 +26,7 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.inputs.disgenet._auth as _auth
 import pypath.inputs.disgenet._records as _records
+import pypath.utils.mapping as mapping
 
 
 def disgenet_variants() -> dict[str, _records.VariantGeneMapping]:
@@ -156,7 +157,7 @@ def disgenet_annotations(
             `curated`, `literature`, `befree` or `all`.
     """
 
-    url = urls.urls['disgenet']['annotations'] % dataset
+    url = urls.urls['disgenet']['annotations_rescued'] % dataset
     c = curl.Curl(
         url,
         silent = False,
