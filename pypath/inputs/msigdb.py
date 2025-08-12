@@ -156,7 +156,6 @@ def msigdb_download(
                 'password': 'password',
             },
             empty_attempt_again = False,
-            follow = False,
         )
 
         cookies = {}
