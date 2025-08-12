@@ -852,6 +852,12 @@ class Domain(object):
                 self.domain = other.domain
 
 
+    @property
+    def ncbi_tax_id(self):
+
+        return self.protein.taxon
+
+
 class DomainDomain(object):
 
     def __init__(
