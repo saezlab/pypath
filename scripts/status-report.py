@@ -794,8 +794,13 @@ class StatusReport(object):
 
             sys.path.insert(0, os.getcwd())
 
-        import pypath.inputs as inputs
         import pypath.share.session as session
+        _logger = session.Logger(name = 'status_report')
+        globals()['_logger'] = _logger
+        globals()['_log'] = _logger._log
+        _log('Loading pypath modules')
+
+        import pypath.inputs as inputs
         import pypath.share.settings as settings
         import pypath.omnipath.server.build as build
         import pypath.omnipath as omnipath
@@ -806,9 +811,6 @@ class StatusReport(object):
         globals()['build'] = build
         globals()['omnipath'] = omnipath
 
-        _logger = session.Logger(name = 'status_report')
-        globals()['_logger'] = _logger
-        globals()['__log'] = _logger._log
         _log('Working directory: `%s`.' % self.maindir)
         _log('Cache directory: `%s`.' % self.cachedir)
         _log('Pickle directory: `%s`.' % self.pickle_dir)
