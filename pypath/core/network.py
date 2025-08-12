@@ -1906,7 +1906,7 @@ class Network(session_mod.Logger):
 
                     return int(fields[tax_dict['col']])
 
-                except TypeError, ValueError:
+                except (TypeError, ValueError):
 
                     return None
 
