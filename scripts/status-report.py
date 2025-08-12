@@ -63,6 +63,7 @@ EXCLUDE = {
     'dbptm_enzyme_substrate_old',
     'deathdomain_interactions',
     'dorothea_old_csv',
+    'dorothea_interactions_old',
     'drugbank',
     'get_3did_dmi', # takes too long
     'get_csa', # takes too long
