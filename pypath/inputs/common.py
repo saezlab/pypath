@@ -24,6 +24,7 @@ import os
 import sys
 import warnings
 import json
+import datetime
 
 from typing import Any, Callable, Dict, IO, List, Optional, Union
 
@@ -107,7 +108,7 @@ def read_xls(
 
             _log(f'The error was: {ex_type}: {ex_value}')
 
-            if 'Excel xlsx file; not supported' not in ex_value:
+            if str(ex_value) != 'Excel xlsx file; not supported':
 
                 _logger._log_traceback()
 
@@ -152,7 +153,10 @@ def read_xls(
                 [
                     (
                         cell
-                            if isinstance(cell, (str, int, float)) else
+                            if isinstance(
+                                cell,
+                                (str, int, float, datetime.datetime),
+                            ) else
                         cell.value
                             if cell is not None else
                         ''
