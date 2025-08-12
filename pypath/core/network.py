@@ -4302,7 +4302,7 @@ class Network(session_mod.Logger):
 
             ia_translated = False
 
-            for new_ia in ia.homology_translate(
+            for new_ia in ia.orthology_translate(
                 taxon = taxon,
                 exclude = exclude,
             ):
