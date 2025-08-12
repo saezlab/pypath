@@ -36,7 +36,7 @@ def get_protmapper():
     https://www.biorxiv.org/content/10.1101/822668v3.supplementary-material
     """
 
-    url = urls.urls['protmapper']['url']
+    url = urls.urls['protmapper']['url_rescued']
     files = urls.urls['protmapper']['files']
     c = curl.Curl(
         url,
@@ -49,11 +49,11 @@ def get_protmapper():
 
     evidences = collections.defaultdict(list)
 
-    for rec in csv.DictReader(c.result['evidences.csv']):
+    for rec in csv.DictReader(c.result['data/evidences.csv']):
 
         evidences[rec['ID']].append(rec)
 
-    records = list(csv.DictReader(c.result['export.csv']))
+    records = list(csv.DictReader(c.result['data/export.csv']))
 
     return records, evidences
 
