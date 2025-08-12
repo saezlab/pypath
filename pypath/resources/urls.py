@@ -777,7 +777,7 @@ urls = {
             'doi=10.1126%2Fscisignal.aag1796&'
             'file=aag1796_tables_s1_to_s23.zip',
         'url_rescued': 'https://rescued.omnipathdb.org/' \
-            'phosphatome-supplementary-S1-23.zip',
+            'phosphatome-supplementary-S1-S23.zip',
     },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
@@ -1185,9 +1185,9 @@ urls = {
     'exocarta': {
         'label': 'Exosome protein, RNA and lipid database',
         'url_protein': 'http://exocarta.org/Archive/'\
-            'EXOCARTA_PROTEIN_MRNA_DETAILS_6.txt',
-        'url_study': 'http://exocarta.org/Archive/'
-            'EXOCARTA_EXPERIMENT_DETAILS_6.txt',
+            'ExoCarta_protein_mRNA_details_6.txt',
+        'url_study': 'http://exocarta.org/Archive/'\
+            'ExoCarta_experiment_details_6.txt',
     },
     'vesiclepedia': {
         'label': 'Extracellular vesicle database',
@@ -1822,6 +1822,12 @@ urls = {
         'label': 'High quality interactomes',
         'url': 'https://hint.yulab.org/download-raw/2024-06/%s_binary_hq.txt',
     },
+    'slc': {
+        'label': 'A substrate‐based ontology for human solute carriers',
+        'article': 'https://doi.org/10.15252/msb.20209652',
+        'table_s1': 'https://rescued.omnipathdb.org/meixner2020-S1.xlsx',
+        'table_s2': 'https://rescued.omnipathdb.org/meixner2020-S2.xlsx',
+    }
 }
 
 
