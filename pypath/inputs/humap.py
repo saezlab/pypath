@@ -25,7 +25,7 @@ import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 
 
-def humap_complexes():
+def humap1_complexes():
 
     url = urls.urls['humap']['humap_rescued']
     c = curl.Curl(url, large = True)
