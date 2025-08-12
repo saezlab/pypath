@@ -63,6 +63,25 @@ def _get_exocarta_vesiclepedia(
         Molecule types to retrieve. Possible values: `protein`, `mrna`.
     """
 
+    record = collections.namedtuple(
+        f'{database.capitalize()}Record',
+        [
+            'entrez',
+            'genesymbol',
+            'organism',
+            'reference',
+        ],
+    )
+
+    Reference = collections.namedtuple(
+        'Reference',
+        [
+            'pubmed',
+            'organisms',
+            'sample',
+        ],
+    )
+
     database = database.lower()
 
     types = types or {'protein'}
@@ -90,7 +109,7 @@ def _get_exocarta_vesiclepedia(
         if not organisms:
             continue
 
-        stud = (
+        stud = Reference(
             s[1] if s[1] != '0' else None, # PubMed ID
             organisms, # organism
             s[4], # sample source (cell type, tissue)
@@ -116,7 +135,7 @@ def _get_exocarta_vesiclepedia(
         if s[4] != organism or s[1] not in types:
             continue
 
-        yield (
+        yield record(
             s[2], # Entrez ID
             s[3], # Gene Symbol
             taxid_rev[s[4]], # NCBI Taxonomy ID
