@@ -23,6 +23,7 @@ import csv
 import collections
 
 import pypath.share.curl as curl
+import pypath.resources.urls as urls
 import pypath.inputs.disgenet._auth as _auth
 import pypath.inputs.disgenet._records as _records
 
