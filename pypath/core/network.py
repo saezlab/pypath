@@ -2347,7 +2347,7 @@ class Network(session_mod.Logger):
 
             records = list(records)
 
-        if not columns and hasattr(records[0], '_fields'):
+        if not columns and records and hasattr(records[0], '_fields'):
 
             columns = records[0]._fields
 
