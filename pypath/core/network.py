@@ -1901,9 +1901,17 @@ class Network(session_mod.Logger):
         else:
 
             if 'dict' not in tax_dict:
-                return int(fields[tax_dict['col']])
+
+                try:
+
+                    return int(fields[tax_dict['col']])
+
+                except TypeError, ValueError:
+
+                    return None
 
             elif fields[tax_dict['col']] in tax_dict['dict']:
+
                 return tax_dict['dict'][fields[tax_dict['col']]]
 
             else:
