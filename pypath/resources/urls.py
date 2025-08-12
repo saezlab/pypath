@@ -715,6 +715,8 @@ urls = {
         'annotation_label': 'Disease-gene associations',
         'annotations': 'http://www.disgenet.org/static/disgenet_ap1/files/'\
             'downloads/%s_gene_disease_associations.tsv.gz',
+        'annotations_rescued': 'https://rescued.omnipathdb.org/'\
+            'disgenet_%s_gene_disease_associations.tsv.gz',
         'annotation_datasets': ['curated', 'literature', 'befree', 'all'],
     },
     'hsn': {
@@ -1310,9 +1312,10 @@ urls = {
             'resources and text mining',
         'url': 'https://www.biorxiv.org/content/biorxiv/early/2019/11/06/'\
             '822668.1/DC1/embed/media-1.zip?download=true',
+        'url_rescued': 'https://rescued.omnipathdb.org/protmapper-suppl.zip',
         'files': [
-            'export.csv',
-            'evidences.csv',
+            'data/export.csv',
+            'data/evidences.csv',
         ],
     },
     'lrdb': {
