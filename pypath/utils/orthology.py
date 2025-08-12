@@ -1685,7 +1685,7 @@ class PtmOrthology(Proteomes, SequenceContainer):
                 identifiers = domain.protein.identifier,
                 target = self.target,
                 id_type = self.id_type,
-                source = self.get_source(domain.ncbi_tax_id),
+                source = self._get_source(domain.ncbi_tax_id),
                 only_swissprot = self.only_swissprot,
                 **self.orthology_args
             )
