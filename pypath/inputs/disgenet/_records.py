@@ -109,7 +109,7 @@ class DiseaseIdMapping(NamedTuple):
     id_types: tuple[IdType]
 
 
-class DisGeNetAnnotation(NamedTuple):
+class DisgenetAnnotation(NamedTuple):
     disease: str
     type: str
     score: float
