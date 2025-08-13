@@ -116,7 +116,7 @@ def lambert2018_annotations():
                 re.split(
                     '[_;]',
                     re.sub(
-                        'PMIDS:[\d;]+', '',
+                        r'PMIDS:[\d;]+', '',
                         r.tf_cat_classification
                     ).
                     replace('tf', 'TF').
@@ -128,7 +128,7 @@ def lambert2018_annotations():
         )
 
         tfcat_pmids = common.re_safe_groups(
-            'PMIDS:([\d;]+)',
+            r'PMIDS:([\d;]+)',
             r.tf_cat_classification.strip()
         )[0] if r.tf_cat_classification else None
 
