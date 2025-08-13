@@ -34,6 +34,7 @@ import pypath.share.settings as settings
 import pypath_common._constants as _const
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.ensembl as ensembl_input
+import pypath.inputs.mirbase as mirbase_input
 
 _logger = session.Logger(name = 'taxonomy')
 _log = _logger._log
@@ -177,6 +178,11 @@ ensembl_taxids = dict(
     for t in ensembl_input.ensembl_organisms()
 )
 
+mirbase_to_ncbi_tax_id = mirbase_input.mirbase_organisms('mirbase', 'ncbi')
+mirbase_to_latin_name = mirbase_input.mirbase_organisms('mirbase', 'latin')
+ncbi_tax_id_to_mirbase = mirbase_input.mirbase_organisms('ncbi', 'mirbase')
+latin_name_to_mirbase = mirbase_input.mirbase_organisms('latin', 'mirbase')
+
 
 nonstandard_taxids = {
     'drosophila': 7227,
@@ -245,6 +251,14 @@ def ensure_latin_name(taxon_id):
 def ensure_ensembl_name(taxon_id):
 
     return _ensure_name(taxon_id, 'ensembl')
+
+
+def ensure_mirbase_name(taxon_id):
+
+    return (
+        _ensure_name(taxon_id, 'mirbase') or
+        latin_name_to_mirbase.get(taxon_id)
+    )
 
 
 def _ensure_name(taxon_id, name_type):
@@ -342,6 +356,13 @@ def taxid_from_ensembl_name(taxon_name):
         return ensembl_name_to_ncbi_tax_id[taxon_name]
 
 
+def taxid_from_mirbase(taxon_name):
+
+    if taxon_name in mirbase_to_ncbi_tax_id:
+
+        return mirbase_to_ncbi_tax_id[taxon_name]
+
+
 def ensure_ncbi_tax_id(taxon_id):
     """
     For taxon names of various formats returns NCBI Taxonomy ID if possible.
@@ -379,7 +400,8 @@ def ensure_ncbi_tax_id(taxon_id):
                 taxid_from_nonstandard(taxon_id) or
                 taxid_from_common_name(taxon_id) or
                 taxid_from_latin_name(taxon_id) or
-                taxid_from_ensembl_name(taxon_id)
+                taxid_from_ensembl_name(taxon_id) or
+                taxid_from_mirbase(taxon_id)
             )
 
         if not ncbi_tax_id:
@@ -527,6 +549,10 @@ def init_db(key):
     elif _key == 'ensembl':
 
         this_db = ensembl_name_to_ncbi_tax_id
+
+    elif _key == 'mirbase':
+
+        this_db = mirbase_to_ncbi_tax_id
 
     if swap:
 
