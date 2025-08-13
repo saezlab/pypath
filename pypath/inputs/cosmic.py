@@ -20,8 +20,7 @@
 import os
 import csv
 import collections
-import base64
-import json
+import urllib
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -34,16 +33,19 @@ _logger = session_mod.Logger(name = 'cosmic_input')
 _log = _logger._log
 
 
-def cancer_gene_census_annotations(
+def _is_html(path: str) -> bool:
+
+    with open(path) as f:
+
+        return f.read(10).strip()[:2] == '<!'
+
+
+def _cosmic_cgc_download(
         user = None,
         passwd = None,
         credentials_fname = 'cosmic_credentials',
+        force_download = False,
     ):
-    """
-    Retrieves a list of cancer driver genes (Cancer Gene Census) from
-    the Sanger COSMIC (Catalogue of Somatic Mutations in Cancer) database.
-    Returns dict of annotations.
-    """
 
     try:
 
@@ -65,7 +67,137 @@ def cancer_gene_census_annotations(
             'method.'
         )
 
-        return {}
+        return
+
+
+    url = urls.urls['cgc']['cgc_tsv']
+    cookies = {}
+
+    c_nocall = curl.Curl(
+        url,
+        call = False,
+        process = False,
+        bypass_url_encoding = True,
+    )
+
+    if (
+        not os.path.exists(c_nocall.cache_file_name) or
+        os.path.getsize(c_nocall.cache_file_name) == 0 or
+        force_download or
+        _is_html(c_nocall.cache_file_name)
+    ):
+
+        req_headers = [settings.get('user_agent')]
+        login_url = urls.urls['cgc']['login']
+        pgsmith_cookie = r'%7B%22z%22%3A%22n%22%2C%22a%22%3A%22e%22%7D'
+        login_payload = {
+            'email': cosmic_cred['user'],
+            'pass': cosmic_cred['passwd'],
+            'r_url': '',
+            'd': '0',
+        }
+        login_payload = urllib.parse.urlencode(login_payload)
+
+        c_login_1 = curl.Curl(
+            login_url,
+            cache = False,
+            req_headers = req_headers,
+            write_cache = False,
+            process = False,
+            large = False,
+            silent = True,
+            empty_attempt_again = False,
+        )
+
+        cookies = c_login_1.cookies()
+        cookies['Pagesmith'] = pgsmith_cookie
+
+        c_login_2 = curl.Curl(
+            login_url,
+            post = login_payload,
+            cookies = cookies,
+            req_headers = req_headers,
+            cache = False,
+            large = False,
+            silent = True,
+            empty_attempt_again = False,
+        )
+
+        cookies = c_login_2.cookies()
+        cookies['redirect_to'] = (
+            '%2Fcensus%2Fall%3Fhome%3Dy%26name%3Dall%26tier%3D%26'
+            'export%3Djson%26sEcho%3D1'
+        )
+        cookies['Pagesmith'] = pgsmith_cookie
+        cookies['DNT'] = '1'
+
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        cookies = cookies,
+        bypass_url_encoding = True,
+    )
+
+    return getattr(c, 'fileobj', None)
+
+
+def _cosmic_cgc_rescued():
+
+    url = urls.urls['cgc']['tsv_rescued']
+    c = curl.Curl(url, large = True, silent = False)
+
+    return getattr(c, 'fileobj', None)
+
+
+def cancer_gene_census_raw(
+        user = None,
+        passwd = None,
+        credentials_fname = 'cosmic_credentials',
+        force_download = False,
+    ):
+    """
+    Retrieves a list of cancer driver genes (Cancer Gene Census) from
+    the Sanger COSMIC (Catalogue of Somatic Mutations in Cancer) database.
+    Returns dict of annotations.
+    """
+
+    if True:
+
+        fileobj = _cosmic_cgc_rescued()
+
+    else:
+
+        fileobj = _cosmic_cgc_download(
+            user = user,
+            passwd = passwd,
+            credentials_fname = credentials_fname,
+            force_download = force_download,
+        )
+
+    if fileobj is None:
+
+        _log('Failed to download COSMIC Cancer Gene Census.')
+        result = []
+
+    else:
+
+        result = csv.DictReader(fileobj, delimiter = '\t')
+
+    yield from result
+
+
+def cancer_gene_census_annotations(
+        user = None,
+        passwd = None,
+        credentials_fname = 'cosmic_credentials',
+        force_download = False,
+    ):
+    """
+    Retrieves a list of cancer driver genes (Cancer Gene Census) from
+    the Sanger COSMIC (Catalogue of Somatic Mutations in Cancer) database.
+    Returns dict of annotations.
+    """
 
     CancerGeneCensusAnnotation = collections.namedtuple(
         'CancerGeneCensusAnnotation',
@@ -74,6 +206,7 @@ def cancer_gene_census_annotations(
             'hallmark',
             'somatic',
             'germline',
+            'chr_band',
             'tumour_types_somatic',
             'tumour_types_germline',
             'cancer_syndrome',
@@ -81,6 +214,7 @@ def cancer_gene_census_annotations(
             'genetics',
             'role',
             'mutation_type',
+            'translocation_partner',
         ),
     )
 
@@ -94,45 +228,16 @@ def cancer_gene_census_annotations(
         )
 
 
-    url = urls.urls['cgc']['url_new']
-
-    auth_str = base64.b64encode(
-        ('%s:%s\n' % (cosmic_cred['user'], cosmic_cred['passwd'])).encode()
+    raw = cancer_gene_census_raw(
+        user = user,
+        passwd = passwd,
+        credentials_fname = credentials_fname,
+        force_download = force_download,
     )
 
-    req_hdrs = ['Authorization: Basic %s' % auth_str.decode()]
-
-    c = curl.Curl(
-        url,
-        large = False,
-        silent = False,
-        req_headers = req_hdrs,
-        cache = False,
-    )
-
-    access_url = json.loads(c.result)
-
-    if 'url' not in access_url:
-
-        _log(
-            'Could not retrieve COSMIC access URL. '
-            'Most likely the authentication failed. '
-            'The reply was: `%s`' % c.result
-        )
-
-        return None
-
-    c = curl.Curl(
-        access_url['url'],
-        large = True,
-        silent = False,
-        bypass_url_encoding = True,
-    )
-
-    data = csv.DictReader(c.fileobj, delimiter = ',')
     result = collections.defaultdict(set)
 
-    for rec in data:
+    for rec in raw:
 
         uniprots = mapping.map_name(
             rec['Gene Symbol'],
@@ -148,6 +253,7 @@ def cancer_gene_census_annotations(
                     hallmark = rec['Hallmark'].strip().lower() == 'yes',
                     somatic = rec['Somatic'].strip().lower() == 'yes',
                     germline = rec['Germline'].strip().lower() == 'yes',
+                    chr_band = rec['Chr Band'],
                     tumour_types_somatic = (
                         multi_field(rec['Tumour Types(Somatic)'])
                     ),
@@ -166,6 +272,9 @@ def cancer_gene_census_annotations(
                     ),
                     mutation_type = (
                         multi_field(rec['Mutation Types'])
+                    ),
+                    translocation_partner = (
+                        multi_field(rec['Translocation Partner']),
                     ),
                 )
             )

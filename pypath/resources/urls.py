@@ -899,6 +899,10 @@ urls = {
         'file': '/files/grch38/cosmic/v76/cancer_gene_census.csv',
         'url_new': 'https://cancer.sanger.ac.uk/cosmic/file_download/'
             'GRCh38/cosmic/v94/cancer_gene_census.csv',
+        'login': 'https://cancer.sanger.ac.uk/cosmic/login',
+        'cgc_tsv': 'https://cancer.sanger.ac.uk/cosmic/census/all'\
+            '?home=y&name=alli&tier=&export=tsv',
+        'tsv_rescued': 'https://rescued.omnipathdb.org/cgc.tsv',
     },
     'havugimana': {
         'label': 'Census of human soluble protein complexes',
