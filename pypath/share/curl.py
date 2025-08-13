@@ -789,6 +789,7 @@ class Curl(FileOpener):
             get = None,
             post = None,
             req_headers = None,
+            cookies = None,
             cache = True,
             debug = False,
             outf = None,
@@ -888,6 +889,7 @@ class Curl(FileOpener):
         self.override_post = override_post
         self.retries = retries or settings.get('curl_retries') or 3
         self.req_headers = req_headers
+        self.req_cookies = cookies
         self._req_headers_list()
         self.post = post
         self.get = get
@@ -1236,6 +1238,15 @@ class Curl(FileOpener):
                 for hdr in self.req_headers.items()
             ]
 
+        if self.req_cookies:
+
+            cookies = '; '.join(
+                '%s=%s' % cookie
+                for cookie in self.req_cookies.items()
+            )
+            self._log(f'Request cookies: `{cookies}`.')
+            self.req_headers.append(f'Cookie: {cookies}')
+
 
     def set_req_headers(self):
 
@@ -1245,6 +1256,7 @@ class Curl(FileOpener):
             self._log('Overriding HTTP method.')
 
             self.req_headers.append('X-HTTP-Method-Override: GET')
+
         self.curl.setopt(
             self.curl.HTTPHEADER,
             [h.encode('ascii') for h in self.req_headers]
@@ -1480,6 +1492,7 @@ class Curl(FileOpener):
         else:
             return (float(b), u'B')
 
+
     def get_headers(self):
 
         self.resp_headers_dict = {}
@@ -1499,6 +1512,28 @@ class Curl(FileOpener):
                 value = value.strip()
                 name = name.lower()
                 self.resp_headers_dict[name] = value
+
+
+    def cookies(self) -> dict[str, str]:
+        """
+        Collect the cookies from the response headers.
+        """
+
+        cookies = {}
+
+        for hdr in getattr(self, 'resp_headers', ()):
+
+            if hdr.lower().startswith(b'set-cookie'):
+
+                cookie = hdr.decode('ascii')
+                cookie = cookie.split(':', maxsplit = 1)[1].strip()
+                cookie = cookie.split(';', maxsplit = 1)[0].strip()
+                cookie = tuple(cookie.split('=', maxsplit = 1))
+                self._log('Cookie received: `%s=%s`.' % cookie)
+                cookies[cookie[0]] = cookie[1]
+
+        return cookies
+
 
     def guess_encoding(self):
 
