@@ -1069,16 +1069,21 @@ class Curl(FileOpener):
 
     def set_post(self):
 
-        if type(self.post) is dict:
+        self.postfields = None
+
+        if isinstance(self.post, dict):
 
             self.postfields = urllib.urlencode(self.post)
+
+        elif isinstance(self.post, str):
+
+            self.postfields = self.post
+
+        if self.postfields is not None:
+
             self.curl.setopt(self.curl.POSTFIELDS, self.postfields)
             self.curl.setopt(self.curl.POST, 1)
             self._log('POST parameters set: %s' % self.postfields[:100])
-
-        else:
-
-            self.postfields = None
 
 
     def set_get(self):
@@ -1642,6 +1647,8 @@ class Curl(FileOpener):
         self.post_str = (
             ''
                 if self.post is None else
+            self.post
+                if isinstance(self.post, str) else
             (
                 '?' + '&'.join(sorted([
                     i[0] + ' = ' + i[1]
