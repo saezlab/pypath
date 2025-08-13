@@ -4211,7 +4211,7 @@ class Topdb(AnnotationBase):
             name = 'TopDB',
             input_method = 'topdb.topdb_annotations',
             input_args = {
-                'ncbi_tax_id': ncbi_tax_id,
+                'organism': ncbi_tax_id,
             },
             ncbi_tax_id = ncbi_tax_id,
             **kwargs

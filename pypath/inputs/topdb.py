@@ -30,7 +30,7 @@ import pypath.utils.mapping as mapping
 import pypath.utils.taxonomy as taxonomy
 
 
-def topdb_annotations(ncbi_tax_id = 9606):
+def topdb_annotations(organism = 9606):
 
     TopdbAnnotation = collections.namedtuple(
         'TopdbAnnotation',
@@ -45,9 +45,11 @@ def topdb_annotations(ncbi_tax_id = 9606):
         large = True,
         default_mode = 'rb',
         silent = False,
+        slow = True,
     )
 
     parser = etree.iterparse(c.fileobj, events = ('start', 'end'))
+    xmlns = '{https://topdb.unitmp.org}'
 
     result = collections.defaultdict(set)
     root = next(parser)
@@ -55,54 +57,47 @@ def topdb_annotations(ncbi_tax_id = 9606):
 
     for ev, elem in parser:
 
-        if ev == 'end' and elem.tag == 'TOPDB':
+        if ev == 'end' and elem.tag == f'{xmlns}TOPDB':
 
             used_elements.append(elem)
 
-            organism = elem.find('Organism').text
-            organism = taxonomy.ensure_ncbi_tax_id(organism)
+            ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
 
-            if not organism:
+            uniprot_ac = elem.attrib['ID']
 
-                continue
-
-            tag_uniprots = elem.find('./CrossRef/UniProt')
-
-            if tag_uniprots is None:
-                continue
-
-            uniprots = [u.text for u in tag_uniprots.findall('AC')]
-            uniprots = set(
-                mapping.map_name0(
-                    u,
-                    'uniprot',
-                    'uniprot',
-                    ncbi_tax_id = ncbi_tax_id,
-                )
-                for u in uniprots
+            uniprots = mapping.map_name(
+                uniprot_ac,
+                'uniprot-entry',
+                'uniprot',
+                ncbi_tax_id = ncbi_tax_id,
             )
 
             if not uniprots:
                 continue
 
-            membranes = set(
-                mem
-                for tag_mem in elem.findall('Membrane')
-                for mem in tag_mem.text.split(';')
-            )
+            tag_mems = elem.find(f'{xmlns}Membranes')
+            membranes = {'Unknown'}
+
+            if tag_mems is not None:
+
+                membranes = set(
+                    mem
+                    for tag_mem in tag_mems.findall(f'{xmlns}Membrane')
+                    for mem in tag_mem.text.split(';')
+                )
 
             ntm = 0
             score = 0
             topologies = ()
-            tag_topo = elem.find('Topology')
+            tag_topo = elem.find(f'{xmlns}Topology')
 
             if tag_topo is not None:
-                ntm = int(tag_topo.find('Numtm').attrib['Count'])
-                score = int(tag_topo.find('Reliability').text)
+                ntm = int(tag_topo.find(f'{xmlns}Numtm').attrib['Count'])
+                score = float(tag_topo.find(f'{xmlns}Reliability').text)
 
                 topologies = set(
                     tag_reg.attrib['Loc']
-                    for tag_reg in tag_topo.findall('./Regions/Region')
+                    for tag_reg in tag_topo.findall(f'./{xmlns}Regions/{xmlns}Region')
                 )
 
             if not membranes:
