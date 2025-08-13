@@ -1631,7 +1631,7 @@ class PtmOrthology(Proteomes, SequenceContainer):
 
             if self.target in self.ptmortho[sourceptm]:
 
-                result = self.ptmortho[sourceptm]
+                result = self.ptmortho[sourceptm][self.target]
 
         if not result and not self.strict:
 
