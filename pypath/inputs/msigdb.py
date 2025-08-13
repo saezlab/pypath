@@ -38,7 +38,8 @@ ALL_COLLECTIONS = {
     'positional': ('c1.all', 'm1.all'),
     'chemical_and_genetic_perturbations': ('c2.cgp', 'm2.cgp'),
     'biocarta_pathways': ('c2.cp.biocarta', 'm2.cp.biocarta'),
-    'kegg_pathways': ('c2.cp.kegg', None),
+    'kegg_pathways': ('c2.cp.kegg_legacy', None),
+    'kegg_medicus_pathways': ('c2.cp.kegg_medicus', None),
     'pid_pathways': ('c2.cp.pid', None),
     'reactome_pathways': ('c2.cp.reactome', 'm2.cp.reactome'),
     'wikipathways': ('c2.cp.wikipathways', 'm2.cp.wikipathways'),
@@ -46,6 +47,7 @@ ALL_COLLECTIONS = {
     'mirna_targets_legacy': ('c3.mir.mir_legacy', None),
     'tf_targets_gtrf': ('c3.tft.gtrd', 'm3.gtrd'),
     'tf_targets_legacy': ('c3.tft.tft_legacy', None),
+    'cancer_cell_atlas': ('c4.3ca', None),
     'cancer_gene_neighborhoods': ('c4.cgn', None),
     'cancer_modules': ('c4.cm', None),
     'go_biological_process': ('c5.go.bp', 'm5.go.bp'),
@@ -60,6 +62,81 @@ ALL_COLLECTIONS = {
 }
 
 
+def _msigdb_login(registered_email: str | None = None) -> dict[str, str]:
+    """
+    Logs in to MSigDB and returns a dict of cookies.
+    """
+
+    registered_email = registered_email or settings.get('msigdb_email')
+
+    if not registered_email:
+
+        _log(
+            'To download MSigDB you must provide an email address '
+            'you have previously registered at '
+            '`http://software.broadinstitute.org/gsea/register.jsp`. '
+            'Could not proceed, returning empty dict.'
+        )
+
+        return {}
+
+    c_login_1 = curl.Curl(
+        urls.urls['msigdb']['login1'],
+        cache = False,
+        write_cache = False,
+        process = False,
+        large = True,
+        silent = True,
+        empty_attempt_again = False,
+    )
+
+    cookies = c_login_1.cookies()
+
+    if not cookies:
+
+        _log('msigdb: could not obtain cookie, returning empty list.')
+
+        return {}
+
+    c_login_2 = curl.Curl(
+        urls.urls['msigdb']['login2'],
+        cache = False,
+        write_cache = False,
+        large = False,
+        silent = True,
+        cookies = cookies,
+        post = {
+            'username': registered_email,
+            'password': 'password',
+        },
+        process = False,
+        empty_attempt_again = False,
+    )
+
+    if hasattr(c_login_2, 'resp_headers'):
+
+        cookies = c_login_2.cookies()
+
+        _log(
+            'msigdb: logged in with email `%s`, '
+            'new cookie obtained: `JSESSIONID=%s`.' % (
+                registered_email,
+                cookies['JSESSIONID']
+            )
+        )
+
+    globals()['COOKIES'] = cookies
+
+    return cookies
+
+
+def _is_html(path: str) -> bool:
+
+    with open(path) as f:
+
+        return f.read(10).strip()[:2] == '<!'
+
+
 def msigdb_download(
         registered_email = None,
         collection = 'msigdb',
@@ -67,6 +144,7 @@ def msigdb_download(
         force_download = False,
         organism = 'human',
         version = '2025.1',
+        cookies = None,
     ):
     """
     Downloads and preprocesses a collection of gmt format gene sets from
@@ -90,24 +168,12 @@ def msigdb_download(
         Download even if cache content is available.
     """
 
-    registered_email = registered_email or settings.get('msigdb_email')
-
-    if not registered_email:
-
-        _log(
-            'To download MSigDB you must provide an email address '
-            'you have previously registered at '
-            '`http://software.broadinstitute.org/gsea/register.jsp`. '
-            'Could not proceed, returning empty dict.'
-        )
-
-        return {}
 
     organisms = {9606: 'Hs', 10090: 'Mm'}
     ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
     msigdb_org = organisms.get(ncbi_tax_id, None)
 
-    if not ncbi_tax_id:
+    if not msigdb_org:
 
         _log(f'Could not recognize organism: `{organism}`.')
 
@@ -118,6 +184,7 @@ def msigdb_download(
     #http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Mm/mh.all.v2022.1.Mm.symbols.gmt
     #http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Hs/h.all.v2022.1.Hs.symbols.gmt
 
+
     url = urls.urls['msigdb']['url'] % (
         version,
         msigdb_org,
@@ -127,10 +194,6 @@ def msigdb_download(
         id_type,
     )
 
-    req_headers = []
-
-    # we shouldn't need this cookie game any more as all files are available
-    # without any login or cookie from data.broadinstitute.org
     c_nocall = curl.Curl(
         url,
         call = False,
@@ -139,94 +202,36 @@ def msigdb_download(
     )
 
     if (
-        not os.path.exists(c_nocall.cache_file_name) or
-        os.path.getsize(c_nocall.cache_file_name) == 0 or
-        force_download
+        (
+            not os.path.exists(c_nocall.cache_file_name) or
+            os.path.getsize(c_nocall.cache_file_name) == 0 or
+            force_download or
+            _is_html(c_nocall.cache_file_name)
+        ) and
+        not cookies
     ):
 
-        c_login_1 = curl.Curl(
-            urls.urls['msigdb']['login1'],
-            cache = False,
-            write_cache = False,
-            process = False,
-            large = True,
-            silent = True,
-            post = {
-                'username': registered_email,
-                'password': 'password',
-            },
-            empty_attempt_again = False,
-        )
-
-        cookies = {}
-
-        if hasattr(c_login_1, 'resp_headers'):
-
-            for hdr in c_login_1.resp_headers:
-
-                if hdr.lower().startswith(b'set-cookie'):
-
-                    cookie = hdr.decode('ascii')
-                    cookie = cookie.split(':', maxsplit = 1)[1].strip()
-                    cookie = cookie.split(';', maxsplit = 1)[0].strip()
-                    cookie = tuple(cookie.split('=', maxsplit = 1))
-                    _log('msigdb cookie: `%s=%s`.' % cookie)
-                    cookies[cookie[0]] = cookie[1]
+        cookies = globals().get('COOKIES')
 
         if not cookies:
 
-            _log('msigdb: could not get cookie, returning empty list.')
+            _log('msigdb: no cookies available, logging in...')
+            cookies = _msigdb_login(registered_email)
 
-            return {}
+            if not cookies:
 
-        req_headers = [
-            'Cookie: %s' % ';'.join(
-                '%s=%s' % cookie
-                for cookie in cookies.items()
-            )
-        ]
+                _log('msigdb: could not log in, returning empty list.')
+                return {}
 
-        c_login_2 = curl.Curl(
-            urls.urls['msigdb']['login2'],
-            cache = False,
-            write_cache = False,
-            large = False,
-            silent = True,
-            req_headers = req_headers,
-            post = {
-                'j_username': registered_email,
-                'j_password': 'password',
-            },
-            process = False,
-            empty_attempt_again = False,
-        )
+        else:
 
-        jsessionid_1 = ''
-
-        if hasattr(c_login_2, 'resp_headers'):
-
-            for hdr in c_login_2.resp_headers:
-
-                if hdr.lower().startswith(b'set-cookie'):
-
-                    jsessionid_1 = hdr.split(b':')[1].split(b';')[0].strip()
-                    jsessionid_1 = jsessionid_1.decode('ascii')
-
-            _log(
-                'msigdb: logged in with email `%s`, '
-                'new cookie obtained: `%s`.' % (
-                    registered_email,
-                    jsessionid_1
-                )
-            )
-
-        _log('msigdb cookies for upcoming request: %s' % req_headers[0])
+            _log('msigdb: using cookies from previous login.')
 
     c = curl.Curl(
         url,
-        req_headers = req_headers,
         silent = False,
         large = True,
+        cookies = cookies,
         bypass_url_encoding = True,
         cache = not force_download,
     )
@@ -248,7 +253,7 @@ def msigdb_download_collections(
         exclude = ('c5', 'm5'),
         id_type = 'symbols',
         organism = 'human',
-        version = None,
+        version = '2025.1',
     ):
     """
     Downloads all or some MSigDB gene set collections.
@@ -311,7 +316,7 @@ def msigdb_annotations(
         only_collections = None,
         exclude = ('c5', 'm5'),
         organism = 'human',
-        version = None,
+        version = '2025.1',
     ):
     """
     Downloads all or some MSigDB gene set collections and processes them
