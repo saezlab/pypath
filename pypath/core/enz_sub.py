@@ -639,7 +639,7 @@ class EnzymeSubstrateOrthologyProcessor(
                 )
             )
 
-            orthology.PtmOrthology._set_source(self, source_taxon)
+            orthology.PtmOrthology._set_default_source(self, source_taxon)
 
             EnzymeSubstrateProcessor.__init__(
                 self,

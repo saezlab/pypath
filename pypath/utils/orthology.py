@@ -1925,7 +1925,25 @@ class PtmOrthology(Proteomes, SequenceContainer):
         Returns the NCBI Taxonomy ID of the source taxon.
         """
 
-        ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(source) or self.source
+        if not source:
+
+            source = self.source
+
+        ncbi_tax_id = self._source_to_ncbi_tax_id(source)
+
+        return ncbi_tax_id
+
+
+    def _set_default_source(self, source: str | int | None = None):
+
+        ncbi_tax_id = self._source_to_ncbi_tax_id(source)
+
+        self.source = ncbi_tax_id or self.source
+
+
+    def _source_to_ncbi_tax_id(self, source: str | int | None):
+
+        ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(source)
 
         if not ncbi_tax_id:
 
