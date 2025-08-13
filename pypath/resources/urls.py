@@ -1009,6 +1009,7 @@ urls = {
         'label': 'miRBase: miRNA main reference database',
         'aliases_old': 'ftp://mirbase.org/pub/mirbase/CURRENT/aliases.txt.gz',
         'aliases': 'https://mirbase.org/download/CURRENT/database_files/mirna_database_links.txt',
+        'root': 'https://mirbase.org/download/CURRENT/database_files/%s.txt',
     },
     'mir2dis': {
         'label': 'miR2Disease experimentally validated'\
