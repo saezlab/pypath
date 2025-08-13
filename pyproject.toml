@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "pypath-omnipath"
-version = "0.16.23"
+version = "0.16.24"
 description = "Molecular signaling prior knowledge processing"
 license = "GPL-3.0-only"
 authors = [
