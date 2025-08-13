@@ -679,8 +679,8 @@ urls = {
     },
     'msigdb': {
         'label': 'Molecular Signatures Database',
-        'login1': 'https://www.gsea-msigdb.org/gsea/login',
-        'login2': 'https://www.gsea-msigdb.org/gsea/j_spring_security_check',
+        'login1': 'https://www.gsea-msigdb.org/gsea/login.jsp',
+        'login2': 'https://www.gsea-msigdb.org/gsea/login',
         'url': 'https://www.gsea-msigdb.org/gsea/msigdb/'
             'download_file.jsp?filePath=/msigdb/release/'
             '%s.%s/%s.v%s.%s.%s.gmt',
