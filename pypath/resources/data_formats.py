@@ -3241,6 +3241,30 @@ small_molecule_protein = {
         data_model = 'ligand_receptor',
         interaction_type = 'small_molecule_protein',
     ),
+    'slc': input_formats.NetworkInput(
+        name = 'SLC',
+        separator = None,
+        id_col_a = ('transporter', 'uniprot'),
+        id_col_b = ('substrate', 'chebi'),
+        id_type_a = 'uniprot',
+        id_type_b = 'chebi',
+        entity_type_a = 'protein',
+        entity_type_b = 'small_molecule',
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        input = 'slc.slc_interactions',
+        references = (3, ';'),
+        header = False,
+        extra_edge_attrs = {
+            'role': 2,
+            'localization': 4,
+            'mechanism': 5,
+            'class': 6,
+        },
+        data_model = 'transporter_substrate',
+        interaction_type = 'small_molecule_protein',
+
+    ),
 }
 
 # synonym
