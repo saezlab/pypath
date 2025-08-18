@@ -1109,12 +1109,19 @@ class Network(session_mod.Logger):
                         line = line.strip('\n\r').split(networkinput.separator)
 
                     else:
+
+                        line_cls = line.__class__
+
                         line = [
                             x.replace('\n', '').replace('\r', '')
                                 if hasattr(x, 'replace') else
                             x
                             for x in line
                         ]
+
+                        if hasattr(line_cls, '_fields'):
+
+                            line = line_cls(*line)
 
                     # 1) filters
                     if self._filters(
@@ -1647,6 +1654,18 @@ class Network(session_mod.Logger):
             return bool(value & dir_val)
 
 
+    @staticmethod
+    def _get(obj: object, key: int | str):
+
+        if isinstance(obj, dict) | isinstance(key, int):
+
+            return obj[key]
+
+        else:
+
+            return getattr(obj, key)
+
+
     def _process_field(self, fmt, line):
         """
         Extract a value from a line describing an interaction.
@@ -1660,6 +1679,7 @@ class Network(session_mod.Logger):
             (str): The extracted value.
         """
 
+
         if common.is_str(fmt) or isinstance(fmt, list):
 
             return fmt
@@ -1670,16 +1690,25 @@ class Network(session_mod.Logger):
 
         if isinstance(fmt, int):
 
-            idx, dct = fmt, {}
+            return line[fmt]
 
         elif isinstance(fmt, tuple):
 
-            idx, dct = fmt
+            if len(fmt) == 2 and isinstance(fmt[1], dict):
 
-        val = line[idx]
-        val = dct.get(val, val)
+                idx, dct = fmt
+                val = line[idx]
+                val = dct.get(val, val)
 
-        return val
+            else:
+
+                val = line
+
+                for key in fmt:
+
+                    val = self._get(val, key)
+
+                return val
 
 
     @staticmethod
@@ -1691,10 +1720,20 @@ class Network(session_mod.Logger):
 
         elif isinstance(fmt, tuple):
 
-            idx, proc = fmt
-            obj = line if idx is None else line[idx]
+            if len(fmt) == 2 and callable(fmt[1]):
 
-            partner = proc(obj)
+                idx, proc = fmt
+                obj = line if idx is None else line[idx]
+
+                partner = proc(obj)
+
+            else:
+
+                partner = line
+
+                for key in fmt:
+
+                    partner = Network._get(partner, key)
 
         return partner.strip() if hasattr(partner, 'strip') else partner
 
