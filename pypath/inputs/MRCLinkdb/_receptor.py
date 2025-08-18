@@ -2,6 +2,7 @@ from collections.abc import Generator
 import collections
 from pypath.share import curl
 from pypath.inputs import uniprot
+import pypath.resources.urls as urls
 
 Homo_receptor = collections.namedtuple(
     'Homo_receptor',
@@ -17,10 +18,10 @@ Metabolite_cell = collections.namedtuple(
 )
 
 
-def homo_receptor() -> Generator[Homo_receptor, None, None]:
+def homo_receptor(organism:int | str) -> Generator[Homo_receptor, None, None]:
     # homo
-    url = "https://www.cellknowledge.com.cn/mrclinkdb/download/Homo%20sapiens%20metabolite%20L-R%20interaction.txt"
-    c = curl.Curl(url)
+    url = urls.urls["mrclinksdb"]["url"]
+
     human_receptor = c.result
     lines = human_receptor.strip('\n').split('\n')
 

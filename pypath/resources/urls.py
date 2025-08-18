@@ -1835,7 +1835,11 @@ urls = {
         'article': 'https://doi.org/10.15252/msb.20209652',
         'table_s1': 'https://rescued.omnipathdb.org/meixner2020-S1.xlsx',
         'table_s2': 'https://rescued.omnipathdb.org/meixner2020-S2.xlsx',
-    }
+    },
+    'mrclinksdb': {
+        'url':'https://www.cellknowledge.com.cn/mrclinkdb/download/%s%20metabolite%20L-R%20interaction.txt',
+        'metabolite_cell':'https://www.cellknowledge.com.cn/mrclinkdb/download/Metabolite-cell%20interaction.txt',
+    },
 }
 
 
