@@ -1,8 +1,10 @@
 from collections.abc import Generator
 import collections
+
 from pypath.share import curl
 from pypath.inputs import uniprot
 import pypath.resources.urls as urls
+import pypath.utils.taxonomy as taxonomy
 
 Homo_receptor = collections.namedtuple(
     'Homo_receptor',
@@ -18,17 +20,18 @@ Metabolite_cell = collections.namedtuple(
 )
 
 
-def homo_receptor(organism:int | str) -> Generator[Homo_receptor, None, None]:
+def homo_receptor(organism: int | str = 'human') -> Generator[Homo_receptor, None, None]:
     # homo
-    url = urls.urls["mrclinksdb"]["url"]
 
-    human_receptor = c.result
-    lines = human_receptor.strip('\n').split('\n')
+    latin_name = taxonomy.ensure_latin_name(organism)
+    url = urls.urls["mrclinksdb"]["url"] % urllib.parse.quote(latin_name)
+
+    c.Curl(url, large = True, silent = False)
 
     # ID conversion
     # bug: Some uniprot has _xxx_!!
     uniprot = []
-    for line in lines:
+    for line in c.result:
         _, _, _, _, _, _, _, _, _, _, receptor_uniprot_id, _, _, _, _ = line.split('\t')
         if receptor_uniprot_id:
             uniprot.append(receptor_uniprot_id)
