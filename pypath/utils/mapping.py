@@ -1576,7 +1576,8 @@ class Mapper(session_mod.Logger):
 
             if tbl is None:
 
-                basic_services = {'hmdb', 'ramp', 'uniprot', 'unichem'}
+                basic_services = {'ramp', 'unichem', 'hmdb', 'uniprot'}
+                symmetric_services = {'biomart', 'ramp', 'unichem', 'hmdb'}
 
                 for (service_ids, service_id_type, input_cls) in (
                     RESOURCES_IMPLICIT
@@ -1602,7 +1603,7 @@ class Mapper(session_mod.Logger):
                                 )
                             )
                         ) or (
-                            service_id_type == 'biomart' and (
+                            service_id_type in symmetric_services and (
                                 (
                                     id_type in service_ids and
                                     target_id_type in service_ids
