@@ -1,6 +1,6 @@
 from collections.abc import Generator
 import collections
-
+import urllib
 from pypath.share import curl
 from pypath.inputs import uniprot
 import pypath.resources.urls as urls
@@ -20,14 +20,16 @@ Metabolite_cell = collections.namedtuple(
 )
 
 
-def homo_receptor(organism: int | str = 'human') -> Generator[Homo_receptor, None, None]:
+def mrclinksdb_raw(organism: int | str = 'human') -> Generator[list, None, None]:
     # homo
-
     latin_name = taxonomy.ensure_latin_name(organism)
     url = urls.urls["mrclinksdb"]["url"] % urllib.parse.quote(latin_name)
 
-    c.Curl(url, large = True, silent = False)
+    c = curl.Curl(url, large = True, silent = False)
+    for line in c.result:
+        yield line.split("\t")
 
+def mrclinksdb_interaction(organism: int | str = 'human'):
     # ID conversion
     # bug: Some uniprot has _xxx_!!
     uniprot = []
