@@ -4,16 +4,12 @@ from pypath.share import curl
 from pypath.resources import urls
 from pypath.inputs import uniprot
 import pandas as pd
-
+__all__ = ['tcdb_substrate']
 TcdbSubstrate = collections.namedtuple(
     'TcdbSubstrate',
     ['transporter_uniprot', 'substrate_id', 'substrate_name', 'location'],
 )
 
-SLCSubstrate = collections.namedtuple(
-    'SLCSubstrate',
-    ['transporter_id', 'substrate_name','location'],
-)
 
 def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
 
@@ -60,16 +56,6 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
                     uniprot_locations.get(transporter_uniprot),
                 )
 
-def slc_table() -> Generator[SLCSubstrate, None, None]:
-    #url = "https://www.embopress.org/action/downloadSupplement?doi=10.15252%2Fmsb.20209652&file=msb209652-sup-0003-TableEV2.xlsx"
-    #df = pd.read_excel(url)
-    slc_annotation = pd.read_excel("/Users/priscillabai/Library/CloudStorage/OneDrive-UniversitätHeidelberg/00_project/MetaboliteDB/SLCtable/msb209652-sup-0002-tableev1.xlsx", sheet_name=1)
-    slc_annotation = slc_annotation[slc_annotation['Substrate_class'] != 'Orphan']
-    for transporter_id, substrate_name,location in zip(
-            slc_annotation["Ensembl_ID"],
-            slc_annotation["Substrates"],
-            slc_annotation["Subcellular_localization"]):
-        yield SLCSubstrate(transporter_id, substrate_name, location)
 
 
 
