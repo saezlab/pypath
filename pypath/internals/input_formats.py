@@ -151,6 +151,7 @@ RAMP_MAPPING = {
     'genesymbol': 'gene_symbol',
     'pubchem_compound': 'pubchem',
     'pubchem_cid': 'pubchem',
+    'ChEBI': 'chebi',
 }
 
 HMDB_MAPPING = {
@@ -244,12 +245,19 @@ class MappingInput(object):
             id_type_a: str,
             id_type_b: str,
             ncbi_tax_id: int | None = None,
+            resource_id_types: dict | None = None,
         ) -> bool:
+
+        id_types = (cls._resource_id_types or {}).copy()
+
+        if resource_id_types:
+
+            id_types.update(resource_id_types)
 
         return all(
             (
-                id_type in cls._resource_id_types or
-                id_type in cls._resource_id_types.values()
+                id_type in id_types or
+                id_type in id_types.values()
             )
             for id_type in (id_type_a, id_type_b)
         )
@@ -650,10 +658,26 @@ class BiomartMapping(MappingInput):
 
 class UnichemMapping(MappingInput):
 
+    _synonyms = {
+        'chebi': 'ChEBI',
+        'chembl': 'ChEMBL',
+        'pubchem': 'PubChem',
+        'drugbank': 'DrugBank',
+        'lincs': 'LINCS',
+        'lipidmaps': 'LipidMaps',
+        'swisslipids': 'SwissLipids',
+        'zinc': 'ZINC',
+        'emolecules': 'eMolecules',
+        'pdb': 'PDBe',
+        'recon': 'Recon',
+        'rhea': 'Rhea',
+        'selleck': 'Selleck',
+    }
+
     _resource_id_types = {
         id_type: id_type
         for id_type in unichem_input.unichem_sources().values()
-    }
+    }.update(_synonyms)
 
     def __init__(
             self,
