@@ -1,5 +1,26 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright 2014-2023
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: see the file `README.rst`
+#  Contact: Dénes Türei (turei.denes@gmail.com)
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      https://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: https://pypath.omnipathdb.org/
+#
+
 from collections.abc import Generator
 import collections
+import itertools
+
 from pypath.share import curl
 from pypath.resources import urls
 from pypath.inputs import uniprot
@@ -34,10 +55,18 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
         if uniprot.valid_uniprot(u)
     ]
 
-    uniprot_locations = uniprot.uniprot_locations(
-        accession=all_uniprots,
-        organism=None,
-    )
+    uniprot_locations = {}
+    chunk_size = 98
+
+    for i in range(0, len(all_uniprots), chunk_size):
+
+        uniprot_locations.update(
+            uniprot.uniprot_locations(
+                accession=all_uniprots[i : i + chunk_size],
+                organism=None,
+                reviewed=None,
+            )
+        )
 
     for line in tc_to_substrate:
 
@@ -55,10 +84,3 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
                     substrate_name,
                     uniprot_locations.get(transporter_uniprot),
                 )
-
-
-
-
-
-
-
