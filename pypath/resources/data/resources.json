@@ -3918,6 +3918,7 @@
   },
   "hu.MAP": {
     "full_name": "Human Protein Complex Map",
+    "synonyms": ["hu.MAP1", "hu.MAP2", "hu.MAP3"],
     "urls": {
       "webpages": ["http://hu.proteincomplexes.org/"],
       "articles": ["https://www.embopress.org/doi/full/10.15252/msb.20167490"]
@@ -4137,6 +4138,7 @@
     "urls": {
       "webpages": ["https://www.biorxiv.org/content/10.1101/822668v3"]
     },
+    "synonyms": ["hprd_ProtMapper"],
     "license": "CC BY 4.0",
     "inputs": {
       "enzyme_substrate": {
@@ -4909,6 +4911,16 @@
       "webpages": ["https://hint.yulab.org/"],
       "articles": [
         "https://doi.org/10.1186/1752-0509-6-92"
+      ]
+    }
+  },
+  "SLC": {
+    "full_name": "Solute Carrier Annotation Resource",
+    "license": "CC BY 4.0",
+    "urls": {
+      "webpages": ["https://opendata.cemm.at/gsflab/slcontology/"],
+      "articles": [
+        "https://www.embopress.org/doi/full/10.15252/msb.20209652"
       ]
     }
   }
