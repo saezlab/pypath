@@ -56,6 +56,8 @@ def mrclinksdb_interaction(organism: int | str = 'human') -> Generator[list, Non
         "MrclinksdbInteractions",
         lines[0]._fields + ("receptor_location",),
     )
+    idx_uniprot = lines[0]._fields.index('receptor_uniprot_id')
+
     for line in lines:
 
         uniprot_id = line.receptor_uniprot_id
@@ -67,6 +69,9 @@ def mrclinksdb_interaction(organism: int | str = 'human') -> Generator[list, Non
                 ncbi_tax_id = 9606,
                 sources = 'MRClinksDB',
             )
+
+            line = list(line)
+            line[idx_uniprot] = uniprot_id
 
         location = uniprot_locations.get(uniprot_id)
 
