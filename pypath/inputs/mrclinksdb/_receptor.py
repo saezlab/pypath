@@ -33,7 +33,6 @@ def mrclinksdb_interaction(organism: int | str = 'human') -> Generator[list, Non
     all_uniprots = [
         u.split('_', maxsplit=1)[0]
         for u in uniprot_id
-        if uniprot.valid_uniprot(u)
     ]
     uniprot_locations = {}
     chunk_size = 98
