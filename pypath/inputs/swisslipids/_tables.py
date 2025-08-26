@@ -17,12 +17,14 @@
 #  Website: https://pypath.omnipathdb.org/
 
 
+import pypath.internals.intera as _intera
 from . import _raw, _records
 
 __all__ = [
     'swisslipids_evidences',
     'swisslipids_lipids',
     'swisslipids_tissues',
+    'swisslipids_reactions',
 ]
 
 
@@ -77,9 +79,31 @@ def swisslipids_tissues():
         yield _records.SwisslipidsTissue(
             lipid_id = rec['Lipid ID'],
             lipid_name = rec['Lipid name'],
-            ncbi_tax_id = rec['Taxon ID'],
+            ncbi_tax_id = int(rec['Taxon ID']),
             taxon_name = rec['Taxon scientific name'],
             tissue_uberon = rec['Tissue/Cell ID'],
             tissue_name = rec['Tissue/Cell name'],
+            evidence = evidences.get(rec['Evidence tag ID']),
+        )
+
+
+def swisslipids_reactions():
+
+    evidences = swisslipids_evidences()
+
+    for rec in _raw.swisslipids_enzymes_raw():
+
+        if '-' in (enzyme := rec['UniProtKB AC(s)']):
+
+            enzyme = _intera.Complex(
+                components = enzyme.split('-'),
+                ncbi_tax_id = int(rec['Protein taxon']),
+                sources = 'SwissLipids',
+            )
+
+        yield _records.SwisslipidsReaction(
+            enzyme_uniprot = enzyme,
+            reaction_rhea = rec['Rhea ID'],
+            ncbi_tax_id = int(rec['Protein taxon']),
             evidence = evidences.get(rec['Evidence tag ID']),
         )

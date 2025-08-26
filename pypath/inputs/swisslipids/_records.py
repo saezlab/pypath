@@ -22,6 +22,7 @@ import collections
 __all__ = [
     'SwisslipidsEvidence',
     'SwisslipidsLipid',
+    'SwisslipidsReaction',
     'SwisslipidsTissue',
 ]
 
@@ -72,5 +73,16 @@ SwisslipidsEvidence = collections.namedtuple(
         'eco',
         'eco_name',
         'pmid',
+    ]
+)
+
+
+SwisslipidsReaction = collections.namedtuple(
+    'SwisslipidsReaction',
+    [
+        'enzyme_uniprot',
+        'reaction_rhea',
+        'ncbi_tax_id',
+        'evidence',
     ]
 )
