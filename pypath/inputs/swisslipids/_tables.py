@@ -19,7 +19,11 @@
 
 from . import _raw, _records
 
-__all__ = ['swisslipids_lipids']
+__all__ = [
+    'swisslipids_evidences',
+    'swisslipids_lipids',
+    'swisslipids_tissues',
+]
 
 
 def swisslipids_lipids():
@@ -32,7 +36,7 @@ def swisslipids_lipids():
             name = rec['Name'],
             abbreviation = rec['Abbreviation*'],
             synonyms = rec['Synonyms*'],
-            class = rec['Class'],
+            lipid_class = rec['Class'],
             parent = rec['Parent'],
             components = rec['Components*'],
             smiles = rec['SMILES (pH7.3)'],
@@ -46,4 +50,36 @@ def swisslipids_lipids():
             hmdb = rec['HMDB'],
             metanetx = rec['MetaNetX'],
             pmids = rec['PMID'].split(' | '),
+        )
+
+
+def swisslipids_evidences() -> dict[str, _records.SwisslipidsEvidence]:
+
+    result = {}
+
+    for rec in _raw.swisslipids_evidences_raw():
+
+        result[rec['Evidence ID']] = _records.SwisslipidsEvidence(
+            eco = rec['ECO ID'],
+            eco_name = rec['ECO definition'],
+            pmid = rec['PMID ID'],
+        )
+
+    return result
+
+
+def swisslipids_tissues():
+
+    evidences = swisslipids_evidences()
+
+    for rec in _raw.swisslipids_tissues_raw():
+
+        yield _records.SwisslipidsTissue(
+            lipid_id = rec['Lipid ID'],
+            lipid_name = rec['Lipid name'],
+            ncbi_tax_id = rec['Taxon ID'],
+            taxon_name = rec['Taxon scientific name'],
+            tissue_uberon = rec['Tissue/Cell ID'],
+            tissue_name = rec['Tissue/Cell name'],
+            evidence = evidences.get(rec['Evidence tag ID']),
         )

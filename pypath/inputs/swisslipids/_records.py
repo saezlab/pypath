@@ -19,7 +19,11 @@
 
 import collections
 
-__all__ = ['SwisslipidsLipid']
+__all__ = [
+    'SwisslipidsEvidence',
+    'SwisslipidsLipid',
+    'SwisslipidsTissue',
+]
 
 
 SwisslipidsLipid = collections.namedtuple(
@@ -30,7 +34,7 @@ SwisslipidsLipid = collections.namedtuple(
         'name',
         'abbreviation',
         'synonyms',
-        'class',
+        'lipid_class',
         'parent',
         'components',
         'smiles',
@@ -44,5 +48,29 @@ SwisslipidsLipid = collections.namedtuple(
         'hmdb',
         'metanetx',
         'pmids',
+    ]
+)
+
+
+SwisslipidsTissue = collections.namedtuple(
+    'SwisslipidsTissue',
+    [
+        'lipid_id',
+        'lipid_name',
+        'ncbi_tax_id',
+        'taxon_name',
+        'tissue_uberon',
+        'tissue_name',
+        'evidence',
+    ]
+)
+
+
+SwisslipidsEvidence = collections.namedtuple(
+    'SwisslipidsEvidence',
+    [
+        'eco',
+        'eco_name',
+        'pmid',
     ]
 )
