@@ -17,6 +17,29 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from ._lipids import *
-from ._raw import *
-from ._records import *
+import collections
+
+__all__ = [
+    'LipidmapsLipid',
+]
+
+
+LipidmapsLipid = collections.namedtuple(
+    'LipidmapsLipid',
+    [
+        'id',
+        'name',
+        'abbreviation',
+        'formula',
+        'exact_mass',
+        'category',
+        'main_class',
+        'smiles',
+        'inchi',
+        'inchikey',
+        'synonyms',
+        'iupac',
+        'pubchem',
+        'chebi',
+    ]
+)

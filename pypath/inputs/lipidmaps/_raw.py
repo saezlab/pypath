@@ -61,4 +61,4 @@ def lipidmaps_sdf():
 
 def lipidmaps_raw():
 
-    yield from lipidmaps_sdf().iter_records()
+    yield from lipidmaps_sdf()
