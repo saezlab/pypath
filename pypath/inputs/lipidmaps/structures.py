@@ -26,7 +26,13 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 
 
-def sdf():
+__all__ = [
+    'lipidmaps_sdf',
+    'lipidmaps_raw',
+]
+
+
+def lipidmaps_sdf():
     """
     Download and open the SDF file with all LipidMaps (LMSD) structures.
     """
@@ -51,3 +57,8 @@ def sdf():
             'ABBREVIATION': 'abbreviation',
         }
     )
+
+
+def lipidmaps_raw():
+
+    yield from lipidmaps_sdf().iter_records()
