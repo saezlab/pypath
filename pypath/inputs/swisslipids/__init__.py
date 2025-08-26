@@ -24,3 +24,5 @@ https://swisslipids.org/#/downloads
 """
 
 from ._raw import *
+from ._records import *
+from ._tables import *
