@@ -116,5 +116,5 @@ def _swisslipids(
 
 for _dataset in DATASETS.__args__:
 
-    _func_name = f'swisslipids_{_dataset}'
+    _func_name = f'swisslipids_{_dataset}_raw'
     globals()[_func_name] = functools.partial(_swisslipids, dataset = _dataset)
