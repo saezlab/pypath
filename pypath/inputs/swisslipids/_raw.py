@@ -51,7 +51,7 @@ DATASETS = Literal[
     'lipids2uniprot',
     'tissues'
 ]
-__all__ = [f'swisslipids_{_}' for _ in DATASETS.__args__]
+__all__ = [f'swisslipids_{_}_raw' for _ in DATASETS.__args__]
 
 
 def _swisslipids(
