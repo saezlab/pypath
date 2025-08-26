@@ -92,7 +92,7 @@ def _swisslipids(
         compr = None if dataset == 'go' else 'gz',
     )
 
-    lines = (re.sub('\t\\s+', '\t', ll).strip() for ll in c.result)
+    lines = c.result
 
     if return_df:
 
