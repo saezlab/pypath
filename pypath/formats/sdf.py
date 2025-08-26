@@ -637,9 +637,11 @@ class SdfReader(session.Logger):
         Iterates over all records in the SDF file.
         """
 
-        for offset in self.names['id'].values():
+        for offsets in self.names['id'].values():
 
-            yield self.get_record(offset)
+            for offset in offsets:
+
+                yield self.get_record(offset)
 
 
     def iter_obmol(self):
