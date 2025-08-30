@@ -1837,8 +1837,14 @@ urls = {
         'table_s2': 'https://rescued.omnipathdb.org/meixner2020-S2.xlsx',
     },
     'mrclinksdb': {
-        'url':r'https://www.cellknowledge.com.cn/mrclinkdb/download/%s%%20metabolite%%20L-R%%20interaction.txt',
-        'metabolite_cell':'https://www.cellknowledge.com.cn/mrclinkdb/download/Metabolite-cell%20interaction.txt',
+        'url': (
+            'https://www.cellknowledge.com.cn/mrclinkdb/download/'
+            r'%s%%20metabolite%%20L-R%%20interaction.txt'
+        ),
+        'metabolite_cell': (
+            'https://www.cellknowledge.com.cn/mrclinkdb/download/'
+            r'Metabolite-cell%20interaction.txt'
+        ),
     },
 }
 

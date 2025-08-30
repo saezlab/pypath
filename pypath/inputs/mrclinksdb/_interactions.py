@@ -42,7 +42,7 @@ def mrclinksdb_raw(
     ) -> Generator[list, None, None]:
 
     latin_name = taxonomy.ensure_latin_name(organism)
-    url = urls.urls["mrclinksdb"]["url"] % urllib.parse.quote(latin_name)
+    url = urls.urls['mrclinksdb']['url'] % urllib.parse.quote(latin_name)
 
     c = curl.Curl(url, large = True, silent = False)
 
@@ -135,18 +135,12 @@ def mrclinksdb_interaction(
 
 
 def metabolite_cell() -> Generator[Metabolite_cell, None, None]:
-    url = "https://www.cellknowledge.com.cn/mrclinkdb/download/Metabolite-cell%20interaction.txt"
-    c = curl.Curl(url)
-    metabolite_cell = c.result
-    lines = metabolite_cell.strip('\n').split('\n')
-    for line in lines:
-        hmdb_id, metabolite, interaction, cell_type, experimental_subject, disease, effect, _, pubmed_id = line.split(
-            '\t')
-        yield Metabolite_cell(hmdb_id, metabolite, interaction, cell_type, experimental_subject, disease, effect,
-                              pubmed_id)
 
+    url = urls.urls['mrclinksdb']['metabolite_cell']
+    c = curl.Curl(url, large = True, silent = False)
 
+    for line in c.result:
 
+        line = line.split('\t')
 
-
-
+        yield _records.MrclinksdbMetaboliteCell(*line)
