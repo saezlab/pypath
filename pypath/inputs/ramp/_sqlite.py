@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from collections import namedtuple
 from typing import Any
 import os
 import sqlite3
@@ -36,10 +37,14 @@ from ._common import _log, _show_tables
 
 __all__ = [
     'ramp_iter',
+    'ramp_metabo',
     'ramp_sqlite',
     'ramp_show_tables',
     'ramp_list_tables',
     'ramp_raw',
+    'ramp_chemprops',
+    'ramp_metaboclass',
+    'ramp_synonyms',
 ]
 
 
@@ -217,5 +222,157 @@ def ramp_iter(table: str) -> Generator[tuple[Any]]:
     for row in cur:
 
         yield row
+
+    con.close()
+
+def ramp_chemprops() -> Generator[tuple[Any]]:
+    """
+    Retrieve RaMP chemical properties table from its SQLite build. This is required
+    for the omnipath.metabo database build.
+
+    Returns:
+        A generator of namedtuples with the required fields from the RaMP SQLite chem_props table.
+    """
+
+    con = ramp_sqlite()
+    cur = con.cursor()
+
+    cur.execute('''
+                SELECT
+                    ramp_id, 
+                    chem_data_source,
+                    chem_source_id,
+                    iso_smiles,
+                    inchi_key_prefix,
+                    inchi_key,
+                    inchi,
+                    mw,
+                    monoisotop_mass,
+                    common_name,
+                    mol_formula
+                FROM chem_props
+                ''')
+    
+    # extract column names from cursor.description
+    col_names = [desc[0] for desc in cur.description]
+    
+    # create a namedtuple class with the column names
+    chem_props = namedtuple('row_cols', col_names)
+
+    for row in cur:
+
+        yield chem_props(*row)
+
+    con.close()
+
+def ramp_metaboclass() -> Generator[tuple[Any]]:
+    """
+    Retrieve RaMP metabolite classes table from its SQLite build. This is required
+    for the omnipath.metabo database build.
+
+    Returns:
+        A generator of namedtuples with the required fields from the RaMP metabolite_class SQLite table.
+    """
+
+    con = ramp_sqlite()
+    cur = con.cursor()
+
+    cur.execute('''
+                SELECT
+                    chem_props.ramp_id as ramp_id,
+                    iso_smiles,
+                    class_source_id,
+                    class_level_name,
+                    class_name
+                FROM chem_props
+                LEFT JOIN metabolite_class AS mc
+                    ON chem_props.ramp_id = mc.ramp_id
+                ORDER BY iso_smiles
+                ''')
+    # extract column names from cursor.description
+    col_names = [desc[0] for desc in cur.description]
+    
+    # create a namedtuple class with the column names
+    metabolite_class = namedtuple('row_cols', col_names)
+
+    for row in cur:
+
+        yield metabolite_class(*row)
+
+    con.close()
+
+def ramp_synonyms() -> Generator[tuple[Any]]:
+    """
+    Retrieve RaMP synonyms table from its SQLite build. This is required
+    for the omnipath.metabo database build
+
+    Returns:
+        A generator of namedtuples with the required fields from the RaMP analytesynonym SQLite table.
+    """
+
+    con = ramp_sqlite()
+    cur = con.cursor()
+
+    cur.execute('''
+                SELECT
+                    ramp_id as ramp_id,
+                    iso_smiles,
+                    synonym,
+                    syn.source as source
+                FROM chem_props
+                LEFT JOIN analytesynonym AS syn
+                    ON chem_props.ramp_id = syn.rampId
+                WHERE syn.synonym IS NOT NULL
+                ORDER BY iso_smiles
+                ''')
+    
+    # extract column names from cursor.description
+    col_names = [desc[0] for desc in cur.description]
+    
+    # create a namedtuple class with the column names
+    synonyms = namedtuple('row_cols', col_names)
+
+    for row in cur:
+
+        yield synonyms(*row)
+
+    con.close()
+
+def ramp_source() -> Generator[tuple[Any]]:
+    """
+    Retrieve RaMP source table from its SQLite build. This is required
+    for the omnipath.metabo database build
+
+    Returns:
+        A generator of namedtuples with the required fields from the RaMP source SQLite table.
+    """
+
+    con = ramp_sqlite()
+    cur = con.cursor()
+
+    cur.execute('''
+                SELECT
+                    ramp_id,
+                    iso_smiles,
+                    sourceID,
+                    IDtype,
+                    commonName,
+                    priorityHMDBstatus
+                
+                FROM chem_props
+                LEFT JOIN source AS src
+                    ON chem_props.ramp_id = src.rampId
+                ORDER BY iso_smiles
+                ''')
+    
+    # extract column names from cursor.description
+    col_names = [desc[0] for desc in cur.description]
+    
+    # create a namedtuple class with the column names
+    source = namedtuple('row_cols', col_names)
+
+    for row in cur:
+
+        yield source(*row)
 
     con.close()
