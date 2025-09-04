@@ -24,6 +24,7 @@ Preprocessed metabolite data from the Human Metabolome Database.
 """
 
 from typing import TYPE_CHECKING
+from collections import namedtuple
 
 if TYPE_CHECKING:
 
@@ -235,6 +236,26 @@ def mapping(
     )
 
 
+CompoundsForMetabo = namedtuple('CompoundsForMetabo', [
+    'synonyms',
+    'chebi_id',
+    'accession',
+    'pubchem_compound_id',
+    'kegg_id',
+    'drugbank_id',
+    'cas_registry_number',
+    'traditional_iupac',
+    'iupac_name',
+    'monisotopic_molecular_weight',
+    'average_molecular_weight',
+    'chemical_formula',
+    'inchi',
+    'inchikey',
+    'smiles',
+    'general_references',
+])
+
+
 def compounds_for_metabo():
 
     for rec in processed(
@@ -256,4 +277,4 @@ def compounds_for_metabo():
         'general_references',
     ):
 
-        yield rec[0]
+        yield CompoundsForMetabo(*rec[0])
