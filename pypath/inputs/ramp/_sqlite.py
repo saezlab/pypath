@@ -37,7 +37,6 @@ from ._common import _log, _show_tables
 
 __all__ = [
     'ramp_iter',
-    'ramp_metabo',
     'ramp_sqlite',
     'ramp_show_tables',
     'ramp_list_tables',
@@ -45,6 +44,7 @@ __all__ = [
     'ramp_chemprops',
     'ramp_metaboclass',
     'ramp_synonyms',
+    'ramp_source',
 ]
 
 
