@@ -32,6 +32,7 @@ from .metabolites import (
     processed as metabolites_processed,
     table as metabolites_table,
     mapping as metabolites_mapping,
+    compounds_for_metabo,
 )  # noqa: F401
 
 from .proteins import (
