@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import csv
 #
 #  This file is part of the `pypath` python module
 #
@@ -84,3 +84,10 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
                     substrate_name,
                     uniprot_locations.get(transporter_uniprot),
                 )
+
+if __name__ == '__main__':
+    with open("tcdb_substrates.txt","w",newline="",encoding = "utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["transporter_uniprot","substrate_id","substrate_name","location"])
+        for record in tcdb_substrate():
+            writer.writerow(record)
