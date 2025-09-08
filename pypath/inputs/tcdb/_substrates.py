@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import csv
+
 #
 #  This file is part of the `pypath` python module
 #
@@ -20,7 +20,7 @@ import csv
 from collections.abc import Generator
 import collections
 import itertools
-
+import csv
 from pypath.share import curl
 from pypath.resources import urls
 from pypath.inputs import uniprot
@@ -85,9 +85,16 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
                     uniprot_locations.get(transporter_uniprot),
                 )
 
-if __name__ == '__main__':
-    with open("tcdb_substrates.txt","w",newline="",encoding = "utf-8") as f:
+
+if __name__ == "__main__":
+    count = 0
+    with open('tcdb_substrates.csv', 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(["transporter_uniprot","substrate_id","substrate_name","location"])
+        writer.writerow(['transporter_uniprot', 'substrate_id', 'substrate_name', 'location'])
+
         for record in tcdb_substrate():
             writer.writerow(record)
+            count += 1
+
+            if count % 1000 == 0:
+                print(f"finished {count} lines...")
