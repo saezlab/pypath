@@ -255,7 +255,7 @@ def ramp_omnipathmetabo():
 
                 -- sub query to group the synonyms from the analytesynonym table
                 LEFT JOIN (
-                        SELECT rampId,
+                        SELECT DISTINCT rampId,
                                GROUP_CONCAT(synonym, ', ') AS synonyms
                         FROM analytesynonym
                         GROUP BY rampId
@@ -271,7 +271,7 @@ def ramp_omnipathmetabo():
                     ON chem_props.ramp_id = mc.ramp_id
                 -- sub query to group the sources from the source table
                 LEFT JOIN (
-                        SELECT rampId,
+                        SELECT DISTINCT rampId,
                                GROUP_CONCAT(sourceID, ', ') AS sources
                         FROM source
                         GROUP BY rampId
