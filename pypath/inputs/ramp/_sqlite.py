@@ -255,7 +255,7 @@ def ramp_omnipathmetabo():
 
                 -- sub query to group the synonyms from the analytesynonym table
                 LEFT JOIN (
-                        SELECT DISTINCT rampId,
+                        SELECT rampId,
                                GROUP_CONCAT(synonym, ', ') AS synonyms
                         FROM analytesynonym
                         GROUP BY rampId
@@ -263,7 +263,7 @@ def ramp_omnipathmetabo():
                     ON chem_props.ramp_id = syn.rampId
                 -- sub query to group the classes from the metabolite_class table
                 LEFT JOIN (
-                        SELECT DISTINCT ramp_id,
+                        SELECT ramp_id,
                                GROUP_CONCAT(class_source_id || '|' || class_level_name || '|' || class_name, ', ') AS classes
                         FROM metabolite_class
                         GROUP BY ramp_id
@@ -271,16 +271,12 @@ def ramp_omnipathmetabo():
                     ON chem_props.ramp_id = mc.ramp_id
                 -- sub query to group the sources from the source table
                 LEFT JOIN (
-                        SELECT DISTINCT rampId,
+                        SELECT rampId,
                                GROUP_CONCAT(sourceID, ', ') AS sources
                         FROM source
                         GROUP BY rampId
                         ) src
                     ON chem_props.ramp_id = src.rampId
-                
-                GROUP BY 
-                    chem_props.ramp_id,
-                    chem_source_id
                 ORDER BY iso_smiles
                 ''')
     
