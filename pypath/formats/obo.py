@@ -153,19 +153,26 @@ class Obo(session.Logger):
                 else:
                     
                     m = self.retag.match(line)
-                    
+
                     if m:
-                        
+
                         tag, *value = m.groups()
                         tag = self._disallowed_keys.get(tag) or tag
+
+                        # Special handling for 'name' field: concatenate value and modifiers
+                        # because name fields in OBO files are multi-word unquoted strings
+                        # without actual modifiers
+                        if tag == 'name' and value[1]:  # value[1] is modifiers
+                            value = (f"{value[0]} {value[1]}", None, value[2])
+
                         value = OboValue(*value)
-                        
+
                         if tag in self._single_tags_set:
-                            
+
                             self._current_record[tag] = value
-                            
+
                         else:
-                            
+
                             self._current_record['attrs'][tag].add(value)
                 
             elif line[0] == '[':
