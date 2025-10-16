@@ -19,15 +19,9 @@
 
 import collections
 import re
-import zipfile
 from typing import Optional, List, Set, Generator
 
 import pypath.share.common as common
-import pypath.share.curl as curl
-import pypath.share.progress as progress
-import pypath.resources.urls as urls
-import pypath.utils.taxonomy as taxonomy
-from pypath.share.downloads import dm
 
 
 # Named tuple for MITAB 2.8 format (46 columns)
@@ -331,93 +325,10 @@ def mitab_parse_parameters(field: str) -> List[dict]:
     return parameters
 
 
-def mitab_signor(
-    organism: int = 9606,
-) -> Generator[str, None, None]:
-    """
-    Download SIGNOR data in causalTab (MITAB) format using the new download manager.
-
-    Args:
-        organism: NCBI taxonomy ID (9606 for human, 10090 for mouse, 10116 for rat)
-
-    Yields:
-        Lines from the causalTab file as they arrive
-    """
-    if isinstance(organism, int):
-        if organism in taxonomy.taxids:
-            _organism = taxonomy.taxids[organism]
-        else:
-            raise ValueError(f'Unknown organism: {organism}')
-    else:
-        _organism = organism
-
-    if _organism not in {'human', 'rat', 'mouse'}:
-        raise ValueError(f'Organism {_organism} not supported by SIGNOR')
-
-    url = urls.urls['signor']['all_url_new']
-
-    # Download file with POST form data
-    file_path = dm.download(
-        url,
-        filename=f'signor_{_organism}_causalTab.txt',
-        subfolder='signor',
-        query={
-            'organism': _organism,
-            'format': 'causalTab',
-            'submit': 'Download',
-        },
-        post=True,
-    )
-
-    # Read and yield lines from the downloaded file
-    if file_path:
-        with open(file_path, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if line:  # Skip empty lines
-                    yield line
-
-
-def mitab_intact(organism: int = 9606) -> Generator[str, None, None]:
-    """
-    Download IntAct data in PSI-MITAB 2.7 format using the download manager.
-
-    Downloads and extracts zip file, yields lines for low memory usage.
-    The human dataset is ~1 GB compressed, ~8 GB uncompressed.
-
-    Args:
-        organism: NCBI taxonomy ID (9606 for human)
-
-    Yields:
-        Lines from the MITAB file as they are extracted
-    """
-    if organism != 9606:
-        raise ValueError(f'Currently only human (9606) is supported for IntAct')
-
-    url = 'https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/species/human.zip'
-
-    # Download zip file using download manager
-    file_path = dm.download(
-        url,
-        filename='human.zip',
-        subfolder='intact',
-    )
-
-    # Extract the file from the zip
-    with zipfile.ZipFile(file_path) as zf:
-        # Get the first (and likely only) file in the zip
-        filename = zf.namelist()[0]
-
-        # Read and yield lines from the extracted file
-        with zf.open(filename) as f:
-            for line in f:
-                line_str = line.decode('utf-8').strip()
-                if line_str:
-                    yield line_str
 
 
 def mitab_interactions(
-        resource: Optional[str] = None,
+        data: Generator[str, None, None],
         organism: Optional[int] = None,
         only_proteins: bool = False,
         skip_header: bool = True,
@@ -429,8 +340,8 @@ def mitab_interactions(
     Data is streamed line-by-line for low latency and memory usage.
 
     Args:
-        resource: Resource name to download (e.g., "signor")
-        organism: NCBI taxonomy ID to filter interactions (None = no filter, required for resources)
+        data: Generator or iterator of MITAB lines
+        organism: NCBI taxonomy ID to filter interactions (None = no filter)
         only_proteins: Only keep protein-protein interactions
         skip_header: Skip the first line (header)
         columns: Minimum number of columns expected (15, 25, 27, 42, or 46)
@@ -438,20 +349,6 @@ def mitab_interactions(
     Yields:
         MitabInteraction namedtuples with all 46 columns
     """
-
-    # Handle resource input
-    if resource is None:
-        raise ValueError("Must specify 'resource'")
-
-    if organism is None:
-        raise ValueError("'organism' parameter is required when using 'resource'")
-
-    if resource.lower() == 'signor':
-        data = mitab_signor(organism=organism)
-    elif resource.lower() == 'intact':
-        data = mitab_intact(organism=organism)
-    else:
-        raise ValueError(f"Unknown resource: {resource}")
     # Parse lines
     for line_num, line in enumerate(data):
 
