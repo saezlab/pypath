@@ -26,7 +26,7 @@ from download_manager import DownloadManager
 
 
 # Pypath data directory in the workspace
-DATA_DIR = Path(__file__).parent.parent.parent / 'raw_data'
+DATA_DIR = Path(__file__).parent.parent.parent.parent / 'pypath-data'
 
 
 def get_download_manager() -> DownloadManager:
