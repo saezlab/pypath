@@ -71,6 +71,7 @@ def _parse_targets(row: dict) -> Generator[G2PTarget]:
     for org in ('Human', 'Mouse', 'Rat'):
 
         record = G2PTarget(
+            target_id = row['Target id'],
             uniprot = row[f'{org} SwissProt'],
             symbol = row[f'{_constants.NAME_AUTHORITIES[org]} symbol'],
             entrez = row[f'{org} Entrez Gene'],

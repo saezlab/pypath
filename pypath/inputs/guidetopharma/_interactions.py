@@ -79,7 +79,7 @@ def interactions(
             if target is None:
 
                 target = G2PTarget(
-                    *(None,) * 8,
+                    *(None,) * 9,
                     organism = taxonomy.ensure_ncbi_tax_id(row['Target Species']),
                     entity_type = None,
                 )
