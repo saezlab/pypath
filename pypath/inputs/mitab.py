@@ -20,10 +20,7 @@
 import collections
 import re
 import zipfile
-import io
 from typing import Optional, List, Set, Generator
-
-import requests
 
 import pypath.share.common as common
 import pypath.share.curl as curl
@@ -383,9 +380,9 @@ def mitab_signor(
 
 def mitab_intact(organism: int = 9606) -> Generator[str, None, None]:
     """
-    Download IntAct data in PSI-MITAB 2.7 format.
+    Download IntAct data in PSI-MITAB 2.7 format using the download manager.
 
-    Streams zip file, extracts and yields lines for low memory usage.
+    Downloads and extracts zip file, yields lines for low memory usage.
     The human dataset is ~1 GB compressed, ~8 GB uncompressed.
 
     Args:
@@ -399,15 +396,15 @@ def mitab_intact(organism: int = 9606) -> Generator[str, None, None]:
 
     url = 'https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/species/human.zip'
 
-    # Stream the zip file
-    response = requests.get(url, timeout=300, stream=True)
-    response.raise_for_status()
-
-    # Read zip content into memory buffer
-    zip_buffer = io.BytesIO(response.content)
+    # Download zip file using download manager
+    file_path = dm.download(
+        url,
+        filename='human.zip',
+        subfolder='intact',
+    )
 
     # Extract the file from the zip
-    with zipfile.ZipFile(zip_buffer) as zf:
+    with zipfile.ZipFile(file_path) as zf:
         # Get the first (and likely only) file in the zip
         filename = zf.namelist()[0]
 
