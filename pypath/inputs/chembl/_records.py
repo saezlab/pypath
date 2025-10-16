@@ -127,7 +127,9 @@ ChemblMolecule = collections.namedtuple(
         "polymer_flag",
         "helm_notation",
         "molecule_properties",
-        "structure",
+        "canonical_smiles",
+        "inchi",
+        "inchikey",
     ]
 )
 

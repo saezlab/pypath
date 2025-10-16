@@ -35,7 +35,9 @@ def molecule(max_pages: int | None = None) -> Generator[ChemblMolecule]:
             polymer_flag = molecule['polymer_flag'],
             helm_notation = molecule['helm_notation'],
             molecule_properties = molecule_properties,
-            structure = structures,
+            canonical_smiles = structures.canonical_smiles if structures else None,
+            inchi = structures.inchi if structures else None,
+            inchikey = structures.inchi_key if structures else None,
         )
 
 
