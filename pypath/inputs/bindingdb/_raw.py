@@ -2,7 +2,7 @@ from collections.abc import Generator
 import csv
 
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
+from pypath.share.downloads import download_and_open
 from pypath_common import _misc
 
 __all__ = [
@@ -37,16 +37,25 @@ def table(
     url_key = 'mapping' if id_mapping else 'url'
 
     url = urls.urls['bindingdb'][url_key] % dataset
-    c = curl.Curl(url, silent = False, large = True, slow = True)
+
+    # Download and open file using download manager
+    # For zip files, opener.result is a dict like curl.Curl
+    opener = download_and_open(
+        url,
+        filename=f'{dataset}_{"mapping" if id_mapping else "table"}.{"tsv" if id_mapping else "zip"}',
+        subfolder='bindingdb',
+        large=True,
+        encoding='utf-8',
+    )
 
     line_count = 0
 
-    # mapping file is tsv format, table file is zipped
-    file_iterator = c.result if id_mapping else _misc.first(c.result.values())
+    # mapping file is plain tsv, table file is zipped
+    # For zip files, result is dict; for plain files, it's a file handle
+    file_iterator = opener.result if id_mapping else _misc.first(opener.result.values())
+
     for line in csv.DictReader(file_iterator, delimiter = '\t'):
-
         yield line
-
         line_count += 1
         if max_lines is not None and line_count > max_lines:
             break

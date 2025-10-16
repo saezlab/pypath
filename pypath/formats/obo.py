@@ -23,7 +23,7 @@ import collections
 import itertools
 
 import pypath.share.session as session
-import pypath.share.curl as curl
+from pypath.share.downloads import download_and_open
 
 
 
@@ -109,10 +109,26 @@ class Obo(session.Logger):
     
     
     def open(self):
-        
-        self.reader = curl.Curl(self.obofile, silent = True, large = True)
+
+        # Download and open file using download manager if it's a URL
+        if self.obofile.startswith('http://') or self.obofile.startswith('https://'):
+            self.reader = download_and_open(
+                self.obofile,
+                filename=self.obofile.split('/')[-1],
+                subfolder='obo',
+                large=True,
+                encoding='utf-8',
+            )
+        else:
+            # For local files, create a simple object with .result attribute
+            # to match the Opener interface
+            class LocalFileOpener:
+                def __init__(self, filepath):
+                    self.result = open(filepath, 'r')
+            self.reader = LocalFileOpener(self.obofile)
+
         self._in_stanza = False
-        
+
         self._log('OBO reader created, opened `%s`.' % self.obofile)
     
     

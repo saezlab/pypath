@@ -24,7 +24,7 @@ from collections.abc import Generator
 
 import csv
 
-from pypath.share import curl
+from pypath.share.downloads import dm
 from pypath.resources import urls
 
 __all__ = [
@@ -62,8 +62,13 @@ def table(name: TABLES) -> Generator[dict]:
 
     url = urls.urls['gtp']['url'] % name
 
-    c = curl.Curl(url, silent = False, large = True, encoding = 'utf-8')
+    # Download file using download manager
+    file_path = dm.download(
+        url,
+        filename=f'{name}.csv',
+        subfolder='guidetopharma',
+    )
 
-    g2p_version = next(c.result).strip()
-
-    yield from csv.DictReader(c.result)
+    with open(file_path, 'r', encoding='utf-8') as f:
+        g2p_version = next(f).strip()
+        yield from csv.DictReader(f)

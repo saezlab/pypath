@@ -35,7 +35,7 @@ import functools
 import pandas as pd
 
 from pypath_common import _misc
-from pypath.share import curl as _curl
+from pypath.share.downloads import dm
 from pypath.resources import urls as _urls
 from pypath.share import session as _session
 
@@ -84,15 +84,20 @@ def _swisslipids(
     _log(f'Loading SwissLipids dataset `{dataset}`.')
     url = _urls.urls['swisslipids']['url'] % dataset
 
-    c = _curl.Curl(
+    # Download file using download manager
+    file_ext = '.tsv' if dataset == 'go' else '.tsv.gz'
+    file_path = dm.download(
         url,
-        large = True,
-        silent = False,
-        encoding = 'latin-1',
-        compr = None if dataset == 'go' else 'gz',
+        filename=f'{dataset}{file_ext}',
+        subfolder='swisslipids',
     )
 
-    lines = c.result
+    # Open file (handle both compressed and uncompressed)
+    import gzip
+    if dataset == 'go':
+        lines = open(file_path, 'r', encoding='latin-1')
+    else:
+        lines = gzip.open(file_path, 'rt', encoding='latin-1')
 
     if return_df:
 

@@ -21,9 +21,11 @@
 Structures from the LIPID MAPS Structure Database (LMSD).
 """
 
+import zipfile
+
 import pypath.formats.sdf as sdfparser
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
+from pypath.share.downloads import dm
 
 
 __all__ = [
@@ -38,25 +40,27 @@ def lipidmaps_sdf():
     """
 
     url = urls.urls['lipidmaps']['lmsd']
-    c = curl.Curl(
+
+    # Download file using download manager
+    file_path = dm.download(
         url,
-        large = True,
-        silent = False,
-        default_mode = 'rb',
-        compr = 'zip',
-        files_needed = ['structures.sdf'],
+        filename='structures.zip',
+        subfolder='lipidmaps',
     )
 
-    return sdfparser.SdfReader(
-        c.result['structures.sdf'],
-        names = {
-            'HMDB_ID': 'hmdb_id',
-            'PUBCHEM_CID': 'pubchem',
-            'SWISSLIPIDS_ID': 'swisslipids',
-            'LM_ID': 'lipidmaps',
-            'ABBREVIATION': 'abbreviation',
-        }
-    )
+    # Extract and read the SDF file from the zip
+    with zipfile.ZipFile(file_path) as zf:
+        sdf_file = zf.open('structures.sdf')
+        return sdfparser.SdfReader(
+            sdf_file,
+            names = {
+                'HMDB_ID': 'hmdb_id',
+                'PUBCHEM_CID': 'pubchem',
+                'SWISSLIPIDS_ID': 'swisslipids',
+                'LM_ID': 'lipidmaps',
+                'ABBREVIATION': 'abbreviation',
+            }
+        )
 
 
 def lipidmaps_raw():
