@@ -30,6 +30,7 @@ import pypath.share.curl as curl
 import pypath.share.progress as progress
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
+from pypath.share.downloads import dm
 
 
 # Named tuple for MITAB 2.8 format (46 columns)
@@ -333,11 +334,11 @@ def mitab_parse_parameters(field: str) -> List[dict]:
     return parameters
 
 
-def mitab_signor(organism: int = 9606) -> Generator[str, None, None]:
+def mitab_signor(
+    organism: int = 9606,
+) -> Generator[str, None, None]:
     """
-    Download SIGNOR data in causalTab (MITAB) format.
-
-    Streams data line-by-line for low latency and memory usage.
+    Download SIGNOR data in causalTab (MITAB) format using the new download manager.
 
     Args:
         organism: NCBI taxonomy ID (9606 for human, 10090 for mouse, 10116 for rat)
@@ -357,19 +358,27 @@ def mitab_signor(organism: int = 9606) -> Generator[str, None, None]:
         raise ValueError(f'Organism {_organism} not supported by SIGNOR')
 
     url = urls.urls['signor']['all_url_new']
-    data = {
-        'organism': _organism,
-        'format': 'causalTab',
-        'submit': 'Download',
-    }
 
-    # Stream data line-by-line as it arrives
-    response = requests.post(url, data=data, timeout=180, stream=True)
-    response.raise_for_status()
+    # Download file with POST form data
+    file_path = dm.download(
+        url,
+        filename=f'signor_{_organism}_causalTab.txt',
+        subfolder='signor',
+        query={
+            'organism': _organism,
+            'format': 'causalTab',
+            'submit': 'Download',
+        },
+        post=True,
+    )
 
-    for line in response.iter_lines(decode_unicode=True):
-        if line:  # Skip empty lines
-            yield line
+    # Read and yield lines from the downloaded file
+    if file_path:
+        with open(file_path, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line:  # Skip empty lines
+                    yield line
 
 
 def mitab_intact(organism: int = 9606) -> Generator[str, None, None]:
