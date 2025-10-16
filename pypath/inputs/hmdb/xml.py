@@ -23,7 +23,7 @@ import lxml.etree as etree
 
 from pypath.inputs.hmdb.schema.common import XMLNS
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
+from pypath.share.downloads import dm
 
 
 def hmdb_xml(dataset: Literal['metabolites']) -> etree.iterparse:
@@ -37,15 +37,19 @@ def hmdb_xml(dataset: Literal['metabolites']) -> etree.iterparse:
     }
 
     url = urls.urls['hmdb'][dataset]
-    c = curl.Curl(
+
+    # Download file using download manager
+    file_path = dm.download(
         url,
-        large = True,
-        silent = False,
-        slow = True,
-        default_mode = 'rb',
+        filename=f'hmdb_{dataset}.zip',
+        subfolder='hmdb',
     )
 
-    return etree.iterparse(
-        c.result[f'hmdb_{dataset}.xml'],
-        tag = f'{XMLNS}{RECORD_TAGNAMES[dataset]}',
-    )
+    # Open the extracted XML file from the zip
+    import zipfile
+    with zipfile.ZipFile(file_path) as zf:
+        xml_file = zf.open(f'hmdb_{dataset}.xml')
+        return etree.iterparse(
+            xml_file,
+            tag = f'{XMLNS}{RECORD_TAGNAMES[dataset]}',
+        )
