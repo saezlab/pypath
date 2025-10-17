@@ -1,6 +1,8 @@
-import collections
+from __future__ import annotations
 
-all = [
+from typing import NamedTuple
+
+__all__ = [
     "BindingdbInteraction",
     "BindingdbLigand",
     "BindingdbTarget",
@@ -8,56 +10,46 @@ all = [
     "ReactionConstant",
 ]
 
-BindingdbInteraction = collections.namedtuple(
-    "BindingdbInteraction",
-    [
-        "ligand",
-        "target",
-    ],
-)
 
-BindingdbLigand = collections.namedtuple(
-    "BindingdbLigand",
-    [
-        "name",
-        "smiles",
-        "inchi",
-        "inchi_key",
-        "pubchem",
-    ]
-)
+class BindingdbLigand(NamedTuple):
+    """BindingDB ligand record."""
+    name: str | None = None
+    smiles: str | None = None
+    inchi: str | None = None
+    inchi_key: str | None = None
+    pubchem: str | None = None
 
-BindingdbTarget = collections.namedtuple(
-    "BindingdbTarget",
-    [
-        "name",
-        "organism",
-        "ncbi_tax_id",
-        "uniprot",
-        "regions_mutations",
-    ]
-)
 
-AllostericRegulation = collections.namedtuple(
-    'AllostericRegulation',
-    [
-        'action',
-        'compound',
-        'organism',
-        'protein',
-        'id_type',
-        'wrong_ec',
-        'pubmeds',
-        'reaction_constants',
-    ]
-)
+class BindingdbTarget(NamedTuple):
+    """BindingDB target record."""
+    name: str | None = None
+    organism: str | None = None
+    ncbi_tax_id: int | None = None
+    uniprot: str | None = None
+    regions_mutations: list[list[str]] | None = None
 
-ReactionConstant = collections.namedtuple(
-    'ReactionConstant',
-    [
-        'type',
-        'value',
-        'conditions',
-        'pubmeds',
-    ]
-)
+
+class BindingdbInteraction(NamedTuple):
+    """BindingDB interaction record."""
+    ligand: BindingdbLigand
+    target: BindingdbTarget
+
+
+class ReactionConstant(NamedTuple):
+    """Reaction constant for allosteric regulation."""
+    type: str | None = None
+    value: str | None = None
+    conditions: str | None = None
+    pubmeds: list[str] | None = None
+
+
+class AllostericRegulation(NamedTuple):
+    """Allosteric regulation record."""
+    action: str | None = None
+    compound: str | None = None
+    organism: str | None = None
+    protein: str | None = None
+    id_type: str | None = None
+    wrong_ec: str | None = None
+    pubmeds: list[str] | None = None
+    reaction_constants: list[ReactionConstant] | None = None

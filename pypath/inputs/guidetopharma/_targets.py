@@ -22,7 +22,7 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.utils import taxonomy
-from ._records import G2PTarget
+from ._records import G2PTarget, clean_dict
 from . import _raw
 from . import _constants
 
@@ -67,6 +67,8 @@ def _parse_targets(row: dict) -> Generator[G2PTarget]:
     Returns:
         A G2PTarget object.
     """
+
+    row = clean_dict(row)
 
     for org in ('Human', 'Mouse', 'Rat'):
 

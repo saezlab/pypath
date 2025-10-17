@@ -19,93 +19,64 @@
 
 from __future__ import annotations
 
-import collections
+from typing import NamedTuple
 
 __all__ = [
     'G2PInteraction',
     'G2PLigand',
     'G2PTarget',
+    'clean_dict',
 ]
 
-
-def _record_factory(
-        name: str,
-        fields: list[str],
-        defaults: tuple = (),
-    ) -> collections.namedtuple:
-
-    RecordBase = collections.namedtuple(name, fields)
-    RecordBase.__new__.__defaults__ = defaults
-
-    class Record(RecordBase):
-
-        def __new__(cls, *args, **kwargs):
-            """
-            Makes sure empty strings are converted to `None`.
-            """
-
-            args = [arg if arg != '' else None for arg in args]
-            kwargs = {k: (v if v != '' else None) for k, v in kwargs.items()}
-
-            return super().__new__(cls, *args, **kwargs)
-
-    return Record
+def clean_dict(d: dict) -> dict:
+    """Return a new dict with empty strings converted to None."""
+    return {k: (None if v == '' else v) for k, v in d.items()}
 
 
-G2PInteraction = _record_factory(
-    "G2PInteraction",
-    [
-        "ligand",
-        "target",
-        "action",
-        "action_type",
-        "is_stimulation",
-        "is_inhibition",
-        "endogenous",
-        "affinity_high",
-        "affinity_low",
-        "affinity_median",
-        "affinity_units",
-        "primary_target",
-        "pubmed",
-    ],
-)
-
-G2PLigand = _record_factory(
-    "G2PLigand",
-    [
-        "ligand_id",
-        "name",
-        "uniprot",
-        "pubchem",
-        "iupac",
-        "chembl",
-        "smiles",
-        "inchi",
-        "organism",
-        "entity_type",
-        "subtype",
-        "role",
-    ],
-    ('ligand',),
-)
+class G2PLigand(NamedTuple):
+    """Guide to Pharmacology ligand record."""
+    ligand_id: str | None = None
+    name: str | None = None
+    uniprot: str | None = None
+    pubchem: str | None = None
+    iupac: str | None = None
+    chembl: str | None = None
+    smiles: str | None = None
+    inchi: str | None = None
+    organism: str | None = None
+    entity_type: str | None = 'ligand'
+    subtype: str | None = None
+    role: str | None = None
 
 
-G2PTarget = _record_factory(
-    "G2PTarget",
-    [ 
-        "target_id",
-        "uniprot",
-        "symbol",
-        "entrez",
-        "ensembl",
-        "refseq",
-        "refseqp",
-        "family",
-        "target_type",
-        "organism",
-        "entity_type",
-        "role",
-    ],
-    ('target',),
-)
+class G2PTarget(NamedTuple):
+    """Guide to Pharmacology target record."""
+    target_id: str | None = None
+    uniprot: str | None = None
+    symbol: str | None = None
+    entrez: str | None = None
+    ensembl: str | None = None
+    refseq: str | None = None
+    refseqp: str | None = None
+    family: str | None = None
+    target_type: str | None = None
+    organism: str | None = None
+    entity_type: str | None = 'target'
+    role: str | None = None
+
+
+class G2PInteraction(NamedTuple):
+    """Guide to Pharmacology interaction record."""
+    ligand: G2PLigand | None
+    target: G2PTarget
+    action: str | None = None
+    action_type: str | None = None
+    is_stimulation: bool | None = None
+    is_inhibition: bool | None = None
+    endogenous: bool | None = None
+    affinity_high: str | None = None
+    affinity_low: str | None = None
+    affinity_median: str | None = None
+    affinity_units: str | None = None
+    primary_target: str | None = None
+    pubmed: str | None = None

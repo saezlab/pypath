@@ -17,65 +17,62 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import collections
+from __future__ import annotations
+
 import re
-from typing import Optional, List, Set, Generator
+from typing import Optional, List, Set, Generator, NamedTuple
 
 import pypath.share.common as common
 
 
-# Named tuple for MITAB 2.8 format (46 columns)
-MitabInteraction = collections.namedtuple(
-    'MitabInteraction',
-    [
-        'id_a',                          # 1. Unique identifier for interactor A
-        'id_b',                          # 2. Unique identifier for interactor B
-        'alt_ids_a',                     # 3. Alternative identifier for interactor A
-        'alt_ids_b',                     # 4. Alternative identifier for interactor B
-        'aliases_a',                     # 5. Aliases for A
-        'aliases_b',                     # 6. Aliases for B
-        'detection_methods',             # 7. Interaction detection methods
-        'first_author',                  # 8. First author
-        'pmids',                         # 9. Publication identifier(s)
-        'taxid_a',                       # 10. NCBI Taxonomy identifier for interactor A
-        'taxid_b',                       # 11. NCBI Taxonomy identifier for interactor B
-        'interaction_types',             # 12. Interaction types
-        'source_dbs',                    # 13. Source databases
-        'interaction_ids',               # 14. Interaction identifier(s)
-        'confidence_scores',             # 15. Confidence score
-        'complex_expansion',             # 16. Complex expansion
-        'biological_role_a',             # 17. Biological role A
-        'biological_role_b',             # 18. Biological role B
-        'experimental_role_a',           # 19. Experimental role A
-        'experimental_role_b',           # 20. Experimental role B
-        'interactor_type_a',             # 21. Interactor type A
-        'interactor_type_b',             # 22. Interactor type B
-        'xrefs_a',                       # 23. Xref for interactor A
-        'xrefs_b',                       # 24. Xref for interactor B
-        'xrefs_interaction',             # 25. Xref for interaction
-        'annotations_a',                 # 26. Annotations for interactor A
-        'annotations_b',                 # 27. Annotations for interactor B
-        'annotations_interaction',       # 28. Annotations for interaction
-        'host_organism',                 # 29. Host organism
-        'parameters',                    # 30. Parameters
-        'creation_date',                 # 31. Creation date
-        'update_date',                   # 32. Update date
-        'checksum_a',                    # 33. Checksum for interactor A
-        'checksum_b',                    # 34. Checksum for interactor B
-        'checksum_interaction',          # 35. Checksum for interaction
-        'negative',                      # 36. Negative
-        'features_a',                    # 37. Features for interactor A
-        'features_b',                    # 38. Features for interactor B
-        'stoichiometry_a',               # 39. Stoichiometry for interactor A
-        'stoichiometry_b',               # 40. Stoichiometry for interactor B
-        'identification_method_a',       # 41. Participant identification method for interactor A
-        'identification_method_b',       # 42. Participant identification method for interactor B
-        'biological_effect_a',           # 43. Biological effect of interactor A
-        'biological_effect_b',           # 44. Biological effect of interactor B
-        'causal_regulatory_mechanism',   # 45. Causal regulatory mechanism
-        'causal_statement',              # 46. Causal statement
-    ]
-)
+class MitabInteraction(NamedTuple):
+    """MITAB 2.8 format interaction record (46 columns)."""
+    id_a: str  # 1. Unique identifier for interactor A
+    id_b: str  # 2. Unique identifier for interactor B
+    alt_ids_a: str  # 3. Alternative identifier for interactor A
+    alt_ids_b: str  # 4. Alternative identifier for interactor B
+    aliases_a: str  # 5. Aliases for A
+    aliases_b: str  # 6. Aliases for B
+    detection_methods: str  # 7. Interaction detection methods
+    first_author: str  # 8. First author
+    pmids: str  # 9. Publication identifier(s)
+    taxid_a: str  # 10. NCBI Taxonomy identifier for interactor A
+    taxid_b: str  # 11. NCBI Taxonomy identifier for interactor B
+    interaction_types: str  # 12. Interaction types
+    source_dbs: str  # 13. Source databases
+    interaction_ids: str  # 14. Interaction identifier(s)
+    confidence_scores: str  # 15. Confidence score
+    complex_expansion: str  # 16. Complex expansion
+    biological_role_a: str  # 17. Biological role A
+    biological_role_b: str  # 18. Biological role B
+    experimental_role_a: str  # 19. Experimental role A
+    experimental_role_b: str  # 20. Experimental role B
+    interactor_type_a: str  # 21. Interactor type A
+    interactor_type_b: str  # 22. Interactor type B
+    xrefs_a: str  # 23. Xref for interactor A
+    xrefs_b: str  # 24. Xref for interactor B
+    xrefs_interaction: str  # 25. Xref for interaction
+    annotations_a: str  # 26. Annotations for interactor A
+    annotations_b: str  # 27. Annotations for interactor B
+    annotations_interaction: str  # 28. Annotations for interaction
+    host_organism: str  # 29. Host organism
+    parameters: str  # 30. Parameters
+    creation_date: str  # 31. Creation date
+    update_date: str  # 32. Update date
+    checksum_a: str  # 33. Checksum for interactor A
+    checksum_b: str  # 34. Checksum for interactor B
+    checksum_interaction: str  # 35. Checksum for interaction
+    negative: str  # 36. Negative
+    features_a: str  # 37. Features for interactor A
+    features_b: str  # 38. Features for interactor B
+    stoichiometry_a: str  # 39. Stoichiometry for interactor A
+    stoichiometry_b: str  # 40. Stoichiometry for interactor B
+    identification_method_a: str  # 41. Participant identification method for interactor A
+    identification_method_b: str  # 42. Participant identification method for interactor B
+    biological_effect_a: str  # 43. Biological effect of interactor A
+    biological_effect_b: str  # 44. Biological effect of interactor B
+    causal_regulatory_mechanism: str  # 45. Causal regulatory mechanism
+    causal_statement: str  # 46. Causal statement
 
 
 def mitab_field_list(field):

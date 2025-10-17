@@ -21,7 +21,7 @@ from collections.abc import Generator
 import pypath_common._constants as _const
 from pypath.utils import taxonomy
 from . import _ligands, _targets, _raw
-from ._records import G2PInteraction, G2PTarget
+from ._records import G2PInteraction, G2PTarget, clean_dict
 from ._constants import POSITIVE_REGULATION, NEGATIVE_REGULATION
 
 __all__ = [
@@ -32,7 +32,7 @@ __all__ = [
 def interactions(
         organism: str | int | None = "human",
         endogenous: bool | None = None,
-    ) -> Generator[tuple]:
+    ) -> Generator[G2PInteraction]:
     """
     Interactions from Guide to Pharmacology.
 
@@ -59,6 +59,7 @@ def interactions(
 
     for row in _raw.table('interactions'):
 
+        row = clean_dict(row)
         _endogenous = row['Endogenous'].lower() == 'true'
 
         if endogenous is not None and endogenous != _endogenous:
