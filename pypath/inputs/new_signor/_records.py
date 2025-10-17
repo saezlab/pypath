@@ -19,7 +19,7 @@
 
 from __future__ import annotations
 
-import collections
+from typing import NamedTuple
 
 __all__ = [
     'SignorComplex',
@@ -29,22 +29,29 @@ __all__ = [
 ]
 
 
-SignorComplex = collections.namedtuple(
-    'SignorComplex',
-    ['complex_id', 'name', 'components']
-)
+class SignorComplex(NamedTuple):
+    """SIGNOR complex record."""
+    complex_id: str | None = None
+    name: str | None = None
+    components: list[str] | None = None
 
-SignorProteinFamily = collections.namedtuple(
-    'SignorProteinFamily',
-    ['family_id', 'name', 'members']
-)
 
-SignorPhenotype = collections.namedtuple(
-    'SignorPhenotype',
-    ['phenotype_id', 'name', 'description']
-)
+class SignorProteinFamily(NamedTuple):
+    """SIGNOR protein family record."""
+    family_id: str | None = None
+    name: str | None = None
+    members: list[str] | None = None
 
-SignorStimulus = collections.namedtuple(
-    'SignorStimulus',
-    ['stimulus_id', 'name', 'description']
-)
+
+class SignorPhenotype(NamedTuple):
+    """SIGNOR phenotype record."""
+    phenotype_id: str | None = None
+    name: str | None = None
+    description: str | None = None
+
+
+class SignorStimulus(NamedTuple):
+    """SIGNOR stimulus record."""
+    stimulus_id: str | None = None
+    name: str | None = None
+    description: str | None = None

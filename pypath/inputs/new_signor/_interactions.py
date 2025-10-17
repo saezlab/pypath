@@ -24,6 +24,7 @@ from collections.abc import Generator
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
 from pypath.share.downloads import dm
+from ..mitab import MitabInteraction
 
 __all__ = [
     'signor_interactions_raw',
@@ -78,7 +79,7 @@ def signor_interactions_raw(organism: int = 9606) -> Generator[str]:
 
 def signor_interactions(
     organism: int = 9606,
-) -> Generator:
+) -> Generator[MitabInteraction, None, None]:
     """
     Download and parse SIGNOR interactions in causalTab format.
 

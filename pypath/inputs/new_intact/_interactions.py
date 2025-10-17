@@ -27,6 +27,7 @@ from collections.abc import Generator
 
 from pypath.share.downloads import download_and_open
 from pypath.inputs import mitab
+from pypath.inputs.mitab import MitabInteraction
 
 __all__ = [
     'intact_interactions_raw',
@@ -34,7 +35,7 @@ __all__ = [
 ]
 
 
-def intact_interactions_raw(organism: int = 9606) -> Generator[str]:
+def intact_interactions_raw(organism: int = 9606) -> Generator[str, None, None]:
     """
     Download IntAct interaction data in PSI-MITAB 2.7 format.
 
@@ -70,8 +71,7 @@ def intact_interactions_raw(organism: int = 9606) -> Generator[str]:
 
 def intact_interactions(
     organism: int = 9606,
-    raw_records: bool = False,
-) -> Generator:
+) -> Generator[MitabInteraction, None, None]:
     """
     Download and parse IntAct interactions in MITAB format.
 
@@ -83,13 +83,9 @@ def intact_interactions(
         Interaction records (raw or parsed)
     """
     data = intact_interactions_raw(organism=organism)
-
-    if raw_records:
-        yield from data
-    else:
-        # Parse using mitab utilities
-        yield from mitab.mitab_interactions(
-            data=data,
-            organism=organism,
-            skip_header=True,
-        )
+    # Parse using mitab utilities
+    yield from mitab.mitab_interactions(
+        data=data,
+        organism=organism,
+        skip_header=True,
+    )

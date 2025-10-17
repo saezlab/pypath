@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import pypath_common._constants as _const
 from pypath.utils import taxonomy
-from ._records import G2PLigand
+from ._records import G2PLigand, clean_dict
 from . import _raw
 
 __all__ = [
@@ -64,6 +64,8 @@ def _parse_ligand(row: dict) -> G2PLigand:
         A G2PLigand object.
     """
 
+    row = clean_dict(row)
+
     record = G2PLigand(
         ligand_id = row['Ligand ID'],
         name = row['Name'],
@@ -72,7 +74,7 @@ def _parse_ligand(row: dict) -> G2PLigand:
         inchi = row['InChI'],
         smiles = row['SMILES'],
         iupac = row['IUPAC name'],
-        chembl  =  row['ChEMBL ID'],
+        chembl = row['ChEMBL ID'],
         organism = (
             taxonomy.ensure_ncbi_tax_id(row['Species']) or
             _const.NOT_ORGANISM_SPECIFIC
