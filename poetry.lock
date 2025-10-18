@@ -525,20 +525,17 @@ optional = false
 python-versions = "^3.9"
 groups = ["main"]
 files = []
-develop = false
+develop = true
 
 [package.dependencies]
-cachemanager = {git = "https://github.com/saezlab/cache-manager.git", branch = "main"}
 certifi = "^2024.7.4"
 pycurl = "^7.45.3"
 requests = "^2.32.3"
 toml = "*"
 
 [package.source]
-type = "git"
-url = "https://github.com/saezlab/download-manager.git"
-reference = "main"
-resolved_reference = "bc1a365d2d4d1e14318c01dde593231164a8d0f4"
+type = "directory"
+url = "../download-manager"
 
 [[package]]
 name = "epam-indigo"
@@ -2255,4 +2252,4 @@ pathophenodb = ["sparqlwrapper"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "031214ed39b2642fe186a4e9a9cd6dd9f8690c6eb58dc6888d624e6d89c6955f"
+content-hash = "80993f6ffa4095710fbe5e3f3b131fd34dc8b7714d2610615a789300cc41ba51"
