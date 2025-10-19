@@ -17,8 +17,9 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from typing import Literal
-from collections.abc import Generator
+from typing import Literal, Generator, Optional
+import sqlite3
+from chembl_downloader import chembl_downloader
 
 import json
 
@@ -90,3 +91,44 @@ def json_pages(data_type: DATA,
         page_count += 1
         if max_pages and page_count >= max_pages:
             break
+
+def query_chembl_data(
+    table_name: str,
+    chembl_version: str = "latest"
+) -> Generator[dict, None, None]:
+    """
+    Retrieves all data from a specified table in the ChEMBL database.
+
+    This function uses chembl_downloader to fetch a specific version of the
+    ChEMBL SQLite database, queries the specified table, and yields each
+    row as a dictionary.
+
+    Args:
+        table_name (str): The name of the table to retrieve data from
+                          (e.g., 'molecule_dictionary', 'activities').
+        chembl_version (str): The ChEMBL version to use for reproducibility.
+                              Defaults to 'latest'.
+
+    Yields:
+        dict: A dictionary representing a row from the table.
+    """
+    # Ensure the specified (or latest) version of the database is downloaded
+    if chembl_version == "latest":
+        # Let the library determine the latest version
+        sqlite_path = chembl_downloader.download_sqlite()
+    else:
+        sqlite_path = chembl_downloader.download_sqlite(version=chembl_version)
+
+    # Connect to the database
+    with chembl_downloader.connect(sqlite_path) as connection:
+        # Use sqlite3.Row as the row_factory to get dict-like rows
+        connection.row_factory = sqlite3.Row
+        cursor = connection.cursor()
+
+        # Construct and execute the SQL query
+        query = f"SELECT * FROM {table_name};"
+        cursor.execute(query)
+
+        # Yield each row as a dictionary
+        for row in cursor:
+            yield dict(row)
