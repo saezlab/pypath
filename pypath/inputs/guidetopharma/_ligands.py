@@ -65,6 +65,7 @@ def _parse_ligand(row: dict) -> G2PLigand:
     """
 
     record = G2PLigand(
+        ligand_id = row['Ligand ID'],
         name = row['Name'],
         uniprot = row['UniProt ID'],
         pubchem = row['PubChem CID'],

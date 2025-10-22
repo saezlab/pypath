@@ -56,7 +56,7 @@ def interactions(dataset: str = 'All',
                 name = name,
                 organism = organism,
                 ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism),
-                uniprot = uniprot_mapping.get(record['Target Name'], [None])[0], #TODO : create regex split to access all uniprots
+                uniprot = uniprot_mapping.get(name, [None])[0], #TODO : create regex split to access all uniprots
                 regions_mutations = [x.strip('[]').split(',') for x in regions_mutations.split('/')],
             ),
         )

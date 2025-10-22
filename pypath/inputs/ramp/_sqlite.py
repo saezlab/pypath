@@ -242,7 +242,6 @@ def ramp_omnipathmetabo():
                     chem_data_source,
                     chem_source_id,
                     iso_smiles,
-                    inchi_key_prefix,
                     inchi_key,
                     inchi,
                     mw,
@@ -264,7 +263,7 @@ def ramp_omnipathmetabo():
                     ON chem_props.ramp_id = syn.rampId
                 -- sub query to group the classes from the metabolite_class table
                 LEFT JOIN (
-                        SELECT DISTINCT ramp_id,
+                        SELECT ramp_id,
                                GROUP_CONCAT(class_source_id || '|' || class_level_name || '|' || class_name, ', ') AS classes
                         FROM metabolite_class
                         GROUP BY ramp_id
@@ -278,10 +277,6 @@ def ramp_omnipathmetabo():
                         GROUP BY rampId
                         ) src
                     ON chem_props.ramp_id = src.rampId
-                
-                GROUP BY 
-                    chem_props.ramp_id,
-                    chem_source_id
                 ORDER BY iso_smiles
                 ''')
     

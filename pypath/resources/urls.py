@@ -1374,6 +1374,10 @@ urls = {
         'mapping': 'https://proconsortium.org/download/current/'
             'promapping.txt',
     },
+        'psimi': {
+        'label': 'PSI-MI Molecular Interaction Ontology',
+        'url': 'https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/refs/heads/master/psi-mi.obo',
+    },
     'genecards': {
         'label': (
             'GeneCards provides a comprehensive summary about the function, '

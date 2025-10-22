@@ -74,6 +74,7 @@ G2PInteraction = _record_factory(
 G2PLigand = _record_factory(
     "G2PLigand",
     [
+        "ligand_id",
         "name",
         "uniprot",
         "pubchem",
@@ -92,7 +93,8 @@ G2PLigand = _record_factory(
 
 G2PTarget = _record_factory(
     "G2PTarget",
-    [
+    [ 
+        "target_id",
         "uniprot",
         "symbol",
         "entrez",
