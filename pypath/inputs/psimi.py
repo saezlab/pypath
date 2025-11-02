@@ -17,25 +17,22 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import collections
+from typing import List, Optional, NamedTuple
 
 import pypath.resources.urls as urls
 import pypath.formats.obo as obo
 
 
-PsimiRecord = collections.namedtuple(
-    'PsimiRecord',
-    [
-        'id',
-        'name',
-        'definition',
-        'definition_refs',
-        'parent_ids',
-        'parent_names',
-        'synonyms',
-        'alt_ids',
-    ]
-)
+class PsimiRecord(NamedTuple):
+    """PSI-MI ontology term record."""
+    id: str
+    name: Optional[str]
+    definition: Optional[str]
+    definition_refs: Optional[str]  # Format: "[PMID:12345,PMID:67890]"
+    parent_ids: Optional[List[str]]
+    parent_names: Optional[List[str]]
+    synonyms: Optional[List[str]]
+    alt_ids: Optional[List[str]]
 
 
 def psimi_ontology(flatten=True):
@@ -43,21 +40,21 @@ def psimi_ontology(flatten=True):
     Downloads and parses the PSI-MI (Molecular Interaction) ontology.
 
     Args:
-        flatten: If True, returns flattened named tuples with pipe-separated
-            values. If False, returns raw OBO records.
+        flatten: If True, returns flattened PsimiRecord named tuples.
+            If False, returns raw OBO records.
 
     Returns:
-        An iterator of named tuples representing PSI-MI ontology terms.
+        An iterator of PsimiRecord named tuples representing PSI-MI ontology terms.
 
         When flatten=True, each record contains:
         - id: The PSI-MI identifier (e.g., 'MI:0001')
         - name: The term name
         - definition: The term definition text
-        - definition_refs: References for the definition (pipe-separated)
-        - parent_ids: Parent term IDs from is_a relationships (pipe-separated)
-        - parent_names: Parent term names (pipe-separated)
-        - synonyms: Synonym texts (pipe-separated)
-        - alt_ids: Alternative IDs (pipe-separated)
+        - definition_refs: References for the definition (e.g., "[PMID:12345,PMID:67890]")
+        - parent_ids: List of parent term IDs from is_a relationships
+        - parent_names: List of parent term names
+        - synonyms: List of synonym texts
+        - alt_ids: List of alternative IDs
     """
 
     url = urls.urls['psimi']['url']
@@ -72,8 +69,8 @@ def psimi_ontology(flatten=True):
 
 def _flatten_obo_record(record):
     """
-    Flatten OBO record for storage in tabular format.
-    Lists and sets are converted to pipe-separated strings.
+    Flatten OBO record for easier consumption.
+    Returns structured data with lists instead of pipe-separated strings.
     """
 
     # Extract basic fields
@@ -92,19 +89,19 @@ def _flatten_obo_record(record):
     parent_names = None
     if 'is_a' in record.attrs:
         parents = list(record.attrs['is_a'])
-        parent_ids = '|'.join(p.value for p in parents)
-        parent_names = '|'.join(p.comment for p in parents if p.comment)
+        parent_ids = [p.value for p in parents]
+        parent_names = [p.comment for p in parents if p.comment]
 
     # Extract synonyms
     synonyms = None
     if 'synonym' in record.attrs:
         synonym_list = list(record.attrs['synonym'])
-        synonyms = '|'.join(s.value for s in synonym_list)
+        synonyms = [s.value for s in synonym_list]
 
     # Extract alternative IDs
     alt_ids = None
     if 'alt_id' in record.attrs:
-        alt_ids = '|'.join(a.value for a in record.attrs['alt_id'])
+        alt_ids = [a.value for a in record.attrs['alt_id']]
 
     return PsimiRecord(
         id=term_id,
