@@ -30,21 +30,7 @@ __all__ = [
 ]
 
 # UniProt REST API URL for comprehensive protein data
-UNIPROT_DATA_URL = (
-    'https://rest.uniprot.org/uniprotkb/stream?'
-    'compressed=true&'
-    'fields=accession%2Cid%2Cprotein_name%2Clength%2Cmass%2Csequence%2C'
-    'gene_primary%2Cgene_synonym%2Corganism_id%2Ccc_disease%2Cft_mutagen%2C'
-    'cc_subcellular_location%2Ccc_ptm%2Clit_pubmed_id%2Ccc_function%2C'
-    'xref_ensembl%2Cxref_kegg%2Ccc_pathway%2Ccc_activity_regulation%2C'
-    'keyword%2Cec%2Cgo%2Cft_transmem%2Cprotein_families%2Cxref_refseq%2C'
-    'xref_alphafolddb%2Cxref_pdb%2Cxref_chembl%2Cxref_phosphositeplus%2C'
-    'xref_signor%2Cxref_pathwaycommons%2Cxref_intact%2Cxref_biogrid%2C'
-    'xref_complexportal&'
-    'format=tsv&'
-    'query=%28%28taxonomy_id%3A9606%29+OR+%28taxonomy_id%3A10090%29+'
-    'OR+%28taxonomy_id%3A10116%29%29+AND+%28reviewed%3Atrue%29'
-)
+UNIPROT_DATA_URL = "https://rest.uniprot.org/uniprotkb/stream?compressed=true&fields=accession,id,protein_name,length,mass,sequence,gene_primary,gene_synonym,organism_id,cc_disease,ft_mutagen,cc_subcellular_location,cc_ptm,lit_pubmed_id,cc_function,xref_ensembl,xref_kegg,cc_pathway,cc_activity_regulation,keywordid,ec,go_id,ft_transmem,protein_families,xref_refseq,xref_alphafolddb,xref_pdb,xref_chembl,xref_phosphositeplus,xref_signor,xref_pathwaycommons,xref_intact,xref_biogrid,xref_complexportal&format=tsv&query=(taxonomy_id:9606 OR taxonomy_id:10090 OR taxonomy_id:10116) AND reviewed:true"
 
 
 def uniprot_data(organism: int | list[int] | None = None) -> Generator[UniProtRecord]:
@@ -98,6 +84,13 @@ def uniprot_data(organism: int | list[int] | None = None) -> Generator[UniProtRe
                         return None
                 return value
 
+            # Helper function to split semicolon-separated values
+            def get_list_field(field_name: str):
+                value = row.get(field_name, '').strip()
+                if not value or value == '':
+                    return None
+                return [item.strip() for item in value.split(';') if item.strip()]
+
             yield UniProtRecord(
                 accession=get_field('Entry'),
                 entry_name=get_field('Entry Name'),
@@ -118,9 +111,9 @@ def uniprot_data(organism: int | list[int] | None = None) -> Generator[UniProtRe
                 xref_kegg=get_field('KEGG'),
                 cc_pathway=get_field('Pathway'),
                 cc_activity_regulation=get_field('Activity regulation'),
-                keyword=get_field('Keywords'),
                 ec=get_field('EC number'),
-                go=get_field('Gene Ontology IDs'),
+                keyword=get_list_field('Keywords IDs'),
+                go=get_list_field('Gene Ontology IDs'),
                 ft_transmem=get_field('Transmembrane'),
                 protein_families=get_field('Protein families'),
                 xref_refseq=get_field('RefSeq'),
