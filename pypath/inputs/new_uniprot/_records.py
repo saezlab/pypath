@@ -47,9 +47,9 @@ class UniProtRecord(NamedTuple):
     xref_kegg: str | None = None
     cc_pathway: str | None = None
     cc_activity_regulation: str | None = None
-    keyword: str | None = None
+    keyword: list[str] | None = None
     ec: str | None = None
-    go: str | None = None
+    go: list[str] | None = None
     ft_transmem: str | None = None
     protein_families: str | None = None
     xref_refseq: str | None = None
