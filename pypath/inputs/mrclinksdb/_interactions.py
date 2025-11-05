@@ -87,12 +87,22 @@ def mrclinksdb_interaction(
         if '_' in (uniprot_id := rec.receptor_uniprot_id):
 
             uniprots = uniprot_id.split('_')
-            location = sorted(set.union(*(
+
+            all_locs = [
                 loc
                 for u in uniprots
-                if (loc := uniprot_locations.get(u))
-            )))
+                if (loc := uniprot_locations.get(u)) is not None and loc
+            ]
 
+            if all_locs:
+                combined = set.union(*all_locs)
+                filtered = [item for item in combined if item is not None]
+                try:
+                    location = sorted(filtered)
+                except TypeError:
+                    location = filtered
+            else:
+                location = []
 
             uniprot_id = intera.Complex(
                 components = sorted(uniprots),
@@ -101,10 +111,21 @@ def mrclinksdb_interaction(
             )
 
         else:
+            loc = uniprot_locations.get(uniprot_id)
+            if loc is None or not loc:
+                location = []
+            else:
+                filtered = [item for item in loc if item is not None]
+                try:
+                    location = sorted(filtered)
+                except TypeError:
+                    location = filtered
 
-            location = uniprot_locations.get(uniprot_id)
+        #pubchem, pubchem_sid = rec.pubchem_cid_sid.split(';')
+        parts = rec.pubchem_cid_sid.split(';')
+        pubchem = parts[0] if parts else ''
+        pubchem_sid = parts[1] if len(parts) > 1 else ''
 
-        pubchem, pubchem_sid = rec.pubchem_cid_sid.split(';')
         pubmeds = (
             sorted(
                 p.strip()
