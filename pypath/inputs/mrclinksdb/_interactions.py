@@ -134,7 +134,7 @@ def mrclinksdb_interaction(
         )
 
 
-def metabolite_cell() -> Generator[_records.MrclinksdbMetaboliteCell, None, None]:
+def mrclinksdb_metabolite_cell() -> Generator[_records.MrclinksdbMetaboliteCell, None, None]:
 
     url = urls.urls['mrclinksdb']['metabolite_cell']
     c = curl.Curl(url, large = True, silent = False)
