@@ -91,16 +91,14 @@ def mrclinksdb_interaction(
             all_locs = [
                 loc
                 for u in uniprots
-                if (loc := uniprot_locations.get(u)) is not None and loc
+                if (loc := uniprot_locations.get(u))
             ]
 
             if all_locs:
-                combined = set.union(*all_locs)
-                filtered = [item for item in combined if item is not None]
                 try:
-                    location = sorted(filtered)
+                    location = sorted([item for item in set.union(*all_locs) if item is not None])
                 except TypeError:
-                    location = filtered
+                    location = [item for item in set.union(*all_locs) if item is not None]
             else:
                 location = []
 
