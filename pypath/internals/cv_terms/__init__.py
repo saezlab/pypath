@@ -1,0 +1,107 @@
+"""Controlled vocabulary terms for the OmniPath build system.
+
+This package provides structured controlled vocabularies (CV) organized by topic,
+with support for metadata like definitions and source URLs. All CV terms are based
+on either PSI-MI standard accessions or OmniPath-specific OM accessions.
+
+The CV terms are organized into logical modules:
+- entities: Entity types and identifier namespaces
+- roles: Biological roles, experimental roles, and membership relationships
+- interactions: Interaction types, detection methods, causal effects and mechanisms
+- references: Reference types and curation metadata
+- licenses: License and update frequency terms
+
+Usage:
+    from omnipath_build.utils.cv_terms import EntityTypeCv, BiologicalRoleCv
+
+    # Access as string (accession value)
+    print(EntityTypeCv.PROTEIN)  # "MI:0326"
+
+    # Access metadata
+    print(EntityTypeCv.PROTEIN.definition)  # "Protein molecule or polypeptide chain"
+    print(EntityTypeCv.PROTEIN.source)      # None (or URL if available)
+
+Accession Ranges:
+    PSI-MI standard terms: MI:XXXX
+    OmniPath entity types: OM:0010-0099
+    OmniPath identifiers: OM:0001-0009 (specialized), OM:0100-0209 (databases/names)
+    OmniPath membership roles: OM:0300-0399
+    OmniPath update categories: OM:0401-0499
+    OmniPath curation: OM:0400-0499
+    OmniPath licenses: OM:0501-0599
+"""
+
+from typing import Union
+
+from .core import CvEnum
+from .entities import EntityTypeCv, IdentifierNamespaceCv
+from .roles import (
+    MembershipRoleCv,
+    BiologicalRoleCv,
+    ExperimentalRoleCv,
+    IdentificationMethodCv,
+)
+from .interactions import (
+    InteractionTypeCv,
+    DetectionMethodCv,
+    BiologicalEffectCv,
+    CausalMechanismCv,
+    CausalStatementCv,
+    ComplexExpansionCv,
+)
+from .references import ReferenceTypeCv, CurationCv
+from .licenses import LicenseCV, UpdateCategoryCV
+
+__all__ = [
+    # Core
+    'CvEnum',
+
+    # Entity-related
+    'EntityTypeCv',
+    'IdentifierNamespaceCv',
+
+    # Role-related
+    'MembershipRoleCv',
+    'BiologicalRoleCv',
+    'ExperimentalRoleCv',
+    'IdentificationMethodCv',
+
+    # Interaction-related
+    'InteractionTypeCv',
+    'DetectionMethodCv',
+    'BiologicalEffectCv',
+    'CausalMechanismCv',
+    'CausalStatementCv',
+    'ComplexExpansionCv',
+
+    # Reference and curation
+    'ReferenceTypeCv',
+    'CurationCv',
+
+    # Licenses and metadata
+    'LicenseCV',
+    'UpdateCategoryCV',
+
+    # Type unions
+    'AnnotationTypeCv',
+]
+
+
+# Type alias for all CV terms that can be used in annotations
+# This maintains backward compatibility with the original cv_term_enums.py
+AnnotationTypeCv = Union[
+    BiologicalRoleCv,
+    ExperimentalRoleCv,
+    IdentificationMethodCv,
+    BiologicalEffectCv,
+    InteractionTypeCv,
+    DetectionMethodCv,
+    CausalMechanismCv,
+    CausalStatementCv,
+    ComplexExpansionCv,
+    EntityTypeCv,
+    IdentifierNamespaceCv,
+    MembershipRoleCv,
+    ReferenceTypeCv,
+    CurationCv,
+]
