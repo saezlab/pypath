@@ -4,10 +4,44 @@ This module provides the CvEnum base class that extends Python's Enum to include
 metadata like definitions and source URLs while maintaining string behavior for
 easy integration with existing code.
 """
-from enum import Enum
+from enum import Enum, EnumMeta
+from typing import Any
+
+_NON_MEMBER_ATTRIBUTES = {'parent_cv_term'}
 
 
-class CvEnum(str, Enum):
+class CvEnumMeta(EnumMeta):
+    """Enum metaclass that preserves metadata attributes without creating members."""
+
+    def __new__(  # type: ignore[override]
+        metacls,
+        cls: str,
+        bases: tuple[type, ...],
+        classdict: dict[str, Any],
+        **kwds: Any,
+    ):
+        metadata: dict[str, Any] = {}
+        member_names = getattr(classdict, '_member_names', None)
+
+        for name in _NON_MEMBER_ATTRIBUTES:
+            if name in classdict:
+                metadata[name] = classdict[name]
+                del classdict[name]
+                if member_names and name in member_names:
+                    member_names.pop(name, None)
+
+        enum_cls = super().__new__(metacls, cls, bases, classdict, **kwds)
+
+        for name in _NON_MEMBER_ATTRIBUTES:
+            value = metadata.get(name)
+            if value is None and hasattr(enum_cls, name):
+                value = getattr(enum_cls, name)
+            setattr(enum_cls, name, value)
+
+        return enum_cls
+
+
+class CvEnum(str, Enum, metaclass=CvEnumMeta):
     """Base class for controlled vocabularies with metadata.
 
     This class allows CV terms to behave as strings (for their accession values)
@@ -35,9 +69,6 @@ class CvEnum(str, Enum):
         print(MyCV.TERM_NAME.source)      # "https://source.url"
         print(MyCV.parent_cv_term)        # "MI:XXXX"
     """
-
-    # Class attribute to store parent CV term (to be overridden by subclasses)
-    parent_cv_term: str | None = None
 
     def __new__(
         cls,

@@ -28,15 +28,6 @@ __all__ = [
     'SOURCE_SCHEMA',
 ]
 
-
-class DownloadConfig(NamedTuple):
-    """ Configuration for source database downloads."""
-
-    url: str  # Download URL
-    method: str  # e.g. 'http', 'ftp', 's3', 'api'
-    additional_params: dict | None = None  # e.g. headers, auth, etc.
-
-
 class Identifier(NamedTuple):
     """An identifier with its type."""
 
@@ -71,7 +62,6 @@ class Resource(NamedTuple):
 
     id: str  # e.g. 'uniprot'
     name: str  # e.g. 'UniProt'
-    download_config: DownloadConfig
     license: LicenseCV
     update_category: UpdateCategoryCV
     
