@@ -2,7 +2,9 @@
 
 This package provides structured controlled vocabularies (CV) organized by topic,
 with support for metadata like definitions and source URLs. All CV terms are based
-on either PSI-MI standard accessions or OmniPath-specific OM accessions.
+on either PSI-MI standard accessions or OmniPath-specific OM accessions. PSI-MI
+terms only store their accession values here—their explanations and links are
+resolved from the MI ontology at runtime.
 
 The CV terms are organized into logical modules:
 - entities: Entity types and identifier namespaces
@@ -17,9 +19,9 @@ Usage:
     # Access as string (accession value)
     print(EntityTypeCv.PROTEIN)  # "MI:0326"
 
-    # Access metadata
-    print(EntityTypeCv.PROTEIN.definition)  # "Protein molecule or polypeptide chain"
-    print(EntityTypeCv.PROTEIN.source)      # None (or URL if available)
+    # Access metadata (available for OmniPath-specific terms)
+    print(EntityTypeCv.PROTEIN_FAMILY.definition)  # "Protein family grouping related proteins"
+    print(IdentifierNamespaceCv.PDB.source)        # "https://www.rcsb.org"
 
 Accession Ranges:
     PSI-MI standard terms: MI:XXXX
