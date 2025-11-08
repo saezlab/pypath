@@ -24,7 +24,7 @@ This module defines the Resource metadata for SIGNOR according to the
 schema defined in pypath.internals.silver_schema.
 """
 
-from pypath.internals.silver_schema import Resource, DownloadConfig
+from pypath.internals.silver_schema import Resource
 from omnipath_build.utils.cv_terms import LicenseCV, UpdateCategoryCV
 
 __all__ = ['SIGNOR_RESOURCE']
@@ -33,14 +33,6 @@ __all__ = ['SIGNOR_RESOURCE']
 SIGNOR_RESOURCE = Resource(
     id='signor',
     name='SIGNOR',
-    download_config=DownloadConfig(
-        url='https://signor.uniroma2.it/downloads/',
-        method='http',
-        additional_params={
-            'post_required': 'true',
-            'format': 'causalTab',
-        },
-    ),
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     publication='PMID:31665520',  # SIGNOR 2.0 paper

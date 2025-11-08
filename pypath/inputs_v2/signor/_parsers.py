@@ -28,13 +28,81 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-from pypath.internals.silver_schema import Entity, Identifier, Annotation, Membership
+from pypath.internals.silver_schema import Entity as SilverEntity
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv
+from ..tabular_builder import (
+    Annotations,
+    Column,
+    Entity as EntitySchema,
+    Entities as MemberEntities,
+    Identifiers,
+    Members,
+)
 from ._download import (
     download_complexes,
     download_protein_families,
     download_phenotypes,
     download_stimuli,
+)
+
+SIGNOR_COMPLEX_SCHEMA = EntitySchema(
+    source='signor',
+    entity_type=EntityTypeCv.PROTEIN_COMPLEX,
+    identifiers=Identifiers(
+        Column('complex_id', cv=IdentifierNamespaceCv.SIGNOR),
+        Column('name', cv=IdentifierNamespaceCv.NAME),
+    ),
+    members=Members(
+        MemberEntities(
+            entity_type=EntityTypeCv.PROTEIN,
+            entity_source='signor',
+            identifiers=Identifiers(
+                Column('components', cv=IdentifierNamespaceCv.UNIPROT),
+            ),
+        )
+    ),
+)
+
+SIGNOR_PROTEIN_FAMILY_SCHEMA = EntitySchema(
+    source='signor',
+    entity_type=EntityTypeCv.PROTEIN_FAMILY,
+    identifiers=Identifiers(
+        Column('family_id', cv=IdentifierNamespaceCv.SIGNOR),
+        Column('name', cv=IdentifierNamespaceCv.NAME),
+    ),
+    members=Members(
+        MemberEntities(
+            entity_type=EntityTypeCv.PROTEIN,
+            entity_source='signor',
+            identifiers=Identifiers(
+                Column('members', cv=IdentifierNamespaceCv.UNIPROT),
+            ),
+        )
+    ),
+)
+
+SIGNOR_PHENOTYPE_SCHEMA = EntitySchema(
+    source='signor',
+    entity_type=EntityTypeCv.PHENOTYPE,
+    identifiers=Identifiers(
+        Column('phenotype_id', cv=IdentifierNamespaceCv.SIGNOR),
+        Column('name', cv=IdentifierNamespaceCv.NAME),
+    ),
+    annotations=Annotations(
+        Column('description', cv=IdentifierNamespaceCv.SYNONYM),
+    ),
+)
+
+SIGNOR_STIMULUS_SCHEMA = EntitySchema(
+    source='signor',
+    entity_type=EntityTypeCv.STIMULUS,
+    identifiers=Identifiers(
+        Column('stimulus_id', cv=IdentifierNamespaceCv.SIGNOR),
+        Column('name', cv=IdentifierNamespaceCv.NAME),
+    ),
+    annotations=Annotations(
+        Column('description', cv=IdentifierNamespaceCv.SYNONYM),
+    ),
 )
 
 __all__ = [
@@ -45,7 +113,7 @@ __all__ = [
 ]
 
 
-def signor_complexes() -> Generator[Entity]:
+def signor_complexes() -> Generator[SilverEntity]:
     """
     Download and parse SIGNOR complex data as Entity records.
 
@@ -53,44 +121,12 @@ def signor_complexes() -> Generator[Entity]:
         Entity records with type PROTEIN_COMPLEX, containing member proteins
     """
     for row in download_complexes():
-        # Skip if we don't have at least one identifier
-        if not row['complex_id']:
-            continue
-
-        # Build identifiers
-        identifiers = [
-            Identifier(type=IdentifierNamespaceCv.SIGNOR, value=row['complex_id'])
-        ]
-        if row['name']:
-            identifiers.append(
-                Identifier(type=IdentifierNamespaceCv.NAME, value=row['name'])
-            )
-
-        # Build member entities (proteins in the complex)
-        members = []
-        for component_id in row.get('components', []):
-            if component_id:  # Skip empty component IDs
-                member_entity = Entity(
-                    source='signor',
-                    type=EntityTypeCv.PROTEIN,
-                    identifiers=[
-                        Identifier(
-                            type=IdentifierNamespaceCv.UNIPROT,
-                            value=component_id
-                        )
-                    ],
-                )
-                members.append(Membership(member=member_entity))
-
-        yield Entity(
-            source='signor',
-            type=EntityTypeCv.PROTEIN_COMPLEX,
-            identifiers=identifiers,
-            members=members if members else None,
-        )
+        entity = SIGNOR_COMPLEX_SCHEMA(row)
+        if entity:
+            yield entity
 
 
-def signor_protein_families() -> Generator[Entity]:
+def signor_protein_families() -> Generator[SilverEntity]:
     """
     Download and parse SIGNOR protein family data as Entity records.
 
@@ -98,44 +134,12 @@ def signor_protein_families() -> Generator[Entity]:
         Entity records with type PROTEIN_FAMILY, containing member proteins
     """
     for row in download_protein_families():
-        # Skip if we don't have at least one identifier
-        if not row['family_id']:
-            continue
-
-        # Build identifiers
-        identifiers = [
-            Identifier(type=IdentifierNamespaceCv.SIGNOR, value=row['family_id'])
-        ]
-        if row['name']:
-            identifiers.append(
-                Identifier(type=IdentifierNamespaceCv.NAME, value=row['name'])
-            )
-
-        # Build member entities (proteins in the family)
-        members = []
-        for member_id in row.get('members', []):
-            if member_id:  # Skip empty member IDs
-                member_entity = Entity(
-                    source='signor',
-                    type=EntityTypeCv.PROTEIN,
-                    identifiers=[
-                        Identifier(
-                            type=IdentifierNamespaceCv.UNIPROT,
-                            value=member_id
-                        )
-                    ],
-                )
-                members.append(Membership(member=member_entity))
-
-        yield Entity(
-            source='signor',
-            type=EntityTypeCv.PROTEIN_FAMILY,
-            identifiers=identifiers,
-            members=members if members else None,
-        )
+        entity = SIGNOR_PROTEIN_FAMILY_SCHEMA(row)
+        if entity:
+            yield entity
 
 
-def signor_phenotypes() -> Generator[Entity]:
+def signor_phenotypes() -> Generator[SilverEntity]:
     """
     Download and parse SIGNOR phenotype data as Entity records.
 
@@ -143,40 +147,12 @@ def signor_phenotypes() -> Generator[Entity]:
         Entity records with type PHENOTYPE
     """
     for row in download_phenotypes():
-        # Skip if we don't have at least one identifier
-        if not row['phenotype_id']:
-            continue
-
-        # Build identifiers
-        identifiers = [
-            Identifier(type=IdentifierNamespaceCv.SIGNOR, value=row['phenotype_id'])
-        ]
-        if row['name']:
-            identifiers.append(
-                Identifier(type=IdentifierNamespaceCv.NAME, value=row['name'])
-            )
-
-        # Build annotations (description as annotation)
-        annotations = []
-        if row.get('description'):
-            # Store description as a generic annotation
-            # Note: We'd need a CV term for "description" - using NAME as synonym for now
-            annotations.append(
-                Annotation(
-                    term=IdentifierNamespaceCv.SYNONYM,
-                    value=row['description']
-                )
-            )
-
-        yield Entity(
-            source='signor',
-            type=EntityTypeCv.PHENOTYPE,
-            identifiers=identifiers,
-            annotations=annotations if annotations else None,
-        )
+        entity = SIGNOR_PHENOTYPE_SCHEMA(row)
+        if entity:
+            yield entity
 
 
-def signor_stimuli() -> Generator[Entity]:
+def signor_stimuli() -> Generator[SilverEntity]:
     """
     Download and parse SIGNOR stimulus data as Entity records.
 
@@ -184,33 +160,6 @@ def signor_stimuli() -> Generator[Entity]:
         Entity records with type STIMULUS
     """
     for row in download_stimuli():
-        # Skip if we don't have at least one identifier
-        if not row['stimulus_id']:
-            continue
-
-        # Build identifiers
-        identifiers = [
-            Identifier(type=IdentifierNamespaceCv.SIGNOR, value=row['stimulus_id'])
-        ]
-        if row['name']:
-            identifiers.append(
-                Identifier(type=IdentifierNamespaceCv.NAME, value=row['name'])
-            )
-
-        # Build annotations (description as annotation)
-        annotations = []
-        if row.get('description'):
-            # Store description as a generic annotation TODO FIX: We'd need a CV term for "description" - using NAME as synonym for now
-            annotations.append(
-                Annotation(
-                    term=IdentifierNamespaceCv.SYNONYM,
-                    value=row['description']
-                )
-            )
-
-        yield Entity(
-            source='signor',
-            type=EntityTypeCv.STIMULUS,
-            identifiers=identifiers,
-            annotations=annotations if annotations else None,
-        )
+        entity = SIGNOR_STIMULUS_SCHEMA(row)
+        if entity:
+            yield entity
