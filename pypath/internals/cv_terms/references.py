@@ -13,11 +13,13 @@ class ReferenceTypeCv(CvEnum):
     (e.g., PubMed, DOI, preprint servers).
     """
 
+    parent_cv_term = "MI:0444"  # database citation - Database citation list names of databases commonly used to cross reference interaction data
+
     # PSI-MI standard reference types
-    PUBMED = ("MI:0446", "PubMed database identifier", "https://pubmed.ncbi.nlm.nih.gov")
-    PUBMED_CENTRAL = ("MI:1042", "PubMed Central database identifier", "https://www.ncbi.nlm.nih.gov/pmc")
-    DOI = ("MI:0574", "Digital Object Identifier", "https://www.doi.org")
-    BIORXIV = ("MI:2347", "bioRxiv preprint server", "https://www.biorxiv.org")
+    PUBMED = "MI:0446"
+    PUBMED_CENTRAL = "MI:1042"
+    DOI = "MI:0574"
+    BIORXIV = "MI:2347"
 
 
 class CurationCv(CvEnum):
@@ -27,14 +29,13 @@ class CurationCv(CvEnum):
     supporting evidence for interactions and entities.
     """
 
+    parent_cv_term = ("OM:0400", "Curation term - Describes the results of a curation process and supporting evidence for interactions and entities.")  # OmniPath-specific term - no PSI-MI parent
+
     # OmniPath curation terms (OM:0400-0499 range)
     EVIDENCE_SENTENCE = (
-        "OM:0400",
+        "OM:0401",
         "Sentence or text excerpt from literature supporting the interaction or annotation"
     )
 
     # PSI-MI standard curation terms
-    COMMENT = (
-        "MI:0612",
-        "General comment, remark, or additional note from curator"
-    )
+    COMMENT = "MI:0612"

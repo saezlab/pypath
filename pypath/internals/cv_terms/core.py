@@ -13,8 +13,18 @@ class CvEnum(str, Enum):
     This class allows CV terms to behave as strings (for their accession values)
     while also carrying additional metadata like definitions and source URLs.
 
+    Each CvEnum subclass can define a parent_cv_term class attribute that represents
+    the parent term in the PSI-MI ontology hierarchy.
+
+    Enum members can be provided either as plain strings (for terms where metadata
+    comes from an external ontology, e.g. PSI-MI) or as tuples containing the
+    accession followed by an optional definition and optional source URL (for
+    OmniPath-specific extensions).
+
     Usage:
         class MyCV(CvEnum):
+            parent_cv_term = "MI:XXXX"  # Parent term in PSI-MI ontology
+
             TERM_NAME = ("ACC:0001", "Definition of the term", "https://source.url")
 
         # Access as string
@@ -23,7 +33,11 @@ class CvEnum(str, Enum):
         # Access metadata
         print(MyCV.TERM_NAME.definition)  # "Definition of the term"
         print(MyCV.TERM_NAME.source)      # "https://source.url"
+        print(MyCV.parent_cv_term)        # "MI:XXXX"
     """
+
+    # Class attribute to store parent CV term (to be overridden by subclasses)
+    parent_cv_term: str | None = None
 
     def __new__(
         cls,

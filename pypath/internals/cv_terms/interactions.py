@@ -14,13 +14,15 @@ class InteractionTypeCv(CvEnum):
     (e.g., physical binding, functional association, enzymatic reaction).
     """
 
+    parent_cv_term = "MI:0190"  # interaction type - Connection between molecule
+
     # PSI-MI standard interaction types
-    COLOCALIZATION = ("MI:0403", "Entities found in the same cellular location")
-    FUNCTIONAL_ASSOCIATION = ("MI:2286", "Functional relationship without direct physical contact")
-    PHYSICAL_ASSOCIATION = ("MI:0915", "Physical interaction or binding")
-    DIRECT_INTERACTION = ("MI:0407", "Direct physical interaction between entities")
-    PHOSPHORYLATION_REACTION = ("MI:0217", "Phosphorylation enzymatic reaction")
-    PHENOTYPE_RESULT = ("MI:2283", "Interaction resulting in a phenotypic effect")
+    COLOCALIZATION = "MI:0403"
+    FUNCTIONAL_ASSOCIATION = "MI:2286"
+    PHYSICAL_ASSOCIATION = "MI:0915"
+    DIRECT_INTERACTION = "MI:0407"
+    PHOSPHORYLATION_REACTION = "MI:0217"
+    PHENOTYPE_RESULT = "MI:2283"
 
 
 class DetectionMethodCv(CvEnum):
@@ -30,11 +32,13 @@ class DetectionMethodCv(CvEnum):
     an interaction between entities.
     """
 
+    parent_cv_term = "MI:0001"  # interaction detection method - Method to determine the interaction
+
     # PSI-MI standard detection methods
-    AFFINITY_CHROMATOGRAPHY = ("MI:0004", "Affinity chromatography technique")
-    COIMMUNOPRECIPITATION = ("MI:0019", "Co-immunoprecipitation experiment")
-    PULL_DOWN = ("MI:0096", "Pull-down assay")
-    INFERRED_BY_CURATOR = ("MI:0364", "Interaction inferred by manual curation")
+    AFFINITY_CHROMATOGRAPHY = "MI:0004"
+    COIMMUNOPRECIPITATION = "MI:0019"
+    PULL_DOWN = "MI:0096"
+    INFERRED_BY_CURATOR = "MI:0364"
 
 
 class BiologicalEffectCv(CvEnum):
@@ -44,11 +48,13 @@ class BiologicalEffectCv(CvEnum):
     target entity (e.g., increase or decrease in activity or quantity).
     """
 
+    parent_cv_term = "MI:2233"  # causal interaction - Binary causative relationships between biological entities
+
     # PSI-MI standard biological effects
-    UP_REGULATES_ACTIVITY = ("MI:2236", "Increases the activity of the target")
-    DOWN_REGULATES_ACTIVITY = ("MI:2241", "Decreases the activity of the target")
-    UP_REGULATES_QUANTITY = ("MI:2237", "Increases the quantity or abundance of the target")
-    DOWN_REGULATES_QUANTITY = ("MI:2242", "Decreases the quantity or abundance of the target")
+    UP_REGULATES_ACTIVITY = "MI:2236"
+    DOWN_REGULATES_ACTIVITY = "MI:2241"
+    UP_REGULATES_QUANTITY = "MI:2237"
+    DOWN_REGULATES_QUANTITY = "MI:2242"
 
 
 class CausalMechanismCv(CvEnum):
@@ -58,10 +64,12 @@ class CausalMechanismCv(CvEnum):
     (e.g., transcriptional regulation, post-translational modification).
     """
 
+    parent_cv_term = "MI:2233"  # causal interaction - Binary causative relationships between biological entities
+
     # PSI-MI standard causal mechanisms
-    TRANSCRIPTIONAL_REGULATION = ("MI:2247", "Regulation at the transcriptional level")
-    TRANSLATION_REGULATION = ("MI:2248", "Regulation at the translational level")
-    POST_TRANSLATIONAL_REGULATION = ("MI:2249", "Regulation by post-translational modification")
+    TRANSCRIPTIONAL_REGULATION = "MI:2247"
+    TRANSLATION_REGULATION = "MI:2248"
+    POST_TRANSLATIONAL_REGULATION = "MI:2249"
 
 
 class CausalStatementCv(CvEnum):
@@ -71,31 +79,21 @@ class CausalStatementCv(CvEnum):
     with the specific mechanism or target (activity, quantity, stability, expression).
     """
 
+    parent_cv_term = "MI:2234"  # causal statement - The effect of modulator entity A on a modulated entity B
+
     # Down-regulation terms
-    DOWN_REGULATES = ("MI:2240", "Decreases or inhibits the target (generic)")
-    DOWN_REGULATES_ACTIVITY = ("MI:2241", "Decreases the activity of the target")
-    DOWN_REGULATES_QUANTITY = ("MI:2242", "Decreases the quantity of the target")
-    DOWN_REGULATES_QUANTITY_BY_DESTABLIZATION = (
-        "MI:2244",
-        "Decreases quantity by destabilizing the target"
-    )
-    DOWN_REGULATES_QUANTITY_BY_REPRESSION = (
-        "MI:2243",
-        "Decreases quantity by repressing expression"
-    )
+    DOWN_REGULATES = "MI:2240"
+    DOWN_REGULATES_ACTIVITY = "MI:2241"
+    DOWN_REGULATES_QUANTITY = "MI:2242"
+    DOWN_REGULATES_QUANTITY_BY_DESTABLIZATION = "MI:2244"
+    DOWN_REGULATES_QUANTITY_BY_REPRESSION = "MI:2243"
 
     # Up-regulation terms
-    UP_REGULATES = ("MI:2235", "Increases or activates the target (generic)")
-    UP_REGULATES_ACTIVITY = ("MI:2236", "Increases the activity of the target")
-    UP_REGULATES_QUANTITY = ("MI:2237", "Increases the quantity of the target")
-    UP_REGULATES_QUANTITY_BY_EXPRESSION = (
-        "MI:2238",
-        "Increases quantity by promoting expression"
-    )
-    UP_REGULATES_QUANTITY_BY_STABILIZATION = (
-        "MI:2239",
-        "Increases quantity by stabilizing the target"
-    )
+    UP_REGULATES = "MI:2235"
+    UP_REGULATES_ACTIVITY = "MI:2236"
+    UP_REGULATES_QUANTITY = "MI:2237"
+    UP_REGULATES_QUANTITY_BY_EXPRESSION = "MI:2238"
+    UP_REGULATES_QUANTITY_BY_STABILIZATION = "MI:2239"
 
 
 class ComplexExpansionCv(CvEnum):
@@ -105,16 +103,9 @@ class ComplexExpansionCv(CvEnum):
     for analysis and representation purposes.
     """
 
+    parent_cv_term = "MI:1059"  # complex expansion - The method by which complex n-ary data is expanded into binary data
+
     # PSI-MI standard complex expansion methods
-    BIPARTITE_EXPANSION = (
-        "MI:1062",
-        "Expand complex into bait-prey binary interactions"
-    )
-    MATRIX_EXPANSION = (
-        "MI:1061",
-        "Expand complex into all possible pairwise interactions"
-    )
-    SPOKE_EXPANSION = (
-        "MI:1060",
-        "Expand complex into hub-spoke topology"
-    )
+    BIPARTITE_EXPANSION = "MI:1062"
+    MATRIX_EXPANSION = "MI:1061"
+    SPOKE_EXPANSION = "MI:1060"

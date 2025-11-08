@@ -13,14 +13,16 @@ class EntityTypeCv(CvEnum):
     including standard PSI-MI types and OmniPath-specific extensions.
     """
 
+    parent_cv_term = "MI:0313"  # interactor type - Molecular species involved in the interaction
+
     # PSI-MI standard terms
-    PROTEIN = ("MI:0326", "Protein molecule or polypeptide chain")
-    GENE = ("MI:0250", "Gene entity or genetic locus")
-    RNA = ("MI:0320", "RNA molecule including mRNA, ncRNA, etc.")
-    PROTEIN_COMPLEX = ("MI:0315", "Complex of multiple protein subunits")
-    SMALL_MOLECULE = ("MI:0328", "Small chemical compound or drug")
-    PHENOTYPE = ("MI:2261", "Phenotypic effect or observable trait")
-    STIMULUS = ("MI:2260", "External stimulus or experimental condition")
+    PROTEIN = "MI:0326"
+    GENE = "MI:0250"
+    RNA = "MI:0320"
+    PROTEIN_COMPLEX = "MI:0315"
+    SMALL_MOLECULE = "MI:0328"
+    PHENOTYPE = "MI:2261"
+    STIMULUS = "MI:2260"
 
     # OmniPath-specific terms (OM:0010-0099 range)
     PROTEIN_FAMILY = ("OM:0010", "Protein family grouping related proteins")
@@ -36,23 +38,25 @@ class IdentifierNamespaceCv(CvEnum):
     Organized by category: proteins/genes, compounds, structures, and names.
     """
 
+    parent_cv_term = "MI:0444"  # database citation - Database citation list names of databases commonly used to cross reference interaction data
+
     # Protein and gene identifiers (PSI-MI standard)
-    UNIPROT = ("MI:1097", "UniProt protein accession", "https://www.uniprot.org")
-    ENTREZ = ("MI:0477", "NCBI Entrez Gene ID", "https://www.ncbi.nlm.nih.gov/gene")
-    ENSEMBL = ("MI:0476", "Ensembl gene/transcript/protein ID", "https://www.ensembl.org")
-    HGNC = ("MI:1095", "HUGO Gene Nomenclature Committee ID", "https://www.genenames.org")
-    REFSEQ = ("MI:0481", "NCBI RefSeq accession", "https://www.ncbi.nlm.nih.gov/refseq")
+    UNIPROT = "MI:1097"
+    ENTREZ = "MI:0477"
+    ENSEMBL = "MI:0476"
+    HGNC = "MI:1095"
+    REFSEQ = "MI:0481"
 
     # Compound identifiers (PSI-MI standard)
-    CHEBI = ("MI:0474", "Chemical Entities of Biological Interest ID", "https://www.ebi.ac.uk/chebi")
-    PUBCHEM = ("MI:0730", "PubChem database identifier", "https://pubchem.ncbi.nlm.nih.gov")
-    CHEMBL = ("MI:1349", "ChEMBL database identifier", "https://www.ebi.ac.uk/chembl")
-    CHEMBL_COMPOUND = ("MI:0967", "ChEMBL compound ID", "https://www.ebi.ac.uk/chembl")
-    CHEMBL_TARGET = ("MI:1348", "ChEMBL target ID", "https://www.ebi.ac.uk/chembl")
-    DRUGBANK = ("MI:2002", "DrugBank database identifier", "https://www.drugbank.ca")
-    KEGG = ("MI:0470", "KEGG database identifier", "https://www.genome.jp/kegg")
-    KEGG_COMPOUND = ("MI:2012", "KEGG Compound ID", "https://www.genome.jp/kegg/compound")
-    CAS = ("MI:2011", "Chemical Abstracts Service Registry Number", "https://www.cas.org")
+    CHEBI = "MI:0474"
+    PUBCHEM = "MI:0730"
+    CHEMBL = "MI:1349"
+    CHEMBL_COMPOUND = "MI:0967"
+    CHEMBL_TARGET = "MI:1348"
+    DRUGBANK = "MI:2002"
+    KEGG = "MI:0470"
+    KEGG_COMPOUND = "MI:2012"
+    CAS = "MI:2011"
 
     # Structure and interaction databases (OM:0100-0199 range)
     PDB = ("OM:0101", "Protein Data Bank identifier", "https://www.rcsb.org")
@@ -81,6 +85,6 @@ class IdentifierNamespaceCv(CvEnum):
     NCBI_TAX_ID = ("OM:0205", "NCBI Taxonomy database ID", "https://www.ncbi.nlm.nih.gov/taxonomy")
 
     # Structure representations (PSI-MI standard)
-    SMILES = ("MI:0239", "Simplified Molecular Input Line Entry System")
-    STANDARD_INCHI_KEY = ("MI:1101", "IUPAC International Chemical Identifier InChIKey")
-    STANDARD_INCHI = ("MI:2010", "IUPAC International Chemical Identifier InChI")
+    SMILES = "MI:0239"
+    STANDARD_INCHI_KEY = "MI:1101"
+    STANDARD_INCHI = "MI:2010"
