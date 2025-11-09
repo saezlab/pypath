@@ -38,6 +38,7 @@ from ..tabular_builder import (
     Entities as MemberEntities,
     Identifiers,
     Members,
+    Entities
 )
 import csv
 from pypath.internals.silver_schema import Resource
@@ -215,3 +216,83 @@ def signor_stimuli() -> Generator[SilverEntity]:
     # Parse and yield entities
     for entity in csv.DictReader(opener.result, delimiter=';'):
         yield map(entity)
+
+
+def signor_interactions() -> Generator[SilverEntity, None, None]:
+    """
+    Download SIGNOR causalTab interactions and yield `SilverEntity` objects.
+    """
+
+    opener = download_and_open(
+        url='https://signor.uniroma2.it/download_entity.php',
+        filename='signor_all_causalTab.txt',
+        subfolder='signor',
+        query={
+            'format': 'causalTab',
+            'submit': 'Download',
+        },
+        post=True,
+    )
+
+    signor_processing = {
+        'extract_prefix': r'^([^:]+):',
+        'extract_value': r'^[^:]+:(.*)',
+    }
+    uniprot_processing = {'extract_value': r'uniprotkb:([^|"]+)'}
+    tax_processing = {'extract_value': r'taxid:([-\d]+)'}
+    pubmed_processing = {'extract_value': r'(?i)pubmed:(\d+)'}
+
+    # For MI terms: extract the MI code as the term, with no separate value
+    mi_term_processing = {'extract_term': r'(MI:\d+)'}
+
+    schema = EntitySchema(
+        entity_type=EntityTypeCv.INTERACTION,
+        identifiers=Identifiers(
+            Column(
+                'Interaction identifier(s)',
+                delimiter='|',
+                processing=signor_processing,
+                cv={
+                    'signor': IdentifierNamespaceCv.SIGNOR,
+                    'signor-interaction': IdentifierNamespaceCv.SIGNOR,
+                },
+            ),
+        ),
+        annotations=Annotations(
+            Column('Interaction type(s)', delimiter='|', processing=mi_term_processing),
+            Column('Interaction detection method(s)', delimiter='|', processing=mi_term_processing),
+            Column('Causal statement', delimiter='|', processing=mi_term_processing),
+            Column('Causal Regulatory Mechanism', delimiter='|', processing=mi_term_processing),
+            Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=ReferenceTypeCv.PUBMED),
+        ),
+        members=Members(
+            Entities(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=Identifiers(
+                    Column('\ufeff#ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                    Column('Alt. ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                ),
+                annotations=Annotations(
+                    Column('Biological role(s) interactor A', delimiter='|', processing=mi_term_processing),
+                    Column('Experimental role(s) interactor A', delimiter='|', processing=mi_term_processing),
+                    Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
+                ),
+            ),
+            Entities(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=Identifiers(
+                    Column('ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                    Column('Alt. ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                ),
+                annotations=Annotations(
+                    Column('Biological role(s) interactor B', delimiter='|', processing=mi_term_processing),
+                    Column('Experimental role(s) interactor B', delimiter='|', processing=mi_term_processing),
+                    Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
+                ),
+            ),
+        ),
+    )
+    reader = csv.DictReader(opener.result, delimiter='\t')
+    for entity in reader:
+        #print(entity)
+        yield schema(entity)

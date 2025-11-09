@@ -33,6 +33,7 @@ class ParsedValue:
     prefix: str | None = None
     units: str | None = None
     raw: str | None = None
+    term: str | None = None  # For CV terms that are separate from the value
 
 
 class ColumnCache(dict):
@@ -81,9 +82,13 @@ class Column:
             if prefix is not None:
                 prefix = prefix.strip().lower()
 
+            term = self._apply_regex('extract_term', text)
+            term = term.strip() if isinstance(term, str) else term
+
             value = self._apply_regex('extract_value', text)
             value = value.strip() if isinstance(value, str) else value
-            if value in (None, ''):
+            # If we have an extract_term, don't default value to text
+            if value in (None, '') and term is None:
                 value = text
 
             units = self._apply_regex('extract_unit', text)
@@ -91,10 +96,11 @@ class Column:
 
             parsed.append(
                 ParsedValue(
-                    value=value if isinstance(value, str) else str(value),
+                    value=value if isinstance(value, str) else str(value) if value is not None else None,
                     prefix=prefix,
                     units=units if isinstance(units, str) else None,
                     raw=text,
+                    term=term,
                 )
             )
 
@@ -242,13 +248,16 @@ class Annotations:
             elif column.cv is not None and not isinstance(column.cv, (dict, Callable)):
                 const_term = column.cv
             for value in cache.values(column, row):
-                resolved_term = const_term or column.resolve_cv(value)
+                # If ParsedValue has a term field, use that; otherwise use resolve_cv
+                resolved_term = const_term or value.term or column.resolve_cv(value)
                 if not resolved_term:
                     continue
+                # When term is extracted separately, value may be None
+                annotation_value = value.value if value.value not in (None, '') else None
                 annotations.append(
                     SilverAnnotation(
                         term=resolved_term,
-                        value=value.value or value.raw,
+                        value=annotation_value,
                         units=value.units,
                     )
                 )
@@ -271,13 +280,16 @@ class Annotations:
             if index >= len(values):
                 continue
             value = values[index]
-            resolved_term = const_term or column.resolve_cv(value)
+            # If ParsedValue has a term field, use that; otherwise use resolve_cv
+            resolved_term = const_term or value.term or column.resolve_cv(value)
             if not resolved_term:
                 continue
+            # When term is extracted separately, value may be None
+            annotation_value = value.value if value.value not in (None, '') else None
             annotations.append(
                 SilverAnnotation(
                     term=resolved_term,
-                    value=value.value or value.raw,
+                    value=annotation_value,
                     units=value.units,
                 )
             )
