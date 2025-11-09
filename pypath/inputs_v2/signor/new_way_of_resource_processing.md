@@ -1,42 +1,4 @@
-from pypath.internals.cv_terms import AnnotationTypeCv, IdentifierNamespaceCv
-from pypath.internals.silver_schema import Entity, Membership, Annotation, Identifier
-
-# If unit is in separate column, first join it to the value column
-COLUMN_SCHEMA = {
-    0: (Identifier, {
-        "cv": IdentifierNamespaceCv.NAME,
-    }),
-    1: (Identifier, {
-        "delimiter": ";",
-        "processing": {
-            "extract_prefix": r"^([a-z]+):",   # capture prefix before colon
-            "extract_value":  r"^[a-z]+:(.*)", # capture value after prefix
-        },
-        "cv": {
-            "chebi": IdentifierNamespaceCv.CHEBI,
-            "go": IdentifierNamespaceCv.GO,
-            "ec": IdentifierNamespaceCv.ENZYME,
-            "default": IdentifierNamespaceCv.SYNONYM,
-        },
-    }),
-    2: (Membership.member.identifiers[0], {
-        "delimiter": ";",
-        "cv": IdentifierNamespaceCv.UNIPROT,
-    }),
-    3: (Annotation, {
-        "delimiter": ";",
-        "processing": {
-            "extract_value": r"([\d.]+)",
-            "extract_unit":  r"[ \t]*([a-zA-Zμ]+)$",
-        },
-        "cv": {
-            'value': AnnotationTypeCv.MOLECULAR_WEIGHT,
-            'unit': IdentifierNamespaceCv.UNIT,
-        },
-    }),
-}
-
-
+New: 
 Entity(
     source="my_database",
     entity_type=EntityType(EntityTypeCv.PROTEIN_COMPLEX),
@@ -90,3 +52,40 @@ Entity(
         )
     )
 )
+
+Old:
+
+# If unit is in separate column, first join it to the value column
+COLUMN_SCHEMA = {
+    0: (Identifier, {
+        "cv": IdentifierNamespaceCv.NAME,
+    }),
+    1: (Identifier, {
+        "delimiter": ";",
+        "processing": {
+            "extract_prefix": r"^([a-z]+):",   # capture prefix before colon
+            "extract_value":  r"^[a-z]+:(.*)", # capture value after prefix
+        },
+        "cv": {
+            "chebi": IdentifierNamespaceCv.CHEBI,
+            "go": IdentifierNamespaceCv.GO,
+            "ec": IdentifierNamespaceCv.ENZYME,
+            "default": IdentifierNamespaceCv.SYNONYM,
+        },
+    }),
+    2: (Membership.member.identifiers[0], {
+        "delimiter": ";",
+        "cv": IdentifierNamespaceCv.UNIPROT,
+    }),
+    3: (Annotation, {
+        "delimiter": ";",
+        "processing": {
+            "extract_value": r"([\d.]+)",
+            "extract_unit":  r"[ \t]*([a-zA-Zμ]+)$",
+        },
+        "cv": {
+            'value': AnnotationTypeCv.MOLECULAR_WEIGHT,
+            'unit': IdentifierNamespaceCv.UNIT,
+        },
+    }),
+}

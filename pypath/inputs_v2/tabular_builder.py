@@ -199,12 +199,18 @@ class Identifiers:
     def build(self, row: Any, cache: ColumnCache | None = None) -> list[SilverIdentifier]:
         cache = cache or ColumnCache()
         identifiers: list[SilverIdentifier] = []
+        seen: set[tuple] = set()
         for column in self.columns:
             for value in cache.values(column, row):
                 id_type = column.resolve_cv(value)
                 literal = value.value or value.raw
                 if not id_type or not literal:
                     continue
+                # Deduplicate identifiers
+                id_key = (id_type, literal)
+                if id_key in seen:
+                    continue
+                seen.add(id_key)
                 identifiers.append(
                     SilverIdentifier(type=id_type, value=literal)
                 )
@@ -217,6 +223,7 @@ class Identifiers:
         cache: ColumnCache,
     ) -> list[SilverIdentifier]:
         identifiers: list[SilverIdentifier] = []
+        seen: set[tuple] = set()
         for column in self.columns:
             values = cache.values(column, row)
             if index >= len(values):
@@ -226,6 +233,11 @@ class Identifiers:
             literal = value.value or value.raw
             if not id_type or not literal:
                 continue
+            # Deduplicate identifiers
+            id_key = (id_type, literal)
+            if id_key in seen:
+                continue
+            seen.add(id_key)
             identifiers.append(
                 SilverIdentifier(type=id_type, value=literal)
             )
@@ -241,6 +253,7 @@ class Annotations:
     def build(self, row: Any, cache: ColumnCache | None = None) -> list[SilverAnnotation]:
         cache = cache or ColumnCache()
         annotations: list[SilverAnnotation] = []
+        seen: set[tuple] = set()
         for column in self.columns:
             const_term = None
             if column.term_cv is not None:
@@ -254,6 +267,11 @@ class Annotations:
                     continue
                 # When term is extracted separately, value may be None
                 annotation_value = value.value if value.value not in (None, '') else None
+                # Deduplicate annotations
+                annot_key = (resolved_term, annotation_value, value.units)
+                if annot_key in seen:
+                    continue
+                seen.add(annot_key)
                 annotations.append(
                     SilverAnnotation(
                         term=resolved_term,
@@ -270,6 +288,7 @@ class Annotations:
         cache: ColumnCache,
     ) -> list[SilverAnnotation]:
         annotations: list[SilverAnnotation] = []
+        seen: set[tuple] = set()
         for column in self.columns:
             const_term = None
             if column.term_cv is not None:
@@ -286,6 +305,11 @@ class Annotations:
                 continue
             # When term is extracted separately, value may be None
             annotation_value = value.value if value.value not in (None, '') else None
+            # Deduplicate annotations
+            annot_key = (resolved_term, annotation_value, value.units)
+            if annot_key in seen:
+                continue
+            seen.add(annot_key)
             annotations.append(
                 SilverAnnotation(
                     term=resolved_term,
@@ -359,15 +383,32 @@ class Entities:
 
 
 class Members:
-    """Container for one or more `Entities` definitions."""
+    """Container for one or more `Entities` or `Entity` definitions."""
 
-    def __init__(self, *entities: Entities) -> None:
+    def __init__(self, *entities: Entities | 'Entity') -> None:
         self.entities = entities
 
     def build(self, row: Any, cache: ColumnCache) -> list[SilverMembership]:
         memberships: list[SilverMembership] = []
-        for entity in self.entities:
-            memberships.extend(entity.build(row, cache))
+        for entity_def in self.entities:
+            if isinstance(entity_def, Entities):
+                # Index-aligned: multiple entities from one row
+                memberships.extend(entity_def.build(row, cache))
+            else:
+                # Single entity: collect all identifiers into one entity
+                member_entity = entity_def.build(row)
+                if member_entity:
+                    membership_annot = (
+                        entity_def.membership_annotations.build(row, cache)
+                        if entity_def.membership_annotations
+                        else None
+                    )
+                    memberships.append(
+                        SilverMembership(
+                            member=member_entity,
+                            annotations=membership_annot if membership_annot else None,
+                        )
+                    )
         return memberships
 
 
@@ -381,11 +422,13 @@ class Entity:
         identifiers: Identifiers,
         annotations: Annotations | None = None,
         members: Members | None = None,
+        membership_annotations: Annotations | None = None,
     ) -> None:
         self.entity_type = entity_type
         self.identifiers = identifiers
         self.annotations = annotations
         self.members = members
+        self.membership_annotations = membership_annotations
 
     def __call__(self, row: Any) -> SilverEntity | None:
         return self.build(row)
