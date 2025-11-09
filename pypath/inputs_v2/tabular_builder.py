@@ -320,8 +320,12 @@ class Annotations:
         return annotations
 
 
-class Entities:
-    """Definition of member entities derived from aligned column splits."""
+class MembersFromList:
+    """Definition of member entities derived from index-aligned delimited column values.
+
+    Creates multiple members by iterating through delimiter-split values at each index position.
+    Example: Column with 'A,B,C' creates 3 member entities.
+    """
 
     def __init__(
         self,
@@ -382,33 +386,57 @@ class Entities:
         return memberships
 
 
-class Members:
-    """Container for one or more `Entities` or `Entity` definitions."""
+class Member:
+    """Definition of a single member: entity + membership annotations."""
 
-    def __init__(self, *entities: Entities | 'Entity') -> None:
-        self.entities = entities
+    def __init__(
+        self,
+        *,
+        entity: 'Entity',
+        annotations: Annotations | None = None,
+    ) -> None:
+        self.entity = entity
+        self.annotations = annotations
+
+    def build(self, row: Any, cache: ColumnCache) -> SilverMembership | None:
+        member_entity = self.entity.build(row)
+        if not member_entity:
+            return None
+
+        membership_annot = (
+            self.annotations.build(row, cache)
+            if self.annotations
+            else None
+        )
+
+        return SilverMembership(
+            member=member_entity,
+            annotations=membership_annot if membership_annot else None,
+        )
+
+
+class Members:
+    """Container for one or more `Member` or `MembersFromList` definitions.
+
+    Accepts:
+    - Member: Single member with explicit entity + membership annotations
+    - MembersFromList: Index-aligned members from delimited columns
+    """
+
+    def __init__(self, *members: Member | MembersFromList) -> None:
+        self.members = members
 
     def build(self, row: Any, cache: ColumnCache) -> list[SilverMembership]:
         memberships: list[SilverMembership] = []
-        for entity_def in self.entities:
-            if isinstance(entity_def, Entities):
+        for member_def in self.members:
+            if isinstance(member_def, MembersFromList):
                 # Index-aligned: multiple entities from one row
-                memberships.extend(entity_def.build(row, cache))
-            else:
-                # Single entity: collect all identifiers into one entity
-                member_entity = entity_def.build(row)
-                if member_entity:
-                    membership_annot = (
-                        entity_def.membership_annotations.build(row, cache)
-                        if entity_def.membership_annotations
-                        else None
-                    )
-                    memberships.append(
-                        SilverMembership(
-                            member=member_entity,
-                            annotations=membership_annot if membership_annot else None,
-                        )
-                    )
+                memberships.extend(member_def.build(row, cache))
+            elif isinstance(member_def, Member):
+                # Single member with explicit entity + annotations
+                membership = member_def.build(row, cache)
+                if membership:
+                    memberships.append(membership)
         return memberships
 
 
@@ -422,13 +450,11 @@ class Entity:
         identifiers: Identifiers,
         annotations: Annotations | None = None,
         members: Members | None = None,
-        membership_annotations: Annotations | None = None,
     ) -> None:
         self.entity_type = entity_type
         self.identifiers = identifiers
         self.annotations = annotations
         self.members = members
-        self.membership_annotations = membership_annotations
 
     def __call__(self, row: Any) -> SilverEntity | None:
         return self.build(row)
@@ -455,7 +481,8 @@ __all__ = [
     'Annotations',
     'Column',
     'Entity',
-    'Entities',
     'Identifiers',
+    'Member',
     'Members',
+    'MembersFromList',
 ]

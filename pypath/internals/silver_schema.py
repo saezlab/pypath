@@ -64,20 +64,28 @@ class Membership(NamedTuple):
         """Compact representation of membership."""
         member_repr = repr(self.member)
         if self.annotations:
-            annot_str = f" [{len(self.annotations)} annot.]"
+            annot_str = f" [membership: {len(self.annotations)} annot.]"
         else:
             annot_str = ""
-        return f"Member({member_repr}{annot_str})"
+        return f"Membership(entity={member_repr}{annot_str})"
 
     def pretty(self, indent: int = 0) -> str:
         """Tree-like representation with indentation."""
         prefix = "  " * indent
-        lines = [f"{prefix}Member:"]
-        lines.append(self.member.pretty(indent + 1))
+        lines = [f"{prefix}Membership:"]
+        lines.append(f"{prefix}├─ entity:")
+        entity_lines = self.member.pretty(0).split("\n")
+        for line in entity_lines:
+            lines.append(f"{prefix}│  {line}")
         if self.annotations:
-            lines.append(f"{prefix}  annotations:")
-            for ann in self.annotations:
-                lines.append(f"{prefix}    - {ann!r}")
+            lines.append(f"{prefix}└─ membership_annotations:")
+            for i, ann in enumerate(self.annotations):
+                connector = "└─" if i == len(self.annotations) - 1 else "├─"
+                lines.append(f"{prefix}   {connector} {ann!r}")
+        else:
+            # Update entity connector to └─ if no annotations
+            lines[1] = f"{prefix}└─ entity:"
+            lines = [lines[0]] + [lines[1]] + [f"{prefix}   {line}" for line in entity_lines]
         return "\n".join(lines)
 
 class Entity(NamedTuple):
@@ -130,37 +138,54 @@ class Entity(NamedTuple):
                 member_connector = "└─" if i == len(self.members) - 1 else "├─"
                 member_prefix = "   " if is_last else "│  "
 
-                # Member entity
-                member_lines = member.member.pretty(0).split("\n")
-                lines.append(f"{prefix}{member_prefix}{member_connector} {member_lines[0]}")
-                for line in member_lines[1:]:
-                    continuation = "   " if i == len(self.members) - 1 else "│  "
-                    lines.append(f"{prefix}{member_prefix}{continuation}  {line}")
+                # Membership wrapper
+                lines.append(f"{prefix}{member_prefix}{member_connector} Membership:")
 
-                # Member annotations
+                # Member entity
+                continuation = "   " if i == len(self.members) - 1 else "│  "
+                member_lines = member.member.pretty(0).split("\n")
+                lines.append(f"{prefix}{member_prefix}{continuation}  ├─ entity: {member_lines[0]}")
+                for line in member_lines[1:]:
+                    lines.append(f"{prefix}{member_prefix}{continuation}  │        {line}")
+
+                # Membership annotations
                 if member.annotations:
-                    lines.append(f"{prefix}{member_prefix}{'   ' if i == len(self.members) - 1 else '│  '}  └─ annotations:")
-                    for ann in member.annotations:
-                        lines.append(f"{prefix}{member_prefix}{'   ' if i == len(self.members) - 1 else '│  '}     └─ {ann!r}")
+                    lines.append(f"{prefix}{member_prefix}{continuation}  └─ membership_annotations:")
+                    for j, ann in enumerate(member.annotations):
+                        ann_connector = "└─" if j == len(member.annotations) - 1 else "├─"
+                        lines.append(f"{prefix}{member_prefix}{continuation}     {ann_connector} {ann!r}")
+                else:
+                    # Close the entity branch if no annotations
+                    # Replace the last "├─ entity:" with "└─ entity:"
+                    if lines[-len(member_lines)-1].endswith("├─ entity: " + member_lines[0]):
+                        lines[-len(member_lines)-1] = f"{prefix}{member_prefix}{continuation}  └─ entity: {member_lines[0]}"
 
         # Is member of
         if self.is_member_of:
             lines.append(f"{prefix}└─ is_member_of: ({len(self.is_member_of)})")
             for i, membership in enumerate(self.is_member_of):
                 member_connector = "└─" if i == len(self.is_member_of) - 1 else "├─"
+                continuation = "   " if i == len(self.is_member_of) - 1 else "│  "
+
+                # Membership wrapper
+                lines.append(f"{prefix}   {member_connector} Membership:")
 
                 # Member entity
                 member_lines = membership.member.pretty(0).split("\n")
-                lines.append(f"{prefix}   {member_connector} {member_lines[0]}")
+                lines.append(f"{prefix}   {continuation}  ├─ entity: {member_lines[0]}")
                 for line in member_lines[1:]:
-                    continuation = "   " if i == len(self.is_member_of) - 1 else "│  "
-                    lines.append(f"{prefix}   {continuation}  {line}")
+                    lines.append(f"{prefix}   {continuation}  │        {line}")
 
-                # Member annotations
+                # Membership annotations
                 if membership.annotations:
-                    lines.append(f"{prefix}   {'   ' if i == len(self.is_member_of) - 1 else '│  '}  └─ annotations:")
-                    for ann in membership.annotations:
-                        lines.append(f"{prefix}   {'   ' if i == len(self.is_member_of) - 1 else '│  '}     └─ {ann!r}")
+                    lines.append(f"{prefix}   {continuation}  └─ membership_annotations:")
+                    for j, ann in enumerate(membership.annotations):
+                        ann_connector = "└─" if j == len(membership.annotations) - 1 else "├─"
+                        lines.append(f"{prefix}   {continuation}     {ann_connector} {ann!r}")
+                else:
+                    # Close the entity branch if no annotations
+                    if lines[-len(member_lines)-1].endswith("├─ entity: " + member_lines[0]):
+                        lines[-len(member_lines)-1] = f"{prefix}   {continuation}  └─ entity: {member_lines[0]}"
 
         return "\n".join(lines)
   
