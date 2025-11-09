@@ -31,7 +31,7 @@ from collections.abc import Generator
 from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity as SilverEntity
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv
-from ..tabular_builder import (
+from .tabular_builder import (
     Annotations,
     Column,
     Entity,
