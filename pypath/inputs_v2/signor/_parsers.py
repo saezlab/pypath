@@ -28,6 +28,8 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
+import pypath.resources.urls as urls
+from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity as SilverEntity
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv
 from ..tabular_builder import (
@@ -38,79 +40,36 @@ from ..tabular_builder import (
     Identifiers,
     Members,
 )
-from ._download import (
-    download_complexes,
-    download_protein_families,
-    download_phenotypes,
-    download_stimuli,
-)
+import csv
+from pypath.internals.silver_schema import Resource
+from omnipath_build.utils.cv_terms import LicenseCV, UpdateCategoryCV
 
-SIGNOR_COMPLEX_SCHEMA = EntitySchema(
-    source='signor',
-    entity_type=EntityTypeCv.PROTEIN_COMPLEX,
-    identifiers=Identifiers(
-        Column('complex_id', cv=IdentifierNamespaceCv.SIGNOR),
-        Column('name', cv=IdentifierNamespaceCv.NAME),
-    ),
-    members=Members(
-        MemberEntities(
-            entity_type=EntityTypeCv.PROTEIN,
-            entity_source='signor',
-            identifiers=Identifiers(
-                Column('components', cv=IdentifierNamespaceCv.UNIPROT),
-            ),
-        )
-    ),
-)
+__all__ = ['SIGNOR_RESOURCE']
 
-SIGNOR_PROTEIN_FAMILY_SCHEMA = EntitySchema(
-    source='signor',
-    entity_type=EntityTypeCv.PROTEIN_FAMILY,
-    identifiers=Identifiers(
-        Column('family_id', cv=IdentifierNamespaceCv.SIGNOR),
-        Column('name', cv=IdentifierNamespaceCv.NAME),
-    ),
-    members=Members(
-        MemberEntities(
-            entity_type=EntityTypeCv.PROTEIN,
-            entity_source='signor',
-            identifiers=Identifiers(
-                Column('members', cv=IdentifierNamespaceCv.UNIPROT),
-            ),
-        )
-    ),
-)
 
-SIGNOR_PHENOTYPE_SCHEMA = EntitySchema(
-    source='signor',
-    entity_type=EntityTypeCv.PHENOTYPE,
-    identifiers=Identifiers(
-        Column('phenotype_id', cv=IdentifierNamespaceCv.SIGNOR),
-        Column('name', cv=IdentifierNamespaceCv.NAME),
-    ),
-    annotations=Annotations(
-        Column('description', cv=IdentifierNamespaceCv.SYNONYM),
-    ),
-)
+def get_resource() -> Resource:
+    """
+    Define the resource metadata.
 
-SIGNOR_STIMULUS_SCHEMA = EntitySchema(
-    source='signor',
-    entity_type=EntityTypeCv.STIMULUS,
-    identifiers=Identifiers(
-        Column('stimulus_id', cv=IdentifierNamespaceCv.SIGNOR),
-        Column('name', cv=IdentifierNamespaceCv.NAME),
-    ),
-    annotations=Annotations(
-        Column('description', cv=IdentifierNamespaceCv.SYNONYM),
-    ),
-)
-
-__all__ = [
-    'signor_complexes',
-    'signor_protein_families',
-    'signor_phenotypes',
-    'signor_stimuli',
-]
+    Returns:
+        Resource object containing SIGNOR metadata.
+    """
+    return Resource(
+        id='signor',
+        name='SIGNOR',
+        license=LicenseCV.CC_BY_4_0,
+        update_category=UpdateCategoryCV.REGULAR,
+        publication='PMID:31665520',  # SIGNOR 2.0 paper
+        url='https://signor.uniroma2.it/',
+        description=(
+            'SIGNOR (SIGnaling Network Open Resource) is a comprehensive '
+            'resource of causal relationships between biological entities '
+            'with a focus on signaling pathways. It provides manually curated '
+            'interactions with mechanistic details including protein-protein '
+            'interactions, post-translational modifications, transcriptional '
+            'regulation, and small molecule effects.'
+        ),
+    )
 
 
 def signor_complexes() -> Generator[SilverEntity]:
@@ -120,10 +79,36 @@ def signor_complexes() -> Generator[SilverEntity]:
     Yields:
         Entity records with type PROTEIN_COMPLEX, containing member proteins
     """
-    for row in download_complexes():
-        entity = SIGNOR_COMPLEX_SCHEMA(row)
-        if entity:
-            yield entity
+    # Download and open the file
+    url = urls.urls['signor']['complexes']
+    opener = download_and_open(
+        url,
+        filename='signor_complexes.txt',
+        subfolder='signor',
+        query={'submit': 'Download complex data'},
+        post=True,
+    )
+
+    # Define the schema mapping
+    map = EntitySchema(
+        entity_type=EntityTypeCv.PROTEIN_COMPLEX,
+        identifiers=Identifiers(
+            Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
+            Column('COMPLEX NAME', cv=IdentifierNamespaceCv.NAME),
+        ),
+        members=Members(
+            MemberEntities(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=Identifiers(
+                    Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
+                ),
+            )
+        ),
+    )
+
+    # Parse and yield entities
+    for entity in csv.DictReader(opener.result, delimiter=';'):
+        yield map(entity)
 
 
 def signor_protein_families() -> Generator[SilverEntity]:
@@ -133,10 +118,36 @@ def signor_protein_families() -> Generator[SilverEntity]:
     Yields:
         Entity records with type PROTEIN_FAMILY, containing member proteins
     """
-    for row in download_protein_families():
-        entity = SIGNOR_PROTEIN_FAMILY_SCHEMA(row)
-        if entity:
-            yield entity
+    # Download and open the file
+    url = urls.urls['signor']['complexes']
+    opener = download_and_open(
+        url,
+        filename='signor_protein_families.txt',
+        subfolder='signor',
+        query={'submit': 'Download protein family data'},
+        post=True,
+    )
+
+    # Define the schema mapping
+    map = EntitySchema(
+        entity_type=EntityTypeCv.PROTEIN_FAMILY,
+        identifiers=Identifiers(
+            Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
+            Column('PROT. FAMILY NAME', cv=IdentifierNamespaceCv.NAME),
+        ),
+        members=Members(
+            MemberEntities(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=Identifiers(
+                    Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
+                ),
+            )
+        ),
+    )
+
+    # Parse and yield entities
+    for entity in csv.DictReader(opener.result, delimiter=';'):
+        yield map(entity)
 
 
 def signor_phenotypes() -> Generator[SilverEntity]:
@@ -146,10 +157,31 @@ def signor_phenotypes() -> Generator[SilverEntity]:
     Yields:
         Entity records with type PHENOTYPE
     """
-    for row in download_phenotypes():
-        entity = SIGNOR_PHENOTYPE_SCHEMA(row)
-        if entity:
-            yield entity
+    # Download and open the file
+    url = urls.urls['signor']['complexes']
+    opener = download_and_open(
+        url,
+        filename='signor_phenotypes.txt',
+        subfolder='signor',
+        query={'submit': 'Download phenotype data'},
+        post=True,
+    )
+
+    # Define the schema mapping
+    map = EntitySchema(
+        entity_type=EntityTypeCv.PHENOTYPE,
+        identifiers=Identifiers(
+            Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
+            Column('PHENOTYPE NAME', cv=IdentifierNamespaceCv.NAME),
+        ),
+        annotations=Annotations(
+            Column('PHENOTYPE DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
+        ),
+    )
+
+    # Parse and yield entities
+    for entity in csv.DictReader(opener.result, delimiter=';'):
+        yield map(entity)
 
 
 def signor_stimuli() -> Generator[SilverEntity]:
@@ -159,7 +191,28 @@ def signor_stimuli() -> Generator[SilverEntity]:
     Yields:
         Entity records with type STIMULUS
     """
-    for row in download_stimuli():
-        entity = SIGNOR_STIMULUS_SCHEMA(row)
-        if entity:
-            yield entity
+    # Download and open the file
+    url = urls.urls['signor']['complexes']
+    opener = download_and_open(
+        url,
+        filename='signor_stimuli.txt',
+        subfolder='signor',
+        query={'submit': 'Download stimulus data'},
+        post=True,
+    )
+
+    # Define the schema mapping
+    map = EntitySchema(
+        entity_type=EntityTypeCv.STIMULUS,
+        identifiers=Identifiers(
+            Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
+            Column('STIMULUS NAME', cv=IdentifierNamespaceCv.NAME),
+        ),
+        annotations=Annotations(
+            Column('STIMULUS DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
+        ),
+    )
+
+    # Parse and yield entities
+    for entity in csv.DictReader(opener.result, delimiter=';'):
+        yield map(entity)

@@ -24,7 +24,6 @@ This v2 module emits Entity records according to the schema defined in
 pypath.internals.silver_schema.
 """
 
-from ._meta import SIGNOR_RESOURCE
 from ._interactions import signor_interactions
 from ._parsers import (
     signor_complexes,

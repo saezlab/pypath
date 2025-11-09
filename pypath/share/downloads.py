@@ -56,6 +56,7 @@ def download_and_open(
         default_mode: str = 'r',
         ext: Optional[str] = None,
         needed: Optional[List[str]] = None,
+        **download_kwargs,
     ) -> Opener:
     """
     Download a file and open it with curl.Curl-compatible interface.
@@ -72,6 +73,7 @@ def download_and_open(
         default_mode: File mode 'r' for text, 'rb' for binary (default: 'r')
         ext: File extension for compression detection ('zip', 'gz', 'tar.gz', etc.)
         needed: For archives, list of specific files to extract (default: all)
+        **download_kwargs: Additional arguments passed to dm.download() (e.g., query, post)
 
     Returns:
         Opener instance with a .result attribute containing:
@@ -92,7 +94,7 @@ def download_and_open(
     """
 
     # Download the file
-    file_path = dm.download(url, filename=filename, subfolder=subfolder)
+    file_path = dm.download(url, filename=filename, subfolder=subfolder, **download_kwargs)
 
     # Use Opener to handle extraction/opening
     # Return the opener itself so it stays alive and keeps files open
