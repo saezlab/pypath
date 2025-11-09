@@ -28,7 +28,6 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-import pypath.resources.urls as urls
 from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity as SilverEntity
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv
@@ -80,7 +79,7 @@ def signor_complexes() -> Generator[SilverEntity]:
         Entity records with type PROTEIN_COMPLEX, containing member proteins
     """
     # Download and open the file
-    url = urls.urls['signor']['complexes']
+    url = 'https://signor.uniroma2.it/download_complexes.php'
     opener = download_and_open(
         url,
         filename='signor_complexes.txt',
@@ -119,7 +118,7 @@ def signor_protein_families() -> Generator[SilverEntity]:
         Entity records with type PROTEIN_FAMILY, containing member proteins
     """
     # Download and open the file
-    url = urls.urls['signor']['complexes']
+    url = 'https://signor.uniroma2.it/download_complexes.php'
     opener = download_and_open(
         url,
         filename='signor_protein_families.txt',
@@ -158,7 +157,7 @@ def signor_phenotypes() -> Generator[SilverEntity]:
         Entity records with type PHENOTYPE
     """
     # Download and open the file
-    url = urls.urls['signor']['complexes']
+    url = 'https://signor.uniroma2.it/download_complexes.php'
     opener = download_and_open(
         url,
         filename='signor_phenotypes.txt',
@@ -192,7 +191,7 @@ def signor_stimuli() -> Generator[SilverEntity]:
         Entity records with type STIMULUS
     """
     # Download and open the file
-    url = urls.urls['signor']['complexes']
+    url = 'https://signor.uniroma2.it/download_complexes.php'
     opener = download_and_open(
         url,
         filename='signor_stimuli.txt',
