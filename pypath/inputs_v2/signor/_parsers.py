@@ -34,11 +34,11 @@ from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv
 from ..tabular_builder import (
     Annotations,
     Column,
-    Entity as EntitySchema,
-    Entity as MemberEntity,
-    Entities,
+    Entity,
     Identifiers,
+    Member,
     Members,
+    MembersFromList,
 )
 import csv
 from pypath.internals.silver_schema import Resource
@@ -88,14 +88,14 @@ def signor_complexes() -> Generator[SilverEntity]:
     )
 
     # Define the schema mapping
-    map = EntitySchema(
+    map = Entity(
         entity_type=EntityTypeCv.PROTEIN_COMPLEX,
         identifiers=Identifiers(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
             Column('COMPLEX NAME', cv=IdentifierNamespaceCv.NAME),
         ),
         members=Members(
-            Entities(
+            MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=Identifiers(
                     Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
@@ -127,14 +127,14 @@ def signor_protein_families() -> Generator[SilverEntity]:
     )
 
     # Define the schema mapping
-    map = EntitySchema(
+    map = Entity(
         entity_type=EntityTypeCv.PROTEIN_FAMILY,
         identifiers=Identifiers(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
             Column('PROT. FAMILY NAME', cv=IdentifierNamespaceCv.NAME),
         ),
         members=Members(
-            Entities(
+            MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=Identifiers(
                     Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
@@ -166,7 +166,7 @@ def signor_phenotypes() -> Generator[SilverEntity]:
     )
 
     # Define the schema mapping
-    map = EntitySchema(
+    map = Entity(
         entity_type=EntityTypeCv.PHENOTYPE,
         identifiers=Identifiers(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
@@ -200,7 +200,7 @@ def signor_stimuli() -> Generator[SilverEntity]:
     )
 
     # Define the schema mapping
-    map = EntitySchema(
+    map = Entity(
         entity_type=EntityTypeCv.STIMULUS,
         identifiers=Identifiers(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
@@ -243,7 +243,7 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
     # For MI terms: extract the MI code as the term, with no separate value
     mi_term_processing = {'extract_term': r'(MI:\d+)'}
 
-    schema = EntitySchema(
+    schema = Entity(
         entity_type=EntityTypeCv.INTERACTION,
         identifiers=Identifiers(
             Column(
@@ -264,28 +264,32 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
             Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=ReferenceTypeCv.PUBMED),
         ),
         members=Members(
-            MemberEntity(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=Identifiers(
-                    Column('\ufeff#ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
-                    Column('Alt. ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+            Member(
+                entity=Entity(
+                    entity_type=EntityTypeCv.PROTEIN,
+                    identifiers=Identifiers(
+                        Column('\ufeff#ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                        Column('Alt. ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                    ),
+                    annotations=Annotations(Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
                 ),
                 annotations=Annotations(
                     Column('Biological role(s) interactor A', delimiter='|', processing=mi_term_processing),
                     Column('Experimental role(s) interactor A', delimiter='|', processing=mi_term_processing),
-                    Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
                 ),
             ),
-            MemberEntity(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=Identifiers(
-                    Column('ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
-                    Column('Alt. ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+            Member(
+                entity=Entity(
+                    entity_type=EntityTypeCv.PROTEIN,
+                    identifiers=Identifiers(
+                        Column('ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                        Column('Alt. ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                    ),
+                    annotations=Annotations(Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
                 ),
                 annotations=Annotations(
                     Column('Biological role(s) interactor B', delimiter='|', processing=mi_term_processing),
                     Column('Experimental role(s) interactor B', delimiter='|', processing=mi_term_processing),
-                    Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
                 ),
             ),
         ),
