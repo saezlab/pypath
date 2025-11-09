@@ -35,16 +35,14 @@ from ..tabular_builder import (
     Annotations,
     Column,
     Entity as EntitySchema,
-    Entities as MemberEntities,
+    Entity as MemberEntity,
+    Entities,
     Identifiers,
     Members,
-    Entities
 )
 import csv
 from pypath.internals.silver_schema import Resource
-from omnipath_build.utils.cv_terms import LicenseCV, UpdateCategoryCV
-
-__all__ = ['SIGNOR_RESOURCE']
+from omnipath_build.utils.cv_terms import LicenseCV, UpdateCategoryCV, ReferenceTypeCv
 
 
 def get_resource() -> Resource:
@@ -97,7 +95,7 @@ def signor_complexes() -> Generator[SilverEntity]:
             Column('COMPLEX NAME', cv=IdentifierNamespaceCv.NAME),
         ),
         members=Members(
-            MemberEntities(
+            Entities(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=Identifiers(
                     Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
@@ -136,7 +134,7 @@ def signor_protein_families() -> Generator[SilverEntity]:
             Column('PROT. FAMILY NAME', cv=IdentifierNamespaceCv.NAME),
         ),
         members=Members(
-            MemberEntities(
+            Entities(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=Identifiers(
                     Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
@@ -266,7 +264,7 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
             Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=ReferenceTypeCv.PUBMED),
         ),
         members=Members(
-            Entities(
+            MemberEntity(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=Identifiers(
                     Column('\ufeff#ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
@@ -278,7 +276,7 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
                     Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
                 ),
             ),
-            Entities(
+            MemberEntity(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=Identifiers(
                     Column('ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),

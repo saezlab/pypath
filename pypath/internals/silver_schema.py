@@ -34,6 +34,11 @@ class Identifier(NamedTuple):
     type: IdentifierNamespaceCv
     value: str
 
+    def __repr__(self) -> str:
+        """Compact representation showing namespace and value."""
+        type_name = self.type.name if hasattr(self.type, 'name') else str(self.type)
+        return f"{type_name}:{self.value}"
+
 class Annotation(NamedTuple):
     """Annotation for an interaction or entity."""
 
@@ -41,9 +46,39 @@ class Annotation(NamedTuple):
     value: str | float | None = None
     units: str | None = None
 
+    def __repr__(self) -> str:
+        """Compact representation of annotation."""
+        term_str = self.term.name if hasattr(self.term, 'name') else str(self.term)
+        if self.value is None:
+            return f"{term_str}"
+        elif self.units:
+            return f"{term_str}={self.value}{self.units}"
+        else:
+            return f"{term_str}={self.value}"
+
 class Membership(NamedTuple):
     member: 'Entity'  # Forward reference since Entity is defined below
     annotations: list[Annotation] | None = None
+
+    def __repr__(self) -> str:
+        """Compact representation of membership."""
+        member_repr = repr(self.member)
+        if self.annotations:
+            annot_str = f" [{len(self.annotations)} annot.]"
+        else:
+            annot_str = ""
+        return f"Member({member_repr}{annot_str})"
+
+    def pretty(self, indent: int = 0) -> str:
+        """Tree-like representation with indentation."""
+        prefix = "  " * indent
+        lines = [f"{prefix}Member:"]
+        lines.append(self.member.pretty(indent + 1))
+        if self.annotations:
+            lines.append(f"{prefix}  annotations:")
+            for ann in self.annotations:
+                lines.append(f"{prefix}    - {ann!r}")
+        return "\n".join(lines)
 
 class Entity(NamedTuple):
     """ Entity record matching entities schema."""
@@ -54,6 +89,80 @@ class Entity(NamedTuple):
 
     members: List[Membership] | None = None # e.g. for complexes and families
     is_member_of: List[Membership] | None = None # e.g. for proteins that are part of complexes or families
+
+    def __repr__(self) -> str:
+        """Tree-like detailed representation."""
+        return self.pretty()
+
+    def __str__(self) -> str:
+        """Tree-like detailed representation."""
+        return self.pretty()
+
+    def pretty(self, indent: int = 0) -> str:
+        """Tree-like representation with full details."""
+        prefix = "  " * indent
+        type_name = self.type.name if hasattr(self.type, 'name') else str(self.type)
+
+        lines = [f"{prefix}{type_name}"]
+
+        # Identifiers
+        lines.append(f"{prefix}├─ identifiers:")
+        for i, id_ in enumerate(self.identifiers):
+            connector = "└─" if i == len(self.identifiers) - 1 and not self.annotations and not self.members and not self.is_member_of else "├─"
+            lines.append(f"{prefix}│  {connector} {id_!r}")
+
+        # Annotations
+        if self.annotations:
+            is_last = not self.members and not self.is_member_of
+            connector = "└─" if is_last else "├─"
+            lines.append(f"{prefix}{connector} annotations:")
+            for i, ann in enumerate(self.annotations):
+                ann_connector = "└─" if i == len(self.annotations) - 1 else "├─"
+                ann_prefix = "   " if is_last else "│  "
+                lines.append(f"{prefix}{ann_prefix}{ann_connector} {ann!r}")
+
+        # Members
+        if self.members:
+            is_last = not self.is_member_of
+            connector = "└─" if is_last else "├─"
+            lines.append(f"{prefix}{connector} members: ({len(self.members)})")
+            for i, member in enumerate(self.members):
+                member_connector = "└─" if i == len(self.members) - 1 else "├─"
+                member_prefix = "   " if is_last else "│  "
+
+                # Member entity
+                member_lines = member.member.pretty(0).split("\n")
+                lines.append(f"{prefix}{member_prefix}{member_connector} {member_lines[0]}")
+                for line in member_lines[1:]:
+                    continuation = "   " if i == len(self.members) - 1 else "│  "
+                    lines.append(f"{prefix}{member_prefix}{continuation}  {line}")
+
+                # Member annotations
+                if member.annotations:
+                    lines.append(f"{prefix}{member_prefix}{'   ' if i == len(self.members) - 1 else '│  '}  └─ annotations:")
+                    for ann in member.annotations:
+                        lines.append(f"{prefix}{member_prefix}{'   ' if i == len(self.members) - 1 else '│  '}     └─ {ann!r}")
+
+        # Is member of
+        if self.is_member_of:
+            lines.append(f"{prefix}└─ is_member_of: ({len(self.is_member_of)})")
+            for i, membership in enumerate(self.is_member_of):
+                member_connector = "└─" if i == len(self.is_member_of) - 1 else "├─"
+
+                # Member entity
+                member_lines = membership.member.pretty(0).split("\n")
+                lines.append(f"{prefix}   {member_connector} {member_lines[0]}")
+                for line in member_lines[1:]:
+                    continuation = "   " if i == len(self.is_member_of) - 1 else "│  "
+                    lines.append(f"{prefix}   {continuation}  {line}")
+
+                # Member annotations
+                if membership.annotations:
+                    lines.append(f"{prefix}   {'   ' if i == len(self.is_member_of) - 1 else '│  '}  └─ annotations:")
+                    for ann in membership.annotations:
+                        lines.append(f"{prefix}   {'   ' if i == len(self.is_member_of) - 1 else '│  '}     └─ {ann!r}")
+
+        return "\n".join(lines)
   
 class Resource(NamedTuple):
     """ Source database record."""
