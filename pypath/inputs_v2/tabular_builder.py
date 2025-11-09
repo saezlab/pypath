@@ -291,13 +291,11 @@ class Entities:
         self,
         *,
         entity_type: EntityTypeCv,
-        entity_source: str,
         identifiers: Identifiers,
         annotations: Annotations | None = None,
         entity_annotations: Annotations | None = None,
     ) -> None:
         self.entity_type = entity_type
-        self.entity_source = entity_source
         self.identifiers = identifiers
         self.membership_annotations = annotations
         self.entity_annotations = entity_annotations
@@ -331,7 +329,6 @@ class Entities:
             )
 
             member_entity = SilverEntity(
-                source=self.entity_source,
                 type=self.entity_type,
                 identifiers=member_identifiers,
                 annotations=entity_annotations if entity_annotations else None,
@@ -368,13 +365,11 @@ class Entity:
     def __init__(
         self,
         *,
-        source: str,
         entity_type: EntityTypeCv,
         identifiers: Identifiers,
         annotations: Annotations | None = None,
         members: Members | None = None,
     ) -> None:
-        self.source = source
         self.entity_type = entity_type
         self.identifiers = identifiers
         self.annotations = annotations
@@ -393,7 +388,6 @@ class Entity:
         members = self.members.build(row, cache) if self.members else None
 
         return SilverEntity(
-            source=self.source,
             type=self.entity_type,
             identifiers=identifiers,
             annotations=annotations if annotations else None,

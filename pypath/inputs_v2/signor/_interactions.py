@@ -30,7 +30,6 @@ from collections.abc import Generator
 
 from pypath.internals.silver_schema import Entity, Identifier, Annotation, Membership
 from pypath.internals.cv_terms import IdentifierNamespaceCv
-from ._download import download_interactions
 from ..mitab import (
     mitab_field_uniprot,
     mitab_parse_identifiers,
@@ -40,6 +39,50 @@ from ..mitab import (
 __all__ = [
     'signor_interactions',
 ]
+
+def download_interactions(organism: int = 9606) -> Generator[str]:
+    """
+    Download SIGNOR interaction data in causalTab (MITAB) format.
+
+    Args:
+        organism: NCBI taxonomy ID (9606 for human, 10090 for mouse, 10116 for rat)
+
+    Yields:
+        Lines from the causalTab file
+    """
+    if isinstance(organism, int):
+        if organism in taxonomy.taxids:
+            _organism = taxonomy.taxids[organism]
+        else:
+            raise ValueError(f'Unknown organism: {organism}')
+    else:
+        _organism = organism
+
+    if _organism not in {'human', 'rat', 'mouse'}:
+        raise ValueError(f'Organism {_organism} not supported by SIGNOR')
+
+    url = urls.urls['signor']['all_url_new']
+
+    # Download file with POST form data
+    file_path = dm.download(
+        url,
+        filename=f'signor_{_organism}_causalTab.txt',
+        subfolder='signor',
+        query={
+            'organism': _organism,
+            'format': 'causalTab',
+            'submit': 'Download',
+        },
+        post=True,
+    )
+
+    # Read and yield lines from the downloaded file
+    if file_path:
+        with open(file_path, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line:  # Skip empty lines
+                    yield line
 
 
 def _parse_entity_type(mitab_type: str) -> str:

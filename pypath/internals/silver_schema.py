@@ -48,8 +48,6 @@ class Membership(NamedTuple):
 class Entity(NamedTuple):
     """ Entity record matching entities schema."""
 
-    # Required fields
-    source: str
     type: EntityTypeCv # e.g. EntityTypeCv.INTERACTION, EntityTypeCv.CV_TERM
     identifiers: List[Identifier]  # e.g. IdentifierNamespaceCv.NAME and .SYNONYM)
     annotations: List[Annotation] | None = None
