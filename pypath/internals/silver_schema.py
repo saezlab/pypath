@@ -12,7 +12,6 @@ import pyarrow as pa
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
-    AnnotationTypeCv,  # This is the Union of all annotation CV terms
     LicenseCV,
     UpdateCategoryCV,
 )
@@ -42,7 +41,7 @@ class Identifier(NamedTuple):
 class Annotation(NamedTuple):
     """Annotation for an interaction or entity."""
 
-    term: AnnotationTypeCv
+    term: str
     value: str | float | None = None
     units: str | None = None
 

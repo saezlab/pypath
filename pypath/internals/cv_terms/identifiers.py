@@ -1,34 +1,9 @@
-"""Entity type and identifier namespace controlled vocabularies.
+"""Identifier namespace controlled vocabularies.
 
-This module contains CV terms for describing entities (proteins, genes, compounds, etc.)
-and their identifier namespaces (UniProt, ChEBI, PubChem, etc.).
+This module contains all CV terms related to identifier namespaces and reference types,
+including database identifiers, chemical structure representations, and reference sources.
 """
 from .core import CvEnum
-
-
-class EntityTypeCv(CvEnum):
-    """Common PSI-MI and OmniPath entity type terms.
-
-    Defines the types of entities that can be represented in the system,
-    including standard PSI-MI types and OmniPath-specific extensions.
-    """
-
-    parent_cv_term = "MI:0313"  # interactor type - Molecular species involved in the interaction
-
-    # PSI-MI standard terms
-    PROTEIN = "MI:0326"
-    GENE = "MI:0250"
-    RNA = "MI:0320"
-    PROTEIN_COMPLEX = "MI:0315"
-    SMALL_MOLECULE = "MI:0328"
-    PHENOTYPE = "MI:2261"
-    STIMULUS = "MI:2260"
-
-    # OmniPath-specific terms (OM:0010-0099 range)
-    PROTEIN_FAMILY = ("OM:0010", "Protein family grouping related proteins")
-    LIPID = ("OM:0011", "Lipid molecule or lipid-like compound")
-    CV_TERM = ("OM:0012", "Controlled vocabulary term entity")
-    INTERACTION = ("OM:0013", "Interaction entity for representing interactions as nodes")
 
 
 class IdentifierNamespaceCv(CvEnum):
@@ -88,3 +63,9 @@ class IdentifierNamespaceCv(CvEnum):
     SMILES = "MI:0239"
     STANDARD_INCHI_KEY = "MI:1101"
     STANDARD_INCHI = "MI:2010"
+
+    # PSI-MI standard reference types
+    PUBMED = "MI:0446"
+    PUBMED_CENTRAL = "MI:1042"
+    DOI = "MI:0574"
+    BIORXIV = "MI:2347"

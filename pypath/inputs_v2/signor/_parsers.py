@@ -30,8 +30,8 @@ from collections.abc import Generator
 
 from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity as SilverEntity
-from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV
-from ..internals.tabular_builder import (
+from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv
+from ...internals.tabular_builder import (
     Annotations,
     Column,
     Entity,
@@ -42,6 +42,7 @@ from ..internals.tabular_builder import (
 )
 import csv
 from pypath.internals.silver_schema import Resource
+from omnipath_build.utils.cv_terms import LicenseCV, UpdateCategoryCV, ReferenceTypeCv
 
 
 def get_resource() -> Resource:
@@ -260,7 +261,7 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
             Column('Interaction detection method(s)', delimiter='|', processing=mi_term_processing),
             Column('Causal statement', delimiter='|', processing=mi_term_processing),
             Column('Causal Regulatory Mechanism', delimiter='|', processing=mi_term_processing),
-            Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=IdentifierNamespaceCv.PUBMED),
+            Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=ReferenceTypeCv.PUBMED),
         ),
         members=Members(
             Member(

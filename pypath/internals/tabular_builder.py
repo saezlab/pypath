@@ -17,7 +17,6 @@ from pypath.internals.silver_schema import (
     Membership as SilverMembership,
 )
 from pypath.internals.cv_terms import (
-    AnnotationTypeCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
 )
@@ -55,7 +54,7 @@ class Column:
         delimiter: str | None = None,
         processing: dict[str, str | re.Pattern] | None = None,
         cv: Any | dict[str, Any] | Callable[[ParsedValue], Any] | None = None,
-        term_cv: AnnotationTypeCv | None = None,
+        term_cv: str | None = None,
         unit_cv: IdentifierNamespaceCv | None = None,
     ) -> None:
         self.selector = selector
@@ -88,7 +87,8 @@ class Column:
             value = self._apply_regex('extract_value', text)
             value = value.strip() if isinstance(value, str) else value
             # If we have an extract_term, don't default value to text
-            if value in (None, '') and term is None:
+            # If extract_value was specified but didn't match, also don't default to text
+            if value in (None, '') and term is None and 'extract_value' not in self.processing:
                 value = text
 
             units = self._apply_regex('extract_unit', text)
@@ -203,7 +203,8 @@ class Identifiers:
         for column in self.columns:
             for value in cache.values(column, row):
                 id_type = column.resolve_cv(value)
-                literal = value.value or value.raw
+                # If extract_value was specified, only use value (not raw fallback)
+                literal = value.value if 'extract_value' in column.processing else (value.value or value.raw)
                 if not id_type or not literal:
                     continue
                 # Deduplicate identifiers
@@ -230,7 +231,8 @@ class Identifiers:
                 continue
             value = values[index]
             id_type = column.resolve_cv(value)
-            literal = value.value or value.raw
+            # If extract_value was specified, only use value (not raw fallback)
+            literal = value.value if 'extract_value' in column.processing else (value.value or value.raw)
             if not id_type or not literal:
                 continue
             # Deduplicate identifiers
@@ -267,6 +269,9 @@ class Annotations:
                     continue
                 # When term is extracted separately, value may be None
                 annotation_value = value.value if value.value not in (None, '') else None
+                # Skip if extract_value was specified but didn't match (and no extract_term)
+                if 'extract_value' in column.processing and annotation_value is None and 'extract_term' not in column.processing:
+                    continue
                 # Deduplicate annotations
                 annot_key = (resolved_term, annotation_value, value.units)
                 if annot_key in seen:
@@ -305,6 +310,9 @@ class Annotations:
                 continue
             # When term is extracted separately, value may be None
             annotation_value = value.value if value.value not in (None, '') else None
+            # Skip if extract_value was specified but didn't match (and no extract_term)
+            if 'extract_value' in column.processing and annotation_value is None and 'extract_term' not in column.processing:
+                continue
             # Deduplicate annotations
             annot_key = (resolved_term, annotation_value, value.units)
             if annot_key in seen:
