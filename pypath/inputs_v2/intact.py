@@ -89,9 +89,44 @@ def intact_interactions(organism: int = 9606) -> Generator[SilverEntity, None, N
         large=True,
         ext='zip',
     )
+    # Mapping of identifier prefixes (from IntAct MITAB data) to CV terms
+    # All prefixes found in ID and Alt ID columns (from complete analysis of all 1.18M rows):
+    # bind smid, cas registry number, chebi, chembl, chembl compound, ddbj/embl/genbank,
+    # dip, ensembl, ensemblgenomes, entrezgene/locuslink, flybase, genbank identifier,
+    # genbank_nucl_gi, genbank_protein_gi, hgnc, imex, intact, ipi, mint, mirbase,
+    # pdbe, psi-mi, refseq, rfam, rnacentral, uniparc, uniprotkb
+    identifier_cv_mapping = {
+        'bind smid': IdentifierNamespaceCv.BIND,
+        'cas registry number': IdentifierNamespaceCv.CAS,
+        'chebi': IdentifierNamespaceCv.CHEBI,
+        'chembl': IdentifierNamespaceCv.CHEMBL,
+        'chembl compound': IdentifierNamespaceCv.CHEMBL_COMPOUND,
+        'ddbj/embl/genbank': IdentifierNamespaceCv.REFSEQ,  # GenBank/EMBL/DDBJ accessions
+        'dip': IdentifierNamespaceCv.DIP,
+        'ensembl': IdentifierNamespaceCv.ENSEMBL,
+        'ensemblgenomes': IdentifierNamespaceCv.ENSEMBL_GENOMES,
+        'entrezgene/locuslink': IdentifierNamespaceCv.ENTREZ,
+        'flybase': IdentifierNamespaceCv.FLYBASE,
+        'genbank identifier': IdentifierNamespaceCv.GENBANK_IDENTIFIER,
+        'genbank_nucl_gi': IdentifierNamespaceCv.GENBANK_NUCL_GI,
+        'genbank_protein_gi': IdentifierNamespaceCv.GENBANK_PROTEIN_GI,
+        'hgnc': IdentifierNamespaceCv.HGNC,
+        'imex': IdentifierNamespaceCv.IMEX,
+        'intact': IdentifierNamespaceCv.INTACT,
+        'ipi': IdentifierNamespaceCv.IPI,
+        'mint': IdentifierNamespaceCv.MINT,
+        'mirbase': IdentifierNamespaceCv.MIRBASE,
+        'pdbe': IdentifierNamespaceCv.PDB,  # PDBe is the European branch of PDB
+        'psi-mi': IdentifierNamespaceCv.CV_TERM_ACCESSION,  # CV term accessions (e.g., MINT-xxx)
+        'refseq': IdentifierNamespaceCv.REFSEQ,
+        'rfam': IdentifierNamespaceCv.RFAM,
+        'rnacentral': IdentifierNamespaceCv.RNACENTRAL,
+        'uniparc': IdentifierNamespaceCv.UNIPARC,
+        'uniprotkb': IdentifierNamespaceCv.UNIPROT,
+    }
 
     # Processing patterns for MITAB fields
-    uniprot_processing = {'extract_value': r'uniprotkb:([^|"]+)'}
+    general_id_processing = {'extract_prefix': r'^([^:]+):', 'extract_value': r'^[^:]+:([^|"]+)'}
     tax_processing = {'extract_value': r'taxid:([-\d]+)'}
     pubmed_processing = {'extract_value': r'(?i)pubmed:(\d+)'}
     mi_term_processing = {'extract_term': r'(MI:\d+)'}
@@ -140,8 +175,8 @@ def intact_interactions(organism: int = 9606) -> Generator[SilverEntity, None, N
                 entity=Entity(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
-                        Column('#ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
-                        Column('Alt. ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                        Column('#ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
+                        Column('Alt. ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                     ),
                     annotations=Annotations(
                         Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
@@ -165,8 +200,8 @@ def intact_interactions(organism: int = 9606) -> Generator[SilverEntity, None, N
                 entity=Entity(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
-                        Column('ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
-                        Column('Alt. ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                        Column('ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
+                        Column('Alt. ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                     ),
                     annotations=Annotations(
                         Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),

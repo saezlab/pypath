@@ -9,8 +9,7 @@ Resource configurations in `pypath/inputs_v2/` use a declarative schema pattern 
 ```python
 from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity as SilverEntity, Resource
-from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, AnnotationTypeCv
-from omnipath_build.utils.cv_terms import LicenseCV, UpdateCategoryCV
+from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV
 from .tabular_builder import Annotations, Column, Entity, Identifiers
 import csv
 
@@ -69,7 +68,7 @@ Column(
         'extract_prefix': r'^(\w+):',      # Extract prefix
         'extract_unit': r'(\w+)$',         # Extract units
     },
-    cv=AnnotationTypeCv.NAME,
+    cv=IdentifierNamespaceCv.NAME,
 )
 ```
 

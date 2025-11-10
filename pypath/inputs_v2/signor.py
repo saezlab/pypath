@@ -235,7 +235,19 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
         'extract_prefix': r'^([^:]+):',
         'extract_value': r'^[^:]+:(.*)',
     }
-    uniprot_processing = {'extract_value': r'uniprotkb:([^|"]+)'}
+
+    # Mapping of identifier prefixes (from SIGNOR data) to CV terms
+    # All prefixes found in ID and Alt ID columns: chebi, complexportal, pubchem, signor, uniprotkb
+    identifier_cv_mapping = {
+        'chebi': IdentifierNamespaceCv.CHEBI,
+        'complexportal': IdentifierNamespaceCv.COMPLEXPORTAL,
+        'pubchem': IdentifierNamespaceCv.PUBCHEM,
+        'signor': IdentifierNamespaceCv.SIGNOR,
+        'uniprotkb': IdentifierNamespaceCv.UNIPROT,
+    }
+
+    # Processing patterns for specific identifier types
+    general_id_processing = {'extract_prefix': r'^([^:]+):', 'extract_value': r'^[^:]+:([^|"]+)'}
     tax_processing = {'extract_value': r'taxid:([-\d]+)'}
     pubmed_processing = {'extract_value': r'(?i)pubmed:(\d+)'}
 
@@ -267,8 +279,8 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
                 entity=Entity(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
-                        Column('\ufeff#ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
-                        Column('Alt. ID(s) interactor A', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                        Column('\ufeff#ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
+                        Column('Alt. ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                     ),
                     annotations=Annotations(Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
                 ),
@@ -281,8 +293,8 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
                 entity=Entity(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
-                        Column('ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
-                        Column('Alt. ID(s) interactor B', delimiter='|', processing=uniprot_processing, cv=IdentifierNamespaceCv.UNIPROT),
+                        Column('ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
+                        Column('Alt. ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                     ),
                     annotations=Annotations(Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
                 ),
