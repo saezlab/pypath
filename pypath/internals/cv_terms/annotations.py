@@ -214,7 +214,7 @@ class MoleculeAnnotationsCv(CvEnum):
     PROTEIN_FAMILY = ("OM:0610", "Protein family classification")
     EC_NUMBER = ("OM:0610", "Enzyme Commission number")
     MUTAGENESIS = ("OM:0612", "Details about mutagenesis experiments")
-
+    DESCRIPTION = ("OM:0613", "General description of the molecule")
 
 class InteractionParameterCv(CvEnum):
     """Interaction parameter terms from PSI-MI.
