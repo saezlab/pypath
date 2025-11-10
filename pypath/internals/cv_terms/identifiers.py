@@ -69,6 +69,8 @@ class IdentifierNamespaceCv(CvEnum):
     GENE_NAME_PRIMARY = ("OM:0200", "Primary gene name or symbol")
     GENE_NAME_SYNONYM = ("OM:0201", "Alternative gene name or synonym")
     NAME = ("OM:0202", "Generic primary name for any entity type")
+    IUPAC_NAME = ("OM:0210", "IUPAC chemical name")
+    IUPAC_TRADITIONAL_NAME = ("OM:0211", "Traditional IUPAC chemical name")
     SYNONYM = ("OM:0203", "Generic synonym or alternative name")
     CV_TERM_ACCESSION = ("OM:0204", "Controlled vocabulary term accession")
     NCBI_TAX_ID = ("OM:0205", "NCBI Taxonomy database ID", "https://www.ncbi.nlm.nih.gov/taxonomy")
