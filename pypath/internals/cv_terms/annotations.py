@@ -214,3 +214,29 @@ class MoleculeAnnotationsCv(CvEnum):
     PROTEIN_FAMILY = ("OM:0610", "Protein family classification")
     EC_NUMBER = ("OM:0610", "Enzyme Commission number")
     MUTAGENESIS = ("OM:0612", "Details about mutagenesis experiments")
+
+
+class InteractionParameterCv(CvEnum):
+    """Interaction parameter terms from PSI-MI.
+
+    Describes kinetic and thermodynamic parameters for enzymatic or binding
+    studies, including affinity measurements, rate constants, and experimental
+    conditions (e.g., pH, temperature).
+    """
+
+    parent_cv_term = "MI:0640"  # parameter type - Parameter for enzymatic or binding kinetic studies
+
+    # Binding affinity measurements (equilibrium constants)
+    KI = "MI:0643"  # Equilibrium constant for dissociation of an inhibitor. Unit Molar.
+    KD = "MI:0646"  # The equilibrium dissociation constant. Unit Molar.
+    IC50 = "MI:0641"  # Molar concentration producing 50% of maximum inhibitory response. Unit Molar.
+    EC50 = "MI:0642"  # Molar concentration producing 50% of maximum response for agonist. Unit Molar.
+
+    # Rate constants
+    KON = "MI:0834"  # Association rate constant or rate of complex formation. Unit M-1 s-1
+    KOFF = "MI:0835"  # Dissociation rate constant measuring stability of a complex. Unit s-1
+
+    # Experimental conditions
+    PH = "MI:0837"  # pH at which interaction was determined
+    TEMPERATURE = "MI:0836"  # Temperature at which interaction was determined. Unit KELVIN (K)
+    TEMPERATURE_CELSIUS = ("OM:0701", "Temperature at which interaction was determined. Unit CELSIUS (C)")

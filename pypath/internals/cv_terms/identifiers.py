@@ -83,3 +83,4 @@ class IdentifierNamespaceCv(CvEnum):
     PUBMED_CENTRAL = "MI:1042"
     DOI = "MI:0574"
     BIORXIV = "MI:2347"
+    PATENT_NUMBER = ("OM:0206", "Patent number identifier")

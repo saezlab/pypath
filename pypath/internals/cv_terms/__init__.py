@@ -50,6 +50,7 @@ from .annotations import (
     CausalStatementCv,
     ComplexExpansionCv,
     CurationCv,
-    MoleculeAnnotationsCv
+    MoleculeAnnotationsCv,
+    InteractionParameterCv
 )
 from .resource_metadata import LicenseCV, UpdateCategoryCV
