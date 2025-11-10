@@ -30,9 +30,8 @@ from collections.abc import Generator
 
 from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity as SilverEntity, Resource
-from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv
-from omnipath_build.utils.cv_terms import LicenseCV, UpdateCategoryCV, ReferenceTypeCv
-from .tabular_builder import (
+from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV
+from ..internals.tabular_builder import (
     Annotations,
     Column,
     Entity,
@@ -118,7 +117,7 @@ def intact_interactions(organism: int = 9606) -> Generator[SilverEntity, None, N
             Column('Expansion method(s)', delimiter='|'),
 
             # Publication information
-            Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=ReferenceTypeCv.PUBMED),
+            Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=IdentifierNamespaceCv.PUBMED),
             Column('Publication 1st author(s)', delimiter='|'),
 
             # Experimental details

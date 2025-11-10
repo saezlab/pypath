@@ -36,74 +36,20 @@ Accession Ranges:
 from typing import Union
 
 from .core import CvEnum
-from .entities import EntityTypeCv, IdentifierNamespaceCv
-from .roles import (
+from .entity_types import EntityTypeCv
+from .identifiers import IdentifierNamespaceCv
+from .annotations import (
     MembershipRoleCv,
     BiologicalRoleCv,
     ExperimentalRoleCv,
     IdentificationMethodCv,
-)
-from .interactions import (
     InteractionTypeCv,
     DetectionMethodCv,
     BiologicalEffectCv,
     CausalMechanismCv,
     CausalStatementCv,
     ComplexExpansionCv,
-)
-from .references import ReferenceTypeCv, CurationCv
-from .licenses import LicenseCV, UpdateCategoryCV
-
-__all__ = [
-    # Core
-    'CvEnum',
-
-    # Entity-related
-    'EntityTypeCv',
-    'IdentifierNamespaceCv',
-
-    # Role-related
-    'MembershipRoleCv',
-    'BiologicalRoleCv',
-    'ExperimentalRoleCv',
-    'IdentificationMethodCv',
-
-    # Interaction-related
-    'InteractionTypeCv',
-    'DetectionMethodCv',
-    'BiologicalEffectCv',
-    'CausalMechanismCv',
-    'CausalStatementCv',
-    'ComplexExpansionCv',
-
-    # Reference and curation
-    'ReferenceTypeCv',
-    'CurationCv',
-
-    # Licenses and metadata
-    'LicenseCV',
-    'UpdateCategoryCV',
-
-    # Type unions
-    'AnnotationTypeCv',
-]
-
-
-# Type alias for all CV terms that can be used in annotations
-# This maintains backward compatibility with the original cv_term_enums.py
-AnnotationTypeCv = Union[
-    BiologicalRoleCv,
-    ExperimentalRoleCv,
-    IdentificationMethodCv,
-    BiologicalEffectCv,
-    InteractionTypeCv,
-    DetectionMethodCv,
-    CausalMechanismCv,
-    CausalStatementCv,
-    ComplexExpansionCv,
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    MembershipRoleCv,
-    ReferenceTypeCv,
     CurationCv,
-]
+    MoleculeAnnotationsCv
+)
+from .resource_metadata import LicenseCV, UpdateCategoryCV

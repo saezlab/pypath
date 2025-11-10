@@ -34,10 +34,10 @@ from pypath.internals.silver_schema import Entity as SilverEntity, Resource
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
-    AnnotationTypeCv,
+    MoleculeAnnotationsCv,
+    LicenseCV, UpdateCategoryCV
 )
-from omnipath_build.utils.cv_terms import LicenseCV, UpdateCategoryCV
-from .tabular_builder import (
+from ..internals.tabular_builder import (
     Annotations,
     Column,
     Entity,
@@ -116,13 +116,13 @@ def uniprot_proteins() -> Generator[SilverEntity]:
             Column('Entry Name', cv=IdentifierNamespaceCv.UNIPROT),
 
             # Primary gene name
-            Column('Gene Names (primary)', cv=IdentifierNamespaceCv.GENESYMBOL),
+            Column('Gene Names (primary)', cv=IdentifierNamespaceCv.GENE_NAME_PRIMARY),
 
             # Gene synonyms (space-delimited)
             Column(
                 'Gene Names (synonym)',
                 delimiter=' ',
-                cv=IdentifierNamespaceCv.GENESYMBOL,
+                cv=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
             ),
 
             # Protein name - extract primary (before parentheses)
@@ -132,11 +132,12 @@ def uniprot_proteins() -> Generator[SilverEntity]:
                 cv=IdentifierNamespaceCv.NAME,
             ),
 
-            # Protein name synonyms - extract all content in parentheses
-            # Note: This will need custom handling for multiple matches
+            # Protein name synonyms - split by '(' and extract content before ')'
+            # Regex only matches tokens with ')', avoiding the primary name
             Column(
                 'Protein names',
-                processing={'extract_value': r'\(([^)]+)\)'},
+                delimiter='(',
+                processing={'extract_value': r'^([^)]+)\)'},
                 cv=IdentifierNamespaceCv.SYNONYM,
             ),
 
@@ -154,37 +155,37 @@ def uniprot_proteins() -> Generator[SilverEntity]:
         ),
         annotations=Annotations(
             # Numeric annotations
-            Column('Length', cv=AnnotationTypeCv.LENGTH),
-            Column('Mass', cv=AnnotationTypeCv.MASS),
+            Column('Length', cv=MoleculeAnnotationsCv.SEQUENCE_LENGTH),
+            Column('Mass', cv=MoleculeAnnotationsCv.MASS_DALTON),
 
             # Functional annotations
-            Column('Function [CC]', cv=AnnotationTypeCv.FUNCTION),
-            Column('Subcellular location [CC]', cv=AnnotationTypeCv.SUBCELLULAR_LOCATION),
-            Column('Post-translational modification', cv=AnnotationTypeCv.PTM),
-            Column('Involvement in disease', cv=AnnotationTypeCv.DISEASE),
-            Column('Pathway', cv=AnnotationTypeCv.PATHWAY),
-            Column('Activity regulation', cv=AnnotationTypeCv.ACTIVITY_REGULATION),
+            Column('Function [CC]', cv=MoleculeAnnotationsCv.FUNCTION),
+            Column('Subcellular location [CC]', cv=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION),
+            Column('Post-translational modification', cv=MoleculeAnnotationsCv.POST_TRANSLATIONAL_MODIFICATION),
+            Column('Involvement in disease', cv=MoleculeAnnotationsCv.DISEASE_INVOLVEMENT),
+            Column('Pathway', cv=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION),
+            Column('Activity regulation', cv=MoleculeAnnotationsCv.ACTIVITY_REGULATION),
 
             # Feature annotations
-            Column('Mutagenesis', cv=AnnotationTypeCv.MUTAGENESIS),
-            Column('Transmembrane', cv=AnnotationTypeCv.TRANSMEMBRANE),
-            Column('Protein families', cv=AnnotationTypeCv.PROTEIN_FAMILY),
-            Column('EC number', cv=AnnotationTypeCv.EC),
+            Column('Mutagenesis', cv=MoleculeAnnotationsCv.MUTAGENESIS),
+            Column('Transmembrane' ,cv=MoleculeAnnotationsCv.TRANSMEMBRANE_REGION),
+            Column('Protein families', delimiter=",", cv=MoleculeAnnotationsCv.PROTEIN_FAMILY),
+            Column('EC number', delimiter=";", cv=MoleculeAnnotationsCv.EC_NUMBER),
 
             # Sequence
-            Column('Sequence', cv=AnnotationTypeCv.SEQUENCE),
+            Column('Sequence', cv=MoleculeAnnotationsCv.AMINO_ACID_SEQUENCE),
 
             # GO terms as CV term accessions
-            Column('Gene Ontology IDs', delimiter=';', cv=AnnotationTypeCv.CV_TERM_ACCESSION),
+            Column('Gene Ontology IDs', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
 
             # Keywords as CV term accessions
-            Column('Keywords IDs', delimiter=';', cv=AnnotationTypeCv.CV_TERM_ACCESSION),
+            Column('Keywords IDs', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
 
             # Organism as annotation
-            Column('Organism (ID)', cv=AnnotationTypeCv.ORGANISM),
+            Column('Organism (ID)', cv=IdentifierNamespaceCv.NCBI_TAX_ID),
 
             # PubMed references as annotations
-            Column('PubMed ID', delimiter=';', cv=AnnotationTypeCv.PUBMED),
+            Column('PubMed ID', delimiter=';', cv=IdentifierNamespaceCv.PUBMED),
         ),
     )
 
