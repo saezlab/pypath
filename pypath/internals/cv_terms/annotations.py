@@ -14,7 +14,7 @@ class MembershipRoleCv(CvEnum):
     or compositional relationships (e.g., proteins in complexes, ontology terms).
     """
 
-    parent_cv_term = ("OM:0300", "Membership role term - Describes the membership relationship of an entity.")  # OmniPath-specific term - no PSI-MI parent
+    parent_cv_term = ("OM:0300", "Membership role term", "Describes the membership relationship of an entity.")  # OmniPath-specific term - no PSI-MI parent
 
     # Ontological and membership relationships (OM:0300-0399 range)
     IS_A = ("OM:0301", "Hierarchical parent-child relationship in ontologies")
@@ -183,7 +183,7 @@ class CurationCv(CvEnum):
     supporting evidence for interactions and entities.
     """
 
-    parent_cv_term = ("OM:0400", "Curation term - Describes the results of a curation process and supporting evidence for interactions and entities.")  # OmniPath-specific term - no PSI-MI parent
+    parent_cv_term = ("OM:0400", "Curation term", "Describes the results of a curation process and supporting evidence for interactions and entities.")  # OmniPath-specific term - no PSI-MI parent
 
     # OmniPath curation terms (OM:0400-0499 range)
     EVIDENCE_SENTENCE = (
@@ -200,7 +200,7 @@ class MoleculeAnnotationsCv(CvEnum):
     Describes various annotation categories used in molecule entries,
     such as domains, families, transmembrane regions, and mutagenesis data.
     """
-    parent_cv_term = ("OM:0600", "Molecule annotation type term - Describes various annotation categories used in molecule entries.")
+    parent_cv_term = ("OM:0600", "Molecule annotation type term", "Describes various annotation categories used in molecule entries.")
     AMINO_ACID_SEQUENCE = ("OM:0600", "Sequence of amino acids of the protein or peptide")
     SEQUENCE_LENGTH = ("OM:0601", "Length of the protein sequence")
     MASS_DALTON = ("OM:0602", "Molecular mass in Daltons")
@@ -249,7 +249,7 @@ class OntologyAnnotationCv(CvEnum):
     Note: Relationships like is_a and xref should use CV_TERM_ACCESSION in identifiers.
     """
 
-    parent_cv_term = ("OM:0800", "Ontology annotation term - Describes metadata for ontology terms.")
+    parent_cv_term = ("OM:0800", "Ontology annotation term", "Describes metadata for ontology terms.")
 
     # Core ontology metadata (OM:0800-0899 range)
     DEFINITION = ("OM:0801", "Textual definition of an ontology term")

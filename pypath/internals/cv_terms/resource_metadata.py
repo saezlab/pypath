@@ -12,7 +12,7 @@ class LicenseCV(CvEnum):
     Describes the licensing terms under which data sources are available.
     """
 
-    parent_cv_term = ("OM:0500", "License term - Describes the licensing terms under which data sources are available.")  # OmniPath-specific term - no PSI-MI parent
+    parent_cv_term = ("OM:0500", "License term", "Describes the licensing terms under which data sources are available.")  # OmniPath-specific term - no PSI-MI parent
 
     # OmniPath license terms (OM:0301-0399 range - note: different from membership roles)
     CC_BY_4_0 = (
@@ -51,7 +51,7 @@ class UpdateCategoryCV(CvEnum):
     Describes how frequently a data source is expected to be updated.
     """
 
-    parent_cv_term = ("OM:0400", "Update frequency term - Describes how frequently a data source is expected to be updated.")
+    parent_cv_term = ("OM:0400", "Update frequency term", "Describes how frequently a data source is expected to be updated.")
 
     # OmniPath update category terms (OM:0401-0499 range)
     REGULAR = (

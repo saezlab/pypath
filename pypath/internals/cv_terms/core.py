@@ -73,20 +73,25 @@ class CvEnum(str, Enum, metaclass=CvEnumMeta):
     def __new__(
         cls,
         accession: str,
-        definition: str | None = None,
-        source: str | None = None
+        name_or_definition: str | None = None,
+        definition_or_source: str | None = None
     ):
         """Create a new CV term with metadata.
 
         Args:
             accession: The CV term accession (e.g., "MI:0326" or "OM:0001")
-            definition: Human-readable definition of the term
-            source: URL or reference to the term's source
+            name_or_definition: For 2-tuples: definition. For 3-tuples: name
+            definition_or_source: For 2-tuples: source. For 3-tuples: definition
         """
         obj = str.__new__(cls, accession)
         obj._value_ = accession
-        obj.definition = definition
-        obj.source = source
+
+        # Handle both 2-tuple and 3-tuple formats
+        # 2-tuple: (accession, definition) or (accession, definition, source)
+        # 3-tuple: (accession, name, definition)
+        # We'll store name_or_definition as definition for backward compatibility
+        obj.definition = name_or_definition
+        obj.source = definition_or_source
         return obj
 
     def __str__(self):
