@@ -30,6 +30,11 @@ class LicenseCV(CvEnum):
         "GNU General Public License v3.0",
         "https://www.gnu.org/licenses/gpl-3.0.html"
     )
+    CC_BY_SA_4_0 = (
+        "OM:0510",
+        "Creative Commons Attribution-ShareAlike 4.0 International license",
+        "https://creativecommons.org/licenses/by-sa/4.0/"
+    )
     MIT = (
         "OM:0504",
         "MIT License - permissive free software license",

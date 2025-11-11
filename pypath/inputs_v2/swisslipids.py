@@ -111,32 +111,25 @@ def swisslipids_lipids() -> Generator[SilverEntity, None, None]:
         identifiers=Identifiers(
             # Primary SwissLipids identifier
             Column('Lipid ID', cv=IdentifierNamespaceCv.SWISSLIPIDS),
-            # Common name
             Column('Name', cv=IdentifierNamespaceCv.NAME),
-            # Chemical structure identifiers
             Column('InChI key (pH7.3)', cv=IdentifierNamespaceCv.STANDARD_INCHI_KEY, processing={'filter': filter_inchikey}),
             Column('InChI (pH7.3)', cv=IdentifierNamespaceCv.STANDARD_INCHI, processing={'filter': filter_inchi}),
             Column('SMILES (pH7.3)', cv=IdentifierNamespaceCv.SMILES),
-            # Cross-references to other databases
             Column('CHEBI', cv=IdentifierNamespaceCv.CHEBI, processing={'filter': filter_chebi}),
             Column('LIPID MAPS', cv=IdentifierNamespaceCv.LIPIDMAPS),
             Column('HMDB', cv=IdentifierNamespaceCv.HMDB),
             Column('MetaNetX', cv=IdentifierNamespaceCv.METANETX),
-            # Synonyms (semicolon-separated)
             Column('Synonyms*', cv=IdentifierNamespaceCv.SYNONYM, delimiter=';'),
+            Column('Abbreviation*', cv=IdentifierNamespaceCv.SYNONYM),
+
         ),
         annotations=Annotations(
-            # Hierarchical classification
-            Column('Level', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
-            Column('Lipid class*', cv=IdentifierNamespaceCv.NAME),
+            Column('Level', cv=MoleculeAnnotationsCv.LIPID_HIERARCHY_LEVEL),
+            Column('Lipid class*', cv=MoleculeAnnotationsCv.LIPID_MAIN_CLASS),
             Column('Parent', cv=IdentifierNamespaceCv.SWISSLIPIDS),
-            Column('Components*', cv=IdentifierNamespaceCv.NAME),
-            # Chemical properties
-            Column('Formula (pH7.3)', cv=MoleculeAnnotationsCv.DESCRIPTION),
-            Column('Charge (pH7.3)', cv=MoleculeAnnotationsCv.DESCRIPTION),
+            Column('Components*', cv=MoleculeAnnotationsCv.LIPID_STRUCTURAL_COMPONENTS),
+            Column('Charge (pH7.3)', cv=MoleculeAnnotationsCv.MOLECULAR_CHARGE),
             Column('Exact Mass (neutral form)', cv=MoleculeAnnotationsCv.MASS_DALTON),
-            # Display name
-            Column('Abbreviation*', cv=IdentifierNamespaceCv.NAME),
             Column('PMID', delimiter='|', cv=IdentifierNamespaceCv.PUBMED)
         ),
     )
