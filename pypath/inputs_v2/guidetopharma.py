@@ -129,7 +129,7 @@ target_type_mapping = {
     'other_protein': EntityTypeCv.OTHER_PROTEIN,
 }
 
-# Mapping for Target Species to NCBI Taxonomy IDs
+# Mapping for Target Species to NCBI Taxonomy IDs TODO need to be checked again.
 species_to_taxid = {
     'Human': '9606',
     'Mouse': '10090',
@@ -152,14 +152,14 @@ species_to_taxid = {
     'Mycobacterium tuberculosis': '1773',
     'Plasmodium falciparum': '5833',
     'Plasmodium falciparum 3D7': '36329',
-    'Plasmodium falciparum 7G8': '137071',
+    'Plasmodium falciparum 7G8': '57266',
     'Plasmodium falciparum A2': '5833',  # Use parent taxid as strain not in NCBI
-    'Plasmodium falciparum D6': '137072',
-    'Plasmodium falciparum Dd2': '137073',
+    'Plasmodium falciparum D6': '478860',
+    'Plasmodium falciparum Dd2': '57267',
     'Plasmodium falciparum FC27': '5833',
-    'Plasmodium falciparum FCR3': '137074',
-    'Plasmodium falciparum HB3': '137075',
-    'Plasmodium falciparum K1': '137076',
+    'Plasmodium falciparum FCR3': '5833',  # Use parent taxid as strain not in NCBI
+    'Plasmodium falciparum HB3': '137071',
+    'Plasmodium falciparum K1': '5839',
     'Plasmodium falciparum NF54': '5833',
     'Plasmodium falciparum TM4': '5833',
     'Plasmodium falciparum TM90C2A': '5833',
@@ -176,7 +176,7 @@ species_to_taxid = {
     'SARS-CoV-2': '2697049',
     'MERS-CoV': '1335626',
     'HCoV-OC43': '31631',
-    'Hepatitis C virus': '11103',
+    'Hepatitis C virus': '3052230',
     'Zika virus': '64320',
 }
 
