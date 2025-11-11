@@ -240,3 +240,18 @@ class InteractionParameterCv(CvEnum):
     PH = "MI:0837"  # pH at which interaction was determined
     TEMPERATURE = "MI:0836"  # Temperature at which interaction was determined. Unit KELVIN (K)
     TEMPERATURE_CELSIUS = ("OM:0701", "Temperature at which interaction was determined. Unit CELSIUS (C)")
+
+
+class OntologyAnnotationCv(CvEnum):
+    """Ontology annotation terms.
+
+    Describes metadata for ontology terms (CV_TERM entities).
+    Note: Relationships like is_a and xref should use CV_TERM_ACCESSION in identifiers.
+    """
+
+    parent_cv_term = ("OM:0800", "Ontology annotation term - Describes metadata for ontology terms.")
+
+    # Core ontology metadata (OM:0800-0899 range)
+    DEFINITION = ("OM:0801", "Textual definition of an ontology term")
+    COMMENT = ("OM:0805", "Additional comment or note about an ontology term")
+    IS_OBSOLETE = ("OM:0806", "Indicates whether the term is obsolete")

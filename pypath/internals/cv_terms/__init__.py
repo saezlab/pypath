@@ -51,6 +51,7 @@ from .annotations import (
     ComplexExpansionCv,
     CurationCv,
     MoleculeAnnotationsCv,
-    InteractionParameterCv
+    InteractionParameterCv,
+    OntologyAnnotationCv,
 )
 from .resource_metadata import LicenseCV, UpdateCategoryCV
