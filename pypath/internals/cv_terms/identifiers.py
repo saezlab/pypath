@@ -64,21 +64,29 @@ class IdentifierNamespaceCv(CvEnum):
     SIGNOR = ("OM:0007", "SIGNOR database identifier", "https://signor.uniroma2.it")
     GUIDETOPHARMA = ("OM:0008", "Guide to Pharmacology identifier", "https://www.guidetopharmacology.org")
     SWISSLIPIDS = ("OM:0009", "SwissLipids database ID", "https://www.swisslipids.org")
+    INN = ("OM:0010", "International Nonproprietary Name", "https://www.who.int/teams/health-product-and-policy-standards/inn")
+    GTO_IMMU_PDB = ("OM:0011", "Guide to Immunopharmacology identifier", "https://www.guidetopharmacology.org/immunopharmacology.jsp")
+    GTO_M_PDB = ("OM:0012", "Guide to Malaria Pharmacology identifier", "https://www.guidetopharmacology.org/malaria.jsp")
 
     # Gene and protein names (OM:0200-0209 range)
     GENE_NAME_PRIMARY = ("OM:0200", "Primary gene name or symbol")
     GENE_NAME_SYNONYM = ("OM:0201", "Alternative gene name or synonym")
     NAME = ("OM:0202", "Generic primary name for any entity type")
-    IUPAC_NAME = ("OM:0210", "IUPAC chemical name")
-    IUPAC_TRADITIONAL_NAME = ("OM:0211", "Traditional IUPAC chemical name")
     SYNONYM = ("OM:0203", "Generic synonym or alternative name")
     CV_TERM_ACCESSION = ("OM:0204", "Controlled vocabulary term accession")
     NCBI_TAX_ID = ("OM:0205", "NCBI Taxonomy database ID", "https://www.ncbi.nlm.nih.gov/taxonomy")
+    SYSTEMATIC_NAME = ("OM:0207", "Systematic or official nomenclature name")
+    ABBREVIATED_NAME = ("OM:0208", "Abbreviated or short form name")
+
+    # Chemical names (OM:0210-0219 range)
+    IUPAC_NAME = ("OM:0210", "IUPAC chemical name")
+    IUPAC_TRADITIONAL_NAME = ("OM:0211", "Traditional IUPAC chemical name")
 
     # Structure representations (PSI-MI standard)
     SMILES = "MI:0239"
     STANDARD_INCHI_KEY = "MI:1101"
     STANDARD_INCHI = "MI:2010"
+    MOLECULAR_FORMULA = ("OM:0212", "Molecular formula (e.g., C6H12O6)")
 
     # PSI-MI standard reference types
     PUBMED = "MI:0446"

@@ -129,6 +129,25 @@ members = Members(
 
 ⸻
 
+Boolean Fields
+
+For boolean fields (e.g., "yes"/"no" or "true"/"false"), use a mapping where the true value maps to the CV term itself. When the field value matches the key, the CV term is added to annotations; otherwise, it's omitted.
+
+annotations = Annotations(
+    Column('Approved', cv={'yes': MoleculeAnnotationsCv.APPROVED}),
+    Column('Withdrawn', cv={'yes': MoleculeAnnotationsCv.WITHDRAWN}),
+    Column('Labelled', cv={'yes': MoleculeAnnotationsCv.LABELLED}),
+)
+
+Result:
+• If Approved = "yes" → annotation includes APPROVED term
+• If Approved = "" or "no" → no APPROVED term added
+
+This avoids storing redundant values like "APPROVED=yes" and instead produces cleaner output where presence of the term indicates true.
+
+
+⸻
+
 Multi-value and Prefix-Based Fields
 
 Simple multi-value fields

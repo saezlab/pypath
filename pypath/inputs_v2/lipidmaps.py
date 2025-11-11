@@ -107,7 +107,7 @@ def lipidmaps_lipids(
 
     # Define declarative schema for LIPID MAPS lipids
     schema = Entity(
-        entity_type=EntityTypeCv.SMALL_MOLECULE,
+        entity_type=EntityTypeCv.LIPID,
         identifiers=Identifiers(
             # Primary LIPID MAPS ID (LM_ID)
             Column('LM_ID', cv=IdentifierNamespaceCv.LIPIDMAPS),
@@ -142,11 +142,9 @@ def lipidmaps_lipids(
             # Exact mass
             Column('EXACT_MASS', cv=MoleculeAnnotationsCv.MASS_DALTON),
             # Lipid classification
-            Column('CATEGORY', cv=MoleculeAnnotationsCv.DESCRIPTION),
-            Column('MAIN_CLASS', cv=MoleculeAnnotationsCv.DESCRIPTION),
-            Column('SUB_CLASS', cv=MoleculeAnnotationsCv.DESCRIPTION),
-            # Additional names and descriptions
-            Column('NAME', cv=MoleculeAnnotationsCv.DESCRIPTION),
+            Column('CATEGORY', cv=MoleculeAnnotationsCv.LIPID_CATEGORY),
+            Column('MAIN_CLASS', cv=MoleculeAnnotationsCv.LIPID_MAIN_CLASS),
+            Column('SUB_CLASS', cv=MoleculeAnnotationsCv.LIPID_SUB_CLASS),
         ),
     )
 

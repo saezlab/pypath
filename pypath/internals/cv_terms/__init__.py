@@ -47,11 +47,14 @@ from .annotations import (
     DetectionMethodCv,
     BiologicalEffectCv,
     CausalMechanismCv,
+    PharmacologicalActionCv,
     CausalStatementCv,
     ComplexExpansionCv,
     CurationCv,
     MoleculeAnnotationsCv,
     InteractionParameterCv,
+    AffinityUnitCv,
+    LigandTypeCv,
     OntologyAnnotationCv,
 )
 from .resource_metadata import LicenseCV, UpdateCategoryCV

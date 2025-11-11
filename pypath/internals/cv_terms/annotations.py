@@ -137,6 +137,54 @@ class CausalMechanismCv(CvEnum):
     POST_TRANSLATIONAL_REGULATION = "MI:2249"
 
 
+class PharmacologicalActionCv(CvEnum):
+    """Pharmacological action terms describing drug-target interactions.
+
+    Describes the pharmacological effect or mechanism of action of a ligand
+    on its target, commonly used in drug databases like Guide to Pharmacology.
+    These terms describe both the functional outcome and mechanism.
+    """
+
+    parent_cv_term = ("OM:0900", "Pharmacological action term", "Describes the pharmacological effect or mechanism of a ligand on its target.")
+
+    # Agonist actions (OM:0901-0919 range)
+    AGONIST = ("OM:0901", "Ligand that activates a receptor")
+    FULL_AGONIST = ("OM:0902", "Ligand that produces maximal receptor activation")
+    PARTIAL_AGONIST = ("OM:0903", "Ligand that produces submaximal receptor activation")
+    INVERSE_AGONIST = ("OM:0904", "Ligand that reduces constitutive receptor activity")
+    BIASED_AGONIST = ("OM:0905", "Ligand that selectively activates specific signaling pathways")
+    IRREVERSIBLE_AGONIST = ("OM:0906", "Agonist that forms permanent or very stable binding")
+
+    # Antagonist actions (OM:0920-0929 range)
+    ANTAGONIST = ("OM:0920", "Ligand that blocks receptor activation")
+    COMPETITIVE = ("OM:0921", "Antagonist that competes with agonist for binding site")
+    NON_COMPETITIVE = ("OM:0922", "Antagonist that binds to different site than agonist")
+
+    # Activation/Inhibition (OM:0930-0949 range)
+    ACTIVATION = ("OM:0930", "General activation of target activity")
+    INHIBITION = ("OM:0931", "General inhibition of target activity")
+    IRREVERSIBLE_INHIBITION = ("OM:0932", "Permanent or very stable inhibition")
+    FEEDBACK_INHIBITION = ("OM:0933", "Inhibition through feedback mechanism")
+
+    # Modulator actions (OM:0950-0969 range)
+    POSITIVE = ("OM:0950", "Positive modulation of target activity")
+    NEGATIVE = ("OM:0951", "Negative modulation of target activity")
+    POTENTIATION = ("OM:0952", "Enhancement of target response")
+    NEUTRAL = ("OM:0953", "Binding without functional effect")
+
+    # Channel-specific actions (OM:0970-0979 range)
+    PORE_BLOCKER = ("OM:0970", "Blocks ion channel pore")
+    SLOWS_INACTIVATION = ("OM:0971", "Delays channel inactivation")
+    VOLTAGE_DEPENDENT_INHIBITION = ("OM:0972", "Inhibition dependent on membrane voltage")
+
+    # Other/mixed (OM:0980-0999 range)
+    BINDING = ("OM:0980", "Simple binding without specified functional outcome")
+    BIPHASIC = ("OM:0981", "Dual or concentration-dependent effects")
+    MIXED = ("OM:0982", "Multiple or mixed pharmacological actions")
+    UNKNOWN = ("OM:0983", "Pharmacological action not determined")
+    NONE = ("OM:0984", "No pharmacological action")
+
+
 class CausalStatementCv(CvEnum):
     """Causal statement terms from PSI-MI.
 
@@ -212,9 +260,34 @@ class MoleculeAnnotationsCv(CvEnum):
     ACTIVITY_REGULATION = ("OM:0608", "Regulation of molecular activity")
     TRANSMEMBRANE_REGION = ("OM:0609", "Information about transmembrane regions")
     PROTEIN_FAMILY = ("OM:0610", "Protein family classification")
-    EC_NUMBER = ("OM:0610", "Enzyme Commission number")
+    EC_NUMBER = ("OM:0611", "Enzyme Commission number")
     MUTAGENESIS = ("OM:0612", "Details about mutagenesis experiments")
     DESCRIPTION = ("OM:0613", "General description of the molecule")
+
+    # Lipid classification terms (OM:0614-0622 range)
+    LIPID_CATEGORY = ("OM:0614", "Lipid category classification (e.g., Fatty Acyls, Glycerolipids)")
+    LIPID_MAIN_CLASS = ("OM:0615", "Main lipid class within a category")
+    LIPID_SUB_CLASS = ("OM:0616", "Sub-class within a lipid main class")
+    LIPID_HIERARCHY_LEVEL = ("OM:0619", "Level of specificity in lipid classification hierarchy (e.g., Species, Isomer, Class)")
+    LIPID_STRUCTURAL_COMPONENTS = ("OM:0620", "Structural components of the lipid molecule (e.g., fatty acid chains)")
+
+    # Molecular properties (OM:0623-0629 range)
+    MOLECULAR_CHARGE = ("OM:0623", "Electric charge of the molecule at specified pH")
+    PRIMARY_TARGET = ("OM:0624", "Indicates whether this is the primary/main target of a ligand (true/false)")
+    ENDOGENOUS = ("OM:0625", "Indicates whether the ligand is an endogenous molecule for the target organism (true/false)")
+
+    # Affinity measurements (OM:0626-0628 range) - used with AffinityUnitCv
+    AFFINITY_HIGH = ("OM:0626", "High affinity measurement value")
+    AFFINITY_LOW = ("OM:0627", "Low affinity measurement value")
+    AFFINITY_MEDIAN = ("OM:0628", "Median affinity measurement value")
+
+    # Drug/molecule status and properties (OM:0650-0654 range)
+    APPROVED = ("OM:0650", "Indicates whether the drug is approved for clinical use")
+    WITHDRAWN = ("OM:0651", "Indicates whether the drug has been withdrawn from market")
+    LABELLED = ("OM:0652", "Indicates whether the molecule is isotopically or fluorescently labelled")
+    RADIOACTIVE = ("OM:0653", "Indicates whether the molecule contains radioactive isotopes")
+    ANTIBACTERIAL = ("OM:0654", "Indicates whether the molecule has antibacterial activity")
+
 
 class InteractionParameterCv(CvEnum):
     """Interaction parameter terms from PSI-MI.
@@ -240,6 +313,59 @@ class InteractionParameterCv(CvEnum):
     PH = "MI:0837"  # pH at which interaction was determined
     TEMPERATURE = "MI:0836"  # Temperature at which interaction was determined. Unit KELVIN (K)
     TEMPERATURE_CELSIUS = ("OM:0701", "Temperature at which interaction was determined. Unit CELSIUS (C)")
+
+
+class AffinityUnitCv(CvEnum):
+    """Affinity measurement unit terms.
+
+    Describes the units used for expressing binding affinity measurements.
+    Most commonly logarithmic scales (pKd, pIC50, etc.) or direct measurements.
+    """
+
+    parent_cv_term = ("OM:0700", "Affinity unit term", "Describes the unit of measurement for binding affinity values.")
+
+    # Logarithmic affinity units (OM:0702-0719 range)
+    PKD = ("OM:0702", "Negative logarithm of dissociation constant (pKd = -log10(Kd))")
+    PKI = ("OM:0703", "Negative logarithm of inhibition constant (pKi = -log10(Ki))")
+    PIC50 = ("OM:0704", "Negative logarithm of IC50 (pIC50 = -log10(IC50))")
+    PEC50 = ("OM:0705", "Negative logarithm of EC50 (pEC50 = -log10(EC50))")
+    PKB = ("OM:0706", "Negative logarithm of equilibrium constant for antagonist (pKb = -log10(Kb))")
+    PA2 = ("OM:0707", "Negative logarithm of molar concentration of antagonist that makes it necessary to double agonist concentration")
+
+    # Direct measurement units would go here if needed (OM:0720-0739 range)
+    # MOLAR = ("OM:0720", "Molar concentration (M)")
+    # NANOMOLAR = ("OM:0721", "Nanomolar concentration (nM)")
+
+
+class LigandTypeCv(CvEnum):
+    """Ligand type classification terms.
+
+    Describes the molecular type or classification of a ligand based on
+    its structure, origin, or functional characteristics.
+    """
+
+    parent_cv_term = ("OM:1000", "Ligand type term", "Describes the molecular type or classification of a ligand.")
+
+    # Functional types (OM:1001-1019 range)
+    AGONIST = ("OM:1001", "Ligand that activates a receptor")
+    ANTAGONIST = ("OM:1002", "Ligand that blocks receptor activation")
+    ACTIVATOR = ("OM:1003", "Molecule that increases target activity")
+    INHIBITOR = ("OM:1004", "Molecule that decreases target activity")
+    ALLOSTERIC_MODULATOR = ("OM:1005", "Ligand that binds at site distinct from active site and modulates activity")
+
+    # Channel-specific types (OM:1020-1029 range)
+    CHANNEL_BLOCKER = ("OM:1020", "Molecule that blocks ion channel activity")
+    GATING_INHIBITOR = ("OM:1021", "Molecule that inhibits channel gating mechanism")
+
+    # Structural/molecular types (OM:1030-1049 range)
+    ANTIBODY = ("OM:1030", "Immunoglobulin-based ligand")
+    FUSION_PROTEIN = ("OM:1031", "Chimeric protein combining domains from different sources")
+
+    # Specificity types (OM:1050-1059 range)
+    SUBUNIT_SPECIFIC = ("OM:1050", "Ligand that selectively targets specific subunit(s)")
+
+    # Unspecified (OM:1099)
+    NONE = ("OM:1099", "No specific ligand type classification")
 
 
 class OntologyAnnotationCv(CvEnum):
