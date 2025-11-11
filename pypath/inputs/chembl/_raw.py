@@ -17,9 +17,9 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from typing import Literal, Generator, Optional
+from typing import Literal
+from collections.abc import Generator
 import sqlite3
-from chembl_downloader import chembl_downloader
 
 import json
 
