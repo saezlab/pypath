@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import csv
+
 #
 #  This file is part of the `pypath` python module
 #
@@ -20,12 +20,15 @@ import csv
 from collections.abc import Generator
 import collections
 import itertools
-
+import csv
 from pypath.share import curl
 from pypath.resources import urls
 from pypath.inputs import uniprot
 import pandas as pd
 __all__ = ['tcdb_substrate']
+
+from pypath.utils import reflists
+
 TcdbSubstrate = collections.namedtuple(
     'TcdbSubstrate',
     ['transporter_uniprot', 'substrate_id', 'substrate_name', 'location'],
@@ -85,9 +88,20 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
                     uniprot_locations.get(transporter_uniprot),
                 )
 
-if __name__ == '__main__':
-    with open("tcdb_substrates.txt","w",newline="",encoding = "utf-8") as f:
+
+if __name__ == "__main__":
+    species_proteins = set(reflists.get_reflist('uniprot', ncbi_tax_id=9606))
+    count = 0
+    with open('tcdb_substrates.csv', 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(["transporter_uniprot","substrate_id","substrate_name","location"])
+        writer.writerow(['transporter_uniprot', 'substrate_id', 'substrate_name', 'location'])
+
         for record in tcdb_substrate():
-            writer.writerow(record)
+            transporter_uniprot = record[0]
+            is_species = transporter_uniprot in species_proteins
+            if is_species:
+                writer.writerow(record)
+                count += 1
+
+            if count % 1000 == 0:
+                print(f"finished {count} lines...")
