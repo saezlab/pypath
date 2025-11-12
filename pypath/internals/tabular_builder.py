@@ -263,7 +263,11 @@ class Annotations:
     """Collection of annotation columns for entities or memberships."""
 
     def __init__(self, *columns: Column) -> None:
-        self.columns = columns
+        # Convert CV terms to Column objects
+        self.columns = tuple(
+            Column(None, cv=col) if not isinstance(col, Column) else col
+            for col in columns
+        )
 
     def build(self, row: Any, cache: ColumnCache | None = None) -> list[SilverAnnotation]:
         cache = cache or ColumnCache()
@@ -275,6 +279,21 @@ class Annotations:
                 const_term = column.term_cv
             elif column.cv is not None and not isinstance(column.cv, (dict, Callable)):
                 const_term = column.cv
+
+            # If selector is None and we have a constant CV term, create annotation directly
+            if column.selector is None and const_term is not None:
+                annot_key = (const_term, None, None)
+                if annot_key not in seen:
+                    seen.add(annot_key)
+                    annotations.append(
+                        SilverAnnotation(
+                            term=const_term,
+                            value=None,
+                            units=None,
+                        )
+                    )
+                continue
+
             for value in cache.values(column, row):
                 # If ParsedValue has a term field, use that; otherwise use resolve_cv
                 resolved_term = const_term or value.term or column.resolve_cv(value)

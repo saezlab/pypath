@@ -162,7 +162,8 @@ def uniprot_proteins() -> Generator[SilverEntity]:
             Column('ComplexPortal', delimiter=';', cv=IdentifierNamespaceCv.COMPLEXPORTAL),
         ),
         annotations=Annotations(
-            # Numeric annotations
+            # Source annotation
+            ResourceCv.UNIPROT,
             Column('Length', cv=MoleculeAnnotationsCv.SEQUENCE_LENGTH),
             Column('Mass', cv=MoleculeAnnotationsCv.MASS_DALTON),
 

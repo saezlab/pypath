@@ -104,6 +104,8 @@ def gene_ontology() -> Generator[SilverEntity]:
 
         ),
         annotations=Annotations(
+            # Source annotation
+            ResourceCv.GENE_ONTOLOGY,
             Column('definition', cv=OntologyAnnotationCv.DEFINITION),
             Column('comment', cv=OntologyAnnotationCv.COMMENT),
             Column('is_a', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),

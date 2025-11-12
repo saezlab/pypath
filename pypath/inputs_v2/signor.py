@@ -97,6 +97,10 @@ def signor_complexes() -> Generator[SilverEntity]:
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
             Column('COMPLEX NAME', cv=IdentifierNamespaceCv.NAME),
         ),
+        annotations=Annotations(
+            # Source annotation
+            ResourceCv.SIGNOR,
+        ),
         members=Members(
             MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
@@ -135,6 +139,10 @@ def signor_protein_families() -> Generator[SilverEntity]:
         identifiers=Identifiers(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
             Column('PROT. FAMILY NAME', cv=IdentifierNamespaceCv.NAME),
+        ),
+        annotations=Annotations(
+            # Source annotation
+            ResourceCv.SIGNOR,
         ),
         members=Members(
             MembersFromList(
@@ -176,6 +184,8 @@ def signor_phenotypes() -> Generator[SilverEntity]:
             Column('PHENOTYPE NAME', cv=IdentifierNamespaceCv.NAME),
         ),
         annotations=Annotations(
+            # Source annotation
+            ResourceCv.SIGNOR,
             Column('PHENOTYPE DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
         ),
     )
@@ -210,6 +220,8 @@ def signor_stimuli() -> Generator[SilverEntity]:
             Column('STIMULUS NAME', cv=IdentifierNamespaceCv.NAME),
         ),
         annotations=Annotations(
+            # Source annotation
+            ResourceCv.SIGNOR,
             Column('STIMULUS DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
         ),
     )
@@ -272,6 +284,8 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
             ),
         ),
         annotations=Annotations(
+            # Source annotation
+            ResourceCv.SIGNOR,
             Column('Interaction type(s)', delimiter='|', processing=mi_term_processing),
             Column('Interaction detection method(s)', delimiter='|', processing=mi_term_processing),
             Column('Causal statement', delimiter='|', processing=mi_term_processing),
