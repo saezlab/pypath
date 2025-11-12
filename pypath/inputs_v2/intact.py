@@ -29,8 +29,8 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
-from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, ResourceAnnotationCv, ResourceCv
 from ..internals.tabular_builder import (
     Annotations,
     Column,
@@ -42,28 +42,33 @@ from ..internals.tabular_builder import (
 import csv
 
 
-def get_resource() -> Resource:
+def intact() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing IntAct metadata.
+    Yields:
+        Entity record with type CV_TERM containing IntAct metadata.
     """
-    return Resource(
-        id='intact',
-        name='IntAct',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:37953288',  # IntAct 2024 paper
-        url='https://www.ebi.ac.uk/intact/',
-        description=(
-            'IntAct provides a freely available, open source database system '
-            'and analysis tools for molecular interaction data. All interactions '
-            'are derived from literature curation or direct user submissions and '
-            'are freely available in PSI-MITAB format. The database includes '
-            'protein-protein, protein-small molecule and protein-nucleic acid '
-            'interactions with detailed experimental evidence.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.INTACT),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='IntAct'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='37953288'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://www.ebi.ac.uk/intact/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'IntAct provides a freely available, open source database system '
+                'and analysis tools for molecular interaction data. All interactions '
+                'are derived from literature curation or direct user submissions and '
+                'are freely available in PSI-MITAB format. The database includes '
+                'protein-protein, protein-small molecule and protein-nucleic acid '
+                'interactions with detailed experimental evidence.'
+            )),
+        ],
     )
 
 

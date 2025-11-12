@@ -29,11 +29,13 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.formats.obo import Obo
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     OntologyAnnotationCv,
+    ResourceAnnotationCv,
+    ResourceCv,
     LicenseCV,
     UpdateCategoryCV,
 )
@@ -50,30 +52,35 @@ from .shared import process_obo_term
 UNIPROT_KEYWORDS_URL = "https://rest.uniprot.org/keywords/stream?format=obo&query=%28*%29"
 
 
-def get_resource() -> Resource:
+def uniprot_keywords() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing UniProt Keywords metadata.
+    Yields:
+        Entity record with type RESOURCE containing UniProt Keywords metadata.
     """
-    return Resource(
-        id='uniprot_keywords',
-        name='UniProt Keywords',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:33237286',
-        url='https://www.uniprot.org/keywords/',
-        description=(
-            'UniProt Keywords provide a controlled vocabulary for '
-            'summarizing protein properties, including biological processes, '
-            'molecular functions, cellular components, protein families, and more. '
-            'Keywords facilitate consistent annotation and efficient searching.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.UNIPROT_KEYWORDS),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='UniProt Keywords'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='33237286'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://www.uniprot.org/keywords/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'UniProt Keywords provide a controlled vocabulary for '
+                'summarizing protein properties, including biological processes, '
+                'molecular functions, cellular components, protein families, and more. '
+                'Keywords facilitate consistent annotation and efficient searching.'
+            )),
+        ],
     )
 
 
-def uniprot_keywords() -> Generator[SilverEntity]:
+def uniprot_keywords_ontology() -> Generator[SilverEntity]:
     """
     Download and parse UniProt Keywords OBO file as Entity records.
 

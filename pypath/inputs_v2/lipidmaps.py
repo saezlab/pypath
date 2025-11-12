@@ -29,13 +29,15 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
     LicenseCV,
     UpdateCategoryCV,
+    ResourceAnnotationCv,
+    ResourceCv,
 )
 from pypath.internals.tabular_builder import (
     Annotations,
@@ -47,30 +49,35 @@ from pypath.share.downloads import download_and_open
 from pypath.formats.sdf import SdfReader
 
 
-def get_resource() -> Resource:
+def lipidmaps() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing LIPID MAPS metadata.
+    Yields:
+        Entity record with type CV_TERM containing LIPID MAPS metadata.
     """
-    return Resource(
-        id='lipidmaps',
-        name='LIPID MAPS Structure Database',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:37855672',  # LIPID MAPS 2024 update paper
-        url='https://lipidmaps.org/',
-        description=(
-            'The LIPID MAPS Structure Database (LMSD) is a comprehensive database '
-            'of lipid structures, annotations, and cross-references. It contains '
-            'over 47,000 unique lipid structures, classified according to a '
-            'comprehensive lipid classification system. The database includes '
-            'structure-based identifiers (InChI, InChIKey, SMILES), chemical '
-            'properties (formula, exact mass), lipid classification (category, '
-            'main class, sub class), and cross-references to other databases '
-            '(ChEBI, PubChem, SwissLipids, HMDB).'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.LIPIDMAPS),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='LIPID MAPS Structure Database'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='37855672'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://lipidmaps.org/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'The LIPID MAPS Structure Database (LMSD) is a comprehensive database '
+                'of lipid structures, annotations, and cross-references. It contains '
+                'over 47,000 unique lipid structures, classified according to a '
+                'comprehensive lipid classification system. The database includes '
+                'structure-based identifiers (InChI, InChIKey, SMILES), chemical '
+                'properties (formula, exact mass), lipid classification (category, '
+                'main class, sub class), and cross-references to other databases '
+                '(ChEBI, PubChem, SwissLipids, HMDB).'
+            )),
+        ],
     )
 
 

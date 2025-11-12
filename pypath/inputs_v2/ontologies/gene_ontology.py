@@ -29,13 +29,15 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.formats.obo import Obo
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     OntologyAnnotationCv,
     LicenseCV,
     UpdateCategoryCV,
+    ResourceAnnotationCv,
+    ResourceCv,
 )
 from ...internals.tabular_builder import (
     Annotations,
@@ -50,26 +52,31 @@ from .shared import process_obo_term
 GENE_ONTOLOGY_URL = "https://current.geneontology.org/ontology/go.obo"
 
 
-def get_resource() -> Resource:
+def go() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing Gene Ontology metadata.
+    Yields:
+        Entity record with type CV_TERM containing Gene Ontology metadata.
     """
-    return Resource(
-        id='gene_ontology',
-        name='Gene Ontology',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:33290552',  # GO Consortium 2021 paper
-        url='http://geneontology.org/',
-        description=(
-            'The Gene Ontology (GO) provides a comprehensive framework for '
-            'describing gene functions across all organisms. GO covers three domains: '
-            'biological process, molecular function, and cellular component. '
-            'GO terms are organized in a hierarchical structure with rich relationships.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.GENE_ONTOLOGY),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='Gene Ontology'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='33290552'),
+            Annotation(term=ResourceAnnotationCv.URL, value='http://geneontology.org/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'The Gene Ontology (GO) provides a comprehensive framework for '
+                'describing gene functions across all organisms. GO covers three domains: '
+                'biological process, molecular function, and cellular component. '
+                'GO terms are organized in a hierarchical structure with rich relationships.'
+            )),
+        ],
     )
 
 

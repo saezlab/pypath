@@ -29,13 +29,15 @@ from __future__ import annotations
 from collections.abc import Generator
 import csv
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
     UpdateCategoryCV,
     MoleculeAnnotationsCv,
+    ResourceAnnotationCv,
+    ResourceCv,
 )
 from pypath.share.downloads import download_and_open
 from ..internals.tabular_builder import (
@@ -46,30 +48,35 @@ from ..internals.tabular_builder import (
 )
 
 
-def get_resource() -> Resource:
+def swisslipids() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing SwissLipids metadata.
+    Yields:
+        Entity record with type CV_TERM containing SwissLipids metadata.
     """
-    return Resource(
-        id='swisslipids',
-        name='SwissLipids',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:25943471',  # SwissLipids knowledgebase for lipid biology
-        url='https://www.swisslipids.org/',
-        description=(
-            'SwissLipids is a curated resource providing a framework for the '
-            'annotation of mass spectrometry data. It provides over 750,000 lipid '
-            'structures with expert curation of lipid classes and nomenclature, '
-            'hierarchical organization, cross-references to other databases (ChEBI, '
-            'LIPID MAPS, HMDB), and integration with mass spectrometry tools. '
-            'The database covers all major lipid categories including fatty acyls, '
-            'glycerolipids, glycerophospholipids, sphingolipids, sterol lipids, '
-            'prenol lipids, saccharolipids, and polyketides.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.SWISSLIPIDS),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='SwissLipids'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='25943471'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://www.swisslipids.org/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'SwissLipids is a curated resource providing a framework for the '
+                'annotation of mass spectrometry data. It provides over 750,000 lipid '
+                'structures with expert curation of lipid classes and nomenclature, '
+                'hierarchical organization, cross-references to other databases (ChEBI, '
+                'LIPID MAPS, HMDB), and integration with mass spectrometry tools. '
+                'The database covers all major lipid categories including fatty acyls, '
+                'glycerolipids, glycerophospholipids, sphingolipids, sterol lipids, '
+                'prenol lipids, saccharolipids, and polyketides.'
+            )),
+        ],
     )
 
 

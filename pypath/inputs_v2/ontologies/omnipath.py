@@ -30,13 +30,15 @@ from collections.abc import Generator
 from typing import Type
 import inspect
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     OntologyAnnotationCv,
     LicenseCV,
     UpdateCategoryCV,
+    ResourceAnnotationCv,
+    ResourceCv,
     CvEnum,
 )
 from pypath.internals import cv_terms
@@ -48,27 +50,32 @@ from ...internals.tabular_builder import (
 )
 
 
-def get_resource() -> Resource:
+def omnipath() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing OmniPath ontology metadata.
+    Yields:
+        Entity record with type CV_TERM containing OmniPath ontology metadata.
     """
-    return Resource(
-        id='omnipath_ontology',
-        name='OmniPath Ontology',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:33950214',  # OmniPath paper
-        url='https://omnipathdb.org/',
-        description=(
-            'OmniPath controlled vocabulary terms used throughout the OmniPath build system. '
-            'These CV terms are organized hierarchically and include entity types, identifier '
-            'namespaces, biological and experimental roles, interaction types, curation metadata, '
-            'and resource metadata. Terms are based on PSI-MI standard accessions or OmniPath-specific '
-            'OM accessions, with hierarchical parent relationships captured via is_a annotations.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.OMNIPATH_ONTOLOGY),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='OmniPath Ontology'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='33950214'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://omnipathdb.org/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'OmniPath controlled vocabulary terms used throughout the OmniPath build system. '
+                'These CV terms are organized hierarchically and include entity types, identifier '
+                'namespaces, biological and experimental roles, interaction types, curation metadata, '
+                'and resource metadata. Terms are based on PSI-MI standard accessions or OmniPath-specific '
+                'OM accessions, with hierarchical parent relationships captured via is_a annotations.'
+            )),
+        ],
     )
 
 

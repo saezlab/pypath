@@ -56,5 +56,7 @@ from .annotations import (
     AffinityUnitCv,
     LigandTypeCv,
     OntologyAnnotationCv,
+    ResourceAnnotationCv,
 )
 from .resource_metadata import LicenseCV, UpdateCategoryCV
+from .resources import ResourceCv

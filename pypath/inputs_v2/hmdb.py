@@ -30,13 +30,15 @@ from collections.abc import Generator
 
 import lxml.etree as etree
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
     LicenseCV,
     UpdateCategoryCV,
+    ResourceAnnotationCv,
+    ResourceCv,
 )
 from pypath.internals.tabular_builder import (
     Entity,
@@ -47,27 +49,32 @@ from pypath.internals.tabular_builder import (
 from pypath.share.downloads import download_and_open
 
 
-def get_resource() -> Resource:
+def hmdb() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing HMDB metadata.
+    Yields:
+        Entity record with type CV_TERM containing HMDB metadata.
     """
-    return Resource(
-        id='hmdb',
-        name='Human Metabolome Database',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:37953221',  # HMDB 5.0 paper (2024)
-        url='https://hmdb.ca/',
-        description=(
-            'The Human Metabolome Database (HMDB) is a comprehensive database '
-            'containing detailed information about small molecule metabolites '
-            'found in the human body. It includes chemical, clinical, and '
-            'biochemical/molecular biology data, with over 220,000 metabolite '
-            'entries including both water-soluble and lipid-soluble metabolites.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.HMDB),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='Human Metabolome Database'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='37953221'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://hmdb.ca/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'The Human Metabolome Database (HMDB) is a comprehensive database '
+                'containing detailed information about small molecule metabolites '
+                'found in the human body. It includes chemical, clinical, and '
+                'biochemical/molecular biology data, with over 220,000 metabolite '
+                'entries including both water-soluble and lipid-soluble metabolites.'
+            )),
+        ],
     )
 
 
