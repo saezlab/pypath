@@ -104,6 +104,8 @@ def uniprot_keywords_ontology() -> Generator[SilverEntity]:
 
         ),
         annotations=Annotations(
+            # Source annotation
+            ResourceCv.UNIPROT_KEYWORDS,
             Column('definition', cv=OntologyAnnotationCv.DEFINITION),
             Column('comment', cv=OntologyAnnotationCv.COMMENT),
             Column('is_a', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),

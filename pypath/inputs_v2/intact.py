@@ -149,6 +149,8 @@ def intact_interactions(organism: int = 9606) -> Generator[SilverEntity, None, N
             ),
         ),
         annotations=Annotations(
+            # Source annotation
+            ResourceCv.INTACT,
             # Interaction metadata
             Column('Interaction type(s)', delimiter='|', processing=mi_term_processing),
             Column('Interaction detection method(s)', delimiter='|', processing=mi_term_processing),

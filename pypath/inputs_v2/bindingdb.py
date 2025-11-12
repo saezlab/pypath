@@ -109,6 +109,8 @@ def bindingdb_interactions(
             Column('BindingDB Reactant_set_id', cv=IdentifierNamespaceCv.BINDINGDB),
         ),
         annotations=Annotations(
+            # Source annotation
+            ResourceCv.BINDINGDB,
             # Binding affinity measurements
             Column('Ki (nM)', cv=InteractionParameterCv.KI),
             Column('Kd (nM)', cv=InteractionParameterCv.KD),

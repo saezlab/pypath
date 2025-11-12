@@ -159,6 +159,8 @@ def omnipath_ontology() -> Generator[SilverEntity]:
             Column('name', cv=IdentifierNamespaceCv.NAME),
         ),
         annotations=Annotations(
+            # Source annotation
+            ResourceCv.OMNIPATH_ONTOLOGY,
             Column('definition', cv=OntologyAnnotationCv.DEFINITION),
             Column('is_a', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
         ),

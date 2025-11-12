@@ -199,7 +199,6 @@ ANNOTATION_FIELDS = [
 
 # Base entity fields (without members/is_member_of to avoid circular reference)
 BASE_ENTITY_FIELDS = [
-    pa.field('source', pa.string()),
     pa.field('type', pa.string()),
     pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS))),
 ]
@@ -212,7 +211,6 @@ MEMBERSHIP_FIELDS = [
 
 # Full entity schema
 ENTITY_FIELDS = [
-    pa.field('source', pa.string(), nullable=False),
     pa.field('type', pa.string(), nullable=False),
     pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS)), nullable=False),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
