@@ -30,12 +30,15 @@ from collections.abc import Generator
 import csv
 
 from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
-    LicenseCV, UpdateCategoryCV
+    LicenseCV,
+    UpdateCategoryCV,
+    ResourceAnnotationCv,
+    ResourceCv,
 )
 from ..internals.tabular_builder import (
     Annotations,
@@ -60,26 +63,31 @@ UNIPROT_DATA_URL = (
 )
 
 
-def get_resource() -> Resource:
+def uniprot() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing UniProt metadata.
+    Yields:
+        Entity record with type CV_TERM containing UniProt metadata.
     """
-    return Resource(
-        id='uniprot',
-        name='UniProt',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:33237286',  # UniProt 2021 paper
-        url='https://www.uniprot.org/',
-        description=(
-            'UniProt is a comprehensive resource for protein sequence and '
-            'functional information. It provides high-quality, manually annotated '
-            'protein data including function, structure, localization, interactions, '
-            'disease associations, and cross-references to other databases.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.UNIPROT),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='UniProt'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='33237286'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://www.uniprot.org/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'UniProt is a comprehensive resource for protein sequence and '
+                'functional information. It provides high-quality, manually annotated '
+                'protein data including function, structure, localization, interactions, '
+                'disease associations, and cross-references to other databases.'
+            )),
+        ],
     )
 
 

@@ -30,7 +30,7 @@ from collections.abc import Generator
 import csv
 
 from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -40,6 +40,8 @@ from pypath.internals.cv_terms import (
     LigandTypeCv,
     AffinityUnitCv,
     MoleculeAnnotationsCv,
+    ResourceAnnotationCv,
+    ResourceCv,
 )
 from ..internals.tabular_builder import (
     Annotations,
@@ -181,29 +183,34 @@ species_to_taxid = {
 }
 
 
-def get_resource() -> Resource:
+def guidetopharma() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing Guide to Pharmacology metadata.
+    Yields:
+        Entity record with type CV_TERM containing Guide to Pharmacology metadata.
     """
-    return Resource(
-        id='guidetopharma',
-        name='Guide to Pharmacology',
-        license=LicenseCV.CC_BY_SA_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:37953350',  # GtoPdb in 2024 paper
-        url='https://www.guidetopharmacology.org/',
-        description=(
-            'The IUPHAR/BPS Guide to PHARMACOLOGY is an expert-curated resource '
-            'of ligand-activity-target relationships, providing quantitative '
-            'information on drug targets and the prescription medicines and '
-            'experimental drugs that act on them. It covers G protein-coupled '
-            'receptors, voltage-gated ion channels, ligand-gated ion channels, '
-            'nuclear hormone receptors, catalytic receptors, enzymes, and '
-            'transporters.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.GUIDETOPHARMA),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='Guide to Pharmacology'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_SA_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='37953350'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://www.guidetopharmacology.org/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'The IUPHAR/BPS Guide to PHARMACOLOGY is an expert-curated resource '
+                'of ligand-activity-target relationships, providing quantitative '
+                'information on drug targets and the prescription medicines and '
+                'experimental drugs that act on them. It covers G protein-coupled '
+                'receptors, voltage-gated ion channels, ligand-gated ion channels, '
+                'nuclear hormone receptors, catalytic receptors, enzymes, and '
+                'transporters.'
+            )),
+        ],
     )
 
 

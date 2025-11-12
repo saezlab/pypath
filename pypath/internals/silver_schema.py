@@ -12,8 +12,6 @@ import pyarrow as pa
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
-    LicenseCV,
-    UpdateCategoryCV,
 )
 
 __all__ = [
@@ -21,10 +19,7 @@ __all__ = [
     'Annotation',
     'Membership',
     'Entity',
-    'DownloadConfig',
-    'Source',
     'ENTITY_SCHEMA',
-    'SOURCE_SCHEMA',
 ]
 
 class Identifier(NamedTuple):
@@ -187,18 +182,6 @@ class Entity(NamedTuple):
                         lines[-len(member_lines)-1] = f"{prefix}   {continuation}  └─ entity: {member_lines[0]}"
 
         return "\n".join(lines)
-  
-class Resource(NamedTuple):
-    """ Source database record."""
-
-    id: str  # e.g. 'uniprot'
-    name: str  # e.g. 'UniProt'
-    license: LicenseCV
-    update_category: UpdateCategoryCV
-    
-    publication: str | None = None
-    url: str | None = None
-    description: str | None = None
 
 #### PyArrow Schemas (needed for parquet files) ####
 
@@ -238,24 +221,3 @@ ENTITY_FIELDS = [
 ]
 
 ENTITY_SCHEMA = pa.schema(ENTITY_FIELDS)
-
-# Download config fields
-DOWNLOAD_CONFIG_FIELDS = [
-    pa.field('url', pa.string()),
-    pa.field('method', pa.string()),
-    pa.field('additional_params', pa.map_(pa.string(), pa.string())),
-]
-
-# Source schema
-RESOURCE_FIELDS = [
-    pa.field('id', pa.string(), nullable=False),
-    pa.field('name', pa.string(), nullable=False),
-    pa.field('download_config', pa.struct(DOWNLOAD_CONFIG_FIELDS), nullable=False),
-    pa.field('license', pa.string(), nullable=False),
-    pa.field('update_category', pa.string(), nullable=False),
-    pa.field('publication', pa.string()),
-    pa.field('url', pa.string()),
-    pa.field('description', pa.string()),
-]
-
-RESOURCE_SCHEMA = pa.schema(RESOURCE_FIELDS)

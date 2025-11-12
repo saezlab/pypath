@@ -381,3 +381,19 @@ class OntologyAnnotationCv(CvEnum):
     DEFINITION = ("OM:0801", "Textual definition of an ontology term")
     COMMENT = ("OM:0805", "Additional comment or note about an ontology term")
     IS_OBSOLETE = ("OM:0806", "Indicates whether the term is obsolete")
+
+
+class ResourceAnnotationCv(CvEnum):
+    """Resource/data source annotation terms.
+
+    Describes metadata for resource entities (RESOURCE entity type).
+    Includes license, update frequency, URLs, and publication references.
+    """
+
+    parent_cv_term = ("OM:0700", "Resource annotation term", "Describes metadata for data sources and resources.")
+
+    # Resource metadata (OM:0700-0799 range)
+    LICENSE = ("OM:0701", "License term for the resource (value from LicenseCV)")
+    UPDATE_CATEGORY = ("OM:0702", "Update frequency category (value from UpdateCategoryCV)")
+    URL = ("OM:0704", "Resource homepage or API URL")
+    DESCRIPTION = ("OM:0705", "Textual description of the resource")

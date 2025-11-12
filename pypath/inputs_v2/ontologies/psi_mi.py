@@ -30,13 +30,15 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.formats.obo import Obo
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     OntologyAnnotationCv,
     LicenseCV,
     UpdateCategoryCV,
+    ResourceAnnotationCv,
+    ResourceCv,
 )
 from ...internals.tabular_builder import (
     Annotations,
@@ -51,30 +53,35 @@ from .shared import process_obo_term
 PSI_MI_URL = "https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo"
 
 
-def get_resource() -> Resource:
+def psi_mi() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing PSI-MI metadata.
+    Yields:
+        Entity record with type CV_TERM containing PSI-MI metadata.
     """
-    return Resource(
-        id='psi_mi',
-        name='PSI-MI Controlled Vocabulary',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:17925023',  # PSI-MI 2.5 paper
-        url='https://github.com/HUPO-PSI/psi-mi-CV',
-        description=(
-            'The PSI-MI (Proteomics Standards Initiative - Molecular Interactions) '
-            'controlled vocabulary provides standardized terms for describing '
-            'molecular interactions. It includes terms for interaction types, '
-            'detection methods, participant roles, and experimental features.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.PSI_MI),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='PSI-MI Controlled Vocabulary'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='17925023'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://github.com/HUPO-PSI/psi-mi-CV'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'The PSI-MI (Proteomics Standards Initiative - Molecular Interactions) '
+                'controlled vocabulary provides standardized terms for describing '
+                'molecular interactions. It includes terms for interaction types, '
+                'detection methods, participant roles, and experimental features.'
+            )),
+        ],
     )
 
 
-def psi_mi() -> Generator[SilverEntity]:
+def psi_mi_ontology() -> Generator[SilverEntity]:
     """
     Download and parse PSI-MI OBO file as Entity records.
 

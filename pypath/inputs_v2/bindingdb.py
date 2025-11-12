@@ -29,8 +29,8 @@ from __future__ import annotations
 from collections.abc import Generator
 import csv
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Resource
-from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, InteractionParameterCv, CurationCv
+from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, InteractionParameterCv, CurationCv, ResourceAnnotationCv, ResourceCv
 from pypath.share.downloads import download_and_open
 from ..internals.tabular_builder import (
     Annotations,
@@ -42,27 +42,32 @@ from ..internals.tabular_builder import (
 )
 
 
-def get_resource() -> Resource:
+def bindingdb() -> Generator[SilverEntity]:
     """
-    Define the resource metadata.
+    Yield resource metadata as an Entity record.
 
-    Returns:
-        Resource object containing BindingDB metadata.
+    Yields:
+        Entity record with type CV_TERM containing BindingDB metadata.
     """
-    return Resource(
-        id='bindingdb',
-        name='BindingDB',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:26481362',  # BindingDB in 2015 paper
-        url='https://www.bindingdb.org/',
-        description=(
-            'BindingDB is a public, web-accessible database of measured binding '
-            'affinities, focusing chiefly on the interactions of proteins considered '
-            'to be drug-targets with small, drug-like molecules. It contains binding '
-            'data for over 2 million protein-ligand complexes with experimental '
-            'measurements including Ki, Kd, IC50, and EC50 values.'
-        ),
+    yield SilverEntity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.BINDINGDB),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='BindingDB'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='26481362'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://www.bindingdb.org/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'BindingDB is a public, web-accessible database of measured binding '
+                'affinities, focusing chiefly on the interactions of proteins considered '
+                'to be drug-targets with small, drug-like molecules. It contains binding '
+                'data for over 2 million protein-ligand complexes with experimental '
+                'measurements including Ki, Kd, IC50, and EC50 values.'
+            )),
+        ],
     )
 
 
