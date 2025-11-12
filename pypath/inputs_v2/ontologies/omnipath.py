@@ -50,7 +50,7 @@ from ...internals.tabular_builder import (
 )
 
 
-def omnipath() -> Generator[Entity]:
+def resource() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 

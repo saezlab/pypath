@@ -52,7 +52,7 @@ from .shared import process_obo_term
 UNIPROT_KEYWORDS_URL = "https://rest.uniprot.org/keywords/stream?format=obo&query=%28*%29"
 
 
-def uniprot_keywords() -> Generator[Entity]:
+def resource() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
