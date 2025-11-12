@@ -29,7 +29,7 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.formats.obo import Obo
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -40,9 +40,9 @@ from pypath.internals.cv_terms import (
     UpdateCategoryCV,
 )
 from ...internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
 )
 from .shared import process_obo_term
@@ -52,14 +52,14 @@ from .shared import process_obo_term
 UNIPROT_KEYWORDS_URL = "https://rest.uniprot.org/keywords/stream?format=obo&query=%28*%29"
 
 
-def uniprot_keywords() -> Generator[SilverEntity]:
+def uniprot_keywords() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type RESOURCE containing UniProt Keywords metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.UNIPROT_KEYWORDS),
@@ -80,11 +80,11 @@ def uniprot_keywords() -> Generator[SilverEntity]:
     )
 
 
-def uniprot_keywords_ontology() -> Generator[SilverEntity]:
+def uniprot_keywords_ontology() -> Generator[Entity]:
     """
     Download and parse UniProt Keywords OBO file as Entity records.
 
-    Downloads UniProt Keywords OBO data and converts each term into a SilverEntity
+    Downloads UniProt Keywords OBO data and converts each term into a Entity
     with CV_TERM type, including identifiers, annotations, and relationships.
 
     Yields:
@@ -94,7 +94,7 @@ def uniprot_keywords_ontology() -> Generator[SilverEntity]:
     obo = Obo(UNIPROT_KEYWORDS_URL, name='UniProtKeywords')
 
     # Define the schema mapping
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.CV_TERM,
         identifiers=Identifiers(
             Column('accession', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),

@@ -29,7 +29,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -42,21 +42,20 @@ from pypath.internals.cv_terms import (
 from pypath.internals.tabular_builder import (
     Annotations,
     Column,
-    Entity,
+    EntityBuilder,
     Identifiers,
 )
 from pypath.share.downloads import download_and_open
 from pypath.formats.sdf import SdfReader
 
-
-def lipidmaps() -> Generator[SilverEntity]:
+def lipidmaps() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing LIPID MAPS metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.LIPIDMAPS),
@@ -83,19 +82,19 @@ def lipidmaps() -> Generator[SilverEntity]:
 
 def lipidmaps_lipids(
     force_refresh: bool = False,
-) -> Generator[SilverEntity, None, None]:
+) -> Generator[Entity, None, None]:
     """
     Download and parse LIPID MAPS Structure Database as Entity records.
 
     This function downloads the LMSD structures in SDF format from the LIPID MAPS
-    website, extracts the zip file, parses the SDF records, and yields SilverEntity
+    website, extracts the zip file, parses the SDF records, and yields Entity
     objects representing individual lipid structures.
 
     Args:
         force_refresh: If True, force redownload of the data.
 
     Yields:
-        SilverEntity records with type SMALL_MOLECULE, representing lipid structures
+        Entity records with type SMALL_MOLECULE, representing lipid structures
         with their identifiers (LIPID MAPS ID, InChI, SMILES, etc.), chemical
         properties (formula, mass, classification), and cross-references to other
         databases (ChEBI, PubChem, SwissLipids, HMDB).
@@ -113,7 +112,7 @@ def lipidmaps_lipids(
     )
 
     # Define declarative schema for LIPID MAPS lipids
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.LIPID,
         identifiers=Identifiers(
             # Primary LIPID MAPS ID (LM_ID)

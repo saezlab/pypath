@@ -40,9 +40,9 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from ...internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
 )
 from .shared import process_obo_term
@@ -94,7 +94,7 @@ def gene_ontology() -> Generator[Entity]:
     obo = Obo(GENE_ONTOLOGY_URL, name='GeneOntology')
 
     # Define the schema mapping
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.CV_TERM,
         identifiers=Identifiers(
             Column('accession', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),

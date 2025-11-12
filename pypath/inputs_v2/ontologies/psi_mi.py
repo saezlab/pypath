@@ -30,7 +30,7 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.formats.obo import Obo
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -41,9 +41,9 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from ...internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
 )
 from .shared import process_obo_term
@@ -53,14 +53,14 @@ from .shared import process_obo_term
 PSI_MI_URL = "https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo"
 
 
-def psi_mi() -> Generator[SilverEntity]:
+def psi_mi() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing PSI-MI metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.PSI_MI),
@@ -81,11 +81,11 @@ def psi_mi() -> Generator[SilverEntity]:
     )
 
 
-def psi_mi_ontology() -> Generator[SilverEntity]:
+def psi_mi_ontology() -> Generator[Entity]:
     """
     Download and parse PSI-MI OBO file as Entity records.
 
-    Downloads PSI-MI OBO data and converts each term into a SilverEntity
+    Downloads PSI-MI OBO data and converts each term into a Entity
     with CV_TERM type, including identifiers, annotations, and relationships.
 
     Yields:
@@ -95,7 +95,7 @@ def psi_mi_ontology() -> Generator[SilverEntity]:
     obo = Obo(PSI_MI_URL, name='PsiMi')
 
     # Define the schema mapping
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.CV_TERM,
         identifiers=Identifiers(
             Column('accession', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),

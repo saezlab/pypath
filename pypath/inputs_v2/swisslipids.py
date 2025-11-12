@@ -29,7 +29,7 @@ from __future__ import annotations
 from collections.abc import Generator
 import csv
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -41,21 +41,21 @@ from pypath.internals.cv_terms import (
 )
 from pypath.share.downloads import download_and_open
 from ..internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
 )
 
 
-def swisslipids() -> Generator[SilverEntity]:
+def swisslipids() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing SwissLipids metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.SWISSLIPIDS),
@@ -80,7 +80,7 @@ def swisslipids() -> Generator[SilverEntity]:
     )
 
 
-def swisslipids_lipids() -> Generator[SilverEntity, None, None]:
+def swisslipids_lipids() -> Generator[Entity, None, None]:
     """
     Download and parse SwissLipids lipid data as Entity records.
 
@@ -113,7 +113,7 @@ def swisslipids_lipids() -> Generator[SilverEntity, None, None]:
         return f'CHEBI:{value}' if not value.startswith('CHEBI:') else value
 
     # Define the schema mapping
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.LIPID,
         identifiers=Identifiers(
             # Primary SwissLipids identifier

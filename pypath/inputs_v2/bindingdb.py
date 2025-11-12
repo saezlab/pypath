@@ -29,27 +29,27 @@ from __future__ import annotations
 from collections.abc import Generator
 import csv
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, InteractionParameterCv, CurationCv, ResourceAnnotationCv, ResourceCv
 from pypath.share.downloads import download_and_open
 from ..internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
     Member,
     Members,
 )
 
 
-def bindingdb() -> Generator[SilverEntity]:
+def bindingdb() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing BindingDB metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.BINDINGDB),
@@ -75,7 +75,7 @@ def bindingdb_interactions(
     dataset: str = 'All',
     max_lines: int | None = None,
     force_refresh: bool = False,
-) -> Generator[SilverEntity, None, None]:
+) -> Generator[Entity, None, None]:
     """
     Download and parse BindingDB protein-ligand binding data as Entity records.
 
@@ -102,7 +102,7 @@ def bindingdb_interactions(
     tax_processing = {'extract_value': r'(\d+)'}
 
     # Define the schema mapping
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         identifiers=Identifiers(
             # Use BindingDB Reactant_set_id as the interaction identifier
@@ -129,7 +129,7 @@ def bindingdb_interactions(
         members=Members(
             # Interactor A: Ligand (small molecule)
             Member(
-                entity=Entity(
+                entity=EntityBuilder(
                     entity_type=EntityTypeCv.SMALL_MOLECULE,
                     identifiers=Identifiers(
                         Column('BindingDB MonomerID', cv=IdentifierNamespaceCv.BINDINGDB),
@@ -150,7 +150,7 @@ def bindingdb_interactions(
             ),
             # Interactor B: Target (protein)
             Member(
-                entity=Entity(
+                entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
                         Column('Target Name', cv=IdentifierNamespaceCv.NAME),

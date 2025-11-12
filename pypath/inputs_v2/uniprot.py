@@ -30,7 +30,7 @@ from collections.abc import Generator
 import csv
 
 from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -41,9 +41,9 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from ..internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
 )
 
@@ -63,14 +63,14 @@ UNIPROT_DATA_URL = (
 )
 
 
-def uniprot() -> Generator[SilverEntity]:
+def uniprot() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing UniProt metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.UNIPROT),
@@ -91,12 +91,12 @@ def uniprot() -> Generator[SilverEntity]:
     )
 
 
-def uniprot_proteins() -> Generator[SilverEntity]:
+def uniprot_proteins() -> Generator[Entity]:
     """
     Download and parse UniProt protein data as Entity records.
 
     Downloads protein data for human, mouse, and rat from UniProt REST API
-    and converts each protein into a SilverEntity with identifiers, annotations,
+    and converts each protein into a Entity with identifiers, annotations,
     membership records, and references.
 
     Yields:
@@ -114,7 +114,7 @@ def uniprot_proteins() -> Generator[SilverEntity]:
     )
 
     # Define the schema mapping
-    map = Entity(
+    map = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN,
         identifiers=Identifiers(
             # Primary UniProt accession

@@ -30,7 +30,7 @@ from collections.abc import Generator
 
 import lxml.etree as etree
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -41,22 +41,22 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from pypath.internals.tabular_builder import (
-    Entity,
-    Identifiers,
     Annotations,
     Column,
+    EntityBuilder,
+    Identifiers,
 )
 from pypath.share.downloads import download_and_open
 
 
-def hmdb() -> Generator[SilverEntity]:
+def hmdb() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing HMDB metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.HMDB),
@@ -173,20 +173,20 @@ def _iterate_metabolites(opener, max_records: int | None = None) -> Generator[di
 def hmdb_metabolites(
     max_records: int | None = None,
     force_refresh: bool = False,
-) -> Generator[SilverEntity, None, None]:
+) -> Generator[Entity, None, None]:
     """
     Download and parse HMDB metabolite data as Entity records.
 
     This function downloads the HMDB metabolites XML file, converts each
     XML element to a dictionary, and uses a declarative schema to build
-    SilverEntity records.
+    Entity records.
 
     Args:
         max_records: Maximum number of records to parse. If None, parses all records.
         force_refresh: If True, force redownload of the data.
 
     Yields:
-        SilverEntity records with type SMALL_MOLECULE, representing metabolites
+        Entity records with type SMALL_MOLECULE, representing metabolites
         with their identifiers (HMDB ID, InChI, SMILES, etc.), chemical
         properties (molecular weight, formula), and cross-references to other
         databases (ChEBI, PubChem, KEGG, DrugBank, CAS).
@@ -204,7 +204,7 @@ def hmdb_metabolites(
     )
 
     # Define declarative schema for HMDB metabolites
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.SMALL_MOLECULE,
         identifiers=Identifiers(
             # Primary HMDB accession

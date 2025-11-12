@@ -29,12 +29,12 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, ResourceAnnotationCv, ResourceCv
 from ..internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
     Member,
     Members,
@@ -42,14 +42,14 @@ from ..internals.tabular_builder import (
 import csv
 
 
-def intact() -> Generator[SilverEntity]:
+def intact() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing IntAct metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.INTACT),
@@ -72,7 +72,7 @@ def intact() -> Generator[SilverEntity]:
     )
 
 
-def intact_interactions(organism: int = 9606) -> Generator[SilverEntity, None, None]:
+def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
     """
     Download and parse IntAct interactions as Entity records.
 
@@ -138,7 +138,7 @@ def intact_interactions(organism: int = 9606) -> Generator[SilverEntity, None, N
     intact_processing = {'extract_value': r'intact:([^|"]+)'}
 
     # Define the schema mapping
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         identifiers=Identifiers(
             Column(
@@ -178,7 +178,7 @@ def intact_interactions(organism: int = 9606) -> Generator[SilverEntity, None, N
         members=Members(
             # Interactor A
             Member(
-                entity=Entity(
+                entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
                         Column('#ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
@@ -203,7 +203,7 @@ def intact_interactions(organism: int = 9606) -> Generator[SilverEntity, None, N
             ),
             # Interactor B
             Member(
-                entity=Entity(
+                entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
                         Column('ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
