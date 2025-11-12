@@ -63,7 +63,7 @@ UNIPROT_DATA_URL = (
 )
 
 
-def uniprot() -> Generator[Entity]:
+def resource() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 

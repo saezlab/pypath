@@ -53,7 +53,7 @@ from .shared import process_obo_term
 PSI_MI_URL = "https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo"
 
 
-def psi_mi() -> Generator[Entity]:
+def resource() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 

@@ -183,7 +183,7 @@ species_to_taxid = {
 }
 
 
-def guidetopharma() -> Generator[Entity]:
+def resource() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 

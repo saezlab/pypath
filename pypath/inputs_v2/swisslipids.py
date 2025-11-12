@@ -48,7 +48,7 @@ from ..internals.tabular_builder import (
 )
 
 
-def swisslipids() -> Generator[Entity]:
+def resource() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 

@@ -48,7 +48,7 @@ from pypath.internals.tabular_builder import (
 from pypath.share.downloads import download_and_open
 from pypath.formats.sdf import SdfReader
 
-def lipidmaps() -> Generator[Entity]:
+def resource() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 

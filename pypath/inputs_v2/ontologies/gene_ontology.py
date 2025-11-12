@@ -52,7 +52,7 @@ from .shared import process_obo_term
 GENE_ONTOLOGY_URL = "https://current.geneontology.org/ontology/go.obo"
 
 
-def go() -> Generator[Entity]:
+def resource() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 

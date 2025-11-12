@@ -42,7 +42,7 @@ from ..internals.tabular_builder import (
 import csv
 
 
-def intact() -> Generator[Entity]:
+def resource() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
