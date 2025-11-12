@@ -106,7 +106,6 @@ def psi_mi_ontology() -> Generator[SilverEntity]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.PSI_MI,
             Column('definition', cv=OntologyAnnotationCv.DEFINITION),
             Column('is_a', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
             Column('xrefs', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),

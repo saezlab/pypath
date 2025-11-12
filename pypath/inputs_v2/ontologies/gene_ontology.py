@@ -29,7 +29,7 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.formats.obo import Obo
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -52,14 +52,14 @@ from .shared import process_obo_term
 GENE_ONTOLOGY_URL = "https://current.geneontology.org/ontology/go.obo"
 
 
-def go() -> Generator[SilverEntity]:
+def go() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing Gene Ontology metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.GENE_ONTOLOGY),
@@ -80,11 +80,11 @@ def go() -> Generator[SilverEntity]:
     )
 
 
-def gene_ontology() -> Generator[SilverEntity]:
+def gene_ontology() -> Generator[Entity]:
     """
     Download and parse Gene Ontology OBO file as Entity records.
 
-    Downloads Gene Ontology OBO data and converts each term into a SilverEntity
+    Downloads Gene Ontology OBO data and converts each term into a Entity
     with CV_TERM type, including identifiers, annotations, and relationships.
 
     Yields:
@@ -105,7 +105,6 @@ def gene_ontology() -> Generator[SilverEntity]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.GENE_ONTOLOGY,
             Column('definition', cv=OntologyAnnotationCv.DEFINITION),
             Column('comment', cv=OntologyAnnotationCv.COMMENT),
             Column('is_a', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),

@@ -147,7 +147,6 @@ def lipidmaps_lipids(
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.LIPIDMAPS,
             # Exact mass
             Column('EXACT_MASS', cv=MoleculeAnnotationsCv.MASS_DALTON),
             # Lipid classification

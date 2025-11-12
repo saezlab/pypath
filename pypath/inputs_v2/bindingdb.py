@@ -110,7 +110,6 @@ def bindingdb_interactions(
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.BINDINGDB,
             # Binding affinity measurements
             Column('Ki (nM)', cv=InteractionParameterCv.KI),
             Column('Kd (nM)', cv=InteractionParameterCv.KD),

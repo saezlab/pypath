@@ -261,7 +261,6 @@ def guidetopharma_targets() -> Generator[SilverEntity, None, None]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.GUIDETOPHARMA,
             Column('Family name', cv=MoleculeAnnotationsCv.PROTEIN_FAMILY),
             Column('HGNC name', cv=MoleculeAnnotationsCv.DESCRIPTION),
         ),
@@ -314,7 +313,6 @@ def guidetopharma_ligands() -> Generator[SilverEntity, None, None]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.GUIDETOPHARMA,
             Column('Species', cv=species_to_taxid, term_cv=IdentifierNamespaceCv.NCBI_TAX_ID),
             Column('Approved', cv={'yes': MoleculeAnnotationsCv.APPROVED}),
             Column('Withdrawn', cv={'yes': MoleculeAnnotationsCv.WITHDRAWN}),
@@ -361,7 +359,6 @@ def guidetopharma_interactions() -> Generator[SilverEntity, None, None]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.GUIDETOPHARMA,
             # Interaction properties
             Column('Action', cv=action_cv_mapping),
             Column('Type', cv=type_cv_mapping),

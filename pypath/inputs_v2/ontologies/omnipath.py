@@ -66,7 +66,6 @@ def omnipath() -> Generator[SilverEntity]:
         annotations=[
             Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
             Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
-            Annotation(term=IdentifierNamespaceCv.PUBMED, value='33950214'),
             Annotation(term=ResourceAnnotationCv.URL, value='https://omnipathdb.org/'),
             Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
                 'OmniPath controlled vocabulary terms used throughout the OmniPath build system. '
@@ -160,7 +159,6 @@ def omnipath_ontology() -> Generator[SilverEntity]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.OMNIPATH_ONTOLOGY,
             Column('definition', cv=OntologyAnnotationCv.DEFINITION),
             Column('is_a', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
         ),
