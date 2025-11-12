@@ -495,8 +495,8 @@ class Members:
         return memberships
 
 
-class Entity:
-    """Declarative spec that produces `SilverEntity` records from rows."""
+class EntityBuilder:
+    """Declarative spec that produces `Entity` records from rows."""
 
     def __init__(
         self,
@@ -545,7 +545,7 @@ class Entity:
 __all__ = [
     'Annotations',
     'Column',
-    'Entity',
+    'EntityBuilder',
     'Identifiers',
     'Member',
     'Members',

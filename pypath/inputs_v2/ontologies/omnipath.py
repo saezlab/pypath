@@ -30,7 +30,7 @@ from collections.abc import Generator
 from typing import Type
 import inspect
 
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -43,21 +43,21 @@ from pypath.internals.cv_terms import (
 )
 from pypath.internals import cv_terms
 from ...internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
 )
 
 
-def omnipath() -> Generator[SilverEntity]:
+def omnipath() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing OmniPath ontology metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.OMNIPATH_ONTOLOGY),
@@ -139,19 +139,19 @@ def _extract_cv_terms() -> Generator[dict]:
         yield term_data
 
 
-def omnipath_ontology() -> Generator[SilverEntity]:
+def omnipath_ontology() -> Generator[Entity]:
     """
     Generate OmniPath CV terms as Entity records.
 
     Extracts all controlled vocabulary terms from the pypath.internals.cv_terms module
-    and converts them into SilverEntity records with CV_TERM type, including their
+    and converts them into Entity records with CV_TERM type, including their
     hierarchical parent relationships.
 
     Yields:
         Entity records with type CV_TERM
     """
     # Define the schema mapping
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.CV_TERM,
         identifiers=Identifiers(
             Column('accession', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),

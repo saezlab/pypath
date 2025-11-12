@@ -30,7 +30,7 @@ from collections.abc import Generator
 import csv
 
 from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -44,9 +44,9 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from ..internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
     Member,
     Members,
@@ -183,14 +183,14 @@ species_to_taxid = {
 }
 
 
-def guidetopharma() -> Generator[SilverEntity]:
+def guidetopharma() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing Guide to Pharmacology metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.GUIDETOPHARMA),
@@ -214,7 +214,7 @@ def guidetopharma() -> Generator[SilverEntity]:
     )
 
 
-def guidetopharma_targets() -> Generator[SilverEntity, None, None]:
+def guidetopharma_targets() -> Generator[Entity, None, None]:
     """
     Download and parse Guide to Pharmacology targets as Entity records.
 
@@ -232,7 +232,7 @@ def guidetopharma_targets() -> Generator[SilverEntity, None, None]:
 
     # Define the schema mapping
     # TODO: need to think how we deal with this: they all get the same guide to pharma ID but have different species. So guide to pharma ID is not merge-safe. Maybe with our check to not merge when different species this will be solved? Then we need to create separate Entities + Interactions for each species variant.
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=Column('Type', cv=target_type_mapping),
         identifiers=Identifiers(
             Column('Target id', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
@@ -276,7 +276,7 @@ def guidetopharma_targets() -> Generator[SilverEntity, None, None]:
         yield schema(row)
 
 
-def guidetopharma_ligands() -> Generator[SilverEntity, None, None]:
+def guidetopharma_ligands() -> Generator[Entity, None, None]:
     """
     Download and parse Guide to Pharmacology ligands as Entity records.
 
@@ -293,7 +293,7 @@ def guidetopharma_ligands() -> Generator[SilverEntity, None, None]:
     )
 
     # Define the schema mapping
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=Column('Type', cv=ligand_chemical_type_mapping),
         identifiers=Identifiers(
             Column('Ligand ID', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
@@ -332,7 +332,7 @@ def guidetopharma_ligands() -> Generator[SilverEntity, None, None]:
         yield schema(row)
 
 
-def guidetopharma_interactions() -> Generator[SilverEntity, None, None]:
+def guidetopharma_interactions() -> Generator[Entity, None, None]:
     """
     Download and parse Guide to Pharmacology ligand-target interactions as Entity records.
 
@@ -351,7 +351,7 @@ def guidetopharma_interactions() -> Generator[SilverEntity, None, None]:
     # Define the schema mapping
     # Note: GuideToPharmacology doesn't provide explicit interaction IDs,
     # so we create a composite identifier from Target ID and Ligand ID
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         identifiers=Identifiers(
             Column(
@@ -376,7 +376,7 @@ def guidetopharma_interactions() -> Generator[SilverEntity, None, None]:
         members=Members(
             # Ligand
             Member(
-                entity=Entity(
+                entity=EntityBuilder(
                     entity_type=Column('Ligand Type', cv=ligand_chemical_type_mapping),
                     identifiers=Identifiers(
                         Column('Ligand ID', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
@@ -385,7 +385,7 @@ def guidetopharma_interactions() -> Generator[SilverEntity, None, None]:
             ),
             # Target
             Member(
-                entity=Entity(
+                entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
                         Column('Target ID', cv=IdentifierNamespaceCv.GUIDETOPHARMA),

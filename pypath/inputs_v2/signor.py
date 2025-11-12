@@ -29,12 +29,12 @@ from __future__ import annotations
 from collections.abc import Generator
 
 from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity as SilverEntity, Identifier, Annotation
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, ResourceAnnotationCv, ResourceCv
 from ..internals.tabular_builder import (
+    EntityBuilder,
     Annotations,
     Column,
-    Entity,
     Identifiers,
     Member,
     Members,
@@ -43,14 +43,14 @@ from ..internals.tabular_builder import (
 import csv
 
 
-def signor() -> Generator[SilverEntity]:
+def signor() -> Generator[Entity]:
     """
     Yield resource metadata as an Entity record.
 
     Yields:
         Entity record with type CV_TERM containing SIGNOR metadata.
     """
-    yield SilverEntity(
+    yield Entity(
         type=EntityTypeCv.CV_TERM,
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.SIGNOR),
@@ -73,7 +73,7 @@ def signor() -> Generator[SilverEntity]:
     )
 
 
-def signor_complexes() -> Generator[SilverEntity]:
+def signor_complexes() -> Generator[Entity]:
     """
     Download and parse SIGNOR complex data as Entity records.
 
@@ -91,7 +91,7 @@ def signor_complexes() -> Generator[SilverEntity]:
     )
 
     # Define the schema mapping
-    map = Entity(
+    map = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN_COMPLEX,
         identifiers=Identifiers(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
@@ -115,7 +115,7 @@ def signor_complexes() -> Generator[SilverEntity]:
         yield map(entity)
 
 
-def signor_protein_families() -> Generator[SilverEntity]:
+def signor_protein_families() -> Generator[Entity]:
     """
     Download and parse SIGNOR protein family data as Entity records.
 
@@ -133,7 +133,7 @@ def signor_protein_families() -> Generator[SilverEntity]:
     )
 
     # Define the schema mapping
-    map = Entity(
+    map = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN_FAMILY,
         identifiers=Identifiers(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
@@ -157,7 +157,7 @@ def signor_protein_families() -> Generator[SilverEntity]:
         yield map(entity)
 
 
-def signor_phenotypes() -> Generator[SilverEntity]:
+def signor_phenotypes() -> Generator[Entity]:
     """
     Download and parse SIGNOR phenotype data as Entity records.
 
@@ -175,7 +175,7 @@ def signor_phenotypes() -> Generator[SilverEntity]:
     )
 
     # Define the schema mapping
-    map = Entity(
+    map = EntityBuilder(
         entity_type=EntityTypeCv.PHENOTYPE,
         identifiers=Identifiers(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
@@ -192,7 +192,7 @@ def signor_phenotypes() -> Generator[SilverEntity]:
         yield map(entity)
 
 
-def signor_stimuli() -> Generator[SilverEntity]:
+def signor_stimuli() -> Generator[Entity]:
     """
     Download and parse SIGNOR stimulus data as Entity records.
 
@@ -210,7 +210,7 @@ def signor_stimuli() -> Generator[SilverEntity]:
     )
 
     # Define the schema mapping
-    map = Entity(
+    map = EntityBuilder(
         entity_type=EntityTypeCv.STIMULUS,
         identifiers=Identifiers(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
@@ -227,9 +227,9 @@ def signor_stimuli() -> Generator[SilverEntity]:
         yield map(entity)
 
 
-def signor_interactions() -> Generator[SilverEntity, None, None]:
+def signor_interactions() -> Generator[Entity, None, None]:
     """
-    Download SIGNOR causalTab interactions and yield `SilverEntity` objects.
+    Download SIGNOR causalTab interactions and yield `Entity` objects.
     """
 
     opener = download_and_open(
@@ -266,7 +266,7 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
     # For MI terms: extract the MI code as the term, with no separate value
     mi_term_processing = {'extract_term': r'(MI:\d+)'}
 
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         identifiers=Identifiers(
             Column(
@@ -289,7 +289,7 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
         ),
         members=Members(
             Member(
-                entity=Entity(
+                entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
                         Column('\ufeff#ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
@@ -303,7 +303,7 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
                 ),
             ),
             Member(
-                entity=Entity(
+                entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=Identifiers(
                         Column('ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
