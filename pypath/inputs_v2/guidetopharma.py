@@ -231,6 +231,7 @@ def guidetopharma_targets() -> Generator[SilverEntity, None, None]:
     )
 
     # Define the schema mapping
+    # TODO: need to think how we deal with this: they all get the same guide to pharma ID but have different species. So guide to pharma ID is not merge-safe. Maybe with our check to not merge when different species this will be solved? Then we need to create separate Entities + Interactions for each species variant.
     schema = Entity(
         entity_type=Column('Type', cv=target_type_mapping),
         identifiers=Identifiers(
@@ -242,15 +243,15 @@ def guidetopharma_targets() -> Generator[SilverEntity, None, None]:
             Column('Human protein RefSeq', cv=IdentifierNamespaceCv.REFSEQ_PROTEIN),
             Column('HGNC id', cv=IdentifierNamespaceCv.HGNC),
             # Rat identifiers
-            Column('Rat SwissProt', cv=IdentifierNamespaceCv.UNIPROT),
-            Column('Rat Ensembl Gene', cv=IdentifierNamespaceCv.ENSEMBL),
-            Column('Rat Entrez Gene', cv=IdentifierNamespaceCv.ENTREZ),
-            Column('Rat protein RefSeq', cv=IdentifierNamespaceCv.REFSEQ_PROTEIN),
+            #Column('Rat SwissProt', cv=IdentifierNamespaceCv.UNIPROT),
+            #Column('Rat Ensembl Gene', cv=IdentifierNamespaceCv.ENSEMBL),
+            #Column('Rat Entrez Gene', cv=IdentifierNamespaceCv.ENTREZ),
+            #Column('Rat protein RefSeq', cv=IdentifierNamespaceCv.REFSEQ_PROTEIN),
             # Mouse identifiers
-            Column('Mouse SwissProt', cv=IdentifierNamespaceCv.UNIPROT),
-            Column('Mouse Ensembl Gene', cv=IdentifierNamespaceCv.ENSEMBL),
-            Column('Mouse Entrez Gene', cv=IdentifierNamespaceCv.ENTREZ),
-            Column('Mouse protein RefSeq', cv=IdentifierNamespaceCv.REFSEQ_PROTEIN),
+            #Column('Mouse SwissProt', cv=IdentifierNamespaceCv.UNIPROT),
+            #Column('Mouse Ensembl Gene', cv=IdentifierNamespaceCv.ENSEMBL),
+            #Column('Mouse Entrez Gene', cv=IdentifierNamespaceCv.ENTREZ),
+            #Column('Mouse protein RefSeq', cv=IdentifierNamespaceCv.REFSEQ_PROTEIN),
             # Names
             Column('Target name', cv=IdentifierNamespaceCv.NAME),
             Column('HGNC symbol', cv=IdentifierNamespaceCv.GENE_NAME_PRIMARY),
@@ -261,6 +262,7 @@ def guidetopharma_targets() -> Generator[SilverEntity, None, None]:
         ),
         annotations=Annotations(
             # Source annotation
+            Column('Species', term_cv=IdentifierNamespaceCv.NCBI_TAX_ID, value="9606"),  # Human
             Column('Family name', cv=MoleculeAnnotationsCv.PROTEIN_FAMILY),
             Column('HGNC name', cv=MoleculeAnnotationsCv.DESCRIPTION),
         ),
