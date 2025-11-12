@@ -132,7 +132,6 @@ def swisslipids_lipids() -> Generator[SilverEntity, None, None]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.SWISSLIPIDS,
             Column('Level', cv=MoleculeAnnotationsCv.LIPID_HIERARCHY_LEVEL),
             Column('Lipid class*', cv=MoleculeAnnotationsCv.LIPID_MAIN_CLASS),
             Column('Parent', cv=IdentifierNamespaceCv.SWISSLIPIDS),

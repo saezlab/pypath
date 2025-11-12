@@ -237,7 +237,6 @@ def hmdb_metabolites(
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.HMDB,
             # Description
             Column('description', cv=MoleculeAnnotationsCv.DESCRIPTION),
             # PubMed references (semicolon-delimited)

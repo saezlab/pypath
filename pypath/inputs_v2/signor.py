@@ -99,7 +99,6 @@ def signor_complexes() -> Generator[SilverEntity]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.SIGNOR,
         ),
         members=Members(
             MembersFromList(
@@ -142,7 +141,6 @@ def signor_protein_families() -> Generator[SilverEntity]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.SIGNOR,
         ),
         members=Members(
             MembersFromList(
@@ -185,7 +183,6 @@ def signor_phenotypes() -> Generator[SilverEntity]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.SIGNOR,
             Column('PHENOTYPE DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
         ),
     )
@@ -221,7 +218,6 @@ def signor_stimuli() -> Generator[SilverEntity]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.SIGNOR,
             Column('STIMULUS DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
         ),
     )
@@ -285,7 +281,6 @@ def signor_interactions() -> Generator[SilverEntity, None, None]:
         ),
         annotations=Annotations(
             # Source annotation
-            ResourceCv.SIGNOR,
             Column('Interaction type(s)', delimiter='|', processing=mi_term_processing),
             Column('Interaction detection method(s)', delimiter='|', processing=mi_term_processing),
             Column('Causal statement', delimiter='|', processing=mi_term_processing),
