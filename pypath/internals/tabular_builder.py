@@ -427,7 +427,7 @@ class MembersFromList:
                 type=self.entity_type,
                 identifiers=member_identifiers,
                 annotations=entity_annotations if entity_annotations else None,
-                members=None,
+                membership=None,
             )
 
             memberships.append(
@@ -469,7 +469,7 @@ class Member:
         )
 
 
-class Members:
+class MembershipBuilder:
     """Container for one or more `Member` or `MembersFromList` definitions.
 
     Accepts:
@@ -503,12 +503,12 @@ class EntityBuilder:
         entity_type: EntityTypeCv | Column | Callable[[Any], EntityTypeCv],
         identifiers: Identifiers,
         annotations: Annotations | None = None,
-        members: Members | None = None,
+        membership: MembershipBuilder | None = None,
     ) -> None:
         self.entity_type = entity_type
         self.identifiers = identifiers
         self.annotations = annotations
-        self.members = members
+        self.membership = membership
 
     def __call__(self, row: Any) -> SilverEntity | None:
         return self.build(row)
@@ -520,7 +520,7 @@ class EntityBuilder:
             return None
 
         annotations = self.annotations.build(row, cache) if self.annotations else None
-        members = self.members.build(row, cache) if self.members else None
+        membership = self.membership.build(row, cache) if self.membership else None
 
         # Resolve entity_type dynamically if it's a Column or callable
         resolved_type = self.entity_type
@@ -536,7 +536,7 @@ class EntityBuilder:
             type=resolved_type,
             identifiers=identifiers,
             annotations=annotations if annotations else None,
-            members=members if members else None,
+            membership=membership if membership else None,
         )
 
 
@@ -546,6 +546,6 @@ __all__ = [
     'EntityBuilder',
     'Identifiers',
     'Member',
-    'Members',
+    'MembershipBuilder',
     'MembersFromList',
 ]

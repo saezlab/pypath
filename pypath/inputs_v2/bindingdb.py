@@ -38,7 +38,7 @@ from ..internals.tabular_builder import (
     Column,
     Identifiers,
     Member,
-    Members,
+    MembershipBuilder,
 )
 
 
@@ -126,7 +126,7 @@ def bindingdb_interactions(
             Column('Patent Number', cv=IdentifierNamespaceCv.PATENT_NUMBER),
             Column('Curation/DataSource', cv=CurationCv.COMMENT),
         ),
-        members=Members(
+        membership=MembershipBuilder(
             # Interactor A: Ligand (small molecule)
             Member(
                 entity=EntityBuilder(

@@ -49,7 +49,7 @@ from ..internals.tabular_builder import (
     Column,
     Identifiers,
     Member,
-    Members,
+    MembershipBuilder,
 )
 
 
@@ -373,7 +373,7 @@ def guidetopharma_interactions() -> Generator[Entity, None, None]:
             Column('PubMed ID', cv=IdentifierNamespaceCv.PUBMED),
             Column('Target Species', cv=species_to_taxid, term_cv=IdentifierNamespaceCv.NCBI_TAX_ID),
         ),
-        members=Members(
+        membership=MembershipBuilder(
             # Ligand
             Member(
                 entity=EntityBuilder(
