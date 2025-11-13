@@ -428,7 +428,6 @@ class MembersFromList:
                 identifiers=member_identifiers,
                 annotations=entity_annotations if entity_annotations else None,
                 members=None,
-                is_member_of=None,
             )
 
             memberships.append(
@@ -538,7 +537,6 @@ class EntityBuilder:
             identifiers=identifiers,
             annotations=annotations if annotations else None,
             members=members if members else None,
-            is_member_of=None,
         )
 
 
