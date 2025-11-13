@@ -42,9 +42,9 @@ from pypath.internals.cv_terms import (
 )
 from ..internals.tabular_builder import (
     EntityBuilder,
-    Annotations,
+    AnnotationsBuilder,
     Column,
-    Identifiers,
+    IdentifiersBuilder,
 )
 
 # UniProt REST API URL for comprehensive protein data
@@ -116,7 +116,7 @@ def uniprot_proteins() -> Generator[Entity]:
     # Define the schema mapping
     map = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             # Primary UniProt accession
             Column('Entry', cv=IdentifierNamespaceCv.UNIPROT),
 
@@ -161,7 +161,7 @@ def uniprot_proteins() -> Generator[Entity]:
             Column('BioGRID', delimiter=';', cv=IdentifierNamespaceCv.BIOGRID),
             Column('ComplexPortal', delimiter=';', cv=IdentifierNamespaceCv.COMPLEXPORTAL),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             Column('Length', cv=MoleculeAnnotationsCv.SEQUENCE_LENGTH),
             Column('Mass', cv=MoleculeAnnotationsCv.MASS_DALTON),

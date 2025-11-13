@@ -45,9 +45,9 @@ from pypath.internals.cv_terms import (
 )
 from ..internals.tabular_builder import (
     EntityBuilder,
-    Annotations,
+    AnnotationsBuilder,
     Column,
-    Identifiers,
+    IdentifiersBuilder,
     Member,
     MembershipBuilder,
 )
@@ -234,7 +234,7 @@ def guidetopharma_targets() -> Generator[Entity, None, None]:
     # TODO: need to think how we deal with this: they all get the same guide to pharma ID but have different species. So guide to pharma ID is not merge-safe. Maybe with our check to not merge when different species this will be solved? Then we need to create separate Entities + Interactions for each species variant.
     schema = EntityBuilder(
         entity_type=Column('Type', cv=target_type_mapping),
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column('Target id', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
             # Human identifiers
             Column('Human SwissProt', cv=IdentifierNamespaceCv.UNIPROT),
@@ -260,7 +260,7 @@ def guidetopharma_targets() -> Generator[Entity, None, None]:
             Column('Target abbreviated name', cv=IdentifierNamespaceCv.ABBREVIATED_NAME),
 
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             Column('Species', term_cv=IdentifierNamespaceCv.NCBI_TAX_ID, value="9606"),  # Human
             Column('Family name', cv=MoleculeAnnotationsCv.PROTEIN_FAMILY),
@@ -295,7 +295,7 @@ def guidetopharma_ligands() -> Generator[Entity, None, None]:
     # Define the schema mapping
     schema = EntityBuilder(
         entity_type=Column('Type', cv=ligand_chemical_type_mapping),
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column('Ligand ID', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
             Column('PubChem SID', cv=IdentifierNamespaceCv.PUBCHEM_COMPOUND),
             Column('PubChem CID', cv=IdentifierNamespaceCv.PUBCHEM),
@@ -313,7 +313,7 @@ def guidetopharma_ligands() -> Generator[Entity, None, None]:
             Column('GtoMPdb', cv=IdentifierNamespaceCv.GTO_M_PDB),
 
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             Column('Species', cv=species_to_taxid, term_cv=IdentifierNamespaceCv.NCBI_TAX_ID),
             Column('Approved', cv={'yes': MoleculeAnnotationsCv.APPROVED}),
@@ -353,13 +353,13 @@ def guidetopharma_interactions() -> Generator[Entity, None, None]:
     # so we create a composite identifier from Target ID and Ligand ID
     schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column(
                 lambda row: f"{row['Target ID']}_{row['Ligand ID']}" if row.get('Target ID') and row.get('Ligand ID') else None,
                 cv=IdentifierNamespaceCv.GUIDETOPHARMA
             ),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             # Interaction properties
             Column('Action', cv=action_cv_mapping),
@@ -378,7 +378,7 @@ def guidetopharma_interactions() -> Generator[Entity, None, None]:
             Member(
                 entity=EntityBuilder(
                     entity_type=Column('Ligand Type', cv=ligand_chemical_type_mapping),
-                    identifiers=Identifiers(
+                    identifiers=IdentifiersBuilder(
                         Column('Ligand ID', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
                     ),
                 ),
@@ -387,7 +387,7 @@ def guidetopharma_interactions() -> Generator[Entity, None, None]:
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
-                    identifiers=Identifiers(
+                    identifiers=IdentifiersBuilder(
                         Column('Target ID', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
                     ),
                 ),

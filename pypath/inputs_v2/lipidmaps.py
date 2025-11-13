@@ -40,10 +40,10 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from pypath.internals.tabular_builder import (
-    Annotations,
+    AnnotationsBuilder,
     Column,
     EntityBuilder,
-    Identifiers,
+    IdentifiersBuilder,
 )
 from pypath.share.downloads import download_and_open
 from pypath.formats.sdf import SdfReader
@@ -114,7 +114,7 @@ def lipidmaps_lipids(
     # Define declarative schema for LIPID MAPS lipids
     schema = EntityBuilder(
         entity_type=EntityTypeCv.LIPID,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             # Primary LIPID MAPS ID (LM_ID)
             Column('LM_ID', cv=IdentifierNamespaceCv.LIPIDMAPS),
             # Common name
@@ -144,7 +144,7 @@ def lipidmaps_lipids(
             Column('HMDB_ID', cv=IdentifierNamespaceCv.HMDB),
             Column('SWISSLIPIDS_ID', cv=IdentifierNamespaceCv.SWISSLIPIDS),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             # Exact mass
             Column('EXACT_MASS', cv=MoleculeAnnotationsCv.MASS_DALTON),

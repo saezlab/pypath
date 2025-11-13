@@ -203,7 +203,7 @@ class Column:
         return str(token).strip()
 
 
-class Identifiers:
+class IdentifiersBuilder:
     """Collection of `Column` objects describing identifiers."""
 
     def __init__(self, *columns: Column) -> None:
@@ -259,7 +259,7 @@ class Identifiers:
         return identifiers
 
 
-class Annotations:
+class AnnotationsBuilder:
     """Collection of annotation columns for entities or memberships."""
 
     def __init__(self, *columns: Column) -> None:
@@ -386,9 +386,9 @@ class MembersFromList:
         self,
         *,
         entity_type: EntityTypeCv,
-        identifiers: Identifiers,
-        annotations: Annotations | None = None,
-        entity_annotations: Annotations | None = None,
+        identifiers: IdentifiersBuilder,
+        annotations: AnnotationsBuilder | None = None,
+        entity_annotations: AnnotationsBuilder | None = None,
     ) -> None:
         self.entity_type = entity_type
         self.identifiers = identifiers
@@ -446,8 +446,8 @@ class Member:
     def __init__(
         self,
         *,
-        entity: 'Entity',
-        annotations: Annotations | None = None,
+        entity: 'EntityBuilder',
+        annotations: AnnotationsBuilder | None = None,
     ) -> None:
         self.entity = entity
         self.annotations = annotations
@@ -501,8 +501,8 @@ class EntityBuilder:
         self,
         *,
         entity_type: EntityTypeCv | Column | Callable[[Any], EntityTypeCv],
-        identifiers: Identifiers,
-        annotations: Annotations | None = None,
+        identifiers: IdentifiersBuilder,
+        annotations: AnnotationsBuilder | None = None,
         membership: MembershipBuilder | None = None,
     ) -> None:
         self.entity_type = entity_type
@@ -541,10 +541,10 @@ class EntityBuilder:
 
 
 __all__ = [
-    'Annotations',
+    'AnnotationsBuilder',
     'Column',
     'EntityBuilder',
-    'Identifiers',
+    'IdentifiersBuilder',
     'Member',
     'MembershipBuilder',
     'MembersFromList',
