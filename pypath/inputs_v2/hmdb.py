@@ -41,10 +41,10 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from pypath.internals.tabular_builder import (
-    Annotations,
+    AnnotationsBuilder,
     Column,
     EntityBuilder,
-    Identifiers,
+    IdentifiersBuilder,
 )
 from pypath.share.downloads import download_and_open
 
@@ -206,7 +206,7 @@ def hmdb_metabolites(
     # Define declarative schema for HMDB metabolites
     schema = EntityBuilder(
         entity_type=EntityTypeCv.SMALL_MOLECULE,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             # Primary HMDB accession
             Column('accession', cv=IdentifierNamespaceCv.HMDB),
             # Primary name
@@ -235,7 +235,7 @@ def hmdb_metabolites(
             Column('drugbank_id', cv=IdentifierNamespaceCv.DRUGBANK),
             Column('cas_registry_number', cv=IdentifierNamespaceCv.CAS),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             # Description
             Column('description', cv=MoleculeAnnotationsCv.DESCRIPTION),

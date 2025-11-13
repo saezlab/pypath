@@ -33,9 +33,9 @@ from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, ResourceAnnotationCv, ResourceCv
 from ..internals.tabular_builder import (
     EntityBuilder,
-    Annotations,
+    AnnotationsBuilder,
     Column,
-    Identifiers,
+    IdentifiersBuilder,
     Member,
     MembershipBuilder,
 )
@@ -140,7 +140,7 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
     # Define the schema mapping
     schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column(
                 'Interaction identifier(s)',
                 delimiter='|',
@@ -148,7 +148,7 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
                 cv=IdentifierNamespaceCv.INTACT,
             ),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             # Interaction metadata
             Column('Interaction type(s)', delimiter='|', processing=mi_term_processing),
@@ -180,11 +180,11 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
-                    identifiers=Identifiers(
+                    identifiers=IdentifiersBuilder(
                         Column('#ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                         Column('Alt. ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                     ),
-                    annotations=Annotations(
+                    annotations=AnnotationsBuilder(
                         Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
                         Column('Alias(es) interactor A', delimiter='|'),
                         Column('Xref(s) interactor A', delimiter='|'),
@@ -192,7 +192,7 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
                         Column('Checksum(s) interactor A', delimiter='|'),
                     ),
                 ),
-                annotations=Annotations(
+                annotations=AnnotationsBuilder(
                     Column('Biological role(s) interactor A', delimiter='|', processing=mi_term_processing),
                     Column('Experimental role(s) interactor A', delimiter='|', processing=mi_term_processing),
                     Column('Type(s) interactor A', delimiter='|', processing=mi_term_processing),
@@ -205,11 +205,11 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
-                    identifiers=Identifiers(
+                    identifiers=IdentifiersBuilder(
                         Column('ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                         Column('Alt. ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                     ),
-                    annotations=Annotations(
+                    annotations=AnnotationsBuilder(
                         Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
                         Column('Alias(es) interactor B', delimiter='|'),
                         Column('Xref(s) interactor B', delimiter='|'),
@@ -217,7 +217,7 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
                         Column('Checksum(s) interactor B', delimiter='|'),
                     ),
                 ),
-                annotations=Annotations(
+                annotations=AnnotationsBuilder(
                     Column('Biological role(s) interactor B', delimiter='|', processing=mi_term_processing),
                     Column('Experimental role(s) interactor B', delimiter='|', processing=mi_term_processing),
                     Column('Type(s) interactor B', delimiter='|', processing=mi_term_processing),

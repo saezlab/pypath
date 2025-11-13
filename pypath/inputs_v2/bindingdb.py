@@ -34,9 +34,9 @@ from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, Licen
 from pypath.share.downloads import download_and_open
 from ..internals.tabular_builder import (
     EntityBuilder,
-    Annotations,
+    AnnotationsBuilder,
     Column,
-    Identifiers,
+    IdentifiersBuilder,
     Member,
     MembershipBuilder,
 )
@@ -104,11 +104,11 @@ def bindingdb_interactions(
     # Define the schema mapping
     schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             # Use BindingDB Reactant_set_id as the interaction identifier
             Column('BindingDB Reactant_set_id', cv=IdentifierNamespaceCv.BINDINGDB),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             # Binding affinity measurements
             Column('Ki (nM)', cv=InteractionParameterCv.KI),
@@ -131,7 +131,7 @@ def bindingdb_interactions(
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.SMALL_MOLECULE,
-                    identifiers=Identifiers(
+                    identifiers=IdentifiersBuilder(
                         Column('BindingDB MonomerID', cv=IdentifierNamespaceCv.BINDINGDB),
                         Column('BindingDB Ligand Name', cv=IdentifierNamespaceCv.NAME),
                         Column('Ligand InChI Key', cv=IdentifierNamespaceCv.STANDARD_INCHI_KEY),
@@ -152,14 +152,14 @@ def bindingdb_interactions(
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
-                    identifiers=Identifiers(
+                    identifiers=IdentifiersBuilder(
                         Column('Target Name', cv=IdentifierNamespaceCv.NAME),
                         Column('UniProt (SwissProt) Primary ID of Target Chain', cv=IdentifierNamespaceCv.NAME),
                         Column('UniProt (SwissProt) Recommended Name of Target Chain', cv=IdentifierNamespaceCv.NAME),
                         Column('UniProt (TrEMBL) Primary ID of Target Chain', cv=IdentifierNamespaceCv.UNIPROT),
                         Column('UniProt (TrEMBL) Submitted Name of Target Chain', cv=IdentifierNamespaceCv.NAME),
                     ),
-                    annotations=Annotations(
+                    annotations=AnnotationsBuilder(
                         Column('Target Source Organism According to Curator or DataSource', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
                         Column('BindingDB Target Chain Sequence', cv=IdentifierNamespaceCv.NAME),
                         Column('Number of Protein Chains in Target (>1 implies a multichain complex)', cv=IdentifierNamespaceCv.NAME),

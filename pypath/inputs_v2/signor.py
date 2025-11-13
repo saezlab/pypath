@@ -33,9 +33,9 @@ from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, ResourceAnnotationCv, ResourceCv
 from ..internals.tabular_builder import (
     EntityBuilder,
-    Annotations,
+    AnnotationsBuilder,
     Column,
-    Identifiers,
+    IdentifiersBuilder,
     Member,
     MembershipBuilder,
     MembersFromList,
@@ -93,17 +93,17 @@ def signor_complexes() -> Generator[Entity]:
     # Define the schema mapping
     map = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN_COMPLEX,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
             Column('COMPLEX NAME', cv=IdentifierNamespaceCv.NAME),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
         ),
         membership=MembershipBuilder(
             MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
-                identifiers=Identifiers(
+                identifiers=IdentifiersBuilder(
                     Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
                 ),
             )
@@ -135,17 +135,17 @@ def signor_protein_families() -> Generator[Entity]:
     # Define the schema mapping
     map = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN_FAMILY,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
             Column('PROT. FAMILY NAME', cv=IdentifierNamespaceCv.NAME),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
         ),
         membership=MembershipBuilder(
             MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
-                identifiers=Identifiers(
+                identifiers=IdentifiersBuilder(
                     Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
                 ),
             )
@@ -177,11 +177,11 @@ def signor_phenotypes() -> Generator[Entity]:
     # Define the schema mapping
     map = EntityBuilder(
         entity_type=EntityTypeCv.PHENOTYPE,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
             Column('PHENOTYPE NAME', cv=IdentifierNamespaceCv.NAME),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             Column('PHENOTYPE DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
         ),
@@ -212,11 +212,11 @@ def signor_stimuli() -> Generator[Entity]:
     # Define the schema mapping
     map = EntityBuilder(
         entity_type=EntityTypeCv.STIMULUS,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
             Column('STIMULUS NAME', cv=IdentifierNamespaceCv.NAME),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             Column('STIMULUS DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
         ),
@@ -268,7 +268,7 @@ def signor_interactions() -> Generator[Entity, None, None]:
 
     schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column(
                 'Interaction identifier(s)',
                 delimiter='|',
@@ -279,7 +279,7 @@ def signor_interactions() -> Generator[Entity, None, None]:
                 },
             ),
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             Column('Interaction type(s)', delimiter='|', processing=mi_term_processing),
             Column('Interaction detection method(s)', delimiter='|', processing=mi_term_processing),
@@ -291,13 +291,13 @@ def signor_interactions() -> Generator[Entity, None, None]:
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
-                    identifiers=Identifiers(
+                    identifiers=IdentifiersBuilder(
                         Column('\ufeff#ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                         Column('Alt. ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                     ),
-                    annotations=Annotations(Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
+                    annotations=AnnotationsBuilder(Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
                 ),
-                annotations=Annotations(
+                annotations=AnnotationsBuilder(
                     Column('Biological role(s) interactor A', delimiter='|', processing=mi_term_processing),
                     Column('Experimental role(s) interactor A', delimiter='|', processing=mi_term_processing),
                 ),
@@ -305,13 +305,13 @@ def signor_interactions() -> Generator[Entity, None, None]:
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
-                    identifiers=Identifiers(
+                    identifiers=IdentifiersBuilder(
                         Column('ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                         Column('Alt. ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
                     ),
-                    annotations=Annotations(Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
+                    annotations=AnnotationsBuilder(Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
                 ),
-                annotations=Annotations(
+                annotations=AnnotationsBuilder(
                     Column('Biological role(s) interactor B', delimiter='|', processing=mi_term_processing),
                     Column('Experimental role(s) interactor B', delimiter='|', processing=mi_term_processing),
                 ),

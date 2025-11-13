@@ -14,7 +14,7 @@ Minimal Structure
 from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity as SilverEntity, Resource
 from pypath.internals.cv_terms import *
-from .tabular_builder import Entity, Identifiers, Annotations, Column
+from .tabular_builder import EntityBuilder, IdentifiersBuilder, AnnotationsBuilder, Column
 import csv
 
 def get_resource() -> Resource:
@@ -35,10 +35,10 @@ def resource_data():
         subfolder='resource_name',
     )
 
-    schema = Entity(
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN,
-        identifiers=Identifiers(...),
-        annotations=Annotations(...),
+        identifiers=IdentifiersBuilder(...),
+        annotations=AnnotationsBuilder(...),
     )
 
     for row in csv.DictReader(opener.result, delimiter='\t'):
@@ -76,7 +76,7 @@ Identifiers
 
 Define primary names, synonyms, and cross-references:
 
-identifiers = Identifiers(
+identifiers = IdentifiersBuilder(
     Column('ID', cv=IdentifierNamespaceCv.UNIPROT),
     Column('Name', cv=IdentifierNamespaceCv.NAME),
     Column('Synonyms', delimiter=';', cv=IdentifierNamespaceCv.SYNONYM),
@@ -100,7 +100,7 @@ Annotations
 
 Annotations capture extra metadata, including references:
 
-annotations = Annotations(
+annotations = AnnotationsBuilder(
     Column('Length', cv=AnnotationTypeCv.LENGTH),
     Column('Function', cv=AnnotationTypeCv.FUNCTION),
     Column('GO IDs', delimiter=';', cv=AnnotationTypeCv.CV_TERM_ACCESSION),
@@ -120,7 +120,7 @@ from .tabular_builder import MembershipBuilder, MembersFromList
 membership = MembershipBuilder(
     MembersFromList(
         entity_type=EntityTypeCv.PROTEIN,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column('Member IDs', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
         ),
     )
@@ -133,7 +133,7 @@ Boolean Fields
 
 For boolean fields (e.g., "yes"/"no" or "true"/"false"), use a mapping where the true value maps to the CV term itself. When the field value matches the key, the CV term is added to annotations; otherwise, it's omitted.
 
-annotations = Annotations(
+annotations = AnnotationsBuilder(
     Column('Approved', cv={'yes': MoleculeAnnotationsCv.APPROVED}),
     Column('Withdrawn', cv={'yes': MoleculeAnnotationsCv.WITHDRAWN}),
     Column('Labelled', cv={'yes': MoleculeAnnotationsCv.LABELLED}),
@@ -197,7 +197,7 @@ schema = Entity(
                processing=general_id_processing,
                cv=identifier_cv_mapping),
     ),
-    annotations=Annotations(
+    annotations=AnnotationsBuilder(
         Column('Interaction type(s)', delimiter='|',
                processing={'extract_term': r'(MI:\d+)'}),
     ),
@@ -205,12 +205,12 @@ schema = Entity(
         Member(
             entity=Entity(
                 entity_type=EntityTypeCv.PROTEIN,
-                identifiers=Identifiers(
+                identifiers=IdentifiersBuilder(
                     Column('#ID(s) interactor A', delimiter='|',
                            processing=general_id_processing,
                            cv=identifier_cv_mapping),
                 ),
-                annotations=Annotations(
+                annotations=AnnotationsBuilder(
                     Column('Taxid interactor A', delimiter='|',
                            processing={'extract_value': r'taxid:([-\d]+)'},
                            cv=IdentifierNamespaceCv.NCBI_TAX_ID),

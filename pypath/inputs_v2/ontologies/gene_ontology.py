@@ -41,9 +41,9 @@ from pypath.internals.cv_terms import (
 )
 from ...internals.tabular_builder import (
     EntityBuilder,
-    Annotations,
+    AnnotationsBuilder,
     Column,
-    Identifiers,
+    IdentifiersBuilder,
 )
 from .shared import process_obo_term
 
@@ -96,14 +96,14 @@ def gene_ontology() -> Generator[Entity]:
     # Define the schema mapping
     schema = EntityBuilder(
         entity_type=EntityTypeCv.CV_TERM,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             Column('accession', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
             Column('name', cv=IdentifierNamespaceCv.NAME),
             Column('synonyms', delimiter=';', cv=IdentifierNamespaceCv.SYNONYM),
             Column('alt_ids', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
 
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             Column('definition', cv=OntologyAnnotationCv.DEFINITION),
             Column('comment', cv=OntologyAnnotationCv.COMMENT),

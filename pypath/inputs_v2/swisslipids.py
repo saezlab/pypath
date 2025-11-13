@@ -42,9 +42,9 @@ from pypath.internals.cv_terms import (
 from pypath.share.downloads import download_and_open
 from ..internals.tabular_builder import (
     EntityBuilder,
-    Annotations,
+    AnnotationsBuilder,
     Column,
-    Identifiers,
+    IdentifiersBuilder,
 )
 
 
@@ -115,7 +115,7 @@ def swisslipids_lipids() -> Generator[Entity, None, None]:
     # Define the schema mapping
     schema = EntityBuilder(
         entity_type=EntityTypeCv.LIPID,
-        identifiers=Identifiers(
+        identifiers=IdentifiersBuilder(
             # Primary SwissLipids identifier
             Column('Lipid ID', cv=IdentifierNamespaceCv.SWISSLIPIDS),
             Column('Name', cv=IdentifierNamespaceCv.NAME),
@@ -130,7 +130,7 @@ def swisslipids_lipids() -> Generator[Entity, None, None]:
             Column('Abbreviation*', cv=IdentifierNamespaceCv.SYNONYM),
 
         ),
-        annotations=Annotations(
+        annotations=AnnotationsBuilder(
             # Source annotation
             Column('Level', cv=MoleculeAnnotationsCv.LIPID_HIERARCHY_LEVEL),
             Column('Lipid class*', cv=MoleculeAnnotationsCv.LIPID_MAIN_CLASS),
