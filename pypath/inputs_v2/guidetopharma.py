@@ -47,6 +47,7 @@ from ..internals.tabular_builder import (
     EntityBuilder,
     AnnotationsBuilder,
     Column,
+    Constant,
     IdentifiersBuilder,
     Member,
     MembershipBuilder,
@@ -262,7 +263,7 @@ def guidetopharma_targets() -> Generator[Entity, None, None]:
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            Column('Species', term_cv=IdentifierNamespaceCv.NCBI_TAX_ID, value="9606"),  # Human
+            Constant("9606", term_cv=IdentifierNamespaceCv.NCBI_TAX_ID),  # Human
             Column('Family name', cv=MoleculeAnnotationsCv.PROTEIN_FAMILY),
             Column('HGNC name', cv=MoleculeAnnotationsCv.DESCRIPTION),
         ),
