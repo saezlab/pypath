@@ -38,10 +38,50 @@ class ParsedValue:
 class ColumnCache(dict):
     """Cache parsed column values per row to avoid duplicate work."""
 
-    def values(self, column: 'Column', row: Any) -> list[ParsedValue]:
+    def values(self, column: 'Column | Constant', row: Any) -> list[ParsedValue]:
         if column not in self:
             self[column] = column.extract(row)
         return self[column]
+
+
+class Constant:
+    """Constant value definition for annotations or identifiers.
+
+    Use this when you want to attach a fixed value that doesn't come from the row data.
+
+    Examples:
+        Constant("9606", term_cv=IdentifierNamespaceCv.NCBI_TAX_ID)  # Always human
+        Constant("active", cv=ActivityTypeCv.ACTIVE)  # Constant annotation
+    """
+
+    def __init__(
+        self,
+        value: str,
+        *,
+        cv: Any | None = None,
+        term_cv: str | None = None,
+        units: str | None = None,
+    ) -> None:
+        self.value = value
+        self.cv = cv
+        self.term_cv = term_cv
+        self.units = units
+        # These attributes ensure compatibility with Column interface
+        self.selector = None
+        self.delimiter = None
+        self.processing = {}
+
+    def extract(self, row: Any) -> list[ParsedValue]:
+        """Return a single ParsedValue with the constant value."""
+        return [ParsedValue(value=self.value, units=self.units)]
+
+    def resolve_cv(self, value: ParsedValue) -> Any | None:
+        """Resolve CV term, prioritizing term_cv over cv."""
+        if self.term_cv is not None:
+            return self.term_cv
+        if self.cv is not None:
+            return self.cv
+        return None
 
 
 class Column:
@@ -204,9 +244,9 @@ class Column:
 
 
 class IdentifiersBuilder:
-    """Collection of `Column` objects describing identifiers."""
+    """Collection of `Column` or `Constant` objects describing identifiers."""
 
-    def __init__(self, *columns: Column) -> None:
+    def __init__(self, *columns: Column | Constant) -> None:
         self.columns = columns
 
     def build(self, row: Any, cache: ColumnCache | None = None) -> list[SilverIdentifier]:
@@ -262,10 +302,10 @@ class IdentifiersBuilder:
 class AnnotationsBuilder:
     """Collection of annotation columns for entities or memberships."""
 
-    def __init__(self, *columns: Column) -> None:
-        # Convert CV terms to Column objects
+    def __init__(self, *columns: Column | Constant) -> None:
+        # Convert CV terms to Column objects, but keep Constant objects as-is
         self.columns = tuple(
-            Column(None, cv=col) if not isinstance(col, Column) else col
+            Column(None, cv=col) if not isinstance(col, (Column, Constant)) else col
             for col in columns
         )
 
@@ -281,7 +321,8 @@ class AnnotationsBuilder:
                 const_term = column.cv
 
             # If selector is None and we have a constant CV term, create annotation directly
-            if column.selector is None and const_term is not None:
+            # BUT: Skip this for Constant objects which always have a value
+            if column.selector is None and const_term is not None and not isinstance(column, Constant):
                 annot_key = (const_term, None, None)
                 if annot_key not in seen:
                     seen.add(annot_key)
@@ -543,6 +584,7 @@ class EntityBuilder:
 __all__ = [
     'AnnotationsBuilder',
     'Column',
+    'Constant',
     'EntityBuilder',
     'IdentifiersBuilder',
     'Member',
