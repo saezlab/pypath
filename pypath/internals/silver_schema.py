@@ -90,7 +90,7 @@ class Entity(NamedTuple):
     identifiers: List[Identifier]  # e.g. IdentifierNamespaceCv.NAME and .SYNONYM)
     annotations: List[Annotation] | None = None
 
-    members: List[Membership] | None = None 
+    membership: List[Membership] | None = None 
 
     def __repr__(self) -> str:
         """Tree-like detailed representation."""
@@ -110,12 +110,12 @@ class Entity(NamedTuple):
         # Identifiers
         lines.append(f"{prefix}├─ identifiers:")
         for i, id_ in enumerate(self.identifiers):
-            connector = "└─" if i == len(self.identifiers) - 1 and not self.annotations and not self.members else "├─"
+            connector = "└─" if i == len(self.identifiers) - 1 and not self.annotations and not self.membership else "├─"
             lines.append(f"{prefix}│  {connector} {id_!r}")
 
         # Annotations
         if self.annotations:
-            is_last = not self.members
+            is_last = not self.membership
             connector = "└─" if is_last else "├─"
             lines.append(f"{prefix}{connector} annotations:")
             for i, ann in enumerate(self.annotations):
@@ -123,20 +123,20 @@ class Entity(NamedTuple):
                 ann_prefix = "   " if is_last else "│  "
                 lines.append(f"{prefix}{ann_prefix}{ann_connector} {ann!r}")
 
-        # Members
-        if self.members:
+        # Membership
+        if self.membership:
             is_last = True
             connector = "└─" if is_last else "├─"
-            lines.append(f"{prefix}{connector} members: ({len(self.members)})")
-            for i, member in enumerate(self.members):
-                member_connector = "└─" if i == len(self.members) - 1 else "├─"
+            lines.append(f"{prefix}{connector} membership: ({len(self.membership)})")
+            for i, member in enumerate(self.membership):
+                member_connector = "└─" if i == len(self.membership) - 1 else "├─"
                 member_prefix = "   " if is_last else "│  "
 
                 # Membership wrapper
                 lines.append(f"{prefix}{member_prefix}{member_connector} Membership:")
 
                 # Member entity
-                continuation = "   " if i == len(self.members) - 1 else "│  "
+                continuation = "   " if i == len(self.membership) - 1 else "│  "
                 member_lines = member.member.pretty(0).split("\n")
                 lines.append(f"{prefix}{member_prefix}{continuation}  ├─ entity: {member_lines[0]}")
                 for line in member_lines[1:]:
@@ -188,7 +188,7 @@ ENTITY_FIELDS = [
     pa.field('type', pa.string(), nullable=False),
     pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS)), nullable=False),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
-    pa.field('members', pa.list_(pa.struct(MEMBERSHIP_FIELDS))),
+    pa.field('membership', pa.list_(pa.struct(MEMBERSHIP_FIELDS))),
 ]
 
 ENTITY_SCHEMA = pa.schema(ENTITY_FIELDS)

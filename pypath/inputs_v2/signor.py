@@ -37,7 +37,7 @@ from ..internals.tabular_builder import (
     Column,
     Identifiers,
     Member,
-    Members,
+    MembershipBuilder,
     MembersFromList,
 )
 import csv
@@ -100,7 +100,7 @@ def signor_complexes() -> Generator[Entity]:
         annotations=Annotations(
             # Source annotation
         ),
-        members=Members(
+        membership=MembershipBuilder(
             MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=Identifiers(
@@ -142,7 +142,7 @@ def signor_protein_families() -> Generator[Entity]:
         annotations=Annotations(
             # Source annotation
         ),
-        members=Members(
+        membership=MembershipBuilder(
             MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=Identifiers(
@@ -287,7 +287,7 @@ def signor_interactions() -> Generator[Entity, None, None]:
             Column('Causal Regulatory Mechanism', delimiter='|', processing=mi_term_processing),
             Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=IdentifierNamespaceCv.PUBMED),
         ),
-        members=Members(
+        membership=MembershipBuilder(
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,

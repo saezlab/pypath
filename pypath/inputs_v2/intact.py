@@ -37,7 +37,7 @@ from ..internals.tabular_builder import (
     Column,
     Identifiers,
     Member,
-    Members,
+    MembershipBuilder,
 )
 import csv
 
@@ -175,7 +175,7 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
             Column('Creation date', delimiter='|'),
             Column('Update date', delimiter='|'),
         ),
-        members=Members(
+        membership=MembershipBuilder(
             # Interactor A
             Member(
                 entity=EntityBuilder(

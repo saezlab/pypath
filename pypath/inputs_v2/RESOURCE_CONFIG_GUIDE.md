@@ -115,9 +115,9 @@ Members (complexes/families)
 
 For group relationships:
 
-from .tabular_builder import Members, MembersFromList
+from .tabular_builder import MembershipBuilder, MembersFromList
 
-members = Members(
+membership = MembershipBuilder(
     MembersFromList(
         entity_type=EntityTypeCv.PROTEIN,
         identifiers=Identifiers(
@@ -201,7 +201,7 @@ schema = Entity(
         Column('Interaction type(s)', delimiter='|',
                processing={'extract_term': r'(MI:\d+)'}),
     ),
-    members=Members(
+    membership=MembershipBuilder(
         Member(
             entity=Entity(
                 entity_type=EntityTypeCv.PROTEIN,
