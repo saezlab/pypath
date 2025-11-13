@@ -52,6 +52,7 @@ class Annotation(NamedTuple):
 
 class Membership(NamedTuple):
     member: 'Entity'  # Forward reference since Entity is defined below
+    is_parent: bool = False  # For an entity self, in each Membership, is_parent=True means member is a parent of self; is_parent=False means self is parent of member
     annotations: list[Annotation] | None = None
 
     def __repr__(self) -> str:
@@ -89,8 +90,7 @@ class Entity(NamedTuple):
     identifiers: List[Identifier]  # e.g. IdentifierNamespaceCv.NAME and .SYNONYM)
     annotations: List[Annotation] | None = None
 
-    members: List[Membership] | None = None # e.g. for complexes and families
-    is_member_of: List[Membership] | None = None # e.g. for proteins that are part of complexes or families
+    members: List[Membership] | None = None 
 
     def __repr__(self) -> str:
         """Tree-like detailed representation."""
@@ -110,12 +110,12 @@ class Entity(NamedTuple):
         # Identifiers
         lines.append(f"{prefix}├─ identifiers:")
         for i, id_ in enumerate(self.identifiers):
-            connector = "└─" if i == len(self.identifiers) - 1 and not self.annotations and not self.members and not self.is_member_of else "├─"
+            connector = "└─" if i == len(self.identifiers) - 1 and not self.annotations and not self.members else "├─"
             lines.append(f"{prefix}│  {connector} {id_!r}")
 
         # Annotations
         if self.annotations:
-            is_last = not self.members and not self.is_member_of
+            is_last = not self.members
             connector = "└─" if is_last else "├─"
             lines.append(f"{prefix}{connector} annotations:")
             for i, ann in enumerate(self.annotations):
@@ -125,7 +125,7 @@ class Entity(NamedTuple):
 
         # Members
         if self.members:
-            is_last = not self.is_member_of
+            is_last = True
             connector = "└─" if is_last else "├─"
             lines.append(f"{prefix}{connector} members: ({len(self.members)})")
             for i, member in enumerate(self.members):
@@ -154,33 +154,6 @@ class Entity(NamedTuple):
                     if lines[-len(member_lines)-1].endswith("├─ entity: " + member_lines[0]):
                         lines[-len(member_lines)-1] = f"{prefix}{member_prefix}{continuation}  └─ entity: {member_lines[0]}"
 
-        # Is member of
-        if self.is_member_of:
-            lines.append(f"{prefix}└─ is_member_of: ({len(self.is_member_of)})")
-            for i, membership in enumerate(self.is_member_of):
-                member_connector = "└─" if i == len(self.is_member_of) - 1 else "├─"
-                continuation = "   " if i == len(self.is_member_of) - 1 else "│  "
-
-                # Membership wrapper
-                lines.append(f"{prefix}   {member_connector} Membership:")
-
-                # Member entity
-                member_lines = membership.member.pretty(0).split("\n")
-                lines.append(f"{prefix}   {continuation}  ├─ entity: {member_lines[0]}")
-                for line in member_lines[1:]:
-                    lines.append(f"{prefix}   {continuation}  │        {line}")
-
-                # Membership annotations
-                if membership.annotations:
-                    lines.append(f"{prefix}   {continuation}  └─ membership_annotations:")
-                    for j, ann in enumerate(membership.annotations):
-                        ann_connector = "└─" if j == len(membership.annotations) - 1 else "├─"
-                        lines.append(f"{prefix}   {continuation}     {ann_connector} {ann!r}")
-                else:
-                    # Close the entity branch if no annotations
-                    if lines[-len(member_lines)-1].endswith("├─ entity: " + member_lines[0]):
-                        lines[-len(member_lines)-1] = f"{prefix}   {continuation}  └─ entity: {member_lines[0]}"
-
         return "\n".join(lines)
 
 #### PyArrow Schemas (needed for parquet files) ####
@@ -203,9 +176,10 @@ BASE_ENTITY_FIELDS = [
     pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS))),
 ]
 
-# Membership structure (entity + annotations)
+# Membership structure (entity + is_parent + annotations)
 MEMBERSHIP_FIELDS = [
     pa.field('member', pa.struct(BASE_ENTITY_FIELDS)),
+    pa.field('is_parent', pa.bool_()),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
 ]
 
@@ -215,7 +189,6 @@ ENTITY_FIELDS = [
     pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS)), nullable=False),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
     pa.field('members', pa.list_(pa.struct(MEMBERSHIP_FIELDS))),
-    pa.field('is_member_of', pa.list_(pa.struct(MEMBERSHIP_FIELDS))),
 ]
 
 ENTITY_SCHEMA = pa.schema(ENTITY_FIELDS)
