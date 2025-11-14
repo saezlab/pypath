@@ -65,9 +65,9 @@ class IdentifierNamespaceCv(CvEnum):
     SIGNOR = ("OM:0007", "SIGNOR database identifier", "https://signor.uniroma2.it")
     GUIDETOPHARMA = ("OM:0008", "Guide to Pharmacology identifier", "https://www.guidetopharmacology.org")
     SWISSLIPIDS = ("OM:0009", "SwissLipids database ID", "https://www.swisslipids.org")
-    INN = ("OM:0010", "International Nonproprietary Name", "https://www.who.int/teams/health-product-and-policy-standards/inn")
-    GTO_IMMU_PDB = ("OM:0011", "Guide to Immunopharmacology identifier", "https://www.guidetopharmacology.org/immunopharmacology.jsp")
-    GTO_M_PDB = ("OM:0012", "Guide to Malaria Pharmacology identifier", "https://www.guidetopharmacology.org/malaria.jsp")
+    INN = ("OM:0120", "International Nonproprietary Name", "https://www.who.int/teams/health-product-and-policy-standards/inn")
+    GTO_IMMU_PDB = ("OM:0121", "Guide to Immunopharmacology identifier", "https://www.guidetopharmacology.org/immunopharmacology.jsp")
+    GTO_M_PDB = ("OM:0122", "Guide to Malaria Pharmacology identifier", "https://www.guidetopharmacology.org/malaria.jsp")
 
     # Gene and protein names (OM:0200-0209 range)
     GENE_NAME_PRIMARY = ("OM:0200", "Primary gene name or symbol")
