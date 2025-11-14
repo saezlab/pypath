@@ -561,11 +561,9 @@ class _BaseCvBuilder:
         return True
 
     @staticmethod
-    def _validate_term(term: Any) -> None:
-        if not isinstance(term, CvEnum):
-            raise TypeError(
-                f"CV term must be an instance of CvEnum, got {term!r} (type={type(term)!r})"
-            )
+    def _validate_term(term: Any) -> None:  # noqa: D401 - validation hook
+        """Validation hook for CV terms (currently permissive)."""
+        return
 
 
 class IdentifiersBuilder(_BaseCvBuilder):
