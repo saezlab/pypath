@@ -1642,7 +1642,8 @@ urls = {
         'drug_indication' : '/chembl/api/data/drug_indication.json?limit=1000',
         'mechanism' : '/chembl/api/data/mechanism.json?limit=1000',
         'latest_readme': 'https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/README',
-        'releases': 'https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases',
+        'sqlite': 'https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/' \
+            'releases/chembl_%02i/chembl_%02i_sqlite.tar.gz',
     },
     'hpo': {
         'label': 'HPO database',
