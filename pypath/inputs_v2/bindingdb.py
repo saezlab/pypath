@@ -161,8 +161,6 @@ def bindingdb_interactions(
                     ),
                     annotations=AnnotationsBuilder(
                         Column('Target Source Organism According to Curator or DataSource', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
-                        Column('BindingDB Target Chain Sequence', cv=IdentifierNamespaceCv.NAME),
-                        Column('Number of Protein Chains in Target (>1 implies a multichain complex)', cv=IdentifierNamespaceCv.NAME),
                     ),
                 ),
             ),
