@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Declarative helpers to turn tabular rows into silver-layer entities."""
+"""Declarative helpers to turn tabular rows into silver-layer entities.
+
+New DSL based on CV / Map / Column sources, replacing the older Column+cv/term_cv
+setup. This module intentionally breaks the previous configuration API.
+"""
 
 from __future__ import annotations
 
@@ -18,195 +22,71 @@ from pypath.internals.silver_schema import (
 )
 from pypath.internals.cv_terms import (
     EntityTypeCv,
-    IdentifierNamespaceCv,
+    CvEnum,
 )
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class ParsedValue:
-    """Result of parsing a single column token."""
-
-    value: str | None
-    prefix: str | None = None
-    units: str | None = None
-    raw: str | None = None
-    term: str | None = None  # For CV terms that are separate from the value
-
-
-class ColumnCache(dict):
-    """Cache parsed column values per row to avoid duplicate work."""
-
-    def values(self, column: 'Column | Constant', row: Any) -> list[ParsedValue]:
-        if column not in self:
-            self[column] = column.extract(row)
-        return self[column]
-
-
-class Constant:
-    """Constant value definition for annotations or identifiers.
-
-    Use this when you want to attach a fixed value that doesn't come from the row data.
-
-    Examples:
-        Constant("9606", term_cv=IdentifierNamespaceCv.NCBI_TAX_ID)  # Always human
-        Constant("active", cv=ActivityTypeCv.ACTIVE)  # Constant annotation
-    """
-
-    def __init__(
-        self,
-        value: str,
-        *,
-        cv: Any | None = None,
-        term_cv: str | None = None,
-        units: str | None = None,
-    ) -> None:
-        self.value = value
-        self.cv = cv
-        self.term_cv = term_cv
-        self.units = units
-        # These attributes ensure compatibility with Column interface
-        self.selector = None
-        self.delimiter = None
-        self.processing = {}
-
-    def extract(self, row: Any) -> list[ParsedValue]:
-        """Return a single ParsedValue with the constant value."""
-        return [ParsedValue(value=self.value, units=self.units)]
-
-    def resolve_cv(self, value: ParsedValue) -> Any | None:
-        """Resolve CV term, prioritizing term_cv over cv."""
-        if self.term_cv is not None:
-            return self.term_cv
-        if self.cv is not None:
-            return self.cv
-        return None
-
-
 class Column:
-    """Column definition describing how to extract values from a row."""
+    """Column definition describing how to extract raw values from a row.
+
+    This is now a *pure* data extractor: it no longer knows about CV terms or
+    regex-based semantic parsing. Any mapping / regex / CV logic should be
+    expressed via :class:`Map` and :class:`CV`.
+
+    Parameters
+    ----------
+    selector:
+        - ``int``      → index into a sequence row
+        - ``str``      → key into a mapping row
+        - ``callable`` → function ``row -> value``
+    delimiter:
+        Optional delimiter used to split string-valued cells into multiple
+        tokens. If not provided, the entire cell is treated as a single value.
+    """
 
     def __init__(
         self,
         selector: int | str | Callable[[Any], Any],
         *,
         delimiter: str | None = None,
-        processing: dict[str, str | re.Pattern] | None = None,
-        cv: Any | dict[str, Any] | Callable[[ParsedValue], Any] | None = None,
-        term_cv: str | None = None,
-        unit_cv: IdentifierNamespaceCv | None = None,
     ) -> None:
         self.selector = selector
         self.delimiter = delimiter
-        self.processing = processing or {}
-        self.cv = cv
-        self.term_cv = term_cv
-        self.unit_cv = unit_cv
-        self._compiled_regex: dict[str, re.Pattern] = {}
 
-    def extract(self, row: Any) -> list[ParsedValue]:
+    def extract(self, row: Any, cache: ColumnCache | None = None) -> list[Any]:
+        """Extract a list of raw values from the given row.
+
+        Values are:
+        - Split by the optional delimiter
+        - Stripped of surrounding whitespace
+        - Empty strings are discarded
+        """
         raw_value = self._lookup(row)
         if raw_value is None:
             return []
 
         tokens = self._split(raw_value)
-        parsed: list[ParsedValue] = []
+        out: list[Any] = []
         for token in tokens:
             text = self._normalize_token(token)
-            if text in (None, '', '-'):
+            if text in (None, "", "-"):
                 continue
+            out.append(text)
+        return out
 
-            prefix = self._apply_regex('extract_prefix', text)
-            if prefix is not None:
-                prefix = prefix.strip().lower()
-
-            term = self._apply_regex('extract_term', text)
-            term = term.strip() if isinstance(term, str) else term
-
-            value = self._apply_regex('extract_value', text)
-            value = value.strip() if isinstance(value, str) else value
-            # If we have an extract_term, don't default value to text
-            # If extract_value was specified but didn't match, also don't default to text
-            if value in (None, '') and term is None and 'extract_value' not in self.processing:
-                value = text
-
-            units = self._apply_regex('extract_unit', text)
-            units = units.strip() if isinstance(units, str) else units
-
-            parsed.append(
-                ParsedValue(
-                    value=value if isinstance(value, str) else str(value) if value is not None else None,
-                    prefix=prefix,
-                    units=units if isinstance(units, str) else None,
-                    raw=text,
-                    term=term,
-                )
-            )
-
-        return parsed
-
-    def resolve_cv(self, value: ParsedValue) -> Any | None:
-        if self.cv is None:
-            return None
-
-        if callable(self.cv):
-            try:
-                return self.cv(value)
-            except Exception as exc:  # pragma: no cover - defensive
-                logger.debug('Column cv callable failed: %s', exc)
-                return None
-
-        if isinstance(self.cv, dict):
-            # First try to match by prefix (for identifier-style values like "GO:0001234")
-            lowered = (value.prefix or '').lower()
-            if lowered in self.cv:
-                return self.cv[lowered]
-
-            # If no prefix, try to match by the actual value (for annotation values like "Inhibition")
-            if not value.prefix and value.value is not None:
-                # Try exact match first
-                if value.value in self.cv:
-                    return self.cv[value.value]
-                # Try lowercase match
-                value_lower = str(value.value).lower()
-                if value_lower in self.cv:
-                    return self.cv[value_lower]
-
-            # Fall back to default
-            return self.cv.get('default') or self.cv.get('DEFAULT')
-
-        return self.cv
-
-    def _apply_regex(self, key: str, text: str) -> str | None:
-        pattern = self.processing.get(key)
-        if not pattern:
-            return None
-
-        if callable(pattern):
-            return pattern(text)
-
-        if isinstance(pattern, re.Pattern):
-            regex = pattern
-        else:
-            regex = self._compiled_regex.get(key)
-            if not regex:
-                regex = re.compile(pattern)
-                self._compiled_regex[key] = regex
-
-        match = regex.search(text)
-        if not match:
-            return None
-
-        if match.lastindex:
-            return match.group(1)
-        return match.group(0)
+    # -- internal helpers -------------------------------------------------
 
     def _lookup(self, row: Any) -> Any:
         if callable(self.selector):
-            return self.selector(row)
+            try:
+                return self.selector(row)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("Column selector callable failed: %s", exc)
+                return None
 
-        if isinstance(row, Mapping):
+        if isinstance(row, Mapping) and isinstance(self.selector, str):
             if self.selector in row:
                 return row[self.selector]
 
@@ -243,184 +123,503 @@ class Column:
         return str(token).strip()
 
 
-class IdentifiersBuilder:
-    """Collection of `Column` or `Constant` objects describing identifiers."""
+class ColumnCache(dict):
+    """Cache extracted values per source (Column, Map, etc.) to avoid duplicate work."""
 
-    def __init__(self, *columns: Column | Constant) -> None:
-        self.columns = columns
+    def values(self, source: Any, row: Any) -> list[Any]:
+        if source not in self:
+            try:
+                extracted = source.extract(row, self)
+            except TypeError:
+                # Fallback for sources that do not accept cache (for robustness)
+                extracted = source.extract(row)
+            self[source] = extracted
+        return self[source]
 
-    def build(self, row: Any, cache: ColumnCache | None = None) -> list[SilverIdentifier]:
+
+class _ConstantSource:
+    """Internal source representing a constant value."""
+
+    __slots__ = ("value",)
+
+    def __init__(self, value: Any) -> None:
+        self.value = value
+
+    def extract(self, row: Any, cache: ColumnCache | None = None) -> list[Any]:  # noqa: ARG002
+        return [self.value]
+
+
+class _CallableSource:
+    """Internal source wrapping a callable row -> value(s)."""
+
+    __slots__ = ("func",)
+
+    def __init__(self, func: Callable[[Any], Any]) -> None:
+        self.func = func
+
+    def extract(self, row: Any, cache: ColumnCache | None = None) -> list[Any]:  # noqa: ARG002
+        try:
+            result = self.func(row)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.debug("Callable source failed: %s", exc)
+            return []
+
+        if result is None:
+            return []
+
+        if isinstance(result, (list, tuple)):
+            return [v for v in result if v is not None]
+
+        return [result]
+
+
+class Map:
+    """Column-based mapping source with optional regex / callable pre-processing.
+
+    This is the main workhorse to go from raw tabular values to CV terms or
+    normalized values.
+
+    Example
+    -------
+    >>> CV(
+    ...     term = Map(col="Action",
+    ...                extract=[r"^([A-Za-z]+)"],
+    ...                map=action_cv_mapping),
+    ... )
+
+    Parameters
+    ----------
+    col:
+        Column selector or :class:`Column` instance used to obtain raw values.
+    map:
+        - ``dict`` mapping raw/processed values to desired outputs.
+          Matching is done first on the original processed value, then on
+          ``lower()`` if the dict contains lowercase keys.
+        - ``callable`` ``value -> mapped_value``.
+        - ``None`` to return the extracted value unchanged.
+    extract:
+        Optional sequence of regex patterns or callables applied in order to
+        the raw string value *before* mapping. Elements may be:
+        - ``str`` or ``re.Pattern`` → the first group (if any) or full match.
+        - ``callable`` ``str -> str | None``.
+        If any extract step returns ``None`` or fails to match, that value is
+        discarded.
+    default:
+        Optional fallback value if mapping yields no result.
+    """
+
+    def __init__(
+        self,
+        *,
+        col: str | int | Callable[[Any], Any] | Column,
+        map: Mapping[Any, Any] | Callable[[Any], Any] | None = None,
+        extract: Sequence[str | re.Pattern | Callable[[str], Any]] | None = None,
+        default: Any | None = None,
+    ) -> None:
+        if isinstance(col, Column):
+            self.column = col
+        else:
+            self.column = Column(col)
+
+        self.mapping = map
+        self.extract_steps: list[str | re.Pattern | Callable[[str], Any]] = list(extract or [])
+        self.default = default
+
+    # Used by ColumnCache
+    def extract(self, row: Any, cache: ColumnCache | None = None) -> list[Any]:
+        if cache is None:
+            cache = ColumnCache()
+
+        raw_values = cache.values(self.column, row)
+        results: list[Any] = []
+        for raw in raw_values:
+            if raw is None:
+                continue
+            text = str(raw).strip()
+            if not text:
+                continue
+
+            processed: str | Any | None = text
+            for step in self.extract_steps:
+                processed = self._apply_step(step, processed)
+                if processed is None:
+                    break
+
+            if processed is None:
+                continue
+
+            mapped = self._apply_mapping(processed)
+            if mapped is None:
+                if self.default is not None:
+                    mapped = self.default
+                else:
+                    continue
+
+            results.append(mapped)
+
+        return results
+
+    # -- internal helpers -------------------------------------------------
+
+    def _apply_step(
+        self,
+        step: str | re.Pattern | Callable[[str], Any],
+        value: Any,
+    ) -> Any | None:
+        if value is None:
+            return None
+
+        text = str(value)
+
+        if callable(step):
+            try:
+                return step(text)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("Map extract callable failed: %s", exc)
+                return None
+
+        # Regex pattern
+        if isinstance(step, re.Pattern):
+            regex = step
+        else:
+            regex = re.compile(step)
+
+        match = regex.search(text)
+        if not match:
+            return None
+
+        if match.lastindex:
+            return match.group(1)
+        return match.group(0)
+
+    def _apply_mapping(self, value: Any) -> Any | None:
+        if self.mapping is None:
+            return value
+
+        if callable(self.mapping):
+            try:
+                return self.mapping(value)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("Map mapping callable failed: %s", exc)
+                return None
+
+        # dict-like
+        try:
+            if value in self.mapping:
+                return self.mapping[value]
+        except TypeError:
+            # Unhashable key, fall back to string
+            value_str = str(value)
+            if value_str in self.mapping:
+                return self.mapping[value_str]
+            lower = value_str.lower()
+            if lower in self.mapping:
+                return self.mapping[lower]
+            return None
+
+        # Try string / lowercase variants
+        value_str = str(value)
+        if value_str in self.mapping:
+            return self.mapping[value_str]
+        lower = value_str.lower()
+        if lower in self.mapping:
+            return self.mapping[lower]
+
+        return None
+
+
+class CV:
+    """Declarative specification of a single CV-based field.
+
+    This is used by both :class:`IdentifiersBuilder` and :class:`AnnotationsBuilder`.
+
+    Parameters
+    ----------
+    term:
+        Source for the CV term / identifier type. Required.
+        Can be:
+        - Constant (e.g. ``MoleculeAnnotationsCv.ENDOGENOUS``
+        - :class:`Map`
+        - :class:`Column`
+        - ``callable`` ``row -> value | list[value]``
+    value:
+        Optional source for the value part.
+    unit:
+        Optional source for the unit part (only used for annotations).
+    """
+
+    def __init__(
+        self,
+        *,
+        term: Any,
+        value: Any | None = None,
+        unit: Any | None = None,
+    ) -> None:
+        self.term_source = self._normalize_source(term)
+        self.value_source = self._normalize_source(value) if value is not None else None
+        self.unit_source = self._normalize_source(unit) if unit is not None else None
+
+    # -- source normalization ---------------------------------------------
+
+    def _normalize_source(self, spec: Any) -> Any:
+        # Already a source-like object
+        if isinstance(spec, (Column, Map, _ConstantSource, _CallableSource)):
+            return spec
+
+        # Callable row -> value(s)
+        if callable(spec):
+            return _CallableSource(spec)
+
+        # Fallback: constant
+        return _ConstantSource(spec)
+
+
+class _BaseCvBuilder:
+    """Shared implementation for identifier and annotation builders."""
+
+    def __init__(self, silver_cls: type[SilverIdentifier] | type[SilverAnnotation], *cvs: CV) -> None:
+        self.silver_cls = silver_cls
+        self.cvs = cvs
+
+    # -- public API -------------------------------------------------------
+
+    def build(self, row: Any, cache: ColumnCache | None = None) -> list[SilverIdentifier] | list[SilverAnnotation]:
         cache = cache or ColumnCache()
-        identifiers: list[SilverIdentifier] = []
-        seen: set[tuple] = set()
-        for column in self.columns:
-            for value in cache.values(column, row):
-                id_type = column.resolve_cv(value)
-                # If extract_value was specified, only use value (not raw fallback)
-                literal = value.value if 'extract_value' in column.processing else (value.value or value.raw)
-                if not id_type or not literal:
+        results: list[SilverIdentifier] | list[SilverAnnotation] = []
+        seen: set[tuple[Any, Any, Any]] = set()
+
+        for cv in self.cvs:
+            for term, value, unit in self._expand_cv(cv, row, cache):
+                if term is None:
                     continue
-                # Deduplicate identifiers
-                id_key = (id_type, literal)
-                if id_key in seen:
+
+                key = (term, value, unit if self.silver_cls is SilverAnnotation else None)
+                if key in seen:
                     continue
-                seen.add(id_key)
-                identifiers.append(
-                    SilverIdentifier(type=id_type, value=literal)
-                )
-        return identifiers
+                seen.add(key)
+
+                if self.silver_cls is SilverIdentifier:
+                    # Identifiers ignore unit and require a non-empty value
+                    if value is None or value == "":
+                        continue
+                    results.append(SilverIdentifier(type=term, value=value))
+                else:
+                    results.append(SilverAnnotation(term=term, value=value, units=unit))
+
+        return results
 
     def build_for_index(
         self,
         row: Any,
         index: int,
         cache: ColumnCache,
-    ) -> list[SilverIdentifier]:
-        identifiers: list[SilverIdentifier] = []
-        seen: set[tuple] = set()
-        for column in self.columns:
-            values = cache.values(column, row)
-            if index >= len(values):
-                continue
-            value = values[index]
-            id_type = column.resolve_cv(value)
-            # If extract_value was specified, only use value (not raw fallback)
-            literal = value.value if 'extract_value' in column.processing else (value.value or value.raw)
-            if not id_type or not literal:
-                continue
-            # Deduplicate identifiers
-            id_key = (id_type, literal)
-            if id_key in seen:
-                continue
-            seen.add(id_key)
-            identifiers.append(
-                SilverIdentifier(type=id_type, value=literal)
-            )
-        return identifiers
+    ) -> list[SilverIdentifier] | list[SilverAnnotation]:
+        results: list[SilverIdentifier] | list[SilverAnnotation] = []
+        seen: set[tuple[Any, Any, Any]] = set()
 
-
-class AnnotationsBuilder:
-    """Collection of annotation columns for entities or memberships."""
-
-    def __init__(self, *columns: Column | Constant) -> None:
-        # Convert CV terms to Column objects, but keep Constant objects as-is
-        self.columns = tuple(
-            Column(None, cv=col) if not isinstance(col, (Column, Constant)) else col
-            for col in columns
-        )
-
-    def build(self, row: Any, cache: ColumnCache | None = None) -> list[SilverAnnotation]:
-        cache = cache or ColumnCache()
-        annotations: list[SilverAnnotation] = []
-        seen: set[tuple] = set()
-        for column in self.columns:
-            const_term = None
-            if column.term_cv is not None:
-                const_term = column.term_cv
-            elif column.cv is not None and not isinstance(column.cv, (dict, Callable)):
-                const_term = column.cv
-
-            # If selector is None and we have a constant CV term, create annotation directly
-            # BUT: Skip this for Constant objects which always have a value
-            if column.selector is None and const_term is not None and not isinstance(column, Constant):
-                annot_key = (const_term, None, None)
-                if annot_key not in seen:
-                    seen.add(annot_key)
-                    annotations.append(
-                        SilverAnnotation(
-                            term=const_term,
-                            value=None,
-                            units=None,
-                        )
-                    )
+        for cv in self.cvs:
+            term_vals = self._safe_extract(cv.term_source, row, cache)
+            if not term_vals:
                 continue
 
-            for value in cache.values(column, row):
-                # If ParsedValue has a term field, use that; otherwise use resolve_cv
-                resolved_term = const_term or value.term or column.resolve_cv(value)
-                if not resolved_term:
+            value_vals: list[Any] | None = None
+            unit_vals: list[Any] | None = None
+
+            if cv.value_source is not None:
+                vv = self._safe_extract(cv.value_source, row, cache)
+                value_vals = vv if vv else None
+
+            if cv.unit_source is not None:
+                uv = self._safe_extract(cv.unit_source, row, cache)
+                unit_vals = uv if uv else None
+
+            term = self._pick_index(term_vals, index)
+            if term is None:
+                continue
+            self._validate_term(term)
+
+            value = self._pick_index(value_vals, index) if value_vals is not None else None
+            if cv.value_source is not None and not self._has_value(value):
+                continue
+
+            unit = self._pick_index(unit_vals, index) if unit_vals is not None else None
+            if not self._has_value(value):
+                unit = None
+
+            key = (term, value, unit if self.silver_cls is SilverAnnotation else None)
+            if key in seen:
+                continue
+            seen.add(key)
+
+            if self.silver_cls is SilverIdentifier:
+                if value is None or value == "":
                     continue
-                # When term is extracted separately, value may be None
-                annotation_value = value.value if value.value not in (None, '') else None
+                results.append(SilverIdentifier(type=term, value=value))
+            else:
+                results.append(SilverAnnotation(term=term, value=value, units=unit))
 
-                # If term_cv is set and cv is a dict, use the dict to transform the value
-                if column.term_cv is not None and isinstance(column.cv, dict) and annotation_value is not None:
-                    # Transform the value using the dict mapping
-                    transformed = column.cv.get(annotation_value) or column.cv.get(str(annotation_value).lower())
-                    if transformed:
-                        annotation_value = str(transformed)
-                # If we resolved from a dict mapping and the value is the lookup key,
-                # don't store the redundant value (term alone is sufficient)
-                # But only if term_cv was NOT explicitly set (otherwise dict is for value transformation)
-                elif annotation_value is not None and isinstance(column.cv, dict) and column.term_cv is None:
-                    # Check if this value was used as a dict key to get the term
-                    if annotation_value in column.cv or str(annotation_value).lower() in column.cv:
-                        annotation_value = None
+        return results
 
-                # Skip if extract_value was specified but didn't match (and no extract_term)
-                if 'extract_value' in column.processing and annotation_value is None and 'extract_term' not in column.processing:
-                    continue
-                # Deduplicate annotations
-                annot_key = (resolved_term, annotation_value, value.units)
-                if annot_key in seen:
-                    continue
-                seen.add(annot_key)
-                annotations.append(
-                    SilverAnnotation(
-                        term=resolved_term,
-                        value=annotation_value,
-                        units=value.units,
-                    )
-                )
-        return annotations
+    def max_length(self, row: Any, cache: ColumnCache) -> int:
+        """Maximum sequence length implied by the CVs for this row."""
+        max_len = 0
+        for cv in self.cvs:
+            term_vals = self._safe_extract(cv.term_source, row, cache)
+            if not term_vals:
+                continue
+            lengths = [len(term_vals)]
 
-    def build_for_index(
+            if cv.value_source is not None:
+                vv = self._safe_extract(cv.value_source, row, cache)
+                if vv:
+                    lengths.append(len(vv))
+
+            if cv.unit_source is not None:
+                uv = self._safe_extract(cv.unit_source, row, cache)
+                if uv:
+                    lengths.append(len(uv))
+
+            if lengths:
+                max_len = max(max_len, max(lengths))
+
+        return max_len
+
+    # -- helpers ----------------------------------------------------------
+
+    def _expand_cv(
         self,
+        cv: CV,
         row: Any,
-        index: int,
         cache: ColumnCache,
-    ) -> list[SilverAnnotation]:
-        annotations: list[SilverAnnotation] = []
-        seen: set[tuple] = set()
-        for column in self.columns:
-            const_term = None
-            if column.term_cv is not None:
-                const_term = column.term_cv
-            elif column.cv is not None and not isinstance(column.cv, (dict, Callable)):
-                const_term = column.cv
-            values = cache.values(column, row)
-            if index >= len(values):
+    ) -> list[tuple[Any, Any, Any]]:
+        term_vals = self._safe_extract(cv.term_source, row, cache)
+        if not term_vals:
+            return []
+
+        value_vals: list[Any] = [None]
+        unit_vals: list[Any] = [None]
+
+        if cv.value_source is not None:
+            vv = self._safe_extract(cv.value_source, row, cache)
+            if vv:
+                value_vals = vv
+
+        if cv.unit_source is not None:
+            uv = self._safe_extract(cv.unit_source, row, cache)
+            if uv:
+                unit_vals = uv
+
+        max_len = max(len(term_vals), len(value_vals), len(unit_vals))
+        out: list[tuple[Any, Any, Any]] = []
+
+        for i in range(max_len):
+            term = self._pick_index(term_vals, i)
+            if term is None:
                 continue
-            value = values[index]
-            # If ParsedValue has a term field, use that; otherwise use resolve_cv
-            resolved_term = const_term or value.term or column.resolve_cv(value)
-            if not resolved_term:
+            self._validate_term(term)
+
+            value = self._pick_index(value_vals, i)
+            if cv.value_source is not None and not self._has_value(value):
                 continue
-            # When term is extracted separately, value may be None
-            annotation_value = value.value if value.value not in (None, '') else None
-            # Skip if extract_value was specified but didn't match (and no extract_term)
-            if 'extract_value' in column.processing and annotation_value is None and 'extract_term' not in column.processing:
-                continue
-            # Deduplicate annotations
-            annot_key = (resolved_term, annotation_value, value.units)
-            if annot_key in seen:
-                continue
-            seen.add(annot_key)
-            annotations.append(
-                SilverAnnotation(
-                    term=resolved_term,
-                    value=annotation_value,
-                    units=value.units,
-                )
+
+            unit = None
+            has_value = self._has_value(value)
+            if has_value:
+                unit = self._pick_index(unit_vals, i)
+            else:
+                # Ensure no dangling units without value
+                unit = None
+
+            out.append((term, value if has_value else None, unit))
+
+        return out
+
+    @staticmethod
+    def _safe_extract(source: Any, row: Any, cache: ColumnCache) -> list[Any]:
+        try:
+            return cache.values(source, row)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.debug("Source extraction failed: %s", exc)
+            return []
+
+    @staticmethod
+    def _pick_index(values: list[Any] | None, index: int) -> Any | None:
+        if not values:
+            return None
+        if len(values) == 1:
+            return values[0]
+        if 0 <= index < len(values):
+            return values[index]
+        return None
+
+    @staticmethod
+    def _has_value(value: Any) -> bool:
+        if value is None:
+            return False
+        if isinstance(value, str):
+            return value.strip() not in ("", "-")
+        return True
+
+    @staticmethod
+    def _validate_term(term: Any) -> None:
+        if not isinstance(term, CvEnum):
+            raise TypeError(
+                f"CV term must be an instance of CvEnum, got {term!r} (type={type(term)!r})"
             )
-        return annotations
+
+
+class IdentifiersBuilder(_BaseCvBuilder):
+    """Collection of CV specifications describing identifiers.
+
+    Example
+    -------
+    >>> identifiers = IdentifiersBuilder(
+    ...     CV(
+    ...         term  = Map(col="ID Namespace", map=id_namespace_cv_mapping),
+    ...         value = Column("ID"),
+    ...     ),
+    ... )
+    """
+
+    def __init__(self, *cvs: CV) -> None:
+        super().__init__(SilverIdentifier, *cvs)
+
+
+class AnnotationsBuilder(_BaseCvBuilder):
+    """Collection of CV specifications describing annotations.
+
+    Example
+    -------
+    >>> annotations = AnnotationsBuilder(
+    ...     CV(
+    ...         term = Map(col="Action", extract=[r"^([A-Za-z]+)"], map=action_cv_mapping),
+    ...     ),
+    ...     CV(
+    ...         term = Map(col="Type", map=type_cv_mapping),
+    ...     ),
+    ...     CV(
+    ...         term = MoleculeAnnotationsCv.ENDOGENOUS,
+    ...     ),
+    ...     CV(
+    ...         term  = MoleculeAnnotationsCv.AFFINITY_HIGH,
+    ...         value = Column("Affinity"),
+    ...         unit  = Map(col="Affinity Units", map=affinity_units_cv_mapping),
+    ...     ),
+    ... )
+    """
+
+    def __init__(self, *cvs: CV) -> None:
+        super().__init__(SilverAnnotation, *cvs)
 
 
 class MembersFromList:
-    """Definition of member entities derived from index-aligned delimited column values.
+    """Definition of member entities derived from index-aligned sources.
 
-    Creates multiple members by iterating through delimiter-split values at each index position.
-    Example: Column with 'A,B,C' creates 3 member entities.
+    This is similar in spirit to the old implementation, but driven by CV
+    specifications instead of raw Columns. For each index up to the maximum
+    length implied by identifiers / annotations CVs, a member is created in
+    which the i-th identifier / annotation value is used (with broadcasting
+    for constant sources).
     """
 
     def __init__(
@@ -437,13 +636,15 @@ class MembersFromList:
         self.entity_annotations = entity_annotations
 
     def build(self, row: Any, cache: ColumnCache) -> list[SilverMembership]:
-        lengths = [len(cache.values(column, row)) for column in self.identifiers.columns]
+        lengths: list[int] = []
+
+        lengths.append(self.identifiers.max_length(row, cache))
 
         if self.membership_annotations:
-            lengths.extend(len(cache.values(column, row)) for column in self.membership_annotations.columns)
+            lengths.append(self.membership_annotations.max_length(row, cache))
 
         if self.entity_annotations:
-            lengths.extend(len(cache.values(column, row)) for column in self.entity_annotations.columns)
+            lengths.append(self.entity_annotations.max_length(row, cache))
 
         member_count = max(lengths) if lengths else 0
         memberships: list[SilverMembership] = []
@@ -487,7 +688,7 @@ class Member:
     def __init__(
         self,
         *,
-        entity: 'EntityBuilder',
+        entity: "EntityBuilder",
         annotations: AnnotationsBuilder | None = None,
     ) -> None:
         self.entity = entity
@@ -515,7 +716,7 @@ class MembershipBuilder:
 
     Accepts:
     - Member: Single member with explicit entity + membership annotations
-    - MembersFromList: Index-aligned members from delimited columns
+    - MembersFromList: Index-aligned members from CV-based sources
     """
 
     def __init__(self, *members: Member | MembersFromList) -> None:
@@ -525,10 +726,8 @@ class MembershipBuilder:
         memberships: list[SilverMembership] = []
         for member_def in self.members:
             if isinstance(member_def, MembersFromList):
-                # Index-aligned: multiple entities from one row
                 memberships.extend(member_def.build(row, cache))
             elif isinstance(member_def, Member):
-                # Single member with explicit entity + annotations
                 membership = member_def.build(row, cache)
                 if membership:
                     memberships.append(membership)
@@ -541,7 +740,7 @@ class EntityBuilder:
     def __init__(
         self,
         *,
-        entity_type: EntityTypeCv | Column | Callable[[Any], EntityTypeCv],
+        entity_type: EntityTypeCv | Column | Map | Callable[[Any], EntityTypeCv],
         identifiers: IdentifiersBuilder,
         annotations: AnnotationsBuilder | None = None,
         membership: MembershipBuilder | None = None,
@@ -563,15 +762,17 @@ class EntityBuilder:
         annotations = self.annotations.build(row, cache) if self.annotations else None
         membership = self.membership.build(row, cache) if self.membership else None
 
-        # Resolve entity_type dynamically if it's a Column or callable
-        resolved_type = self.entity_type
-        if isinstance(self.entity_type, Column):
-            # Extract the value and resolve via CV mapping
+        # Resolve entity_type dynamically if it's a Column / Map / callable
+        resolved_type: Any = self.entity_type
+        if isinstance(self.entity_type, (Column, Map)):
             values = cache.values(self.entity_type, row)
             if values:
-                resolved_type = self.entity_type.resolve_cv(values[0]) or values[0].value
+                resolved_type = values[0]
         elif callable(self.entity_type):
-            resolved_type = self.entity_type(row)
+            try:
+                resolved_type = self.entity_type(row)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("Entity type callable failed: %s", exc)
 
         return SilverEntity(
             type=resolved_type,
@@ -582,12 +783,14 @@ class EntityBuilder:
 
 
 __all__ = [
-    'AnnotationsBuilder',
-    'Column',
-    'Constant',
-    'EntityBuilder',
-    'IdentifiersBuilder',
-    'Member',
-    'MembershipBuilder',
-    'MembersFromList',
+    "AnnotationsBuilder",
+    "Column",
+    "ColumnCache",
+    "CV",
+    "EntityBuilder",
+    "IdentifiersBuilder",
+    "Map",
+    "Member",
+    "MembershipBuilder",
+    "MembersFromList",
 ]

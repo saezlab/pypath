@@ -41,10 +41,12 @@ from pypath.internals.cv_terms import (
 )
 from pypath.share.downloads import download_and_open
 from ..internals.tabular_builder import (
-    EntityBuilder,
     AnnotationsBuilder,
     Column,
+    CV,
+    EntityBuilder,
     IdentifiersBuilder,
+    Map,
 )
 
 
@@ -100,11 +102,15 @@ def swisslipids_lipids() -> Generator[Entity, None, None]:
     # Define processing functions
     def filter_inchi(value):
         """Filter out placeholder InChI values."""
-        return value and value != 'InChI=none'
+        if not value or value == 'InChI=none':
+            return None
+        return value
 
     def filter_inchikey(value):
         """Filter out placeholder InChIKey values."""
-        return value and value != 'InChIKey=none'
+        if not value or value == 'InChIKey=none':
+            return None
+        return value
 
     def filter_chebi(value):
         """Format ChEBI IDs with CHEBI: prefix."""
@@ -117,28 +123,36 @@ def swisslipids_lipids() -> Generator[Entity, None, None]:
         entity_type=EntityTypeCv.LIPID,
         identifiers=IdentifiersBuilder(
             # Primary SwissLipids identifier
-            Column('Lipid ID', cv=IdentifierNamespaceCv.SWISSLIPIDS),
-            Column('Name', cv=IdentifierNamespaceCv.NAME),
-            Column('InChI key (pH7.3)', cv=IdentifierNamespaceCv.STANDARD_INCHI_KEY, processing={'filter': filter_inchikey}),
-            Column('InChI (pH7.3)', cv=IdentifierNamespaceCv.STANDARD_INCHI, processing={'filter': filter_inchi}),
-            Column('SMILES (pH7.3)', cv=IdentifierNamespaceCv.SMILES),
-            Column('CHEBI', cv=IdentifierNamespaceCv.CHEBI, processing={'filter': filter_chebi}),
-            Column('LIPID MAPS', cv=IdentifierNamespaceCv.LIPIDMAPS),
-            Column('HMDB', cv=IdentifierNamespaceCv.HMDB),
-            Column('MetaNetX', cv=IdentifierNamespaceCv.METANETX),
-            Column('Synonyms*', cv=IdentifierNamespaceCv.SYNONYM, delimiter=';'),
-            Column('Abbreviation*', cv=IdentifierNamespaceCv.SYNONYM),
-
+            CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=Column('Lipid ID')),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('Name')),
+            CV(
+                term=IdentifierNamespaceCv.STANDARD_INCHI_KEY,
+                value=Map(col=Column('InChI key (pH7.3)'), extract=[filter_inchikey]),
+            ),
+            CV(
+                term=IdentifierNamespaceCv.STANDARD_INCHI,
+                value=Map(col=Column('InChI (pH7.3)'), extract=[filter_inchi]),
+            ),
+            CV(term=IdentifierNamespaceCv.SMILES, value=Column('SMILES (pH7.3)')),
+            CV(
+                term=IdentifierNamespaceCv.CHEBI,
+                value=Map(col=Column('CHEBI'), extract=[filter_chebi]),
+            ),
+            CV(term=IdentifierNamespaceCv.LIPIDMAPS, value=Column('LIPID MAPS')),
+            CV(term=IdentifierNamespaceCv.HMDB, value=Column('HMDB')),
+            CV(term=IdentifierNamespaceCv.METANETX, value=Column('MetaNetX')),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('Synonyms*', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('Abbreviation*')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            Column('Level', cv=MoleculeAnnotationsCv.LIPID_HIERARCHY_LEVEL),
-            Column('Lipid class*', cv=MoleculeAnnotationsCv.LIPID_MAIN_CLASS),
-            Column('Parent', cv=IdentifierNamespaceCv.SWISSLIPIDS),
-            Column('Components*', cv=MoleculeAnnotationsCv.LIPID_STRUCTURAL_COMPONENTS),
-            Column('Charge (pH7.3)', cv=MoleculeAnnotationsCv.MOLECULAR_CHARGE),
-            Column('Exact Mass (neutral form)', cv=MoleculeAnnotationsCv.MASS_DALTON),
-            Column('PMID', delimiter='|', cv=IdentifierNamespaceCv.PUBMED)
+            CV(term=MoleculeAnnotationsCv.LIPID_HIERARCHY_LEVEL, value=Column('Level')),
+            CV(term=MoleculeAnnotationsCv.LIPID_MAIN_CLASS, value=Column('Lipid class*')),
+            CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=Column('Parent')),
+            CV(term=MoleculeAnnotationsCv.LIPID_STRUCTURAL_COMPONENTS, value=Column('Components*')),
+            CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE, value=Column('Charge (pH7.3)')),
+            CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=Column('Exact Mass (neutral form)')),
+            CV(term=IdentifierNamespaceCv.PUBMED, value=Column('PMID', delimiter='|')),
         ),
     )
 

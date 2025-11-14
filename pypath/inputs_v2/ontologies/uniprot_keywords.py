@@ -40,9 +40,10 @@ from pypath.internals.cv_terms import (
     UpdateCategoryCV,
 )
 from ...internals.tabular_builder import (
-    EntityBuilder,
     AnnotationsBuilder,
     Column,
+    CV,
+    EntityBuilder,
     IdentifiersBuilder,
 )
 from .shared import process_obo_term
@@ -97,18 +98,18 @@ def uniprot_keywords_ontology() -> Generator[Entity]:
     schema = EntityBuilder(
         entity_type=EntityTypeCv.CV_TERM,
         identifiers=IdentifiersBuilder(
-            Column('accession', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
-            Column('name', cv=IdentifierNamespaceCv.NAME),
-            Column('synonyms', delimiter=';', cv=IdentifierNamespaceCv.SYNONYM),
-            Column('alt_ids', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('accession')),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('name')),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('synonyms', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('alt_ids', delimiter=';')),
 
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            Column('definition', cv=OntologyAnnotationCv.DEFINITION),
-            Column('comment', cv=OntologyAnnotationCv.COMMENT),
-            Column('is_a', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
-            Column('xrefs', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
+            CV(term=OntologyAnnotationCv.DEFINITION, value=Column('definition')),
+            CV(term=OntologyAnnotationCv.COMMENT, value=Column('comment')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('is_a', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('xrefs', delimiter=';')),
 
         ),
     )

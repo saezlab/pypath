@@ -41,10 +41,12 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from ..internals.tabular_builder import (
-    EntityBuilder,
     AnnotationsBuilder,
     Column,
+    CV,
+    EntityBuilder,
     IdentifiersBuilder,
+    Map,
 )
 
 # UniProt REST API URL for comprehensive protein data
@@ -114,86 +116,91 @@ def uniprot_proteins() -> Generator[Entity]:
     )
 
     # Define the schema mapping
-    map = EntityBuilder(
+    protein_name_column = Column('Protein names')
+    protein_synonym_column = Column('Protein names', delimiter='(')
+
+    schema = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN,
         identifiers=IdentifiersBuilder(
             # Primary UniProt accession
-            Column('Entry', cv=IdentifierNamespaceCv.UNIPROT),
+            CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('Entry')),
 
             # UniProt entry name
-            Column('Entry Name', cv=IdentifierNamespaceCv.UNIPROT),
+            CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('Entry Name')),
 
             # Primary gene name
-            Column('Gene Names (primary)', cv=IdentifierNamespaceCv.GENE_NAME_PRIMARY),
+            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=Column('Gene Names (primary)')),
 
             # Gene synonyms (space-delimited)
-            Column(
-                'Gene Names (synonym)',
-                delimiter=' ',
-                cv=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
+            CV(
+                term=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
+                value=Column('Gene Names (synonym)', delimiter=' '),
             ),
 
             # Protein name - extract primary (before parentheses)
-            Column(
-                'Protein names',
-                processing={'extract_value': r'^([^(]+)'},
-                cv=IdentifierNamespaceCv.NAME,
+            CV(
+                term=IdentifierNamespaceCv.NAME,
+                value=Map(
+                    col=protein_name_column,
+                    extract=[r'^([^(]+)'],
+                ),
             ),
 
             # Protein name synonyms - split by '(' and extract content before ')'
             # Regex only matches tokens with ')', avoiding the primary name
-            Column(
-                'Protein names',
-                delimiter='(',
-                processing={'extract_value': r'^([^)]+)\)'},
-                cv=IdentifierNamespaceCv.SYNONYM,
+            CV(
+                term=IdentifierNamespaceCv.SYNONYM,
+                value=Map(
+                    col=protein_synonym_column,
+                    extract=[r'^([^)]+)\)'],
+                ),
             ),
 
             # Cross-references (semicolon-delimited)
-            Column('Ensembl', delimiter=';', cv=IdentifierNamespaceCv.ENSEMBL),
-            Column('RefSeq', delimiter=';', cv=IdentifierNamespaceCv.REFSEQ),
-            Column('PDB', delimiter=';', cv=IdentifierNamespaceCv.PDB),
-            Column('AlphaFoldDB', delimiter=';', cv=IdentifierNamespaceCv.ALPHAFOLDDB),
-            Column('KEGG', delimiter=';', cv=IdentifierNamespaceCv.KEGG),
-            Column('ChEMBL', delimiter=';', cv=IdentifierNamespaceCv.CHEMBL),
-            Column('SIGNOR', delimiter=';', cv=IdentifierNamespaceCv.SIGNOR),
-            Column('IntAct', delimiter=';', cv=IdentifierNamespaceCv.INTACT),
-            Column('BioGRID', delimiter=';', cv=IdentifierNamespaceCv.BIOGRID),
-            Column('ComplexPortal', delimiter=';', cv=IdentifierNamespaceCv.COMPLEXPORTAL),
+            CV(term=IdentifierNamespaceCv.ENSEMBL, value=Column('Ensembl', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.REFSEQ, value=Column('RefSeq', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.PDB, value=Column('PDB', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=Column('AlphaFoldDB', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.KEGG, value=Column('KEGG', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.CHEMBL, value=Column('ChEMBL', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.SIGNOR, value=Column('SIGNOR', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.INTACT, value=Column('IntAct', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.BIOGRID, value=Column('BioGRID', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.COMPLEXPORTAL, value=Column('ComplexPortal', delimiter=';')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            Column('Length', cv=MoleculeAnnotationsCv.SEQUENCE_LENGTH),
-            Column('Mass', cv=MoleculeAnnotationsCv.MASS_DALTON),
+            CV(term=MoleculeAnnotationsCv.SEQUENCE_LENGTH, value=Column('Length')),
+            CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=Column('Mass')),
 
             # Functional annotations
-            Column('Function [CC]', cv=MoleculeAnnotationsCv.FUNCTION),
-            Column('Subcellular location [CC]', cv=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION),
-            Column('Post-translational modification', cv=MoleculeAnnotationsCv.POST_TRANSLATIONAL_MODIFICATION),
-            Column('Involvement in disease', cv=MoleculeAnnotationsCv.DISEASE_INVOLVEMENT),
-            Column('Pathway', cv=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION),
-            Column('Activity regulation', cv=MoleculeAnnotationsCv.ACTIVITY_REGULATION),
+            CV(term=MoleculeAnnotationsCv.FUNCTION, value=Column('Function [CC]')),
+            CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=Column('Subcellular location [CC]')),
+            CV(term=MoleculeAnnotationsCv.POST_TRANSLATIONAL_MODIFICATION, value=Column('Post-translational modification')),
+            CV(term=MoleculeAnnotationsCv.DISEASE_INVOLVEMENT, value=Column('Involvement in disease')),
+            CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=Column('Pathway')),
+            CV(term=MoleculeAnnotationsCv.ACTIVITY_REGULATION, value=Column('Activity regulation')),
 
             # Feature annotations
-            Column('Mutagenesis', cv=MoleculeAnnotationsCv.MUTAGENESIS),
-            Column('Transmembrane' ,cv=MoleculeAnnotationsCv.TRANSMEMBRANE_REGION),
-            Column('Protein families', delimiter=",", cv=MoleculeAnnotationsCv.PROTEIN_FAMILY),
-            Column('EC number', delimiter=";", cv=MoleculeAnnotationsCv.EC_NUMBER),
+            CV(term=MoleculeAnnotationsCv.MUTAGENESIS, value=Column('Mutagenesis')),
+            CV(term=MoleculeAnnotationsCv.TRANSMEMBRANE_REGION, value=Column('Transmembrane')),
+            CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=Column('Protein families', delimiter=",")),
+            CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=Column('EC number', delimiter=";")),
 
             # Sequence
-            Column('Sequence', cv=MoleculeAnnotationsCv.AMINO_ACID_SEQUENCE),
+            CV(term=MoleculeAnnotationsCv.AMINO_ACID_SEQUENCE, value=Column('Sequence')),
 
             # GO terms as CV term accessions
-            Column('Gene Ontology IDs', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('Gene Ontology IDs', delimiter=';')),
 
             # Keywords as CV term accessions
-            Column('Keywords IDs', delimiter=';', cv=IdentifierNamespaceCv.CV_TERM_ACCESSION),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('Keywords IDs', delimiter=';')),
 
             # Organism as annotation
-            Column('Organism (ID)', cv=IdentifierNamespaceCv.NCBI_TAX_ID),
+            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=Column('Organism (ID)')),
 
             # PubMed references as annotations
-            Column('PubMed ID', delimiter=';', cv=IdentifierNamespaceCv.PUBMED),
+            CV(term=IdentifierNamespaceCv.PUBMED, value=Column('PubMed ID', delimiter=';')),
         ),
     )
 
@@ -201,4 +208,4 @@ def uniprot_proteins() -> Generator[Entity]:
     if opener and opener.result:
         reader = csv.DictReader(opener.result, delimiter='\t')
         for row in reader:
-            yield map(row)
+            yield schema(row)

@@ -42,8 +42,10 @@ from pypath.internals.cv_terms import (
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     Column,
+    CV,
     EntityBuilder,
     IdentifiersBuilder,
+    Map,
 )
 from pypath.share.downloads import download_and_open
 from pypath.formats.sdf import SdfReader
@@ -111,47 +113,51 @@ def lipidmaps_lipids(
         force=force_refresh,
     )
 
+    def normalize_chebi(value: str | None) -> str | None:
+        if not value:
+            return None
+        value = value.strip()
+        if not value:
+            return None
+        return value if value.startswith('CHEBI:') else f'CHEBI:{value}'
+
     # Define declarative schema for LIPID MAPS lipids
     schema = EntityBuilder(
         entity_type=EntityTypeCv.LIPID,
         identifiers=IdentifiersBuilder(
             # Primary LIPID MAPS ID (LM_ID)
-            Column('LM_ID', cv=IdentifierNamespaceCv.LIPIDMAPS),
+            CV(term=IdentifierNamespaceCv.LIPIDMAPS, value=Column('LM_ID')),
             # Common name
-            Column('COMMON_NAME', cv=IdentifierNamespaceCv.NAME),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('COMMON_NAME')),
             # Systematic name (IUPAC)
-            Column('SYSTEMATIC_NAME', cv=IdentifierNamespaceCv.IUPAC_NAME),
+            CV(term=IdentifierNamespaceCv.IUPAC_NAME, value=Column('SYSTEMATIC_NAME')),
             # Abbreviation
-            Column('ABBREVIATION', cv=IdentifierNamespaceCv.SYNONYM),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('ABBREVIATION')),
             # Synonyms (may be semicolon-delimited)
-            Column('SYNONYMS', delimiter=';', cv=IdentifierNamespaceCv.SYNONYM),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('SYNONYMS', delimiter=';')),
             # Chemical structure identifiers
-            Column('INCHI_KEY', cv=IdentifierNamespaceCv.STANDARD_INCHI_KEY),
-            Column('INCHI', cv=IdentifierNamespaceCv.STANDARD_INCHI),
-            Column('SMILES', cv=IdentifierNamespaceCv.SMILES),
+            CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=Column('INCHI_KEY')),
+            CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=Column('INCHI')),
+            CV(term=IdentifierNamespaceCv.SMILES, value=Column('SMILES')),
             # Chemical formula
-            Column('FORMULA', cv=IdentifierNamespaceCv.NAME),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('FORMULA')),
             # Cross-references to other databases
-            Column(
-                'CHEBI_ID',
-                cv=IdentifierNamespaceCv.CHEBI,
-                processing={
-                    'extract_prefix': r'^(CHEBI:)?',
-                    'extract_value': r'^(?:CHEBI:)?(.+)',
-                },
+            CV(
+                term=IdentifierNamespaceCv.CHEBI,
+                value=Map(col=Column('CHEBI_ID'), extract=[normalize_chebi]),
             ),
-            Column('PUBCHEM_CID', cv=IdentifierNamespaceCv.PUBCHEM_COMPOUND),
-            Column('HMDB_ID', cv=IdentifierNamespaceCv.HMDB),
-            Column('SWISSLIPIDS_ID', cv=IdentifierNamespaceCv.SWISSLIPIDS),
+            CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=Column('PUBCHEM_CID')),
+            CV(term=IdentifierNamespaceCv.HMDB, value=Column('HMDB_ID')),
+            CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=Column('SWISSLIPIDS_ID')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
             # Exact mass
-            Column('EXACT_MASS', cv=MoleculeAnnotationsCv.MASS_DALTON),
+            CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=Column('EXACT_MASS')),
             # Lipid classification
-            Column('CATEGORY', cv=MoleculeAnnotationsCv.LIPID_CATEGORY),
-            Column('MAIN_CLASS', cv=MoleculeAnnotationsCv.LIPID_MAIN_CLASS),
-            Column('SUB_CLASS', cv=MoleculeAnnotationsCv.LIPID_SUB_CLASS),
+            CV(term=MoleculeAnnotationsCv.LIPID_CATEGORY, value=Column('CATEGORY')),
+            CV(term=MoleculeAnnotationsCv.LIPID_MAIN_CLASS, value=Column('MAIN_CLASS')),
+            CV(term=MoleculeAnnotationsCv.LIPID_SUB_CLASS, value=Column('SUB_CLASS')),
         ),
     )
 

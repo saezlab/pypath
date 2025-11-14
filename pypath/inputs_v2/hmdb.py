@@ -43,8 +43,10 @@ from pypath.internals.cv_terms import (
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     Column,
+    CV,
     EntityBuilder,
     IdentifiersBuilder,
+    Map,
 )
 from pypath.share.downloads import download_and_open
 
@@ -203,44 +205,48 @@ def hmdb_metabolites(
         force=force_refresh,
     )
 
+    def normalize_chebi(value: str | None) -> str | None:
+        if not value:
+            return None
+        value = value.strip()
+        if not value:
+            return None
+        return value if value.startswith('CHEBI:') else f'CHEBI:{value}'
+
     # Define declarative schema for HMDB metabolites
     schema = EntityBuilder(
         entity_type=EntityTypeCv.SMALL_MOLECULE,
         identifiers=IdentifiersBuilder(
             # Primary HMDB accession
-            Column('accession', cv=IdentifierNamespaceCv.HMDB),
+            CV(term=IdentifierNamespaceCv.HMDB, value=Column('accession')),
             # Primary name
-            Column('name', cv=IdentifierNamespaceCv.NAME),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('name')),
             # Traditional IUPAC name
-            Column('traditional_iupac', cv=IdentifierNamespaceCv.IUPAC_TRADITIONAL_NAME),
+            CV(term=IdentifierNamespaceCv.IUPAC_TRADITIONAL_NAME, value=Column('traditional_iupac')),
             # IUPAC name
-            Column('iupac_name', cv=IdentifierNamespaceCv.IUPAC_NAME),
+            CV(term=IdentifierNamespaceCv.IUPAC_NAME, value=Column('iupac_name')),
             # Synonyms (semicolon-delimited)
-            Column('synonyms', delimiter=';', cv=IdentifierNamespaceCv.SYNONYM),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('synonyms', delimiter=';')),
             # Chemical structure identifiers
-            Column('inchikey', cv=IdentifierNamespaceCv.STANDARD_INCHI_KEY),
-            Column('inchi', cv=IdentifierNamespaceCv.STANDARD_INCHI),
-            Column('smiles', cv=IdentifierNamespaceCv.SMILES),
+            CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=Column('inchikey')),
+            CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=Column('inchi')),
+            CV(term=IdentifierNamespaceCv.SMILES, value=Column('smiles')),
             # Cross-references to other databases
-            Column(
-                'chebi_id',
-                cv=IdentifierNamespaceCv.CHEBI,
-                processing={
-                    'extract_prefix': r'^(CHEBI:)?',
-                    'extract_value': r'^(?:CHEBI:)?(.+)',
-                },
+            CV(
+                term=IdentifierNamespaceCv.CHEBI,
+                value=Map(col=Column('chebi_id'), extract=[normalize_chebi]),
             ),
-            Column('pubchem_compound_id', cv=IdentifierNamespaceCv.PUBCHEM_COMPOUND),
-            Column('kegg_id', cv=IdentifierNamespaceCv.KEGG_COMPOUND),
-            Column('drugbank_id', cv=IdentifierNamespaceCv.DRUGBANK),
-            Column('cas_registry_number', cv=IdentifierNamespaceCv.CAS),
+            CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=Column('pubchem_compound_id')),
+            CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=Column('kegg_id')),
+            CV(term=IdentifierNamespaceCv.DRUGBANK, value=Column('drugbank_id')),
+            CV(term=IdentifierNamespaceCv.CAS, value=Column('cas_registry_number')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
             # Description
-            Column('description', cv=MoleculeAnnotationsCv.DESCRIPTION),
+            CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=Column('description')),
             # PubMed references (semicolon-delimited)
-            Column('pubmed_ids', delimiter=';', cv=IdentifierNamespaceCv.PUBMED),
+            CV(term=IdentifierNamespaceCv.PUBMED, value=Column('pubmed_ids', delimiter=';')),
         ),
     )
 

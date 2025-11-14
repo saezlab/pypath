@@ -332,9 +332,13 @@ class AffinityUnitCv(CvEnum):
     PKB = ("OM:0706", "Negative logarithm of equilibrium constant for antagonist (pKb = -log10(Kb))")
     PA2 = ("OM:0707", "Negative logarithm of molar concentration of antagonist that makes it necessary to double agonist concentration")
 
-    # Direct measurement units would go here if needed (OM:0720-0739 range)
-    # MOLAR = ("OM:0720", "Molar concentration (M)")
-    # NANOMOLAR = ("OM:0721", "Nanomolar concentration (nM)")
+    # Direct measurement units (OM:0720-0739 range)
+    MOLAR = ("OM:0720", "Molar concentration (M)")
+    MICROMOLAR = ("OM:0721", "Micromolar concentration (µM)")
+    NANOMOLAR = ("OM:0722", "Nanomolar concentration (nM)")
+    PER_SECOND = ("OM:0723", "Per second (s^-1)")
+    PER_MOLAR_PER_SECOND = ("OM:0724", "Per molar per second (M^-1 s^-1)")
+    DEGREE_CELSIUS = ("OM:0725", "Degrees Celsius (°C)")
 
 
 class LigandTypeCv(CvEnum):
@@ -366,6 +370,36 @@ class LigandTypeCv(CvEnum):
 
     # Unspecified (OM:1099)
     NONE = ("OM:1099", "No specific ligand type classification")
+
+
+class InteractionMetadataCv(CvEnum):
+    """General interaction-level annotations derived from MITAB/PSI-MI."""
+
+    parent_cv_term = ("OM:1100", "Interaction metadata term", "Describes textual or categorical metadata for an interaction record.")
+
+    CONFIDENCE_VALUE = ("OM:1101", "Confidence score(s) assigned to the interaction")
+    EXPANSION_METHOD = ("OM:1102", "Complex expansion strategy applied to derive binary interactions")
+    FIRST_AUTHOR = ("OM:1103", "First author(s) of the supporting publication")
+    INTERACTION_PARAMETER = ("OM:1104", "Additional interaction parameter(s)")
+    NEGATIVE_FLAG = ("OM:1105", "Indicates whether the interaction is negative")
+    INTERACTION_XREF = ("OM:1106", "Cross-reference(s) attached to the interaction")
+    INTERACTION_ANNOTATION = ("OM:1107", "Annotation(s) describing the interaction")
+    INTERACTION_CHECKSUM = ("OM:1108", "Checksum(s) for interaction records")
+    CREATION_DATE = ("OM:1109", "Date when the interaction record was created")
+    UPDATE_DATE = ("OM:1110", "Date when the interaction record was last updated")
+
+
+class ParticipantMetadataCv(CvEnum):
+    """Annotations specific to interaction participants (interactors)."""
+
+    parent_cv_term = ("OM:1111", "Participant metadata term", "Describes textual or categorical metadata for an interaction participant.")
+
+    ALIAS = ("OM:1112", "Alias(es) recorded for the participant")
+    PARTICIPANT_XREF = ("OM:1113", "Cross-reference(s) attached to the participant")
+    PARTICIPANT_ANNOTATION = ("OM:1114", "Annotation(s) describing participant features")
+    PARTICIPANT_CHECKSUM = ("OM:1115", "Checksum(s) for participant records")
+    PARTICIPANT_FEATURE = ("OM:1116", "Experimental feature(s) of the participant")
+    STOICHIOMETRY = ("OM:1117", "Stoichiometry associated with the participant within the interaction")
 
 
 class OntologyAnnotationCv(CvEnum):

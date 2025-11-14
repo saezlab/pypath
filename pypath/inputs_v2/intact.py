@@ -30,12 +30,23 @@ from collections.abc import Generator
 
 from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity, Identifier, Annotation
-from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, ResourceAnnotationCv, ResourceCv
+from pypath.internals.cv_terms import (
+    EntityTypeCv,
+    IdentifierNamespaceCv,
+    InteractionMetadataCv,
+    ParticipantMetadataCv,
+    LicenseCV,
+    UpdateCategoryCV,
+    ResourceAnnotationCv,
+    ResourceCv,
+)
 from ..internals.tabular_builder import (
-    EntityBuilder,
     AnnotationsBuilder,
     Column,
+    CV,
+    EntityBuilder,
     IdentifiersBuilder,
+    Map,
     Member,
     MembershipBuilder,
 )
@@ -130,50 +141,83 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
         'uniprotkb': IdentifierNamespaceCv.UNIPROT,
     }
 
-    # Processing patterns for MITAB fields
-    general_id_processing = {'extract_prefix': r'^([^:]+):', 'extract_value': r'^[^:]+:([^|"]+)'}
-    tax_processing = {'extract_value': r'taxid:([-\d]+)'}
-    pubmed_processing = {'extract_value': r'(?i)pubmed:(\d+)'}
-    mi_term_processing = {'extract_term': r'(MI:\d+)'}
-    intact_processing = {'extract_value': r'intact:([^|"]+)'}
+    prefix_regex = r'^([^:]+):'
+    value_regex = r'^[^:]+:([^|"]+)'
+    tax_regex = r'taxid:([-\d]+)'
+    pubmed_regex = r'(?i)pubmed:(\d+)'
+    mi_regex = r'(MI:\d+)'
+    intact_value_regex = r'intact:([^|"]+)'
+
+    def general_identifier_cv(column_name: str) -> CV:
+        column = Column(column_name, delimiter='|')
+        return CV(
+            term=Map(
+                col=column,
+                extract=[prefix_regex, str.lower],
+                map=identifier_cv_mapping,
+            ),
+            value=Map(col=column, extract=[value_regex]),
+        )
+
+    def mi_term_cv(column_name: str) -> CV:
+        column = Column(column_name, delimiter='|')
+        return CV(term=Map(col=column, extract=[mi_regex]))
+
+    def tax_cv(column_name: str) -> CV:
+        column = Column(column_name, delimiter='|')
+        return CV(
+            term=IdentifierNamespaceCv.NCBI_TAX_ID,
+            value=Map(col=column, extract=[tax_regex]),
+        )
+
+    def pubmed_annotation(column_name: str) -> CV:
+        column = Column(column_name, delimiter='|')
+        return CV(
+            term=IdentifierNamespaceCv.PUBMED,
+            value=Map(col=column, extract=[pubmed_regex]),
+        )
+
+    def simple_annotation(term_cv, column_name: str) -> CV:
+        return CV(term=term_cv, value=Column(column_name, delimiter='|'))
 
     # Define the schema mapping
     schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         identifiers=IdentifiersBuilder(
-            Column(
-                'Interaction identifier(s)',
-                delimiter='|',
-                processing=intact_processing,
-                cv=IdentifierNamespaceCv.INTACT,
+            CV(
+                term=IdentifierNamespaceCv.INTACT,
+                value=Map(
+                    col=Column('Interaction identifier(s)', delimiter='|'),
+                    extract=[intact_value_regex],
+                ),
             ),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
             # Interaction metadata
-            Column('Interaction type(s)', delimiter='|', processing=mi_term_processing),
-            Column('Interaction detection method(s)', delimiter='|', processing=mi_term_processing),
-            Column('Source database(s)', delimiter='|', processing=mi_term_processing),
-            Column('Confidence value(s)', delimiter='|'),
-            Column('Expansion method(s)', delimiter='|'),
+            mi_term_cv('Interaction type(s)'),
+            mi_term_cv('Interaction detection method(s)'),
+            mi_term_cv('Source database(s)'),
+            simple_annotation(InteractionMetadataCv.CONFIDENCE_VALUE, 'Confidence value(s)'),
+            simple_annotation(InteractionMetadataCv.EXPANSION_METHOD, 'Expansion method(s)'),
 
             # Publication information
-            Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=IdentifierNamespaceCv.PUBMED),
-            Column('Publication 1st author(s)', delimiter='|'),
+            pubmed_annotation('Publication Identifier(s)'),
+            simple_annotation(InteractionMetadataCv.FIRST_AUTHOR, 'Publication 1st author(s)'),
 
             # Experimental details
-            Column('Host organism(s)', delimiter='|', processing=tax_processing),
-            Column('Interaction parameter(s)', delimiter='|'),
-            Column('Negative', delimiter='|'),
+            tax_cv('Host organism(s)'),
+            simple_annotation(InteractionMetadataCv.INTERACTION_PARAMETER, 'Interaction parameter(s)'),
+            simple_annotation(InteractionMetadataCv.NEGATIVE_FLAG, 'Negative'),
 
             # Cross-references and annotations
-            Column('Interaction Xref(s)', delimiter='|'),
-            Column('Interaction annotation(s)', delimiter='|'),
-            Column('Interaction Checksum(s)', delimiter='|'),
+            simple_annotation(InteractionMetadataCv.INTERACTION_XREF, 'Interaction Xref(s)'),
+            simple_annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, 'Interaction annotation(s)'),
+            simple_annotation(InteractionMetadataCv.INTERACTION_CHECKSUM, 'Interaction Checksum(s)'),
 
             # Timestamps
-            Column('Creation date', delimiter='|'),
-            Column('Update date', delimiter='|'),
+            simple_annotation(InteractionMetadataCv.CREATION_DATE, 'Creation date'),
+            simple_annotation(InteractionMetadataCv.UPDATE_DATE, 'Update date'),
         ),
         membership=MembershipBuilder(
             # Interactor A
@@ -181,24 +225,24 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=IdentifiersBuilder(
-                        Column('#ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
-                        Column('Alt. ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
+                        general_identifier_cv('#ID(s) interactor A'),
+                        general_identifier_cv('Alt. ID(s) interactor A'),
                     ),
                     annotations=AnnotationsBuilder(
-                        Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
-                        Column('Alias(es) interactor A', delimiter='|'),
-                        Column('Xref(s) interactor A', delimiter='|'),
-                        Column('Annotation(s) interactor A', delimiter='|'),
-                        Column('Checksum(s) interactor A', delimiter='|'),
+                        tax_cv('Taxid interactor A'),
+                        simple_annotation(ParticipantMetadataCv.ALIAS, 'Alias(es) interactor A'),
+                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_XREF, 'Xref(s) interactor A'),
+                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_ANNOTATION, 'Annotation(s) interactor A'),
+                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_CHECKSUM, 'Checksum(s) interactor A'),
                     ),
                 ),
                 annotations=AnnotationsBuilder(
-                    Column('Biological role(s) interactor A', delimiter='|', processing=mi_term_processing),
-                    Column('Experimental role(s) interactor A', delimiter='|', processing=mi_term_processing),
-                    Column('Type(s) interactor A', delimiter='|', processing=mi_term_processing),
-                    Column('Feature(s) interactor A', delimiter='|'),
-                    Column('Stoichiometry(s) interactor A', delimiter='|'),
-                    Column('Identification method participant A', delimiter='|', processing=mi_term_processing),
+                    mi_term_cv('Biological role(s) interactor A'),
+                    mi_term_cv('Experimental role(s) interactor A'),
+                    mi_term_cv('Type(s) interactor A'),
+                    simple_annotation(ParticipantMetadataCv.PARTICIPANT_FEATURE, 'Feature(s) interactor A'),
+                    simple_annotation(ParticipantMetadataCv.STOICHIOMETRY, 'Stoichiometry(s) interactor A'),
+                    mi_term_cv('Identification method participant A'),
                 ),
             ),
             # Interactor B
@@ -206,24 +250,24 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=IdentifiersBuilder(
-                        Column('ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
-                        Column('Alt. ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
+                        general_identifier_cv('ID(s) interactor B'),
+                        general_identifier_cv('Alt. ID(s) interactor B'),
                     ),
                     annotations=AnnotationsBuilder(
-                        Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
-                        Column('Alias(es) interactor B', delimiter='|'),
-                        Column('Xref(s) interactor B', delimiter='|'),
-                        Column('Annotation(s) interactor B', delimiter='|'),
-                        Column('Checksum(s) interactor B', delimiter='|'),
+                        tax_cv('Taxid interactor B'),
+                        simple_annotation(ParticipantMetadataCv.ALIAS, 'Alias(es) interactor B'),
+                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_XREF, 'Xref(s) interactor B'),
+                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_ANNOTATION, 'Annotation(s) interactor B'),
+                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_CHECKSUM, 'Checksum(s) interactor B'),
                     ),
                 ),
                 annotations=AnnotationsBuilder(
-                    Column('Biological role(s) interactor B', delimiter='|', processing=mi_term_processing),
-                    Column('Experimental role(s) interactor B', delimiter='|', processing=mi_term_processing),
-                    Column('Type(s) interactor B', delimiter='|', processing=mi_term_processing),
-                    Column('Feature(s) interactor B', delimiter='|'),
-                    Column('Stoichiometry(s) interactor B', delimiter='|'),
-                    Column('Identification method participant B', delimiter='|', processing=mi_term_processing),
+                    mi_term_cv('Biological role(s) interactor B'),
+                    mi_term_cv('Experimental role(s) interactor B'),
+                    mi_term_cv('Type(s) interactor B'),
+                    simple_annotation(ParticipantMetadataCv.PARTICIPANT_FEATURE, 'Feature(s) interactor B'),
+                    simple_annotation(ParticipantMetadataCv.STOICHIOMETRY, 'Stoichiometry(s) interactor B'),
+                    mi_term_cv('Identification method participant B'),
                 ),
             ),
         ),
