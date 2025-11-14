@@ -17,6 +17,7 @@ class IdentifierNamespaceCv(CvEnum):
 
     # Protein and gene identifiers (PSI-MI standard)
     UNIPROT = "MI:1097"
+    UNIPROT_TREMBL = "MI:1099"
     ENTREZ = "MI:0477"
     ENSEMBL = "MI:0476"
     HGNC = "MI:1095"
