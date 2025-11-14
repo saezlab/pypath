@@ -71,8 +71,8 @@ def chembl_sqlite(
             large = True,
             silent = False,
             files_needed = [path_in_tar],
+            slow = True
         )
-
         with open(sqlite_path, 'wb') as fp:
 
             while chunk := c.result[path_in_tar].read(1024 ** 2):
