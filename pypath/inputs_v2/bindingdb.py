@@ -195,9 +195,9 @@ def bindingdb_interactions(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=IdentifiersBuilder(
                         CV(term=IdentifierNamespaceCv.NAME, value=Column('Target Name')),
-                        CV(term=IdentifierNamespaceCv.NAME, value=Column('UniProt (SwissProt) Primary ID of Target Chain')),
+                        CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('UniProt (SwissProt) Primary ID of Target Chain')),
                         CV(term=IdentifierNamespaceCv.NAME, value=Column('UniProt (SwissProt) Recommended Name of Target Chain')),
-                        CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('UniProt (TrEMBL) Primary ID of Target Chain')),
+                        CV(term=IdentifierNamespaceCv.UNIPROT_TREMBL, value=Column('UniProt (TrEMBL) Primary ID of Target Chain')),
                         CV(term=IdentifierNamespaceCv.NAME, value=Column('UniProt (TrEMBL) Submitted Name of Target Chain')),
                     ),
                     annotations=AnnotationsBuilder(
