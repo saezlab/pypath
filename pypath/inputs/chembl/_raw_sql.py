@@ -352,9 +352,9 @@ def query_sql_data(
         sqlite_path = download_sqlite()
     else:
         sqlite_path = download_sqlite(version=chembl_version)
-
+    print(f"Using ChEMBL database at: {sqlite_path}")
     # Connect to the database
-    with chembl_downloader.connect(sqlite_path) as connection:
+    with sqlite3.connect(sqlite_path) as connection:
         # Use sqlite3.Row as the row_factory to get dict-like rows
         connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
