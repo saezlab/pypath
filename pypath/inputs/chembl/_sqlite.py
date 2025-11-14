@@ -20,6 +20,7 @@
 import tarfile
 import sqlite3
 import shutil
+import os
 
 import pypath.share.cache as cache
 from pypath.share import curl, cache
@@ -34,9 +35,8 @@ def _chembl_sqlite_path(version: int = 36) -> str:
         f'ChEMBL_SQLite_{version:02}.sqlite',
     )
 
-
 def chembl_sqlite(
-        version: int = 36
+        version: int = 36,
         connect: bool = True,
     ) -> sqlite3.Connection | str:
 
@@ -63,9 +63,9 @@ def chembl_sqlite(
 
         path_in_tar = (
             'chembl_%02i/chembl_%02i_sqlite/chembl_%02i.db' %
-            (version, ) * 3
+            ((version, ) * 3)
         )
-        url = url.urls['chembl']['sqlite'] % (version, version)
+        url = urls.urls['chembl']['sqlite'] % (version, version)
         c = curl.Curl(
             url,
             large = True,
