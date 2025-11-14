@@ -54,6 +54,8 @@ from .annotations import (
     MoleculeAnnotationsCv,
     InteractionParameterCv,
     AffinityUnitCv,
+    InteractionMetadataCv,
+    ParticipantMetadataCv,
     LigandTypeCv,
     OntologyAnnotationCv,
     ResourceAnnotationCv,

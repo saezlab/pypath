@@ -30,15 +30,27 @@ from collections.abc import Generator
 import csv
 
 from pypath.internals.silver_schema import Entity, Identifier, Annotation
-from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, InteractionParameterCv, CurationCv, ResourceAnnotationCv, ResourceCv
+from pypath.internals.cv_terms import (
+    EntityTypeCv,
+    IdentifierNamespaceCv,
+    LicenseCV,
+    UpdateCategoryCV,
+    InteractionParameterCv,
+    AffinityUnitCv,
+    CurationCv,
+    ResourceAnnotationCv,
+    ResourceCv,
+)
 from pypath.share.downloads import download_and_open
 from ..internals.tabular_builder import (
-    EntityBuilder,
     AnnotationsBuilder,
     Column,
+    CV,
+    EntityBuilder,
     IdentifiersBuilder,
     Member,
     MembershipBuilder,
+    Map,
 )
 
 
@@ -99,32 +111,61 @@ def bindingdb_interactions(
         ext='zip',
     )
     # Processing pattern to extract taxonomy ID
-    tax_processing = {'extract_value': r'(\d+)'}
+    tax_column = Column('Target Source Organism According to Curator or DataSource')
+    tax_value = Map(col=tax_column, extract=[r'(\d+)'])
 
     # Define the schema mapping
     schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         identifiers=IdentifiersBuilder(
             # Use BindingDB Reactant_set_id as the interaction identifier
-            Column('BindingDB Reactant_set_id', cv=IdentifierNamespaceCv.BINDINGDB),
+            CV(term=IdentifierNamespaceCv.BINDINGDB, value=Column('BindingDB Reactant_set_id')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
             # Binding affinity measurements
-            Column('Ki (nM)', cv=InteractionParameterCv.KI),
-            Column('Kd (nM)', cv=InteractionParameterCv.KD),
-            Column('IC50 (nM)', cv=InteractionParameterCv.IC50),
-            Column('EC50 (nM)', cv=InteractionParameterCv.EC50),
-            Column('kon (M-1-s-1)', cv=InteractionParameterCv.KON),
-            Column('koff (s-1)', cv=InteractionParameterCv.KOFF),
+            CV(
+                term=InteractionParameterCv.KI,
+                value=Column('Ki (nM)'),
+                unit=AffinityUnitCv.NANOMOLAR,
+            ),
+            CV(
+                term=InteractionParameterCv.KD,
+                value=Column('Kd (nM)'),
+                unit=AffinityUnitCv.NANOMOLAR,
+            ),
+            CV(
+                term=InteractionParameterCv.IC50,
+                value=Column('IC50 (nM)'),
+                unit=AffinityUnitCv.NANOMOLAR,
+            ),
+            CV(
+                term=InteractionParameterCv.EC50,
+                value=Column('EC50 (nM)'),
+                unit=AffinityUnitCv.NANOMOLAR,
+            ),
+            CV(
+                term=InteractionParameterCv.KON,
+                value=Column('kon (M-1-s-1)'),
+                unit=AffinityUnitCv.PER_MOLAR_PER_SECOND,
+            ),
+            CV(
+                term=InteractionParameterCv.KOFF,
+                value=Column('koff (s-1)'),
+                unit=AffinityUnitCv.PER_SECOND,
+            ),
             # Experimental conditions
-            Column('pH', cv=InteractionParameterCv.PH),
-            Column('Temp (C)', cv=InteractionParameterCv.TEMPERATURE_CELSIUS),
+            CV(term=InteractionParameterCv.PH, value=Column('pH')),
+            CV(
+                term=InteractionParameterCv.TEMPERATURE_CELSIUS,
+                value=Column('Temp (C)'),
+                unit=AffinityUnitCv.DEGREE_CELSIUS,
+            ),
             # References and metadata
-            Column('PMID', cv=IdentifierNamespaceCv.PUBMED),
-            Column('Article DOI', cv=IdentifierNamespaceCv.DOI),
-            Column('Patent Number', cv=IdentifierNamespaceCv.PATENT_NUMBER),
-            Column('Curation/DataSource', cv=CurationCv.COMMENT),
+            CV(term=IdentifierNamespaceCv.PUBMED, value=Column('PMID')),
+            CV(term=IdentifierNamespaceCv.DOI, value=Column('Article DOI')),
+            CV(term=IdentifierNamespaceCv.PATENT_NUMBER, value=Column('Patent Number')),
+            CV(term=CurationCv.COMMENT, value=Column('Curation/DataSource')),
         ),
         membership=MembershipBuilder(
             # Interactor A: Ligand (small molecule)
@@ -132,19 +173,19 @@ def bindingdb_interactions(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.SMALL_MOLECULE,
                     identifiers=IdentifiersBuilder(
-                        Column('BindingDB MonomerID', cv=IdentifierNamespaceCv.BINDINGDB),
-                        Column('BindingDB Ligand Name', cv=IdentifierNamespaceCv.NAME),
-                        Column('Ligand InChI Key', cv=IdentifierNamespaceCv.STANDARD_INCHI_KEY),
-                        Column('Ligand InChI', cv=IdentifierNamespaceCv.STANDARD_INCHI),
-                        Column('Ligand SMILES', cv=IdentifierNamespaceCv.SMILES),
-                        Column('PubChem CID', cv=IdentifierNamespaceCv.PUBCHEM_COMPOUND),
-                        Column('PubChem SID', cv=IdentifierNamespaceCv.PUBCHEM),
-                        Column('ChEBI ID of Ligand', cv=IdentifierNamespaceCv.CHEBI),
-                        Column('ChEMBL ID of Ligand', cv=IdentifierNamespaceCv.CHEMBL_COMPOUND),
-                        Column('DrugBank ID of Ligand', cv=IdentifierNamespaceCv.DRUGBANK),
-                        Column('KEGG ID of Ligand', cv=IdentifierNamespaceCv.KEGG_COMPOUND),
-                        Column('ZINC ID of Ligand', cv=IdentifierNamespaceCv.NAME),
-                        Column('Ligand HET ID in PDB', cv=IdentifierNamespaceCv.PDB),
+                        CV(term=IdentifierNamespaceCv.BINDINGDB, value=Column('BindingDB MonomerID')),
+                        CV(term=IdentifierNamespaceCv.NAME, value=Column('BindingDB Ligand Name')),
+                        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=Column('Ligand InChI Key')),
+                        CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=Column('Ligand InChI')),
+                        CV(term=IdentifierNamespaceCv.SMILES, value=Column('Ligand SMILES')),
+                        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=Column('PubChem CID')),
+                        CV(term=IdentifierNamespaceCv.PUBCHEM, value=Column('PubChem SID')),
+                        CV(term=IdentifierNamespaceCv.CHEBI, value=Column('ChEBI ID of Ligand')),
+                        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=Column('ChEMBL ID of Ligand')),
+                        CV(term=IdentifierNamespaceCv.DRUGBANK, value=Column('DrugBank ID of Ligand')),
+                        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=Column('KEGG ID of Ligand')),
+                        CV(term=IdentifierNamespaceCv.NAME, value=Column('ZINC ID of Ligand')),
+                        CV(term=IdentifierNamespaceCv.PDB, value=Column('Ligand HET ID in PDB')),
                     ),
                 ),
             ),
@@ -153,14 +194,17 @@ def bindingdb_interactions(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=IdentifiersBuilder(
-                        Column('Target Name', cv=IdentifierNamespaceCv.NAME),
-                        Column('UniProt (SwissProt) Primary ID of Target Chain', cv=IdentifierNamespaceCv.NAME),
-                        Column('UniProt (SwissProt) Recommended Name of Target Chain', cv=IdentifierNamespaceCv.NAME),
-                        Column('UniProt (TrEMBL) Primary ID of Target Chain', cv=IdentifierNamespaceCv.UNIPROT),
-                        Column('UniProt (TrEMBL) Submitted Name of Target Chain', cv=IdentifierNamespaceCv.NAME),
+                        CV(term=IdentifierNamespaceCv.NAME, value=Column('Target Name')),
+                        CV(term=IdentifierNamespaceCv.NAME, value=Column('UniProt (SwissProt) Primary ID of Target Chain')),
+                        CV(term=IdentifierNamespaceCv.NAME, value=Column('UniProt (SwissProt) Recommended Name of Target Chain')),
+                        CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('UniProt (TrEMBL) Primary ID of Target Chain')),
+                        CV(term=IdentifierNamespaceCv.NAME, value=Column('UniProt (TrEMBL) Submitted Name of Target Chain')),
                     ),
                     annotations=AnnotationsBuilder(
-                        Column('Target Source Organism According to Curator or DataSource', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID),
+                        CV(
+                            term=IdentifierNamespaceCv.NCBI_TAX_ID,
+                            value=tax_value,
+                        ),
                     ),
                 ),
             ),

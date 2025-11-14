@@ -32,10 +32,12 @@ from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv, LicenseCV, UpdateCategoryCV, ResourceAnnotationCv, ResourceCv
 from ..internals.tabular_builder import (
-    EntityBuilder,
     AnnotationsBuilder,
     Column,
+    CV,
+    EntityBuilder,
     IdentifiersBuilder,
+    Map,
     Member,
     MembershipBuilder,
     MembersFromList,
@@ -94,8 +96,8 @@ def signor_complexes() -> Generator[Entity]:
     map = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN_COMPLEX,
         identifiers=IdentifiersBuilder(
-            Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
-            Column('COMPLEX NAME', cv=IdentifierNamespaceCv.NAME),
+            CV(term=IdentifierNamespaceCv.SIGNOR, value=Column('SIGNOR ID')),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('COMPLEX NAME')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
@@ -104,7 +106,10 @@ def signor_complexes() -> Generator[Entity]:
             MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
-                    Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
+                    CV(
+                        term=IdentifierNamespaceCv.UNIPROT,
+                        value=Column('LIST OF ENTITIES', delimiter=','),
+                    ),
                 ),
             )
         ),
@@ -136,8 +141,8 @@ def signor_protein_families() -> Generator[Entity]:
     map = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN_FAMILY,
         identifiers=IdentifiersBuilder(
-            Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
-            Column('PROT. FAMILY NAME', cv=IdentifierNamespaceCv.NAME),
+            CV(term=IdentifierNamespaceCv.SIGNOR, value=Column('SIGNOR ID')),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('PROT. FAMILY NAME')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
@@ -146,7 +151,10 @@ def signor_protein_families() -> Generator[Entity]:
             MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
-                    Column('LIST OF ENTITIES', delimiter=',', cv=IdentifierNamespaceCv.UNIPROT),
+                    CV(
+                        term=IdentifierNamespaceCv.UNIPROT,
+                        value=Column('LIST OF ENTITIES', delimiter=','),
+                    ),
                 ),
             )
         ),
@@ -178,12 +186,12 @@ def signor_phenotypes() -> Generator[Entity]:
     map = EntityBuilder(
         entity_type=EntityTypeCv.PHENOTYPE,
         identifiers=IdentifiersBuilder(
-            Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
-            Column('PHENOTYPE NAME', cv=IdentifierNamespaceCv.NAME),
+            CV(term=IdentifierNamespaceCv.SIGNOR, value=Column('SIGNOR ID')),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('PHENOTYPE NAME')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            Column('PHENOTYPE DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('PHENOTYPE DESCRIPTION')),
         ),
     )
 
@@ -213,12 +221,12 @@ def signor_stimuli() -> Generator[Entity]:
     map = EntityBuilder(
         entity_type=EntityTypeCv.STIMULUS,
         identifiers=IdentifiersBuilder(
-            Column('SIGNOR ID', cv=IdentifierNamespaceCv.SIGNOR),
-            Column('STIMULUS NAME', cv=IdentifierNamespaceCv.NAME),
+            CV(term=IdentifierNamespaceCv.SIGNOR, value=Column('SIGNOR ID')),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('STIMULUS NAME')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            Column('STIMULUS DESCRIPTION', cv=IdentifierNamespaceCv.SYNONYM),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('STIMULUS DESCRIPTION')),
         ),
     )
 
@@ -243,11 +251,6 @@ def signor_interactions() -> Generator[Entity, None, None]:
         post=True,
     )
 
-    signor_processing = {
-        'extract_prefix': r'^([^:]+):',
-        'extract_value': r'^[^:]+:(.*)',
-    }
-
     # Mapping of identifier prefixes (from SIGNOR data) to CV terms
     # All prefixes found in ID and Alt ID columns: chebi, complexportal, pubchem, signor, uniprotkb
     identifier_cv_mapping = {
@@ -258,62 +261,93 @@ def signor_interactions() -> Generator[Entity, None, None]:
         'uniprotkb': IdentifierNamespaceCv.UNIPROT,
     }
 
-    # Processing patterns for specific identifier types
-    general_id_processing = {'extract_prefix': r'^([^:]+):', 'extract_value': r'^[^:]+:([^|"]+)'}
-    tax_processing = {'extract_value': r'taxid:([-\d]+)'}
-    pubmed_processing = {'extract_value': r'(?i)pubmed:(\d+)'}
+    # Processing helpers
+    prefix_regex = r'^([^:]+):'
+    general_value_regex = r'^[^:]+:([^|"]+)'
+    interaction_value_regex = r'^[^:]+:(.*)'
+    tax_regex = r'taxid:([-\d]+)'
+    pubmed_regex = r'(?i)pubmed:(\d+)'
+    mi_regex = r'(MI:\d+)'
 
-    # For MI terms: extract the MI code as the term, with no separate value
-    mi_term_processing = {'extract_term': r'(MI:\d+)'}
+    term_mapping = {
+        'signor': IdentifierNamespaceCv.SIGNOR,
+        'signor-interaction': IdentifierNamespaceCv.SIGNOR,
+    }
+
+    def interaction_identifier_cv() -> CV:
+        column = Column('Interaction identifier(s)', delimiter='|')
+        return CV(
+            term=Map(
+                col=column,
+                extract=[prefix_regex, str.lower],
+                map=term_mapping,
+            ),
+            value=Map(col=column, extract=[interaction_value_regex]),
+        )
+
+    def general_identifier_cv(column_name: str) -> CV:
+        column = Column(column_name, delimiter='|')
+        return CV(
+            term=Map(
+                col=column,
+                extract=[prefix_regex, str.lower],
+                map=identifier_cv_mapping,
+            ),
+            value=Map(col=column, extract=[general_value_regex]),
+        )
+
+    def mi_term_cv(column_name: str) -> CV:
+        column = Column(column_name, delimiter='|')
+        return CV(term=Map(col=column, extract=[mi_regex]))
+
+    def pubmed_annotation(column_name: str) -> CV:
+        column = Column(column_name, delimiter='|')
+        return CV(term=IdentifierNamespaceCv.PUBMED, value=Map(col=column, extract=[pubmed_regex]))
+
+    def tax_cv(column_name: str) -> CV:
+        column = Column(column_name, delimiter='|')
+        return CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=Map(col=column, extract=[tax_regex]))
 
     schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         identifiers=IdentifiersBuilder(
-            Column(
-                'Interaction identifier(s)',
-                delimiter='|',
-                processing=signor_processing,
-                cv={
-                    'signor': IdentifierNamespaceCv.SIGNOR,
-                    'signor-interaction': IdentifierNamespaceCv.SIGNOR,
-                },
-            ),
+            interaction_identifier_cv(),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            Column('Interaction type(s)', delimiter='|', processing=mi_term_processing),
-            Column('Interaction detection method(s)', delimiter='|', processing=mi_term_processing),
-            Column('Causal statement', delimiter='|', processing=mi_term_processing),
-            Column('Causal Regulatory Mechanism', delimiter='|', processing=mi_term_processing),
-            Column('Publication Identifier(s)', delimiter='|', processing=pubmed_processing, cv=IdentifierNamespaceCv.PUBMED),
+            mi_term_cv('Interaction type(s)'),
+            mi_term_cv('Interaction detection method(s)'),
+            mi_term_cv('Causal statement'),
+            mi_term_cv('Causal Regulatory Mechanism'),
+            pubmed_annotation('Publication Identifier(s)'),
         ),
         membership=MembershipBuilder(
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=IdentifiersBuilder(
-                        Column('\ufeff#ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
-                        Column('Alt. ID(s) interactor A', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
+                        general_identifier_cv('\ufeff#ID(s) interactor A'),
+                        general_identifier_cv('Alt. ID(s) interactor A'),
                     ),
-                    annotations=AnnotationsBuilder(Column('Taxid interactor A', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
+                    annotations=AnnotationsBuilder(tax_cv('Taxid interactor A')),
                 ),
                 annotations=AnnotationsBuilder(
-                    Column('Biological role(s) interactor A', delimiter='|', processing=mi_term_processing),
-                    Column('Experimental role(s) interactor A', delimiter='|', processing=mi_term_processing),
+                    mi_term_cv('Biological role(s) interactor A'),
+                    mi_term_cv('Experimental role(s) interactor A'),
                 ),
             ),
             Member(
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=IdentifiersBuilder(
-                        Column('ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
-                        Column('Alt. ID(s) interactor B', delimiter='|', processing=general_id_processing, cv=identifier_cv_mapping),
+                        general_identifier_cv('ID(s) interactor B'),
+                        general_identifier_cv('Alt. ID(s) interactor B'),
                     ),
-                    annotations=AnnotationsBuilder(Column('Taxid interactor B', delimiter='|', processing=tax_processing, cv=IdentifierNamespaceCv.NCBI_TAX_ID)),
+                    annotations=AnnotationsBuilder(tax_cv('Taxid interactor B')),
                 ),
                 annotations=AnnotationsBuilder(
-                    Column('Biological role(s) interactor B', delimiter='|', processing=mi_term_processing),
-                    Column('Experimental role(s) interactor B', delimiter='|', processing=mi_term_processing),
+                    mi_term_cv('Biological role(s) interactor B'),
+                    mi_term_cv('Experimental role(s) interactor B'),
                 ),
             ),
         ),

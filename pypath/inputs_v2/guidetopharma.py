@@ -44,11 +44,12 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from ..internals.tabular_builder import (
-    EntityBuilder,
     AnnotationsBuilder,
     Column,
-    Constant,
+    CV,
+    EntityBuilder,
     IdentifiersBuilder,
+    Map,
     Member,
     MembershipBuilder,
 )
@@ -234,15 +235,15 @@ def guidetopharma_targets() -> Generator[Entity, None, None]:
     # Define the schema mapping
     # TODO: need to think how we deal with this: they all get the same guide to pharma ID but have different species. So guide to pharma ID is not merge-safe. Maybe with our check to not merge when different species this will be solved? Then we need to create separate Entities + Interactions for each species variant.
     schema = EntityBuilder(
-        entity_type=Column('Type', cv=target_type_mapping),
+        entity_type=Map(col=Column('Type'), map=target_type_mapping),
         identifiers=IdentifiersBuilder(
-            Column('Target id', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
+            CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=Column('Target id')),
             # Human identifiers
-            Column('Human SwissProt', cv=IdentifierNamespaceCv.UNIPROT),
-            Column('Human Ensembl Gene', cv=IdentifierNamespaceCv.ENSEMBL),
-            Column('Human Entrez Gene', cv=IdentifierNamespaceCv.ENTREZ),
-            Column('Human protein RefSeq', cv=IdentifierNamespaceCv.REFSEQ_PROTEIN),
-            Column('HGNC id', cv=IdentifierNamespaceCv.HGNC),
+            CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('Human SwissProt')),
+            CV(term=IdentifierNamespaceCv.ENSEMBL, value=Column('Human Ensembl Gene')),
+            CV(term=IdentifierNamespaceCv.ENTREZ, value=Column('Human Entrez Gene')),
+            CV(term=IdentifierNamespaceCv.REFSEQ_PROTEIN, value=Column('Human protein RefSeq')),
+            CV(term=IdentifierNamespaceCv.HGNC, value=Column('HGNC id')),
             # Rat identifiers
             #Column('Rat SwissProt', cv=IdentifierNamespaceCv.UNIPROT),
             #Column('Rat Ensembl Gene', cv=IdentifierNamespaceCv.ENSEMBL),
@@ -254,18 +255,18 @@ def guidetopharma_targets() -> Generator[Entity, None, None]:
             #Column('Mouse Entrez Gene', cv=IdentifierNamespaceCv.ENTREZ),
             #Column('Mouse protein RefSeq', cv=IdentifierNamespaceCv.REFSEQ_PROTEIN),
             # Names
-            Column('Target name', cv=IdentifierNamespaceCv.NAME),
-            Column('HGNC symbol', cv=IdentifierNamespaceCv.GENE_NAME_PRIMARY),
-            Column('synonyms', delimiter='|', cv=IdentifierNamespaceCv.SYNONYM),
-            Column('Target systematic name', cv=IdentifierNamespaceCv.SYSTEMATIC_NAME),
-            Column('Target abbreviated name', cv=IdentifierNamespaceCv.ABBREVIATED_NAME),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('Target name')),
+            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=Column('HGNC symbol')),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('synonyms', delimiter='|')),
+            CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=Column('Target systematic name')),
+            CV(term=IdentifierNamespaceCv.ABBREVIATED_NAME, value=Column('Target abbreviated name')),
 
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            Constant("9606", term_cv=IdentifierNamespaceCv.NCBI_TAX_ID),  # Human
-            Column('Family name', cv=MoleculeAnnotationsCv.PROTEIN_FAMILY),
-            Column('HGNC name', cv=MoleculeAnnotationsCv.DESCRIPTION),
+            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value="9606"),  # Human
+            CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=Column('Family name')),
+            CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=Column('HGNC name')),
         ),
     )
 
@@ -294,34 +295,47 @@ def guidetopharma_ligands() -> Generator[Entity, None, None]:
     )
 
     # Define the schema mapping
+    def boolean_term(column_name: str, term) -> CV:
+        column = Column(column_name)
+        return CV(
+            term=Map(
+                col=column,
+                extract=[str.lower],
+                map={'yes': term},
+            ),
+        )
+
     schema = EntityBuilder(
-        entity_type=Column('Type', cv=ligand_chemical_type_mapping),
+        entity_type=Map(col=Column('Type'), map=ligand_chemical_type_mapping),
         identifiers=IdentifiersBuilder(
-            Column('Ligand ID', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
-            Column('PubChem SID', cv=IdentifierNamespaceCv.PUBCHEM_COMPOUND),
-            Column('PubChem CID', cv=IdentifierNamespaceCv.PUBCHEM),
-            Column('UniProt ID', cv=IdentifierNamespaceCv.UNIPROT),
-            Column('Ensembl ID', cv=IdentifierNamespaceCv.ENSEMBL),
-            Column('ChEMBL ID', cv=IdentifierNamespaceCv.CHEMBL),
-            Column('InChIKey', cv=IdentifierNamespaceCv.STANDARD_INCHI_KEY),
-            Column('Synonyms', cv=IdentifierNamespaceCv.SYNONYM),
-            Column('Name', cv=IdentifierNamespaceCv.NAME),
-            Column('IUPAC name', cv=IdentifierNamespaceCv.IUPAC_NAME),
-            Column('SMILES', cv=IdentifierNamespaceCv.SMILES),
-            Column('InChI', cv=IdentifierNamespaceCv.STANDARD_INCHI),
-            Column('INN', cv=IdentifierNamespaceCv.INN),
-            Column('GtoImmuPdb', cv=IdentifierNamespaceCv.GTO_IMMU_PDB),
-            Column('GtoMPdb', cv=IdentifierNamespaceCv.GTO_M_PDB),
+            CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=Column('Ligand ID')),
+            CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=Column('PubChem SID')),
+            CV(term=IdentifierNamespaceCv.PUBCHEM, value=Column('PubChem CID')),
+            CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('UniProt ID')),
+            CV(term=IdentifierNamespaceCv.ENSEMBL, value=Column('Ensembl ID')),
+            CV(term=IdentifierNamespaceCv.CHEMBL, value=Column('ChEMBL ID')),
+            CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=Column('InChIKey')),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('Synonyms')),
+            CV(term=IdentifierNamespaceCv.NAME, value=Column('Name')),
+            CV(term=IdentifierNamespaceCv.IUPAC_NAME, value=Column('IUPAC name')),
+            CV(term=IdentifierNamespaceCv.SMILES, value=Column('SMILES')),
+            CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=Column('InChI')),
+            CV(term=IdentifierNamespaceCv.INN, value=Column('INN')),
+            CV(term=IdentifierNamespaceCv.GTO_IMMU_PDB, value=Column('GtoImmuPdb')),
+            CV(term=IdentifierNamespaceCv.GTO_M_PDB, value=Column('GtoMPdb')),
 
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            Column('Species', cv=species_to_taxid, term_cv=IdentifierNamespaceCv.NCBI_TAX_ID),
-            Column('Approved', cv={'yes': MoleculeAnnotationsCv.APPROVED}),
-            Column('Withdrawn', cv={'yes': MoleculeAnnotationsCv.WITHDRAWN}),
-            Column('Labelled', cv={'yes': MoleculeAnnotationsCv.LABELLED}),
-            Column('Radioactive', cv={'yes': MoleculeAnnotationsCv.RADIOACTIVE}),
-            Column('Antibacterial', cv={'yes': MoleculeAnnotationsCv.ANTIBACTERIAL}),
+            CV(
+                term=IdentifierNamespaceCv.NCBI_TAX_ID,
+                value=Map(col=Column('Species'), map=species_to_taxid),
+            ),
+            boolean_term('Approved', MoleculeAnnotationsCv.APPROVED),
+            boolean_term('Withdrawn', MoleculeAnnotationsCv.WITHDRAWN),
+            boolean_term('Labelled', MoleculeAnnotationsCv.LABELLED),
+            boolean_term('Radioactive', MoleculeAnnotationsCv.RADIOACTIVE),
+            boolean_term('Antibacterial', MoleculeAnnotationsCv.ANTIBACTERIAL),
         ),
     )
 
@@ -352,35 +366,58 @@ def guidetopharma_interactions() -> Generator[Entity, None, None]:
     # Define the schema mapping
     # Note: GuideToPharmacology doesn't provide explicit interaction IDs,
     # so we create a composite identifier from Target ID and Ligand ID
+    affinity_units_source = Map(
+        col=Column('Affinity Units'),
+        map=affinity_units_cv_mapping,
+    )
+
     schema = EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         identifiers=IdentifiersBuilder(
-            Column(
-                lambda row: f"{row['Target ID']}_{row['Ligand ID']}" if row.get('Target ID') and row.get('Ligand ID') else None,
-                cv=IdentifierNamespaceCv.GUIDETOPHARMA
+            CV(
+                term=IdentifierNamespaceCv.GUIDETOPHARMA,
+                value=Column(
+                    lambda row: f"{row['Target ID']}_{row['Ligand ID']}"
+                    if row.get('Target ID') and row.get('Ligand ID')
+                    else None
+                ),
             ),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
             # Interaction properties
-            Column('Action', cv=action_cv_mapping),
-            Column('Type', cv=type_cv_mapping),
-            Column('Endogenous', cv=MoleculeAnnotationsCv.ENDOGENOUS),
-            Column('Affinity High', cv=MoleculeAnnotationsCv.AFFINITY_HIGH),
-            Column('Affinity Low', cv=MoleculeAnnotationsCv.AFFINITY_LOW),
-            Column('Affinity Median', cv=MoleculeAnnotationsCv.AFFINITY_MEDIAN),
-            Column('Affinity Units', cv=affinity_units_cv_mapping),
-            Column('Primary Target', cv=MoleculeAnnotationsCv.PRIMARY_TARGET),
-            Column('PubMed ID', cv=IdentifierNamespaceCv.PUBMED),
-            Column('Target Species', cv=species_to_taxid, term_cv=IdentifierNamespaceCv.NCBI_TAX_ID),
+            CV(term=Map(col=Column('Action'), map=action_cv_mapping)),
+            CV(term=Map(col=Column('Type'), map=type_cv_mapping)),
+            CV(term=MoleculeAnnotationsCv.ENDOGENOUS, value=Column('Endogenous')),
+            CV(
+                term=MoleculeAnnotationsCv.AFFINITY_HIGH,
+                value=Column('Affinity High'),
+                unit=affinity_units_source,
+            ),
+            CV(
+                term=MoleculeAnnotationsCv.AFFINITY_LOW,
+                value=Column('Affinity Low'),
+                unit=affinity_units_source,
+            ),
+            CV(
+                term=MoleculeAnnotationsCv.AFFINITY_MEDIAN,
+                value=Column('Affinity Median'),
+                unit=affinity_units_source,
+            ),
+            CV(term=MoleculeAnnotationsCv.PRIMARY_TARGET, value=Column('Primary Target')),
+            CV(term=IdentifierNamespaceCv.PUBMED, value=Column('PubMed ID')),
+            CV(
+                term=IdentifierNamespaceCv.NCBI_TAX_ID,
+                value=Map(col=Column('Target Species'), map=species_to_taxid),
+            ),
         ),
         membership=MembershipBuilder(
             # Ligand
             Member(
                 entity=EntityBuilder(
-                    entity_type=Column('Ligand Type', cv=ligand_chemical_type_mapping),
+                    entity_type=Map(col=Column('Ligand Type'), map=ligand_chemical_type_mapping),
                     identifiers=IdentifiersBuilder(
-                        Column('Ligand ID', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
+                        CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=Column('Ligand ID')),
                     ),
                 ),
             ),
@@ -389,7 +426,7 @@ def guidetopharma_interactions() -> Generator[Entity, None, None]:
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.PROTEIN,
                     identifiers=IdentifiersBuilder(
-                        Column('Target ID', cv=IdentifierNamespaceCv.GUIDETOPHARMA),
+                        CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=Column('Target ID')),
                     ),
                 ),
             ),
