@@ -766,11 +766,16 @@ class EntityBuilder:
             values = cache.values(self.entity_type, row)
             if values:
                 resolved_type = values[0]
+            else:
+                # If extraction failed, we cannot build this entity
+                logger.debug("Entity type extraction failed for row")
+                return None
         elif callable(self.entity_type):
             try:
                 resolved_type = self.entity_type(row)
             except Exception as exc:  # pragma: no cover - defensive
                 logger.debug("Entity type callable failed: %s", exc)
+                return None
 
         return SilverEntity(
             type=resolved_type,
