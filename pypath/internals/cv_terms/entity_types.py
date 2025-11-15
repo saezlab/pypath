@@ -7,15 +7,16 @@ from .core import CvEnum
 
 
 class EntityTypeCv(CvEnum):
-    """Common PSI-MI and OmniPath entity type terms.
+    """Top-level entity type classes.
 
-    Defines the types of entities that can be represented in the system,
-    including standard PSI-MI types and OmniPath-specific extensions.
+    Only broad PSI-MI and OmniPath entity categories should be listed here.
+    More specific classes (protein families, GPCRs, metabolites, etc.) go
+    into subordinate subtype vocabularies.
     """
 
-    parent_cv_term = "MI:0313"  # interactor type - Molecular species involved in the interaction
+    parent_cv_term = "MI:0313"  # interactor type
 
-    # PSI-MI standard terms
+    # PSI-MI standard top-level terms
     PROTEIN = "MI:0326"
     GENE = "MI:0250"
     RNA = "MI:0320"
@@ -24,28 +25,36 @@ class EntityTypeCv(CvEnum):
     PHENOTYPE = "MI:2261"
     STIMULUS = "MI:2260"
 
-    # OmniPath-specific terms (OM:0010-0099 range)
-    PROTEIN_FAMILY = ("OM:0010", "Protein family grouping related proteins")
-    LIPID = ("OM:0011", "Lipid molecule or lipid-like compound")
-    CV_TERM = ("OM:0012", "Controlled vocabulary term entity")
-    INTERACTION = ("OM:0013", "Interaction entity for representing interactions as nodes")
+    # OmniPath high-level types
+    PROTEIN_FAMILY = "OM:0010"
+    CV_TERM = "OM:0012"
+    INTERACTION = "OM:0013"
 
-    # Molecule subtypes by chemical nature (OM:0020-0039 range)
-    SYNTHETIC_ORGANIC = ("OM:0020", "Synthetically produced organic compound")
-    NATURAL_PRODUCT = ("OM:0021", "Naturally occurring compound isolated from biological sources")
-    METABOLITE = ("OM:0022", "Endogenous metabolite or metabolic intermediate")
-    INORGANIC = ("OM:0023", "Inorganic compound or ion")
-    PEPTIDE = ("OM:0024", "Peptide or small protein molecule")
-    ANTIBODY = ("OM:0025", "Antibody or immunoglobulin-based molecule")
-    NUCLEIC_ACID = ("OM:0026", "DNA, RNA, or nucleotide-based molecule")
+class MoleculeSubtypeCv(CvEnum):
+    """Chemical-nature-based molecule subtypes."""
 
-    # Protein functional classes (OM:0040-0059 range)
+    parent_cv_term = EntityTypeCv.SMALL_MOLECULE
+
+    SYNTHETIC_ORGANIC = ("OM:0020", "Synthetic organic compound")
+    NATURAL_PRODUCT = ("OM:0021", "Natural product")
+    METABOLITE = ("OM:0022", "Endogenous metabolite")
+    INORGANIC = ("OM:0023", "Inorganic compound")
+    PEPTIDE = ("OM:0024", "Peptide molecule")
+    ANTIBODY = ("OM:0025", "Antibody or immunoglobulin")
+    NUCLEIC_ACID = ("OM:0026", "DNA/RNA/nucleotide-based molecule")
+
+
+class ProteinFunctionalClassCv(CvEnum):
+    """Functional subclasses of proteins."""
+
+    parent_cv_term = EntityTypeCv.PROTEIN
+
     GPCR = ("OM:0040", "G protein-coupled receptor")
     LGIC = ("OM:0041", "Ligand-gated ion channel")
     VGIC = ("OM:0042", "Voltage-gated ion channel")
     OTHER_ION_CHANNEL = ("OM:0043", "Other ion channel")
     ENZYME = ("OM:0044", "Enzyme")
-    CATALYTIC_RECEPTOR = ("OM:0045", "Catalytic receptor (e.g., receptor tyrosine kinase)")
+    CATALYTIC_RECEPTOR = ("OM:0045", "Catalytic receptor")
     NUCLEAR_HORMONE_RECEPTOR = ("OM:0046", "Nuclear hormone receptor")
     TRANSPORTER = ("OM:0047", "Transporter protein")
-    OTHER_PROTEIN = ("OM:0048", "Other protein not classified in standard categories")
+    OTHER_PROTEIN = ("OM:0048", "Other protein")
