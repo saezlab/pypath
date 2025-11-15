@@ -33,6 +33,8 @@ from pypath.share.downloads import download_and_open
 from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
+    ProteinFunctionalClassCv,
+    MoleculeSubtypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
     UpdateCategoryCV,
@@ -109,28 +111,28 @@ affinity_units_cv_mapping = {
     'pKi': AffinityUnitCv.PKI,
 }
 
-# Mapping for Ligand Type (chemical nature) to EntityTypeCv
+# Mapping for Ligand Type (chemical nature) to MoleculeSubtypeCv
 ligand_chemical_type_mapping = {
-    'Synthetic organic': EntityTypeCv.SYNTHETIC_ORGANIC,
-    'Natural product': EntityTypeCv.NATURAL_PRODUCT,
-    'Metabolite': EntityTypeCv.METABOLITE,
-    'Inorganic': EntityTypeCv.INORGANIC,
-    'Peptide': EntityTypeCv.PEPTIDE,
-    'Antibody': EntityTypeCv.ANTIBODY,
-    'Nucleic acid': EntityTypeCv.NUCLEIC_ACID,
+    'Synthetic organic': MoleculeSubtypeCv.SYNTHETIC_ORGANIC,
+    'Natural product': MoleculeSubtypeCv.NATURAL_PRODUCT,
+    'Metabolite': MoleculeSubtypeCv.METABOLITE,
+    'Inorganic': MoleculeSubtypeCv.INORGANIC,
+    'Peptide': MoleculeSubtypeCv.PEPTIDE,
+    'Antibody': MoleculeSubtypeCv.ANTIBODY,
+    'Nucleic acid': MoleculeSubtypeCv.NUCLEIC_ACID,
 }
 
-# Mapping for Target Type to EntityTypeCv
+# Mapping for Target Type to ProteinFunctionalClassCv
 target_type_mapping = {
-    'gpcr': EntityTypeCv.GPCR,
-    'lgic': EntityTypeCv.LGIC,
-    'vgic': EntityTypeCv.VGIC,
-    'other_ic': EntityTypeCv.OTHER_ION_CHANNEL,
-    'enzyme': EntityTypeCv.ENZYME,
-    'catalytic_receptor': EntityTypeCv.CATALYTIC_RECEPTOR,
-    'nhr': EntityTypeCv.NUCLEAR_HORMONE_RECEPTOR,
-    'transporter': EntityTypeCv.TRANSPORTER,
-    'other_protein': EntityTypeCv.OTHER_PROTEIN,
+    'gpcr': ProteinFunctionalClassCv.GPCR,
+    'lgic': ProteinFunctionalClassCv.LGIC,
+    'vgic': ProteinFunctionalClassCv.VGIC,
+    'other_ic': ProteinFunctionalClassCv.OTHER_ION_CHANNEL,
+    'enzyme': ProteinFunctionalClassCv.ENZYME,
+    'catalytic_receptor': ProteinFunctionalClassCv.CATALYTIC_RECEPTOR,
+    'nhr': ProteinFunctionalClassCv.NUCLEAR_HORMONE_RECEPTOR,
+    'transporter': ProteinFunctionalClassCv.TRANSPORTER,
+    'other_protein': ProteinFunctionalClassCv.OTHER_PROTEIN,
 }
 
 # Mapping for Target Species to NCBI Taxonomy IDs TODO need to be checked again.
@@ -235,7 +237,7 @@ def guidetopharma_targets() -> Generator[Entity, None, None]:
     # Define the schema mapping
     # TODO: need to think how we deal with this: they all get the same guide to pharma ID but have different species. So guide to pharma ID is not merge-safe. Maybe with our check to not merge when different species this will be solved? Then we need to create separate Entities + Interactions for each species variant.
     schema = EntityBuilder(
-        entity_type=Map(col=Column('Type'), map=target_type_mapping),
+        entity_type=EntityTypeCv.PROTEIN,
         identifiers=IdentifiersBuilder(
             CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=Column('Target id')),
             # Human identifiers
@@ -267,6 +269,8 @@ def guidetopharma_targets() -> Generator[Entity, None, None]:
             CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value="9606"),  # Human
             CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=Column('Family name')),
             CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=Column('HGNC name')),
+            # Protein functional class as annotation
+            CV(term=Map(col=Column('Type'), map=target_type_mapping)),
         ),
     )
 
@@ -306,7 +310,7 @@ def guidetopharma_ligands() -> Generator[Entity, None, None]:
         )
 
     schema = EntityBuilder(
-        entity_type=Map(col=Column('Type'), map=ligand_chemical_type_mapping),
+        entity_type=EntityTypeCv.SMALL_MOLECULE,
         identifiers=IdentifiersBuilder(
             CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=Column('Ligand ID')),
             CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=Column('PubChem SID')),
@@ -336,6 +340,8 @@ def guidetopharma_ligands() -> Generator[Entity, None, None]:
             boolean_term('Labelled', MoleculeAnnotationsCv.LABELLED),
             boolean_term('Radioactive', MoleculeAnnotationsCv.RADIOACTIVE),
             boolean_term('Antibacterial', MoleculeAnnotationsCv.ANTIBACTERIAL),
+            # Molecule subtype as annotation
+            CV(term=Map(col=Column('Type'), map=ligand_chemical_type_mapping)),
         ),
     )
 
@@ -415,7 +421,7 @@ def guidetopharma_interactions() -> Generator[Entity, None, None]:
             # Ligand
             Member(
                 entity=EntityBuilder(
-                    entity_type=Map(col=Column('Ligand Type'), map=ligand_chemical_type_mapping),
+                    entity_type=EntityTypeCv.SMALL_MOLECULE,
                     identifiers=IdentifiersBuilder(
                         CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=Column('Ligand ID')),
                     ),

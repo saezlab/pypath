@@ -324,7 +324,7 @@ def signor_interactions() -> Generator[Entity, None, None]:
         membership=MembershipBuilder(
             Member(
                 entity=EntityBuilder(
-                    entity_type=EntityTypeCv.PROTEIN,
+                    entity_type=mi_term_cv('Type(s) interactor A'),
                     identifiers=IdentifiersBuilder(
                         general_identifier_cv('\ufeff#ID(s) interactor A'),
                         general_identifier_cv('Alt. ID(s) interactor A'),
@@ -338,7 +338,7 @@ def signor_interactions() -> Generator[Entity, None, None]:
             ),
             Member(
                 entity=EntityBuilder(
-                    entity_type=EntityTypeCv.PROTEIN,
+                    entity_type=mi_term_cv('Type(s) interactor B'),
                     identifiers=IdentifiersBuilder(
                         general_identifier_cv('ID(s) interactor B'),
                         general_identifier_cv('Alt. ID(s) interactor B'),
