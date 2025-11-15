@@ -300,6 +300,11 @@ def signor_interactions() -> Generator[Entity, None, None]:
         column = Column(column_name, delimiter='|')
         return CV(term=Map(col=column, extract=[mi_regex]))
 
+    def mi_term_string(column_name: str) -> Map:
+        """Extract MI term as a plain string for entity_type field."""
+        column = Column(column_name, delimiter='|')
+        return Map(col=column, extract=[mi_regex])
+
     def pubmed_annotation(column_name: str) -> CV:
         column = Column(column_name, delimiter='|')
         return CV(term=IdentifierNamespaceCv.PUBMED, value=Map(col=column, extract=[pubmed_regex]))
@@ -324,7 +329,7 @@ def signor_interactions() -> Generator[Entity, None, None]:
         membership=MembershipBuilder(
             Member(
                 entity=EntityBuilder(
-                    entity_type=mi_term_cv('Type(s) interactor A'),
+                    entity_type=mi_term_string('Type(s) interactor A'),
                     identifiers=IdentifiersBuilder(
                         general_identifier_cv('\ufeff#ID(s) interactor A'),
                         general_identifier_cv('Alt. ID(s) interactor A'),
@@ -338,7 +343,7 @@ def signor_interactions() -> Generator[Entity, None, None]:
             ),
             Member(
                 entity=EntityBuilder(
-                    entity_type=mi_term_cv('Type(s) interactor B'),
+                    entity_type=mi_term_string('Type(s) interactor B'),
                     identifiers=IdentifiersBuilder(
                         general_identifier_cv('ID(s) interactor B'),
                         general_identifier_cv('Alt. ID(s) interactor B'),
