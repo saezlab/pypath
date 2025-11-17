@@ -27,6 +27,7 @@ class EntityTypeCv(CvEnum):
 
     # OmniPath high-level types
     PROTEIN_FAMILY = "OM:0010"
+    LIPID = ("OM:0011", "Lipid molecule or lipid-like compound")
     CV_TERM = "OM:0012"
     INTERACTION = "OM:0013"
 
