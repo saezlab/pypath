@@ -268,7 +268,6 @@ def guidetopharma_targets() -> Generator[Entity, None, None]:
             # Source annotation
             CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value="9606"),  # Human
             CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=Column('Family name')),
-            CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=Column('HGNC name')),
             # Protein functional class as annotation
             CV(term=Map(col=Column('Type'), map=target_type_mapping)),
         ),
