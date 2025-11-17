@@ -58,16 +58,16 @@ class UpdateCategoryCV(CvEnum):
 
     parent_cv_term = ("OM:0400", "Update frequency term", "Describes how frequently a data source is expected to be updated.")
 
-    # OmniPath update category terms (OM:0401-0499 range)
+    # OmniPath update category terms (OM:0410-0419 range)
     REGULAR = (
-        "OM:0401",
+        "OM:0410",
         "Regular scheduled updates (e.g., monthly, quarterly, annually)"
     )
     IRREGULAR = (
-        "OM:0402",
+        "OM:0411",
         "Irregular or occasional updates with no fixed schedule"
     )
     STATIC = (
-        "OM:0403",
+        "OM:0412",
         "Static resource with no planned future updates"
     )

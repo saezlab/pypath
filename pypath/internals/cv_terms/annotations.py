@@ -375,31 +375,31 @@ class LigandTypeCv(CvEnum):
 class InteractionMetadataCv(CvEnum):
     """General interaction-level annotations derived from MITAB/PSI-MI."""
 
-    parent_cv_term = ("OM:1100", "Interaction metadata term", "Describes textual or categorical metadata for an interaction record.")
+    parent_cv_term = ("OM:1200", "Interaction metadata term", "Describes textual or categorical metadata for an interaction record.")
 
-    CONFIDENCE_VALUE = ("OM:1101", "Confidence score(s) assigned to the interaction")
-    EXPANSION_METHOD = ("OM:1102", "Complex expansion strategy applied to derive binary interactions")
-    FIRST_AUTHOR = ("OM:1103", "First author(s) of the supporting publication")
-    INTERACTION_PARAMETER = ("OM:1104", "Additional interaction parameter(s)")
-    NEGATIVE_FLAG = ("OM:1105", "Indicates whether the interaction is negative")
-    INTERACTION_XREF = ("OM:1106", "Cross-reference(s) attached to the interaction")
-    INTERACTION_ANNOTATION = ("OM:1107", "Annotation(s) describing the interaction")
-    INTERACTION_CHECKSUM = ("OM:1108", "Checksum(s) for interaction records")
-    CREATION_DATE = ("OM:1109", "Date when the interaction record was created")
-    UPDATE_DATE = ("OM:1110", "Date when the interaction record was last updated")
+    CONFIDENCE_VALUE = ("OM:1201", "Confidence score(s) assigned to the interaction")
+    EXPANSION_METHOD = ("OM:1202", "Complex expansion strategy applied to derive binary interactions")
+    FIRST_AUTHOR = ("OM:1203", "First author(s) of the supporting publication")
+    INTERACTION_PARAMETER = ("OM:1204", "Additional interaction parameter(s)")
+    NEGATIVE_FLAG = ("OM:1205", "Indicates whether the interaction is negative")
+    INTERACTION_XREF = ("OM:1206", "Cross-reference(s) attached to the interaction")
+    INTERACTION_ANNOTATION = ("OM:1207", "Annotation(s) describing the interaction")
+    INTERACTION_CHECKSUM = ("OM:1208", "Checksum(s) for interaction records")
+    CREATION_DATE = ("OM:1209", "Date when the interaction record was created")
+    UPDATE_DATE = ("OM:1210", "Date when the interaction record was last updated")
 
 
 class ParticipantMetadataCv(CvEnum):
     """Annotations specific to interaction participants (interactors)."""
 
-    parent_cv_term = ("OM:1111", "Participant metadata term", "Describes textual or categorical metadata for an interaction participant.")
+    parent_cv_term = ("OM:1220", "Participant metadata term", "Describes textual or categorical metadata for an interaction participant.")
 
-    ALIAS = ("OM:1112", "Alias(es) recorded for the participant")
-    PARTICIPANT_XREF = ("OM:1113", "Cross-reference(s) attached to the participant")
-    PARTICIPANT_ANNOTATION = ("OM:1114", "Annotation(s) describing participant features")
-    PARTICIPANT_CHECKSUM = ("OM:1115", "Checksum(s) for participant records")
-    PARTICIPANT_FEATURE = ("OM:1116", "Experimental feature(s) of the participant")
-    STOICHIOMETRY = ("OM:1117", "Stoichiometry associated with the participant within the interaction")
+    ALIAS = ("OM:1221", "Alias(es) recorded for the participant")
+    PARTICIPANT_XREF = ("OM:1222", "Cross-reference(s) attached to the participant")
+    PARTICIPANT_ANNOTATION = ("OM:1223", "Annotation(s) describing participant features")
+    PARTICIPANT_CHECKSUM = ("OM:1224", "Checksum(s) for participant records")
+    PARTICIPANT_FEATURE = ("OM:1225", "Experimental feature(s) of the participant")
+    STOICHIOMETRY = ("OM:1226", "Stoichiometry associated with the participant within the interaction")
 
 
 class OntologyAnnotationCv(CvEnum):
@@ -424,10 +424,10 @@ class ResourceAnnotationCv(CvEnum):
     Includes license, update frequency, URLs, and publication references.
     """
 
-    parent_cv_term = ("OM:0700", "Resource annotation term", "Describes metadata for data sources and resources.")
+    parent_cv_term = ("OM:0850", "Resource annotation term", "Describes metadata for data sources and resources.")
 
-    # Resource metadata (OM:0700-0799 range)
-    LICENSE = ("OM:0701", "License term for the resource (value from LicenseCV)")
-    UPDATE_CATEGORY = ("OM:0702", "Update frequency category (value from UpdateCategoryCV)")
-    URL = ("OM:0704", "Resource homepage or API URL")
-    DESCRIPTION = ("OM:0705", "Textual description of the resource")
+    # Resource metadata (OM:0850-0899 range)
+    LICENSE = ("OM:0851", "License term for the resource (value from LicenseCV)")
+    UPDATE_CATEGORY = ("OM:0852", "Update frequency category (value from UpdateCategoryCV)")
+    URL = ("OM:0853", "Resource homepage or API URL")
+    DESCRIPTION = ("OM:0854", "Textual description of the resource")
