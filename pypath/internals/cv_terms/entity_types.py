@@ -30,6 +30,8 @@ class EntityTypeCv(CvEnum):
     LIPID = ("OM:0011", "Lipid molecule or lipid-like compound")
     CV_TERM = "OM:0012"
     INTERACTION = "OM:0013"
+    PATHWAY = "OM:0014"
+    REACTION = "OM:0015"
 
 class MoleculeSubtypeCv(CvEnum):
     """Chemical-nature-based molecule subtypes."""
