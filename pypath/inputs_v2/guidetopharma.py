@@ -324,9 +324,6 @@ def guidetopharma_ligands() -> Generator[Entity, None, None]:
             CV(term=IdentifierNamespaceCv.SMILES, value=Column('SMILES')),
             CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=Column('InChI')),
             CV(term=IdentifierNamespaceCv.INN, value=Column('INN')),
-            CV(term=IdentifierNamespaceCv.GTO_IMMU_PDB, value=Column('GtoImmuPdb')),
-            CV(term=IdentifierNamespaceCv.GTO_M_PDB, value=Column('GtoMPdb')),
-
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
