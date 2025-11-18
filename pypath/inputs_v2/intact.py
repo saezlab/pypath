@@ -203,21 +203,13 @@ def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
 
             # Publication information
             pubmed_annotation('Publication Identifier(s)'),
-            simple_annotation(InteractionMetadataCv.FIRST_AUTHOR, 'Publication 1st author(s)'),
-
             # Experimental details
             tax_cv('Host organism(s)'),
             simple_annotation(InteractionMetadataCv.INTERACTION_PARAMETER, 'Interaction parameter(s)'),
-            simple_annotation(InteractionMetadataCv.NEGATIVE_FLAG, 'Negative'),
-
             # Cross-references and annotations
             simple_annotation(InteractionMetadataCv.INTERACTION_XREF, 'Interaction Xref(s)'),
             simple_annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, 'Interaction annotation(s)'),
             simple_annotation(InteractionMetadataCv.INTERACTION_CHECKSUM, 'Interaction Checksum(s)'),
-
-            # Timestamps
-            simple_annotation(InteractionMetadataCv.CREATION_DATE, 'Creation date'),
-            simple_annotation(InteractionMetadataCv.UPDATE_DATE, 'Update date'),
         ),
         membership=MembershipBuilder(
             # Interactor A
