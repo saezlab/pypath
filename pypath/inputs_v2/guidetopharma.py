@@ -406,7 +406,6 @@ def guidetopharma_interactions() -> Generator[Entity, None, None]:
                 value=Column('Affinity Median'),
                 unit=affinity_units_source,
             ),
-            CV(term=MoleculeAnnotationsCv.PRIMARY_TARGET, value=Column('Primary Target')),
             CV(term=IdentifierNamespaceCv.PUBMED, value=Column('PubMed ID')),
             CV(
                 term=IdentifierNamespaceCv.NCBI_TAX_ID,
