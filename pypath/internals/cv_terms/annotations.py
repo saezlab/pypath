@@ -39,6 +39,7 @@ class BiologicalRoleCv(CvEnum):
     STIMULATOR = "MI:0840"
     ALLOSTERIC_EFFECTOR = "MI:1160"
     REGULATOR_TARGET = "MI:2275"
+    REGULATOR = "MI:2274"
 
 
 class ExperimentalRoleCv(CvEnum):
