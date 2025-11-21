@@ -28,6 +28,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import csv
+import re
 
 from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
@@ -52,6 +53,102 @@ from ..internals.tabular_builder import (
     MembershipBuilder,
     Map,
 )
+
+
+# Patterns to identify different identifier types in the ligand name field
+_LIGAND_NAME_PATTERNS = {
+    IdentifierNamespaceCv.CHEMBL_COMPOUND: re.compile(r'^CHEMBL\d+$'),
+    IdentifierNamespaceCv.ZINC: re.compile(r'^ZINC\d+$'),
+    IdentifierNamespaceCv.CAS: re.compile(r'^\d{2,7}-\d{2}-\d$'),
+    IdentifierNamespaceCv.CHEBI: re.compile(r'^CHEBI[:\s]?\d+$', re.IGNORECASE),
+    IdentifierNamespaceCv.PUBCHEM_COMPOUND: re.compile(r'^CID[:\s]?\d+$', re.IGNORECASE),
+    IdentifierNamespaceCv.KEGG_COMPOUND: re.compile(r'^C\d{5}$'),
+}
+
+# Pattern for patent references (we'll skip these as they're not useful identifiers)
+_PATENT_PATTERN = re.compile(r'^(US|EP|WO|JP|CN|KR|AU|CA)\d+')
+
+
+def _parse_ligand_name(row: dict) -> list[tuple[IdentifierNamespaceCv, str]]:
+    """
+    Parse the BindingDB Ligand Name field which contains multiple identifiers
+    separated by '::'.
+
+    Returns a list of (namespace, value) tuples for each identified component.
+    """
+    raw_value = row.get('BindingDB Ligand Name', '')
+    if not raw_value:
+        return []
+
+    results: list[tuple[IdentifierNamespaceCv, str]] = []
+    parts = raw_value.split('::')
+
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+
+        # Skip patent references
+        if _PATENT_PATTERN.match(part):
+            continue
+
+        # Try to match known identifier patterns
+        matched = False
+        for namespace, pattern in _LIGAND_NAME_PATTERNS.items():
+            if pattern.match(part):
+                # Extract numeric part for some identifiers
+                if namespace == IdentifierNamespaceCv.CHEBI:
+                    # Normalize CHEBI:123 -> 123
+                    value = re.sub(r'^CHEBI[:\s]?', '', part, flags=re.IGNORECASE)
+                elif namespace == IdentifierNamespaceCv.PUBCHEM_COMPOUND:
+                    # Normalize CID123 -> 123
+                    value = re.sub(r'^CID[:\s]?', '', part, flags=re.IGNORECASE)
+                else:
+                    value = part
+                results.append((namespace, value))
+                matched = True
+                break
+
+        # If no pattern matched, treat as a name
+        if not matched:
+            results.append((IdentifierNamespaceCv.NAME, part))
+
+    return results
+
+
+def _ligand_names(row: dict) -> list[str]:
+    """Extract all NAME-type values from the ligand name field."""
+    return [v for ns, v in _parse_ligand_name(row) if ns == IdentifierNamespaceCv.NAME]
+
+
+def _ligand_chembl(row: dict) -> list[str]:
+    """Extract CHEMBL IDs from the ligand name field."""
+    return [v for ns, v in _parse_ligand_name(row) if ns == IdentifierNamespaceCv.CHEMBL_COMPOUND]
+
+
+def _ligand_zinc(row: dict) -> list[str]:
+    """Extract ZINC IDs from the ligand name field."""
+    return [v for ns, v in _parse_ligand_name(row) if ns == IdentifierNamespaceCv.ZINC]
+
+
+def _ligand_cas(row: dict) -> list[str]:
+    """Extract CAS numbers from the ligand name field."""
+    return [v for ns, v in _parse_ligand_name(row) if ns == IdentifierNamespaceCv.CAS]
+
+
+def _ligand_chebi(row: dict) -> list[str]:
+    """Extract CHEBI IDs from the ligand name field."""
+    return [v for ns, v in _parse_ligand_name(row) if ns == IdentifierNamespaceCv.CHEBI]
+
+
+def _ligand_pubchem_cid(row: dict) -> list[str]:
+    """Extract PubChem CIDs from the ligand name field."""
+    return [v for ns, v in _parse_ligand_name(row) if ns == IdentifierNamespaceCv.PUBCHEM_COMPOUND]
+
+
+def _ligand_kegg(row: dict) -> list[str]:
+    """Extract KEGG compound IDs from the ligand name field."""
+    return [v for ns, v in _parse_ligand_name(row) if ns == IdentifierNamespaceCv.KEGG_COMPOUND]
 
 
 def resource() -> Generator[Entity]:
@@ -174,7 +271,16 @@ def bindingdb_interactions(
                     entity_type=EntityTypeCv.SMALL_MOLECULE,
                     identifiers=IdentifiersBuilder(
                         CV(term=IdentifierNamespaceCv.BINDINGDB, value=Column('BindingDB MonomerID')),
-                        CV(term=IdentifierNamespaceCv.NAME, value=Column('BindingDB Ligand Name')),
+                        # Parse ligand names from the compound field (contains :: separated values)
+                        CV(term=IdentifierNamespaceCv.NAME, value=_ligand_names),
+                        # Extract cross-references embedded in the ligand name field
+                        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=_ligand_chembl),
+                        CV(term=IdentifierNamespaceCv.ZINC, value=_ligand_zinc),
+                        CV(term=IdentifierNamespaceCv.CAS, value=_ligand_cas),
+                        CV(term=IdentifierNamespaceCv.CHEBI, value=_ligand_chebi),
+                        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=_ligand_pubchem_cid),
+                        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=_ligand_kegg),
+                        # Standard identifiers from dedicated columns
                         CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=Column('Ligand InChI Key')),
                         CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=Column('Ligand InChI')),
                         CV(term=IdentifierNamespaceCv.SMILES, value=Column('Ligand SMILES')),
@@ -184,7 +290,7 @@ def bindingdb_interactions(
                         CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=Column('ChEMBL ID of Ligand')),
                         CV(term=IdentifierNamespaceCv.DRUGBANK, value=Column('DrugBank ID of Ligand')),
                         CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=Column('KEGG ID of Ligand')),
-                        CV(term=IdentifierNamespaceCv.NAME, value=Column('ZINC ID of Ligand')),
+                        CV(term=IdentifierNamespaceCv.ZINC, value=Column('ZINC ID of Ligand')),
                         CV(term=IdentifierNamespaceCv.PDB, value=Column('Ligand HET ID in PDB')),
                     ),
                 ),
