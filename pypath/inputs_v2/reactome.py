@@ -35,12 +35,16 @@ from rdflib.namespace import RDF
 
 from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
+    BiologicalRoleCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
+    InteractionMetadataCv,
     LicenseCV,
-    UpdateCategoryCV,
+    MoleculeAnnotationsCv,
+    ParticipantMetadataCv,
     ResourceAnnotationCv,
     ResourceCv,
+    UpdateCategoryCV,
 )
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -327,20 +331,18 @@ def _extract_names(g: Graph, uri, bp_ns: Namespace) -> dict[str, str | list[str]
 def _extract_organism(g: Graph, uri, bp_ns: Namespace) -> dict[str, str]:
     """
     Extract organism information from a BioPAX resource.
+
+    Returns only ncbi_tax_id, not organism name.
     """
     organism_info: dict[str, str] = {}
     organism = g.value(uri, bp_ns.organism)
 
     if organism:
-        organism_name = g.value(organism, bp_ns.name)
-        if organism_name:
-            organism_info['organism_name'] = str(organism_name)
-
         for xref in g.objects(organism, bp_ns.xref):
             db = g.value(xref, bp_ns.db)
             id_value = g.value(xref, bp_ns.id)
             if db and id_value and 'taxonomy' in str(db).lower():
-                organism_info['ncbi_taxonomy_id'] = str(id_value)
+                organism_info['ncbi_tax_id'] = str(id_value)
                 break
 
     return organism_info
@@ -416,8 +418,7 @@ def _iterate_entity_references(
                 'kegg': ';'.join(xrefs.get('kegg', [])),
                 'pubmed': ';'.join(xrefs.get('pubmed', [])),
                 'go': ';'.join(xrefs.get('go', [])),
-                'organism_name': organism.get('organism_name', ''),
-                'ncbi_taxonomy_id': organism.get('ncbi_taxonomy_id', ''),
+                'ncbi_tax_id': organism.get('ncbi_tax_id', ''),
             }
 
             yield record
@@ -476,8 +477,7 @@ def reactome_entity_references(
         ),
         annotations=AnnotationsBuilder(
             CV(term=IdentifierNamespaceCv.PUBMED, value=Column('pubmed', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=Column('ncbi_taxonomy_id')),
-            CV(term='organism', value=Column('organism_name')),
+            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=Column('ncbi_tax_id')),
         ),
     )
 
@@ -622,6 +622,16 @@ def _build_member_entities(participants: list[dict]) -> list[Entity]:
     """
     Build Entity objects for reaction participants.
     """
+    # Map role strings to CV terms
+    role_mapping = {
+        'reactant': BiologicalRoleCv.REACTANT,
+        'product': BiologicalRoleCv.PRODUCT,
+        'template': BiologicalRoleCv.TEMPLATE,
+        'controller': BiologicalRoleCv.CONTROLLER,
+        'controlled': BiologicalRoleCv.CONTROLLED,
+        'pathway_component': BiologicalRoleCv.PATHWAY_COMPONENT,
+    }
+
     entities = []
     for p in participants:
         entity_type_str = p.get('entity_type', 'physical_entity')
@@ -645,13 +655,15 @@ def _build_member_entities(participants: list[dict]) -> list[Entity]:
                 if cid:
                     identifiers.append(Identifier(type=IdentifierNamespaceCv.CHEBI, value=cid))
 
-        annotations = [Annotation(term='role', value=p.get('role', ''))]
+        role_str = p.get('role', '')
+        role_cv = role_mapping.get(role_str)
+        annotations = [Annotation(term=role_cv)] if role_cv else []
         if p.get('stoichiometry'):
-            annotations.append(Annotation(term='stoichiometric_coefficient', value=p['stoichiometry']))
+            annotations.append(Annotation(term=ParticipantMetadataCv.STOICHIOMETRY, value=p['stoichiometry']))
 
         entities.append((
             Entity(type=entity_type, identifiers=identifiers if identifiers else None),
-            annotations,
+            annotations if annotations else None,
         ))
 
     return entities
@@ -710,9 +722,9 @@ def reactome_reactions(
                 if pmid:
                     annotations.append(Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid))
         if record.get('ec_number'):
-            annotations.append(Annotation(term='ec_number', value=record['ec_number']))
+            annotations.append(Annotation(term=MoleculeAnnotationsCv.EC_NUMBER, value=record['ec_number']))
         if record.get('direction'):
-            annotations.append(Annotation(term='conversion_direction', value=record['direction']))
+            annotations.append(Annotation(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=record['direction']))
 
         # Build membership from participants
         membership = []
@@ -816,8 +828,7 @@ def _iterate_pathways(
             'reactome_id': ';'.join(xrefs.get('reactome_id', [])),
             'pubmed': ';'.join(xrefs.get('pubmed', [])),
             'go': ';'.join(xrefs.get('go', [])),
-            'organism_name': organism.get('organism_name', ''),
-            'ncbi_taxonomy_id': organism.get('ncbi_taxonomy_id', ''),
+            'ncbi_tax_id': organism.get('ncbi_tax_id', ''),
             'description': ' '.join(descriptions),
             'comments': ';'.join(comments),
             'components': components,
@@ -881,12 +892,10 @@ def reactome_pathways(
             for pmid in record['pubmed'].split(';'):
                 if pmid:
                     annotations.append(Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid))
-        if record.get('organism_name'):
-            annotations.append(Annotation(term='organism', value=record['organism_name']))
-        if record.get('ncbi_taxonomy_id'):
-            annotations.append(Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=record['ncbi_taxonomy_id']))
+        if record.get('ncbi_tax_id'):
+            annotations.append(Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=record['ncbi_tax_id']))
         if record.get('description'):
-            annotations.append(Annotation(term='description', value=record['description']))
+            annotations.append(Annotation(term=MoleculeAnnotationsCv.DESCRIPTION, value=record['description']))
 
         # Build membership from components
         membership = []
@@ -912,9 +921,9 @@ def reactome_pathways(
                     if rid:
                         comp_identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
 
-            comp_annotations = [Annotation(term='role', value='pathway_component')]
+            comp_annotations = [Annotation(term=BiologicalRoleCv.PATHWAY_COMPONENT)]
             if comp.get('step_order') is not None:
-                comp_annotations.append(Annotation(term='step_order', value=str(comp['step_order'])))
+                comp_annotations.append(Annotation(term=ParticipantMetadataCv.STEP_ORDER, value=str(comp['step_order'])))
 
             membership.append(Membership(
                 member=Entity(type=comp_type, identifiers=comp_identifiers if comp_identifiers else None),
@@ -1081,7 +1090,7 @@ def reactome_controls(
         # Build annotations
         annotations = []
         if record.get('control_type'):
-            annotations.append(Annotation(term='control_type', value=record['control_type']))
+            annotations.append(Annotation(term=InteractionMetadataCv.CONTROL_TYPE, value=record['control_type']))
 
         # Build membership
         membership = []
@@ -1108,7 +1117,7 @@ def reactome_controls(
                 membership.append(Membership(
                     member=Entity(type=controller_type, identifiers=controller_identifiers),
                     is_parent=False,
-                    annotations=[Annotation(term='role', value='controller')],
+                    annotations=[Annotation(term=BiologicalRoleCv.CONTROLLER)],
                 ))
 
         # Add controlled
@@ -1135,7 +1144,7 @@ def reactome_controls(
                 membership.append(Membership(
                     member=Entity(type=controlled_type, identifiers=controlled_identifiers),
                     is_parent=False,
-                    annotations=[Annotation(term='role', value='controlled')],
+                    annotations=[Annotation(term=BiologicalRoleCv.CONTROLLED)],
                 ))
 
         # Get entity type
