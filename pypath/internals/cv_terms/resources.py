@@ -27,6 +27,7 @@ class ResourceCv(CvEnum):
 
     # Interaction databases (OM:1150-1179 range)
     INTACT = ("OM:1150", "IntAct", "https://www.ebi.ac.uk/intact")
+    REACTOME = ("OM:1151", "Reactome", "https://reactome.org/")
     SIGNOR = ("OM:1152", "SIGNOR", "https://signor.uniroma2.it/")
     BINDINGDB = ("OM:1153", "BindingDB", "https://www.bindingdb.org/")
 

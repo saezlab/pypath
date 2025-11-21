@@ -24,6 +24,7 @@ class EntityTypeCv(CvEnum):
     SMALL_MOLECULE = "MI:0328"
     PHENOTYPE = "MI:2261"
     STIMULUS = "MI:2260"
+    DNA = "MI:0681"
 
     # OmniPath high-level types
     PROTEIN_FAMILY = "OM:0010"
@@ -32,6 +33,11 @@ class EntityTypeCv(CvEnum):
     INTERACTION = "OM:0013"
     PATHWAY = "OM:0014"
     REACTION = "OM:0015"
+    PHYSICAL_ENTITY = "OM:0016"
+    CATALYSIS = "OM:0017"
+    CONTROL = "OM:0018"
+    DEGRADATION = ("OM:0019", "Degradation reaction")
+
 
 class MoleculeSubtypeCv(CvEnum):
     """Chemical-nature-based molecule subtypes."""

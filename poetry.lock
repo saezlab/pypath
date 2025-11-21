@@ -793,10 +793,10 @@ type = ["pytest-mypy"]
 name = "isodate"
 version = "0.7.2"
 description = "An ISO 8601 date/time/duration parser and formatter"
-optional = true
+optional = false
 python-versions = ">=3.7"
 groups = ["main"]
-markers = "python_version < \"3.11\" and extra == \"pathophenodb\""
+markers = "python_version < \"3.11\""
 files = [
     {file = "isodate-0.7.2-py3-none-any.whl", hash = "sha256:28009937d8031054830160fce6d409ed342816b543597cece116d966c6d99e15"},
     {file = "isodate-0.7.2.tar.gz", hash = "sha256:4cd1aa0f43ca76f4a6c6c0292a85f40b35ec2e43e315b59f06e6d32171a953e6"},
@@ -1834,15 +1834,14 @@ typing = ["matplotlib (>=3.8)", "mypy", "pandas-stubs"]
 
 [[package]]
 name = "rdflib"
-version = "7.1.4"
+version = "7.4.0"
 description = "RDFLib is a Python library for working with RDF, a simple yet powerful language for representing information."
-optional = true
-python-versions = "<4.0.0,>=3.8.1"
+optional = false
+python-versions = ">=3.8.1"
 groups = ["main"]
-markers = "extra == \"pathophenodb\""
 files = [
-    {file = "rdflib-7.1.4-py3-none-any.whl", hash = "sha256:72f4adb1990fa5241abd22ddaf36d7cafa5d91d9ff2ba13f3086d339b213d997"},
-    {file = "rdflib-7.1.4.tar.gz", hash = "sha256:fed46e24f26a788e2ab8e445f7077f00edcf95abb73bcef4b86cefa8b62dd174"},
+    {file = "rdflib-7.4.0-py3-none-any.whl", hash = "sha256:0af003470404ff21bc0eb04077cc97ee96da581f2429bf42a8e163fc1c2797bc"},
+    {file = "rdflib-7.4.0.tar.gz", hash = "sha256:c8ee16c31848c19c174aed96185327ea139ca3d392fac7fa882ddf5687f8f533"},
 ]
 
 [package.dependencies]
@@ -2252,4 +2251,4 @@ pathophenodb = ["sparqlwrapper"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "80993f6ffa4095710fbe5e3f3b131fd34dc8b7714d2610615a789300cc41ba51"
+content-hash = "d81f8abdc2c9eb71abb7627456c097afe0ee751925cc696ec060123854085696"
