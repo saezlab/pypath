@@ -41,6 +41,14 @@ class BiologicalRoleCv(CvEnum):
     REGULATOR_TARGET = "MI:2275"
     REGULATOR = "MI:2274"
 
+    # Reaction participant roles (OM:0310-0319 range)
+    REACTANT = ("OM:0310", "Substrate or input molecule consumed in a reaction")
+    PRODUCT = ("OM:0311", "Output molecule produced by a reaction")
+    TEMPLATE = ("OM:0312", "Template molecule (e.g., DNA/RNA template in transcription/translation)")
+    CONTROLLER = ("OM:0313", "Entity that controls or regulates a process")
+    CONTROLLED = ("OM:0314", "Process or entity being controlled or regulated")
+    PATHWAY_COMPONENT = ("OM:0315", "Component entity within a pathway")
+
 
 class ExperimentalRoleCv(CvEnum):
     """Experimental role terms for interaction participants.
@@ -389,6 +397,10 @@ class InteractionMetadataCv(CvEnum):
     CREATION_DATE = ("OM:1209", "Date when the interaction record was created")
     UPDATE_DATE = ("OM:1210", "Date when the interaction record was last updated")
 
+    # Reaction/process metadata (OM:1211-1219 range)
+    CONVERSION_DIRECTION = ("OM:1211", "Direction of a biochemical conversion (e.g., LEFT_TO_RIGHT, RIGHT_TO_LEFT, REVERSIBLE)")
+    CONTROL_TYPE = ("OM:1212", "Type of regulatory control (e.g., ACTIVATION, INHIBITION)")
+
 
 class ParticipantMetadataCv(CvEnum):
     """Annotations specific to interaction participants (interactors)."""
@@ -401,6 +413,7 @@ class ParticipantMetadataCv(CvEnum):
     PARTICIPANT_CHECKSUM = ("OM:1224", "Checksum(s) for participant records")
     PARTICIPANT_FEATURE = ("OM:1225", "Experimental feature(s) of the participant")
     STOICHIOMETRY = ("OM:1226", "Stoichiometry associated with the participant within the interaction")
+    STEP_ORDER = ("OM:1227", "Order or position of a step within a pathway or process")
 
 
 class OntologyAnnotationCv(CvEnum):
