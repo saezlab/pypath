@@ -94,7 +94,7 @@ def signor_complexes() -> Generator[Entity]:
 
     # Define the schema mapping
     map = EntityBuilder(
-        entity_type=EntityTypeCv.PROTEIN_COMPLEX,
+        entity_type=EntityTypeCv.COMPLEX,
         identifiers=IdentifiersBuilder(
             CV(term=IdentifierNamespaceCv.SIGNOR, value=Column('SIGNOR ID')),
             CV(term=IdentifierNamespaceCv.NAME, value=Column('COMPLEX NAME')),

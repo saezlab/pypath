@@ -20,7 +20,7 @@ class EntityTypeCv(CvEnum):
     PROTEIN = "MI:0326"
     GENE = "MI:0250"
     RNA = "MI:0320"
-    PROTEIN_COMPLEX = "MI:0315"
+    COMPLEX = "MI:0314"
     SMALL_MOLECULE = "MI:0328"
     PHENOTYPE = "MI:2261"
     STIMULUS = "MI:2260"
