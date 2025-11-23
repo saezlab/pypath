@@ -1356,7 +1356,9 @@ def reactome_controls(
                 ))
 
         type_mapping = {v.value: v for v in EntityTypeCv}
-        entity_type = type_mapping.get(record.get('entity_type', ''), EntityTypeCv.CONTROL)
+        # Change: Model controls/catalysis as generic INTERACTIONS
+        # The specific type (Catalysis, Control) is already captured in annotations or control_type
+        entity_type = EntityTypeCv.INTERACTION
 
         yield Entity(
             type=entity_type,
