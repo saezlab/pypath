@@ -16,11 +16,11 @@ class ResourceCv(CvEnum):
 
     parent_cv_term = ("OM:1100", "Resource term", "Identifies a biological database or data source.")
 
-    # Ontology resources (OM:1100-1119 range)
-    OMNIPATH_ONTOLOGY = ("OM:1100", "OmniPath Ontology", "https://omnipathdb.org/")
-    UNIPROT_KEYWORDS = ("OM:1101", "UniProt Keywords", "https://www.uniprot.org/keywords/")
-    GENE_ONTOLOGY = ("OM:1102", "Gene Ontology", "https://geneontology.org")
-    PSI_MI = ("OM:1103", "PSI-MI Controlled Vocabulary", "https://github.com/HUPO-PSI/psi-mi-CV")
+    # Ontology resources (OM:1101-1119 range)
+    OMNIPATH_ONTOLOGY = ("OM:1101", "OmniPath Ontology", "https://omnipathdb.org/")
+    UNIPROT_KEYWORDS = ("OM:1102", "UniProt Keywords", "https://www.uniprot.org/keywords/")
+    GENE_ONTOLOGY = ("OM:1103", "Gene Ontology", "https://geneontology.org")
+    PSI_MI = ("OM:1104", "PSI-MI Controlled Vocabulary", "https://github.com/HUPO-PSI/psi-mi-CV")
 
     # Protein databases (OM:1120-1149 range)
     UNIPROT = ("OM:1120", "UniProt", "https://www.uniprot.org")
