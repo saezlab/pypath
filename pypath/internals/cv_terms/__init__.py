@@ -42,7 +42,6 @@ from .annotations import (
     MembershipRoleCv,
     BiologicalRoleCv,
     ExperimentalRoleCv,
-    IdentificationMethodCv,
     InteractionTypeCv,
     DetectionMethodCv,
     BiologicalEffectCv,

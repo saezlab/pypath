@@ -66,21 +66,6 @@ class ExperimentalRoleCv(CvEnum):
     UNSPECIFIED_ROLE = "MI:0499"
 
 
-class IdentificationMethodCv(CvEnum):
-    """Participant identification method terms.
-
-    Describes the method used to identify or detect a participant
-    in an interaction study.
-    """
-
-    parent_cv_term = "MI:0002"  # participant identification method - Method to determine the molecules involved in the interaction
-
-    # PSI-MI standard identification methods
-    GENERIC = "MI:0002"
-    MASS_SPECTROMETRY = "MI:0427"
-    SEQUENCE_TAG = "MI:0102"
-
-
 class InteractionTypeCv(CvEnum):
     """Interaction type terms from PSI-MI.
 
@@ -258,7 +243,7 @@ class MoleculeAnnotationsCv(CvEnum):
     such as domains, families, transmembrane regions, and mutagenesis data.
     """
     parent_cv_term = ("OM:0600", "Molecule annotation type term", "Describes various annotation categories used in molecule entries.")
-    AMINO_ACID_SEQUENCE = ("OM:0600", "Sequence of amino acids of the protein or peptide")
+    AMINO_ACID_SEQUENCE = ("OM:0620", "Sequence of amino acids of the protein or peptide")
     SEQUENCE_LENGTH = ("OM:0601", "Length of the protein sequence")
     MASS_DALTON = ("OM:0602", "Molecular mass in Daltons")
     FUNCTION = ("OM:0603", "Functional description of the molecule")
