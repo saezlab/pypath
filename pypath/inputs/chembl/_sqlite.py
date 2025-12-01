@@ -17,23 +17,16 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import tarfile
 import sqlite3
 import shutil
 import os
 
 import pypath.share.cache as cache
 from pypath.share import curl, cache
+from pypath.formats import sqlite as _sqlite
 from pypath.resources import urls
+
 from ._common import _log, _show_tables
-
-
-def _chembl_sqlite_path(version: int = 36) -> str:
-
-    return os.path.join(
-        cache.get_cachedir(),
-        f'ChEMBL_SQLite_{version:02}.sqlite',
-    )
 
 def chembl_sqlite(
         version: int = 36,
@@ -55,35 +48,29 @@ def chembl_sqlite(
         A SQLite database connection.
     """
 
-    sqlite_path = _chembl_sqlite_path(version)
-    exists = os.path.exists(sqlite_path)
-    _log(f'ChEMBL SQLite path: `{sqlite_path}`; exists: {exists}.')
-
-    if not exists:
-
-        path_in_tar = (
-            'chembl_%02i/chembl_%02i_sqlite/chembl_%02i.db' %
-            ((version, ) * 3)
+    path_in_tar = (
+        f'chembl_{version:02d}/chembl_{version:02d}_sqlite/chembl_{version:02d}.db'
         )
-        url = urls.urls['chembl']['sqlite'] % (version, version)
-        c = curl.Curl(
+    url = urls.urls['chembl']['sqlite'] % (version, version)
+
+    def _download() -> curl.Curl:
+        """Callback to download the tarballed ChEMBL database."""
+        return curl.Curl(
             url,
-            large = True,
-            silent = False,
-            files_needed = [path_in_tar],
-            slow = True
+            large=True,
+            silent=False,
+            files_needed=[path_in_tar],
+            slow=True
         )
-        with open(sqlite_path, 'wb') as fp:
 
-            while chunk := c.result[path_in_tar].read(1024 ** 2):
+    def _extractor(curl_obj: curl.Curl) -> str:
+        """Extractor to get the SQLite file from the tarball."""
+        return curl_obj.result[path_in_tar]
 
-                fp.write(chunk)
-
-    if connect:
-
-        _log(f'Opening SQLite: `{sqlite_path}`')
-        con = sqlite3.connect(sqlite_path)
-
-        return con
-
-    return sqlite_path
+    return _sqlite.download_sqlite(
+        download_callback=_download,
+        extractor=_extractor,
+        database = 'ChEMBL',
+        version = f'{version:02}',
+        connect = connect,
+    )

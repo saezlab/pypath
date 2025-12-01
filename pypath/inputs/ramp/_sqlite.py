@@ -31,7 +31,7 @@ from pypath_common import _misc
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.cache as cache
-import pypath.formats.sqlite as _sqlite
+from pypath.formats import sqlite as _sqlite
 from ._common import _log, _show_tables
 
 

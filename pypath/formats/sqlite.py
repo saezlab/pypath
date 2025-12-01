@@ -25,8 +25,10 @@ Utility functions for working with SQLite databases.
 
 import os
 import sqlite3
+from pathlib import Path
+import pprint
 
-import pypath.share.session as session
+from pypath.share import session, cache, curl
 
 __all__ = [
     'table_names',
@@ -42,9 +44,14 @@ _log = session.Logger(name = 'sqlite')._log
 
 def table_names(con: sqlite3.Connection) -> list[str]:
     """
-    From a SQLite database, retrieve a list of table names.
-    """
+    Retrieves the names of all tables from a SQLite database.
 
+    Args:
+        con: An open SQLite database connection.
+
+    Returns:
+        A list of table names as strings.
+    """
     cur = con.cursor()
     cur.execute('SELECT name FROM sqlite_master WHERE type = "table"')
 
@@ -53,62 +60,80 @@ def table_names(con: sqlite3.Connection) -> list[str]:
 
 def list_columns(con: sqlite3.Connection) -> dict[str, list[str]]:
     """
-    From a SQLite database, retrieve a list of column names.
-    """
+    Retrieves a list of tables and their columns from a SQLite database.
 
+    Args:
+        con: An open SQLite database connection.
+
+    Returns:
+        A dictionary mapping table names to a list of their column names.
+    """
     return {
         table: [col[1] for col in con.execute(f'PRAGMA table_info({table})')]
         for table in table_names(con)
     }
 
 
-def list_tables(con: sqlite3.Connection) -> dict[str, list[str]]:
+def sqlite_cache_path(database: str, version: str) -> Path:
+    """Constructs the standard local cache path for a SQLite database.
+
+    The path is generated based on the pypath cache directory, the database
+    name, and its version.
+
+    Args:
+        database: The name of the database (e.g., 'ChEMBL').
+        version: The version string for the database.
+
+    Returns:
+        A `pathlib.Path` object for the cached SQLite file.
     """
-    List the tables of an SQLite database.
-    """
-
-    tables = list_columns(con)
-    con.close()
-
-    return tables
-
-
-def sqlite_cache_path(database: str, version: str) -> str:
-
-    return os.path.join(
-        cache.get_cachedir(),
-        f'{database}_SQLite_{version}.sqlite',
-    )
+    return Path(
+        cache.get_cachedir()) / f'{database}_SQLite_{version}.sqlite'
 
 
 def download_sqlite(
         download_callback: callable,
         database: str,
+        extractor: callable,
         version: str,
         connect: bool = True,
-    ) -> sqlite3.Connection | str:
+    ) -> sqlite3.Connection | Path:
     """
-    Download a database in SQLite format.
+    Downloads and caches a database in SQLite format if not already present.
 
-    Args
-        version:
-            The version of the database to download.
+    This generic function checks for the existence of a specific version of a
+    database in the local cache. If the file is not found, it uses the
+    provided callback functions to download and extract it.
 
-    Returns
-        A SQLite database connection.
+    Args:
+        download_callback: A callable that performs the download and returns
+            an object containing the downloaded data stream.
+        database: The name of the database (e.g., 'RaMP').
+        extractor: A callable that takes the result from `download_callback`
+            and returns a readable file-like object for the SQLite database.
+        version: The version of the database to download.
+        connect: If True, returns an open `sqlite3.Connection` object.
+            If False, returns the `pathlib.Path` to the database file.
+
+    Returns:
+        An open SQLite database connection or the path to the file.
     """
-
-    sqlite_path = sqlite_path(database, version)
-    exists = os.path.exists(sqlite_path)
+    sqlite_path = sqlite_cache_path(database, version)
+    exists = Path.exists(sqlite_path)
     _log(f'{database} SQLite path: `{sqlite_path}`; exists: {exists}.')
 
     if not exists:
 
+        # Resource specific download
         c = download_callback()
+
+        # Resource specific sqlite file extractor
+        file_stream = extractor(c)
 
         with open(sqlite_path, 'wb') as fp:
 
-            while chunk := c.gzfile.read(1024 ** 2):
+            # Reads 1 MB at a time
+            while chunk := file_stream.read(1024 ** 2):
 
                 fp.write(chunk)
 
@@ -122,12 +147,85 @@ def download_sqlite(
     return sqlite_path
 
 
-def show_tables(con: sqlite3.Connection):
+def _create_in_memory_subset_db(
+        full_db_path: Path,
+        tables: list[str],
+        **kwargs,
+    ) -> sqlite3.Connection:
     """
-    Show the tables of the RaMP database from SQL dump.
-    """
+    Creates a new in-memory SQLite database and populates it with specified tables
+    from a full database file.
 
-    return pprint.pprint(list_tables(con))
+    Args:
+        full_db_path: Path to the full SQLite database file.
+        tables: A list of table names to copy into the in-memory database.
+        **kwargs: Additional keyword arguments to pass to `sqlite3.connect`
+            for the in-memory database.
+
+    Returns:
+        An open `sqlite3.Connection` object to the new in-memory database.
+    """
+    _con_param = {'database': ':memory:'}
+    _con_param.update(kwargs or {})
+    con = sqlite3.connect(**_con_param)
+    cur = con.cursor()
+    cur.execute(f"ATTACH DATABASE '{full_db_path}' AS full")
+
+    for table in tables:
+        cur.execute(f"CREATE TABLE {table} AS SELECT * FROM full.{table}")
+
+    cur.execute('DETACH DATABASE full')
+    con.commit()
+
+    return con
+
+
+def _extract_tables_to_data_structures(
+        full_db_con: sqlite3.Connection,
+        tables: list[str],
+        return_df: bool,
+        prefixes: bool,
+    ) -> dict[str, list[tuple] | pd.DataFrame] | list[tuple] | pd.DataFrame:
+    """
+    Extracts data from specified tables in a SQLite database into DataFrames
+    or lists of tuples.
+
+    Args:
+        full_db_con: An open SQLite database connection to the full database.
+        tables: A list of table names to extract.
+        return_df: If True, returns data as pandas DataFrames. Otherwise,
+            returns lists of tuples.
+        prefixes: If False, attempts to remove CURIE prefixes from IDs in
+            the 'source' table.
+
+    Returns:
+        A dictionary mapping table names to DataFrames/lists, or a single
+        DataFrame/list if only one table was requested.
+    """
+    import pandas as pd # Import pandas locally if not already imported globally
+    from pypath_common import _misc # Import _misc locally if not already imported globally
+
+    q = 'SELECT * FROM %s'
+
+    if return_df:
+        callback = lambda x: pd.read_sql_query(q % x, full_db_con)
+    else:
+        cur = full_db_con.cursor()
+        callback = lambda x: cur.execute(q % x).fetchall()
+
+    result = {t: callback(t) for t in tables}
+
+    if not prefixes and 'source' in result:
+        result['source'].sourceId = (
+            result['source'].sourceId.apply(
+                lambda x: x.split(':', maxsplit=1)[1]
+            )
+        )
+
+    if len(result) == 1:
+        result = _misc.first(result.values())
+
+    return result
 
 
 def raw_tables(
@@ -139,97 +237,58 @@ def raw_tables(
         **kwargs,
     ) -> dict[str, list[tuple] | pd.DataFrame | sqlite3.Connection]:
     """
-    Retrieve contents from an SQLite database.
+    Retrieves contents from a specified SQLite database.
+
+    This function provides a flexible way to query one or more tables from a
+    SQLite database, returning the data in various formats.
 
     Args:
-        tables:
-            One or more tables to retrieve. If None, all tables are retrieved.
-        sqlite:
-            Return an SQLite database instead of a pandas DataFrame.
-        return_df:
-            Return a pandas data frame.
-        kwargs:
-            Options for the SQLite database: this way you can point to a new
-            or existing database, while by default, an in-memory, temporary
-            database is used.
+        sqlite_callback: A callable that returns an open connection to the
+            target SQLite database.
+        tables: A string or list of strings specifying the table(s) to
+            retrieve. If None, all tables are retrieved.
+        sqlite: If True, returns a new in-memory SQLite database containing
+            the requested tables.
+        return_df: If True, returns data as pandas DataFrames. Otherwise,
+            returns lists of tuples.
+        prefixes: If False, attempts to remove CURIE prefixes from IDs in
+            the 'source' table.
+        **kwargs: Additional keyword arguments to pass to `sqlite3.connect`
+            when creating a new in-memory database (if `sqlite=True`).
 
     Returns:
-        Either a dictionary with the table names as keys and pandas dataframes
-        as values, or an SQLite database connection.
+        A dictionary of table names to DataFrames/lists, or a connection.
     """
-
+    # Fix: `list_names` is not defined, should be `table_names`
     full_db_path = sqlite_callback(connect = False)
     full_db_con = sqlite_callback()
-    tables = _misc.to_list(tables) or list(list_names(full_db_con))
 
+    if tables is None:
+        tables = list(table_names(full_db_con))
+
+    # Creates a SQLite database in memory with the requested tables
     if sqlite:
-
-        _con_param = {'database': ':memory:'}
-        _con_param.update(kwargs or {})
-        con = sqlite3.connect(**_con_param)
-        cur = con.cursor()
-        cur.execute(f"ATTACH DATABASE '{full_db_path}' AS full")
-
-        for table in tables:
-
-            cur.execute(f"CREATE TABLE {table} AS SELECT * FROM full.{table}")
-
-        cur.execute('DETACH DATABASE full')
-        con.commit()
-
-        return con
-
+        return _create_in_memory_subset_db(full_db_path, tables, **kwargs)
+    # Extracts the requested tables to data structures (DataFrames or lists)
     else:
-
-        q = f'SELECT * FROM %s'
-
-        if return_df:
-
-            callback = lambda x: pd.read_sql_query(q % x, full_db_con)
-
-        else:
-
-            cur = full_db_con.cursor()
-            callback = lambda x: cur.execute(q % x).fetchall()
-
-        result = {t: callback(t) for t in tables}
-
-        if not prefixes and 'source' in result:
-
-            result['source'].sourceId = (
-                result['source'].sourceId.apply(
-                    lambda x: x.split(':', maxsplit = 1)[1]
-                )
-            )
-
-        if len(result) == 1:
-
-            result = _misc.first(result.values())
-
-        return result
+        return _extract_tables_to_data_structures(full_db_con, tables, return_df, prefixes)
 
 
 def iter(sqlite_callback: callable, table: str) -> Generator[tuple[Any]]:
     """
-    Retrieve contents from an SQLite database.
+    Yields rows from a table in a SQLite database.
+
+    This generator function is memory-efficient for iterating over large
+    tables, as it retrieves one row at a time.
 
     Args:
-        tables:
-            One or more tables to retrieve. If None, all tables are retrieved.
-        sqlite:
-            Return an SQLite database instead of a pandas DataFrame.
-        return_df:
-            Return a pandas data frame.
-        kwargs:
-            Options for the SQLite database: this way you can point to a new
-            or existing database, while by default, an in-memory, temporary
-            database is used.
+        sqlite_callback: A callable that returns an open connection to the
+            target SQLite database.
+        table: The name of the table to iterate over.
 
-    Returns:
-        Either a dictionary with the table names as keys and pandas dataframes
-        as values, or an SQLite database connection.
+    Yields:
+        A tuple representing a single row from the table.
     """
-
     con = sqlite_callback()
     cur = con.cursor()
 
