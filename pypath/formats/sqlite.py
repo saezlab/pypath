@@ -17,25 +17,23 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from __future__ import annotations
-
 """
 Utility functions for working with SQLite databases.
 """
+from __future__ import annotations
 
-import os
 import sqlite3
 from pathlib import Path
-import pprint
-import pandas as pd
+from typing import Callable, TypeVar, BinaryIO
 
-from pypath.share import session, cache, curl
+import pandas as pd
 from pypath_common import _misc
+from pypath.share import session, cache
 
 __all__ = [
     'table_names',
     'list_columns',
-    'list_tables',
+
     'sqlite_cache_path',
     'raw_tables',
     'iter',
@@ -93,10 +91,13 @@ def sqlite_cache_path(database: str, version: str) -> Path:
         cache.get_cachedir()) / f'{database}_SQLite_{version}.sqlite'
 
 
+DownloadResult = TypeVar("DownloadResult")
+
+
 def download_sqlite(
-        download_callback: callable,
+        download_callback: Callable[[], DownloadResult],
         database: str,
-        extractor: callable,
+        extractor: Callable[[DownloadResult], BinaryIO],
         version: str,
         connect: bool = True,
     ) -> sqlite3.Connection | Path:
@@ -151,7 +152,7 @@ def download_sqlite(
 
 def _create_in_memory_subset_db(
         full_db_path: Path,
-        tables: list[str],
+        tables: str |list[str],
         **kwargs,
     ) -> sqlite3.Connection:
     """
@@ -189,7 +190,7 @@ def _create_in_memory_subset_db(
 
 def _extract_tables_to_data_structures(
         full_db_con: sqlite3.Connection,
-        tables: list[str],
+        tables: str |list[str],
         return_df: bool,
     ) -> dict[str, list[tuple] | pd.DataFrame] | list[tuple] | pd.DataFrame:
     """
@@ -226,13 +227,12 @@ def _extract_tables_to_data_structures(
 
 
 def raw_tables(
-        sqlite_callback: callable,
-        tables: str | list[str] = None,
+        sqlite_callback: Callable[..., sqlite3.Connection | Path],
+        tables: str | list[str] | None = None,
         sqlite: bool = False,
         return_df: bool = True,
-        prefixes: bool = True,
         **kwargs,
-    ) -> dict[str, list[tuple] | pd.DataFrame | sqlite3.Connection]:
+    ) -> dict[str, list[tuple] | pd.DataFrame] | list[tuple] | pd.DataFrame | sqlite3.Connection:
     """
     Retrieves contents from a specified SQLite database.
 
@@ -241,24 +241,22 @@ def raw_tables(
 
     Args:
         sqlite_callback: A callable that returns an open connection to the
-            target SQLite database.
+            target SQLite database. Arguments are dependent on the specific
+            database being accessed.
         tables: A string or list of strings specifying the table(s) to
             retrieve. If None, all tables are retrieved.
         sqlite: If True, returns a new in-memory SQLite database containing
             the requested tables.
         return_df: If True, returns data as pandas DataFrames. Otherwise,
             returns lists of tuples.
-        prefixes: If False, attempts to remove CURIE prefixes from IDs in
-            the 'source' table.
         **kwargs: Additional keyword arguments to pass to `sqlite3.connect`
             when creating a new in-memory database (if `sqlite=True`).
 
     Returns:
         A dictionary of table names to DataFrames/lists, or a connection.
     """
-    # Fix: `list_names` is not defined, should be `table_names`
-    full_db_path = sqlite_callback(connect = False)
-    full_db_con = sqlite_callback()
+    full_db_path = sqlite_callback(connect=False)
+    full_db_con = sqlite3.connect(full_db_path)
 
     if tables is None:
         tables = list(table_names(full_db_con))
@@ -268,7 +266,9 @@ def raw_tables(
         return _create_in_memory_subset_db(full_db_path, tables, **kwargs)
     # Extracts the requested tables to data structures (DataFrames or lists)
     else:
-        return _extract_tables_to_data_structures(full_db_con, tables, return_df, prefixes)
+        result = _extract_tables_to_data_structures(full_db_con, tables, return_df)
+        full_db_con.close()
+        return result
 
 
 def iter(sqlite_callback: callable, table: str) -> Generator[tuple[Any]]:
