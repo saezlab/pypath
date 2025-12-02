@@ -27,8 +27,10 @@ import os
 import sqlite3
 from pathlib import Path
 import pprint
+import pandas as pd
 
 from pypath.share import session, cache, curl
+from pypath_common import _misc
 
 __all__ = [
     'table_names',
@@ -165,12 +167,17 @@ def _create_in_memory_subset_db(
     Returns:
         An open `sqlite3.Connection` object to the new in-memory database.
     """
+    # instructs sqlite3 to create a new in-memory database (RAM)
     _con_param = {'database': ':memory:'}
+
     _con_param.update(kwargs or {})
+
+    # Creates the in-memory database and copies the requested tables
     con = sqlite3.connect(**_con_param)
     cur = con.cursor()
     cur.execute(f"ATTACH DATABASE '{full_db_path}' AS full")
 
+    # Copy the requested tables
     for table in tables:
         cur.execute(f"CREATE TABLE {table} AS SELECT * FROM full.{table}")
 
@@ -184,7 +191,6 @@ def _extract_tables_to_data_structures(
         full_db_con: sqlite3.Connection,
         tables: list[str],
         return_df: bool,
-        prefixes: bool,
     ) -> dict[str, list[tuple] | pd.DataFrame] | list[tuple] | pd.DataFrame:
     """
     Extracts data from specified tables in a SQLite database into DataFrames
@@ -195,33 +201,24 @@ def _extract_tables_to_data_structures(
         tables: A list of table names to extract.
         return_df: If True, returns data as pandas DataFrames. Otherwise,
             returns lists of tuples.
-        prefixes: If False, attempts to remove CURIE prefixes from IDs in
-            the 'source' table.
 
     Returns:
-        A dictionary mapping table names to DataFrames/lists, or a single
+        A dictionary mapping table names to DataFrames/lists of tuples, or a single
         DataFrame/list if only one table was requested.
     """
-    import pandas as pd # Import pandas locally if not already imported globally
-    from pypath_common import _misc # Import _misc locally if not already imported globally
 
+    # Default SQL query
     q = 'SELECT * FROM %s'
 
     if return_df:
-        callback = lambda x: pd.read_sql_query(q % x, full_db_con)
+        callback = lambda table_name: pd.read_sql_query(q % table_name, full_db_con)
     else:
         cur = full_db_con.cursor()
-        callback = lambda x: cur.execute(q % x).fetchall()
+        callback = lambda table_name: cur.execute(q % table_name).fetchall()
 
     result = {t: callback(t) for t in tables}
 
-    if not prefixes and 'source' in result:
-        result['source'].sourceId = (
-            result['source'].sourceId.apply(
-                lambda x: x.split(':', maxsplit=1)[1]
-            )
-        )
-
+    # If only one table was requested, return a single DataFrame/table
     if len(result) == 1:
         result = _misc.first(result.values())
 
