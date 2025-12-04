@@ -18,8 +18,7 @@
 #
 
 import sqlite3
-import shutil
-import os
+from typing import Callable
 
 import pypath.share.cache as cache
 from pypath.share import curl, cache
@@ -36,16 +35,17 @@ def chembl_sqlite(
     """
     Download the ChEMBL database in SQLite format.
 
-    SQLite format builds are avialable in ChEMBL's FTP site:
-        https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases
-    This function downloads and opens one of them.
+    SQLite format builds are available at ChEMBL's FTP site:
+    https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases
+    This function downloads, caches, and opens one of them.
 
     Args
         version:
             The version of the ChEMBL database to download.
 
-    Returns
-        A SQLite database connection.
+    Returns:
+        A SQLite database connection to the ChEMBL database, or the path to
+        the database file.
     """
 
     path_in_tar = (
@@ -74,3 +74,18 @@ def chembl_sqlite(
         version = f'{version:02}',
         connect = connect,
     )
+
+def chembl_sqlite_data() -> dict[str, list[tuple]]:
+    """Extracts all tables and data from the ChEMBL SQLite database.
+
+    Returns:
+        A dictionary where keys are table names and values are lists of
+        tuples representing the rows in each table.
+    """
+    chembl_tables = _sqlite.raw_tables(
+        sqlite_callback = chembl_sqlite,
+        sqlite = False,
+        return_df = False
+    )
+
+    return chembl_tables
