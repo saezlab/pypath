@@ -33,7 +33,6 @@ from pypath.share import session, cache
 __all__ = [
     'table_names',
     'list_columns',
-
     'sqlite_cache_path',
     'raw_tables',
     'iter',
@@ -97,8 +96,8 @@ DownloadResult = TypeVar("DownloadResult")
 def download_sqlite(
         download_callback: Callable[[], DownloadResult],
         database: str,
-        extractor: Callable[[DownloadResult], BinaryIO],
         version: str,
+        extractor: Callable[[DownloadResult], BinaryIO] | None = None,
         connect: bool = True,
     ) -> sqlite3.Connection | Path:
     """
@@ -112,7 +111,8 @@ def download_sqlite(
         download_callback: A callable that performs the download and returns
             an object containing the downloaded data stream.
         database: The name of the database (e.g., 'RaMP').
-        extractor: A callable that takes the result from `download_callback`
+        extractor: An optional callable that takes the result from
+            `download_callback`
             and returns a readable file-like object for the SQLite database.
         version: The version of the database to download.
         connect: If True, returns an open `sqlite3.Connection` object.
@@ -130,8 +130,12 @@ def download_sqlite(
         # Resource specific download
         c = download_callback()
 
-        # Resource specific sqlite file extractor
-        file_stream = extractor(c)
+        if extractor:
+            # Resource specific sqlite file extractor
+            file_stream = extractor(c)
+        else:
+            # The download result is the file stream itself
+            file_stream = c.result
 
         with open(sqlite_path, 'wb') as fp:
 

@@ -19,6 +19,7 @@
 
 import sqlite3
 from typing import Callable
+from pathlib import Path
 
 import pypath.share.cache as cache
 from pypath.share import curl, cache
@@ -30,7 +31,7 @@ from ._common import _log, _show_tables
 def chembl_sqlite(
         version: int = 36,
         connect: bool = True,
-    ) -> sqlite3.Connection | str:
+    ) -> sqlite3.Connection | Path:
 
     """
     Download the ChEMBL database in SQLite format.
@@ -53,7 +54,7 @@ def chembl_sqlite(
         )
     url = urls.urls['chembl']['sqlite'] % (version, version)
 
-    def _download() -> curl.Curl:
+    def _chembl_download() -> curl.Curl:
         """Callback to download the tarballed ChEMBL database."""
         return curl.Curl(
             url,
@@ -63,29 +64,27 @@ def chembl_sqlite(
             slow=True
         )
 
-    def _extractor(curl_obj: curl.Curl) -> str:
+    def _chembl_extractor(curl_obj: curl.Curl) -> str:
         """Extractor to get the SQLite file from the tarball."""
         return curl_obj.result[path_in_tar]
 
     return _sqlite.download_sqlite(
-        download_callback=_download,
-        extractor=_extractor,
+        download_callback= _chembl_download,
+        extractor=_chembl_extractor,
         database = 'ChEMBL',
         version = f'{version:02}',
         connect = connect,
     )
 
-def chembl_sqlite_data() -> dict[str, list[tuple]]:
+def chembl_sqlite_raw() -> dict[str, list[tuple]]:
     """Extracts all tables and data from the ChEMBL SQLite database.
 
     Returns:
         A dictionary where keys are table names and values are lists of
         tuples representing the rows in each table.
     """
-    chembl_tables = _sqlite.raw_tables(
+    return _sqlite.raw_tables(
         sqlite_callback = chembl_sqlite,
         sqlite = False,
         return_df = False
     )
-
-    return chembl_tables
