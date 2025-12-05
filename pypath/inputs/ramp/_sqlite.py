@@ -41,15 +41,6 @@ __all__ = [
     'ramp_omnipathmetabo',
 ]
 
-
-def _ramp_sqlite_path(version: str = '2.5.4') -> str:
-
-    return os.path.join(
-        cache.get_cachedir(),
-        f'RaMP_SQLite_{version}.sqlite',
-    )
-
-
 def ramp_sqlite(
         version: str = '2.5.4',
         connect: bool = True,
