@@ -17,11 +17,15 @@ from collections.abc import Generator
 import csv
 
 from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity, Identifier, Annotation, Resource
+from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     AnnotationTypeCv,
+    LicenseCV,
+    UpdateCategoryCV,
+    ResourceAnnotationCv,
+    ResourceCv,
     # Import other CV terms as needed
 )
 from ..internals.tabular_builder import (
@@ -35,20 +39,40 @@ from ..internals.tabular_builder import (
     MembershipBuilder,
 )
 
-def get_resource() -> Resource:
-    return Resource(
-        id='resource_id',
-        name='Resource Name',
-        license=LicenseCV.CC_BY_4_0,
-        update_category=UpdateCategoryCV.REGULAR,
-        publication='PMID:12345678',
-        url='https://example.org/',
-        description='Brief description.',
+
+def resource() -> Generator[Entity]:
+    """
+    Yield resource metadata as an Entity record.
+
+    Yields:
+        Entity record with type CV_TERM containing resource metadata.
+    """
+    yield Entity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.RESOURCE_ID),
+            Identifier(type=IdentifierNamespaceCv.NAME, value='Resource Name'),
+        ],
+        annotations=[
+            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
+            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
+            Annotation(term=IdentifierNamespaceCv.PUBMED, value='12345678'),
+            Annotation(term=ResourceAnnotationCv.URL, value='https://example.org/'),
+            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
+                'Brief description of the resource, what it contains, '
+                'and what kind of data it provides.'
+            )),
+        ],
     )
 
-def resource_data() -> Generator[Entity]:
-    """Download and parse resource data as Entity records."""
 
+def resource_data() -> Generator[Entity]:
+    """
+    Download and parse resource data as Entity records.
+
+    Yields:
+        Entity records with the appropriate type (e.g., PROTEIN, INTERACTION)
+    """
     opener = download_and_open(
         'https://example.org/data.tsv',
         filename='data.tsv',
