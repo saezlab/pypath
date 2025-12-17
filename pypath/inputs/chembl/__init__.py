@@ -6,4 +6,4 @@ from ._documents import document
 from ._mechanisms import mechanism
 from ._targets import target
 from ._molecules import molecule
-
+from ._sqlite import chembl_sqlite

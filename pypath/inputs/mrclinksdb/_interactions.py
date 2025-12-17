@@ -87,12 +87,20 @@ def mrclinksdb_interaction(
         if '_' in (uniprot_id := rec.receptor_uniprot_id):
 
             uniprots = uniprot_id.split('_')
-            location = sorted(set.union(*(
+
+            all_locs = [
                 loc
                 for u in uniprots
                 if (loc := uniprot_locations.get(u))
-            )))
+            ]
 
+            if all_locs:
+                try:
+                    location = sorted([item for item in set.union(*all_locs) if item is not None])
+                except TypeError:
+                    location = [item for item in set.union(*all_locs) if item is not None]
+            else:
+                location = []
 
             uniprot_id = intera.Complex(
                 components = sorted(uniprots),
@@ -101,10 +109,21 @@ def mrclinksdb_interaction(
             )
 
         else:
+            loc = uniprot_locations.get(uniprot_id)
+            if loc is None or not loc:
+                location = []
+            else:
+                filtered = [item for item in loc if item is not None]
+                try:
+                    location = sorted(filtered)
+                except TypeError:
+                    location = filtered
 
-            location = uniprot_locations.get(uniprot_id)
+        #pubchem, pubchem_sid = rec.pubchem_cid_sid.split(';')
+        parts = rec.pubchem_cid_sid.split(';')
+        pubchem = parts[0] if parts else ''
+        pubchem_sid = parts[1] if len(parts) > 1 else ''
 
-        pubchem, pubchem_sid = rec.pubchem_cid_sid.split(';')
         pubmeds = (
             sorted(
                 p.strip()
@@ -134,7 +153,7 @@ def mrclinksdb_interaction(
         )
 
 
-def metabolite_cell() -> Generator[Metabolite_cell, None, None]:
+def mrclinksdb_metabolite_cell() -> Generator[_records.MrclinksdbMetaboliteCell, None, None]:
 
     url = urls.urls['mrclinksdb']['metabolite_cell']
     c = curl.Curl(url, large = True, silent = False)
