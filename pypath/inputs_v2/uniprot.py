@@ -24,7 +24,8 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig, iter_tsv
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2.parsers.base import iter_tsv
 
 # UniProt REST API URL for comprehensive protein data
 # Currently hardcoded for human (9606), mouse (10090), and rat (10116)
