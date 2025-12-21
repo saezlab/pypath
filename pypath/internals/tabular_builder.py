@@ -3,13 +3,14 @@
 
 """Declarative helpers to turn tabular rows into silver-layer entities.
 
-New DSL based on CV / Map / Column sources, replacing the older Column+cv/term_cv
-setup. This module intentionally breaks the previous configuration API.
+New DSL based on CV / FieldConfig sources (producing Columns), replacing the
+older Column+cv/term_cv setup. This module intentionally breaks the previous
+configuration API.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import logging
 import re
 from typing import Any, Callable, Mapping, Sequence
@@ -29,11 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 class Column:
-    """Column definition describing how to extract raw values from a row.
-
-    This is now a *pure* data extractor: it no longer knows about CV terms or
-    regex-based semantic parsing. Any mapping / regex / CV logic should be
-    expressed via :class:`Map` and :class:`CV`.
+    """Column definition describing how to extract and normalize values from a row.
 
     Parameters
     ----------
@@ -44,6 +41,21 @@ class Column:
     delimiter:
         Optional delimiter used to split string-valued cells into multiple
         tokens. If not provided, the entire cell is treated as a single value.
+    extract:
+        Optional sequence of regex patterns or callables applied in order to
+        the raw string value *before* mapping. Elements may be:
+        - ``str`` or ``re.Pattern`` → the first group (if any) or full match.
+        - ``callable`` ``str -> str | None``.
+        If any extract step returns ``None`` or fails to match, that value is
+        discarded.
+    map:
+        - ``dict`` mapping raw/processed values to desired outputs.
+          Matching is done first on the original processed value, then on
+          ``lower()`` if the dict contains lowercase keys.
+        - ``callable`` ``value -> mapped_value``.
+        - ``None`` to return the extracted value unchanged.
+    default:
+        Optional fallback value if mapping yields no result.
     """
 
     def __init__(
@@ -51,18 +63,18 @@ class Column:
         selector: int | str | Callable[[Any], Any],
         *,
         delimiter: str | None = None,
+        extract: Sequence[str | re.Pattern | Callable[[str], Any]] | None = None,
+        map: Mapping[Any, Any] | Callable[[Any], Any] | None = None,
+        default: Any | None = None,
     ) -> None:
         self.selector = selector
         self.delimiter = delimiter
+        self.extract_steps: list[str | re.Pattern | Callable[[str], Any]] = list(extract or [])
+        self.mapping = map
+        self.default = default
 
     def extract(self, row: Any, cache: ColumnCache | None = None) -> list[Any]:
-        """Extract a list of raw values from the given row.
-
-        Values are:
-        - Split by the optional delimiter
-        - Stripped of surrounding whitespace
-        - Empty strings are discarded
-        """
+        """Extract a list of processed values from the given row."""
         raw_value = self._lookup(row)
         if raw_value is None:
             return []
@@ -73,7 +85,23 @@ class Column:
             text = self._normalize_token(token)
             if text in (None, "", "-"):
                 continue
-            out.append(text)
+            processed: str | Any | None = text
+            for step in self.extract_steps:
+                processed = self._apply_step(step, processed)
+                if processed is None:
+                    break
+
+            if processed is None:
+                continue
+
+            mapped = self._apply_mapping(processed)
+            if mapped is None:
+                if self.default is not None:
+                    mapped = self.default
+                else:
+                    continue
+
+            out.append(mapped)
         return out
 
     # -- internal helpers -------------------------------------------------
@@ -122,9 +150,71 @@ class Column:
             return token.strip().strip('"')
         return str(token).strip()
 
+    def _apply_step(
+        self,
+        step: str | re.Pattern | Callable[[str], Any],
+        value: Any,
+    ) -> Any | None:
+        if value is None:
+            return None
+
+        text = str(value)
+
+        if callable(step):
+            try:
+                return step(text)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("Column extract callable failed: %s", exc)
+                return None
+
+        if isinstance(step, re.Pattern):
+            regex = step
+        else:
+            regex = re.compile(step)
+
+        match = regex.search(text)
+        if not match:
+            return None
+
+        if match.lastindex:
+            return match.group(1)
+        return match.group(0)
+
+    def _apply_mapping(self, value: Any) -> Any | None:
+        if self.mapping is None:
+            return value
+
+        if callable(self.mapping):
+            try:
+                return self.mapping(value)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("Column mapping callable failed: %s", exc)
+                return None
+
+        try:
+            if value in self.mapping:
+                return self.mapping[value]
+        except TypeError:
+            value_str = str(value)
+            if value_str in self.mapping:
+                return self.mapping[value_str]
+            lower = value_str.lower()
+            if lower in self.mapping:
+                return self.mapping[lower]
+            return None
+
+        value_str = str(value)
+        if value_str in self.mapping:
+            return self.mapping[value_str]
+        lower = value_str.lower()
+        if lower in self.mapping:
+            return self.mapping[lower]
+
+        return None
+
 
 class ColumnCache(dict):
-    """Cache extracted values per source (Column, Map, etc.) to avoid duplicate work."""
+    """Cache extracted values per source to avoid duplicate work."""
 
     def values(self, source: Any, row: Any) -> list[Any]:
         if source not in self:
@@ -173,159 +263,62 @@ class _CallableSource:
         return [result]
 
 
-class Map:
-    """Column-based mapping source with optional regex / callable pre-processing.
+@dataclass
+class FieldConfig:
+    extract: dict[str, Any] = field(default_factory=dict)
+    map: dict[str, Mapping[Any, Any] | Callable[[Any], Any]] = field(default_factory=dict)
+    delimiter: str | None = None
 
-    This is the main workhorse to go from raw tabular values to CV terms or
-    normalized values.
-
-    Example
-    -------
-    >>> CV(
-    ...     term = Map(col="Action",
-    ...                extract=[r"^([A-Za-z]+)"],
-    ...                map=action_cv_mapping),
-    ... )
-
-    Parameters
-    ----------
-    col:
-        Column selector or :class:`Column` instance used to obtain raw values.
-    map:
-        - ``dict`` mapping raw/processed values to desired outputs.
-          Matching is done first on the original processed value, then on
-          ``lower()`` if the dict contains lowercase keys.
-        - ``callable`` ``value -> mapped_value``.
-        - ``None`` to return the extracted value unchanged.
-    extract:
-        Optional sequence of regex patterns or callables applied in order to
-        the raw string value *before* mapping. Elements may be:
-        - ``str`` or ``re.Pattern`` → the first group (if any) or full match.
-        - ``callable`` ``str -> str | None``.
-        If any extract step returns ``None`` or fails to match, that value is
-        discarded.
-    default:
-        Optional fallback value if mapping yields no result.
-    """
-
-    def __init__(
+    def __call__(
         self,
+        selector: int | str | Callable[[Any], Any],
         *,
-        col: str | int | Callable[[Any], Any] | Column,
-        map: Mapping[Any, Any] | Callable[[Any], Any] | None = None,
-        extract: Sequence[str | re.Pattern | Callable[[str], Any]] | None = None,
+        extract: str | Sequence[Any] | Callable[[str], Any] | re.Pattern | None = None,
+        map: str | Mapping[Any, Any] | Callable[[Any], Any] | None = None,
+        delimiter: str | None = None,
         default: Any | None = None,
-    ) -> None:
-        if isinstance(col, Column):
-            self.column = col
-        else:
-            self.column = Column(col)
+    ) -> Column:
+        extract_steps = self._resolve_extract(extract)
+        mapping = self._resolve_mapping(map)
+        return Column(
+            selector,
+            delimiter=delimiter if delimiter is not None else self.delimiter,
+            extract=extract_steps,
+            map=mapping,
+            default=default,
+        )
 
-        self.mapping = map
-        self.extract_steps: list[str | re.Pattern | Callable[[str], Any]] = list(extract or [])
-        self.default = default
-
-    # Used by ColumnCache
-    def extract(self, row: Any, cache: ColumnCache | None = None) -> list[Any]:
-        if cache is None:
-            cache = ColumnCache()
-
-        raw_values = cache.values(self.column, row)
-        results: list[Any] = []
-        for raw in raw_values:
-            if raw is None:
-                continue
-            text = str(raw).strip()
-            if not text:
-                continue
-
-            processed: str | Any | None = text
-            for step in self.extract_steps:
-                processed = self._apply_step(step, processed)
-                if processed is None:
-                    break
-
-            if processed is None:
-                continue
-
-            mapped = self._apply_mapping(processed)
-            if mapped is None:
-                if self.default is not None:
-                    mapped = self.default
-                else:
-                    continue
-
-            results.append(mapped)
-
-        return results
-
-    # -- internal helpers -------------------------------------------------
-
-    def _apply_step(
+    def _resolve_extract(
         self,
-        step: str | re.Pattern | Callable[[str], Any],
-        value: Any,
-    ) -> Any | None:
-        if value is None:
+        extract: str | Sequence[Any] | Callable[[str], Any] | re.Pattern | None,
+    ) -> list[Any] | None:
+        if extract is None:
             return None
+        if isinstance(extract, str):
+            extract = [extract]
+        if isinstance(extract, (list, tuple)):
+            steps: list[Any] = []
+            for item in extract:
+                if isinstance(item, str) and item in self.extract:
+                    value = self.extract[item]
+                    if isinstance(value, (list, tuple)):
+                        steps.extend(value)
+                    else:
+                        steps.append(value)
+                else:
+                    steps.append(item)
+            return steps
+        return [extract]
 
-        text = str(value)
-
-        if callable(step):
-            try:
-                return step(text)
-            except Exception as exc:  # pragma: no cover - defensive
-                logger.debug("Map extract callable failed: %s", exc)
-                return None
-
-        # Regex pattern
-        if isinstance(step, re.Pattern):
-            regex = step
-        else:
-            regex = re.compile(step)
-
-        match = regex.search(text)
-        if not match:
+    def _resolve_mapping(
+        self,
+        mapping: str | Mapping[Any, Any] | Callable[[Any], Any] | None,
+    ) -> Mapping[Any, Any] | Callable[[Any], Any] | None:
+        if mapping is None:
             return None
-
-        if match.lastindex:
-            return match.group(1)
-        return match.group(0)
-
-    def _apply_mapping(self, value: Any) -> Any | None:
-        if self.mapping is None:
-            return value
-
-        if callable(self.mapping):
-            try:
-                return self.mapping(value)
-            except Exception as exc:  # pragma: no cover - defensive
-                logger.debug("Map mapping callable failed: %s", exc)
-                return None
-
-        # dict-like
-        try:
-            if value in self.mapping:
-                return self.mapping[value]
-        except TypeError:
-            # Unhashable key, fall back to string
-            value_str = str(value)
-            if value_str in self.mapping:
-                return self.mapping[value_str]
-            lower = value_str.lower()
-            if lower in self.mapping:
-                return self.mapping[lower]
-            return None
-
-        # Try string / lowercase variants
-        value_str = str(value)
-        if value_str in self.mapping:
-            return self.mapping[value_str]
-        lower = value_str.lower()
-        if lower in self.mapping:
-            return self.mapping[lower]
-
-        return None
+        if isinstance(mapping, str):
+            return self.map[mapping]
+        return mapping
 
 
 class CV:
@@ -338,9 +331,8 @@ class CV:
     term:
         Source for the CV term / identifier type. Required.
         Can be:
-        - Constant (e.g. ``MoleculeAnnotationsCv.ENDOGENOUS``
-        - :class:`Map`
-        - :class:`Column`
+        - Constant (e.g. ``MoleculeAnnotationsCv.ENDOGENOUS``)
+        - :class:`Column` (typically via :class:`FieldConfig`)
         - ``callable`` ``row -> value | list[value]``
     value:
         Optional source for the value part.
@@ -363,7 +355,7 @@ class CV:
 
     def _normalize_source(self, spec: Any) -> Any:
         # Already a source-like object
-        if isinstance(spec, (Column, Map, _ConstantSource, _CallableSource)):
+        if isinstance(spec, (Column, _ConstantSource, _CallableSource)):
             return spec
 
         # Callable row -> value(s)
@@ -571,10 +563,11 @@ class IdentifiersBuilder(_BaseCvBuilder):
 
     Example
     -------
+    >>> f = FieldConfig()
     >>> identifiers = IdentifiersBuilder(
     ...     CV(
-    ...         term  = Map(col="ID Namespace", map=id_namespace_cv_mapping),
-    ...         value = Column("ID"),
+    ...         term  = f("ID Namespace", map=id_namespace_cv_mapping),
+    ...         value = f("ID"),
     ...     ),
     ... )
     """
@@ -588,20 +581,21 @@ class AnnotationsBuilder(_BaseCvBuilder):
 
     Example
     -------
+    >>> f = FieldConfig()
     >>> annotations = AnnotationsBuilder(
     ...     CV(
-    ...         term = Map(col="Action", extract=[r"^([A-Za-z]+)"], map=action_cv_mapping),
+    ...         term = f("Action", extract=[r"^([A-Za-z]+)"], map=action_cv_mapping),
     ...     ),
     ...     CV(
-    ...         term = Map(col="Type", map=type_cv_mapping),
+    ...         term = f("Type", map=type_cv_mapping),
     ...     ),
     ...     CV(
     ...         term = MoleculeAnnotationsCv.ENDOGENOUS,
     ...     ),
     ...     CV(
     ...         term  = MoleculeAnnotationsCv.AFFINITY_HIGH,
-    ...         value = Column("Affinity"),
-    ...         unit  = Map(col="Affinity Units", map=affinity_units_cv_mapping),
+    ...         value = f("Affinity"),
+    ...         unit  = f("Affinity Units", map=affinity_units_cv_mapping),
     ...     ),
     ... )
     """
@@ -738,7 +732,7 @@ class EntityBuilder:
     def __init__(
         self,
         *,
-        entity_type: EntityTypeCv | Column | Map | Callable[[Any], EntityTypeCv],
+        entity_type: EntityTypeCv | Column | Callable[[Any], EntityTypeCv],
         identifiers: IdentifiersBuilder,
         annotations: AnnotationsBuilder | None = None,
         membership: MembershipBuilder | None = None,
@@ -760,9 +754,9 @@ class EntityBuilder:
         annotations = self.annotations.build(row, cache) if self.annotations else None
         membership = self.membership.build(row, cache) if self.membership else None
 
-        # Resolve entity_type dynamically if it's a Column / Map / callable
+        # Resolve entity_type dynamically if it's a Column / callable
         resolved_type: Any = self.entity_type
-        if isinstance(self.entity_type, (Column, Map)):
+        if isinstance(self.entity_type, Column):
             values = cache.values(self.entity_type, row)
             if values:
                 resolved_type = values[0]
@@ -792,7 +786,7 @@ __all__ = [
     "CV",
     "EntityBuilder",
     "IdentifiersBuilder",
-    "Map",
+    "FieldConfig",
     "Member",
     "MembershipBuilder",
     "MembersFromList",

@@ -8,27 +8,23 @@ defined in pypath.internals.silver_schema.
 from __future__ import annotations
 
 from collections.abc import Generator
-import csv
 
-from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
     LicenseCV,
     UpdateCategoryCV,
-    ResourceAnnotationCv,
     ResourceCv,
 )
-from ..internals.tabular_builder import (
+from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
-    Column,
     CV,
     EntityBuilder,
+    FieldConfig,
     IdentifiersBuilder,
-    Map,
 )
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig, iter_tsv
 
 # UniProt REST API URL for comprehensive protein data
 # Currently hardcoded for human (9606), mouse (10090), and rat (10116)
@@ -45,148 +41,96 @@ UNIPROT_DATA_URL = (
     "xref_biogrid,xref_complexportal"
 )
 
+config = ResourceConfig(
+    id=ResourceCv.UNIPROT,
+    name='UniProt',
+    url='https://www.uniprot.org/',
+    license=LicenseCV.CC_BY_4_0,
+    update_category=UpdateCategoryCV.REGULAR,
+    pubmed='33237286',
+    description=(
+        'UniProt is a comprehensive resource for protein sequence and '
+        'functional information. It provides high-quality, manually annotated '
+        'protein data including function, structure, localization, interactions, '
+        'disease associations, and cross-references to other databases.'
+    ),
+)
 
-def resource() -> Generator[Entity]:
-    """
-    Yield resource metadata as an Entity record.
+f = FieldConfig(
+    extract={
+        'protein_name': r'^([^(]+)',
+        'protein_synonym': r'^([^)]+)\)',
+    },
+)
 
-    Yields:
-        Entity record with type CV_TERM containing UniProt metadata.
-    """
-    yield Entity(
-        type=EntityTypeCv.CV_TERM,
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.UNIPROT),
-            Identifier(type=IdentifierNamespaceCv.NAME, value='UniProt'),
-        ],
-        annotations=[
-            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
-            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
-            Annotation(term=IdentifierNamespaceCv.PUBMED, value='33237286'),
-            Annotation(term=ResourceAnnotationCv.URL, value='https://www.uniprot.org/'),
-            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
-                'UniProt is a comprehensive resource for protein sequence and '
-                'functional information. It provides high-quality, manually annotated '
-                'protein data including function, structure, localization, interactions, '
-                'disease associations, and cross-references to other databases.'
-            )),
-        ],
-    )
+protein_name_column = f('Protein names', extract='protein_name')
+protein_synonym_column = f('Protein names', delimiter='(', extract='protein_synonym')
 
-
-def uniprot_proteins() -> Generator[Entity]:
-    """
-    Download and parse UniProt protein data as Entity records.
-
-    Downloads protein data for human, mouse, and rat from UniProt REST API
-    and converts each protein into a Entity with identifiers, annotations,
-    membership records, and references.
-
-    Yields:
-        Entity records with type PROTEIN
-    """
-    # Download and open the file
-    opener = download_and_open(
-        UNIPROT_DATA_URL,
-        filename='uniprot_proteins_9606_10090_10116.tsv.gz',
-        subfolder='uniprot',
-        large=True,
-        encoding='utf-8',
-        default_mode='r',
-        ext='gz',
-    )
-
-    # Define the schema mapping
-    protein_name_column = Column('Protein names')
-    protein_synonym_column = Column('Protein names', delimiter='(')
-
-    schema = EntityBuilder(
-        entity_type=EntityTypeCv.PROTEIN,
-        identifiers=IdentifiersBuilder(
-            # Primary UniProt accession
-            CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('Entry')),
-
-            # UniProt entry name
-            CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('Entry Name')),
-
-            # Primary gene name
-            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=Column('Gene Names (primary)')),
-
-            # Gene synonyms (space-delimited)
-            CV(
-                term=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
-                value=Column('Gene Names (synonym)', delimiter=' '),
-            ),
-
-            # Protein name - extract primary (before parentheses)
-            CV(
-                term=IdentifierNamespaceCv.NAME,
-                value=Map(
-                    col=protein_name_column,
-                    extract=[r'^([^(]+)'],
-                ),
-            ),
-
-            # Protein name synonyms - split by '(' and extract content before ')'
-            # Regex only matches tokens with ')', avoiding the primary name
-            CV(
-                term=IdentifierNamespaceCv.SYNONYM,
-                value=Map(
-                    col=protein_synonym_column,
-                    extract=[r'^([^)]+)\)'],
-                ),
-            ),
-
-            # Cross-references (semicolon-delimited)
-            CV(term=IdentifierNamespaceCv.ENSEMBL, value=Column('Ensembl', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.REFSEQ, value=Column('RefSeq', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.PDB, value=Column('PDB', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=Column('AlphaFoldDB', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.KEGG, value=Column('KEGG', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CHEMBL, value=Column('ChEMBL', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.SIGNOR, value=Column('SIGNOR', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.INTACT, value=Column('IntAct', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.BIOGRID, value=Column('BioGRID', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.COMPLEXPORTAL, value=Column('ComplexPortal', delimiter=';')),
+proteins_schema = EntityBuilder(
+    entity_type=EntityTypeCv.PROTEIN,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry')),
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry Name')),
+        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Gene Names (primary)')),
+        CV(
+            term=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
+            value=f('Gene Names (synonym)', delimiter=' '),
         ),
-        annotations=AnnotationsBuilder(
-            # Source annotation
-            CV(term=MoleculeAnnotationsCv.SEQUENCE_LENGTH, value=Column('Length')),
-            CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=Column('Mass')),
-
-            # Functional annotations
-            CV(term=MoleculeAnnotationsCv.FUNCTION, value=Column('Function [CC]')),
-            CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=Column('Subcellular location [CC]')),
-            CV(term=MoleculeAnnotationsCv.POST_TRANSLATIONAL_MODIFICATION, value=Column('Post-translational modification')),
-            CV(term=MoleculeAnnotationsCv.DISEASE_INVOLVEMENT, value=Column('Involvement in disease')),
-            CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=Column('Pathway')),
-            CV(term=MoleculeAnnotationsCv.ACTIVITY_REGULATION, value=Column('Activity regulation')),
-
-            # Feature annotations
-            CV(term=MoleculeAnnotationsCv.MUTAGENESIS, value=Column('Mutagenesis')),
-            CV(term=MoleculeAnnotationsCv.TRANSMEMBRANE_REGION, value=Column('Transmembrane')),
-            CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=Column('Protein families', delimiter=",")),
-            CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=Column('EC number', delimiter=";")),
-
-            # Sequence
-            CV(term=MoleculeAnnotationsCv.AMINO_ACID_SEQUENCE, value=Column('Sequence')),
-
-            # GO terms as CV term accessions
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('Gene Ontology IDs', delimiter=';')),
-
-            # Keywords as CV term accessions
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('Keywords IDs', delimiter=';')),
-
-            # Organism as annotation
-            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=Column('Organism (ID)')),
-
-            # PubMed references as annotations
-            CV(term=IdentifierNamespaceCv.PUBMED, value=Column('PubMed ID', delimiter=';')),
+        CV(
+            term=IdentifierNamespaceCv.NAME,
+            value=protein_name_column,
         ),
-    )
+        CV(
+            term=IdentifierNamespaceCv.SYNONYM,
+            value=protein_synonym_column,
+        ),
+        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.REFSEQ, value=f('RefSeq', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.PDB, value=f('PDB', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=f('AlphaFoldDB', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.KEGG, value=f('KEGG', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CHEMBL, value=f('ChEMBL', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.INTACT, value=f('IntAct', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.BIOGRID, value=f('BioGRID', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.COMPLEXPORTAL, value=f('ComplexPortal', delimiter=';')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.SEQUENCE_LENGTH, value=f('Length')),
+        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('Mass')),
+        CV(term=MoleculeAnnotationsCv.FUNCTION, value=f('Function [CC]')),
+        CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('Subcellular location [CC]')),
+        CV(term=MoleculeAnnotationsCv.POST_TRANSLATIONAL_MODIFICATION, value=f('Post-translational modification')),
+        CV(term=MoleculeAnnotationsCv.DISEASE_INVOLVEMENT, value=f('Involvement in disease')),
+        CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=f('Pathway')),
+        CV(term=MoleculeAnnotationsCv.ACTIVITY_REGULATION, value=f('Activity regulation')),
+        CV(term=MoleculeAnnotationsCv.MUTAGENESIS, value=f('Mutagenesis')),
+        CV(term=MoleculeAnnotationsCv.TRANSMEMBRANE_REGION, value=f('Transmembrane')),
+        CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('Protein families', delimiter=',')),
+        CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=f('EC number', delimiter=';')),
+        CV(term=MoleculeAnnotationsCv.AMINO_ACID_SEQUENCE, value=f('Sequence')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Gene Ontology IDs', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Keywords IDs', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Organism (ID)')),
+        CV(term=IdentifierNamespaceCv.PUBMED, value=f('PubMed ID', delimiter=';')),
+    ),
+)
 
-    # Parse and yield entities
-    if opener and opener.result:
-        reader = csv.DictReader(opener.result, delimiter='\t')
-        for row in reader:
-            yield schema(row)
+resource = Resource(
+    config,
+    proteins=Dataset(
+        download=Download(
+            url=UNIPROT_DATA_URL,
+            filename='uniprot_proteins_9606_10090_10116.tsv.gz',
+            subfolder='uniprot',
+            large=True,
+            encoding='utf-8',
+            default_mode='r',
+            ext='gz',
+        ),
+        mapper=proteins_schema,
+        raw_parser=iter_tsv,
+    ),
+)
+
+proteins = resource.proteins

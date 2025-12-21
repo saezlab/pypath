@@ -44,9 +44,9 @@ from pypath.internals.cv_terms import (
 from pypath.internals import cv_terms
 from ...internals.tabular_builder import (
     AnnotationsBuilder,
-    Column,
     CV,
     EntityBuilder,
+    FieldConfig,
     IdentifiersBuilder,
 )
 
@@ -152,16 +152,17 @@ def omnipath_ontology() -> Generator[Entity]:
         Entity records with type CV_TERM
     """
     # Define the schema mapping
+    f = FieldConfig()
     schema = EntityBuilder(
         entity_type=EntityTypeCv.CV_TERM,
         identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('accession')),
-            CV(term=IdentifierNamespaceCv.NAME, value=Column('name')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
+            CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            CV(term=OntologyAnnotationCv.DEFINITION, value=Column('definition')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('is_a')),
+            CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a')),
         ),
     )
 

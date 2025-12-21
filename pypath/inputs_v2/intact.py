@@ -8,9 +8,8 @@ defined in pypath.internals.silver_schema.
 from __future__ import annotations
 
 from collections.abc import Generator
+import csv
 
-from pypath.share.downloads import download_and_open
-from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -18,238 +17,181 @@ from pypath.internals.cv_terms import (
     ParticipantMetadataCv,
     LicenseCV,
     UpdateCategoryCV,
-    ResourceAnnotationCv,
     ResourceCv,
 )
-from ..internals.tabular_builder import (
+from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     Column,
     CV,
     EntityBuilder,
+    FieldConfig,
     IdentifiersBuilder,
-    Map,
     Member,
     MembershipBuilder,
 )
-import csv
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
 
-def resource() -> Generator[Entity]:
-    """
-    Yield resource metadata as an Entity record.
+_IDENTIFIER_CV_MAPPING = {
+    'bind smid': IdentifierNamespaceCv.BIND,
+    'cas registry number': IdentifierNamespaceCv.CAS,
+    'chebi': IdentifierNamespaceCv.CHEBI,
+    'chembl': IdentifierNamespaceCv.CHEMBL,
+    'chembl compound': IdentifierNamespaceCv.CHEMBL_COMPOUND,
+    'ddbj/embl/genbank': IdentifierNamespaceCv.REFSEQ,
+    'dip': IdentifierNamespaceCv.DIP,
+    'ensembl': IdentifierNamespaceCv.ENSEMBL,
+    'ensemblgenomes': IdentifierNamespaceCv.ENSEMBL_GENOMES,
+    'entrezgene/locuslink': IdentifierNamespaceCv.ENTREZ,
+    'flybase': IdentifierNamespaceCv.FLYBASE,
+    'genbank identifier': IdentifierNamespaceCv.GENBANK_IDENTIFIER,
+    'genbank_nucl_gi': IdentifierNamespaceCv.GENBANK_NUCL_GI,
+    'genbank_protein_gi': IdentifierNamespaceCv.GENBANK_PROTEIN_GI,
+    'hgnc': IdentifierNamespaceCv.HGNC,
+    'imex': IdentifierNamespaceCv.IMEX,
+    'intact': IdentifierNamespaceCv.INTACT,
+    'ipi': IdentifierNamespaceCv.IPI,
+    'mint': IdentifierNamespaceCv.MINT,
+    'mirbase': IdentifierNamespaceCv.MIRBASE,
+    'pdbe': IdentifierNamespaceCv.PDB,
+    'psi-mi': IdentifierNamespaceCv.CV_TERM_ACCESSION,
+    'refseq': IdentifierNamespaceCv.REFSEQ,
+    'rfam': IdentifierNamespaceCv.RFAM,
+    'rnacentral': IdentifierNamespaceCv.RNACENTRAL,
+    'uniparc': IdentifierNamespaceCv.UNIPARC,
+    'uniprotkb': IdentifierNamespaceCv.UNIPROT,
+}
 
-    Yields:
-        Entity record with type CV_TERM containing IntAct metadata.
-    """
-    yield Entity(
-        type=EntityTypeCv.CV_TERM,
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.INTACT),
-            Identifier(type=IdentifierNamespaceCv.NAME, value='IntAct'),
-        ],
-        annotations=[
-            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
-            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
-            Annotation(term=IdentifierNamespaceCv.PUBMED, value='37953288'),
-            Annotation(term=ResourceAnnotationCv.URL, value='https://www.ebi.ac.uk/intact/'),
-            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
-                'IntAct provides a freely available, open source database system '
-                'and analysis tools for molecular interaction data. All interactions '
-                'are derived from literature curation or direct user submissions and '
-                'are freely available in PSI-MITAB format. The database includes '
-                'protein-protein, protein-small molecule and protein-nucleic acid '
-                'interactions with detailed experimental evidence.'
-            )),
-        ],
-    )
+f = FieldConfig(
+    extract={
+        'prefix_lower': [r'^([^:]+):', str.lower],
+        'value': r'^[^:]+:([^|"]+)',
+        'mi': r'(MI:\d+)',
+        'tax': r'taxid:([-\d]+)',
+        'pubmed': r'(?i)pubmed:(\d+)',
+        'intact': r'intact:([^|"]+)',
+    },
+    map={
+        'identifier_cv': _IDENTIFIER_CV_MAPPING,
+    },
+    delimiter='|',
+)
 
 
-def intact_interactions(organism: int = 9606) -> Generator[Entity, None, None]:
-    """
-    Download and parse IntAct interactions as Entity records.
-
-    Args:
-        organism: NCBI taxonomy ID (9606 for human)
-
-    Yields:
-        Entity records with type INTERACTION, containing interactor pairs
-    """
+def _intact_raw(opener, organism: int = 9606, **_kwargs: object):
     if organism != 9606:
-        raise ValueError(f'Currently only human (9606) is supported for IntAct')
-
-    # Download and open the file
-    url = 'https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/species/human.zip'
-    opener = download_and_open(
-        url=url,
-        filename='human.zip',
-        subfolder='intact',
-        large=True,
-        ext='zip',
-    )
-    # Mapping of identifier prefixes (from IntAct MITAB data) to CV terms
-    # All prefixes found in ID and Alt ID columns (from complete analysis of all 1.18M rows):
-    # bind smid, cas registry number, chebi, chembl, chembl compound, ddbj/embl/genbank,
-    # dip, ensembl, ensemblgenomes, entrezgene/locuslink, flybase, genbank identifier,
-    # genbank_nucl_gi, genbank_protein_gi, hgnc, imex, intact, ipi, mint, mirbase,
-    # pdbe, psi-mi, refseq, rfam, rnacentral, uniparc, uniprotkb
-    identifier_cv_mapping = {
-        'bind smid': IdentifierNamespaceCv.BIND,
-        'cas registry number': IdentifierNamespaceCv.CAS,
-        'chebi': IdentifierNamespaceCv.CHEBI,
-        'chembl': IdentifierNamespaceCv.CHEMBL,
-        'chembl compound': IdentifierNamespaceCv.CHEMBL_COMPOUND,
-        'ddbj/embl/genbank': IdentifierNamespaceCv.REFSEQ,  # GenBank/EMBL/DDBJ accessions
-        'dip': IdentifierNamespaceCv.DIP,
-        'ensembl': IdentifierNamespaceCv.ENSEMBL,
-        'ensemblgenomes': IdentifierNamespaceCv.ENSEMBL_GENOMES,
-        'entrezgene/locuslink': IdentifierNamespaceCv.ENTREZ,
-        'flybase': IdentifierNamespaceCv.FLYBASE,
-        'genbank identifier': IdentifierNamespaceCv.GENBANK_IDENTIFIER,
-        'genbank_nucl_gi': IdentifierNamespaceCv.GENBANK_NUCL_GI,
-        'genbank_protein_gi': IdentifierNamespaceCv.GENBANK_PROTEIN_GI,
-        'hgnc': IdentifierNamespaceCv.HGNC,
-        'imex': IdentifierNamespaceCv.IMEX,
-        'intact': IdentifierNamespaceCv.INTACT,
-        'ipi': IdentifierNamespaceCv.IPI,
-        'mint': IdentifierNamespaceCv.MINT,
-        'mirbase': IdentifierNamespaceCv.MIRBASE,
-        'pdbe': IdentifierNamespaceCv.PDB,  # PDBe is the European branch of PDB
-        'psi-mi': IdentifierNamespaceCv.CV_TERM_ACCESSION,  # CV term accessions (e.g., MINT-xxx)
-        'refseq': IdentifierNamespaceCv.REFSEQ,
-        'rfam': IdentifierNamespaceCv.RFAM,
-        'rnacentral': IdentifierNamespaceCv.RNACENTRAL,
-        'uniparc': IdentifierNamespaceCv.UNIPARC,
-        'uniprotkb': IdentifierNamespaceCv.UNIPROT,
-    }
-
-    prefix_regex = r'^([^:]+):'
-    value_regex = r'^[^:]+:([^|"]+)'
-    tax_regex = r'taxid:([-\d]+)'
-    pubmed_regex = r'(?i)pubmed:(\d+)'
-    mi_regex = r'(MI:\d+)'
-    intact_value_regex = r'intact:([^|"]+)'
-
-    def general_identifier_cv(column_name: str) -> CV:
-        column = Column(column_name, delimiter='|')
-        return CV(
-            term=Map(
-                col=column,
-                extract=[prefix_regex, str.lower],
-                map=identifier_cv_mapping,
-            ),
-            value=Map(col=column, extract=[value_regex]),
-        )
-
-    def mi_term_cv(column_name: str) -> CV:
-        column = Column(column_name, delimiter='|')
-        return CV(term=Map(col=column, extract=[mi_regex]))
-
-    def tax_cv(column_name: str) -> CV:
-        column = Column(column_name, delimiter='|')
-        return CV(
-            term=IdentifierNamespaceCv.NCBI_TAX_ID,
-            value=Map(col=column, extract=[tax_regex]),
-        )
-
-    def pubmed_annotation(column_name: str) -> CV:
-        column = Column(column_name, delimiter='|')
-        return CV(
-            term=IdentifierNamespaceCv.PUBMED,
-            value=Map(col=column, extract=[pubmed_regex]),
-        )
-
-    def simple_annotation(term_cv, column_name: str) -> CV:
-        return CV(term=term_cv, value=Column(column_name, delimiter='|'))
-
-    # Define the schema mapping
-    schema = EntityBuilder(
-        entity_type=EntityTypeCv.INTERACTION,
-        identifiers=IdentifiersBuilder(
-            CV(
-                term=IdentifierNamespaceCv.INTACT,
-                value=Map(
-                    col=Column('Interaction identifier(s)', delimiter='|'),
-                    extract=[intact_value_regex],
-                ),
-            ),
-        ),
-        annotations=AnnotationsBuilder(
-            # Source annotation
-            # Interaction metadata
-            mi_term_cv('Interaction type(s)'),
-            mi_term_cv('Interaction detection method(s)'),
-            mi_term_cv('Source database(s)'),
-            simple_annotation(InteractionMetadataCv.CONFIDENCE_VALUE, 'Confidence value(s)'),
-            simple_annotation(InteractionMetadataCv.EXPANSION_METHOD, 'Expansion method(s)'),
-
-            # Publication information
-            pubmed_annotation('Publication Identifier(s)'),
-            # Experimental details
-            tax_cv('Host organism(s)'),
-            simple_annotation(InteractionMetadataCv.INTERACTION_PARAMETER, 'Interaction parameter(s)'),
-            # Cross-references and annotations
-            simple_annotation(InteractionMetadataCv.INTERACTION_XREF, 'Interaction Xref(s)'),
-            simple_annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, 'Interaction annotation(s)'),
-            simple_annotation(InteractionMetadataCv.INTERACTION_CHECKSUM, 'Interaction Checksum(s)'),
-        ),
-        membership=MembershipBuilder(
-            # Interactor A
-            Member(
-                entity=EntityBuilder(
-                    entity_type=EntityTypeCv.PROTEIN,
-                    identifiers=IdentifiersBuilder(
-                        general_identifier_cv('#ID(s) interactor A'),
-                        general_identifier_cv('Alt. ID(s) interactor A'),
-                    ),
-                    annotations=AnnotationsBuilder(
-                        tax_cv('Taxid interactor A'),
-                        simple_annotation(ParticipantMetadataCv.ALIAS, 'Alias(es) interactor A'),
-                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_XREF, 'Xref(s) interactor A'),
-                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_ANNOTATION, 'Annotation(s) interactor A'),
-                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_CHECKSUM, 'Checksum(s) interactor A'),
-                    ),
-                ),
-                annotations=AnnotationsBuilder(
-                    mi_term_cv('Biological role(s) interactor A'),
-                    mi_term_cv('Experimental role(s) interactor A'),
-                    mi_term_cv('Type(s) interactor A'),
-                    simple_annotation(ParticipantMetadataCv.PARTICIPANT_FEATURE, 'Feature(s) interactor A'),
-                    simple_annotation(ParticipantMetadataCv.STOICHIOMETRY, 'Stoichiometry(s) interactor A'),
-                    mi_term_cv('Identification method participant A'),
-                ),
-            ),
-            # Interactor B
-            Member(
-                entity=EntityBuilder(
-                    entity_type=EntityTypeCv.PROTEIN,
-                    identifiers=IdentifiersBuilder(
-                        general_identifier_cv('ID(s) interactor B'),
-                        general_identifier_cv('Alt. ID(s) interactor B'),
-                    ),
-                    annotations=AnnotationsBuilder(
-                        tax_cv('Taxid interactor B'),
-                        simple_annotation(ParticipantMetadataCv.ALIAS, 'Alias(es) interactor B'),
-                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_XREF, 'Xref(s) interactor B'),
-                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_ANNOTATION, 'Annotation(s) interactor B'),
-                        simple_annotation(ParticipantMetadataCv.PARTICIPANT_CHECKSUM, 'Checksum(s) interactor B'),
-                    ),
-                ),
-                annotations=AnnotationsBuilder(
-                    mi_term_cv('Biological role(s) interactor B'),
-                    mi_term_cv('Experimental role(s) interactor B'),
-                    mi_term_cv('Type(s) interactor B'),
-                    simple_annotation(ParticipantMetadataCv.PARTICIPANT_FEATURE, 'Feature(s) interactor B'),
-                    simple_annotation(ParticipantMetadataCv.STOICHIOMETRY, 'Stoichiometry(s) interactor B'),
-                    mi_term_cv('Identification method participant B'),
-                ),
-            ),
-        ),
-    )
-
-    # Get the file from the zip (it's a dict with filename -> file handle)
+        raise ValueError('Currently only human (9606) is supported for IntAct')
+    if not opener or not opener.result:
+        return
     for file_handle in opener.result.values():
-        # Parse and yield entities
         reader = csv.DictReader(file_handle, delimiter='\t')
-        for row in reader:
-            yield schema(row)
-        break  # Only process the first file in the zip
+        yield from reader
+        break
+
+
+config = ResourceConfig(
+    id=ResourceCv.INTACT,
+    name='IntAct',
+    url='https://www.ebi.ac.uk/intact/',
+    license=LicenseCV.CC_BY_4_0,
+    update_category=UpdateCategoryCV.REGULAR,
+    pubmed='37953288',
+    description=(
+        'IntAct provides a freely available, open source database system '
+        'and analysis tools for molecular interaction data. All interactions '
+        'are derived from literature curation or direct user submissions and '
+        'are freely available in PSI-MITAB format. The database includes '
+        'protein-protein, protein-small molecule and protein-nucleic acid '
+        'interactions with detailed experimental evidence.'
+    ),
+)
+
+interactions_schema = EntityBuilder(
+    entity_type=EntityTypeCv.INTERACTION,
+    identifiers=IdentifiersBuilder(
+        CV(
+            term=IdentifierNamespaceCv.INTACT,
+            value=f('Interaction identifier(s)', extract='intact'),
+        ),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=f('Interaction type(s)', extract='mi')),
+        CV(term=f('Interaction detection method(s)', extract='mi')),
+        CV(term=f('Source database(s)', extract='mi')),
+        CV(term=InteractionMetadataCv.CONFIDENCE_VALUE, value=f('Confidence value(s)')),
+        CV(term=InteractionMetadataCv.EXPANSION_METHOD, value=f('Expansion method(s)')),
+        CV(term=IdentifierNamespaceCv.PUBMED, value=f('Publication Identifier(s)', extract='pubmed')),
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Host organism(s)', extract='tax')),
+        CV(term=InteractionMetadataCv.INTERACTION_PARAMETER, value=f('Interaction parameter(s)')),
+        CV(term=InteractionMetadataCv.INTERACTION_XREF, value=f('Interaction Xref(s)')),
+        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('Interaction annotation(s)')),
+        CV(term=InteractionMetadataCv.INTERACTION_CHECKSUM, value=f('Interaction Checksum(s)')),
+    ),
+    membership=MembershipBuilder(
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=IdentifiersBuilder(
+                    CV(term=f('#ID(s) interactor A', extract='prefix_lower', map='identifier_cv'), value=f('#ID(s) interactor A', extract='value')),
+                    CV(term=f('Alt. ID(s) interactor A', extract='prefix_lower', map='identifier_cv'), value=f('Alt. ID(s) interactor A', extract='value')),
+                ),
+                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor A', extract='tax')),
+                    CV(term=ParticipantMetadataCv.ALIAS, value=f('Alias(es) interactor A')),
+                    CV(term=ParticipantMetadataCv.PARTICIPANT_XREF, value=f('Xref(s) interactor A')),
+                    CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Annotation(s) interactor A')),
+                    CV(term=ParticipantMetadataCv.PARTICIPANT_CHECKSUM, value=f('Checksum(s) interactor A')),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=f('Biological role(s) interactor A', extract='mi')),
+                CV(term=f('Experimental role(s) interactor A', extract='mi')),
+                CV(term=f('Type(s) interactor A', extract='mi')),
+                CV(term=ParticipantMetadataCv.PARTICIPANT_FEATURE, value=f('Feature(s) interactor A')),
+                CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('Stoichiometry(s) interactor A')),
+                CV(term=f('Identification method participant A', extract='mi')),
+            ),
+        ),
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=IdentifiersBuilder(
+                    CV(term=f('ID(s) interactor B', extract='prefix_lower', map='identifier_cv'), value=f('ID(s) interactor B', extract='value')),
+                    CV(term=f('Alt. ID(s) interactor B', extract='prefix_lower', map='identifier_cv'), value=f('Alt. ID(s) interactor B', extract='value')),
+                ),
+                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor B', extract='tax')),
+                    CV(term=ParticipantMetadataCv.ALIAS, value=f('Alias(es) interactor B')),
+                    CV(term=ParticipantMetadataCv.PARTICIPANT_XREF, value=f('Xref(s) interactor B')),
+                    CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Annotation(s) interactor B')),
+                    CV(term=ParticipantMetadataCv.PARTICIPANT_CHECKSUM, value=f('Checksum(s) interactor B')),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=f('Biological role(s) interactor B', extract='mi')),
+                CV(term=f('Experimental role(s) interactor B', extract='mi')),
+                CV(term=f('Type(s) interactor B', extract='mi')),
+                CV(term=ParticipantMetadataCv.PARTICIPANT_FEATURE, value=f('Feature(s) interactor B')),
+                CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('Stoichiometry(s) interactor B')),
+                CV(term=f('Identification method participant B', extract='mi')),
+            ),
+        ),
+    ),
+)
+
+resource = Resource(
+    config,
+    interactions=Dataset(
+        download=Download(
+            url='https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/species/human.zip',
+            filename='human.zip',
+            subfolder='intact',
+            large=True,
+            ext='zip',
+        ),
+        mapper=interactions_schema,
+        raw_parser=_intact_raw,
+    ),
+)
+
+interactions = resource.interactions

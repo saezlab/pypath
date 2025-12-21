@@ -31,12 +31,12 @@ from pypath.internals.cv_terms import (
     MembershipRoleCv,
     MoleculeAnnotationsCv,
     ParticipantMetadataCv,
-    ResourceAnnotationCv,
     ResourceCv,
     UpdateCategoryCV,
 )
 
 from pypath.share.downloads import download_and_open, DATA_DIR
+from pypath.inputs_v2.base import Dataset, Resource, ResourceConfig
 
 
 # BioPAX namespace
@@ -76,27 +76,18 @@ ENTITY_REFERENCE_TYPES = {
 }
 
 
-def resource() -> Generator[Entity]:
-    """
-    Yield resource metadata as an Entity record.
-    """
-    yield Entity(
-        type=EntityTypeCv.CV_TERM,
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.REACTOME),
-            Identifier(type=IdentifierNamespaceCv.NAME, value='Reactome'),
-        ],
-        annotations=[
-            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
-            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
-            Annotation(term=IdentifierNamespaceCv.PUBMED, value='34788843'),
-            Annotation(term=ResourceAnnotationCv.URL, value='https://reactome.org/'),
-            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
-                'Reactome is a free, open-source, curated and peer-reviewed '
-                'pathway database.'
-            )),
-        ],
-    )
+config = ResourceConfig(
+    id=ResourceCv.REACTOME,
+    name='Reactome',
+    url='https://reactome.org/',
+    license=LicenseCV.CC_BY_4_0,
+    update_category=UpdateCategoryCV.REGULAR,
+    pubmed='34788843',
+    description=(
+        'Reactome is a free, open-source, curated and peer-reviewed '
+        'pathway database.'
+    ),
+)
 
 
 # --------------------------------------------------------------------------- #
@@ -1077,292 +1068,283 @@ def _build_member_entities(participants: list[dict]) -> list[Entity]:
     return entities
 
 
-def reactome_reactions(
+
+def _reactome_raw(
+    opener,
+    data_type: str,
     species: str = 'Homo_sapiens',
     max_records: int | None = None,
     force_refresh: bool = False,
-) -> Generator[Entity, None, None]:
-    """
-    Download and parse Reactome reaction data as Entity records.
-    """
-    from pypath.internals.silver_schema import Membership
-
+    **_kwargs: object,
+):
     if not _ensure_all_caches_populated(species, force_refresh):
         return
-
-    cached_data = _DATA_CACHE['reactions']
-
+    cached_data = _DATA_CACHE[data_type]
     for i, record in enumerate(cached_data):
         if max_records is not None and i >= max_records:
             break
-        
-        identifiers = []
-        if record.get('display_name'):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=record['display_name']))
-        if record.get('synonyms'):
-            for syn in record['synonyms'].split(';'):
+        yield record
+
+
+def _map_reaction_record(record: dict) -> Entity:
+    from pypath.internals.silver_schema import Membership
+
+    identifiers = []
+    if record.get('display_name'):
+        identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=record['display_name']))
+    if record.get('synonyms'):
+        for syn in record['synonyms'].split(';'):
+            if syn:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=syn))
+    if record.get('reactome_stable_id'):
+        for rid in record['reactome_stable_id'].split(';'):
+            if rid:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
+    if record.get('reactome_id'):
+        for rid in record['reactome_id'].split(';'):
+            if rid:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_ID, value=rid))
+
+    annotations = []
+    if record.get('pubmed'):
+        for pmid in record['pubmed'].split(';'):
+            if pmid:
+                annotations.append(Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid))
+    if record.get('ec_number'):
+        annotations.append(Annotation(term=MoleculeAnnotationsCv.EC_NUMBER, value=record['ec_number']))
+    if record.get('direction'):
+        annotations.append(Annotation(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=record['direction']))
+
+    membership = []
+    all_participants = record.get('reactants', []) + record.get('products', []) + record.get('templates', [])
+
+    for entity, member_annotations in _build_member_entities(all_participants):
+        membership.append(Membership(
+            member=entity,
+            is_parent=False,
+            annotations=member_annotations,
+        ))
+
+    type_mapping = {v.value: v for v in EntityTypeCv}
+    entity_type = type_mapping.get(record.get('entity_type', ''), EntityTypeCv.REACTION)
+
+    return Entity(
+        type=entity_type,
+        identifiers=identifiers if identifiers else None,
+        annotations=annotations if annotations else None,
+        membership=membership if membership else None,
+    )
+
+
+def _map_pathway_record(record: dict) -> Entity:
+    from pypath.internals.silver_schema import Membership
+
+    identifiers = []
+    if record.get('display_name'):
+        identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=record['display_name']))
+    if record.get('synonyms'):
+        for syn in record['synonyms'].split(';'):
+            if syn:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=syn))
+    if record.get('reactome_stable_id'):
+        for rid in record['reactome_stable_id'].split(';'):
+            if rid:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
+    if record.get('reactome_id'):
+        for rid in record['reactome_id'].split(';'):
+            if rid:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_ID, value=rid))
+    if record.get('go'):
+        for goid in record['go'].split(';'):
+            if goid:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=goid))
+
+    annotations = []
+    if record.get('pubmed'):
+        for pmid in record['pubmed'].split(';'):
+            if pmid:
+                annotations.append(Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid))
+    if record.get('ncbi_tax_id'):
+        annotations.append(Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=record['ncbi_tax_id']))
+    if record.get('description'):
+        annotations.append(Annotation(term=MoleculeAnnotationsCv.DESCRIPTION, value=record['description']))
+
+    membership = []
+    for comp in record.get('components', []):
+        type_str = comp.get('type', '')
+        if 'Pathway' in type_str:
+            comp_type = EntityTypeCv.PATHWAY
+        elif 'BiochemicalReaction' in type_str:
+            comp_type = EntityTypeCv.REACTION
+        elif 'Catalysis' in type_str:
+            comp_type = EntityTypeCv.CATALYSIS
+        elif 'Control' in type_str:
+            comp_type = EntityTypeCv.CONTROL
+        else:
+            comp_type = EntityTypeCv.INTERACTION
+
+        comp_identifiers = []
+        if comp.get('display_name'):
+            comp_identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=comp['display_name']))
+        if comp.get('reactome_stable_id'):
+            for rid in comp['reactome_stable_id'].split(';'):
+                if rid:
+                    comp_identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
+
+        comp_annotations = [Annotation(term=BiologicalRoleCv.PATHWAY_COMPONENT)]
+        if comp.get('step_order') is not None:
+            comp_annotations.append(Annotation(term=ParticipantMetadataCv.STEP_ORDER, value=str(comp['step_order'])))
+
+        membership.append(Membership(
+            member=Entity(type=comp_type, identifiers=comp_identifiers if comp_identifiers else None),
+            is_parent=False,
+            annotations=comp_annotations,
+        ))
+
+    return Entity(
+        type=EntityTypeCv.PATHWAY,
+        identifiers=identifiers if identifiers else None,
+        annotations=annotations if annotations else None,
+        membership=membership if membership else None,
+    )
+
+
+def _map_control_record(record: dict) -> Entity:
+    from pypath.internals.silver_schema import Membership
+
+    identifiers = []
+    if record.get('display_name'):
+        identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=record['display_name']))
+    elif record.get('controller', {}).get('display_name'):
+        identifiers.append(Identifier(
+            type=IdentifierNamespaceCv.NAME,
+            value=f"{record['control_class']} by {record['controller']['display_name']}",
+        ))
+
+    if record.get('reactome_stable_id'):
+        for rid in record['reactome_stable_id'].split(';'):
+            if rid:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
+    if record.get('reactome_id'):
+        for rid in record['reactome_id'].split(';'):
+            if rid:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_ID, value=rid))
+    if record.get('go'):
+        for goid in record['go'].split(';'):
+            if goid:
+                identifiers.append(Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=goid))
+
+    annotations = []
+    if record.get('control_type'):
+        annotations.append(Annotation(term=InteractionMetadataCv.CONTROL_TYPE, value=record['control_type']))
+
+    membership = []
+
+    controller = record.get('controller', {})
+    if controller:
+        controller_identifiers = []
+        controller_annotations = [Annotation(term=BiologicalRoleCv.CONTROLLER)]
+
+        if controller.get('display_name'):
+            controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=controller['display_name']))
+
+        if controller.get('synonyms'):
+            for syn in controller['synonyms'].split(';'):
                 if syn:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=syn))
-        if record.get('reactome_stable_id'):
-            for rid in record['reactome_stable_id'].split(';'):
+                    controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=syn))
+
+        if controller.get('reactome_stable_id'):
+            for rid in controller['reactome_stable_id'].split(';'):
                 if rid:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
-        if record.get('reactome_id'):
-            for rid in record['reactome_id'].split(';'):
-                if rid:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_ID, value=rid))
+                    controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
 
-        annotations = []
-        if record.get('pubmed'):
-            for pmid in record['pubmed'].split(';'):
-                if pmid:
-                    annotations.append(Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid))
-        if record.get('ec_number'):
-            annotations.append(Annotation(term=MoleculeAnnotationsCv.EC_NUMBER, value=record['ec_number']))
-        if record.get('direction'):
-            annotations.append(Annotation(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=record['direction']))
+        if controller.get('uniprot'):
+            for uid in controller['uniprot'].split(';'):
+                if uid:
+                    controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.UNIPROT, value=uid))
 
-        membership = []
-        all_participants = record.get('reactants', []) + record.get('products', []) + record.get('templates', [])
+        if controller.get('pubchem_compound'):
+            for pcid in controller['pubchem_compound'].split(';'):
+                if pcid:
+                    controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=pcid))
 
-        for entity, member_annotations in _build_member_entities(all_participants):
-            membership.append(Membership(
-                member=entity,
-                is_parent=False,
-                annotations=member_annotations,
-            ))
+        if controller.get('kegg'):
+            for kid in controller['kegg'].split(';'):
+                if kid:
+                    controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.KEGG_COMPOUND, value=kid))
+
+        if controller.get('go'):
+            for goid in controller['go'].split(';'):
+                if goid:
+                    controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=goid))
+
+        if controller.get('ncbi_tax_id'):
+            controller_annotations.append(Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=controller['ncbi_tax_id']))
 
         type_mapping = {v.value: v for v in EntityTypeCv}
-        entity_type = type_mapping.get(record.get('entity_type', ''), EntityTypeCv.REACTION)
+        controller_type = type_mapping.get(controller.get('entity_type', ''), EntityTypeCv.PHYSICAL_ENTITY)
 
-        yield Entity(
-            type=entity_type,
-            identifiers=identifiers if identifiers else None,
-            annotations=annotations if annotations else None,
-            membership=membership if membership else None,
-        )
-
-
-def reactome_pathways(
-    species: str = 'Homo_sapiens',
-    max_records: int | None = None,
-    force_refresh: bool = False,
-) -> Generator[Entity, None, None]:
-    """
-    Download and parse Reactome pathway data as Entity records.
-    """
-    from pypath.internals.silver_schema import Membership
-
-    if not _ensure_all_caches_populated(species, force_refresh):
-        return
-
-    cached_data = _DATA_CACHE['pathways']
-
-    for i, record in enumerate(cached_data):
-        if max_records is not None and i >= max_records:
-            break
-        
-        identifiers = []
-        if record.get('display_name'):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=record['display_name']))
-        if record.get('synonyms'):
-            for syn in record['synonyms'].split(';'):
-                if syn:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=syn))
-        if record.get('reactome_stable_id'):
-            for rid in record['reactome_stable_id'].split(';'):
-                if rid:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
-        if record.get('reactome_id'):
-            for rid in record['reactome_id'].split(';'):
-                if rid:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_ID, value=rid))
-        if record.get('go'):
-            for goid in record['go'].split(';'):
-                if goid:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=goid))
-
-        annotations = []
-        if record.get('pubmed'):
-            for pmid in record['pubmed'].split(';'):
-                if pmid:
-                    annotations.append(Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid))
-        if record.get('ncbi_tax_id'):
-            annotations.append(Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=record['ncbi_tax_id']))
-        if record.get('description'):
-            annotations.append(Annotation(term=MoleculeAnnotationsCv.DESCRIPTION, value=record['description']))
-
-        membership = []
-        for comp in record.get('components', []):
-            type_str = comp.get('type', '')
-            if 'Pathway' in type_str:
-                comp_type = EntityTypeCv.PATHWAY
-            elif 'BiochemicalReaction' in type_str:
-                comp_type = EntityTypeCv.REACTION
-            elif 'Catalysis' in type_str:
-                comp_type = EntityTypeCv.CATALYSIS
-            elif 'Control' in type_str:
-                comp_type = EntityTypeCv.CONTROL
-            else:
-                comp_type = EntityTypeCv.INTERACTION
-
-            comp_identifiers = []
-            if comp.get('display_name'):
-                comp_identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=comp['display_name']))
-            if comp.get('reactome_stable_id'):
-                for rid in comp['reactome_stable_id'].split(';'):
-                    if rid:
-                        comp_identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
-
-            comp_annotations = [Annotation(term=BiologicalRoleCv.PATHWAY_COMPONENT)]
-            if comp.get('step_order') is not None:
-                comp_annotations.append(Annotation(term=ParticipantMetadataCv.STEP_ORDER, value=str(comp['step_order'])))
-
+        if controller_identifiers:
             membership.append(Membership(
-                member=Entity(type=comp_type, identifiers=comp_identifiers if comp_identifiers else None),
+                member=Entity(type=controller_type, identifiers=controller_identifiers, annotations=controller_annotations if controller_annotations else None),
                 is_parent=False,
-                annotations=comp_annotations,
+                annotations=[Annotation(term=BiologicalRoleCv.CONTROLLER)],
             ))
 
-        yield Entity(
-            type=EntityTypeCv.PATHWAY,
-            identifiers=identifiers if identifiers else None,
-            annotations=annotations if annotations else None,
-            membership=membership if membership else None,
-        )
+    controlled = record.get('controlled', {})
+    if controlled:
+        controlled_identifiers = []
+        if controlled.get('display_name'):
+            controlled_identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=controlled['display_name']))
+        if controlled.get('reactome_stable_id'):
+            for rid in controlled['reactome_stable_id'].split(';'):
+                if rid:
+                    controlled_identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
 
+        controlled_type_str = controlled.get('type', '')
+        if 'BiochemicalReaction' in controlled_type_str:
+            controlled_type = EntityTypeCv.REACTION
+        elif 'Pathway' in controlled_type_str:
+            controlled_type = EntityTypeCv.PATHWAY
+        else:
+            controlled_type = EntityTypeCv.INTERACTION
 
-def reactome_controls(
-    species: str = 'Homo_sapiens',
-    max_records: int | None = None,
-    force_refresh: bool = False,
-) -> Generator[Entity, None, None]:
-    """
-    Download and parse Reactome control/catalysis data as Entity records.
-    """
-    from pypath.internals.silver_schema import Membership
-
-    if not _ensure_all_caches_populated(species, force_refresh):
-        return
-
-    cached_data = _DATA_CACHE['controls']
-
-    for i, record in enumerate(cached_data):
-        if max_records is not None and i >= max_records:
-            break
-        
-        identifiers = []
-        if record.get('display_name'):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=record['display_name']))
-        elif record.get('controller', {}).get('display_name'):
-            identifiers.append(Identifier(
-                type=IdentifierNamespaceCv.NAME,
-                value=f"{record['control_class']} by {record['controller']['display_name']}",
+        if controlled_identifiers:
+            membership.append(Membership(
+                member=Entity(type=controlled_type, identifiers=controlled_identifiers),
+                is_parent=False,
+                annotations=[Annotation(term=BiologicalRoleCv.CONTROLLED)],
             ))
 
-        if record.get('reactome_stable_id'):
-            for rid in record['reactome_stable_id'].split(';'):
-                if rid:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
-        if record.get('reactome_id'):
-            for rid in record['reactome_id'].split(';'):
-                if rid:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_ID, value=rid))
-        if record.get('go'):
-            for goid in record['go'].split(';'):
-                if goid:
-                    identifiers.append(Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=goid))
+    entity_type = EntityTypeCv.INTERACTION
 
-        annotations = []
-        if record.get('control_type'):
-            annotations.append(Annotation(term=InteractionMetadataCv.CONTROL_TYPE, value=record['control_type']))
+    return Entity(
+        type=entity_type,
+        identifiers=identifiers if identifiers else None,
+        annotations=annotations if annotations else None,
+        membership=membership if membership else None,
+    )
 
-        membership = []
 
-        controller = record.get('controller', {})
-        if controller:
-            controller_identifiers = []
-            controller_annotations = [Annotation(term=BiologicalRoleCv.CONTROLLER)]
+resource = Resource(
+    config,
+    reactions=Dataset(
+        download=None,
+        mapper=_map_reaction_record,
+        raw_parser=lambda opener, **kwargs: _reactome_raw(opener, data_type='reactions', **kwargs),
+    ),
+    pathways=Dataset(
+        download=None,
+        mapper=_map_pathway_record,
+        raw_parser=lambda opener, **kwargs: _reactome_raw(opener, data_type='pathways', **kwargs),
+    ),
+    controls=Dataset(
+        download=None,
+        mapper=_map_control_record,
+        raw_parser=lambda opener, **kwargs: _reactome_raw(opener, data_type='controls', **kwargs),
+    ),
+)
 
-            if controller.get('display_name'):
-                controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=controller['display_name']))
-
-            if controller.get('synonyms'):
-                for syn in controller['synonyms'].split(';'):
-                    if syn:
-                        controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=syn))
-
-            if controller.get('reactome_stable_id'):
-                for rid in controller['reactome_stable_id'].split(';'):
-                    if rid:
-                        controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
-
-            if controller.get('uniprot'):
-                for uid in controller['uniprot'].split(';'):
-                    if uid:
-                        controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.UNIPROT, value=uid))
-
-            if controller.get('pubchem_compound'):
-                for pcid in controller['pubchem_compound'].split(';'):
-                    if pcid:
-                        controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=pcid))
-
-            if controller.get('kegg'):
-                for kid in controller['kegg'].split(';'):
-                    if kid:
-                        controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.KEGG_COMPOUND, value=kid))
-
-            if controller.get('go'):
-                for goid in controller['go'].split(';'):
-                    if goid:
-                        controller_identifiers.append(Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=goid))
-
-            if controller.get('ncbi_tax_id'):
-                controller_annotations.append(Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=controller['ncbi_tax_id']))
-
-            type_mapping = {v.value: v for v in EntityTypeCv}
-            controller_type = type_mapping.get(controller.get('entity_type', ''), EntityTypeCv.PHYSICAL_ENTITY)
-
-            if controller_identifiers:
-                membership.append(Membership(
-                    member=Entity(type=controller_type, identifiers=controller_identifiers, annotations=controller_annotations if controller_annotations else None),
-                    is_parent=False,
-                    annotations=[Annotation(term=BiologicalRoleCv.CONTROLLER)],
-                ))
-
-        controlled = record.get('controlled', {})
-        if controlled:
-            controlled_identifiers = []
-            if controlled.get('display_name'):
-                controlled_identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=controlled['display_name']))
-            if controlled.get('reactome_stable_id'):
-                for rid in controlled['reactome_stable_id'].split(';'):
-                    if rid:
-                        controlled_identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=rid))
-
-            controlled_type_str = controlled.get('type', '')
-            if 'BiochemicalReaction' in controlled_type_str:
-                controlled_type = EntityTypeCv.REACTION
-            elif 'Pathway' in controlled_type_str:
-                controlled_type = EntityTypeCv.PATHWAY
-            else:
-                controlled_type = EntityTypeCv.INTERACTION
-
-            if controlled_identifiers:
-                membership.append(Membership(
-                    member=Entity(type=controlled_type, identifiers=controlled_identifiers),
-                    is_parent=False,
-                    annotations=[Annotation(term=BiologicalRoleCv.CONTROLLED)],
-                ))
-
-        type_mapping = {v.value: v for v in EntityTypeCv}
-        # Change: Model controls/catalysis as generic INTERACTIONS
-        # The specific type (Catalysis, Control) is already captured in annotations or control_type
-        entity_type = EntityTypeCv.INTERACTION
-
-        yield Entity(
-            type=entity_type,
-            identifiers=identifiers if identifiers else None,
-            annotations=annotations if annotations else None,
-            membership=membership if membership else None,
-        )
+reactions = resource.reactions
+pathways = resource.pathways
+controls = resource.controls
