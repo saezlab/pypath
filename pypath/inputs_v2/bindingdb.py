@@ -7,9 +7,6 @@ the schema defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
-from collections.abc import Generator
-import csv
-
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -30,8 +27,7 @@ from pypath.internals.tabular_builder import (
     MembershipBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-
-
+from pypath.inputs_v2.parsers.bindingdb import _raw
 
 
 def _bindingdb_url(dataset: str = 'All', **_kwargs: object) -> str:
@@ -40,33 +36,6 @@ def _bindingdb_url(dataset: str = 'All', **_kwargs: object) -> str:
 
 def _bindingdb_filename(dataset: str = 'All', **_kwargs: object) -> str:
     return f'{dataset}_table.zip'
-
-
-def _bindingdb_raw(opener, max_lines: int | None = None, **_kwargs: object):
-    if not opener or not opener.result:
-        return
-    for file_handle in opener.result.values():
-        header_line = file_handle.readline().strip()
-        header = header_line.split('\t')
-
-        columns_to_keep = min(49, len(header))
-        filtered_header = header[:columns_to_keep]
-
-        def filtered_rows():
-            for line in file_handle:
-                columns = line.strip().split('\t')
-                yield '\t'.join(columns[:columns_to_keep])
-
-        reader = csv.DictReader(filtered_rows(), fieldnames=filtered_header, delimiter='\t')
-
-        if max_lines:
-            for i, row in enumerate(reader):
-                if i >= max_lines:
-                    break
-                yield row
-        else:
-            yield from reader
-        break
 
 
 config = ResourceConfig(
@@ -178,7 +147,7 @@ resource = Resource(
             ext='zip',
         ),
         mapper=interactions_schema,
-        raw_parser=_bindingdb_raw,
+        raw_parser=_raw,
     ),
 )
 

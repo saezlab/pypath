@@ -8,8 +8,6 @@ pypath.internals.silver_schema.
 
 from __future__ import annotations
 
-from collections.abc import Generator
-
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -25,49 +23,8 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.formats.sdf import SdfReader
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-
-
-def _parse_lipids_sdf(opener, **_kwargs: object) -> Generator[dict[str, str], None, None]:
-    if not opener or not opener.result:
-        return
-
-    for file_handle in opener.result.values():
-        sdf_reader = SdfReader(
-            file_handle,
-            names={
-                'HMDB_ID': 'HMDB_ID',
-                'PUBCHEM_CID': 'PUBCHEM_CID',
-                'SWISSLIPIDS_ID': 'SWISSLIPIDS_ID',
-                'LM_ID': 'LM_ID',
-                'ABBREVIATION': 'ABBREVIATION',
-                'CHEBI_ID': 'CHEBI_ID',
-                'SYNONYMS': 'SYNONYMS',
-                'INCHI': 'INCHI',
-                'INCHI_KEY': 'INCHI_KEY',
-                'COMMON_NAME': 'COMMON_NAME',
-                'SYSTEMATIC_NAME': 'SYSTEMATIC_NAME',
-                'SMILES': 'SMILES',
-                'FORMULA': 'FORMULA',
-            },
-            fields={
-                'EXACT_MASS',
-                'CATEGORY',
-                'MAIN_CLASS',
-                'SUB_CLASS',
-                'NAME',
-            },
-        )
-
-        for record in sdf_reader:
-            flat_record = {}
-            if 'name' in record:
-                flat_record.update(record['name'])
-            if 'annot' in record:
-                flat_record.update(record['annot'])
-            yield flat_record
-        break
+from pypath.inputs_v2.parsers.lipidmaps import _raw
 
 
 config = ResourceConfig(
@@ -138,7 +95,7 @@ resource = Resource(
             default_mode='rb',
         ),
         mapper=lipids_schema,
-        raw_parser=_parse_lipids_sdf,
+        raw_parser=_raw,
     ),
 )
 
