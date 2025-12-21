@@ -42,9 +42,9 @@ from pypath.internals.cv_terms import (
 )
 from ...internals.tabular_builder import (
     AnnotationsBuilder,
-    Column,
     CV,
     EntityBuilder,
+    FieldConfig,
     IdentifiersBuilder,
 )
 from .shared import process_obo_term
@@ -96,22 +96,23 @@ def psi_mi_ontology() -> Generator[Entity]:
     obo = Obo(PSI_MI_URL, name='PsiMi')
 
     # Define the schema mapping
+    f = FieldConfig()
     schema = EntityBuilder(
         entity_type=EntityTypeCv.CV_TERM,
         identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('accession')),
-            CV(term=IdentifierNamespaceCv.NAME, value=Column('name')),
-            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('synonyms', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('alt_ids', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
+            CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('alt_ids', delimiter=';')),
 
         ),
         annotations=AnnotationsBuilder(
             # Source annotation
-            CV(term=OntologyAnnotationCv.DEFINITION, value=Column('definition')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('is_a', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=Column('xrefs', delimiter=';')),
-            CV(term=OntologyAnnotationCv.COMMENT, value=Column('comment')),
-            CV(term=OntologyAnnotationCv.IS_OBSOLETE, value=Column('is_obsolete')),
+            CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('xrefs', delimiter=';')),
+            CV(term=OntologyAnnotationCv.COMMENT, value=f('comment')),
+            CV(term=OntologyAnnotationCv.IS_OBSOLETE, value=f('is_obsolete')),
         ),
     )
 

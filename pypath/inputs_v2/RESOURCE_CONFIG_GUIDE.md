@@ -32,9 +32,8 @@ from ..internals.tabular_builder import (
     EntityBuilder,
     IdentifiersBuilder,
     AnnotationsBuilder,
-    Column,
+    FieldConfig,
     CV,
-    Map,
     Member,
     MembershipBuilder,
 )
@@ -79,10 +78,15 @@ def resource_data() -> Generator[Entity]:
         subfolder='resource_name',
     )
 
+    f = FieldConfig()
     schema = EntityBuilder(
         entity_type=EntityTypeCv.PROTEIN,
-        identifiers=IdentifiersBuilder(...),
-        annotations=AnnotationsBuilder(...),
+        identifiers=IdentifiersBuilder(
+            CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry')),
+        ),
+        annotations=AnnotationsBuilder(
+            CV(term=AnnotationTypeCv.LENGTH, value=f('Length')),
+        ),
     )
 
     if opener and opener.result:
@@ -92,36 +96,34 @@ def resource_data() -> Generator[Entity]:
 ```
 ⸻
 
-Core Components: Column, Map, and CV
+Core Components: FieldConfig and CV
 
-The configuration DSL has three main building blocks:
+The configuration DSL has two main building blocks:
 
-1. **Column**: Pure data extraction from a field
-   - Extracts values by column name (str), index (int), or callable
-   - Optionally splits multi-value fields with `delimiter`
-   - Does NOT include CV term or transformation logic
-
-```python
-Column('Field')                    # Extract single value
-Column('Field', delimiter=';')     # Split multi-value field
-Column(0)                          # Extract by index
-```
-
-2. **Map**: Value transformation and extraction
-   - Applies regex patterns or callable functions to transform values
-   - Maps extracted values to CV terms using dictionaries
-   - Chains multiple extraction steps
+1. **FieldConfig**: Reusable column factory
+   - Centralizes extraction rules, mappings, and default delimiters
+   - Produces `Column` instances via the shorthand `f(...)`
+   - Keeps transformation logic close to schemas without repeating patterns
 
 ```python
-Map(
-    col=Column('Field'),
-    extract=[r'^([^(]+)', str.strip],  # Apply regex, then strip
-    map={'value': 'mapped_value'},      # Optional mapping dict
-    default='fallback',                 # Optional default value
+f = FieldConfig(
+    extract={
+        'prefix_lower': [r'^([^:]+):', str.lower],
+        'value': r'^[^:]+:([^|"]+)',
+    },
+    map={
+        'identifier_cv': identifier_cv_mapping,
+    },
+    delimiter='|',
 )
+
+f('Field')                          # Extract single value
+f('Field', delimiter=';')           # Split multi-value field
+f('ID Column', extract='value')     # Apply named extract steps
+f('ID Column', extract='prefix_lower', map='identifier_cv')  # Convert to CV terms
 ```
 
-3. **CV**: Semantic specification
+2. **CV**: Semantic specification
    - Links a CV term (what it means) to a value source (where it comes from)
    - Separates term, value, and optional unit
    - Used by both IdentifiersBuilder and AnnotationsBuilder
@@ -129,13 +131,13 @@ Map(
 ```python
 CV(
     term=IdentifierNamespaceCv.UNIPROT,  # What type of identifier
-    value=Column('ID'),                  # Where to get the value
+    value=f('ID'),                       # Where to get the value
 )
 
 CV(
     term=AnnotationTypeCv.MOLECULAR_WEIGHT,
-    value=Column('MW'),
-    unit=Column('MW_Unit'),              # Optional unit specification
+    value=f('MW'),
+    unit=f('MW_Unit'),                   # Optional unit specification
 )
 ```
 
@@ -146,35 +148,36 @@ Identifiers
 Define primary names, synonyms, and cross-references using CV objects:
 
 ```python
+f = FieldConfig(
+    extract={
+        'name': [r'^([^(]+)', str.strip],
+        'synonym': r'\(([^)]+)\)',
+    },
+)
+
 identifiers = IdentifiersBuilder(
     # Simple identifier
-    CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('Entry')),
+    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry')),
 
     # Simple name
-    CV(term=IdentifierNamespaceCv.NAME, value=Column('Name')),
+    CV(term=IdentifierNamespaceCv.NAME, value=f('Name')),
 
     # Multi-value synonyms
     CV(
         term=IdentifierNamespaceCv.SYNONYM,
-        value=Column('Synonyms', delimiter=';')
+        value=f('Synonyms', delimiter=';')
     ),
 
     # Extract name before parentheses
     CV(
         term=IdentifierNamespaceCv.NAME,
-        value=Map(
-            col=Column('Full Name'),
-            extract=[r'^([^(]+)', str.strip]
-        )
+        value=f('Full Name', extract='name')
     ),
 
     # Extract parenthesized synonyms
     CV(
         term=IdentifierNamespaceCv.SYNONYM,
-        value=Map(
-            col=Column('Full Name'),
-            extract=[r'\(([^)]+)\)']
-        )
+        value=f('Full Name', extract='synonym')
     ),
 )
 ```
@@ -190,30 +193,30 @@ Annotations capture extra metadata, including references:
 ```python
 annotations = AnnotationsBuilder(
     # Simple value annotation
-    CV(term=AnnotationTypeCv.LENGTH, value=Column('Length')),
+    CV(term=AnnotationTypeCv.LENGTH, value=f('Length')),
 
     # Text annotation
-    CV(term=AnnotationTypeCv.FUNCTION, value=Column('Function')),
+    CV(term=AnnotationTypeCv.FUNCTION, value=f('Function')),
 
     # Multi-value annotations
     CV(
         term=AnnotationTypeCv.CV_TERM_ACCESSION,
-        value=Column('GO IDs', delimiter=';')
+        value=f('GO IDs', delimiter=';')
     ),
     CV(
         term=AnnotationTypeCv.PUBMED,
-        value=Column('PubMed IDs', delimiter=';')
+        value=f('PubMed IDs', delimiter=';')
     ),
 
     # With unit specification
     CV(
         term=AnnotationTypeCv.MOLECULAR_WEIGHT,
-        value=Column('MW'),
-        unit=Column('MW_Unit'),  # e.g., "kDa"
+        value=f('MW'),
+        unit=f('MW_Unit'),  # e.g., "kDa"
     ),
 
     # Organism taxonomy ID
-    CV(term=AnnotationTypeCv.ORGANISM, value=Column('Organism ID')),
+    CV(term=AnnotationTypeCv.ORGANISM, value=f('Organism ID')),
 )
 ```
 
@@ -231,10 +234,10 @@ membership = MembershipBuilder(
         entity=EntityBuilder(
             entity_type=EntityTypeCv.PROTEIN,
             identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('Interactor_A')),
+                CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Interactor_A')),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=AnnotationTypeCv.ORGANISM, value=Column('TaxID_A')),
+                CV(term=AnnotationTypeCv.ORGANISM, value=f('TaxID_A')),
             ),
         )
     ),
@@ -242,7 +245,7 @@ membership = MembershipBuilder(
         entity=EntityBuilder(
             entity_type=EntityTypeCv.PROTEIN,
             identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.UNIPROT, value=Column('Interactor_B')),
+                CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Interactor_B')),
             ),
         )
     ),
@@ -257,12 +260,12 @@ membership = MembershipBuilder(
         identifiers=IdentifiersBuilder(
             CV(
                 term=IdentifierNamespaceCv.UNIPROT,
-                value=Column('Member IDs', delimiter=',')
+                value=f('Member IDs', delimiter=',')
             ),
         ),
         annotations=AnnotationsBuilder(
             # Annotations applied to each member
-            CV(term=AnnotationTypeCv.ORGANISM, value=Column('Organism')),
+            CV(term=AnnotationTypeCv.ORGANISM, value=f('Organism')),
         ),
     )
 )
@@ -277,9 +280,9 @@ For boolean fields (e.g., "yes"/"no" or "true"/"false"), use a mapping where the
 
 ```python
 annotations = AnnotationsBuilder(
-    CV(term={'yes': MoleculeAnnotationsCv.APPROVED}, value=Column('Approved')),
-    CV(term={'yes': MoleculeAnnotationsCv.WITHDRAWN}, value=Column('Withdrawn')),
-    CV(term={'yes': MoleculeAnnotationsCv.LABELLED}, value=Column('Labelled')),
+    CV(term={'yes': MoleculeAnnotationsCv.APPROVED}, value=f('Approved')),
+    CV(term={'yes': MoleculeAnnotationsCv.WITHDRAWN}, value=f('Withdrawn')),
+    CV(term={'yes': MoleculeAnnotationsCv.LABELLED}, value=f('Labelled')),
 )
 ```
 
@@ -298,13 +301,13 @@ Multi-value and Prefix-Based Fields
 ```python
 CV(
     term=IdentifierNamespaceCv.GENESYMBOL,
-    value=Column('Gene Synonyms', delimiter=' ')
+    value=f('Gene Synonyms', delimiter=' ')
 )
 ```
 
 **Prefix-based ID mapping**:
 
-Use Map with dynamic CV term extraction for heterogeneous identifier fields like `uniprotkb:P12345|chebi:15377`:
+Use FieldConfig with dynamic CV term extraction for heterogeneous identifier fields like `uniprotkb:P12345|chebi:15377`:
 
 ```python
 # Define mapping from prefix to CV term
@@ -315,17 +318,22 @@ identifier_cv_mapping = {
     'refseq': IdentifierNamespaceCv.REFSEQ,
 }
 
-# Use Map for both term and value extraction
+# Configure a reusable FieldConfig helper
+f = FieldConfig(
+    extract={
+        'prefix_lower': [r'^([^:]+):', str.lower],
+        'value': r'^[^:]+:([^|"]+)',
+    },
+    map={
+        'identifier_cv': identifier_cv_mapping,
+    },
+    delimiter='|',
+)
+
+# Use f for both term and value extraction
 CV(
-    term=Map(
-        col=Column('ID Column', delimiter='|'),
-        extract=[r'^([^:]+):', str.lower],  # Extract prefix, lowercase
-        map=identifier_cv_mapping,           # Map to CV term
-    ),
-    value=Map(
-        col=Column('ID Column', delimiter='|'),
-        extract=[r'^[^:]+:([^|"]+)'],        # Extract value after colon
-    ),
+    term=f('ID Column', extract='prefix_lower', map='identifier_cv'),
+    value=f('ID Column', extract='value'),
 )
 ```
 
@@ -355,21 +363,27 @@ identifier_cv_mapping = {
     'intact': IdentifierNamespaceCv.INTACT,
 }
 
+f = FieldConfig(
+    extract={
+        'prefix_lower': [r'^([^:]+):', str.lower],
+        'value': r'^[^:]+:(.+)',
+        'mi': r'(MI:\d+)',
+        'tax': r'taxid:([-\d]+)',
+    },
+    map={
+        'identifier_cv': identifier_cv_mapping,
+    },
+    delimiter='|',
+)
+
 schema = EntityBuilder(
     entity_type=EntityTypeCv.INTERACTION,
 
     identifiers=IdentifiersBuilder(
         # Dynamic identifier type based on prefix
         CV(
-            term=Map(
-                col=Column('Interaction identifier(s)', delimiter='|'),
-                extract=[r'^([^:]+):', str.lower],
-                map=identifier_cv_mapping,
-            ),
-            value=Map(
-                col=Column('Interaction identifier(s)', delimiter='|'),
-                extract=[r'^[^:]+:(.+)'],
-            ),
+            term=f('Interaction identifier(s)', extract='prefix_lower', map='identifier_cv'),
+            value=f('Interaction identifier(s)', extract='value'),
         ),
     ),
 
@@ -377,10 +391,7 @@ schema = EntityBuilder(
         # Extract MI term accessions
         CV(
             term=AnnotationTypeCv.CV_TERM_ACCESSION,
-            value=Map(
-                col=Column('Interaction type(s)', delimiter='|'),
-                extract=[r'(MI:\d+)'],
-            ),
+            value=f('Interaction type(s)', extract='mi'),
         ),
     ),
 
@@ -391,24 +402,14 @@ schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(
-                        term=Map(
-                            col=Column('#ID(s) interactor A', delimiter='|'),
-                            extract=[r'^([^:]+):', str.lower],
-                            map=identifier_cv_mapping,
-                        ),
-                        value=Map(
-                            col=Column('#ID(s) interactor A', delimiter='|'),
-                            extract=[r'^[^:]+:(.+)'],
-                        ),
+                        term=f('#ID(s) interactor A', extract='prefix_lower', map='identifier_cv'),
+                        value=f('#ID(s) interactor A', extract='value'),
                     ),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(
                         term=AnnotationTypeCv.ORGANISM,
-                        value=Map(
-                            col=Column('Taxid interactor A'),
-                            extract=[r'taxid:([-\d]+)'],
-                        ),
+                        value=f('Taxid interactor A', extract='tax'),
                     ),
                 ),
             )
@@ -419,15 +420,8 @@ schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(
-                        term=Map(
-                            col=Column('ID(s) interactor B', delimiter='|'),
-                            extract=[r'^([^:]+):', str.lower],
-                            map=identifier_cv_mapping,
-                        ),
-                        value=Map(
-                            col=Column('ID(s) interactor B', delimiter='|'),
-                            extract=[r'^[^:]+:(.+)'],
-                        ),
+                        term=f('ID(s) interactor B', extract='prefix_lower', map='identifier_cv'),
+                        value=f('ID(s) interactor B', extract='value'),
                     ),
                 ),
             )
@@ -495,11 +489,10 @@ type_mapping = {
     'smallmolecule': EntityTypeCv.SMALL_MOLECULE,
 }
 
+f = FieldConfig()
+
 schema = EntityBuilder(
-    entity_type=Map(
-        col=Column('Type'),
-        map=type_mapping,
-    ),
+    entity_type=f('Type', map=type_mapping),
     identifiers=IdentifiersBuilder(...),
 )
 ```
@@ -515,32 +508,33 @@ def parse_ligand_name(row):
     # Complex parsing logic here
     return cleaned_name
 
+f = FieldConfig()
+
 identifiers = IdentifiersBuilder(
     CV(
         term=IdentifierNamespaceCv.NAME,
-        value=parse_ligand_name  # Function reference
+        value=f(parse_ligand_name)  # Function reference
     ),
 )
 ```
 
-**Chained Extractions with Map**
+**Chained Extractions with FieldConfig**
 
 Apply multiple transformation steps in sequence:
 
 ```python
+f = FieldConfig()
+
 CV(
     term=AnnotationTypeCv.AFFINITY,
-    value=Map(
-        col=Column('Affinity'),
+    value=f(
+        'Affinity',
         extract=[
             r'([0-9.]+)',        # Extract number
             float,               # Convert to float
         ],
     ),
-    unit=Map(
-        col=Column('Affinity'),
-        extract=[r'([a-zA-Z]+)$'],  # Extract unit at end
-    ),
+    unit=f('Affinity', extract=[r'([a-zA-Z]+)$']),  # Extract unit at end
 )
 ```
 
@@ -548,11 +542,11 @@ CV(
 
 Core Principles
 	1.	**Declarative schema**: Define mappings, do not manually build entities
-	2.	**Separation of concerns**: Column extracts, Map transforms, CV assigns meaning
+	2.	**Separation of concerns**: FieldConfig extracts/transforms, CV assigns meaning
 	3.	**Reusability**: Same column can be used with different transformations
 	4.	**CV term priority**: Always prefer existing CV terms (PSI-MI first, then OmniPath)
-	5.	**Multi-value fields**: Use `delimiter` in Column for split operations
-	6.	**Dynamic extraction**: Use Map with dictionaries for prefix-based or conditional CV terms
+	5.	**Multi-value fields**: Use `delimiter` in FieldConfig for split operations
+	6.	**Dynamic extraction**: Use FieldConfig with dictionaries for prefix-based or conditional CV terms
 	7.	**Search first**: Always search before adding new CV terms
 	8.	**Type annotations**: Use Generator[Entity] for return types
 

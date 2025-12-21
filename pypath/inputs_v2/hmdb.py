@@ -11,74 +11,28 @@ from collections.abc import Generator
 
 import lxml.etree as etree
 
-from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
     LicenseCV,
     UpdateCategoryCV,
-    ResourceAnnotationCv,
     ResourceCv,
 )
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
-    Column,
     CV,
     EntityBuilder,
+    FieldConfig,
     IdentifiersBuilder,
-    Map,
 )
-from pypath.share.downloads import download_and_open
-
-
-def resource() -> Generator[Entity]:
-    """
-    Yield resource metadata as an Entity record.
-
-    Yields:
-        Entity record with type CV_TERM containing HMDB metadata.
-    """
-    yield Entity(
-        type=EntityTypeCv.CV_TERM,
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.HMDB),
-            Identifier(type=IdentifierNamespaceCv.NAME, value='Human Metabolome Database'),
-        ],
-        annotations=[
-            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
-            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
-            Annotation(term=IdentifierNamespaceCv.PUBMED, value='37953221'),
-            Annotation(term=ResourceAnnotationCv.URL, value='https://hmdb.ca/'),
-            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
-                'The Human Metabolome Database (HMDB) is a comprehensive database '
-                'containing detailed information about small molecule metabolites '
-                'found in the human body. It includes chemical, clinical, and '
-                'biochemical/molecular biology data, with over 220,000 metabolite '
-                'entries including both water-soluble and lipid-soluble metabolites.'
-            )),
-        ],
-    )
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
 
 def _iterate_metabolites(opener, max_records: int | None = None) -> Generator[dict[str, str], None, None]:
-    """
-    Iterate through HMDB XML metabolites and yield dictionaries.
-
-    This function handles the XML parsing and yields flat dictionaries
-    suitable for processing with the tabular_builder pattern.
-
-    Args:
-        opener: The file opener result from download_and_open
-        max_records: Maximum number of records to parse
-
-    Yields:
-        Dictionary representations of metabolites
-    """
     if not opener or not opener.result:
         return
 
-    # The zip file contains hmdb_metabolites.xml
     xml_file = None
     for filename, file_handle in opener.result.items():
         if 'metabolites.xml' in filename.lower():
@@ -88,17 +42,14 @@ def _iterate_metabolites(opener, max_records: int | None = None) -> Generator[di
     if not xml_file:
         return
 
-    # XML namespace used in HMDB
     xmlns = '{http://www.hmdb.ca}'
 
     def get_text(elem: etree._Element, tag: str, parent: etree._Element = None) -> str:
-        """Helper to safely extract text from an XML element."""
         parent = parent if parent is not None else elem
         child = parent.find(f'{xmlns}{tag}')
         return child.text.strip() if child is not None and child.text else ''
 
     def get_list(elem: etree._Element, container_tag: str, item_tag: str) -> str:
-        """Helper to extract a list of text values as semicolon-delimited string."""
         container = elem.find(f'{xmlns}{container_tag}')
         if container is None:
             return ''
@@ -108,7 +59,6 @@ def _iterate_metabolites(opener, max_records: int | None = None) -> Generator[di
         ]
         return ';'.join(items)
 
-    # Use iterparse for memory-efficient parsing of large XML
     context = etree.iterparse(xml_file, events=('end',), tag=f'{xmlns}metabolite')
 
     count = 0
@@ -116,7 +66,6 @@ def _iterate_metabolites(opener, max_records: int | None = None) -> Generator[di
         if max_records is not None and count >= max_records:
             break
 
-        # Extract PubMed IDs from general_references
         pubmed_ids = []
         general_refs = elem.find(f'{xmlns}general_references')
         if general_refs is not None:
@@ -145,7 +94,6 @@ def _iterate_metabolites(opener, max_records: int | None = None) -> Generator[di
 
         count += 1
 
-        # Clear the element to free memory
         elem.clear()
         while elem.getprevious() is not None:
             del elem.getparent()[0]
@@ -153,85 +101,75 @@ def _iterate_metabolites(opener, max_records: int | None = None) -> Generator[di
     del context
 
 
-def hmdb_metabolites(
-    max_records: int | None = None,
-    force_refresh: bool = False,
-) -> Generator[Entity, None, None]:
-    """
-    Download and parse HMDB metabolite data as Entity records.
+def _hmdb_raw(opener, max_records: int | None = None, **_kwargs: object):
+    yield from _iterate_metabolites(opener, max_records=max_records)
 
-    This function downloads the HMDB metabolites XML file, converts each
-    XML element to a dictionary, and uses a declarative schema to build
-    Entity records.
 
-    Args:
-        max_records: Maximum number of records to parse. If None, parses all records.
-        force_refresh: If True, force redownload of the data.
+config = ResourceConfig(
+    id=ResourceCv.HMDB,
+    name='Human Metabolome Database',
+    url='https://hmdb.ca/',
+    license=LicenseCV.CC_BY_4_0,
+    update_category=UpdateCategoryCV.REGULAR,
+    pubmed='37953221',
+    description=(
+        'The Human Metabolome Database (HMDB) is a comprehensive database '
+        'containing detailed information about small molecule metabolites '
+        'found in the human body. It includes chemical, clinical, and '
+        'biochemical/molecular biology data, with over 220,000 metabolite '
+        'entries including both water-soluble and lipid-soluble metabolites.'
+    ),
+)
 
-    Yields:
-        Entity records with type SMALL_MOLECULE, representing metabolites
-        with their identifiers (HMDB ID, InChI, SMILES, etc.), chemical
-        properties (molecular weight, formula), and cross-references to other
-        databases (ChEBI, PubChem, KEGG, DrugBank, CAS).
-    """
-    # Download HMDB metabolites XML
-    url = 'https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip'
-    opener = download_and_open(
-        url,
-        filename='hmdb_metabolites.zip',
-        subfolder='hmdb',
-        large=True,
-        ext='zip',
-        default_mode='rb',  # Binary mode required for lxml
-        force=force_refresh,
-    )
+f = FieldConfig(
+    extract={
+        'chebi': r'^(?:CHEBI:)?(\d+)$',
+    },
+    transform={
+        'chebi': lambda v: f'CHEBI:{v}' if v else None,
+    },
+)
 
-    def normalize_chebi(value: str | None) -> str | None:
-        if not value:
-            return None
-        value = value.strip()
-        if not value:
-            return None
-        return value if value.startswith('CHEBI:') else f'CHEBI:{value}'
-
-    # Define declarative schema for HMDB metabolites
-    schema = EntityBuilder(
-        entity_type=EntityTypeCv.SMALL_MOLECULE,
-        identifiers=IdentifiersBuilder(
-            # Primary HMDB accession
-            CV(term=IdentifierNamespaceCv.HMDB, value=Column('accession')),
-            # Primary name
-            CV(term=IdentifierNamespaceCv.NAME, value=Column('name')),
-            # Traditional IUPAC name
-            CV(term=IdentifierNamespaceCv.IUPAC_TRADITIONAL_NAME, value=Column('traditional_iupac')),
-            # IUPAC name
-            CV(term=IdentifierNamespaceCv.IUPAC_NAME, value=Column('iupac_name')),
-            # Synonyms (semicolon-delimited)
-            CV(term=IdentifierNamespaceCv.SYNONYM, value=Column('synonyms', delimiter=';')),
-            # Chemical structure identifiers
-            CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=Column('inchikey')),
-            CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=Column('inchi')),
-            CV(term=IdentifierNamespaceCv.SMILES, value=Column('smiles')),
-            # Cross-references to other databases
-            CV(
-                term=IdentifierNamespaceCv.CHEBI,
-                value=Map(col=Column('chebi_id'), extract=[normalize_chebi]),
-            ),
-            CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=Column('pubchem_compound_id')),
-            CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=Column('kegg_id')),
-            CV(term=IdentifierNamespaceCv.DRUGBANK, value=Column('drugbank_id')),
-            CV(term=IdentifierNamespaceCv.CAS, value=Column('cas_registry_number')),
+metabolites_schema = EntityBuilder(
+    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.HMDB, value=f('accession')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+        CV(term=IdentifierNamespaceCv.IUPAC_TRADITIONAL_NAME, value=f('traditional_iupac')),
+        CV(term=IdentifierNamespaceCv.IUPAC_NAME, value=f('iupac_name')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('inchikey')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('inchi')),
+        CV(term=IdentifierNamespaceCv.SMILES, value=f('smiles')),
+        CV(
+            term=IdentifierNamespaceCv.CHEBI,
+            value=f('chebi_id', extract='chebi'),
         ),
-        annotations=AnnotationsBuilder(
-            # Source annotation
-            # Description
-            CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=Column('description')),
-            # PubMed references (semicolon-delimited)
-            CV(term=IdentifierNamespaceCv.PUBMED, value=Column('pubmed_ids', delimiter=';')),
-        ),
-    )
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_compound_id')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_id')),
+        CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('drugbank_id')),
+        CV(term=IdentifierNamespaceCv.CAS, value=f('cas_registry_number')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('description')),
+        CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_ids', delimiter=';')),
+    ),
+)
 
-    # Parse and yield entities
-    if opener and opener.result:
-        for row in _iterate_metabolites(opener, max_records):
-            yield schema(row)
+resource = Resource(
+    config,
+    metabolites=Dataset(
+        download=Download(
+            url='https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
+            filename='hmdb_metabolites.zip',
+            subfolder='hmdb',
+            large=True,
+            ext='zip',
+            default_mode='rb',
+        ),
+        mapper=metabolites_schema,
+        raw_parser=_hmdb_raw,
+    ),
+)
+
+metabolites = resource.metabolites
