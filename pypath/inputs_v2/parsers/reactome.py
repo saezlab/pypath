@@ -19,7 +19,7 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDF
 
 from pypath.internals.cv_terms import EntityTypeCv
-from pypath.share.downloads import download_and_open, DATA_DIR
+from pypath.share.downloads import DATA_DIR
 
 
 # BioPAX namespace
@@ -27,6 +27,13 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 
 # Module-level cache for parsed data (keyed by data_type)
 _DATA_CACHE: dict[str, list[dict]] = {}
+
+# Cache version to invalidate older pickled formats
+_CACHE_VERSION = 2
+
+# Delimiter used for list-of-participants and list-of-components fields
+_LIST_DELIMITER = "||"
+_MISSING_VALUE = "__MISSING__"
 
 # Mapping of BioPAX PhysicalEntity types to EntityTypeCv terms
 PHYSICAL_ENTITY_TYPE_MAP = {
@@ -65,7 +72,7 @@ ENTITY_REFERENCE_TYPES = {
 
 def _get_cache_path(data_type: str) -> Path:
     cache_dir = DATA_DIR / 'reactome'
-    return cache_dir / f'{data_type}.pkl'
+    return cache_dir / f'{data_type}_v{_CACHE_VERSION}.pkl'
 
 
 def _load_cached_data(data_type: str, force_refresh: bool = False) -> list[dict] | None:
@@ -96,18 +103,7 @@ def _save_cached_data(data_type: str, data: list[dict]) -> None:
         pass
 
 
-def _load_biopax_graph(species: str = 'Homo_sapiens', force_refresh: bool = False) -> Graph | None:
-    url = 'https://reactome.org/download/current/biopax.zip'
-    opener = download_and_open(
-        url,
-        filename='reactome_biopax.zip',
-        subfolder='reactome',
-        large=True,
-        ext='zip',
-        default_mode='rb',
-        force=force_refresh,
-    )
-
+def _load_biopax_graph(opener, species: str = 'Homo_sapiens') -> Graph | None:
     if not opener or not opener.result:
         return None
 
@@ -210,6 +206,53 @@ def _extract_names_from_props(props: dict, bp_ns: Namespace) -> dict[str, str | 
         names['synonyms'] = [str(s) for s in synonyms]
 
     return names
+
+
+_PARTICIPANT_FIELDS = [
+    'role',
+    'entity_type',
+    'display_name',
+    'synonyms',
+    'reactome_stable_id',
+    'uniprot',
+    'chebi',
+    'pubchem_compound',
+    'kegg',
+    'go',
+    'ncbi_tax_id',
+    'stoichiometry',
+]
+
+
+def _join_list(values: list[str]) -> str:
+    return _LIST_DELIMITER.join(values)
+
+
+def _flatten_participants(participants: list[dict], prefix: str = 'participant') -> dict[str, str]:
+    data: dict[str, str] = {}
+    for field in _PARTICIPANT_FIELDS:
+        items = []
+        for participant in participants:
+            value = participant.get(field, '')
+            if value in (None, ''):
+                value = _MISSING_VALUE
+            items.append(str(value))
+        data[f'{prefix}_{field}'] = _join_list(items)
+    return data
+
+
+def _flatten_components(components: list[dict], prefix: str = 'component') -> dict[str, str]:
+    fields = ['entity_type', 'display_name', 'reactome_stable_id', 'step_order']
+    data: dict[str, str] = {}
+    for field in fields:
+        items = []
+        for component in components:
+            value = component.get(field, '')
+            if value in (None, ''):
+                value = _MISSING_VALUE
+            items.append(str(value))
+        data[f'{prefix}_{field}'] = _join_list(items)
+    return data
 
 
 def _get_organism_tax_id(g: Graph, organism_uri: URIRef, xref_cache: dict, bp_ns: Namespace) -> str:
@@ -529,11 +572,37 @@ def _iterate_reactions(
 
         reactants = []
         for mol in props.get(BP.left, []):
-            reactants.append(_extract_participant_data(g, mol, 'reactant', entity_reference_index, xref_cache, stoich_map))
+            participant = _extract_participant_data(
+                g,
+                mol,
+                'reactant',
+                entity_reference_index,
+                xref_cache,
+                stoich_map,
+            )
+            if isinstance(participant, list):
+                reactants.extend(participant)
+            else:
+                participant.pop('members', None)
+                participant.pop('is_family', None)
+                reactants.append(participant)
 
         products = []
         for mol in props.get(BP.right, []):
-            products.append(_extract_participant_data(g, mol, 'product', entity_reference_index, xref_cache, stoich_map))
+            participant = _extract_participant_data(
+                g,
+                mol,
+                'product',
+                entity_reference_index,
+                xref_cache,
+                stoich_map,
+            )
+            if isinstance(participant, list):
+                products.extend(participant)
+            else:
+                participant.pop('members', None)
+                participant.pop('is_family', None)
+                products.append(participant)
 
         templates = []
         if reaction_type_str == 'TemplateReaction':
@@ -543,9 +612,21 @@ def _iterate_reactions(
                 t_xrefs = _extract_xrefs_from_props(t_props, xref_cache, BP)
                 templates.append({
                     'role': 'template',
+                    'entity_type': '',
                     'display_name': t_names.get('display_name', ''),
+                    'synonyms': '',
                     'reactome_stable_id': ';'.join(t_xrefs.get('reactome_stable_id', [])),
+                    'uniprot': '',
+                    'chebi': '',
+                    'pubchem_compound': '',
+                    'kegg': '',
+                    'go': '',
+                    'ncbi_tax_id': '',
+                    'stoichiometry': '',
                 })
+
+        participants = reactants + products + templates
+        participant_data = _flatten_participants(participants, prefix='participant')
 
         yield {
             'uri': str(reaction_uri),
@@ -558,9 +639,7 @@ def _iterate_reactions(
             'pubmed': ';'.join(xrefs.get('pubmed', [])),
             'ec_number': ec_number,
             'direction': direction,
-            'reactants': reactants,
-            'products': products,
-            'templates': templates,
+            **participant_data,
         }
         count += 1
 
@@ -608,12 +687,24 @@ def _iterate_pathways(
             c_props = _get_entity_props(g, comp)
             c_types = c_props.get(RDF.type, [])
             type_str = str(c_types[0]).split('#')[-1] if c_types else ''
+            type_str_lower = type_str.lower()
+            if 'pathway' in type_str_lower:
+                component_type = EntityTypeCv.PATHWAY
+            elif 'biochemicalreaction' in type_str_lower:
+                component_type = EntityTypeCv.REACTION
+            elif 'catalysis' in type_str_lower:
+                component_type = EntityTypeCv.CATALYSIS
+            elif 'control' in type_str_lower:
+                component_type = EntityTypeCv.CONTROL
+            else:
+                component_type = EntityTypeCv.INTERACTION
 
             c_names = _extract_names_from_props(c_props, BP)
             c_xrefs = _extract_xrefs_from_props(c_props, xref_cache, BP)
 
             components.append({
                 'type': type_str,
+                'entity_type': component_type.value,
                 'display_name': c_names.get('display_name', ''),
                 'reactome_stable_id': ';'.join(c_xrefs.get('reactome_stable_id', [])),
                 'step_order': step_order_map.get(str(comp), None),
@@ -630,7 +721,7 @@ def _iterate_pathways(
             'ncbi_tax_id': ncbi_tax_id,
             'description': ' '.join(descriptions),
             'comments': ';'.join(comments),
-            'components': components,
+            **_flatten_components(components, prefix='component'),
         }
         count += 1
 
@@ -678,15 +769,18 @@ def _iterate_controls(
             c_type_str = str(c_types[0]).split('#')[-1].lower() if c_types else 'physicalentity'
 
             controller_info = {
+                'role': 'controller',
                 'display_name': c_names.get('display_name', ''),
                 'entity_type': PHYSICAL_ENTITY_TYPE_MAP.get(c_type_str, EntityTypeCv.PHYSICAL_ENTITY).value,
                 'reactome_stable_id': ';'.join(c_xrefs.get('reactome_stable_id', [])),
                 'uniprot': ';'.join(c_xrefs.get('uniprot', [])),
+                'chebi': '',
                 'synonyms': '',
                 'pubchem_compound': '',
                 'kegg': '',
                 'go': '',
                 'ncbi_tax_id': '',
+                'stoichiometry': '',
             }
 
             controller_refs_to_merge = []
@@ -746,24 +840,49 @@ def _iterate_controls(
             cd_xrefs = _extract_xrefs_from_props(cd_props, xref_cache, BP)
             cd_types = cd_props.get(RDF.type, [])
             cd_type_str = str(cd_types[0]).split('#')[-1] if cd_types else ''
+            cd_type_str_lower = cd_type_str.lower()
+            if 'biochemicalreaction' in cd_type_str_lower:
+                controlled_entity_type = EntityTypeCv.REACTION
+            elif 'pathway' in cd_type_str_lower:
+                controlled_entity_type = EntityTypeCv.PATHWAY
+            else:
+                controlled_entity_type = EntityTypeCv.INTERACTION
 
             controlled_info = {
+                'role': 'controlled',
                 'display_name': cd_names.get('display_name', ''),
-                'type': cd_type_str,
+                'entity_type': controlled_entity_type.value,
                 'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                'uniprot': '',
+                'chebi': '',
+                'synonyms': '',
+                'pubchem_compound': '',
+                'kegg': '',
+                'go': '',
+                'ncbi_tax_id': '',
+                'stoichiometry': '',
             }
+
+        control_display_name = names.get('display_name', '')
+        if not control_display_name and controller_info.get('display_name'):
+            control_display_name = f"{control_type_cls} by {controller_info['display_name']}"
+
+        participants = []
+        if controller_info:
+            participants.append(controller_info)
+        if controlled_info:
+            participants.append(controlled_info)
 
         yield {
             'uri': str(s),
             'control_class': control_type_cls,
             'entity_type': entity_type_cv.value,
-            'display_name': names.get('display_name', ''),
+            'display_name': control_display_name,
             'reactome_stable_id': ';'.join(xrefs.get('reactome_stable_id', [])),
             'reactome_id': ';'.join(xrefs.get('reactome_id', [])),
             'go': ';'.join(xrefs.get('go', [])),
             'control_type': control_type_val,
-            'controller': controller_info,
-            'controlled': controlled_info,
+            **_flatten_participants(participants, prefix='participant'),
         }
         count += 1
 
@@ -772,7 +891,11 @@ def _iterate_controls(
 # Main Parser Function
 # --------------------------------------------------------------------------- #
 
-def _ensure_all_caches_populated(species: str = 'Homo_sapiens', force_refresh: bool = False) -> bool:
+def _ensure_all_caches_populated(
+    opener,
+    species: str = 'Homo_sapiens',
+    force_refresh: bool = False,
+) -> bool:
     """Ensure all data types are cached."""
     data_types = ['reactions', 'pathways', 'controls']
 
@@ -781,7 +904,7 @@ def _ensure_all_caches_populated(species: str = 'Homo_sapiens', force_refresh: b
         if all_cached:
             return True
 
-    g = _load_biopax_graph(species, force_refresh)
+    g = _load_biopax_graph(opener, species)
     if g is None:
         return False
 
@@ -824,7 +947,7 @@ def _raw(
     Yields:
         Dictionary for each record
     """
-    if not _ensure_all_caches_populated(species, force_refresh):
+    if not _ensure_all_caches_populated(opener, species, force_refresh):
         return
     cached_data = _DATA_CACHE[data_type]
     for i, record in enumerate(cached_data):
