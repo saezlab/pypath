@@ -430,25 +430,38 @@ class _BaseCvBuilder:
                 continue
             self._validate_term(term)
 
+            if cv.value_source is None:
+                if self.silver_cls is not SilverAnnotation:
+                    continue
+                key = (term, None, None)
+                if key in seen:
+                    continue
+                seen.add(key)
+                results.append(SilverAnnotation(term=term, value=None, units=None))
+                continue
+
             value = self._pick_index(value_vals, index) if value_vals is not None else None
-            if cv.value_source is not None and not self._has_value(value):
+            value_items = self._explode_values(value)
+            if not value_items:
                 continue
 
             unit = self._pick_index(unit_vals, index) if unit_vals is not None else None
-            if not self._has_value(value):
-                unit = None
+            unit_items = self._explode_values(unit) if cv.unit_source is not None else [None]
+            if len(unit_items) != len(value_items):
+                unit_items = [unit_items[0] if unit_items else None] * len(value_items)
 
-            key = (term, value, unit if self.silver_cls is SilverAnnotation else None)
-            if key in seen:
-                continue
-            seen.add(key)
-
-            if self.silver_cls is SilverIdentifier:
-                if value is None or value == "":
+            for value_item, unit_item in zip(value_items, unit_items):
+                key = (term, value_item, unit_item if self.silver_cls is SilverAnnotation else None)
+                if key in seen:
                     continue
-                results.append(SilverIdentifier(type=term, value=value))
-            else:
-                results.append(SilverAnnotation(term=term, value=value, units=unit))
+                seen.add(key)
+
+                if self.silver_cls is SilverIdentifier:
+                    if value_item is None or value_item == "":
+                        continue
+                    results.append(SilverIdentifier(type=term, value=value_item))
+                else:
+                    results.append(SilverAnnotation(term=term, value=value_item, units=unit_item))
 
         return results
 
@@ -511,18 +524,26 @@ class _BaseCvBuilder:
             self._validate_term(term)
 
             value = self._pick_index(value_vals, i)
-            if cv.value_source is not None and not self._has_value(value):
+            unit = self._pick_index(unit_vals, i) if unit_vals else None
+
+            if cv.value_source is None:
+                out.append((term, None, None))
                 continue
 
-            unit = None
-            has_value = self._has_value(value)
-            if has_value:
-                unit = self._pick_index(unit_vals, i)
-            else:
-                # Ensure no dangling units without value
-                unit = None
+            value_items = self._explode_values(value)
+            if not value_items:
+                continue
 
-            out.append((term, value if has_value else None, unit))
+            unit_items = self._explode_values(unit) if cv.unit_source is not None else [None]
+            if len(unit_items) != len(value_items):
+                unit_items = [unit_items[0] if unit_items else None] * len(value_items)
+
+            for idx in range(len(value_items)):
+                value_item = value_items[idx]
+                unit_item = unit_items[idx] if idx < len(unit_items) else None
+                if not self._has_value(value_item):
+                    continue
+                out.append((term, value_item, unit_item))
 
         return out
 
@@ -548,9 +569,21 @@ class _BaseCvBuilder:
     def _has_value(value: Any) -> bool:
         if value is None:
             return False
+        if isinstance(value, (list, tuple, set)):
+            return any(_BaseCvBuilder._has_value(item) for item in value)
         if isinstance(value, str):
             return value.strip() not in ("", "-")
         return True
+
+    @staticmethod
+    def _explode_values(value: Any) -> list[Any]:
+        if value is None:
+            return []
+        if isinstance(value, (list, tuple, set)):
+            return [item for item in value if _BaseCvBuilder._has_value(item)]
+        if _BaseCvBuilder._has_value(value):
+            return [value]
+        return []
 
     @staticmethod
     def _validate_term(term: Any) -> None:  # noqa: D401 - validation hook
@@ -617,7 +650,7 @@ class MembersFromList:
     def __init__(
         self,
         *,
-        entity_type: EntityTypeCv,
+        entity_type: EntityTypeCv | Column | Callable[[Any], Any],
         identifiers: IdentifiersBuilder,
         annotations: AnnotationsBuilder | None = None,
         entity_annotations: AnnotationsBuilder | None = None,
@@ -646,6 +679,7 @@ class MembersFromList:
             if not member_identifiers:
                 continue
 
+            member_entity_type = self._resolve_entity_type(row, cache, index)
             entity_annotations = (
                 self.entity_annotations.build_for_index(row, index, cache)
                 if self.entity_annotations
@@ -658,7 +692,7 @@ class MembersFromList:
             )
 
             member_entity = SilverEntity(
-                type=self.entity_type,
+                type=member_entity_type,
                 identifiers=member_identifiers,
                 annotations=entity_annotations if entity_annotations else None,
                 membership=None,
@@ -672,6 +706,28 @@ class MembersFromList:
             )
 
         return memberships
+
+    def _resolve_entity_type(self, row: Any, cache: ColumnCache, index: int) -> EntityTypeCv:
+        if isinstance(self.entity_type, Column):
+            values = cache.values(self.entity_type, row)
+            value = _BaseCvBuilder._pick_index(values, index)
+        elif callable(self.entity_type):
+            try:
+                value = self.entity_type(row)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("MembersFromList entity_type callable failed: %s", exc)
+                return EntityTypeCv.PHYSICAL_ENTITY
+            if isinstance(value, (list, tuple)):
+                value = _BaseCvBuilder._pick_index(list(value), index)
+        else:
+            value = self.entity_type
+
+        if isinstance(value, EntityTypeCv):
+            return value
+        if isinstance(value, str):
+            entity_type_map = {item.value: item for item in EntityTypeCv}
+            return entity_type_map.get(value, EntityTypeCv.PHYSICAL_ENTITY)
+        return EntityTypeCv.PHYSICAL_ENTITY
 
 
 class Member:
