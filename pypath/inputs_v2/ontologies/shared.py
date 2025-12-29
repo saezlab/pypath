@@ -135,3 +135,25 @@ def process_obo_term(term) -> Dict[str, str]:
         result[f'relationship_{rel_type}'] = ';'.join(targets)
 
     return result
+
+
+def iter_obo_terms(opener, **_kwargs: Any):
+    """Yield processed OBO terms from a downloaded file opener."""
+    if not opener:
+        return
+
+    path = getattr(opener, "path", None)
+    if not path and hasattr(opener, "result"):
+        handle = opener.result
+        if isinstance(handle, dict):
+            handle = next(iter(handle.values()), None)
+        if handle is not None and hasattr(handle, "name"):
+            path = handle.name
+
+    if not path:
+        return
+
+    obo = Obo(path, name='Ontology')
+    for term in obo:
+        if term.stanza == 'Term':
+            yield process_obo_term(term)

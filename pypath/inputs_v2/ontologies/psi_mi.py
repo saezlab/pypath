@@ -27,17 +27,13 @@ defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
-from collections.abc import Generator
-
-from pypath.formats.obo import Obo
-from pypath.internals.silver_schema import Entity, Identifier, Annotation
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     OntologyAnnotationCv,
     LicenseCV,
     UpdateCategoryCV,
-    ResourceAnnotationCv,
     ResourceCv,
 )
 from ...internals.tabular_builder import (
@@ -47,77 +43,56 @@ from ...internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from .shared import process_obo_term
+from .shared import iter_obo_terms
 
 
 # PSI-MI OBO URL
 PSI_MI_URL = "https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo"
 
+config = ResourceConfig(
+    id=ResourceCv.PSI_MI,
+    name='PSI-MI Controlled Vocabulary',
+    url='https://github.com/HUPO-PSI/psi-mi-CV',
+    license=LicenseCV.CC_BY_4_0,
+    update_category=UpdateCategoryCV.REGULAR,
+    pubmed='17925023',
+    description=(
+        'The PSI-MI (Proteomics Standards Initiative - Molecular Interactions) '
+        'controlled vocabulary provides standardized terms for describing '
+        'molecular interactions. It includes terms for interaction types, '
+        'detection methods, participant roles, and experimental features.'
+    ),
+)
 
-def resource() -> Generator[Entity]:
-    """
-    Yield resource metadata as an Entity record.
+f = FieldConfig()
+schema = EntityBuilder(
+    entity_type=EntityTypeCv.CV_TERM,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('alt_ids', delimiter=';')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('xrefs', delimiter=';')),
+        CV(term=OntologyAnnotationCv.COMMENT, value=f('comment')),
+        CV(term=OntologyAnnotationCv.IS_OBSOLETE, value=f('is_obsolete')),
+    ),
+)
 
-    Yields:
-        Entity record with type CV_TERM containing PSI-MI metadata.
-    """
-    yield Entity(
-        type=EntityTypeCv.CV_TERM,
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.PSI_MI),
-            Identifier(type=IdentifierNamespaceCv.NAME, value='PSI-MI Controlled Vocabulary'),
-        ],
-        annotations=[
-            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
-            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
-            Annotation(term=IdentifierNamespaceCv.PUBMED, value='17925023'),
-            Annotation(term=ResourceAnnotationCv.URL, value='https://github.com/HUPO-PSI/psi-mi-CV'),
-            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
-                'The PSI-MI (Proteomics Standards Initiative - Molecular Interactions) '
-                'controlled vocabulary provides standardized terms for describing '
-                'molecular interactions. It includes terms for interaction types, '
-                'detection methods, participant roles, and experimental features.'
-            )),
-        ],
-    )
-
-
-def psi_mi_ontology() -> Generator[Entity]:
-    """
-    Download and parse PSI-MI OBO file as Entity records.
-
-    Downloads PSI-MI OBO data and converts each term into a Entity
-    with CV_TERM type, including identifiers, annotations, and relationships.
-
-    Yields:
-        Entity records with type CV_TERM
-    """
-    # Download and open the OBO file
-    obo = Obo(PSI_MI_URL, name='PsiMi')
-
-    # Define the schema mapping
-    f = FieldConfig()
-    schema = EntityBuilder(
-        entity_type=EntityTypeCv.CV_TERM,
-        identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
-            CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
-            CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('alt_ids', delimiter=';')),
-
+resource = Resource(
+    config,
+    psi_mi_ontology=Dataset(
+        download=Download(
+            url=PSI_MI_URL,
+            filename='psi-mi.obo',
+            subfolder='psi_mi',
         ),
-        annotations=AnnotationsBuilder(
-            # Source annotation
-            CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('xrefs', delimiter=';')),
-            CV(term=OntologyAnnotationCv.COMMENT, value=f('comment')),
-            CV(term=OntologyAnnotationCv.IS_OBSOLETE, value=f('is_obsolete')),
-        ),
-    )
+        mapper=schema,
+        raw_parser=iter_obo_terms,
+    ),
+)
 
-    # Parse and yield entities
-    for term in obo:
-        if term.stanza == 'Term':
-            row = process_obo_term(term)
-            yield schema(row)
+psi_mi_ontology = resource.psi_mi_ontology
