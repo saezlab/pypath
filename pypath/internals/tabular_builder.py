@@ -64,12 +64,14 @@ class Column:
         *,
         delimiter: str | None = None,
         extract: Sequence[str | re.Pattern | Callable[[str], Any]] | None = None,
+        transform: Callable[[Any], Any] | None = None,
         map: Mapping[Any, Any] | Callable[[Any], Any] | None = None,
         default: Any | None = None,
     ) -> None:
         self.selector = selector
         self.delimiter = delimiter
         self.extract_steps: list[str | re.Pattern | Callable[[str], Any]] = list(extract or [])
+        self.transform = transform
         self.mapping = map
         self.default = default
 
@@ -91,6 +93,10 @@ class Column:
                 if processed is None:
                     break
 
+            if processed is None:
+                continue
+
+            processed = self._apply_transform(processed)
             if processed is None:
                 continue
 
@@ -212,6 +218,16 @@ class Column:
 
         return None
 
+    def _apply_transform(self, value: Any) -> Any | None:
+        if self.transform is None:
+            return value
+
+        try:
+            return self.transform(value)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.debug("Column transform callable failed: %s", exc)
+            return None
+
 
 class ColumnCache(dict):
     """Cache extracted values per source to avoid duplicate work."""
@@ -267,6 +283,7 @@ class _CallableSource:
 class FieldConfig:
     extract: dict[str, Any] = field(default_factory=dict)
     map: dict[str, Mapping[Any, Any] | Callable[[Any], Any]] = field(default_factory=dict)
+    transform: dict[str, Callable[[Any], Any]] = field(default_factory=dict)
     delimiter: str | None = None
 
     def __call__(
@@ -274,16 +291,19 @@ class FieldConfig:
         selector: int | str | Callable[[Any], Any],
         *,
         extract: str | Sequence[Any] | Callable[[str], Any] | re.Pattern | None = None,
+        transform: str | Callable[[Any], Any] | None = None,
         map: str | Mapping[Any, Any] | Callable[[Any], Any] | None = None,
         delimiter: str | None = None,
         default: Any | None = None,
     ) -> Column:
         extract_steps = self._resolve_extract(extract)
+        transform_func = self._resolve_transform(transform)
         mapping = self._resolve_mapping(map)
         return Column(
             selector,
             delimiter=delimiter if delimiter is not None else self.delimiter,
             extract=extract_steps,
+            transform=transform_func,
             map=mapping,
             default=default,
         )
@@ -319,6 +339,16 @@ class FieldConfig:
         if isinstance(mapping, str):
             return self.map[mapping]
         return mapping
+
+    def _resolve_transform(
+        self,
+        transform: str | Callable[[Any], Any] | None,
+    ) -> Callable[[Any], Any] | None:
+        if transform is None:
+            return None
+        if isinstance(transform, str):
+            return self.transform[transform]
+        return transform
 
 
 class CV:

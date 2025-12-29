@@ -30,14 +30,13 @@ from collections.abc import Generator
 from typing import Type
 import inspect
 
-from pypath.internals.silver_schema import Entity, Identifier, Annotation
+from pypath.inputs_v2.base import Dataset, Resource, ResourceConfig
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     OntologyAnnotationCv,
     LicenseCV,
     UpdateCategoryCV,
-    ResourceAnnotationCv,
     ResourceCv,
     CvEnum,
 )
@@ -49,34 +48,6 @@ from ...internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-
-
-def resource() -> Generator[Entity]:
-    """
-    Yield resource metadata as an Entity record.
-
-    Yields:
-        Entity record with type CV_TERM containing OmniPath ontology metadata.
-    """
-    yield Entity(
-        type=EntityTypeCv.CV_TERM,
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.OMNIPATH_ONTOLOGY),
-            Identifier(type=IdentifierNamespaceCv.NAME, value='OmniPath Ontology'),
-        ],
-        annotations=[
-            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
-            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
-            Annotation(term=ResourceAnnotationCv.URL, value='https://omnipathdb.org/'),
-            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
-                'OmniPath controlled vocabulary terms used throughout the OmniPath build system. '
-                'These CV terms are organized hierarchically and include entity types, identifier '
-                'namespaces, biological and experimental roles, interaction types, curation metadata, '
-                'and resource metadata. Terms are based on PSI-MI standard accessions or OmniPath-specific '
-                'OM accessions, with hierarchical parent relationships captured via is_a annotations.'
-            )),
-        ],
-    )
 
 
 def _extract_cv_terms() -> Generator[dict]:
@@ -140,32 +111,45 @@ def _extract_cv_terms() -> Generator[dict]:
         yield term_data
 
 
-def omnipath_ontology() -> Generator[Entity]:
-    """
-    Generate OmniPath CV terms as Entity records.
+def _iter_cv_terms(_opener=None, **_kwargs: object):
+    yield from _extract_cv_terms()
 
-    Extracts all controlled vocabulary terms from the pypath.internals.cv_terms module
-    and converts them into Entity records with CV_TERM type, including their
-    hierarchical parent relationships.
 
-    Yields:
-        Entity records with type CV_TERM
-    """
-    # Define the schema mapping
-    f = FieldConfig()
-    schema = EntityBuilder(
-        entity_type=EntityTypeCv.CV_TERM,
-        identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
-            CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
-        ),
-        annotations=AnnotationsBuilder(
-            # Source annotation
-            CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a')),
-        ),
-    )
+config = ResourceConfig(
+    id=ResourceCv.OMNIPATH_ONTOLOGY,
+    name='OmniPath Ontology',
+    url='https://omnipathdb.org/',
+    license=LicenseCV.CC_BY_4_0,
+    update_category=UpdateCategoryCV.REGULAR,
+    description=(
+        'OmniPath controlled vocabulary terms used throughout the OmniPath build system. '
+        'These CV terms are organized hierarchically and include entity types, identifier '
+        'namespaces, biological and experimental roles, interaction types, curation metadata, '
+        'and resource metadata. Terms are based on PSI-MI standard accessions or OmniPath-specific '
+        'OM accessions, with hierarchical parent relationships captured via is_a annotations.'
+    ),
+)
 
-    # Extract and yield entities
-    for term_data in _extract_cv_terms():
-        yield schema(term_data)
+f = FieldConfig()
+schema = EntityBuilder(
+    entity_type=EntityTypeCv.CV_TERM,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a')),
+    ),
+)
+
+resource = Resource(
+    config,
+    omnipath_ontology=Dataset(
+        download=None,
+        mapper=schema,
+        raw_parser=_iter_cv_terms,
+    ),
+)
+
+omnipath_ontology = resource.omnipath_ontology

@@ -26,15 +26,11 @@ using the schema defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
-from collections.abc import Generator
-
-from pypath.formats.obo import Obo
-from pypath.internals.silver_schema import Entity, Identifier, Annotation
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     OntologyAnnotationCv,
-    ResourceAnnotationCv,
     ResourceCv,
     LicenseCV,
     UpdateCategoryCV,
@@ -46,77 +42,55 @@ from ...internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from .shared import process_obo_term
+from .shared import iter_obo_terms
 
 
 # UniProt Keywords OBO URL
 UNIPROT_KEYWORDS_URL = "https://rest.uniprot.org/keywords/stream?format=obo&query=%28*%29"
 
+config = ResourceConfig(
+    id=ResourceCv.UNIPROT_KEYWORDS,
+    name='UniProt Keywords',
+    url='https://www.uniprot.org/keywords/',
+    license=LicenseCV.CC_BY_4_0,
+    update_category=UpdateCategoryCV.REGULAR,
+    pubmed='33237286',
+    description=(
+        'UniProt Keywords provide a controlled vocabulary for '
+        'summarizing protein properties, including biological processes, '
+        'molecular functions, cellular components, protein families, and more. '
+        'Keywords facilitate consistent annotation and efficient searching.'
+    ),
+)
 
-def resource() -> Generator[Entity]:
-    """
-    Yield resource metadata as an Entity record.
+f = FieldConfig()
+schema = EntityBuilder(
+    entity_type=EntityTypeCv.CV_TERM,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('alt_ids', delimiter=';')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
+        CV(term=OntologyAnnotationCv.COMMENT, value=f('comment')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('xrefs', delimiter=';')),
+    ),
+)
 
-    Yields:
-        Entity record with type RESOURCE containing UniProt Keywords metadata.
-    """
-    yield Entity(
-        type=EntityTypeCv.CV_TERM,
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.UNIPROT_KEYWORDS),
-            Identifier(type=IdentifierNamespaceCv.NAME, value='UniProt Keywords'),
-        ],
-        annotations=[
-            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
-            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
-            Annotation(term=IdentifierNamespaceCv.PUBMED, value='33237286'),
-            Annotation(term=ResourceAnnotationCv.URL, value='https://www.uniprot.org/keywords/'),
-            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
-                'UniProt Keywords provide a controlled vocabulary for '
-                'summarizing protein properties, including biological processes, '
-                'molecular functions, cellular components, protein families, and more. '
-                'Keywords facilitate consistent annotation and efficient searching.'
-            )),
-        ],
-    )
-
-
-def uniprot_keywords_ontology() -> Generator[Entity]:
-    """
-    Download and parse UniProt Keywords OBO file as Entity records.
-
-    Downloads UniProt Keywords OBO data and converts each term into a Entity
-    with CV_TERM type, including identifiers, annotations, and relationships.
-
-    Yields:
-        Entity records with type CV_TERM
-    """
-    # Download and open the OBO file
-    obo = Obo(UNIPROT_KEYWORDS_URL, name='UniProtKeywords')
-
-    # Define the schema mapping
-    f = FieldConfig()
-    schema = EntityBuilder(
-        entity_type=EntityTypeCv.CV_TERM,
-        identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
-            CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
-            CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('alt_ids', delimiter=';')),
-
+resource = Resource(
+    config,
+    uniprot_keywords_ontology=Dataset(
+        download=Download(
+            url=UNIPROT_KEYWORDS_URL,
+            filename='uniprot_keywords.obo',
+            subfolder='uniprot_keywords',
         ),
-        annotations=AnnotationsBuilder(
-            # Source annotation
-            CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
-            CV(term=OntologyAnnotationCv.COMMENT, value=f('comment')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('xrefs', delimiter=';')),
+        mapper=schema,
+        raw_parser=iter_obo_terms,
+    ),
+)
 
-        ),
-    )
-
-    # Parse and yield entities
-    for term in obo:
-        if term.stanza == 'Term':
-            row = process_obo_term(term)
-            yield schema(row)
+uniprot_keywords_ontology = resource.uniprot_keywords_ontology

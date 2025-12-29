@@ -26,17 +26,13 @@ using the schema defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
-from collections.abc import Generator
-
-from pypath.formats.obo import Obo
-from pypath.internals.silver_schema import Entity, Identifier, Annotation
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     OntologyAnnotationCv,
     LicenseCV,
     UpdateCategoryCV,
-    ResourceAnnotationCv,
     ResourceCv,
 )
 from ...internals.tabular_builder import (
@@ -46,77 +42,56 @@ from ...internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from .shared import process_obo_term
+from .shared import iter_obo_terms
 
 
 # Gene Ontology OBO URL
 GENE_ONTOLOGY_URL = "https://current.geneontology.org/ontology/go.obo"
 
+config = ResourceConfig(
+    id=ResourceCv.GENE_ONTOLOGY,
+    name='Gene Ontology',
+    url='http://geneontology.org/',
+    license=LicenseCV.CC_BY_4_0,
+    update_category=UpdateCategoryCV.REGULAR,
+    pubmed='33290552',
+    description=(
+        'The Gene Ontology (GO) provides a comprehensive framework for '
+        'describing gene functions across all organisms. GO covers three domains: '
+        'biological process, molecular function, and cellular component. '
+        'GO terms are organized in a hierarchical structure with rich relationships.'
+    ),
+)
 
-def resource() -> Generator[Entity]:
-    """
-    Yield resource metadata as an Entity record.
+f = FieldConfig()
+schema = EntityBuilder(
+    entity_type=EntityTypeCv.CV_TERM,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('alt_ids', delimiter=';')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
+        CV(term=OntologyAnnotationCv.COMMENT, value=f('comment')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('xrefs', delimiter=';')),
+        CV(term=OntologyAnnotationCv.IS_OBSOLETE, value=f('is_obsolete')),
+    ),
+)
 
-    Yields:
-        Entity record with type CV_TERM containing Gene Ontology metadata.
-    """
-    yield Entity(
-        type=EntityTypeCv.CV_TERM,
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=ResourceCv.GENE_ONTOLOGY),
-            Identifier(type=IdentifierNamespaceCv.NAME, value='Gene Ontology'),
-        ],
-        annotations=[
-            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(LicenseCV.CC_BY_4_0)),
-            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(UpdateCategoryCV.REGULAR)),
-            Annotation(term=IdentifierNamespaceCv.PUBMED, value='33290552'),
-            Annotation(term=ResourceAnnotationCv.URL, value='http://geneontology.org/'),
-            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=(
-                'The Gene Ontology (GO) provides a comprehensive framework for '
-                'describing gene functions across all organisms. GO covers three domains: '
-                'biological process, molecular function, and cellular component. '
-                'GO terms are organized in a hierarchical structure with rich relationships.'
-            )),
-        ],
-    )
-
-
-def gene_ontology() -> Generator[Entity]:
-    """
-    Download and parse Gene Ontology OBO file as Entity records.
-
-    Downloads Gene Ontology OBO data and converts each term into a Entity
-    with CV_TERM type, including identifiers, annotations, and relationships.
-
-    Yields:
-        Entity records with type CV_TERM
-    """
-    # Download and open the OBO file
-    obo = Obo(GENE_ONTOLOGY_URL, name='GeneOntology')
-
-    # Define the schema mapping
-    f = FieldConfig()
-    schema = EntityBuilder(
-        entity_type=EntityTypeCv.CV_TERM,
-        identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('accession')),
-            CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
-            CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('alt_ids', delimiter=';')),
-
+resource = Resource(
+    config,
+    gene_ontology=Dataset(
+        download=Download(
+            url=GENE_ONTOLOGY_URL,
+            filename='go.obo',
+            subfolder='gene_ontology',
         ),
-        annotations=AnnotationsBuilder(
-            # Source annotation
-            CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
-            CV(term=OntologyAnnotationCv.COMMENT, value=f('comment')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('is_a', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('xrefs', delimiter=';')),
-            CV(term=OntologyAnnotationCv.IS_OBSOLETE, value=f('is_obsolete')),
-        ),
-    )
+        mapper=schema,
+        raw_parser=iter_obo_terms,
+    ),
+)
 
-    # Parse and yield entities
-    for term in obo:
-        if term.stanza == 'Term':
-            row = process_obo_term(term)
-            yield schema(row)
+gene_ontology = resource.gene_ontology
