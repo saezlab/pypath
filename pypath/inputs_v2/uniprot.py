@@ -133,5 +133,3 @@ resource = Resource(
         raw_parser=iter_tsv,
     ),
 )
-
-proteins = resource.proteins

@@ -94,5 +94,3 @@ resource = Resource(
         raw_parser=iter_obo_terms,
     ),
 )
-
-psi_mi_ontology = resource.psi_mi_ontology

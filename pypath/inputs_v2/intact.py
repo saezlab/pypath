@@ -193,5 +193,3 @@ resource = Resource(
         raw_parser=_intact_raw,
     ),
 )
-
-interactions = resource.interactions

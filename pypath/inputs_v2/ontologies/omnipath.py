@@ -151,5 +151,3 @@ resource = Resource(
         raw_parser=_iter_cv_terms,
     ),
 )
-
-omnipath_ontology = resource.omnipath_ontology
