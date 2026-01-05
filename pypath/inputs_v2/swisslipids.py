@@ -106,5 +106,3 @@ resource = Resource(
         raw_parser=iter_tsv,
     ),
 )
-
-lipids = resource.lipids

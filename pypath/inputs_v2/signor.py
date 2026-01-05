@@ -290,9 +290,3 @@ resource = Resource(
         raw_parser=_iter_tsv,
     ),
 )
-
-complexes = resource.complexes
-protein_families = resource.protein_families
-phenotypes = resource.phenotypes
-stimuli = resource.stimuli
-interactions = resource.interactions

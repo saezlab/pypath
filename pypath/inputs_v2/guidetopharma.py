@@ -343,7 +343,3 @@ resource = Resource(
         raw_parser=_iter_guidetopharma_csv,
     ),
 )
-
-targets = resource.targets
-ligands = resource.ligands
-interactions = resource.interactions

@@ -93,5 +93,3 @@ resource = Resource(
         raw_parser=iter_obo_terms,
     ),
 )
-
-gene_ontology = resource.gene_ontology

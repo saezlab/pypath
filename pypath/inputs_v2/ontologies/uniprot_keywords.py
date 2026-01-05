@@ -92,5 +92,3 @@ resource = Resource(
         raw_parser=iter_obo_terms,
     ),
 )
-
-uniprot_keywords_ontology = resource.uniprot_keywords_ontology

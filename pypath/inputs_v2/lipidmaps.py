@@ -98,5 +98,3 @@ resource = Resource(
         raw_parser=_raw,
     ),
 )
-
-lipids = resource.lipids

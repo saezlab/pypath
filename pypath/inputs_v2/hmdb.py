@@ -92,5 +92,3 @@ resource = Resource(
         raw_parser=_raw,
     ),
 )
-
-metabolites = resource.metabolites
