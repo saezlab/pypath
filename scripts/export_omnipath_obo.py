@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Export OmniPath CV terms to OBO format.
+"""Export OmniPath CV terms as an extension of PSI-MI OBO.
 
-This script extracts all OmniPath-specific controlled vocabulary terms (OM:* accessions)
-from pypath.internals.cv_terms and generates an OBO format ontology file.
+This script generates a combined OBO file containing:
+1. The full PSI-MI ontology (fetched from GitHub)
+2. OmniPath-specific terms (OM:* accessions) appended with proper is_a relationships
+
+OmniPath terms that extend PSI-MI categories use is_a relationships to their
+MI parent terms, enabling proper hierarchy traversal across both ontologies.
 
 Usage:
     python scripts/export_omnipath_obo.py [output_path]
     
-    output_path: Optional path for the OBO file (default: omnipath.obo)
+    output_path: Optional path for the OBO file (default: omnipath_mi.obo)
 """
 
 from __future__ import annotations
@@ -16,6 +20,7 @@ from __future__ import annotations
 import inspect
 import re
 import sys
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 
@@ -24,6 +29,42 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from pypath.internals.cv_terms import CvEnum
 from pypath.internals import cv_terms
+
+
+# PSI-MI OBO source
+PSI_MI_URL = "https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo"
+
+
+def fetch_psi_mi() -> str:
+    """Fetch PSI-MI OBO content from GitHub.
+    
+    Returns:
+        The PSI-MI OBO file content as a string.
+    """
+    print("Fetching PSI-MI OBO...")
+    with urllib.request.urlopen(PSI_MI_URL) as response:
+        content = response.read().decode('utf-8')
+    print(f"  Fetched {len(content)} bytes")
+    return content
+
+
+def fix_malformed_dates(content: str) -> str:
+    """Fix malformed date formats in OBO content.
+    
+    PSI-MI has dates in non-standard format like "date: 15:04:2021 22:57"
+    (DD:MM:YYYY instead of ISO format) which causes pronto/fastobo to fail.
+    
+    Args:
+        content: The OBO file content.
+        
+    Returns:
+        Content with malformed dates removed.
+    """
+    # Remove malformed header date lines (DD:MM:YYYY format)
+    content = re.sub(r'^date: \d{2}:\d{2}:\d{4}.*\n', '', content, flags=re.MULTILINE)
+    # Remove all creation_date fields (parser gets corrupted by malformed header)
+    content = re.sub(r'^creation_date:.*\n', '', content, flags=re.MULTILINE)
+    return content
 
 
 def format_name(name: str) -> str:
@@ -43,7 +84,8 @@ def extract_om_terms() -> list[dict]:
     """Extract all OM:* terms from cv_terms module.
     
     Returns:
-        List of dicts with keys: accession, name, definition, parent, xref
+        List of dicts with keys: accession, name, definition, is_a
+        Note: We now use is_a for ALL parent relationships (both OM and MI).
     """
     terms = {}  # accession -> term_data
     parent_terms = {}  # Track parent terms defined as tuples
@@ -67,8 +109,7 @@ def extract_om_terms() -> list[dict]:
                         "accession": parent_accession,
                         "name": format_name(parent_name) if parent_name else parent_accession,
                         "definition": parent_def,
-                        "parent": None,  # Root terms have no parent
-                        "xref": None,
+                        "is_a": "MI:0000",  # Link OM roots to MI root
                     }
             elif isinstance(parent_term, str):
                 parent_accession = parent_term
@@ -83,21 +124,17 @@ def extract_om_terms() -> list[dict]:
             
             definition = getattr(member, "definition", None) or ""
             
-            # Determine is_a (OM:* only) and xref (MI:* references)
-            is_a = None
-            xref = None
-            if parent_accession:
-                if parent_accession.startswith("OM:"):
-                    is_a = parent_accession
-                elif parent_accession.startswith("MI:"):
-                    xref = parent_accession
+            # Use is_a for ALL parent relationships (both OM and MI)
+            # This allows proper hierarchy traversal in the combined ontology
+            # Use is_a for ALL parent relationships (both OM and MI)
+            # Default to MI:0000 (molecular interaction) if no parent is specified
+            is_a = parent_accession if parent_accession else "MI:0000"
             
             terms[accession] = {
                 "accession": accession,
                 "name": format_name(member.name),
                 "definition": definition,
-                "parent": is_a,
-                "xref": xref,
+                "is_a": is_a,
             }
     
     # Add parent terms that aren't already included as regular terms
@@ -109,21 +146,15 @@ def extract_om_terms() -> list[dict]:
 
 
 def format_obo(terms: list[dict]) -> str:
-    """Format terms as OBO file content.
+    """Format OM terms as OBO content to append to PSI-MI.
     
     Args:
-        terms: List of term dicts with accession, name, definition, parent
+        terms: List of term dicts with accession, name, definition, is_a
         
     Returns:
-        OBO format string
+        OBO format string (just the [Term] entries, no header)
     """
-    lines = [
-        "format-version: 1.2",
-        f"date: {datetime.now().strftime('%d:%m:%Y %H:%M')}",
-        "ontology: omnipath",
-        "default-namespace: OMNIPATH",
-        "",
-    ]
+    lines = []
     
     # Sort terms by accession for consistent output
     for term in sorted(terms, key=lambda t: t["accession"]):
@@ -135,43 +166,60 @@ def format_obo(terms: list[dict]) -> str:
             escaped_def = escape_obo_string(term["definition"])
             lines.append(f'def: "{escaped_def}" []')
         
-        if term["parent"]:
-            lines.append(f"is_a: {term['parent']}")
-        
-        if term.get("xref"):
-            lines.append(f"xref: {term['xref']}")
+        if term["is_a"]:
+            lines.append(f"is_a: {term['is_a']}")
         
         lines.append("")
     
     return "\n".join(lines)
 
 
-def main(output_path: str = "omnipath.obo") -> None:
-    """Generate OmniPath OBO file from cv_terms.
+def main(output_path: str = "omnipath_mi.obo") -> None:
+    """Generate combined PSI-MI + OmniPath OBO file.
     
     Args:
         output_path: Path for the output OBO file
     """
+    # Fetch and fix PSI-MI
+    psi_mi = fetch_psi_mi()
+    psi_mi = fix_malformed_dates(psi_mi)
+    print("  Fixed malformed dates")
+    
+    # Extract OM terms
     print("Extracting OM terms from cv_terms...")
     terms = extract_om_terms()
     print(f"Found {len(terms)} OM terms")
     
+    # Format OM terms
     print("Generating OBO format...")
-    obo_content = format_obo(terms)
+    om_obo = format_obo(terms)
+    
+    # Combine: PSI-MI + OmniPath terms
+    combined = psi_mi + "\n" + om_obo
     
     output = Path(output_path)
-    output.write_text(obo_content)
+    output.write_text(combined)
     print(f"Wrote {output.resolve()}")
     
     # Print summary
-    root_terms = [t for t in terms if t["parent"] is None]
+    root_om_terms = [t for t in terms if t["is_a"] is None]
+    mi_child_terms = [t for t in terms if t["is_a"] and t["is_a"].startswith("MI:")]
+    om_child_terms = [t for t in terms if t["is_a"] and t["is_a"].startswith("OM:")]
+    
     print(f"\nSummary:")
-    print(f"  Total terms: {len(terms)}")
-    print(f"  Root terms: {len(root_terms)}")
-    for rt in sorted(root_terms, key=lambda t: t["accession"]):
-        print(f"    - {rt['accession']}: {rt['name']}")
+    print(f"  OM terms: {len(terms)}")
+    print(f"  OM root terms (no parent): {len(root_om_terms)}")
+    print(f"  OM terms extending MI: {len(mi_child_terms)}")
+    print(f"  OM terms under OM parents: {len(om_child_terms)}")
+    
+    if root_om_terms:
+        print(f"\n  OmniPath root terms:")
+        for rt in sorted(root_om_terms, key=lambda t: t["accession"])[:10]:
+            print(f"    - {rt['accession']}: {rt['name']}")
+        if len(root_om_terms) > 10:
+            print(f"    ... and {len(root_om_terms) - 10} more")
 
 
 if __name__ == "__main__":
-    output = sys.argv[1] if len(sys.argv) > 1 else "omnipath.obo"
+    output = sys.argv[1] if len(sys.argv) > 1 else "omnipath_mi.obo"
     main(output)
