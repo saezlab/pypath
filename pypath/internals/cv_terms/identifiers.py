@@ -65,6 +65,7 @@ class IdentifierNamespaceCv(CvEnum):
     SIGNOR = ("OM:0007", "SIGNOR database identifier", "https://signor.uniroma2.it")
     GUIDETOPHARMA = ("OM:0008", "Guide to Pharmacology identifier", "https://www.guidetopharmacology.org")
     SWISSLIPIDS = ("OM:0009", "SwissLipids database ID", "https://www.swisslipids.org")
+    CORUM = ("OM:0010", "CORUM protein complex database ID", "https://mips.helmholtz-muenchen.de/corum/")
     ZINC = ("OM:0123", "ZINC database compound identifier", "https://zinc.docking.org")
     INN = ("OM:0120", "International Nonproprietary Name", "https://www.who.int/teams/health-product-and-policy-standards/inn")
     GTO_IMMU_PDB = ("OM:0121", "Guide to Immunopharmacology identifier", "https://www.guidetopharmacology.org/immunopharmacology.jsp")

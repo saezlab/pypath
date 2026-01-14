@@ -30,6 +30,7 @@ class ResourceCv(CvEnum):
     REACTOME = ("OM:1151", "Reactome", "https://reactome.org/")
     SIGNOR = ("OM:1152", "SIGNOR", "https://signor.uniroma2.it/")
     BINDINGDB = ("OM:1153", "BindingDB", "https://www.bindingdb.org/")
+    CORUM = ("OM:1154", "CORUM", "https://mips.helmholtz-muenchen.de/corum/")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
