@@ -35,6 +35,11 @@ class LicenseCV(CvEnum):
         "Creative Commons Attribution-ShareAlike 4.0 International license",
         "https://creativecommons.org/licenses/by-sa/4.0/"
     )
+    CC_BY_NC_4_0 = (
+        "OM:0511",
+        "Creative Commons Attribution-NonCommercial 4.0 International license",
+        "https://creativecommons.org/licenses/by-nc/4.0/"
+    )
     MIT = (
         "OM:0504",
         "MIT License - permissive free software license",
