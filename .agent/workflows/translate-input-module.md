@@ -15,17 +15,45 @@ This workflow converts a legacy `pypath.inputs` module to the new declarative `p
 
 ---
 
+## Step 0: Check Resource Metadata CSV & Track Progress
+
+**IMPORTANT**: Before starting, check the resource metadata CSV:
+`pypath/.agent/omnipath-resources.csv`
+
+This CSV contains pre-collected metadata for all OmniPath resources:
+- **Resource Name** - The canonical resource name
+- **Categories** - Data categories (Interactions, Annotations, Complexes, etc.)
+- **License Name/Full Name/URL** - License information
+- **Maintenance** - Update frequency
+- **Records** - Record count
+- **Articles/PubMeds** - Publication references
+- **Contacts** - Maintainer contacts
+- **Status** - Translation status (`pending`, `done`, `fail`, `skip`)
+- **Notes** - Notes on issues or special handling needed
+
+// turbo
+Look up resource metadata:
+```bash
+grep -i 'RESOURCE_NAME' pypath/.agent/omnipath-resources.csv
+```
+
+After completing translation, update the CSV:
+- Set **Status** to `done` if successful, `fail` if blocked, or `skip` if not needed
+- Add any relevant **Notes** (e.g., "Complex membership parsing not yet supported")
+
+---
+
 ## Step 1: Analyze the Old Module and Gather Metadata
 
 ### 1a. Check existing metadata sources
 
-**IMPORTANT**: Resource metadata (license, URL, pubmed, description) exists in:
-- `pypath/pypath/resources/data/resources.json` - Primary source for license, pubmeds, URLs
+The CSV above is the primary source for license and metadata. Additional details may exist in:
+- `pypath/pypath/resources/data/resources.json` - Additional metadata
 - `pypath/pypath/resources/descriptions.py` - Detailed descriptions
 - `pypath/pypath/resources/urls.py` - Download URLs
 
 // turbo
-Search for resource metadata:
+Search for additional resource metadata:
 ```bash
 grep -A 50 '"RESOURCE_NAME":' pypath/pypath/resources/data/resources.json | head -60
 ```
