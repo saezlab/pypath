@@ -67,6 +67,7 @@ class Column:
         transform: Callable[[Any], Any] | None = None,
         map: Mapping[Any, Any] | Callable[[Any], Any] | None = None,
         default: Any | None = None,
+        preserve_indices: bool = False,
     ) -> None:
         self.selector = selector
         self.delimiter = delimiter
@@ -74,9 +75,15 @@ class Column:
         self.transform = transform
         self.mapping = map
         self.default = default
+        self.preserve_indices = preserve_indices
 
     def extract(self, row: Any, cache: ColumnCache | None = None) -> list[Any]:
-        """Extract a list of processed values from the given row."""
+        """Extract a list of processed values from the given row.
+        
+        When preserve_indices is True, empty/placeholder values are preserved
+        as None in the output list to maintain index alignment across multiple
+        delimited fields (needed for MembersFromList).
+        """
         raw_value = self._lookup(row)
         if raw_value is None:
             return []
@@ -86,6 +93,8 @@ class Column:
         for token in tokens:
             text = self._normalize_token(token)
             if text in (None, "", "-"):
+                if self.preserve_indices:
+                    out.append(None)
                 continue
             processed: str | Any | None = text
             for step in self.extract_steps:
@@ -94,16 +103,23 @@ class Column:
                     break
 
             if processed is None:
+                if self.preserve_indices:
+                    out.append(None)
                 continue
 
             processed = self._apply_transform(processed)
             if processed is None:
+                if self.preserve_indices:
+                    out.append(None)
                 continue
 
             mapped = self._apply_mapping(processed)
             if mapped is None:
                 if self.default is not None:
                     mapped = self.default
+                elif self.preserve_indices:
+                    out.append(None)
+                    continue
                 else:
                     continue
 
@@ -285,6 +301,7 @@ class FieldConfig:
     map: dict[str, Mapping[Any, Any] | Callable[[Any], Any]] = field(default_factory=dict)
     transform: dict[str, Callable[[Any], Any]] = field(default_factory=dict)
     delimiter: str | None = None
+    preserve_indices: bool = False
 
     def __call__(
         self,
@@ -295,6 +312,7 @@ class FieldConfig:
         map: str | Mapping[Any, Any] | Callable[[Any], Any] | None = None,
         delimiter: str | None = None,
         default: Any | None = None,
+        preserve_indices: bool | None = None,
     ) -> Column:
         extract_steps = self._resolve_extract(extract)
         transform_func = self._resolve_transform(transform)
@@ -306,6 +324,7 @@ class FieldConfig:
             transform=transform_func,
             map=mapping,
             default=default,
+            preserve_indices=preserve_indices if preserve_indices is not None else self.preserve_indices,
         )
 
     def _resolve_extract(
