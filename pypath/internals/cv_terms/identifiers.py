@@ -99,3 +99,4 @@ class IdentifierNamespaceCv(CvEnum):
     BIORXIV = "MI:2347"
     PATENT_NUMBER = ("OM:0206", "Patent number identifier")
     PHENOL_EXPLORER = ("OM:0011", "Phenol-Explorer database identifier", "http://phenol-explorer.eu/")
+    FOODB = ("OM:0213", "FooDB database identifier", "https://foodb.ca/")
