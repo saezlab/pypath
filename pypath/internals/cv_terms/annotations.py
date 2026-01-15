@@ -293,6 +293,7 @@ class MoleculeAnnotationsCv(CvEnum):
     AGLYCONE = ("OM:0666", "Aglycone (non-sugar) component of a glycoside compound")
 
     # Concentration and measurement statistics (OM:0680-0699 range)
+    CONCENTRATION_VALUE = ("OM:0679", "Concentration value")
     CONCENTRATION_MEAN = ("OM:0680", "Mean concentration value")
     CONCENTRATION_MIN = ("OM:0681", "Minimum concentration value")
     CONCENTRATION_MAX = ("OM:0682", "Maximum concentration value")
@@ -301,6 +302,7 @@ class MoleculeAnnotationsCv(CvEnum):
     SAMPLE_COUNT = ("OM:0685", "Number of samples analyzed (n)")
     DATA_POINT_COUNT = ("OM:0686", "Total number of data points (N)")
     EXPERIMENTAL_METHOD = ("OM:0687", "Experimental method group used for measurement")
+    CONCENTRATION_MEDIAN = ("OM:0688", "Median concentration value")
 
 
 class InteractionParameterCv(CvEnum):

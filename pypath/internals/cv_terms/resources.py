@@ -38,6 +38,7 @@ class ResourceCv(CvEnum):
     SWISSLIPIDS = ("OM:1172", "SwissLipids", "https://www.swisslipids.org/")
     PHENOL_EXPLORER = ("OM:1173", "Phenol-Explorer", "http://phenol-explorer.eu/")
     FOODB = ("OM:1174", "FooDB", "https://foodb.ca/")
+    PTFI = ("OM:1175", "PTFI Discover", "https://ptfidiscover.markerlab.com/")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")

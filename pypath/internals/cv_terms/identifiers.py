@@ -100,3 +100,5 @@ class IdentifierNamespaceCv(CvEnum):
     PATENT_NUMBER = ("OM:0206", "Patent number identifier")
     PHENOL_EXPLORER = ("OM:0011", "Phenol-Explorer database identifier", "http://phenol-explorer.eu/")
     FOODB = ("OM:0213", "FooDB database identifier", "https://foodb.ca/")
+    PTFI = ("OM:0214", "PTFI Discover database identifier", "https://ptfidiscover.markerlab.com/")
+    FOODON = ("OM:0215", "FOODON ontology identifier", "https://foodon.org/")
