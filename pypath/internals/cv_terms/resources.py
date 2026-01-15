@@ -37,6 +37,7 @@ class ResourceCv(CvEnum):
     LIPIDMAPS = ("OM:1171", "LIPID MAPS Structure Database", "https://lipidmaps.org/")
     SWISSLIPIDS = ("OM:1172", "SwissLipids", "https://www.swisslipids.org/")
     PHENOL_EXPLORER = ("OM:1173", "Phenol-Explorer", "http://phenol-explorer.eu/")
+    FOODB = ("OM:1174", "FooDB", "https://foodb.ca/")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
