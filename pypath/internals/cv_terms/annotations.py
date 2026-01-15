@@ -283,6 +283,25 @@ class MoleculeAnnotationsCv(CvEnum):
     RADIOACTIVE = ("OM:0653", "Indicates whether the molecule contains radioactive isotopes")
     ANTIBACTERIAL = ("OM:0654", "Indicates whether the molecule has antibacterial activity")
 
+    # Food and compound classification (OM:0660-0679 range)
+    FOOD_CLASS = ("OM:0660", "Food classification group (e.g., Alcoholic beverages, Fruits)")
+    FOOD_SUBCLASS = ("OM:0661", "Food classification subgroup (e.g., Beers, Berries)")
+    COMPOUND_CLASS = ("OM:0662", "Compound classification class (e.g., Flavonoids, Phenolic acids)")
+    COMPOUND_SUBCLASS = ("OM:0663", "Compound classification subclass (e.g., Anthocyanins, Flavanols)")
+    BOTANICAL_FAMILY = ("OM:0664", "Botanical family of a food source")
+    SCIENTIFIC_NAME = ("OM:0665", "Scientific name of a food source organism")
+    AGLYCONE = ("OM:0666", "Aglycone (non-sugar) component of a glycoside compound")
+
+    # Concentration and measurement statistics (OM:0680-0699 range)
+    CONCENTRATION_MEAN = ("OM:0680", "Mean concentration value")
+    CONCENTRATION_MIN = ("OM:0681", "Minimum concentration value")
+    CONCENTRATION_MAX = ("OM:0682", "Maximum concentration value")
+    CONCENTRATION_SD = ("OM:0683", "Standard deviation of concentration measurements")
+    CONCENTRATION_UNIT = ("OM:0684", "Unit of concentration measurement (e.g., mg/100 ml)")
+    SAMPLE_COUNT = ("OM:0685", "Number of samples analyzed (n)")
+    DATA_POINT_COUNT = ("OM:0686", "Total number of data points (N)")
+    EXPERIMENTAL_METHOD = ("OM:0687", "Experimental method group used for measurement")
+
 
 class InteractionParameterCv(CvEnum):
     """Interaction parameter terms from PSI-MI.

@@ -37,6 +37,7 @@ class EntityTypeCv(CvEnum):
     CATALYSIS = "OM:0017"
     CONTROL = "OM:0018"
     DEGRADATION = ("OM:0019", "Degradation reaction")
+    FOOD = ("OM:0020", "Food or food product")
 
 
 class MoleculeSubtypeCv(CvEnum):
