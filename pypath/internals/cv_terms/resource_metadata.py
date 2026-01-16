@@ -61,7 +61,7 @@ class UpdateCategoryCV(CvEnum):
     Describes how frequently a data source is expected to be updated.
     """
 
-    parent_cv_term = ("OM:0400", "Update frequency term", "Describes how frequently a data source is expected to be updated.")
+    parent_cv_term = ("OM:0420", "Update frequency term", "Describes how frequently a data source is expected to be updated.")
 
     # OmniPath update category terms (OM:0410-0419 range)
     REGULAR = (

@@ -45,7 +45,7 @@ class MoleculeSubtypeCv(CvEnum):
 
     parent_cv_term = EntityTypeCv.SMALL_MOLECULE
 
-    SYNTHETIC_ORGANIC = ("OM:0020", "Synthetic organic compound")
+    SYNTHETIC_ORGANIC = ("OM:0029", "Synthetic organic compound")
     NATURAL_PRODUCT = ("OM:0021", "Natural product")
     METABOLITE = ("OM:0022", "Endogenous metabolite")
     INORGANIC = ("OM:0023", "Inorganic compound")
