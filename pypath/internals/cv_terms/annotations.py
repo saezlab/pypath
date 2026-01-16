@@ -264,7 +264,7 @@ class MoleculeAnnotationsCv(CvEnum):
     LIPID_MAIN_CLASS = ("OM:0615", "Main lipid class within a category")
     LIPID_SUB_CLASS = ("OM:0616", "Sub-class within a lipid main class")
     LIPID_HIERARCHY_LEVEL = ("OM:0619", "Level of specificity in lipid classification hierarchy (e.g., Species, Isomer, Class)")
-    LIPID_STRUCTURAL_COMPONENTS = ("OM:0620", "Structural components of the lipid molecule (e.g., fatty acid chains)")
+    LIPID_STRUCTURAL_COMPONENTS = ("OM:0621", "Structural components of the lipid molecule (e.g., fatty acid chains)")
 
     # Molecular properties (OM:0623-0629 range)
     MOLECULAR_CHARGE = ("OM:0623", "Electric charge of the molecule at specified pH")

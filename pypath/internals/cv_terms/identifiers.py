@@ -65,7 +65,7 @@ class IdentifierNamespaceCv(CvEnum):
     SIGNOR = ("OM:0007", "SIGNOR database identifier", "https://signor.uniroma2.it")
     GUIDETOPHARMA = ("OM:0008", "Guide to Pharmacology identifier", "https://www.guidetopharmacology.org")
     SWISSLIPIDS = ("OM:0009", "SwissLipids database ID", "https://www.swisslipids.org")
-    CORUM = ("OM:0010", "CORUM protein complex database ID", "https://mips.helmholtz-muenchen.de/corum/")
+    CORUM = ("OM:0027", "CORUM protein complex database ID", "https://mips.helmholtz-muenchen.de/corum/")
     ZINC = ("OM:0123", "ZINC database compound identifier", "https://zinc.docking.org")
     INN = ("OM:0120", "International Nonproprietary Name", "https://www.who.int/teams/health-product-and-policy-standards/inn")
     GTO_IMMU_PDB = ("OM:0121", "Guide to Immunopharmacology identifier", "https://www.guidetopharmacology.org/immunopharmacology.jsp")
@@ -98,7 +98,7 @@ class IdentifierNamespaceCv(CvEnum):
     DOI = "MI:0574"
     BIORXIV = "MI:2347"
     PATENT_NUMBER = ("OM:0206", "Patent number identifier")
-    PHENOL_EXPLORER = ("OM:0011", "Phenol-Explorer database identifier", "http://phenol-explorer.eu/")
+    PHENOL_EXPLORER = ("OM:0028", "Phenol-Explorer database identifier", "http://phenol-explorer.eu/")
     FOODB = ("OM:0213", "FooDB database identifier", "https://foodb.ca/")
     PTFI = ("OM:0214", "PTFI Discover database identifier", "https://ptfidiscover.markerlab.com/")
     FOODON = ("OM:0215", "FOODON ontology identifier", "https://foodon.org/")
