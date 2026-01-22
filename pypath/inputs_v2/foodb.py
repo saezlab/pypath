@@ -80,6 +80,7 @@ foods_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_taxonomy_id')),
     ),
     annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('description')),
         CV(term=MoleculeAnnotationsCv.SCIENTIFIC_NAME, value=f('name_scientific')),
         CV(term=MoleculeAnnotationsCv.FOOD_CLASS, value=f('food_group')),
         CV(term=MoleculeAnnotationsCv.FOOD_SUBCLASS, value=f('food_subgroup')),
@@ -119,18 +120,12 @@ foods_schema = EntityBuilder(
 # Resource definition
 # =============================================================================
 
-# Path to extracted FooDB data (extracted from tar archive)
-FOODB_DATA_DIR = '/Users/jschaul/Code/omnipath_build/pypath-data/foodb/foodb_2020_04_07_csv'
-
 resource = Resource(
     config,
     foods=Dataset(
         download=download_csv,
         mapper=foods_schema,
-        raw_parser=lambda opener, **kwargs: _raw(
-            data_dir=FOODB_DATA_DIR,
-            **kwargs,
-        ),
+        raw_parser=_raw,
     ),
 )
 
