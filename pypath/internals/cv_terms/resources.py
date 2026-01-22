@@ -42,3 +42,6 @@ class ResourceCv(CvEnum):
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
+
+    # Phenotype and ontology databases (OM:1190-1199 range)
+    HPO = ("OM:1190", "Human Phenotype Ontology", "https://hpo.jax.org/")

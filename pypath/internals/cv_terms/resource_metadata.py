@@ -49,6 +49,11 @@ class LicenseCV(CvEnum):
         "OM:0505",
         "Free for academic use, restrictions may apply for commercial use"
     )
+    HPO = (
+        "OM:0506",
+        "HPO License - free for academic and non-profit use",
+        "https://hpo.jax.org/app/license"
+    )
     UNSPECIFIED = (
         "OM:0599",
         "License not specified or unclear"
