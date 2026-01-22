@@ -1,7 +1,7 @@
 """
 Parse FooDB data files.
 
-This parser downloads and processes FooDB CSV files:
+This parser downloads and processes FooDB CSV files from a tar archive:
 - Food.csv: Food information
 - Compound.csv: Compound/metabolite information  
 - Content.csv: Food-compound relationships with concentrations
@@ -14,9 +14,9 @@ Data is cached in a pickle file to speed up subsequent access.
 
 from __future__ import annotations
 
+import io
 import pickle
 from collections.abc import Generator
-import os
 from pathlib import Path
 from typing import Any
 
@@ -33,7 +33,7 @@ MEMBER_DELIMITER = '||'
 _DATA_CACHE: list[dict] | None = None
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 1
+_CACHE_VERSION = 2  # Bumped version since we changed the parsing approach
 
 
 def _get_cache_path() -> Path:
@@ -41,8 +41,10 @@ def _get_cache_path() -> Path:
     return cache_dir / f'foodb_data_v{_CACHE_VERSION}.pkl'
 
 
-def _load_cached_data() -> list[dict] | None:
+def _load_cached_data(force_refresh: bool = False) -> list[dict] | None:
     global _DATA_CACHE
+    if force_refresh:
+        return None
     if _DATA_CACHE is not None:
         return _DATA_CACHE
     
@@ -86,9 +88,38 @@ def _blank_to_dash(s: pd.Series) -> pd.Series:
     return s.replace('', '-')
 
 
-def _load_compounds(data_dir: str) -> pd.DataFrame:
+def _find_csv_file(files: dict[str, Any], csv_name: str) -> io.StringIO | None:
+    """
+    Find a CSV file in the extracted archive files dict.
+    
+    Args:
+        files: Dict mapping filename to file handle from opener.result
+        csv_name: Name of the CSV file to find (e.g., 'Food.csv')
+        
+    Returns:
+        A StringIO or file handle for the CSV file, or None if not found
+    """
+    for filename, handle in files.items():
+        # Match by basename (handles nested paths in tar archives)
+        if filename.endswith(csv_name) or filename.endswith(f'/{csv_name}'):
+            # If handle is bytes, decode it
+            if hasattr(handle, 'read'):
+                content = handle.read()
+                if isinstance(content, bytes):
+                    return io.StringIO(content.decode('utf-8'))
+                elif isinstance(content, str):
+                    return io.StringIO(content)
+                # Reset handle if readable
+                handle.seek(0)
+                return handle
+    return None
+
+
+def _load_compounds(files: dict[str, Any]) -> pd.DataFrame:
     """Load Compound.csv with correct headers."""
-    compounds_path = os.path.join(data_dir, 'Compound.csv')
+    handle = _find_csv_file(files, 'Compound.csv')
+    if handle is None:
+        raise ValueError("Compound.csv not found in archive")
     
     # Correct column order (header in file is mismatched with data in the original file)
     # We skip the header row (skiprows=1) and provide our own names.
@@ -101,7 +132,7 @@ def _load_compounds(data_dir: str) -> pd.DataFrame:
     
     # Use C engine for speed, handle potential bad lines if any
     df = pd.read_csv(
-        compounds_path,
+        handle,
         names=fieldnames,
         skiprows=1,
         dtype={'id': 'Int64'}, # nullable int
@@ -111,17 +142,16 @@ def _load_compounds(data_dir: str) -> pd.DataFrame:
     # Filter valid IDs
     df = df.dropna(subset=['id'])
     
-    # Rename columns to match expected output schema / merge keys
-    # We prefix compound columns to avoid collision with Food columns later if needed,
-    # but we will rename explicitly before merge.
-    
     return df
 
 
-def _load_synonyms(data_dir: str) -> pd.DataFrame:
+def _load_synonyms(files: dict[str, Any]) -> pd.DataFrame:
     """Load CompoundSynonym.csv and aggregate synonyms."""
-    syn_path = os.path.join(data_dir, 'CompoundSynonym.csv')
-    df = pd.read_csv(syn_path, low_memory=False)
+    handle = _find_csv_file(files, 'CompoundSynonym.csv')
+    if handle is None:
+        raise ValueError("CompoundSynonym.csv not found in archive")
+    
+    df = pd.read_csv(handle, low_memory=False)
     
     # Filter for compounds
     df = df[df['source_type'] == 'Compound'].copy()
@@ -131,10 +161,6 @@ def _load_synonyms(data_dir: str) -> pd.DataFrame:
     df = df[df['synonym'] != '']
     
     # Aggregate: take top 5, join with ';'
-    # GroupBy apply is slow, but optimized for simple aggregations.
-    # To limit to 5 efficiently:
-    # We can take head(5) per group first?
-    # Sorting isn't strictly defined but let's just take first 5 encountered.
     df_head = df.groupby('source_id').head(5)
     
     synonyms = df_head.groupby('source_id')['synonym'].agg(';'.join).reset_index()
@@ -143,10 +169,13 @@ def _load_synonyms(data_dir: str) -> pd.DataFrame:
     return synonyms
 
 
-def _load_external_ids(data_dir: str) -> pd.DataFrame:
+def _load_external_ids(files: dict[str, Any]) -> pd.DataFrame:
     """Load External Descriptors and extract ChEBI/KEGG."""
-    ext_path = os.path.join(data_dir, 'CompoundExternalDescriptor.csv')
-    df = pd.read_csv(ext_path, low_memory=False)
+    handle = _find_csv_file(files, 'CompoundExternalDescriptor.csv')
+    if handle is None:
+        raise ValueError("CompoundExternalDescriptor.csv not found in archive")
+    
+    df = pd.read_csv(handle, low_memory=False)
     
     # Clean
     df['external_id'] = _clean_str(df['external_id'])
@@ -163,9 +192,6 @@ def _load_external_ids(data_dir: str) -> pd.DataFrame:
     chebis = chebis[['compound_id', 'external_id']].rename(columns={'external_id': 'chebi'})
     
     # KEGG: C followed by 5 digits
-    # Regex: ^C\d{5}
-    # But original logic was: startswith('C') and len >= 5 and [1:6] is digit.
-    # We can use regex.
     kegg_mask = df['external_id'].str.match(r'^C\d{5}')
     keggs = df[kegg_mask].copy()
     keggs = keggs.drop_duplicates(subset=['compound_id'])
@@ -179,29 +205,43 @@ def _load_external_ids(data_dir: str) -> pd.DataFrame:
 
 
 def _raw(
-    data_dir: str,
+    opener,
+    force_refresh: bool = False,
     **_kwargs,
 ) -> Generator[dict[str, Any], None, None]:
     """
-    Parse FooDB CSV files and produce flat rows with delimited member fields.
+    Parse FooDB CSV files from tar archive and produce flat rows with delimited member fields.
     
     Args:
-        data_dir: Path to the extracted FooDB CSV directory
+        opener: The opener from Download.open() containing the extracted tar archive files
+        force_refresh: If True, ignore cached data and reparse from source
     """
     # 0. Check cache
-    cached_data = _load_cached_data()
+    cached_data = _load_cached_data(force_refresh=force_refresh)
     if cached_data is not None:
         yield from cached_data
         return
 
+    # Validate opener
+    if not opener or not opener.result:
+        raise ValueError("FooDB download failed - no data available from opener")
+    
+    if not isinstance(opener.result, dict):
+        raise ValueError(f"Expected dict of files from tar archive, got {type(opener.result)}")
+    
+    files = opener.result
+
     # 1. Load Food
-    food_path = os.path.join(data_dir, 'Food.csv')
-    df_food = pd.read_csv(food_path, dtype={'id': 'Int64'}, low_memory=False)
+    food_handle = _find_csv_file(files, 'Food.csv')
+    if food_handle is None:
+        raise ValueError("Food.csv not found in archive")
+    
+    df_food = pd.read_csv(food_handle, dtype={'id': 'Int64'}, low_memory=False)
     df_food = df_food.dropna(subset=['id'])
     
     # Keep only necessary food columns and clean them
     food_cols = [
-        'id', 'public_id', 'name', 'name_scientific', 
+        'id', 'public_id', 'name', 'name_scientific', 'description',
         'food_group', 'food_subgroup', 'ncbi_taxonomy_id'
     ]
     # Ensure columns exist (Food.csv should have them)
@@ -213,8 +253,11 @@ def _raw(
             df_food[col] = _clean_str(df_food[col])
             
     # 2. Load Content (The link between Food and Compound)
-    content_path = os.path.join(data_dir, 'Content.csv')
-    df_content = pd.read_csv(content_path, low_memory=False)
+    content_handle = _find_csv_file(files, 'Content.csv')
+    if content_handle is None:
+        raise ValueError("Content.csv not found in archive")
+    
+    df_content = pd.read_csv(content_handle, low_memory=False)
     
     # Filter for source_type == 'Compound'
     df_content = df_content[df_content['source_type'] == 'Compound']
@@ -224,9 +267,9 @@ def _raw(
     df_content = df_content.dropna(subset=['food_id', 'source_id'])
     
     # 3. Load Compound Info
-    df_compounds = _load_compounds(data_dir)
-    df_synonyms = _load_synonyms(data_dir)
-    df_ext = _load_external_ids(data_dir)
+    df_compounds = _load_compounds(files)
+    df_synonyms = _load_synonyms(files)
+    df_ext = _load_external_ids(files)
     
     # Merge Compound details
     # Compound base + Synonyms + Ext IDs
@@ -235,9 +278,6 @@ def _raw(
     df_full_compounds = df_full_compounds.merge(df_ext, on='id', how='left')
     
     # 4. Merge Content with Compounds
-    # Content.source_id -> Compound.id
-    # We want to keep all content rows, even if compound lookup fails (though it shouldn't ideally)
-    # But if compound details are missing, we might just have empty fields.
     df_merged = df_content.merge(
         df_full_compounds, 
         left_on='source_id', 
@@ -247,9 +287,6 @@ def _raw(
     )
     
     # 5. Prepare data for aggregation
-    # We need to clean and format all fields that will be aggregated.
-    # Map DataFrame columns to the output keys expected by _build_member_fields in original
-    
     # Helper to safe get column
     def get_col(df, col):
         return df[col] if col in df.columns else pd.Series([''] * len(df))
@@ -302,18 +339,9 @@ def _raw(
     df_members = df_merged.groupby('food_id').agg(agg_funcs).reset_index()
     
     # 7. Merge back with Food info
-    # Inner join to ensure we only emit foods that have content
-    # (Or left join if we want foods without content? Original iterated `food_lookup.items()` but then `content_by_food.get(food_id, [])`.
-    # Original emitted all foods, even if no content (empty strings).
-    # So we should use Right Join on df_food?
-    # Or start with df_food and Left Join df_members.
-    
     df_final = df_food.merge(df_members, left_on='id', right_on='food_id', how='left')
     
     # For foods with no members, the member columns will be NaN. Fill with empty string.
-    # Actually, if no members, we want empty string?
-    # Original: if not contents -> all fields are ''.
-    # So fillna('') is correct.
     for col in member_cols:
         df_final[col] = df_final[col].fillna('')
         
