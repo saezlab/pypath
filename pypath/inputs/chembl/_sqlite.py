@@ -71,6 +71,7 @@ def chembl_sqlite(
             large = True,
             silent = False,
             files_needed = [path_in_tar],
+            slow = True,
         )
 
         with open(sqlite_path, 'wb') as fp:
