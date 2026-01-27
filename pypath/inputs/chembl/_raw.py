@@ -25,6 +25,7 @@ import json
 
 from pypath.share import curl
 from pypath.resources import urls
+from . import _sqlite
 
 DATA = Literal[
     "target",
@@ -115,9 +116,9 @@ def query_chembl_data(
     # Ensure the specified (or latest) version of the database is downloaded
     if chembl_version == "latest":
         # Let the library determine the latest version
-        sqlite_path = chembl_downloader.download_sqlite()
+        sqlite_path = _sqlite.chembl_sqlite()
     else:
-        sqlite_path = chembl_downloader.download_sqlite(version=chembl_version)
+        sqlite_path = _sqlite.chembl_sqlite(version=chembl_version)
 
     # Connect to the database
     with chembl_downloader.connect(sqlite_path) as connection:
