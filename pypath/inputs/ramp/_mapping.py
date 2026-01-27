@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from ._sqlite import ramp_raw
+from ._sqlite import ramp_sqlite_raw
 
 __all__ = ['ramp_mapping']
 

@@ -17,56 +17,46 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-import tarfile
 import sqlite3
-import shutil
-import os
+from typing import Callable
+from pathlib import Path
 
 import pypath.share.cache as cache
 from pypath.share import curl, cache
+from pypath.formats import sqlite as _sqlite
 from pypath.resources import urls
+
 from ._common import _log, _show_tables
-
-
-def _chembl_sqlite_path(version: int = 36) -> str:
-
-    return os.path.join(
-        cache.get_cachedir(),
-        f'ChEMBL_SQLite_{version:02}.sqlite',
-    )
 
 def chembl_sqlite(
         version: int = 36,
         connect: bool = True,
-    ) -> sqlite3.Connection | str:
+    ) -> sqlite3.Connection | Path:
 
     """
     Download the ChEMBL database in SQLite format.
 
-    SQLite format builds are avialable in ChEMBL's FTP site:
-        https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases
-    This function downloads and opens one of them.
+    SQLite format builds are available at ChEMBL's FTP site:
+    https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases
+    This function downloads, caches, and opens one of them.
 
     Args
         version:
             The version of the ChEMBL database to download.
 
-    Returns
-        A SQLite database connection.
+    Returns:
+        A SQLite database connection to the ChEMBL database, or the path to
+        the database file.
     """
 
-    sqlite_path = _chembl_sqlite_path(version)
-    exists = os.path.exists(sqlite_path)
-    _log(f'ChEMBL SQLite path: `{sqlite_path}`; exists: {exists}.')
-
-    if not exists:
-
-        path_in_tar = (
-            'chembl_%02i/chembl_%02i_sqlite/chembl_%02i.db' %
-            ((version, ) * 3)
+    path_in_tar = (
+        f'chembl_{version:02d}/chembl_{version:02d}_sqlite/chembl_{version:02d}.db'
         )
-        url = urls.urls['chembl']['sqlite'] % (version, version)
-        c = curl.Curl(
+    url = urls.urls['chembl']['sqlite'] % (version, version)
+
+    def _chembl_download() -> curl.Curl:
+        """Callback to download the tarballed ChEMBL database."""
+        return curl.Curl(
             url,
             large = True,
             silent = False,
@@ -74,17 +64,27 @@ def chembl_sqlite(
             slow = True,
         )
 
-        with open(sqlite_path, 'wb') as fp:
+    def _chembl_extractor(curl_obj: curl.Curl) -> str:
+        """Extractor to get the SQLite file from the tarball."""
+        return curl_obj.result[path_in_tar]
 
-            while chunk := c.result[path_in_tar].read(1024 ** 2):
+    return _sqlite.download_sqlite(
+        download_callback= _chembl_download,
+        extractor=_chembl_extractor,
+        database = 'ChEMBL',
+        version = f'{version:02}',
+        connect = connect,
+    )
 
-                fp.write(chunk)
+def chembl_sqlite_raw() -> dict[str, list[tuple]]:
+    """Extracts all tables and data from the ChEMBL SQLite database.
 
-    if connect:
-
-        _log(f'Opening SQLite: `{sqlite_path}`')
-        con = sqlite3.connect(sqlite_path)
-
-        return con
-
-    return sqlite_path
+    Returns:
+        A dictionary where keys are table names and values are lists of
+        tuples representing the rows in each table.
+    """
+    return _sqlite.raw_tables(
+        sqlite_callback = chembl_sqlite,
+        sqlite = False,
+        return_df = False
+    )
