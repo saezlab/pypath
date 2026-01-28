@@ -1854,6 +1854,18 @@ urls = {
             r'Metabolite-cell%20interaction.txt'
         ),
     },
+    'metatlas': {
+        'label': 'Metabolic Atlas GEM repository',
+        'models': 'https://metabolicatlas.org/api/v2/repository/models/',
+        'integrated': 'https://metabolicatlas.org/api/v2/repository/integrated_models',
+        'file': 'https://metabolicatlas.org/api/v2/repository/%s',
+        'gems_index': 'https://metabolicatlas.github.io/standard-GEM-validation/index.json',
+        'gem_metadata': 'https://metabolicatlas.github.io/standard-GEM-validation/results/%s.json',
+        'github_tree': 'https://api.github.com/repos/%s/git/trees/%s?recursive=1',
+        'github_raw': 'https://raw.githubusercontent.com/%s/%s/%s',
+        'gitlab_tree': 'https://gitlab.com/api/v4/projects/%s/repository/tree?ref=%s&recursive=true&per_page=1000',
+        'gitlab_raw': 'https://gitlab.com/%s/-/raw/%s/%s',
+    },
 }
 
 
