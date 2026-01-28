@@ -21,9 +21,9 @@
 Standard GEM TSV file parsing functions.
 
 Standard GEMs contain annotation files in TSV format:
-- reactions.tsv - Reaction annotations
-- metabolites.tsv - Metabolite annotations
-- genes.tsv - Gene annotations
+- reactions.tsv - Reaction ID mappings to KEGG, BiGG, Rhea, etc.
+- metabolites.tsv - Metabolite ID mappings to HMDB, ChEBI, etc.
+- genes.tsv - Gene annotations with Ensembl, UniProt mappings
 """
 
 from __future__ import annotations
@@ -43,6 +43,41 @@ __all__ = [
     'metatlas_gem_tsv',
 ]
 
+# Mappings from named tuple fields to TSV column names
+_REACTION_FIELDS = {
+    'id': 'rxns',
+    'kegg': 'rxnKEGGID',
+    'bigg': 'rxnBiGGID',
+    'metanetx': 'rxnMetaNetXID',
+    'rhea': 'rxnRheaID',
+    'rhea_master': 'rxnRheaMasterID',
+    'reactome': 'rxnREACTOMEID',
+}
+
+_METABOLITE_FIELDS = {
+    'id': 'mets',
+    'id_no_compartment': 'metsNoComp',
+    'bigg': 'metBiGGID',
+    'kegg': 'metKEGGID',
+    'hmdb': 'metHMDBID',
+    'chebi': 'metChEBIID',
+    'pubchem': 'metPubChemID',
+    'lipidmaps': 'metLipidMapsID',
+    'metanetx': 'metMetaNetXID',
+}
+
+_GENE_FIELDS = {
+    'id': 'genes',
+    'ensembl_transcript': 'geneENSTID',
+    'ensembl_protein': 'geneENSPID',
+    'uniprot': 'geneUniProtID',
+    'symbol': 'geneSymbols',
+    'entrez': 'geneEntrezID',
+    'name': 'geneNames',
+    'aliases': 'geneAliases',
+    'compartments': 'compartments',
+}
+
 
 def _get_gem_info(gem: str) -> tuple[str, str] | None:
     """
@@ -59,7 +94,6 @@ def _get_gem_info(gem: str) -> tuple[str, str] | None:
 
     for host, repos in index.items():
         for repo in repos:
-            # GEM name is the last part of the repo path
             if repo.split('/')[-1] == gem:
                 return host, repo
 
@@ -127,13 +161,7 @@ def metatlas_gem_reactions(
 
     for row in metatlas_gem_tsv(gem, 'model/reactions.tsv', ref):
         yield MetatlasReaction(
-            id=row.get('rxns', ''),
-            kegg=row.get('rxnKEGGID', ''),
-            bigg=row.get('rxnBiGGID', ''),
-            metanetx=row.get('rxnMetaNetXID', ''),
-            rhea=row.get('rxnRheaID', ''),
-            rhea_master=row.get('rxnRheaMasterID', ''),
-            reactome=row.get('rxnREACTOMEID', ''),
+            **{f: row.get(col, '') for f, col in _REACTION_FIELDS.items()},
             spontaneous=row.get('spontaneous', '') == '1',
         )
 
@@ -160,15 +188,7 @@ def metatlas_gem_metabolites(
 
     for row in metatlas_gem_tsv(gem, 'model/metabolites.tsv', ref):
         yield MetatlasMetabolite(
-            id=row.get('mets', ''),
-            id_no_compartment=row.get('metsNoComp', ''),
-            bigg=row.get('metBiGGID', ''),
-            kegg=row.get('metKEGGID', ''),
-            hmdb=row.get('metHMDBID', ''),
-            chebi=row.get('metChEBIID', ''),
-            pubchem=row.get('metPubChemID', ''),
-            lipidmaps=row.get('metLipidMapsID', ''),
-            metanetx=row.get('metMetaNetXID', ''),
+            **{f: row.get(col, '') for f, col in _METABOLITE_FIELDS.items()},
         )
 
 
@@ -194,13 +214,5 @@ def metatlas_gem_genes(
 
     for row in metatlas_gem_tsv(gem, 'model/genes.tsv', ref):
         yield MetatlasGene(
-            id=row.get('genes', ''),
-            ensembl_transcript=row.get('geneENSTID', ''),
-            ensembl_protein=row.get('geneENSPID', ''),
-            uniprot=row.get('geneUniProtID', ''),
-            symbol=row.get('geneSymbols', ''),
-            entrez=row.get('geneEntrezID', ''),
-            name=row.get('geneNames', ''),
-            aliases=row.get('geneAliases', ''),
-            compartments=row.get('compartments', ''),
+            **{f: row.get(col, '') for f, col in _GENE_FIELDS.items()},
         )

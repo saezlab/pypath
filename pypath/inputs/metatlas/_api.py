@@ -26,31 +26,32 @@ from various organisms and tissues.
 
 from __future__ import annotations
 
-from collections.abc import Generator
 import json
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
-from ._common import _log, REQ_HEADERS
+from ._common import _log, REQ_HEADERS, _df_or_records
 from ._records import MetatlasModel
 
 __all__ = [
     'metatlas_models',
     'metatlas_integrated_models',
-    'metatlas_model_files',
 ]
 
 
-def metatlas_models() -> Generator[MetatlasModel, None, None]:
+def metatlas_models(dataframe: bool = False):
     """
     Retrieves all repository models from Metabolic Atlas.
 
     Metabolic Atlas contains 360+ metabolic models from various
     organisms and tissues.
 
-    Yields:
-        MetatlasModel named tuples with model metadata.
+    Args:
+        dataframe: Return a pandas DataFrame instead of a list.
+
+    Returns:
+        List of MetatlasModel named tuples, or DataFrame if requested.
     """
 
     _log('Downloading repository models from Metabolic Atlas.')
@@ -60,23 +61,26 @@ def metatlas_models() -> Generator[MetatlasModel, None, None]:
 
     if c.result is None:
         _log('Failed to download Metabolic Atlas models.')
-        return
+        return [] if not dataframe else None
 
     data = json.loads(c.result)
+    records = [_parse_model(model) for model in data]
 
-    for model in data:
-        yield _parse_model(model)
+    return _df_or_records(records, dataframe)
 
 
-def metatlas_integrated_models() -> Generator[MetatlasModel, None, None]:
+def metatlas_integrated_models(dataframe: bool = False):
     """
     Retrieves integrated models from Metabolic Atlas.
 
     Integrated models are 7 curated models with enhanced API access
     and additional features like compartment maps and subsystem data.
 
-    Yields:
-        MetatlasModel named tuples with model metadata.
+    Args:
+        dataframe: Return a pandas DataFrame instead of a list.
+
+    Returns:
+        List of MetatlasModel named tuples, or DataFrame if requested.
     """
 
     _log('Downloading integrated models from Metabolic Atlas.')
@@ -86,12 +90,12 @@ def metatlas_integrated_models() -> Generator[MetatlasModel, None, None]:
 
     if c.result is None:
         _log('Failed to download Metabolic Atlas integrated models.')
-        return
+        return [] if not dataframe else None
 
     data = json.loads(c.result)
+    records = [_parse_model(model) for model in data]
 
-    for model in data:
-        yield _parse_model(model)
+    return _df_or_records(records, dataframe)
 
 
 def _parse_model(model: dict) -> MetatlasModel:
@@ -111,68 +115,17 @@ def _parse_model(model: dict) -> MetatlasModel:
     sample = model.get('sample', {}) or {}
     gemodelset = model.get('gemodelset', {}) or {}
 
-    # Integrated models use full_name, repository models use gemodelset.name
-    name = model.get('full_name', '') or gemodelset.get('name', '')
-
-    # Integrated models use date, repository models use year
-    year = model.get('year') or model.get('date', '')
-
     return MetatlasModel(
         id=model.get('id', ''),
-        name=name,
+        name=model.get('full_name', '') or gemodelset.get('name', ''),
         short_name=model.get('short_name', ''),
         organism=sample.get('organism', ''),
         tissue=sample.get('tissue', ''),
         cell_type=sample.get('cell_type', ''),
         condition=model.get('condition', ''),
-        year=year,
+        year=model.get('year') or model.get('date', ''),
         reaction_count=model.get('reaction_count'),
         metabolite_count=model.get('metabolite_count'),
         gene_count=model.get('gene_count'),
         files=tuple(model.get('files', [])) if model.get('files') else (),
     )
-
-
-def metatlas_model_files(model_id: str) -> list[dict]:
-    """
-    Retrieves file list for a specific model.
-
-    Args:
-        model_id: The model ID (e.g., 'Human-GEM').
-
-    Returns:
-        List of file dictionaries with path, name, and type info.
-    """
-
-    _log(f'Getting file list for model {model_id}.')
-
-    url = urls.urls['metatlas']['file'] % model_id
-    c = curl.Curl(url, silent=False, large=False, req_headers=REQ_HEADERS)
-
-    if c.result is None:
-        _log(f'Failed to get files for model {model_id}.')
-        return []
-
-    data = json.loads(c.result)
-    return data.get('files', [])
-
-
-def _download_model_file(path: str) -> str | None:
-    """
-    Downloads a file from a model repository.
-
-    Args:
-        path: The file path from the model files list.
-
-    Returns:
-        File content as string, or None if download failed.
-    """
-
-    url = urls.urls['metatlas']['file'] % path
-    c = curl.Curl(url, silent=False, large=True, req_headers=REQ_HEADERS)
-
-    if c.result is None:
-        _log(f'Failed to download file {path}.')
-        return None
-
-    return c.result

@@ -32,7 +32,6 @@ This module provides functions to:
 from ._api import (
     metatlas_models,
     metatlas_integrated_models,
-    metatlas_model_files,
 )
 from ._git import metatlas_gems
 from ._gem import (

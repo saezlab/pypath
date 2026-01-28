@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import pypath.share.session as session
 
-__all__ = ['_log', 'REQ_HEADERS']
+__all__ = ['_log', 'REQ_HEADERS', '_df_or_records']
 
 _log = session.Logger(name='metatlas_input')._log
 
@@ -33,3 +33,23 @@ REQ_HEADERS = [
     'Accept: application/json',
     'User-Agent: pypath (https://pypath.omnipathdb.org)',
 ]
+
+
+def _df_or_records(records: list, dataframe: bool = False):
+    """
+    Returns records as list or pandas DataFrame.
+
+    Args:
+        records: List of named tuples.
+        dataframe: If True, return a DataFrame.
+
+    Returns:
+        List of records or pandas DataFrame.
+    """
+
+    if not dataframe:
+        return records
+
+    import pandas as pd
+
+    return pd.DataFrame(records)

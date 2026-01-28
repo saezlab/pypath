@@ -23,14 +23,13 @@ GitHub and GitLab repository utilities for standard GEM access.
 
 from __future__ import annotations
 
-from collections.abc import Generator
 from urllib.parse import quote as url_quote
 import json
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
-from ._common import _log
+from ._common import _log, _df_or_records
 from ._records import MetatlasGem
 
 __all__ = [
@@ -38,16 +37,24 @@ __all__ = [
     'git_raw_file',
 ]
 
+GIT_URLS = {
+    'github': 'https://github.com/%s',
+    'gitlab': 'https://gitlab.com/%s',
+}
 
-def metatlas_gems() -> Generator[MetatlasGem, None, None]:
+
+def metatlas_gems(dataframe: bool = False):
     """
     Lists standard GEMs from the Metabolic Atlas validation index.
 
     Standard GEMs are community-curated models following a standardized
     format, hosted on GitHub or GitLab.
 
-    Yields:
-        MetatlasGem named tuples with repository metadata.
+    Args:
+        dataframe: Return a pandas DataFrame instead of a list.
+
+    Returns:
+        List of MetatlasGem named tuples, or DataFrame if requested.
     """
 
     _log('Downloading standard GEM index from Metabolic Atlas.')
@@ -55,30 +62,27 @@ def metatlas_gems() -> Generator[MetatlasGem, None, None]:
     index = _parse_gem_index()
 
     if not index:
-        return
+        return [] if not dataframe else None
+
+    records = []
 
     for host, repos in index.items():
         for repo in repos:
-            # Extract GEM name from repo path (last part)
             gem_name = repo.split('/')[-1]
             metadata = _gem_metadata(gem_name)
 
-            if host == 'github':
-                git_url = f'https://github.com/{repo}'
-            elif host == 'gitlab':
-                git_url = f'https://gitlab.com/{repo}'
-            else:
-                git_url = ''
-
-            yield MetatlasGem(
+            records.append(MetatlasGem(
                 model_name=gem_name,
                 git_host=host,
                 git_repo=repo,
-                git_url=git_url,
-                latest_version=metadata.get('version', ''),
-                commits=metadata.get('commits'),
-                contributors=metadata.get('contributors'),
-            )
+                git_url=GIT_URLS.get(host, '%s') % repo,
+                **{
+                    f: metadata.get(f)
+                    for f in ('latest_version', 'commits', 'contributors')
+                },
+            ))
+
+    return _df_or_records(records, dataframe)
 
 
 def _parse_gem_index() -> dict:
@@ -86,7 +90,7 @@ def _parse_gem_index() -> dict:
     Parses the standard-GEM validation index.json.
 
     Returns:
-        Dictionary mapping GEM names to their repository info.
+        Dictionary mapping git hosts to lists of repository paths.
     """
 
     url = urls.urls['metatlas']['gems_index']
@@ -107,7 +111,7 @@ def _gem_metadata(gem_name: str) -> dict:
         gem_name: Name of the GEM (e.g., 'Human-GEM').
 
     Returns:
-        Dictionary with version, commits, contributors info.
+        Dictionary with latest_version, commits, contributors.
     """
 
     url = urls.urls['metatlas']['gem_metadata'] % gem_name
@@ -118,7 +122,6 @@ def _gem_metadata(gem_name: str) -> dict:
 
     try:
         data = json.loads(c.result)
-        # Structure is {gem_name: {metadata: {...}, releases: [...]}}
         gem_data = data.get(gem_name, {})
         metadata = gem_data.get('metadata', {})
 
@@ -126,7 +129,6 @@ def _gem_metadata(gem_name: str) -> dict:
         releases = gem_data.get('releases', [])
         version = ''
         if releases:
-            # Get the first release's tag name if available
             first_release = releases[0] if releases else {}
             for key in first_release.keys():
                 if key not in ('standard-GEM', 'test_results'):
@@ -134,7 +136,7 @@ def _gem_metadata(gem_name: str) -> dict:
                     break
 
         return {
-            'version': version,
+            'latest_version': version,
             'commits': metadata.get('commits'),
             'contributors': metadata.get('contributors'),
         }
@@ -175,7 +177,6 @@ def git_raw_file(
         _log(f'Failed to download {path} from {repo}.')
         return None
 
-    # Read the content from the file object
     c.fileobj.seek(0)
     return c.fileobj.read()
 
@@ -214,7 +215,4 @@ def git_repo_tree(
 
     data = json.loads(c.result)
 
-    if host == 'github':
-        return data.get('tree', [])
-    else:
-        return data
+    return data.get('tree', []) if host == 'github' else data
