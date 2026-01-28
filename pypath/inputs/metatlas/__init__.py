@@ -43,7 +43,4 @@ from ._gem import (
 from ._records import (
     MetatlasModel,
     MetatlasGem,
-    MetatlasReaction,
-    MetatlasMetabolite,
-    MetatlasGene,
 )

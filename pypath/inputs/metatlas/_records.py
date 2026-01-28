@@ -28,9 +28,6 @@ import collections
 __all__ = [
     'MetatlasModel',
     'MetatlasGem',
-    'MetatlasReaction',
-    'MetatlasMetabolite',
-    'MetatlasGene',
 ]
 
 
@@ -67,48 +64,3 @@ MetatlasGem = collections.namedtuple(
 )
 
 
-MetatlasReaction = collections.namedtuple(
-    'MetatlasReaction',
-    [
-        'id',
-        'kegg',
-        'bigg',
-        'metanetx',
-        'rhea',
-        'rhea_master',
-        'reactome',
-        'spontaneous',
-    ],
-)
-
-
-MetatlasMetabolite = collections.namedtuple(
-    'MetatlasMetabolite',
-    [
-        'id',
-        'id_no_compartment',
-        'bigg',
-        'kegg',
-        'hmdb',
-        'chebi',
-        'pubchem',
-        'lipidmaps',
-        'metanetx',
-    ],
-)
-
-
-MetatlasGene = collections.namedtuple(
-    'MetatlasGene',
-    [
-        'id',
-        'ensembl_transcript',
-        'ensembl_protein',
-        'uniprot',
-        'symbol',
-        'entrez',
-        'name',
-        'aliases',
-        'compartments',
-    ],
-)

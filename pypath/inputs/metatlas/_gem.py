@@ -20,10 +20,14 @@
 """
 Standard GEM TSV file parsing functions.
 
-Standard GEMs contain annotation files in TSV format:
-- reactions.tsv - Reaction ID mappings to KEGG, BiGG, Rhea, etc.
-- metabolites.tsv - Metabolite ID mappings to HMDB, ChEBI, etc.
-- genes.tsv - Gene annotations with Ensembl, UniProt mappings
+Standard GEMs may contain annotation files in TSV format:
+- reactions.tsv - Reaction ID mappings
+- metabolites.tsv - Metabolite ID mappings
+- genes.tsv - Gene annotations
+
+Note: Column names vary between GEMs. SysBioChalmers GEMs use names like
+'rxnKEGGID', 'rxnBiGGID', while others use 'kegg.reaction', 'bigg.reaction'.
+The functions return raw dictionaries to accommodate this variation.
 """
 
 from __future__ import annotations
@@ -34,7 +38,6 @@ import io
 
 from ._common import _log
 from ._git import git_raw_file, _parse_gem_index
-from ._records import MetatlasReaction, MetatlasMetabolite, MetatlasGene
 
 __all__ = [
     'metatlas_gem_reactions',
@@ -42,41 +45,6 @@ __all__ = [
     'metatlas_gem_genes',
     'metatlas_gem_tsv',
 ]
-
-# Mappings from named tuple fields to TSV column names
-_REACTION_FIELDS = {
-    'id': 'rxns',
-    'kegg': 'rxnKEGGID',
-    'bigg': 'rxnBiGGID',
-    'metanetx': 'rxnMetaNetXID',
-    'rhea': 'rxnRheaID',
-    'rhea_master': 'rxnRheaMasterID',
-    'reactome': 'rxnREACTOMEID',
-}
-
-_METABOLITE_FIELDS = {
-    'id': 'mets',
-    'id_no_compartment': 'metsNoComp',
-    'bigg': 'metBiGGID',
-    'kegg': 'metKEGGID',
-    'hmdb': 'metHMDBID',
-    'chebi': 'metChEBIID',
-    'pubchem': 'metPubChemID',
-    'lipidmaps': 'metLipidMapsID',
-    'metanetx': 'metMetaNetXID',
-}
-
-_GENE_FIELDS = {
-    'id': 'genes',
-    'ensembl_transcript': 'geneENSTID',
-    'ensembl_protein': 'geneENSPID',
-    'uniprot': 'geneUniProtID',
-    'symbol': 'geneSymbols',
-    'entrez': 'geneEntrezID',
-    'name': 'geneNames',
-    'aliases': 'geneAliases',
-    'compartments': 'compartments',
-}
 
 
 def _get_gem_info(gem: str) -> tuple[str, str] | None:
@@ -117,6 +85,7 @@ def metatlas_gem_tsv(
 
     Yields:
         Dictionaries for each row in the TSV file.
+        Column names vary between GEMs.
     """
 
     gem_info = _get_gem_info(gem)
@@ -142,77 +111,64 @@ def metatlas_gem_tsv(
 def metatlas_gem_reactions(
         gem: str,
         ref: str | None = None,
-) -> Generator[MetatlasReaction, None, None]:
+) -> Generator[dict, None, None]:
     """
-    Parses reaction ID mappings from a standard GEM.
-
-    The reactions.tsv file contains cross-references to external databases
-    like KEGG, BiGG, MetaNetX, and Rhea.
+    Parses reaction annotations from a standard GEM.
 
     Args:
         gem: Name of the GEM (e.g., 'Human-GEM').
-        ref: Git reference (branch, tag, or commit). Defaults to 'main'.
+        ref: Git reference (branch, tag, or commit).
+            If None, uses the repository's default branch.
 
     Yields:
-        MetatlasReaction named tuples with ID mappings.
+        Dictionaries with reaction ID mappings.
+        Column names vary between GEMs (e.g., 'rxnKEGGID' vs 'kegg.reaction').
     """
 
     _log(f'Parsing reactions from {gem}.')
 
-    for row in metatlas_gem_tsv(gem, 'model/reactions.tsv', ref):
-        yield MetatlasReaction(
-            **{f: row.get(col, '') for f, col in _REACTION_FIELDS.items()},
-            spontaneous=row.get('spontaneous', '') == '1',
-        )
+    yield from metatlas_gem_tsv(gem, 'model/reactions.tsv', ref)
 
 
 def metatlas_gem_metabolites(
         gem: str,
         ref: str | None = None,
-) -> Generator[MetatlasMetabolite, None, None]:
+) -> Generator[dict, None, None]:
     """
-    Parses metabolite ID mappings from a standard GEM.
-
-    The metabolites.tsv file contains cross-references to external databases
-    like KEGG, HMDB, ChEBI, PubChem, and LIPID MAPS.
+    Parses metabolite annotations from a standard GEM.
 
     Args:
         gem: Name of the GEM (e.g., 'Human-GEM').
-        ref: Git reference (branch, tag, or commit). Defaults to 'main'.
+        ref: Git reference (branch, tag, or commit).
+            If None, uses the repository's default branch.
 
     Yields:
-        MetatlasMetabolite named tuples with ID mappings.
+        Dictionaries with metabolite ID mappings.
+        Column names vary between GEMs.
     """
 
     _log(f'Parsing metabolites from {gem}.')
 
-    for row in metatlas_gem_tsv(gem, 'model/metabolites.tsv', ref):
-        yield MetatlasMetabolite(
-            **{f: row.get(col, '') for f, col in _METABOLITE_FIELDS.items()},
-        )
+    yield from metatlas_gem_tsv(gem, 'model/metabolites.tsv', ref)
 
 
 def metatlas_gem_genes(
         gem: str,
         ref: str | None = None,
-) -> Generator[MetatlasGene, None, None]:
+) -> Generator[dict, None, None]:
     """
     Parses gene annotations from a standard GEM.
 
-    The genes.tsv file contains gene identifiers and their mappings
-    to Ensembl, UniProt, Entrez, and other databases.
-
     Args:
         gem: Name of the GEM (e.g., 'Human-GEM').
-        ref: Git reference (branch, tag, or commit). Defaults to 'main'.
+        ref: Git reference (branch, tag, or commit).
+            If None, uses the repository's default branch.
 
     Yields:
-        MetatlasGene named tuples with gene annotations.
+        Dictionaries with gene annotations.
+        Column names vary between GEMs.
     """
 
     _log(f'Parsing genes from {gem}.')
 
-    for row in metatlas_gem_tsv(gem, 'model/genes.tsv', ref):
-        yield MetatlasGene(
-            **{f: row.get(col, '') for f, col in _GENE_FIELDS.items()},
-        )
+    yield from metatlas_gem_tsv(gem, 'model/genes.tsv', ref)
