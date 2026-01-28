@@ -35,6 +35,7 @@ from ._records import MetatlasGem
 __all__ = [
     'metatlas_gems',
     'git_raw_file',
+    'git_default_branch',
 ]
 
 GIT_URLS = {
@@ -144,10 +145,44 @@ def _gem_metadata(gem_name: str) -> dict:
         return {}
 
 
+def git_default_branch(host: str, repo: str) -> str | None:
+    """
+    Gets the default branch for a repository.
+
+    Args:
+        host: 'github' or 'gitlab'.
+        repo: Repository path (e.g., 'SysBioChalmers/Human-GEM').
+
+    Returns:
+        Default branch name (e.g., 'main' or 'master'), or None if failed.
+    """
+
+    if host == 'github':
+        url = urls.urls['metatlas']['github_repo'] % repo
+    elif host == 'gitlab':
+        encoded_repo = url_quote(repo, safe='')
+        url = urls.urls['metatlas']['gitlab_repo'] % encoded_repo
+    else:
+        _log(f'Unknown git host: {host}')
+        return None
+
+    c = curl.Curl(url, silent=True, large=False)
+
+    if c.result is None:
+        _log(f'Failed to get repo info for {repo}.')
+        return None
+
+    try:
+        data = json.loads(c.result)
+        return data.get('default_branch')
+    except json.JSONDecodeError:
+        return None
+
+
 def git_raw_file(
         host: str,
         repo: str,
-        ref: str,
+        ref: str | None,
         path: str,
 ) -> str | None:
     """
@@ -157,11 +192,18 @@ def git_raw_file(
         host: 'github' or 'gitlab'.
         repo: Repository path (e.g., 'SysBioChalmers/Human-GEM').
         ref: Git reference (branch, tag, or commit hash).
+            If None, uses the repository's default branch.
         path: Path to file within repository.
 
     Returns:
         File content as string, or None if download failed.
     """
+
+    if ref is None:
+        ref = git_default_branch(host, repo)
+        if ref is None:
+            _log(f'Could not determine default branch for {repo}.')
+            return None
 
     if host == 'github':
         url = urls.urls['metatlas']['github_raw'] % (repo, ref, path)
@@ -174,7 +216,7 @@ def git_raw_file(
     c = curl.Curl(url, silent=False, large=True)
 
     if c.fileobj is None:
-        _log(f'Failed to download {path} from {repo}.')
+        _log(f'Failed to download {path} from {repo}@{ref}.')
         return None
 
     c.fileobj.seek(0)
@@ -184,7 +226,7 @@ def git_raw_file(
 def git_repo_tree(
         host: str,
         repo: str,
-        ref: str,
+        ref: str | None = None,
 ) -> list[dict]:
     """
     Lists files in a repository at a specific ref.
@@ -193,10 +235,17 @@ def git_repo_tree(
         host: 'github' or 'gitlab'.
         repo: Repository path (e.g., 'SysBioChalmers/Human-GEM').
         ref: Git reference (branch, tag, or commit hash).
+            If None, uses the repository's default branch.
 
     Returns:
         List of file dictionaries with path and type info.
     """
+
+    if ref is None:
+        ref = git_default_branch(host, repo)
+        if ref is None:
+            _log(f'Could not determine default branch for {repo}.')
+            return []
 
     if host == 'github':
         url = urls.urls['metatlas']['github_tree'] % (repo, ref)

@@ -112,7 +112,8 @@ def metatlas_gem_tsv(
     Args:
         gem: Name of the GEM (e.g., 'Human-GEM').
         file: Relative path to the TSV file (e.g., 'model/reactions.tsv').
-        ref: Git reference (branch, tag, or commit). Defaults to 'main'.
+        ref: Git reference (branch, tag, or commit).
+            If None, uses the repository's default branch.
 
     Yields:
         Dictionaries for each row in the TSV file.
@@ -124,9 +125,8 @@ def metatlas_gem_tsv(
         return
 
     host, repo = gem_info
-    ref = ref or 'main'
 
-    _log(f'Downloading {file} from {gem}@{ref}.')
+    _log(f'Downloading {file} from {gem}.')
 
     content = git_raw_file(host, repo, ref, file)
 
