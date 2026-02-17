@@ -30,7 +30,6 @@ import struct
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
 import pypath.share.cache as cache_mod
-_logger = session_mod.log()
 
 import pycurl
 try:
@@ -73,14 +72,16 @@ if not hasattr(urllib, 'quote'):
 try:
     import pysftp
 except:
-    _logger.msg(
-        'Module `pysftp` not available. '
-        'Only downloading of a small number of resources '
-        'relies on this module. '
-        'Please install by PIP if it is necessary for you.',
-        'curl',
-        -1,
-    )
+    pass
+    # _logger.msg(
+    #     'Module `pysftp` not available. '
+    #     'Only downloading of a small number of resources '
+    #     'relies on this module. '
+    #     'Please install by PIP if it is necessary for you.',
+    #     'curl',
+    #     -1,
+    # )
+
 import codecs
 import gzip
 import zipfile
