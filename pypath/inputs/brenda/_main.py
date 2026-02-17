@@ -32,8 +32,8 @@ from pypath.utils import mapping, taxonomy
 
 REORGANISM = re.compile(
     r'#(\d+)# '
-    r'((?:no activity in )?)'
-    r'([-\w\s\.\[\]]+[^\s#\{<\(]).*'
+    r"((?:no activity in )?)'?"
+    r"([-\w\s\.\[\]]+[^\s#\{<\(']).*"
 )
 REEC = re.compile(r'EC ([\d\.]+)')
 REID = re.compile(r'\{([\w\.]+); source: (\w+)\}')
@@ -47,7 +47,7 @@ REEFFECT = re.compile(
 REKIKM = re.compile(
     r'#([\d,]+)# '  # proteins (by numeric reference)
     r'([-\d\.]+) '          # concentration
-    r'\{([-\w\+\s,%\.\(\)/\'\[\]]+)\} '  # compound name
+    r'\{([-\w\+\s,%\.\(\)/\'\[\]\~]+)\} '  # compound name
     r' ?\(?((?:.*)?)(?:>\))? ' # within parentheses concentration & time
     r'<([\d,]+)>'  # literature references (numeric)
 )
