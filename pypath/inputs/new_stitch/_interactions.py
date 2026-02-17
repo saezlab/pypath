@@ -50,7 +50,7 @@ def interactions(max_lines: int | None = None,
             )
 
 
-def get_action_identifier(action: StitchAction) -> tuple:
+def _get_action_identifier(action: StitchAction) -> tuple:
     """
     Returns a tuple that can be used as a key to look up the link information for an action
 
@@ -64,10 +64,10 @@ def get_action_identifier(action: StitchAction) -> tuple:
     # get the correct order to search the links lookup
     if action.source.type == 'small_molecule':
         return (action.source.id, action.target.id, action.target.ncbi_tax_id, action.source.stereospecific)
-    else:
+    else: # target is a 'small_molecule'
         return (action.target.id, action.source.id, action.source.ncbi_tax_id, action.target.stereospecific)
-    
-def create_lookup(max_lines: int | None = None,
+   
+def _create_lookup(max_lines: int | None = None,
                  ncbi_tax_id: int = 9606) -> dict:
     """
     Create a dictionary to look up the link information for each action

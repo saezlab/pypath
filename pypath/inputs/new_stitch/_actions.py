@@ -79,7 +79,7 @@ def actions(max_lines: int | None = None,
 
 
 
-def parse_entities(action: dict) -> tuple[Entity, Entity]:
+def _parse_entities(action: dict) -> tuple[Entity, Entity]:
     """
     Converts the STITCH chemical and protein identifiers and
     flags into a ParsedIds named tuple. Also uses "a_is_acting"
@@ -111,7 +111,7 @@ def parse_entities(action: dict) -> tuple[Entity, Entity]:
 
     return tuple(partners)
 
-def parse_action(action: str) -> tuple[bool, bool]:
+def _parse_action(action: str) -> tuple[bool, bool]:
     """
     Will parse the action column into boolean values
     for 'activation' and 'inhibition'.
