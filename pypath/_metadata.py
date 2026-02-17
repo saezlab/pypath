@@ -30,7 +30,7 @@ import importlib.metadata
 import toml
 import itertools
 
-_VERSION = '0.16.29'
+_VERSION = '0.16.30'
 
 
 def get_metadata():
