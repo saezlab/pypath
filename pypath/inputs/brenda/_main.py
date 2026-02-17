@@ -22,6 +22,7 @@ from collections.abc import Generator
 import re
 import pathlib as pl
 import collections
+import warnings
 
 import pandas as pd
 import pyparsing
@@ -191,7 +192,11 @@ def allosteric_regulation(
 
         elif label == 'PR':
 
-            pr_match = REORGANISM.match(data).groups()
+            if not (m := REORGANISM.match(data)):
+                raise RuntimeError(f'Failed to extract organism: `{data}`')
+            else:
+                pr_match = m.groups()
+
             org_id, negation, organism = REORGANISM.match(data).groups()
 
             if organism not in organisms or negation:
@@ -212,6 +217,9 @@ def allosteric_regulation(
         elif label in {'KI', 'KM'}:
 
             values = REKIKM.findall(data)
+            if not values:
+                warnings.warn(f'Failed to extract KI/KM: `{data}`')
+
             record['km_ki'].append((label, _common.first(values)))
 
         elif label == 'RF':
@@ -240,17 +248,22 @@ def allosteric_regulation_records(
 
         reactions_constants = collections.defaultdict(list)
 
-        for k, (k_proteins, k_value, compound, k_details, refs) in stage0['km_ki']:
 
-            for k_prot_idx in k_proteins.split(','):
+        try:
+            for k, (k_proteins, k_value, compound, k_details, refs) in stage0['km_ki']:
 
-                try:
-                    k_value = float(k_value)
-                except ValueError: pass
-                k_pubmeds = collect_refs(refs)
-                reactions_constants[(k_prot_idx, compound)].append(
-                    ReactionConstant(k, k_value, k_details, k_pubmeds)
-                )
+                for k_prot_idx in k_proteins.split(','):
+
+                    try:
+                        k_value = float(k_value)
+                    except ValueError: pass
+                    k_pubmeds = collect_refs(refs)
+                    reactions_constants[(k_prot_idx, compound)].append(
+                        ReactionConstant(k, k_value, k_details, k_pubmeds)
+                    )
+        except TypeError:
+            pass
+
 
         for action in actions[1]:
 
