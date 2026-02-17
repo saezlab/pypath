@@ -1159,7 +1159,9 @@ urls = {
         'actions': 'http://stitch.embl.de/download/actions.v5.0/%u'\
             '.actions.v5.0.tsv.gz',
         'links': 'http://stitch.embl.de/download/protein_chemical.links.detailed.v5.0/%u'\
-            '.protein_chemical.links.detailed.v5.0.tsv.gz'
+            '.protein_chemical.links.detailed.v5.0.tsv.gz',
+        'links_rescued': 'https://rescued.omnipathdb.org/stitch/%u'\
+            '.protein_chemical.links.detailed.v5.0.tsv.gz',
     },
     'cspa': {
         'label': 'Cell Surface Protein Atlas',

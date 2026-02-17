@@ -23,7 +23,7 @@ def links(max_lines: int | None = None,
             interaction.
     """
 
-    url = urls.urls['stitch']['links'] % ncbi_tax_id
+    url = urls.urls['stitch']['links_rescued'] % ncbi_tax_id
 
     links = tables(url, max_lines)
 

@@ -50,7 +50,7 @@ def stitch_actions_interactions(
     if c.result is None:
         return
 
-    _ = next(c.result)  
+    _ = next(c.result)
 
     sep = re.compile(r'[sm\.]')
 
@@ -141,9 +141,9 @@ def stitch_links_interactions(
             if s.mechanism == 'binding'
         )
 
-    url = urls.urls['stitch']['links'] % ncbi_tax_id
+    url = urls.urls['stitch']['links_rescued'] % ncbi_tax_id
     c = curl.Curl(url, silent = False, large = True)
-    
+
     if c.result is None:
         return
 
