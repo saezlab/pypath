@@ -96,7 +96,7 @@ ReactionConstant = collections.namedtuple(
 
 def main(
         output_dir: str = 'brenda_output',
-        limit: int = 20,
+        limit: int | None = None,
     ) -> Generator[tuple[str, str], None, None]:
 
     #output of directory
@@ -155,7 +155,7 @@ def main(
 
 def allosteric_regulation(
         organisms: str | int | list[str | int] = 'mouse',
-        limit: int = 20,
+        limit: int | None = None,
     ) -> Generator[tuple[str, str], None, None]:
 
     organisms = _common.to_list(organisms)
