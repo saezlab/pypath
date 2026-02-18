@@ -36,7 +36,23 @@ __all__ = [
     'metatlas_gems',
     'git_raw_file',
     'git_default_branch',
+    'gem_file_path',
 ]
+
+def gem_file_path(gem: str, extension: str) -> str:
+    """
+    Construct model file path: model/{gem}.{ext}.
+
+    Args:
+        gem: Name of the GEM (e.g., 'Human-GEM').
+        extension: File extension (e.g., 'yml', 'xml', 'mat').
+
+    Returns:
+        Relative path to the model file.
+    """
+
+    return f'model/{gem}.{extension}'
+
 
 GIT_URLS = {
     'github': 'https://github.com/%s',

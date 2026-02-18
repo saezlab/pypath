@@ -28,6 +28,8 @@ import collections
 __all__ = [
     'MetatlasModel',
     'MetatlasGem',
+    'GemReaction',
+    'GemMetabolite',
 ]
 
 
@@ -60,6 +62,33 @@ MetatlasGem = collections.namedtuple(
         'latest_version',
         'commits',
         'contributors',
+    ],
+)
+
+
+GemReaction = collections.namedtuple(
+    'GemReaction',
+    [
+        'id',
+        'name',
+        'metabolites',
+        'lower_bound',
+        'upper_bound',
+        'gene_reaction_rule',
+        'subsystem',
+        'eccodes',
+    ],
+)
+
+
+GemMetabolite = collections.namedtuple(
+    'GemMetabolite',
+    [
+        'id',
+        'name',
+        'compartment',
+        'formula',
+        'charge',
     ],
 )
 
