@@ -30,6 +30,7 @@ __all__ = [
     'MetatlasGem',
     'GemReaction',
     'GemMetabolite',
+    'GemInteraction',
 ]
 
 
@@ -89,6 +90,21 @@ GemMetabolite = collections.namedtuple(
         'compartment',
         'formula',
         'charge',
+    ],
+)
+
+
+GemInteraction = collections.namedtuple(
+    'GemInteraction',
+    [
+        'source',
+        'target',
+        'source_type',
+        'target_type',
+        'source_compartment',
+        'target_compartment',
+        'reaction_id',
+        'reverse',
     ],
 )
 

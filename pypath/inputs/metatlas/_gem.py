@@ -46,7 +46,7 @@ import yaml
 
 from ._common import _log
 from ._git import git_raw_file, gem_file_path, _parse_gem_index
-from ._records import GemReaction, GemMetabolite
+from ._records import GemReaction, GemMetabolite, GemInteraction
 
 __all__ = [
     'metatlas_gem_reactions',
@@ -56,6 +56,7 @@ __all__ = [
     'metatlas_gem_yaml',
     'metatlas_gem_yaml_reactions',
     'metatlas_gem_yaml_metabolites',
+    'metatlas_gem_network',
 ]
 
 
@@ -362,3 +363,166 @@ def metatlas_gem_yaml_metabolites(
             formula=met.get('formula', ''),
             charge=charge,
         )
+
+
+def _parse_gene_rule(rule: str) -> list[str]:
+    """
+    Parse a gene_reaction_rule string into enzyme identifiers.
+
+    The rule is a Boolean expression with ``or`` (isoenzymes) and ``and``
+    (complex subunits).  Parentheses are stripped — nested expressions are
+    flattened, matching the OmnipathR approach.
+
+    AND-connected genes (complex subunits) are joined into a single
+    identifier by ``_``, with subunits sorted for consistency.
+
+    Returns:
+        List of enzyme identifiers (one per OR-alternative).  Single genes
+        remain as-is; complexes become ``GENE1_GENE2`` strings.
+        Empty list for orphan reactions (no gene rule).
+    """
+
+    if not rule or not rule.strip():
+        return []
+
+    rule = re.sub(r'[()]', '', rule)
+
+    enzymes = []
+
+    for group in rule.split(' or '):
+
+        subunits = sorted(g.strip() for g in group.split(' and ') if g.strip())
+
+        if subunits:
+            enzymes.append('_'.join(subunits))
+
+    return enzymes
+
+
+def metatlas_gem_network(
+        gem: str,
+        ref: str | None = None,
+) -> Generator[GemInteraction, None, None]:
+    """
+    Build a binary interaction network from a standard GEM.
+
+    Each metabolic reaction is decomposed into metabolite-enzyme edges:
+    reactant → enzyme and enzyme → product.  Reversible reactions produce
+    additional edges with ``reverse=True`` where products become sources
+    and reactants become targets.
+
+    Gene rules are parsed: ``or`` gives independent isoenzyme edges,
+    ``and`` gives per-subunit edges for enzyme complexes.
+
+    Orphan reactions (no gene rule) are skipped.
+
+    Args:
+        gem: Name of the GEM (e.g., 'Human-GEM').
+        ref: Git reference (branch, tag, or commit).
+            If None, uses the repository's default branch.
+
+    Yields:
+        GemInteraction named tuples — binary edges between metabolites
+        and enzymes with compartment annotations.
+    """
+
+    data = metatlas_gem_yaml(gem, ref)
+
+    if data is None:
+        return
+
+    # Build metabolite ID → compartment lookup
+    met_comp = {}
+
+    for met in data.get('metabolites', []):
+
+        if isinstance(met, list):
+            met = dict(met)
+
+        met_comp[met.get('id', '')] = met.get('compartment', '')
+
+    reactions = data.get('reactions', [])
+    n_orphan = 0
+
+    _log(f'Building network from {len(reactions)} reactions in {gem}.')
+
+    for rxn in reactions:
+
+        if isinstance(rxn, list):
+            rxn = dict(rxn)
+
+        enzymes = _parse_gene_rule(rxn.get('gene_reaction_rule', ''))
+
+        if not enzymes:
+            n_orphan += 1
+            continue
+
+        rxn_id = rxn.get('id', '')
+
+        mets = rxn.get('metabolites', {})
+
+        if isinstance(mets, list):
+            mets = dict(mets)
+
+        lb = float(rxn.get('lower_bound', 0))
+        ub = float(rxn.get('upper_bound', 0))
+        reversible = lb < 0 < ub
+        direction = 1 if lb + ub >= 0 else -1
+
+        reactants = [m for m, coef in mets.items() if coef * direction < 0]
+        products = [m for m, coef in mets.items() if coef * direction > 0]
+
+        for enzyme in enzymes:
+
+            for met_id in reactants:
+                yield GemInteraction(
+                    source=met_id,
+                    target=enzyme,
+                    source_type='metabolite',
+                    target_type='protein',
+                    source_compartment=met_comp.get(met_id, ''),
+                    target_compartment='',
+                    reaction_id=rxn_id,
+                    reverse=False,
+                )
+
+            for met_id in products:
+                yield GemInteraction(
+                    source=enzyme,
+                    target=met_id,
+                    source_type='protein',
+                    target_type='metabolite',
+                    source_compartment='',
+                    target_compartment=met_comp.get(met_id, ''),
+                    reaction_id=rxn_id,
+                    reverse=False,
+                )
+
+            if reversible:
+
+                for met_id in products:
+                    yield GemInteraction(
+                        source=met_id,
+                        target=enzyme,
+                        source_type='metabolite',
+                        target_type='protein',
+                        source_compartment=met_comp.get(met_id, ''),
+                        target_compartment='',
+                        reaction_id=rxn_id,
+                        reverse=True,
+                    )
+
+                for met_id in reactants:
+                    yield GemInteraction(
+                        source=enzyme,
+                        target=met_id,
+                        source_type='protein',
+                        target_type='metabolite',
+                        source_compartment='',
+                        target_compartment=met_comp.get(met_id, ''),
+                        reaction_id=rxn_id,
+                        reverse=True,
+                    )
+
+    if n_orphan:
+        _log(f'Skipped {n_orphan} orphan reactions (no gene rule) in {gem}.')

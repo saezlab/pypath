@@ -42,10 +42,12 @@ from ._gem import (
     metatlas_gem_yaml,
     metatlas_gem_yaml_reactions,
     metatlas_gem_yaml_metabolites,
+    metatlas_gem_network,
 )
 from ._records import (
     MetatlasModel,
     MetatlasGem,
     GemReaction,
     GemMetabolite,
+    GemInteraction,
 )
