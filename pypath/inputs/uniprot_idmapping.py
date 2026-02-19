@@ -77,7 +77,7 @@ def idtypes(
         return {'groups': groups, 'rules': rules}
 
     rules = {int(r.ruleId): r.tos for r in rules.itertuples()}
-    groups.fillna(-1., inplace = True)
+    groups['ruleId'] = groups['ruleId'].fillna(-1)
 
     result = set()
 

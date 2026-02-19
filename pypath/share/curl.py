@@ -1189,6 +1189,7 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.TCP_KEEPALIVE, 1)
         self.curl.setopt(self.curl.TCP_KEEPIDLE, 2)
         self.curl.setopt(self.curl.SSL_ENABLE_ALPN, self.alpn)
+        self.curl.setopt(self.curl.USERAGENT, 'curl/8.7.1')
 
         if not self.http2:
 
