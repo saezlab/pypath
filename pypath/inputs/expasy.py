@@ -56,7 +56,7 @@ def expasy_enzyme_classes(
         r'(?:(\d+))?-?\.\s*'
         r'(?:(\d+))?-?\.\s*'
         r'-?\s+'
-        r'([-\w\(\)\s\+]+)\.$'
+        r'(.+)\.$'
     )
 
     result = []
