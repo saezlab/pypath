@@ -124,7 +124,7 @@ def metatlas_gem_tsv(
 
 
 def metatlas_gem_reactions(
-        gem: str,
+        gem: str = 'Human-GEM',
         ref: str | None = None,
 ) -> Generator[dict, None, None]:
     """
@@ -146,7 +146,7 @@ def metatlas_gem_reactions(
 
 
 def metatlas_gem_metabolites(
-        gem: str,
+        gem: str = 'Human-GEM',
         ref: str | None = None,
 ) -> Generator[dict, None, None]:
     """
@@ -168,7 +168,7 @@ def metatlas_gem_metabolites(
 
 
 def metatlas_gem_genes(
-        gem: str,
+        gem: str = 'Human-GEM',
         ref: str | None = None,
 ) -> Generator[dict, None, None]:
     """
@@ -216,7 +216,7 @@ def _fix_yaml_quoting(content: str) -> str:
 
 
 def metatlas_gem_yaml(
-        gem: str,
+        gem: str = 'Human-GEM',
         ref: str | None = None,
 ) -> dict | None:
     """
@@ -265,7 +265,7 @@ def metatlas_gem_yaml(
 
 
 def metatlas_gem_yaml_reactions(
-        gem: str,
+        gem: str = 'Human-GEM',
         ref: str | None = None,
 ) -> Generator[GemReaction, None, None]:
     """
@@ -322,7 +322,7 @@ def metatlas_gem_yaml_reactions(
 
 
 def metatlas_gem_yaml_metabolites(
-        gem: str,
+        gem: str = 'Human-GEM',
         ref: str | None = None,
 ) -> Generator[GemMetabolite, None, None]:
     """
@@ -400,7 +400,7 @@ def _parse_gene_rule(rule: str) -> list[str]:
 
 
 def metatlas_gem_network(
-        gem: str,
+        gem: str = 'Human-GEM',
         ref: str | None = None,
 ) -> Generator[GemInteraction, None, None]:
     """
