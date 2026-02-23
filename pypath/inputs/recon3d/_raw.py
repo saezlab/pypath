@@ -73,12 +73,11 @@ def recon3d_raw() -> dict:
         _log('Failed to download Recon3D JSON from BiGG.')
         return {}
 
-    # With large=True, c.result is a file-like object; use json.load not json.loads.
-    try:
-        return json.load(c.result)
-    except (TypeError, AttributeError):
-        # Fallback: result may already be a string in some curl versions.
+    # With large=True, c.result is a line generator; join into a string first.
+    if isinstance(c.result, str):
         return json.loads(c.result)
+
+    return json.loads(''.join(c.result))
 
 
 def gem_matlab_extract(mat: dict, *fields: str) -> dict[str, list]:
