@@ -1858,7 +1858,7 @@ urls = {
     },
     'recon3d': {
         'label': 'Recon3D human genome-scale metabolic model',
-        'bigg_json': 'https://bigg.ucsd.edu/static/models/Recon3D.json',
+        'bigg_json': 'http://bigg.ucsd.edu/static/models/Recon3D.json',
         'vmh_mat': (
             'https://www.vmh.life/files/reconstructions/Recon3D/'
             '3.01/Recon3DModel_301.mat'
