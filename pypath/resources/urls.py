@@ -1856,6 +1856,14 @@ urls = {
             r'Metabolite-cell%20interaction.txt'
         ),
     },
+    'recon3d': {
+        'label': 'Recon3D human genome-scale metabolic model',
+        'bigg_json': 'https://bigg.ucsd.edu/static/models/Recon3D.json',
+        'vmh_mat': (
+            'https://www.vmh.life/files/reconstructions/Recon3D/'
+            '3.01/Recon3DModel_301.mat'
+        ),
+    },
     'metatlas': {
         'label': 'Metabolic Atlas GEM repository',
         'models': 'https://metabolicatlas.org/api/v2/repository/models/',
