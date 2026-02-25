@@ -31,14 +31,11 @@ from pypath.inputs_v2.parsers.bindingdb import _raw
 
 
 def _bindingdb_url(dataset: str = 'All', **_kwargs: object) -> str:
-    return (
-        'https://bindingdb.org/rwd/bind/chemsearch/marvin/SDFdownload.jsp'
-        f'?download_file=/rwd/bind/downloads/BindingDB_{dataset}_202602_tsv.zip'
-    )
+    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{dataset}_202602_tsv.zip'
 
 
 def _bindingdb_filename(dataset: str = 'All', **_kwargs: object) -> str:
-    return f'{dataset}_table.zip'
+    return f'BindingDB_{dataset}_202602_tsv.zip'
 
 
 config = ResourceConfig(
