@@ -36,7 +36,7 @@ UNIPROT_DATA_URL = (
     "&query=(taxonomy_id:9606 OR taxonomy_id:10090 OR taxonomy_id:10116) AND reviewed:true"
     "&fields=accession,id,protein_name,length,mass,sequence,gene_primary,gene_synonym,"
     "organism_id,cc_disease,ft_mutagen,cc_subcellular_location,cc_ptm,lit_pubmed_id,"
-    "cc_function,xref_ensembl,xref_kegg,cc_pathway,cc_activity_regulation,keywordid,"
+    "cc_function,xref_ensembl,xref_geneid,xref_kegg,cc_pathway,cc_activity_regulation,keywordid,"
     "ec,go_id,ft_transmem,protein_families,xref_refseq,xref_alphafolddb,xref_pdb,"
     "xref_chembl,xref_phosphositeplus,xref_signor,xref_pathwaycommons,xref_intact,"
     "xref_biogrid,xref_complexportal"
@@ -86,6 +86,7 @@ proteins_schema = EntityBuilder(
             value=protein_synonym_column,
         ),
         CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.ENTREZ, value=f('GeneID', delimiter=';')),
         CV(term=IdentifierNamespaceCv.REFSEQ, value=f('RefSeq', delimiter=';')),
         CV(term=IdentifierNamespaceCv.PDB, value=f('PDB', delimiter=';')),
         CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=f('AlphaFoldDB', delimiter=';')),
