@@ -48,7 +48,6 @@ if _cm_path not in sys.path:
     sys.path.insert(0, _cm_path)
 
 from download_manager import DownloadManager
-from download_manager._manager_extended import DownloadManagerExtended
 
 import pypath.share.session as session
 import pypath.share.settings as settings
@@ -106,7 +105,7 @@ class InputModule:
             # Use the same data directory for download cache
             import pypath
             pypath_data = Path(pypath.__file__).parent / 'data'
-            self.download_manager = DownloadManagerExtended(
+            self.download_manager = DownloadManager(
                 path=str(pypath_data / 'cache'),
                 config={'backend': 'requests'}
             )

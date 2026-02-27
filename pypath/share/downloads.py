@@ -21,16 +21,30 @@
 Shared DownloadManager instance for pypath.
 """
 
+import os
 from pathlib import Path
-from typing import Union, Dict, Optional, List
-import io
+from typing import Optional, List
 
+import pypath.share.settings as settings
 from download_manager import DownloadManager
-from download_manager._open import Opener
+from cache_manager._open import Opener
 
 
-# Pypath data directory in the workspace
-DATA_DIR = Path(__file__).parent.parent.parent.parent / 'pypath-data'
+def _resolve_data_dir() -> Path:
+    """Resolve download storage directory for inputs_v2 raw files."""
+
+    configured = (
+        os.environ.get('PYPATH_DOWNLOAD_DATADIR') or
+        settings.get('cachedir')
+    )
+    data_dir = Path(configured)
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    return data_dir
+
+
+# Kept as module-level constant for compatibility with modules importing DATA_DIR
+DATA_DIR = _resolve_data_dir()
 
 
 def get_download_manager() -> DownloadManager:
@@ -40,7 +54,7 @@ def get_download_manager() -> DownloadManager:
     Returns:
         DownloadManager: Configured download manager instance.
     """
-    return DownloadManager(data_folder=str(DATA_DIR))
+    return DownloadManager(path=str(_resolve_data_dir()), config={'backend': 'requests'})
 
 
 # Singleton instance
@@ -93,8 +107,13 @@ def download_and_open(
         >>>     # process line
     """
 
-    # Download the file
-    file_path = dm.download(url, filename=filename, subfolder=subfolder, **download_kwargs)
+    data_dir = _resolve_data_dir()
+
+    # Download the file to a deterministic path
+    target_dir = data_dir / subfolder
+    target_dir.mkdir(parents=True, exist_ok=True)
+    file_path = target_dir / filename
+    dm.download(url, dest=str(file_path), **download_kwargs)
 
     # Use Opener to handle extraction/opening
     # Return the opener itself so it stays alive and keeps files open

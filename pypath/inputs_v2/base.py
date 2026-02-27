@@ -89,7 +89,7 @@ class Download:
             default_mode=self.default_mode,
             ext=self.ext,
             needed=self.needed,
-            force=force_refresh,
+            force_download=force_refresh,
             **download_kwargs,
         )
 
