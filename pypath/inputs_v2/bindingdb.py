@@ -113,7 +113,6 @@ interactions_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('DrugBank ID of Ligand')),
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('KEGG ID of Ligand')),
                     CV(term=IdentifierNamespaceCv.ZINC, value=f('ZINC ID of Ligand')),
-                    CV(term=IdentifierNamespaceCv.PDB, value=f('Ligand HET ID in PDB')),
                 ),
             ),
         ),

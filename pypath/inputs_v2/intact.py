@@ -53,7 +53,6 @@ _IDENTIFIER_CV_MAPPING = {
     'ipi': IdentifierNamespaceCv.IPI,
     'mint': IdentifierNamespaceCv.MINT,
     'mirbase': IdentifierNamespaceCv.MIRBASE,
-    'pdbe': IdentifierNamespaceCv.PDB,
     'psi-mi': IdentifierNamespaceCv.CV_TERM_ACCESSION,
     'refseq': IdentifierNamespaceCv.REFSEQ,
     'rfam': IdentifierNamespaceCv.RFAM,
