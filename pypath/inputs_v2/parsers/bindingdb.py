@@ -1,8 +1,4 @@
-"""
-BindingDB TSV parser.
-
-Parses BindingDB's tab-separated data files with column filtering.
-"""
+"""BindingDB TSV parser (2026-03+ schema)."""
 
 from __future__ import annotations
 
@@ -11,31 +7,16 @@ import csv
 
 
 def _raw(opener, max_lines: int | None = None, **_kwargs: object) -> Generator[dict[str, str], None, None]:
-    """
-    Parse BindingDB TSV file, keeping only the first 49 columns.
+    """Parse BindingDB TSV rows.
 
-    Args:
-        opener: File opener from download_and_open
-        max_lines: Optional limit on number of records to process
-
-    Yields:
-        Dictionary for each binding record
+    Expects the current BindingDB schema with chain-indexed target columns
+    (e.g. ``UniProt ... Target Chain 1``).
     """
     if not opener or not opener.result:
         return
+
     for file_handle in opener.result.values():
-        header_line = file_handle.readline().strip()
-        header = header_line.split('\t')
-
-        columns_to_keep = min(49, len(header))
-        filtered_header = header[:columns_to_keep]
-
-        def filtered_rows():
-            for line in file_handle:
-                columns = line.strip().split('\t')
-                yield '\t'.join(columns[:columns_to_keep])
-
-        reader = csv.DictReader(filtered_rows(), fieldnames=filtered_header, delimiter='\t')
+        reader = csv.DictReader(file_handle, delimiter='\t')
 
         if max_lines:
             for i, row in enumerate(reader):
@@ -44,4 +25,5 @@ def _raw(opener, max_lines: int | None = None, **_kwargs: object) -> Generator[d
                 yield row
         else:
             yield from reader
+
         break
