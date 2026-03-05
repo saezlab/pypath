@@ -217,6 +217,7 @@ def recon3d_metabolites(extra_hmdb: bool = True) -> list[dict]:
         chebi = _annotation_list(annotation, 'chebi')
         kegg = _annotation_list(annotation, 'kegg.compound')
         bigg = _annotation_list(annotation, 'bigg.metabolite')
+        metanetx = _annotation_list(annotation, 'metanetx.chemical')
 
         if extra_hmdb and base_id in vmh_hmdb:
             hmdb = list(dict.fromkeys(hmdb + vmh_hmdb[base_id]))
@@ -240,6 +241,7 @@ def recon3d_metabolites(extra_hmdb: bool = True) -> list[dict]:
             'chebi': chebi,
             'kegg': kegg,
             'bigg': bigg,
+            'metanetx': metanetx,
         })
 
     return result
