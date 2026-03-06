@@ -71,7 +71,7 @@ proteins_schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry')),
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry Name')),
+        CV(term=IdentifierNamespaceCv.UNIPROT_ENTRY_NAME, value=f('Entry Name')),
         CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Gene Names (primary)')),
         CV(
             term=IdentifierNamespaceCv.GENE_NAME_SYNONYM,

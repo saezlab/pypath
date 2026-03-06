@@ -102,3 +102,4 @@ class IdentifierNamespaceCv(CvEnum):
     FOODB = ("OM:0213", "FooDB database identifier", "https://foodb.ca/")
     PTFI = ("OM:0214", "PTFI Discover database identifier", "https://ptfidiscover.markerlab.com/")
     FOODON = ("OM:0215", "FOODON ontology identifier", "https://foodon.org/")
+    UNIPROT_ENTRY_NAME = ("OM:0216", "UniProt entry name (e.g., EGFR_HUMAN)", "https://www.uniprot.org/help/entry_name")
