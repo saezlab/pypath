@@ -31,6 +31,7 @@ class ResourceCv(CvEnum):
     SIGNOR = ("OM:1152", "SIGNOR", "https://signor.uniroma2.it/")
     BINDINGDB = ("OM:1153", "BindingDB", "https://www.bindingdb.org/")
     CORUM = ("OM:1154", "CORUM", "https://mips.helmholtz-muenchen.de/corum/")
+    CHEMBL = ("OM:1155", "ChEMBL", "https://www.ebi.ac.uk/chembl/")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
@@ -39,6 +40,7 @@ class ResourceCv(CvEnum):
     PHENOL_EXPLORER = ("OM:1173", "Phenol-Explorer", "http://phenol-explorer.eu/")
     FOODB = ("OM:1174", "FooDB", "https://foodb.ca/")
     PTFI = ("OM:1175", "PTFI Discover", "https://ptfidiscover.markerlab.com/")
+    MEBOCOST = ("OM:1176", "MEBOCOST DB", "https://github.com/kaifuchenlab/MEBOCOST")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
