@@ -102,3 +102,8 @@ class IdentifierNamespaceCv(CvEnum):
     FOODB = ("OM:0213", "FooDB database identifier", "https://foodb.ca/")
     PTFI = ("OM:0214", "PTFI Discover database identifier", "https://ptfidiscover.markerlab.com/")
     FOODON = ("OM:0215", "FOODON ontology identifier", "https://foodon.org/")
+    CELLINKER = ("OM:0216", "Cellinker database identifier", "https://www.rna-society.org/cellinker/")
+    RECON2 = ("OM:0217", "Recon2 metabolic reconstruction identifier", "https://www.ebi.ac.uk/biomodels/MODEL1109130000")
+    CELLPHONEDB = ("OM:0218", "CellPhoneDB database identifier", "https://www.cellphonedb.org/")
+    CELLCHAT = ("OM:0219", "CellChat database identifier", "http://www.cellchat.org/")
+    MEBOCOST = ("OM:0220", "MEBOCOST database identifier", "https://www.ebi.ac.uk/biomodels/MODEL2209130001")
