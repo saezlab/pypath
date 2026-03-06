@@ -31,11 +31,11 @@ from pypath.inputs_v2.parsers.bindingdb import _raw
 
 
 def _bindingdb_url(dataset: str = 'All', **_kwargs: object) -> str:
-    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{dataset}_202602_tsv.zip'
+    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{dataset}_202603_tsv.zip'
 
 
 def _bindingdb_filename(dataset: str = 'All', **_kwargs: object) -> str:
-    return f'BindingDB_{dataset}_202602_tsv.zip'
+    return f'BindingDB_{dataset}_202603_tsv.zip'
 
 
 config = ResourceConfig(
@@ -121,10 +121,10 @@ interactions_schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.NAME, value=f('Target Name')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt (SwissProt) Primary ID of Target Chain')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (SwissProt) Recommended Name of Target Chain')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT_TREMBL, value=f('UniProt (TrEMBL) Primary ID of Target Chain')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (TrEMBL) Submitted Name of Target Chain')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt (SwissProt) Primary ID of Target Chain 1')),
+                    CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (SwissProt) Recommended Name of Target Chain 1')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT_TREMBL, value=f('UniProt (TrEMBL) Primary ID of Target Chain 1')),
+                    CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (TrEMBL) Submitted Name of Target Chain 1')),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=tax_value),

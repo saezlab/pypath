@@ -383,6 +383,15 @@ class IntercellAnnotation(annot.CustomAnnotation):
         if self._resource_categories['baccin']:
 
             self.ensure_annotdb()
+
+            if 'Baccin2019' not in self.annotdb.annots:
+
+                self._log(
+                    'Baccin2019 annotations not available: '
+                    'skipping Baccin2019 category definitions.'
+                )
+                return
+
             baccin_categories = []
             baccin = self.annotdb.annots['Baccin2019']
             fields = baccin.get_names()

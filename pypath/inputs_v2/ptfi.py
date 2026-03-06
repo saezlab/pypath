@@ -13,6 +13,7 @@ Data sources:
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 from typing import Optional
@@ -96,6 +97,7 @@ def download_ptfi_data(
     output_dir: Path | str | None = None,
     specimen_ids: list[str] | None = None,
     force_refresh: bool = False,
+    allow_download: bool = False,
 ) -> Path:
     """
     Download PTFI specimen data from the API.
@@ -122,6 +124,13 @@ def download_ptfi_data(
 
     # Convert ID numbers to full specimen IDs
     full_specimen_ids = [f"specimen_FOODON_{id_num}" for id_num in specimen_ids]
+
+    if not allow_download:
+        print(
+            f"PTFI download disabled by default; using cached files in {output_dir} "
+            "(set PTFI_ALLOW_DOWNLOAD=1 or pass allow_download=True to fetch missing files)."
+        )
+        return output_dir
 
     print(f"Found {len(full_specimen_ids)} specimen IDs to download")
 
@@ -235,19 +244,23 @@ foods_schema = EntityBuilder(
 
 def _download_and_parse(opener=None, **kwargs):
     """
-    Download PTFI data and parse it.
-
-    This is a custom approach since PTFI requires downloading multiple files
-    via API rather than a single archive.
+    Parse PTFI data, using cache by default and downloading only on demand.
 
     Args:
-        opener: Unused (PTFI downloads via API, not a single file)
+        opener: Unused (PTFI uses per-specimen API files)
         **kwargs: Additional arguments passed to _raw parser
     """
-    # Download the data (will skip if already exists)
-    data_dir = download_ptfi_data()
+    allow_download = (
+        str(os.environ.get('PTFI_ALLOW_DOWNLOAD', '0')).strip().lower()
+        in {'1', 'true', 'yes'}
+    )
 
-    # Parse the downloaded data
+    data_dir = download_ptfi_data(
+        force_refresh=bool(kwargs.get('force_refresh', False)),
+        allow_download=allow_download,
+    )
+
+    # Parse cached/downloaded data
     yield from _raw(data_dir=str(data_dir), **kwargs)
 
 

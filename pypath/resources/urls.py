@@ -1864,6 +1864,12 @@ urls = {
             '3.01/Recon3DModel_301.mat'
         ),
     },
+    'metanetx': {
+        'label': 'MetaNetX/MNXref metabolite cross-references',
+        'chem_xref': (
+            'https://www.metanetx.org/cgi-bin/mnxget/mnxref/chem_xref.tsv'
+        ),
+    },
     'metatlas': {
         'label': 'Metabolic Atlas GEM repository',
         'models': 'https://metabolicatlas.org/api/v2/repository/models/',

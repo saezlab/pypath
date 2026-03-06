@@ -71,7 +71,7 @@ proteins_schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry')),
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry Name')),
+        CV(term=IdentifierNamespaceCv.UNIPROT_ENTRY_NAME, value=f('Entry Name')),
         CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Gene Names (primary)')),
         CV(
             term=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
@@ -87,8 +87,8 @@ proteins_schema = EntityBuilder(
         ),
         CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl', delimiter=';')),
         CV(term=IdentifierNamespaceCv.ENTREZ, value=f('GeneID', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.REFSEQ, value=f('RefSeq', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=f('AlphaFoldDB', delimiter=';')),
+        #CV(term=IdentifierNamespaceCv.REFSEQ, value=f('RefSeq', delimiter=';')),
+        #CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=f('AlphaFoldDB', delimiter=';')),
         CV(term=IdentifierNamespaceCv.KEGG, value=f('KEGG', delimiter=';')),
         CV(term=IdentifierNamespaceCv.CHEMBL, value=f('ChEMBL', delimiter=';')),
         CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR', delimiter=';')),
