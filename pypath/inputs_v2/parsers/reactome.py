@@ -29,7 +29,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 2
+_CACHE_VERSION = 3
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
@@ -223,6 +223,19 @@ _PARTICIPANT_FIELDS = [
     'stoichiometry',
 ]
 
+_CONTROLLER_MEMBER_FIELDS = [
+    'entity_type',
+    'display_name',
+    'synonyms',
+    'reactome_stable_id',
+    'uniprot',
+    'chebi',
+    'pubchem_compound',
+    'kegg',
+    'go',
+    'ncbi_tax_id',
+]
+
 
 def _join_list(values: list[str]) -> str:
     return _LIST_DELIMITER.join(values)
@@ -248,6 +261,19 @@ def _flatten_components(components: list[dict], prefix: str = 'component') -> di
         items = []
         for component in components:
             value = component.get(field, '')
+            if value in (None, ''):
+                value = _MISSING_VALUE
+            items.append(str(value))
+        data[f'{prefix}_{field}'] = _join_list(items)
+    return data
+
+
+def _flatten_controller_members(members: list[dict], prefix: str = 'controller_member') -> dict[str, str]:
+    data: dict[str, str] = {}
+    for field in _CONTROLLER_MEMBER_FIELDS:
+        items = []
+        for member in members:
+            value = member.get(field, '')
             if value in (None, ''):
                 value = _MISSING_VALUE
             items.append(str(value))
@@ -726,6 +752,25 @@ def _iterate_pathways(
         count += 1
 
 
+def _classify_group_controller_entity_type(
+    controller_type: EntityTypeCv,
+    member_types: list[EntityTypeCv],
+) -> EntityTypeCv:
+    """Classify a Reactome controller assembled from memberPhysicalEntity.
+
+    We only keep COMPLEX when the BioPAX controller itself is complex-like.
+    All other grouped controllers are modeled conservatively as PHYSICAL_ENTITY,
+    because Reactome memberPhysicalEntity sets often mean alternatives / sets /
+    grouped active forms, not a curated protein family in the biological sense.
+    """
+    member_type_set = set(member_types)
+
+    if controller_type == EntityTypeCv.COMPLEX or EntityTypeCv.COMPLEX in member_type_set:
+        return EntityTypeCv.COMPLEX
+
+    return EntityTypeCv.PHYSICAL_ENTITY
+
+
 def _iterate_controls(
     g: Graph,
     xref_cache: dict,
@@ -758,6 +803,7 @@ def _iterate_controls(
         control_type_val = str(props[BP.controlType][0]) if props.get(BP.controlType) else ''
 
         controller_info = {}
+        controller_members: list[dict[str, str]] = []
         controllers = props.get(BP.controller, [])
         if controllers:
             c_uri = controllers[0]
@@ -767,11 +813,12 @@ def _iterate_controls(
 
             c_types = c_props.get(RDF.type, [])
             c_type_str = str(c_types[0]).split('#')[-1].lower() if c_types else 'physicalentity'
+            controller_entity_type = PHYSICAL_ENTITY_TYPE_MAP.get(c_type_str, EntityTypeCv.PHYSICAL_ENTITY)
 
             controller_info = {
                 'role': 'controller',
                 'display_name': c_names.get('display_name', ''),
-                'entity_type': PHYSICAL_ENTITY_TYPE_MAP.get(c_type_str, EntityTypeCv.PHYSICAL_ENTITY).value,
+                'entity_type': controller_entity_type.value,
                 'reactome_stable_id': ';'.join(c_xrefs.get('reactome_stable_id', [])),
                 'uniprot': ';'.join(c_xrefs.get('uniprot', [])),
                 'chebi': '',
@@ -783,7 +830,9 @@ def _iterate_controls(
                 'stoichiometry': '',
             }
 
-            controller_refs_to_merge = []
+            controller_refs_to_merge: list[str] = []
+            controller_member_types: list[EntityTypeCv] = []
+            has_member_physical_entities = False
 
             c_refs = c_props.get(BP.entityReference, [])
             if c_refs:
@@ -791,14 +840,74 @@ def _iterate_controls(
 
             if not controller_refs_to_merge:
                 c_members = c_props.get(BP.memberPhysicalEntity, [])
+                has_member_physical_entities = bool(c_members)
                 for member_uri in c_members:
                     member_props = _get_entity_props(g, member_uri)
+                    member_names = _extract_names_from_props(member_props, BP)
+                    member_xrefs = _extract_xrefs_from_props(member_props, xref_cache, BP)
+
+                    member_types = member_props.get(RDF.type, [])
+                    member_type_str = str(member_types[0]).split('#')[-1].lower() if member_types else 'physicalentity'
+                    member_entity_type = PHYSICAL_ENTITY_TYPE_MAP.get(member_type_str, EntityTypeCv.PHYSICAL_ENTITY)
+                    controller_member_types.append(member_entity_type)
+
+                    member_data = {
+                        'entity_type': member_entity_type.value,
+                        'display_name': member_names.get('display_name', ''),
+                        'reactome_stable_id': ';'.join(member_xrefs.get('reactome_stable_id', [])),
+                        'uniprot': ';'.join(member_xrefs.get('uniprot', [])),
+                        'chebi': ';'.join(member_xrefs.get('chebi', [])),
+                        'synonyms': '',
+                        'pubchem_compound': '',
+                        'kegg': '',
+                        'go': '',
+                        'ncbi_tax_id': '',
+                    }
+
                     member_refs = member_props.get(BP.entityReference, [])
                     if member_refs:
-                        controller_refs_to_merge.append(str(member_refs[0]))
+                        ref_key = str(member_refs[0])
+                        controller_refs_to_merge.append(ref_key)
+                        ref_entry = entity_reference_index.get(ref_key)
+                        if ref_entry and ref_entry.get('entity'):
+                            ref_entity = ref_entry['entity']
+                            existing_uniprot = set(member_data['uniprot'].split(';')) if member_data['uniprot'] else set()
+                            existing_chebi = set(member_data['chebi'].split(';')) if member_data['chebi'] else set()
+                            all_synonyms = []
+                            all_pubchem = []
+                            all_kegg = []
+                            all_go = []
+
+                            for identifier in ref_entity.identifiers or []:
+                                if identifier.type == IdentifierNamespaceCv.SYNONYM:
+                                    all_synonyms.append(identifier.value)
+                                elif identifier.type == IdentifierNamespaceCv.UNIPROT:
+                                    existing_uniprot.add(identifier.value)
+                                elif identifier.type == IdentifierNamespaceCv.CHEBI:
+                                    existing_chebi.add(identifier.value)
+                                elif identifier.type == IdentifierNamespaceCv.PUBCHEM_COMPOUND:
+                                    all_pubchem.append(identifier.value)
+                                elif identifier.type == IdentifierNamespaceCv.KEGG_COMPOUND:
+                                    all_kegg.append(identifier.value)
+                                elif identifier.type == IdentifierNamespaceCv.CV_TERM_ACCESSION:
+                                    all_go.append(identifier.value)
+
+                            for annotation in ref_entity.annotations or []:
+                                if annotation.term == IdentifierNamespaceCv.NCBI_TAX_ID and annotation.value:
+                                    member_data['ncbi_tax_id'] = annotation.value
+
+                            member_data['uniprot'] = ';'.join(sorted(existing_uniprot - {''}))
+                            member_data['chebi'] = ';'.join(sorted(existing_chebi - {''}))
+                            member_data['synonyms'] = ';'.join(all_synonyms)
+                            member_data['pubchem_compound'] = ';'.join(all_pubchem)
+                            member_data['kegg'] = ';'.join(all_kegg)
+                            member_data['go'] = ';'.join(all_go)
+
+                    controller_members.append(member_data)
 
             if controller_refs_to_merge:
                 existing_uniprot = set(controller_info['uniprot'].split(';')) if controller_info['uniprot'] else set()
+                existing_chebi = set(controller_info['chebi'].split(';')) if controller_info['chebi'] else set()
                 all_synonyms = []
                 all_pubchem = []
                 all_kegg = []
@@ -814,6 +923,8 @@ def _iterate_controls(
                                 all_synonyms.append(identifier.value)
                             elif identifier.type == IdentifierNamespaceCv.UNIPROT:
                                 existing_uniprot.add(identifier.value)
+                            elif identifier.type == IdentifierNamespaceCv.CHEBI:
+                                existing_chebi.add(identifier.value)
                             elif identifier.type == IdentifierNamespaceCv.PUBCHEM_COMPOUND:
                                 all_pubchem.append(identifier.value)
                             elif identifier.type == IdentifierNamespaceCv.KEGG_COMPOUND:
@@ -825,7 +936,23 @@ def _iterate_controls(
                             if annotation.term == IdentifierNamespaceCv.NCBI_TAX_ID and annotation.value:
                                 controller_info['ncbi_tax_id'] = annotation.value
 
-                controller_info['uniprot'] = ';'.join(sorted(existing_uniprot - {''}))
+                if has_member_physical_entities:
+                    controller_entity_type = _classify_group_controller_entity_type(
+                        controller_entity_type,
+                        controller_member_types,
+                    )
+                    controller_info['entity_type'] = controller_entity_type.value
+
+                    if controller_entity_type in {EntityTypeCv.PROTEIN_FAMILY, EntityTypeCv.PHYSICAL_ENTITY, EntityTypeCv.COMPLEX}:
+                        controller_info['uniprot'] = ''
+                        controller_info['chebi'] = ''
+                    else:
+                        controller_info['uniprot'] = ';'.join(sorted(existing_uniprot - {''}))
+                        controller_info['chebi'] = ';'.join(sorted(existing_chebi - {''}))
+                else:
+                    controller_info['uniprot'] = ';'.join(sorted(existing_uniprot - {''}))
+                    controller_info['chebi'] = ';'.join(sorted(existing_chebi - {''}))
+
                 controller_info['synonyms'] = ';'.join(all_synonyms)
                 controller_info['pubchem_compound'] = ';'.join(all_pubchem)
                 controller_info['kegg'] = ';'.join(all_kegg)
@@ -867,12 +994,6 @@ def _iterate_controls(
         if not control_display_name and controller_info.get('display_name'):
             control_display_name = f"{control_type_cls} by {controller_info['display_name']}"
 
-        participants = []
-        if controller_info:
-            participants.append(controller_info)
-        if controlled_info:
-            participants.append(controlled_info)
-
         yield {
             'uri': str(s),
             'control_class': control_type_cls,
@@ -882,7 +1003,92 @@ def _iterate_controls(
             'reactome_id': ';'.join(xrefs.get('reactome_id', [])),
             'go': ';'.join(xrefs.get('go', [])),
             'control_type': control_type_val,
-            **_flatten_participants(participants, prefix='participant'),
+            'controller_entity_type': controller_info.get('entity_type', ''),
+            'controller_display_name': controller_info.get('display_name', ''),
+            'controller_synonyms': controller_info.get('synonyms', ''),
+            'controller_reactome_stable_id': controller_info.get('reactome_stable_id', ''),
+            'controller_uniprot': controller_info.get('uniprot', ''),
+            'controller_chebi': controller_info.get('chebi', ''),
+            'controller_pubchem_compound': controller_info.get('pubchem_compound', ''),
+            'controller_kegg': controller_info.get('kegg', ''),
+            'controller_go': controller_info.get('go', ''),
+            'controller_ncbi_tax_id': controller_info.get('ncbi_tax_id', ''),
+            'controlled_entity_type': controlled_info.get('entity_type', ''),
+            'controlled_display_name': controlled_info.get('display_name', ''),
+            'controlled_synonyms': controlled_info.get('synonyms', ''),
+            'controlled_reactome_stable_id': controlled_info.get('reactome_stable_id', ''),
+            'controlled_uniprot': controlled_info.get('uniprot', ''),
+            'controlled_chebi': controlled_info.get('chebi', ''),
+            'controlled_pubchem_compound': controlled_info.get('pubchem_compound', ''),
+            'controlled_kegg': controlled_info.get('kegg', ''),
+            'controlled_go': controlled_info.get('go', ''),
+            'controlled_ncbi_tax_id': controlled_info.get('ncbi_tax_id', ''),
+            **_flatten_controller_members(controller_members, prefix='controller_member'),
+        }
+        count += 1
+
+
+def _iterate_control_groups(
+    g: Graph,
+    xref_cache: dict,
+    entity_reference_index: dict,
+    max_records: int | None = None,
+) -> Generator[dict, None, None]:
+    seen: set[tuple[str, str, str, str]] = set()
+    count = 0
+
+    for record in _iterate_controls(g, xref_cache, entity_reference_index, max_records=None):
+        member_types = record.get('controller_member_entity_type', '')
+        member_names = record.get('controller_member_display_name', '')
+        member_stable_ids = record.get('controller_member_reactome_stable_id', '')
+        member_uniprots = record.get('controller_member_uniprot', '')
+        member_chebis = record.get('controller_member_chebi', '')
+        member_pubchem = record.get('controller_member_pubchem_compound', '')
+        member_kegg = record.get('controller_member_kegg', '')
+        member_go = record.get('controller_member_go', '')
+        member_tax = record.get('controller_member_ncbi_tax_id', '')
+
+        has_members = any(
+            value and value != _MISSING_VALUE
+            for value in [member_types, member_names, member_stable_ids, member_uniprots, member_chebis]
+        )
+        if not has_members:
+            continue
+
+        key = (
+            str(record.get('controller_entity_type', '')),
+            str(record.get('controller_display_name', '')),
+            str(record.get('controller_reactome_stable_id', '')),
+            str(record.get('controller_uniprot', '')),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+
+        if max_records is not None and count >= max_records:
+            break
+
+        yield {
+            'controller_entity_type': record.get('controller_entity_type', ''),
+            'controller_display_name': record.get('controller_display_name', ''),
+            'controller_synonyms': record.get('controller_synonyms', ''),
+            'controller_reactome_stable_id': record.get('controller_reactome_stable_id', ''),
+            'controller_uniprot': record.get('controller_uniprot', ''),
+            'controller_chebi': record.get('controller_chebi', ''),
+            'controller_pubchem_compound': record.get('controller_pubchem_compound', ''),
+            'controller_kegg': record.get('controller_kegg', ''),
+            'controller_go': record.get('controller_go', ''),
+            'controller_ncbi_tax_id': record.get('controller_ncbi_tax_id', ''),
+            'controller_member_entity_type': member_types,
+            'controller_member_display_name': member_names,
+            'controller_member_synonyms': record.get('controller_member_synonyms', ''),
+            'controller_member_reactome_stable_id': member_stable_ids,
+            'controller_member_uniprot': member_uniprots,
+            'controller_member_chebi': member_chebis,
+            'controller_member_pubchem_compound': member_pubchem,
+            'controller_member_kegg': member_kegg,
+            'controller_member_go': member_go,
+            'controller_member_ncbi_tax_id': member_tax,
         }
         count += 1
 
@@ -897,7 +1103,7 @@ def _ensure_all_caches_populated(
     force_refresh: bool = False,
 ) -> bool:
     """Ensure all data types are cached."""
-    data_types = ['reactions', 'pathways', 'controls']
+    data_types = ['reactions', 'pathways', 'controls', 'control_groups']
 
     if not force_refresh:
         all_cached = all(_load_cached_data(dt) is not None for dt in data_types)
@@ -922,6 +1128,10 @@ def _ensure_all_caches_populated(
     if _load_cached_data('controls', force_refresh) is None:
         data = list(_iterate_controls(g, xref_cache, ref_index, max_records=None))
         _save_cached_data('controls', data)
+
+    if _load_cached_data('control_groups', force_refresh) is None:
+        data = list(_iterate_control_groups(g, xref_cache, ref_index, max_records=None))
+        _save_cached_data('control_groups', data)
 
     return True
 

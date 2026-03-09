@@ -24,6 +24,7 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
+    Member,
     MembersFromList,
     MembershipBuilder,
 )
@@ -179,32 +180,82 @@ controls_schema = EntityBuilder(
         CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('control_type')),
     ),
     membership=MembershipBuilder(
-        MembersFromList(
-            entity_type=f('participant_entity_type', delimiter='||', map='entity_type'),
-            identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.NAME, value=f('participant_display_name', delimiter='||', map='missing')),
-                CV(term=IdentifierNamespaceCv.SYNONYM, value=f('participant_synonyms', delimiter='||', map='split')),
-                CV(
-                    term=IdentifierNamespaceCv.REACTOME_STABLE_ID,
-                    value=f('participant_reactome_stable_id', delimiter='||', map='split'),
+        Member(
+            entity=EntityBuilder(
+                entity_type=f('controller_entity_type', map='entity_type'),
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.NAME, value=f('controller_display_name', map='missing')),
+                    CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controller_synonyms', map='split')),
+                    CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controller_reactome_stable_id', map='split')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controller_uniprot', map='split')),
+                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split')),
+                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_pubchem_compound', map='split')),
+                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_kegg', map='split')),
+                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_go', map='split')),
                 ),
-                CV(term=IdentifierNamespaceCv.UNIPROT, value=f('participant_uniprot', delimiter='||', map='split')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f('participant_chebi', delimiter='||', map='split')),
-                CV(
-                    term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-                    value=f('participant_pubchem_compound', delimiter='||', map='split'),
+                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controller_ncbi_tax_id', map='missing')),
                 ),
-                CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('participant_kegg', delimiter='||', map='split')),
-                CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('participant_go', delimiter='||', map='split')),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=f('participant_role', delimiter='||', map='role')),
+                CV(term=BiologicalRoleCv.CONTROLLER),
+            ),
+        ),
+        Member(
+            entity=EntityBuilder(
+                entity_type=f('controlled_entity_type', map='entity_type'),
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.NAME, value=f('controlled_display_name', map='missing')),
+                    CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controlled_synonyms', map='split')),
+                    CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controlled_reactome_stable_id', map='split')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controlled_uniprot', map='split')),
+                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('controlled_chebi', map='split')),
+                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controlled_pubchem_compound', map='split')),
+                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controlled_kegg', map='split')),
+                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controlled_go', map='split')),
+                ),
+                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controlled_ncbi_tax_id', map='missing')),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=BiologicalRoleCv.CONTROLLED),
+            ),
+        ),
+    ),
+)
+
+
+control_groups_schema = EntityBuilder(
+    entity_type=f('controller_entity_type', map='entity_type'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.NAME, value=f('controller_display_name', map='missing')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controller_synonyms', map='split')),
+        CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controller_reactome_stable_id', map='split')),
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controller_uniprot', map='split')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_pubchem_compound', map='split')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_kegg', map='split')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_go', map='split')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controller_ncbi_tax_id', map='missing')),
+    ),
+    membership=MembershipBuilder(
+        MembersFromList(
+            entity_type=f('controller_member_entity_type', delimiter='||', map='entity_type'),
+            identifiers=IdentifiersBuilder(
+                CV(term=IdentifierNamespaceCv.NAME, value=f('controller_member_display_name', delimiter='||', map='missing')),
+                CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controller_member_synonyms', delimiter='||', map='split')),
+                CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controller_member_reactome_stable_id', delimiter='||', map='split')),
+                CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controller_member_uniprot', delimiter='||', map='split')),
+                CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_member_chebi', delimiter='||', map='split')),
+                CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_member_pubchem_compound', delimiter='||', map='split')),
+                CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_member_kegg', delimiter='||', map='split')),
+                CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_member_go', delimiter='||', map='split')),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(
-                    term=IdentifierNamespaceCv.NCBI_TAX_ID,
-                    value=f('participant_ncbi_tax_id', delimiter='||', map='missing'),
-                ),
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controller_member_ncbi_tax_id', delimiter='||', map='missing')),
             ),
         ),
     ),
@@ -236,5 +287,10 @@ resource = Resource(
         download=download,
         mapper=controls_schema,
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='controls', **kwargs),
+    ),
+    control_groups=Dataset(
+        download=download,
+        mapper=control_groups_schema,
+        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='control_groups', **kwargs),
     ),
 )
