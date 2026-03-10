@@ -62,6 +62,11 @@ _TERM_MAPPING = {
     'signor-interaction': IdentifierNamespaceCv.SIGNOR,
 }
 
+# The SIGNOR complex and protein-family exports currently used here do not
+# expose an organism column. The downloaded tables contain human UniProt
+# accessions, so we tax-scope these member proteins to human.
+SIGNOR_DEFAULT_TAX_ID = '9606'
+
 f = FieldConfig(
     extract={
         'prefix_lower': [_PREFIX_REGEX, str.lower],
@@ -147,6 +152,9 @@ complexes_schema = EntityBuilder(
                     value=f('LIST OF ENTITIES', delimiter=','),
                 ),
             ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=SIGNOR_DEFAULT_TAX_ID),
+            ),
         )
     ),
 )
@@ -166,6 +174,9 @@ protein_families_schema = EntityBuilder(
                     term=IdentifierNamespaceCv.UNIPROT,
                     value=f('LIST OF ENTITIES', delimiter=','),
                 ),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=SIGNOR_DEFAULT_TAX_ID),
             ),
         )
     ),

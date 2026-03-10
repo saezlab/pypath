@@ -53,6 +53,7 @@ annotations_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('hpo_id')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('hpo_name')),
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
     ),
 )
 

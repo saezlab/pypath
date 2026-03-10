@@ -45,6 +45,16 @@ config = ResourceConfig(
 
 f = FieldConfig(
     delimiter=';',
+    map={
+        'organism_taxid': {
+            'Human': '9606',
+            'Homo sapiens': '9606',
+            'Mouse': '10090',
+            'Mus musculus': '10090',
+            'Rat': '10116',
+            'Rattus norvegicus': '10116',
+        },
+    },
 )
 
 complexes_schema = EntityBuilder(
@@ -65,6 +75,12 @@ complexes_schema = EntityBuilder(
                 CV(
                     term=IdentifierNamespaceCv.UNIPROT,
                     value=f('subunits(UniProt IDs)', delimiter=';'),
+                ),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(
+                    term=IdentifierNamespaceCv.NCBI_TAX_ID,
+                    value=f('Organism', map='organism_taxid'),
                 ),
             ),
         )

@@ -308,6 +308,12 @@ interactions_schema = EntityBuilder(
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Target ID')),
                 ),
+                annotations=AnnotationsBuilder(
+                    CV(
+                        term=IdentifierNamespaceCv.NCBI_TAX_ID,
+                        value=f('Target Species', map='species_taxid'),
+                    ),
+                ),
             ),
         ),
     ),
