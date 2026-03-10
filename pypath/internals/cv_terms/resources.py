@@ -32,6 +32,7 @@ class ResourceCv(CvEnum):
     BINDINGDB = ("OM:1153", "BindingDB", "https://www.bindingdb.org/")
     CORUM = ("OM:1154", "CORUM", "https://mips.helmholtz-muenchen.de/corum/")
     CHEMBL = ("OM:1155", "ChEMBL", "https://www.ebi.ac.uk/chembl/")
+    CELLPHONEDB = ("OM:1156", "CellPhoneDB", "https://www.cellphonedb.org/")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
