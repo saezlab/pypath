@@ -66,7 +66,10 @@ f = FieldConfig(
         'prefix_lower': [r'^([^:]+):', str.lower],
         'value': r'^[^:]+:([^|"]+)',
         'mi': r'(MI:\d+)',
-        'tax': r'taxid:([-\d]+)',
+        # Tax fields can look like:
+        # taxid:9606(human)|taxid:9606(Homo sapiens)
+        # Extract the first signed integer appearing in the field.
+        'tax': r'(-?\d+)',
         'pubmed': r'(?i)pubmed:(\d+)',
         'intact': r'intact:([^|"]+)',
     },

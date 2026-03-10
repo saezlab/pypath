@@ -170,13 +170,17 @@ ANNOTATION_FIELDS = [
     pa.field('units', pa.string()),
 ]
 
-# Base entity fields (without members/is_member_of to avoid circular reference)
+# Base member entity fields (without nested membership to avoid circular reference)
+# Important: member entities must still retain their own annotations, otherwise
+# tax IDs and other entity-scoped metadata on interaction/complex members are
+# lost before local table construction.
 BASE_ENTITY_FIELDS = [
     pa.field('type', pa.string()),
     pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS))),
+    pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
 ]
 
-# Membership structure (entity + is_parent + annotations)
+# Membership structure (entity + is_parent + membership annotations)
 MEMBERSHIP_FIELDS = [
     pa.field('member', pa.struct(BASE_ENTITY_FIELDS)),
     pa.field('is_parent', pa.bool_()),

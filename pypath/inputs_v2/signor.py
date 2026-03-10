@@ -53,7 +53,10 @@ _IDENTIFIER_CV_MAPPING = {
 _PREFIX_REGEX = r'^([^:]+):'
 _GENERAL_VALUE_REGEX = r'^[^:]+:([^|"]+)'
 _INTERACTION_VALUE_REGEX = r'^[^:]+:(.*)'
-_TAX_REGEX = r'taxid:([-\d]+)'
+# Tax fields can look like:
+# taxid:9606(human)|taxid:9606(Homo sapiens)
+# We only need the first taxon number appearing in the field.
+_TAX_REGEX = r'(-?\d+)'
 _PUBMED_REGEX = r'(?i)pubmed:(\d+)'
 _MI_REGEX = r'(MI:\d+)'
 
