@@ -56,7 +56,8 @@ f = FieldConfig(
     extract={
         'pubmed': r'^(\d+)$',
         'source': lambda v: evidence_source_map.get(v),
-        'comment': lambda v: v if v.startswith('http') or (not v.isdigit() and v not in evidence_source_map) else None,
+        'comment': lambda v: v if v.startswith('http') 
+        or (not v.isdigit() and v not in evidence_source_map) else None,
     },
     delimiter='; ',
 )
