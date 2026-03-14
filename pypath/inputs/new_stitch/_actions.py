@@ -37,10 +37,10 @@ def actions(max_lines: int | None = None,
 
     for action in actions:
 
-        a, b = parse_entities(action)
+        a, b = _parse_entities(action)
 
         # create variables to check if action is activation or inhibition
-        activation, inhibition = parse_action(action["action"])
+        activation, inhibition = _parse_action(action["action"])
 
         out.append(
             StitchAction(

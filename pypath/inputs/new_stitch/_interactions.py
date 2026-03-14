@@ -25,12 +25,12 @@ def interactions(max_lines: int | None = None,
     the_actions = actions(max_lines, ncbi_tax_id)
 
     # Create a dictionary to look up the link information for each action
-    link_lookup = create_lookup(max_lines, ncbi_tax_id)
+    link_lookup = _create_lookup(max_lines, ncbi_tax_id)
 
     # Iterate over the actions and look up the corresponding link information
     for action in the_actions:
 
-        action_identifier = get_action_identifier(action)
+        action_identifier = _get_action_identifier(action)
         
         if action_identifier in link_lookup:
             link = link_lookup[action_identifier]

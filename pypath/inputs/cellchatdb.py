@@ -93,7 +93,12 @@ def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
                             result[name] = df_converted
                         except Exception as conv_err:
                             # If conversion fails, create a placeholder
-                            print(f"Warning: Could not convert {name}: {conv_err}")
+                            import warnings as _warnings
+                            _warnings.warn(
+                                f'Could not convert {name}: {conv_err}',
+                                UserWarning,
+                                stacklevel = 2,
+                            )
                             result[name] = pd.DataFrame()  # Empty dataframe as placeholder
 
                     except Exception as df_err:
