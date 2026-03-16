@@ -40,9 +40,11 @@ __all__ = [
     'recon3d_reactions',
     'recon3d_genes',
     'recon3d_network',
+    'recon3d_transporter_network',
 ]
 
 import re
+from collections import defaultdict
 from collections.abc import Generator
 
 from pypath.inputs.metatlas._records import GemInteraction
@@ -77,16 +79,23 @@ def _strip_compartment(met_id: str) -> tuple[str, str]:
     return met_id, ''
 
 
-def _parse_gene_rule(rule: str) -> list[str]:
+def _parse_gene_rule(
+        rule: str,
+        strip_isoforms: bool = True,
+) -> list[str]:
     """
     Parse a Recon3D ``gene_reaction_rule`` into enzyme identifiers.
 
-    Reuses the same Boolean expression logic as the MetAtlas parser:
     ``or`` → isoenzymes (each yielded separately), ``and`` → complex
     subunits (joined with ``_``).  Parentheses are stripped.
 
+    Recon3D gene IDs carry ``_ATN`` isoform suffixes (e.g. ``1234_AT1``).
+    When ``strip_isoforms`` is ``True`` (default) these are removed before
+    building complex subunit strings, yielding clean Entrez IDs.
+
     Args:
-        rule: Gene-reaction rule string (e.g. ``'1234 or (5678 and 9012)'``).
+        rule: Gene-reaction rule string (e.g. ``'1234_AT1 or (5678_AT1 and 9012_AT2)'``).
+        strip_isoforms: Remove ``_ATN`` isoform suffixes.  Default: ``True``.
 
     Returns:
         List of enzyme identifier strings.  Returns empty list for orphan
@@ -102,6 +111,18 @@ def _parse_gene_rule(rule: str) -> list[str]:
     for or_part in re.split(r'\bor\b', rule, flags=re.IGNORECASE):
         genes = [g.strip() for g in re.split(r'\band\b', or_part, flags=re.IGNORECASE)]
         genes = [g for g in genes if g]
+
+        if not genes:
+            continue
+
+        if strip_isoforms:
+            stripped = []
+
+            for g in genes:
+                m = re.search(r'_AT\d+$', g)
+                stripped.append(g[: m.start()] if m else g)
+
+            genes = [g for g in stripped if g]
 
         if not genes:
             continue
@@ -443,3 +464,122 @@ def recon3d_network(
         )
 
     _log(f'Recon3D: {n_filtered} edges removed by cofactor filter (metab_max_degree={metab_max_degree}).')
+
+
+def recon3d_transporter_network(
+        include_reverse: bool = True,
+        include_orphans: bool = False,
+) -> Generator[GemInteraction, None, None]:
+    """
+    Yield GemInteraction records for Recon3D transport reactions.
+
+    Transport reactions are identified by detecting metabolites whose
+    BiGG base ID appears on both the reactant and product sides of a
+    reaction with *different* compartment codes — the molecular signature
+    of membrane transport.
+
+    Two directed edges are generated per transported metabolite per
+    enzyme:
+
+    - ``met[in_comp] → enzyme``
+    - ``enzyme → met[out_comp]``
+
+    Reversible reactions produce an additional reversed pair with
+    ``reverse=True`` where ``in_comp`` and ``out_comp`` are swapped.
+
+    Orphan reactions (no gene rule) generate edges using the reaction ID
+    as a pseudo-enzyme node when ``include_orphans`` is ``True``.
+
+    Args:
+        include_reverse:
+            If ``True``, yield reversed edges for reversible transport
+            reactions (``reverse=True``).  Default: ``True``.
+        include_orphans:
+            If ``True``, yield edges for orphan transport reactions
+            using the reaction ID as a pseudo-enzyme node with
+            ``target_type='reaction'`` or ``source_type='reaction'``.
+            Default: ``False``.
+
+    Yields:
+        :class:`GemInteraction` records.  Metabolite IDs are BiGG base
+        IDs (compartment suffix stripped); enzyme IDs are Entrez Gene ID
+        strings with ``_ATN`` isoform suffixes removed.
+    """
+
+    reactions = recon3d_reactions()
+    n_transport = 0
+
+    _log(f'Recon3D: building transporter network from {len(reactions)} reactions.')
+
+    for rxn in reactions:
+
+        enzymes = _parse_gene_rule(rxn['gene_reaction_rule'])
+
+        if not enzymes and not include_orphans:
+            continue
+
+        mets: dict = rxn['metabolites']
+        lb = rxn['lower_bound']
+        ub = rxn['upper_bound']
+        rxn_id = rxn['id']
+        reversible = rxn['reversible']
+        direction = 1 if lb + ub >= 0 else -1
+
+        reactant_comps: defaultdict[str, list[str]] = defaultdict(list)
+        product_comps: defaultdict[str, list[str]] = defaultdict(list)
+
+        for met_full, coef in mets.items():
+            base, comp = _strip_compartment(met_full)
+
+            if coef * direction < 0:
+                reactant_comps[base].append(comp)
+            elif coef * direction > 0:
+                product_comps[base].append(comp)
+
+        transported = [
+            (base, in_comp, out_comp)
+            for base in set(reactant_comps) & set(product_comps)
+            for in_comp in reactant_comps[base]
+            for out_comp in product_comps[base]
+            if in_comp != out_comp
+        ]
+
+        if not transported:
+            continue
+
+        n_transport += 1
+        nodes = enzymes if enzymes else [rxn_id]
+        node_type = 'protein' if enzymes else 'reaction'
+
+        for base_id, in_comp, out_comp in transported:
+            for node in nodes:
+
+                yield GemInteraction(
+                    source=base_id, target=node,
+                    source_type='metabolite', target_type=node_type,
+                    source_compartment=in_comp, target_compartment='',
+                    reaction_id=rxn_id, reverse=False,
+                )
+                yield GemInteraction(
+                    source=node, target=base_id,
+                    source_type=node_type, target_type='metabolite',
+                    source_compartment='', target_compartment=out_comp,
+                    reaction_id=rxn_id, reverse=False,
+                )
+
+                if reversible and include_reverse:
+
+                    yield GemInteraction(
+                        source=base_id, target=node,
+                        source_type='metabolite', target_type=node_type,
+                        source_compartment=out_comp, target_compartment='',
+                        reaction_id=rxn_id, reverse=True,
+                    )
+                    yield GemInteraction(
+                        source=node, target=base_id,
+                        source_type=node_type, target_type='metabolite',
+                        source_compartment='', target_compartment=in_comp,
+                        reaction_id=rxn_id, reverse=True,
+                    )
+
+    _log(f'Recon3D: {n_transport} transport reactions processed.')

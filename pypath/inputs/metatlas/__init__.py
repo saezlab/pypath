@@ -43,6 +43,9 @@ from ._gem import (
     metatlas_gem_yaml_reactions,
     metatlas_gem_yaml_metabolites,
     metatlas_gem_network,
+    metatlas_gem_transport_ids,
+    metatlas_gem_detect_gene_id_type,
+    metatlas_gem_transport_network,
 )
 from ._records import (
     MetatlasModel,
