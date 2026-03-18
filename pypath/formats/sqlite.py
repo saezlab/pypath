@@ -221,7 +221,10 @@ def _extract_tables_to_data_structures(
         cur = full_db_con.cursor()
         callback = lambda table_name: cur.execute(q % table_name).fetchall()
 
-    result = {t: callback(t) for t in tables}
+    if isinstance(tables, str):
+        result = callback(tables)
+    else:
+        result = {t: callback(t) for t in tables}
 
     # If only one table was requested, return a single DataFrame/table
     if len(result) == 1:
