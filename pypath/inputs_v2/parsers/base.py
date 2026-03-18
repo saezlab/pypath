@@ -1,7 +1,7 @@
 """
 Common raw data parsers for simple file formats.
 
-These parsers handle standard formats like CSV, TSV, JSON, and JSONL.
+These parsers handle standard formats like CSV, TSV, JSON, JSONL, and SQLite.
 """
 
 from __future__ import annotations
@@ -9,6 +9,8 @@ from __future__ import annotations
 from collections.abc import Generator
 import csv
 import json
+from pathlib import Path
+import sqlite3
 from typing import Any
 
 
@@ -77,3 +79,76 @@ def iter_jsonl(opener, **_kwargs: Any) -> Generator[dict[str, Any], None, None]:
     for line in handle:
         if line.strip():
             yield json.loads(line)
+
+
+def iter_sqlite(
+    opener,
+    table_name: str,
+    sqlite_path: Path,
+    db_rel_path: str | None = None,
+    **_kwargs: Any
+) -> Generator[dict[str, Any], None, None]:
+    """
+    Iterates over a table in a SQLite database.
+    If the database is within an archive (e.g., .tar.gz), it extracts it
+    to a local cache path first.
+
+    Args:
+        opener: The opener object for handling database connections.
+        table_name: The name of the table to retrieve data from.
+        sqlite_path: The local path to the cached SQLite database.
+        db_rel_path: Optional relative path to the database file within the archive.
+
+    Yields:
+        Dictionary representing a row from the table.
+    """
+    if not sqlite_path.exists():
+        if not opener or not opener.result:
+            return
+
+        _extract_sqlite_from_opener(opener, sqlite_path, db_rel_path)
+
+    yield from _iter_table(sqlite_path, table_name)
+
+
+def _extract_sqlite_from_opener(opener, target_path: Path, db_rel_path: str | None) -> None:
+    """Extracts a SQLite database file from the opener to a local path."""
+    if isinstance(opener.result, dict):
+        if not db_rel_path:
+            raise ValueError("db_rel_path is required for extracted archive results.")
+
+        if db_rel_path not in opener.result:
+            raise FileNotFoundError(f"Could not find {db_rel_path} in archive.")
+
+        db_handle = opener.result[db_rel_path]
+    else:
+        db_handle = opener.result
+
+    print(f"Extracting SQLite database to: {target_path}")
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(target_path, 'wb') as fp:
+        while chunk := db_handle.read(1024 ** 2):
+            fp.write(chunk)
+
+
+def _iter_table(sqlite_path: Path, table_name: str) -> Generator[dict[str, Any], None, None]:
+    """Pure generator for yielding rows from a SQLite table."""
+    connection = None
+    try:
+        connection = sqlite3.connect(sqlite_path)
+        connection.row_factory = sqlite3.Row
+        cursor = connection.cursor()
+
+        query = f"SELECT * FROM {table_name};"
+        cursor.execute(query)
+
+        for row in cursor:
+            yield dict(row)
+
+    except sqlite3.Error as e:
+        print(f"SQLite error during table iteration: {e}")
+        raise
+    finally:
+        if connection:
+            connection.close()
