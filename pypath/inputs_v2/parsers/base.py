@@ -115,7 +115,7 @@ def _extract_sqlite_from_opener(opener, target_path: Path, db_rel_path: str | No
     """Extracts a SQLite database file from the opener to a local path."""
     if isinstance(opener.result, dict):
         if not db_rel_path:
-            raise ValueError("db_rel_path is required for extracted archive results.")
+            raise ValueError("Relative path for file in archive is required for extracted archive results.")
 
         if db_rel_path not in opener.result:
             raise FileNotFoundError(f"Could not find {db_rel_path} in archive.")

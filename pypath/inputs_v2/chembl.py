@@ -20,6 +20,9 @@ from pypath.internals.cv_terms import (
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
+    MoleculeSubtypeCv,
+    ProteinFunctionalClassCv,
+    MoleculeAnnotationsCv,
 )
 
 from pypath.internals.tabular_builder import (
@@ -68,10 +71,57 @@ download = Download(
     needed=_files_needed()
 )
 
+# Mapping of ChEMBL molecule_type strings to EntityTypeCv
+MOLECULE_TYPE_TO_ENTITY_TYPE = {
+    'Small molecule': EntityTypeCv.SMALL_MOLECULE,
+    'Protein': EntityTypeCv.PROTEIN,
+    'Antibody': EntityTypeCv.PROTEIN,
+    'Enzyme': EntityTypeCv.PROTEIN,
+    'Oligosaccharide': EntityTypeCv.SMALL_MOLECULE,
+    'Oligonucleotide': EntityTypeCv.SMALL_MOLECULE,
+    'Gene': EntityTypeCv.GENE,
+    'Cell': EntityTypeCv.PHYSICAL_ENTITY,
+    'Unknown': EntityTypeCv.PHYSICAL_ENTITY,
+    'Unclassified': EntityTypeCv.PHYSICAL_ENTITY,
+}
+
+# Mapping of ChEMBL molecule_type strings to more specific subclasses
+MOLECULE_TYPE_TO_SUBTYPE = {
+    'Antibody': MoleculeSubtypeCv.ANTIBODY,
+    'Enzyme': ProteinFunctionalClassCv.ENZYME,
+    'Small molecule': MoleculeSubtypeCv.SYNTHETIC_ORGANIC,
+}
+
+f = FieldConfig(
+    extract={
+        'chebi': r'^(?:CHEBI:)?(\d+)$',
+    },
+    transform={
+        'chebi': lambda v: f'CHEBI:{v}' if v else None,
+        'bool_to_cv': lambda v, cv: cv if str(v) == '1' else None,
+    },
+    map={
+        'entity_type': MOLECULE_TYPE_TO_ENTITY_TYPE,
+        'subtype': MOLECULE_TYPE_TO_SUBTYPE,
+    },
+)
+
 molecules_schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=f('molecule_type', map='entity_type'),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.CHEMBL, value='molecule_chembl_id'),
+        CV(term=IdentifierNamespaceCv.CHEMBL, value=f('chembl_id')),
+        CV(term=IdentifierNamespaceCv.CHEMBL_INTERNAL_ID, value=f('molregno')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('pref_name')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id', extract='chebi', transform='chebi')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.CLINICAL_PHASE, value=f('max_phase')),
+        CV(term=f('molecule_type', map='subtype')),
+        CV(term=f('therapeutic_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.APPROVED))),
+        CV(term=f('withdrawn_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.WITHDRAWN))),
+        CV(term=f('polymer_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.POLYMER))),
+        CV(term=f('inorganic_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.INORGANIC))),
+        CV(term=f('natural_product', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.NATURAL_PRODUCT))),
     ),
 )
 
