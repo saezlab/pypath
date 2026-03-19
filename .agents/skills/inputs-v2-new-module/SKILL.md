@@ -29,7 +29,6 @@ Then inspect current upstream data.
 Decide:
 - what formats exist
 - which format is best
-- whether URLs are stable or need dynamic resolution
 - what entity types / identifiers / species / license are available
 
 **Checkpoint:** state the chosen source format and why.
@@ -97,8 +96,6 @@ poetry run python -c "from pypath.inputs_v2.<resource> import resource; print(ne
 ```
 
 Repeat for each dataset.
-
-If full smoke tests are blocked, run parser-level checks and report the exact blocker.
 
 ## What to report at the end
 
