@@ -108,3 +108,5 @@ class IdentifierNamespaceCv(CvEnum):
     CELLCHAT = ("OM:0219", "CellChat database identifier", "http://www.cellchat.org/")
     MEBOCOST = ("OM:0220", "MEBOCOST database identifier", "https://www.ebi.ac.uk/biomodels/MODEL2209130001")
     UNIPROT_ENTRY_NAME = ("OM:0221", "UniProt entry name (e.g., EGFR_HUMAN)", "https://www.uniprot.org/help/entry_name")
+    WIKIPATHWAYS = ("OM:0222", "WikiPathways identifier", "https://www.wikipathways.org/")
+    WIKIPATHWAYS_VERSION = ("OM:0223", "Versioned WikiPathways identifier", "https://www.wikipathways.org/")
