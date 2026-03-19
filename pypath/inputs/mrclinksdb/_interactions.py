@@ -46,9 +46,33 @@ def mrclinksdb_raw(
 
     c = curl.Curl(url, large = True, silent = False)
 
-    for line in c.result:
+    rows = iter(c.result)
 
-        yield _records.MrclinksdbRaw(*line.split("\t"))
+    # Read header to detect column order.
+    # In some organisms (e.g. mouse) the 'Receptor gene ID' and
+    # 'Receptor uniprot id' columns are swapped relative to the
+    # MrclinksdbRaw namedtuple definition (gene ID at pos 9, UniProt at 10).
+    header_line = next(rows, None)
+
+    if header_line is None:
+        return
+
+    header = header_line.split('\t')
+    swap_gene_uniprot = (
+        len(header) > 10 and
+        header[9].strip().lower() == 'receptor uniprot id'
+    )
+
+    yield _records.MrclinksdbRaw(*header)
+
+    for line in rows:
+
+        fields = line.split('\t')
+
+        if swap_gene_uniprot and len(fields) > 10:
+            fields[9], fields[10] = fields[10], fields[9]
+
+        yield _records.MrclinksdbRaw(*fields)
 
 
 def mrclinksdb_interaction(

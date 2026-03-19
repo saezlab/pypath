@@ -50,6 +50,7 @@ from ._gem import (
     recon3d_metabolites,
     recon3d_network,
     recon3d_reactions,
+    recon3d_transporter_network,
 )
 
 __all__ = [
@@ -60,4 +61,5 @@ __all__ = [
     'recon3d_raw',
     'recon3d_raw_vmh',
     'recon3d_reactions',
+    'recon3d_transporter_network',
 ]
