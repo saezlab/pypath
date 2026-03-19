@@ -11,7 +11,7 @@ from functools import partial
 from pathlib import Path
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.base import iter_sqlite
+from pypath.inputs_v2.parsers.chembl import molecules_parser
 from pypath.share import cache
 
 from pypath.internals.cv_terms import (
@@ -113,6 +113,10 @@ molecules_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.CHEMBL_INTERNAL_ID, value=f('molregno')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('pref_name')),
         CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id', extract='chebi', transform='chebi')),
+        CV(term=IdentifierNamespaceCv.SMILES, value=f('canonical_smiles')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('standard_inchi')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('standard_inchi_key')),
+        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('full_molformula')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.CLINICAL_PHASE, value=f('max_phase')),
@@ -122,8 +126,15 @@ molecules_schema = EntityBuilder(
         CV(term=f('polymer_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.POLYMER))),
         CV(term=f('inorganic_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.INORGANIC))),
         CV(term=f('natural_product', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.NATURAL_PRODUCT))),
+        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('full_mwt')),
+        CV(term=MoleculeAnnotationsCv.MW_MONOISOTOPIC, value=f('mw_monoisotopic')),
+        CV(term=MoleculeAnnotationsCv.ALOGP, value=f('alogp')),
+        CV(term=MoleculeAnnotationsCv.CX_LOGP, value=f('cx_logp')),
+        CV(term=MoleculeAnnotationsCv.CX_LOGD, value=f('cx_logd')),
+        CV(term=MoleculeAnnotationsCv.MOLECULAR_SPECIES, value=f('molecular_species')),
     ),
 )
+
 
 resource = Resource(
     config=config,
@@ -131,8 +142,7 @@ resource = Resource(
         download=download,
         mapper=molecules_schema,
         raw_parser=partial(
-            iter_sqlite,
-            table_name='molecule_dictionary',
+            molecules_parser,
             sqlite_path=SQLITE_PATH,
             db_rel_path=DB_REL_PATH,
         ),
