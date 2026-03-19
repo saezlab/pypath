@@ -258,6 +258,7 @@ class MoleculeAnnotationsCv(CvEnum):
     MUTAGENESIS = ("OM:0612", "Details about mutagenesis experiments")
     DESCRIPTION = ("OM:0613", "General description of the molecule")
     FUNCAT = ("OM:0617", "MIPS Functional Catalogue (FunCat) annotation - hierarchical classification of protein function")
+    CLINICAL_PHASE = ("OM:0630", "Maximum clinical trial phase reached (0-4)")
 
     # Lipid classification terms (OM:0614-0622 range)
     LIPID_CATEGORY = ("OM:0614", "Lipid category classification (e.g., Fatty Acyls, Glycerolipids)")
