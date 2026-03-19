@@ -83,32 +83,34 @@ def iter_jsonl(opener, **_kwargs: Any) -> Generator[dict[str, Any], None, None]:
 
 def iter_sqlite(
     opener,
-    table_name: str,
-    sqlite_path: Path,
+    table_name: str | None = None,
+    sqlite_path: Path | None = None,
     db_rel_path: str | None = None,
+    query: str | None = None,
     **_kwargs: Any
 ) -> Generator[dict[str, Any], None, None]:
     """
-    Iterates over a table in a SQLite database.
+    Iterates over a table or query in a SQLite database.
     If the database is within an archive (e.g., .tar.gz), it extracts it
     to a local cache path first.
 
     Args:
         opener: The opener object for handling database connections.
-        table_name: The name of the table to retrieve data from.
+        table_name: The name of the table to retrieve data from (if query not provided).
         sqlite_path: The local path to the cached SQLite database.
         db_rel_path: Optional relative path to the database file within the archive.
+        query: Optional custom SQL query to execute.
 
     Yields:
-        Dictionary representing a row from the table.
+        Dictionary representing a row from the table or query.
     """
-    if not sqlite_path.exists():
+    if sqlite_path and not sqlite_path.exists():
         if not opener or not opener.result:
             return
 
         _extract_sqlite_from_opener(opener, sqlite_path, db_rel_path)
 
-    yield from _iter_table(sqlite_path, table_name)
+    yield from _iter_table(sqlite_path, table_name, query=query)
 
 
 def _extract_sqlite_from_opener(opener, target_path: Path, db_rel_path: str | None) -> None:
@@ -132,22 +134,30 @@ def _extract_sqlite_from_opener(opener, target_path: Path, db_rel_path: str | No
             fp.write(chunk)
 
 
-def _iter_table(sqlite_path: Path, table_name: str) -> Generator[dict[str, Any], None, None]:
-    """Pure generator for yielding rows from a SQLite table."""
+def _iter_table(
+    sqlite_path: Path,
+    table_name: str | None = None,
+    query: str | None = None,
+) -> Generator[dict[str, Any], None, None]:
+    """Pure generator for yielding rows from a SQLite table or query."""
     connection = None
     try:
         connection = sqlite3.connect(sqlite_path)
         connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
 
-        query = f"SELECT * FROM {table_name};"
+        if not query:
+            if not table_name:
+                raise ValueError("Either table_name or query must be provided.")
+            query = f"SELECT * FROM {table_name};"
+
         cursor.execute(query)
 
         for row in cursor:
             yield dict(row)
 
     except sqlite3.Error as e:
-        print(f"SQLite error during table iteration: {e}")
+        print(f"SQLite error during iteration: {e}")
         raise
     finally:
         if connection:
