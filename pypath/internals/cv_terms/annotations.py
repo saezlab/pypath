@@ -283,6 +283,9 @@ class MoleculeAnnotationsCv(CvEnum):
     LABELLED = ("OM:0652", "Indicates whether the molecule is isotopically or fluorescently labelled")
     RADIOACTIVE = ("OM:0653", "Indicates whether the molecule contains radioactive isotopes")
     ANTIBACTERIAL = ("OM:0654", "Indicates whether the molecule has antibacterial activity")
+    POLYMER = ("OM:0655", "Indicates whether the molecule is a polymer")
+    INORGANIC = ("OM:0656", "Indicates whether the molecule is inorganic")
+    NATURAL_PRODUCT = ("OM:0657", "Indicates whether the molecule is a natural product")
 
     # Food and compound classification (OM:0660-0679 range)
     FOOD_CLASS = ("OM:0660", "Food classification group (e.g., Alcoholic beverages, Fruits)")

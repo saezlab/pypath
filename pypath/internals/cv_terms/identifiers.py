@@ -110,3 +110,4 @@ class IdentifierNamespaceCv(CvEnum):
     UNIPROT_ENTRY_NAME = ("OM:0221", "UniProt entry name (e.g., EGFR_HUMAN)", "https://www.uniprot.org/help/entry_name")
     WIKIPATHWAYS = ("OM:0222", "WikiPathways identifier", "https://www.wikipathways.org/")
     WIKIPATHWAYS_VERSION = ("OM:0223", "Versioned WikiPathways identifier", "https://www.wikipathways.org/")
+    CHEMBL_INTERNAL_ID = ("OM:0224", "ChEMBL internal ID (molregno)")
