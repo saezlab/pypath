@@ -11,7 +11,12 @@ from functools import partial
 from pathlib import Path
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.chembl import molecules_parser
+from pypath.inputs_v2.parsers.chembl import (
+    molecules_parser,
+    assays_parser,
+    documents_parser,
+    mechanisms_parser,
+)
 from pypath.share import cache
 
 from pypath.internals.cv_terms import (
@@ -23,6 +28,11 @@ from pypath.internals.cv_terms import (
     MoleculeSubtypeCv,
     ProteinFunctionalClassCv,
     MoleculeAnnotationsCv,
+    AssayTypeCv,
+    AssayAnnotationsCv,
+    CurationCv,
+    PharmacologicalActionCv,
+    InteractionMetadataCv,
 )
 
 from pypath.internals.tabular_builder import (
@@ -31,6 +41,8 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
+    Member,
+    MembershipBuilder,
 )
 
 
@@ -92,6 +104,29 @@ MOLECULE_TYPE_TO_SUBTYPE = {
     'Small molecule': MoleculeSubtypeCv.SYNTHETIC_ORGANIC,
 }
 
+# Mapping of ChEMBL assay_type codes to AssayTypeCv
+ASSAY_TYPE_MAP = {
+    'B': AssayTypeCv.BINDING,
+    'F': AssayTypeCv.FUNCTIONAL,
+    'A': AssayTypeCv.ADME,
+    'T': AssayTypeCv.TOXICITY,
+    'P': AssayTypeCv.PHYSICOCHEMICAL,
+}
+
+# Mapping of ChEMBL action_type strings to PharmacologicalActionCv
+ACTION_TYPE_MAP = {
+    'AGONIST': PharmacologicalActionCv.AGONIST,
+    'ANTAGONIST': PharmacologicalActionCv.ANTAGONIST,
+    'INHIBITOR': PharmacologicalActionCv.INHIBITION,
+    'ACTIVATOR': PharmacologicalActionCv.ACTIVATION,
+    'PARTIAL AGONIST': PharmacologicalActionCv.PARTIAL_AGONIST,
+    'INVERSE AGONIST': PharmacologicalActionCv.INVERSE_AGONIST,
+    'POTENTIATOR': PharmacologicalActionCv.POTENTIATION,
+    'POSITIVE ALLosteric MODULATOR': PharmacologicalActionCv.POSITIVE,
+    'NEGATIVE ALLosteric MODULATOR': PharmacologicalActionCv.NEGATIVE,
+    'BINDING AGENT': PharmacologicalActionCv.BINDING,
+}
+
 f = FieldConfig(
     extract={
         'chebi': r'^(?:CHEBI:)?(\d+)$',
@@ -103,6 +138,8 @@ f = FieldConfig(
     map={
         'entity_type': MOLECULE_TYPE_TO_ENTITY_TYPE,
         'subtype': MOLECULE_TYPE_TO_SUBTYPE,
+        'assay_type': ASSAY_TYPE_MAP,
+        'action_type': ACTION_TYPE_MAP,
     },
 )
 
@@ -135,6 +172,82 @@ molecules_schema = EntityBuilder(
     ),
 )
 
+assays_schema = EntityBuilder(
+    entity_type=EntityTypeCv.ASSAY,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CHEMBL_ASSAY, value=f('chembl_id')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('description')),
+        CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
+        CV(term=IdentifierNamespaceCv.CHEMBL, value=f('document_chembl_id')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=f('assay_type', map='assay_type')),
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('assay_tax_id')),
+        CV(term=AssayAnnotationsCv.CONFIDENCE_SCORE, value=f('confidence_score')),
+        CV(term=AssayAnnotationsCv.ASSAY_CATEGORY, value=f('assay_category')),
+        CV(term=AssayAnnotationsCv.SUBCELLULAR_FRACTION, value=f('assay_subcellular_fraction')),
+        CV(term=AssayAnnotationsCv.TISSUE, value=f('assay_tissue')),
+        CV(term=AssayAnnotationsCv.CELL_TYPE, value=f('assay_cell_type')),
+        CV(term=AssayAnnotationsCv.DESCRIPTION, value=f('parameters')),
+    ),
+)
+
+documents_schema = EntityBuilder(
+    entity_type=EntityTypeCv.PUBLICATION,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CHEMBL_DOCUMENT, value=f('chembl_id')),
+        CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_id')),
+        CV(term=IdentifierNamespaceCv.DOI, value=f('doi')),
+        CV(term=IdentifierNamespaceCv.PATENT_NUMBER, value=f('patent_id')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=CurationCv.JOURNAL, value=f('journal')),
+        CV(term=CurationCv.YEAR, value=f('year')),
+        CV(term=CurationCv.TITLE, value=f('title')),
+        CV(term=CurationCv.ABSTRACT, value=f('abstract')),
+        CV(term=CurationCv.DOC_TYPE, value=f('doc_type')),
+    ),
+)
+
+mechanisms_schema = EntityBuilder(
+    entity_type=EntityTypeCv.INTERACTION,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CHEMBL_MECHANISM, value=f('mec_id')),
+    ),
+    membership=MembershipBuilder(
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.CHEMBL, value=f('molecule_chembl_id')),
+                ),
+            ),
+        ),
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
+                ),
+            ),
+        ),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=f('action_type', map='action_type')),
+        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('molecular_mechanism')),
+        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('mechanism_refs')),
+        CV(term=EntityBuilder(
+            entity_type=EntityTypeCv.PUBLICATION,
+            identifiers=IdentifiersBuilder(
+                CV(term=IdentifierNamespaceCv.CHEMBL, value=f('document_chembl_id')),
+                CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_id')),
+                CV(term=IdentifierNamespaceCv.DOI, value=f('doi')),
+                CV(term=IdentifierNamespaceCv.NAME, value=f('document_title')),
+            ),
+        )),
+    ),
+)
+
 
 resource = Resource(
     config=config,
@@ -143,6 +256,33 @@ resource = Resource(
         mapper=molecules_schema,
         raw_parser=partial(
             molecules_parser,
+            sqlite_path=SQLITE_PATH,
+            db_rel_path=DB_REL_PATH,
+        ),
+    ),
+    assays=Dataset(
+        download=download,
+        mapper=assays_schema,
+        raw_parser=partial(
+            assays_parser,
+            sqlite_path=SQLITE_PATH,
+            db_rel_path=DB_REL_PATH,
+        ),
+    ),
+    documents=Dataset(
+        download=download,
+        mapper=documents_schema,
+        raw_parser=partial(
+            documents_parser,
+            sqlite_path=SQLITE_PATH,
+            db_rel_path=DB_REL_PATH,
+        ),
+    ),
+    mechanisms=Dataset(
+        download=download,
+        mapper=mechanisms_schema,
+        raw_parser=partial(
+            mechanisms_parser,
             sqlite_path=SQLITE_PATH,
             db_rel_path=DB_REL_PATH,
         ),

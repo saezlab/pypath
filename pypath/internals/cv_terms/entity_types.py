@@ -38,6 +38,8 @@ class EntityTypeCv(CvEnum):
     CONTROL = "OM:0018"
     DEGRADATION = ("OM:0019", "Degradation reaction")
     FOOD = ("OM:0020", "Food or food product")
+    ASSAY = ("OM:0030", "Experimental assay or protocol used to measure biological activity")
+    PUBLICATION = ("OM:0031", "A research article, book, patent, or other formal publication.")
 
 
 class MoleculeSubtypeCv(CvEnum):

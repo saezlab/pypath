@@ -111,3 +111,6 @@ class IdentifierNamespaceCv(CvEnum):
     WIKIPATHWAYS = ("OM:0222", "WikiPathways identifier", "https://www.wikipathways.org/")
     WIKIPATHWAYS_VERSION = ("OM:0223", "Versioned WikiPathways identifier", "https://www.wikipathways.org/")
     CHEMBL_INTERNAL_ID = ("OM:0224", "ChEMBL internal ID (molregno)")
+    CHEMBL_ASSAY = ("OM:0225", "ChEMBL assay identifier (CHEMBL_ID)")
+    CHEMBL_DOCUMENT = ("OM:0226", "ChEMBL document identifier (CHEMBL_ID)")
+    CHEMBL_MECHANISM = ("OM:0227", "ChEMBL mechanism identifier (mec_id)")

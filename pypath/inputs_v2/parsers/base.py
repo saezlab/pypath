@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import csv
+import itertools
 import json
 from pathlib import Path
 import sqlite3
@@ -100,6 +101,7 @@ def iter_sqlite(
         sqlite_path: The local path to the cached SQLite database.
         db_rel_path: Optional relative path to the database file within the archive.
         query: Optional custom SQL query to execute.
+        max_records: Optional maximum number of records to retrieve.
 
     Yields:
         Dictionary representing a row from the table or query.
@@ -110,7 +112,9 @@ def iter_sqlite(
 
         _extract_sqlite_from_opener(opener, sqlite_path, db_rel_path)
 
-    yield from _iter_table(sqlite_path, table_name, query=query)
+    results = _iter_table(sqlite_path, table_name, query=query)
+
+    yield from results
 
 
 def _extract_sqlite_from_opener(opener, target_path: Path, db_rel_path: str | None) -> None:

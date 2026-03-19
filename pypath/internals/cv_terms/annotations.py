@@ -236,6 +236,13 @@ class CurationCv(CvEnum):
     # PSI-MI standard curation terms
     COMMENT = "MI:0612"
 
+    # Publication metadata terms (OM:0410-0419 range)
+    JOURNAL = ("OM:0410", "Name of the journal or book")
+    YEAR = ("OM:0411", "Year of publication")
+    TITLE = ("OM:0412", "Title of the publication")
+    ABSTRACT = ("OM:0413", "Abstract or summary text")
+    DOC_TYPE = ("OM:0414", "Type of publication (e.g. journal article, patent, book chapter)")
+
 class MoleculeAnnotationsCv(CvEnum):
     """Controlled vocabulary for molecule annotation types.
 
@@ -312,6 +319,32 @@ class MoleculeAnnotationsCv(CvEnum):
     DATA_POINT_COUNT = ("OM:0686", "Total number of data points (N)")
     EXPERIMENTAL_METHOD = ("OM:0687", "Experimental method group used for measurement")
     CONCENTRATION_MEDIAN = ("OM:0688", "Median concentration value")
+
+
+class AssayTypeCv(CvEnum):
+    """Assay type classification (primarily from ChEMBL)."""
+
+    parent_cv_term = ("OM:0750", "Assay type term", "Describes the type of experimental assay.")
+
+    BINDING = ("OM:0751", "Assay to measure the binding of a ligand to a target")
+    FUNCTIONAL = ("OM:0752", "Assay to measure the functional effect of a ligand on a target")
+    ADME = ("OM:0753", "Absorption, Distribution, Metabolism, and Excretion assay")
+    TOXICITY = ("OM:0754", "Assay to measure the toxic effect of a ligand")
+    PHYSICOCHEMICAL = ("OM:0755", "Assay to measure physicochemical properties")
+    UNCLASSIFIED = ("OM:0756", "Assay type not classified")
+
+
+class AssayAnnotationsCv(CvEnum):
+    """Annotations specific to experimental assays."""
+
+    parent_cv_term = ("OM:0760", "Assay annotation term", "Describes metadata for experimental assays.")
+
+    ASSAY_CATEGORY = ("OM:0761", "Broad category of the assay (e.g., screening, panel)")
+    CONFIDENCE_SCORE = ("OM:0762", "Confidence score assigned to the assay-target relationship (0-9)")
+    SUBCELLULAR_FRACTION = ("OM:0763", "Subcellular fraction used in the assay")
+    TISSUE = ("OM:0764", "Tissue or organ source for the assay")
+    CELL_TYPE = ("OM:0765", "Cell type used in the assay")
+    DESCRIPTION = ("OM:0766", "Textual description of the assay protocol and objectives")
 
 
 class InteractionParameterCv(CvEnum):

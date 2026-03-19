@@ -58,6 +58,8 @@ from .annotations import (
     LigandTypeCv,
     OntologyAnnotationCv,
     ResourceAnnotationCv,
+    AssayTypeCv,
+    AssayAnnotationsCv,
 )
 from .resource_metadata import LicenseCV, UpdateCategoryCV
 from .resources import ResourceCv
