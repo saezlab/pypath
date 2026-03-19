@@ -422,6 +422,8 @@ class ParticipantMetadataCv(CvEnum):
     PARTICIPANT_FEATURE = ("OM:1225", "Experimental feature(s) of the participant")
     STOICHIOMETRY = ("OM:1226", "Stoichiometry associated with the participant within the interaction")
     STEP_ORDER = ("OM:1227", "Order or position of a step within a pathway or process")
+    SOURCE = ("OM:1228", "Participant designated as the source of a directed interaction")
+    TARGET = ("OM:1229", "Participant designated as the target of a directed interaction")
 
 
 class OntologyAnnotationCv(CvEnum):

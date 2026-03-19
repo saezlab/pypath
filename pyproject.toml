@@ -91,7 +91,8 @@ certifi = ">=2023.7.22"
 cffi = "^1.17.0"
 download-manager = {git = "https://github.com/saezlab/download-manager.git", branch = "main"}
 cachemanager = {git = "https://github.com/saezlab/cache-manager.git", rev = "main"}
-rdflib = "^7.4.0"
+rdflib = "^7.6.0"
+python-dotenv = "*"
 
 [tool.poetry.extras]
 # bel = [
