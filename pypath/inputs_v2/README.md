@@ -424,6 +424,14 @@ for record in resource.proteins.raw():
     print(record)  # dict from parser
 ```
 
+## Command Line Smoke Test
+
+To print the first mapped Entity from the human MEBOCOST dataset:
+
+```bash
+poetry run python -c "from pypath.inputs_v2.mebocost import resource; print(next(resource.human()))"
+```
+
 ## Discovery
 
 The `omnipath_build` loaders automatically discover `Resource` objects exported at module level. Each resource's datasets are then processed to build the silver layer.

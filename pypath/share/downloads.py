@@ -25,13 +25,29 @@ import os
 from pathlib import Path
 from typing import Optional, List
 
+from dotenv import load_dotenv
+
 import pypath.share.settings as settings
 from download_manager import DownloadManager
 from cache_manager._open import Opener
 
 
+def _load_env_file() -> None:
+    """Load environment variables from the nearest local `.env` file."""
+
+    for base in (Path.cwd(), *Path.cwd().parents):
+
+        env_path = base / '.env'
+
+        if env_path.exists():
+            load_dotenv(env_path, override=False)
+            break
+
+
 def _resolve_data_dir() -> Path:
     """Resolve download storage directory for inputs_v2 raw files."""
+
+    _load_env_file()
 
     configured = (
         os.environ.get('PYPATH_DOWNLOAD_DATADIR') or
