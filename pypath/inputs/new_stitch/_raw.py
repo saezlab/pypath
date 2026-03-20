@@ -29,6 +29,9 @@ def tables(url: str,
 
     c = curl.Curl(url, silent = False, large = True, slow = True)
 
+    if c.result is None:
+        return
+
     line_count = 0
     for line in csv.DictReader(c.result, delimiter = '\t'):
         
