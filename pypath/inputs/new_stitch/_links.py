@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 from collections.abc import Generator
+import itertools
 import re
 
 import pypath.resources.urls as urls
 from ._records import StitchLinks
 from ._raw import tables
+
+
+def _prepend(first, rest):
+    return itertools.chain([first], rest)
 
 __all__ = [
     'links',
@@ -17,6 +24,10 @@ def links(max_lines: int | None = None,
     """
     Downloads the 'links' file from STITCH and formats the data.
 
+    Tries the rescued OmniPath mirror first; falls back to the original
+    STITCH server if the mirror returns no data (e.g. for non-human
+    organisms that are not hosted on the mirror).
+
     Yields
         StitchLinks
             A named tuple containing information about each ligand-receptor
@@ -24,11 +35,24 @@ def links(max_lines: int | None = None,
     """
 
     url = urls.urls['stitch']['links_rescued'] % ncbi_tax_id
-
     links = tables(url, max_lines)
 
+    # Peek at the first record to detect a failed/empty download.
+    # If the rescued mirror returned nothing, fall back to the original URL.
+    try:
+        first = next(links)
+    except StopIteration:
+        url = urls.urls['stitch']['links'] % ncbi_tax_id
+        links = tables(url, max_lines)
+        try:
+            first = next(links)
+        except StopIteration:
+            return
 
-    for link in links:
+    links = _prepend(first, links)
+
+
+    for link in links:  # noqa: F402
 
         # extract ids
         stereo, cid_id = RECHEMID.match(link['chemical']).groups()
