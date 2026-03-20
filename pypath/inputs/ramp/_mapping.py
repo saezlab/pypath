@@ -21,9 +21,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from ._sqlite import ramp_sqlite_raw
-
-__all__ = ['ramp_mapping']
+from ._sqlite import ramp_sqlite
 
 
 def ramp_mapping(
@@ -62,8 +60,9 @@ def ramp_mapping(
         'ON a.rampId = b.rampId;'
     )
 
-    con = ramp_raw(tables = 'source', sqlite = True)
+    con = ramp_sqlite()
     df = pd.read_sql_query(query, con)
+    con.close()
 
     if not curies:
 
@@ -75,4 +74,53 @@ def ramp_mapping(
         df
             if return_df else
         df.groupby('id_type_a')['id_type_b'].apply(set).to_dict()
+    )
+
+
+def ramp_synonym_mapping(
+        id_type: str,
+        return_df: bool = False,
+        curies: bool = False,
+    ) -> dict[str, set[str]] | pd.DataFrame:
+    """
+    Retrieve the mapping between an identifier type and synonyms.
+
+    Joins the ``source`` and ``analytesynonym`` tables on RaMP IDs to
+    produce an ``<ID type> -> synonym`` translation dictionary.
+
+    Args:
+        id_type:
+            The identifier type, e.g. ``'hmdb'``, ``'swisslipids'``,
+            ``'chebi'``, etc.
+        return_df:
+            Return a pandas DataFrame instead of a dictionary.
+        curies:
+            Do not remove CURIEs from the identifiers.
+
+    Returns:
+        A dictionary mapping identifiers to sets of synonyms, or a
+        pandas DataFrame with ``source_id`` and ``synonym`` columns.
+    """
+
+    query = (
+        'SELECT DISTINCT s.sourceId AS source_id, a.Synonym AS synonym '
+        'FROM source s '
+        'JOIN analytesynonym a ON s.rampId = a.rampId '
+        f'WHERE s.geneOrCompound = "compound" AND s.IDtype = "{id_type}"'
+    )
+
+    con = ramp_sqlite()
+    df = pd.read_sql_query(query, con)
+    con.close()
+
+    if not curies:
+
+        df['source_id'] = df['source_id'].apply(
+            lambda x: x.split(':', maxsplit = 1)[-1],
+        )
+
+    return (
+        df
+            if return_df else
+        df.groupby('source_id')['synonym'].apply(set).to_dict()
     )
