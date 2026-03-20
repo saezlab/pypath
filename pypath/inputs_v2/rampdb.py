@@ -5,8 +5,28 @@ This module converts annotations of lipids and metabolites into Entity records
 using the declarative schema pattern.
 """
 
+import re
+import requests
+
+from bs4 import BeautifulSoup
+
 from pypath.inputs_v2.base import ResourceConfig
 from pypath.internals.cv_terms import ResourceCv, LicenseCV, UpdateCategoryCV
+from pypath.inputs_v2.base import Download
+
+
+def get_ramp_latest_ver(branch='main'):
+
+    url = f'https://github.com/ncats/RaMP-DB/raw/refs/heads/{branch}/db/'
+    res = requests.get(url)
+    soup = BeautifulSoup(res.text, 'html.parser')
+    files = sorted({
+        f.text for f in soup.find_all(title=re.compile("\\.sqlite.gz$"))
+    })
+
+    return url + files[-1]
+
+
 
 config = ResourceConfig(
     id=ResourceCv.RAMPDB,
@@ -22,3 +42,8 @@ config = ResourceConfig(
         'annotations for genes, proteins, and metabolites.'
     )
 )
+
+#download = Download(
+#    url=get_ramp_latest_ver(),
+
+#)
