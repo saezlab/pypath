@@ -152,6 +152,7 @@ RAMP_MAPPING = {
     'pubchem_compound': 'pubchem',
     'pubchem_cid': 'pubchem',
     'ChEBI': 'chebi',
+    'synonym': 'synonym',
 }
 
 HMDB_MAPPING = {

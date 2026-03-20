@@ -33,6 +33,10 @@ def ramp_mapping(
     """
     Retrieve the mapping between two identifiers.
 
+    When one of the ID types is ``'synonym'``, the mapping is done
+    against the ``analytesynonym`` table instead of the ``source``
+    table.
+
     Args:
         id_type_a:
             The identifier type of the first identifier.
@@ -46,6 +50,22 @@ def ramp_mapping(
     Returns:
         A dictionary with the mapping between the two identifiers.
     """
+
+    if id_type_b == 'synonym':
+
+        return ramp_synonym_mapping(
+            id_type = id_type_a,
+            return_df = return_df,
+            curies = curies,
+        )
+
+    elif id_type_a == 'synonym':
+
+        return ramp_synonym_mapping(
+            id_type = id_type_b,
+            return_df = return_df,
+            curies = curies,
+        )
 
     query = (
         'SELECT DISTINCT a.sourceId as id_type_a, b.sourceId as id_type_b '
