@@ -16,8 +16,8 @@ __all__ = [
     'links',
 ]
 
-RECHEMID = re.compile(r'CID([ms]?)0*(\d+)') # seperates the stitch pubchemID
-REPROTID = re.compile(r'(\d+)\.?(ENSP0*\d+)')  # seperates the stitch ensembl protein ID
+RECHEMID = re.compile(r'CID([ms]?)0*(\d+)')          # e.g. CIDm01234, CIDs01234
+REPROTID = re.compile(r'(\d+)\.?(ENS[A-Z]*P\d+)')  # e.g. 9606.ENSP00000123, 10090.ENSMUSP00000012
 
 def links(max_lines: int | None = None,
           ncbi_tax_id: int = 9606) -> Generator[StitchLinks]:

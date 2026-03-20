@@ -9,7 +9,7 @@ __all__ = [
     'actions',
 ]
 
-REID = re.compile(r'((?:\d+)?)\.?(CID|ENSP)([ms]?)(0*)(\d+)')
+REID = re.compile(r'((?:\d+)?)\.?(CID|ENS[A-Z]*P)([ms]?)(0*)(\d+)')  # e.g. 10090.ENSMUSP00000012
 
 
 def actions(max_lines: int | None = None,
