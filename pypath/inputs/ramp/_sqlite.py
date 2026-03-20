@@ -35,6 +35,31 @@ from pypath.formats import sqlite as _sqlite
 from ._common import _log, _show_tables
 
 
+_INDEXES = (
+    ('idx_source_rampId', 'source', 'rampId'),
+    ('idx_source_IDtype_geneOrCompound', 'source', 'IDtype, geneOrCompound'),
+    ('idx_analytesynonym_rampId', 'analytesynonym', 'rampId'),
+    ('idx_metabolite_class_ramp_id', 'metabolite_class', 'ramp_id'),
+    ('idx_chem_props_ramp_id', 'chem_props', 'ramp_id'),
+)
+
+
+def _ensure_indexes(con: sqlite3.Connection):
+    """
+    Create indexes on the RaMP database if they do not exist.
+    """
+
+    cur = con.cursor()
+
+    for name, table, columns in _INDEXES:
+
+        cur.execute(
+            f'CREATE INDEX IF NOT EXISTS {name} ON {table} ({columns})'
+        )
+
+    con.commit()
+
+
 def ramp_sqlite(
         version: str = '2.5.4',
         connect: bool = True,
@@ -64,12 +89,18 @@ def ramp_sqlite(
                          )
 
 
-    return _sqlite.download_sqlite(
+    result = _sqlite.download_sqlite(
         download_callback = _ramp_download,
         database = 'RaMP',
         version = version,
         connect = connect,
     )
+
+    if connect:
+
+        _ensure_indexes(result)
+
+    return result
 
 
 def raw(

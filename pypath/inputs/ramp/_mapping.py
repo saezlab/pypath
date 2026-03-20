@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+import pypath.share.common as common
 from ._sqlite import ramp_sqlite
 
 
@@ -61,11 +62,19 @@ def ramp_mapping(
 
     elif id_type_a == 'synonym':
 
-        return ramp_synonym_mapping(
+        data = ramp_synonym_mapping(
             id_type = id_type_b,
             return_df = return_df,
             curies = curies,
         )
+
+        if return_df:
+
+            return data.rename(
+                columns = {'source_id': 'synonym', 'synonym': 'source_id'},
+            )
+
+        return common.swap_dict(data, force_sets = True)
 
     query = (
         'SELECT DISTINCT a.sourceId as id_type_a, b.sourceId as id_type_b '
