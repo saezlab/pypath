@@ -43,6 +43,7 @@ class ResourceCv(CvEnum):
     FOODB = ("OM:1174", "FooDB", "https://foodb.ca/")
     PTFI = ("OM:1175", "PTFI Discover", "https://ptfidiscover.markerlab.com/")
     MEBOCOST = ("OM:1176", "MEBOCOST DB", "https://github.com/kaifuchenlab/MEBOCOST")
+    RAMPDB = ("OM:1177", "RaMP-DB", "https://rampdb.nih.gov/")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
