@@ -23,4 +23,5 @@ from __future__ import annotations
 Utilities for working with metabolites and metabolomics data.
 """
 
+from ._hmdb import normalise_hmdb
 from .struct.visual import show

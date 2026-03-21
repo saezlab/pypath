@@ -96,6 +96,10 @@ def unichem_mapping(id_type_a, id_type_b):
     """
     Identifier translation data from UniChem.
 
+    HMDB IDs are normalised to the current 7-digit zero-padded format
+    (e.g. ``HMDB0000001``) at load time, so callers do not need to handle
+    the legacy 5-digit format (``HMDB00001``) themselves.
+
     Args
         id_type_a (int,str): An ID type in UniChem: either the integer ID or
             the string label of a resource. For a full list see
@@ -108,10 +112,19 @@ def unichem_mapping(id_type_a, id_type_b):
             `id_type_a`, values are sets of IDs of `id_type_b`.
     """
 
-    return (
+    from pypath.utils.metabo import normalise_hmdb
+
+    result = (
         _unichem_mapping(id_type_a, id_type_b) or
         common.swap_dict(_unichem_mapping(id_type_b, id_type_a))
     )
+
+    if str(id_type_a).upper() == 'HMDB':
+        result = {normalise_hmdb(k): v for k, v in result.items()}
+    elif str(id_type_b).upper() == 'HMDB':
+        result = {k: {normalise_hmdb(h) for h in v} for k, v in result.items()}
+
+    return result
 
 
 def _unichem_mapping(id_type_a, id_type_b):
