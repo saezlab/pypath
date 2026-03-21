@@ -135,7 +135,10 @@ def pubchem_name_cids(name: str) -> set[str]:
     }
 
 
-def pubchem_names_cids(names: Iterable[str]) -> dict[str, set[str]]:
+def pubchem_names_cids(
+        names: Iterable[str],
+        show_progress: bool = True,
+) -> dict[str, set[str]]:
     """
     PubChem CIDs for a collection of compound names.
 
@@ -145,10 +148,25 @@ def pubchem_names_cids(names: Iterable[str]) -> dict[str, set[str]]:
 
     Args:
         names: Iterable of compound name strings.
+        show_progress: Show a tqdm progress bar (default ``True``).
+            Silently ignored if tqdm is not installed.
 
     Returns:
         Dict mapping each input name to its set of PubChem CID strings.
         Names not found in PubChem map to an empty set.
     """
 
-    return {name: pubchem_name_cids(name) for name in names}
+    names = list(names)
+
+    try:
+        from tqdm import tqdm
+        iterator = tqdm(
+            names,
+            desc = 'PubChem name lookup',
+            unit = 'name',
+            disable = not show_progress,
+        )
+    except ImportError:
+        iterator = names
+
+    return {name: pubchem_name_cids(name) for name in iterator}
