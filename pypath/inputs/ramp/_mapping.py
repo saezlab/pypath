@@ -110,6 +110,12 @@ def ramp_synonym_mapping(
     )
 
     con = ramp_sqlite()
+    # analytesynonym has no index on rampId by default; create one so the
+    # JOIN is fast instead of doing a 1.5M-row full table scan.
+    con.execute(
+        'CREATE INDEX IF NOT EXISTS idx_analytesynonym_rampId '
+        'ON analytesynonym (rampId)'
+    )
     df = pd.read_sql_query(query, con)
     con.close()
 
