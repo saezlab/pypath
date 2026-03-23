@@ -128,3 +128,78 @@ def documents_parser(
     """
     query = "SELECT * FROM docs"
     yield from iter_sqlite(opener, query=query, **kwargs)
+
+
+def targets_parser(
+    opener: Any,
+    **kwargs: Any,
+) -> Generator[dict[str, Any], None, None]:
+    """
+    Parses ChEMBL targets by joining with components and sequences.
+
+    Args:
+        opener: The opener object for handling database connections.
+        **kwargs: Additional arguments passed to iter_sqlite.
+
+    Yields:
+        Dictionary representing a joined target record.
+    """
+    query = """
+    SELECT
+        td.tid,
+        td.target_type,
+        td.pref_name,
+        td.tax_id,
+        td.organism,
+        td.chembl_id,
+        GROUP_CONCAT(COALESCE(cs.accession, '')) AS component_accessions,
+        GROUP_CONCAT(COALESCE(cs.component_type, '')) AS component_types,
+        GROUP_CONCAT(COALESCE(tc.component_id, '')) AS component_ids,
+        GROUP_CONCAT(COALESCE(cs.description, '')) AS component_descriptions
+    FROM target_dictionary td
+    LEFT JOIN target_components tc ON td.tid = tc.tid
+    LEFT JOIN component_sequences cs ON tc.component_id = cs.component_id
+    GROUP BY td.tid
+    """
+    yield from iter_sqlite(opener, query=query, **kwargs)
+
+
+def activities_parser(
+    opener: Any,
+    **kwargs: Any,
+) -> Generator[dict[str, Any], None, None]:
+    """
+    Parses ChEMBL activities by joining with molecules, assays, targets, documents,
+    ligand efficiency, and action types.
+
+    Args:
+        opener: The opener object for handling database connections.
+        **kwargs: Additional arguments passed to iter_sqlite.
+
+    Yields:
+        Dictionary representing a joined activity record.
+    """
+    query = """
+    SELECT
+        act.*,
+        md.chembl_id AS molecule_chembl_id,
+        a.chembl_id AS assay_chembl_id,
+        td.chembl_id AS target_chembl_id,
+        td.tax_id AS target_tax_id,
+        d.chembl_id AS document_chembl_id,
+        d.pubmed_id,
+        le.bei,
+        le.le,
+        le.lle,
+        le.sei,
+        at.description AS action_description,
+        at.parent_type AS action_parent_type
+    FROM activities act
+    LEFT JOIN molecule_dictionary md ON act.molregno = md.molregno
+    LEFT JOIN assays a ON act.assay_id = a.assay_id
+    LEFT JOIN target_dictionary td ON a.tid = td.tid
+    LEFT JOIN docs d ON act.doc_id = d.doc_id
+    LEFT JOIN ligand_eff le ON act.activity_id = le.activity_id
+    LEFT JOIN action_type at ON act.action_type = at.action_type
+    """
+    yield from iter_sqlite(opener, query=query, **kwargs)

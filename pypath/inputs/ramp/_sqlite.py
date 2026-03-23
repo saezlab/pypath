@@ -55,21 +55,36 @@ def ramp_sqlite(
     """
 
     url = urls.urls['ramp']['github_sqlite'] % version
-    def _ramp_download() -> curl.Curl:
-        """Callback to download the RaMP database."""
-        return curl.Curl(urls,
-                         large = True,
-                         silent = False,
-                         compr = 'gz'
-                         )
+    sqlite_path = _sqlite.sqlite_cache_path('RaMP', version)
 
+    if not sqlite_path.exists() or sqlite_path.stat().st_size == 0:
 
-    return _sqlite.download_sqlite(
-        download_callback = _ramp_download,
-        database = 'RaMP',
-        version = version,
-        connect = connect,
-    )
+        import gzip
+        import requests
+
+        _log(f'Downloading RaMP SQLite v{version} from {url}')
+
+        with requests.get(url, stream = True, timeout = 120) as resp:
+
+            resp.raise_for_status()
+
+            with gzip.GzipFile(fileobj = resp.raw) as gz_stream:
+
+                with open(sqlite_path, 'wb') as fp:
+
+                    while chunk := gz_stream.read(1024 ** 2):
+
+                        fp.write(chunk)
+
+        _log(f'RaMP SQLite written to {sqlite_path}')
+
+    if connect:
+
+        _log(f'Opening SQLite: `{sqlite_path}`')
+
+        return sqlite3.connect(sqlite_path)
+
+    return sqlite_path
 
 
 def raw(

@@ -1557,6 +1557,9 @@ urls = {
         'label': 'NCBI database of bioactive compounds, substances and '
             'assays',
         'ftp': 'https://ftp.ncbi.nlm.nih.gov/pubchem/%s/Extras/%s-%s.gz',
+        'name_cids': (
+            'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/%s/cids/JSON'
+        ),
     },
     'scconnect': {
         'label': 'Database of ligand-receptor interactions',

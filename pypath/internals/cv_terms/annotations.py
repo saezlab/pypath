@@ -362,6 +362,7 @@ class InteractionParameterCv(CvEnum):
     KD = "MI:0646"  # The equilibrium dissociation constant. Unit Molar.
     IC50 = "MI:0641"  # Molar concentration producing 50% of maximum inhibitory response. Unit Molar.
     EC50 = "MI:0642"  # Molar concentration producing 50% of maximum response for agonist. Unit Molar.
+    PCHEMBL_VALUE = ("OM:0708", "Negative logarithm of molar IC50/EC50/Ki/Kd/Km value (-log10(molar value))")
 
     # Rate constants
     KON = "MI:0834"  # Association rate constant or rate of complex formation. Unit M-1 s-1

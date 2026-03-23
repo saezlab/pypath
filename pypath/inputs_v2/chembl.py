@@ -16,6 +16,8 @@ from pypath.inputs_v2.parsers.chembl import (
     assays_parser,
     documents_parser,
     mechanisms_parser,
+    targets_parser,
+    activities_parser,
 )
 from pypath.share import cache
 
@@ -33,6 +35,7 @@ from pypath.internals.cv_terms import (
     CurationCv,
     PharmacologicalActionCv,
     InteractionMetadataCv,
+    InteractionParameterCv,
 )
 
 from pypath.internals.tabular_builder import (
@@ -43,6 +46,7 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
     Member,
     MembershipBuilder,
+    MembersFromList,
 )
 
 
@@ -127,6 +131,40 @@ ACTION_TYPE_MAP = {
     'BINDING AGENT': PharmacologicalActionCv.BINDING,
 }
 
+# Mapping of ChEMBL target_type strings to EntityTypeCv
+TARGET_TYPE_MAP = {
+    'SINGLE PROTEIN': EntityTypeCv.PROTEIN,
+    'PROTEIN COMPLEX': EntityTypeCv.COMPLEX,
+    'PROTEIN FAMILY': EntityTypeCv.PROTEIN_FAMILY,
+    'PROTEIN-PROTEIN INTERACTION': EntityTypeCv.INTERACTION,
+    # SELECTIVITY GROUP refers to a pair of proteins used to report selectivity
+    # data, commonly closely related subtypes. Mapping to PROTEIN_FAMILY for now.
+    'SELECTIVITY GROUP': EntityTypeCv.PROTEIN_FAMILY,
+    'NUCLEIC-ACID': EntityTypeCv.NUCLEIC_ACID,
+    'ORGANISM': EntityTypeCv.ORGANISM,
+    'CELL LINE': EntityTypeCv.CELL_LINE,
+    'SUBCELLULAR': EntityTypeCv.PHYSICAL_ENTITY,
+    'MACROMOLECULE': EntityTypeCv.BIOPOLYMER,
+    'TISSUE': EntityTypeCv.TISSUE,
+}
+
+# Mapping of ChEMBL component_type to EntityTypeCv
+COMPONENT_TYPE_MAP = {
+    'PROTEIN': EntityTypeCv.PROTEIN,
+    'RNA': EntityTypeCv.RNA,
+    'DNA': EntityTypeCv.DNA,
+}
+
+# Mapping of ChEMBL standard_type strings to InteractionParameterCv
+STANDARD_TYPE_MAP = {
+    'IC50': InteractionParameterCv.IC50,
+    'EC50': InteractionParameterCv.EC50,
+    'Ki': InteractionParameterCv.KI,
+    'Kd': InteractionParameterCv.KD,
+    'Kon': InteractionParameterCv.KON,
+    'Koff': InteractionParameterCv.KOFF,
+}
+
 f = FieldConfig(
     extract={
         'chebi': r'^(?:CHEBI:)?(\d+)$',
@@ -140,6 +178,9 @@ f = FieldConfig(
         'subtype': MOLECULE_TYPE_TO_SUBTYPE,
         'assay_type': ASSAY_TYPE_MAP,
         'action_type': ACTION_TYPE_MAP,
+        'target_type': TARGET_TYPE_MAP,
+        'component_type': COMPONENT_TYPE_MAP,
+        'standard_type': STANDARD_TYPE_MAP,
     },
 )
 
@@ -248,6 +289,79 @@ mechanisms_schema = EntityBuilder(
     ),
 )
 
+targets_schema = EntityBuilder(
+    entity_type=f('target_type', map='target_type'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('chembl_id')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('pref_name')),
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('tax_id')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('organism')),
+    ),
+    membership=MembershipBuilder(
+        MembersFromList(
+            entity_type=f('component_types', delimiter=',', map='component_type'),
+            identifiers=IdentifiersBuilder(
+                CV(term=IdentifierNamespaceCv.UNIPROT, value=f('component_accessions', delimiter=',')),
+                CV(term=IdentifierNamespaceCv.CHEMBL_COMPONENT_ID, value=f('component_ids', delimiter=',')),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('component_descriptions', delimiter=',')),
+            ),
+        )
+    ),
+)
+
+activities_schema = EntityBuilder(
+    entity_type=EntityTypeCv.INTERACTION,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CHEMBL_ACTIVITY, value=f('activity_id')),
+    ),
+    membership=MembershipBuilder(
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.CHEMBL, value=f('molecule_chembl_id')),
+                ),
+            ),
+        ),
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
+                ),
+            ),
+        ),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=f('standard_type', map='standard_type'), value=f('standard_value')),
+        CV(term=InteractionParameterCv.PCHEMBL_VALUE, value=f('pchembl_value')),
+        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('standard_relation')),
+        CV(term=CurationCv.COMMENT, value=f('data_validity_comment')),
+        CV(term=f('action_type', map='action_type')),
+        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('action_description')),
+        CV(term=EntityBuilder(
+            entity_type=EntityTypeCv.ASSAY,
+            identifiers=IdentifiersBuilder(
+                CV(term=IdentifierNamespaceCv.CHEMBL_ASSAY, value=f('assay_chembl_id')),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('target_tax_id')),
+            ),
+        )),
+        CV(term=EntityBuilder(
+            entity_type=EntityTypeCv.PUBLICATION,
+            identifiers=IdentifiersBuilder(
+                CV(term=IdentifierNamespaceCv.CHEMBL_DOCUMENT, value=f('document_chembl_id')),
+                CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_id')),
+            ),
+        )),
+    ),
+)
+
 
 resource = Resource(
     config=config,
@@ -283,6 +397,24 @@ resource = Resource(
         mapper=mechanisms_schema,
         raw_parser=partial(
             mechanisms_parser,
+            sqlite_path=SQLITE_PATH,
+            db_rel_path=DB_REL_PATH,
+        ),
+    ),
+    targets=Dataset(
+        download=download,
+        mapper=targets_schema,
+        raw_parser=partial(
+            targets_parser,
+            sqlite_path=SQLITE_PATH,
+            db_rel_path=DB_REL_PATH,
+        ),
+    ),
+    activities=Dataset(
+        download=download,
+        mapper=activities_schema,
+        raw_parser=partial(
+            activities_parser,
             sqlite_path=SQLITE_PATH,
             db_rel_path=DB_REL_PATH,
         ),

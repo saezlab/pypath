@@ -110,6 +110,12 @@ def ramp_synonym_mapping(
     )
 
     con = ramp_sqlite()
+    # analytesynonym has no index on rampId by default; create one so the
+    # JOIN is fast instead of doing a 1.5M-row full table scan.
+    con.execute(
+        'CREATE INDEX IF NOT EXISTS idx_analytesynonym_rampId '
+        'ON analytesynonym (rampId)'
+    )
     df = pd.read_sql_query(query, con)
     con.close()
 
@@ -124,3 +130,36 @@ def ramp_synonym_mapping(
             if return_df else
         df.groupby('source_id')['synonym'].apply(set).to_dict()
     )
+
+
+def ramp_synonyms_chebi() -> dict[str, str]:
+    """
+    Compound synonym → ChEBI ID mapping derived from RaMP.
+
+    Inverts :func:`ramp_synonym_mapping` for ``'chebi'`` to produce a
+    lookup dict keyed by lowercase synonym strings.  RaMP aggregates
+    synonyms from HMDB, ChEBI, KEGG, WikiPathways, and Reactome, so
+    this provides broader coverage than any single source.
+
+    Returns:
+        Dict mapping lowercase synonym strings to ChEBI ID strings
+        (e.g. ``'adenosine triphosphate'`` → ``'CHEBI:30616'``).
+        When multiple ChEBI IDs share a synonym, the first encountered
+        mapping is kept.
+    """
+
+    chebi_to_syns = ramp_synonym_mapping('chebi', curies = True)
+
+    result: dict[str, str] = {}
+
+    for chebi_curie, syns in chebi_to_syns.items():
+
+        # curies=True gives 'chebi:15422'; normalise to 'CHEBI:15422'
+        chebi_id = str(chebi_curie).upper()
+
+        for syn in syns:
+
+            if syn:
+                result.setdefault(str(syn).lower(), chebi_id)
+
+    return result

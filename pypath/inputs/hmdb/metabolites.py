@@ -256,6 +256,53 @@ CompoundsForMetabo = namedtuple('CompoundsForMetabo', [
 ])
 
 
+def synonyms_chebi() -> dict[str, str]:
+    """
+    Compound name and synonym → ChEBI ID mapping from HMDB.
+
+    Parses the HMDB metabolites XML once, collecting primary name,
+    IUPAC name, traditional IUPAC name, and all synonyms for each
+    compound that carries a ChEBI annotation.  Keys are lower-cased
+    for case-insensitive lookup.
+
+    Returns:
+        Dict mapping lowercase name/synonym strings to ChEBI ID strings
+        (e.g. ``'atp'`` → ``'CHEBI:30616'``).  When multiple compounds
+        share a synonym, the first encountered mapping is kept.
+    """
+
+    from pypath.inputs.hmdb.schema.metabolites import SCHEMA
+
+    _name_fields = ('name', 'iupac_name', 'traditional_iupac')
+    sub_schema = {
+        k: SCHEMA[k]
+        for k in (*_name_fields, 'synonyms', 'chebi_id')
+    }
+
+    result: dict[str, str] = {}
+
+    for rec in hmdb_common.raw('metabolites', schema = sub_schema):
+
+        chebi = rec.get('chebi_id') or ''
+
+        if not chebi:
+            continue
+
+        if not str(chebi).upper().startswith('CHEBI:'):
+            chebi = f'CHEBI:{chebi}'
+
+        for field in _name_fields:
+            val = rec.get(field) or ''
+            if val:
+                result.setdefault(str(val).lower(), chebi)
+
+        for syn in (rec.get('synonyms') or []):
+            if syn:
+                result.setdefault(str(syn).lower(), chebi)
+
+    return result
+
+
 def compounds_for_metabo():
 
     for rec in processed(
