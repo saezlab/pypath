@@ -34,6 +34,7 @@ class ResourceCv(CvEnum):
     CHEMBL = ("OM:1155", "ChEMBL", "https://www.ebi.ac.uk/chembl/")
     CELLPHONEDB = ("OM:1156", "CellPhoneDB", "https://www.cellphonedb.org/")
     WIKIPATHWAYS = ("OM:1157", "WikiPathways", "https://www.wikipathways.org/")
+    NEURONCHAT = ("OM:1158", "NeuronChat", "https://github.com/Wei-BioMath/NeuronChat")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
