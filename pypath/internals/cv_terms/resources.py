@@ -45,6 +45,7 @@ class ResourceCv(CvEnum):
     PTFI = ("OM:1175", "PTFI Discover", "https://ptfidiscover.markerlab.com/")
     MEBOCOST = ("OM:1176", "MEBOCOST DB", "https://github.com/kaifuchenlab/MEBOCOST")
     RAMPDB = ("OM:1177", "RaMP-DB", "https://rampdb.nih.gov/")
+    CHEBI = ("OM:1178", "ChEBI", "https://www.ebi.ac.uk/chebi/")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
