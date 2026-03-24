@@ -22,12 +22,6 @@ inputs_v2/
 │   ├── lipidmaps.py      # LIPID MAPS SDF parser
 │   ├── reactome.py       # Reactome BioPAX parser
 │   └── bindingdb.py      # BindingDB parser
-├── ontologies/           # Ontology-specific modules
-│   ├── shared.py         # Common OBO parsing utilities
-│   ├── gene_ontology.py  # Gene Ontology
-│   ├── psi_mi.py         # PSI-MI ontology
-│   ├── omnipath.py       # OmniPath internal ontology
-│   └── uniprot_keywords.py  # UniProt Keywords
 ├── bindingdb.py          # BindingDB interactions & compounds
 ├── guidetopharma.py      # Guide to Pharmacology
 ├── hmdb.py               # Human Metabolome Database
