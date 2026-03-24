@@ -9,7 +9,38 @@ __all__ = ['escape_obo_string', 'format_obo']
 
 
 def escape_obo_string(value: str) -> str:
-    return value.replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
+    r"""Escape OBO text while preserving already-valid OBO escape sequences.
+
+    Some upstream parsers pass through source values that are already OBO-escaped
+    (for example ``\{`` / ``\}`` in ChEBI names). The old implementation
+    doubled every backslash, turning valid escapes into invalid ones like
+    ``\\{``. Preserve known escape sequences first, then escape any remaining
+    reserved characters.
+    """
+    placeholders = {
+        '\\{': '__OBO_ESCAPED_OPEN__',
+        '\\}': '__OBO_ESCAPED_CLOSE__',
+        '\\\\': '__OBO_ESCAPED_BACKSLASH__',
+        '\\"': '__OBO_ESCAPED_QUOTE__',
+        '\\n': '__OBO_ESCAPED_NEWLINE__',
+    }
+
+    for old, marker in placeholders.items():
+        value = value.replace(old, marker)
+
+    value = (
+        value
+        .replace('\\', '\\\\')
+        .replace('{', '\\{')
+        .replace('}', '\\}')
+        .replace('"', '\\"')
+        .replace('\n', ' ')
+    )
+
+    for old, marker in reversed(list(placeholders.items())):
+        value = value.replace(marker, old)
+
+    return value
 
 
 def format_obo(document: OntologyDocument, terms: list[OntologyTerm]) -> str:

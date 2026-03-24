@@ -1,5 +1,5 @@
 """
-Parse WikiPathways RDF data and emit Entity records.
+Parse WikiPathways RDF data and emit interaction-centric Entity records.
 """
 
 from __future__ import annotations

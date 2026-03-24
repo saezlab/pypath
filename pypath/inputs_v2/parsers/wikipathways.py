@@ -199,6 +199,13 @@ def _extract_interaction_records(
 
         source = _extract_entity_record(graph, source_uri)
         target = _extract_entity_record(graph, target_uri)
+
+        if (
+            source['entity_type'] == EntityTypeCv.PATHWAY.value
+            or target['entity_type'] == EntityTypeCv.PATHWAY.value
+        ):
+            continue
+
         interaction_types = _interaction_types(graph, interaction_uri)
         interaction_uri_str = str(interaction_uri)
 
