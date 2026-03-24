@@ -58,6 +58,7 @@ class MoleculeSubtypeCv(CvEnum):
     INORGANIC = ("OM:0023", "Inorganic compound")
     PEPTIDE = ("OM:0024", "Peptide molecule")
     ANTIBODY = ("OM:0025", "Antibody or immunoglobulin")
+    NUCLEIC_ACID = ("OM:0026", "Nucleic acid molecule")
 
 
 class ProteinFunctionalClassCv(CvEnum):
