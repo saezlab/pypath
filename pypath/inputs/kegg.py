@@ -804,3 +804,29 @@ def kegg_dbget(entry):
         result[key] = value
 
     return result
+
+
+def kegg_compound_chebi() -> dict[str, str]:
+    """
+    Build a KEGG Compound ID → ChEBI ID mapping via the KEGG REST API.
+
+    Calls ``/conv/chebi/compound`` once to retrieve the complete bulk
+    cross-reference table (~16,000 entries) and caches it via pypath's
+    standard curl cache.  Subsequent calls in the same session return the
+    cached result from disk without re-downloading.
+
+    Returns:
+        Dict mapping KEGG Compound IDs (e.g. ``'C00001'``) to ChEBI IDs
+        (e.g. ``'CHEBI:15377'``).  When a compound maps to multiple ChEBI
+        entries the first encountered is kept.
+    """
+
+    from pypath.inputs.kegg_api import _kegg_conv
+
+    raw = _kegg_conv('compound', 'chebi', source_split=True, target_split=True)
+
+    return {
+        kid: f'CHEBI:{next(iter(chebis))}'
+        for kid, chebis in raw.items()
+        if chebis
+    }
