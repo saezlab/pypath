@@ -53,7 +53,7 @@ f = FieldConfig(
     },
     transform={
         'inchi': lambda v: None if v == 'InChI=none' else v,
-        'inchikey': lambda v: None if v == 'InChIKey=none' else v,
+        'inchikey': lambda v: None if v == 'InChIKey=none' else (str(v).removeprefix('InChIKey=') if v else None),
         'chebi': lambda v: f'CHEBI:{v}' if v else None,
     },
 )

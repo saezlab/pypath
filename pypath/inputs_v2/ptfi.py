@@ -203,12 +203,18 @@ f = FieldConfig(delimiter=MEMBER_DELIMITER, preserve_indices=True)
 # Food Schema with Compound Membership (declarative)
 # =============================================================================
 
+f_foodon = FieldConfig(
+    transform={
+        'foodon': lambda v: str(v).replace('FOODON_', 'FOODON:') if v else None,
+    },
+)
+
 foods_schema = EntityBuilder(
     entity_type=EntityTypeCv.FOOD,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.PTFI, value=f('specimen_id')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
-        CV(term=IdentifierNamespaceCv.FOODON, value=f('foodon_id')),
+        CV(term=IdentifierNamespaceCv.FOODON, value=f_foodon('foodon_id', transform='foodon')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.SAMPLE_COUNT, value=f('num_samples')),

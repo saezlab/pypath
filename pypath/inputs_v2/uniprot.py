@@ -38,7 +38,7 @@ UNIPROT_DATA_URL = (
     "organism_id,cc_disease,ft_mutagen,cc_subcellular_location,cc_ptm,lit_pubmed_id,"
     "cc_function,xref_ensembl,xref_geneid,xref_kegg,cc_pathway,cc_activity_regulation,keywordid,"
     "ec,go_id,ft_transmem,protein_families,xref_refseq,xref_alphafolddb,"
-    "xref_chembl,xref_phosphositeplus,xref_signor,xref_pathwaycommons,xref_intact,"
+    "xref_chembl,xref_phosphositeplus,xref_signor,xref_pathwaycommons,"
     "xref_biogrid,xref_complexportal"
 )
 
@@ -61,6 +61,8 @@ f = FieldConfig(
     extract={
         'protein_name': r'^([^(]+)',
         'protein_synonym': r'^([^)]+)\)',
+        'ensembl_id': r'^(ENS[A-Z0-9]*\d+(?:\.\d+)?)',
+        'complexportal_id': r'^(CPX-\d+)',
     },
 )
 
@@ -85,16 +87,15 @@ proteins_schema = EntityBuilder(
             term=IdentifierNamespaceCv.SYNONYM,
             value=protein_synonym_column,
         ),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl', delimiter=';', extract='ensembl_id')),
         CV(term=IdentifierNamespaceCv.ENTREZ, value=f('GeneID', delimiter=';')),
         #CV(term=IdentifierNamespaceCv.REFSEQ, value=f('RefSeq', delimiter=';')),
         #CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=f('AlphaFoldDB', delimiter=';')),
         CV(term=IdentifierNamespaceCv.KEGG, value=f('KEGG', delimiter=';')),
         CV(term=IdentifierNamespaceCv.CHEMBL, value=f('ChEMBL', delimiter=';')),
         CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.INTACT, value=f('IntAct', delimiter=';')),
         CV(term=IdentifierNamespaceCv.BIOGRID, value=f('BioGRID', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.COMPLEXPORTAL, value=f('ComplexPortal', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.COMPLEXPORTAL, value=f('ComplexPortal', delimiter=';', extract='complexportal_id')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.SEQUENCE_LENGTH, value=f('Length')),

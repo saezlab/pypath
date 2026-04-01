@@ -48,6 +48,7 @@ _IDENTIFIER_CV_MAPPING = {
     'genbank_nucl_gi': IdentifierNamespaceCv.GENBANK_NUCL_GI,
     'genbank_protein_gi': IdentifierNamespaceCv.GENBANK_PROTEIN_GI,
     'hgnc': IdentifierNamespaceCv.HGNC,
+    'genesymbol': IdentifierNamespaceCv.GENE_NAME_PRIMARY,
     'imex': IdentifierNamespaceCv.IMEX,
     'intact': IdentifierNamespaceCv.INTACT,
     'ipi': IdentifierNamespaceCv.IPI,
@@ -78,6 +79,50 @@ f = FieldConfig(
     },
     delimiter='|',
 )
+
+
+def _normalize_identifier_prefix(prefix: str, value: str) -> str | None:
+    prefix = prefix.lower()
+    value = value.strip().strip('"')
+    if prefix == 'intact' and value.startswith('MINT-'):
+        return 'mint'
+    if prefix == 'intact' and not (value.startswith('EBI-') or value.startswith('IM-')):
+        return None
+    if prefix == 'hgnc' and not value.isdigit() and not value.upper().startswith('HGNC:'):
+        return 'genesymbol'
+    return prefix
+
+
+def _parse_identifier_pairs(raw: object) -> list[tuple[object, str]]:
+    if raw is None:
+        return []
+    text = str(raw).strip()
+    if not text or text == '-':
+        return []
+    pairs: list[tuple[object, str]] = []
+    for item in text.split('|'):
+        item = item.strip().strip('"')
+        if not item or ':' not in item:
+            continue
+        prefix, value = item.split(':', 1)
+        value = value.strip().strip('"')
+        prefix = _normalize_identifier_prefix(prefix, value)
+        if prefix is None:
+            continue
+        if prefix == 'uniprotkb' and '-PRO_' in value:
+            value = value.split('-PRO_', 1)[0]
+        mapped = _IDENTIFIER_CV_MAPPING.get(prefix)
+        if mapped is not None and value and value != '-':
+            pairs.append((mapped, value))
+    return pairs
+
+
+def parsed_identifier_terms(column_name: str):
+    return lambda row: [term for term, _ in _parse_identifier_pairs(row.get(column_name))]
+
+
+def parsed_identifier_values(column_name: str):
+    return lambda row: [value for _, value in _parse_identifier_pairs(row.get(column_name))]
 
 
 def _intact_raw(opener, organism: int = 9606, **_kwargs: object):
@@ -125,24 +170,20 @@ interactions_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('Publication Identifier(s)', extract='pubmed')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Host organism(s)', extract='tax')),
         CV(term=InteractionMetadataCv.INTERACTION_PARAMETER, value=f('Interaction parameter(s)')),
-        CV(term=InteractionMetadataCv.INTERACTION_XREF, value=f('Interaction Xref(s)')),
         CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('Interaction annotation(s)')),
-        CV(term=InteractionMetadataCv.INTERACTION_CHECKSUM, value=f('Interaction Checksum(s)')),
     ),
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
-                    CV(term=f('#ID(s) interactor A', extract='prefix_lower', map='identifier_cv'), value=f('#ID(s) interactor A', extract='value')),
-                    CV(term=f('Alt. ID(s) interactor A', extract='prefix_lower', map='identifier_cv'), value=f('Alt. ID(s) interactor A', extract='value')),
+                    CV(term=parsed_identifier_terms('#ID(s) interactor A'), value=parsed_identifier_values('#ID(s) interactor A')),
+                    CV(term=parsed_identifier_terms('Alt. ID(s) interactor A'), value=parsed_identifier_values('Alt. ID(s) interactor A')),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor A', extract='tax')),
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Alias(es) interactor A')),
-                    CV(term=ParticipantMetadataCv.PARTICIPANT_XREF, value=f('Xref(s) interactor A')),
                     CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Annotation(s) interactor A')),
-                    CV(term=ParticipantMetadataCv.PARTICIPANT_CHECKSUM, value=f('Checksum(s) interactor A')),
                 ),
             ),
             annotations=AnnotationsBuilder(
@@ -158,15 +199,13 @@ interactions_schema = EntityBuilder(
             entity=EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
-                    CV(term=f('ID(s) interactor B', extract='prefix_lower', map='identifier_cv'), value=f('ID(s) interactor B', extract='value')),
-                    CV(term=f('Alt. ID(s) interactor B', extract='prefix_lower', map='identifier_cv'), value=f('Alt. ID(s) interactor B', extract='value')),
+                    CV(term=parsed_identifier_terms('ID(s) interactor B'), value=parsed_identifier_values('ID(s) interactor B')),
+                    CV(term=parsed_identifier_terms('Alt. ID(s) interactor B'), value=parsed_identifier_values('Alt. ID(s) interactor B')),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor B', extract='tax')),
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Alias(es) interactor B')),
-                    CV(term=ParticipantMetadataCv.PARTICIPANT_XREF, value=f('Xref(s) interactor B')),
                     CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Annotation(s) interactor B')),
-                    CV(term=ParticipantMetadataCv.PARTICIPANT_CHECKSUM, value=f('Checksum(s) interactor B')),
                 ),
             ),
             annotations=AnnotationsBuilder(

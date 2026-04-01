@@ -65,7 +65,14 @@ download_csv = Download(
 # Field configuration
 # =============================================================================
 
-f = FieldConfig(delimiter=MEMBER_DELIMITER, preserve_indices=True)
+f = FieldConfig(
+    delimiter=MEMBER_DELIMITER,
+    preserve_indices=True,
+    extract={
+        'taxid': r'^(-?\d+)',
+        'cas': r'(\d{1,7}-\d{2}-\d)',
+    },
+)
 
 
 # =============================================================================
@@ -77,11 +84,11 @@ foods_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.FOODB, value=f('public_id')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_taxonomy_id')),
+        CV(term=IdentifierNamespaceCv.SCIENTIFIC_NAME, value=f('name_scientific')),
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_taxonomy_id', extract='taxid')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('description')),
-        CV(term=MoleculeAnnotationsCv.SCIENTIFIC_NAME, value=f('name_scientific')),
         CV(term=MoleculeAnnotationsCv.FOOD_CLASS, value=f('food_group')),
         CV(term=MoleculeAnnotationsCv.FOOD_SUBCLASS, value=f('food_subgroup')),
     ),
@@ -91,7 +98,7 @@ foods_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.FOODB, value=f('member_compound_public_id')),
                 CV(term=IdentifierNamespaceCv.NAME, value=f('member_compound_name')),
-                CV(term=IdentifierNamespaceCv.CAS, value=f('member_cas')),
+                CV(term=IdentifierNamespaceCv.CAS, value=f('member_cas', extract='cas')),
                 CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('member_inchikey')),
                 CV(term=IdentifierNamespaceCv.SMILES, value=f('member_smiles')),
                 CV(term=IdentifierNamespaceCv.CHEBI, value=f('member_chebi')),

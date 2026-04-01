@@ -92,7 +92,7 @@ def get_interactions_schema(taxon_id: str) -> EntityBuilder:
                 entity=EntityBuilder(
                     entity_type=EntityTypeCv.SMALL_MOLECULE,
                     identifiers=IdentifiersBuilder(
-                        CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID')),
+                        CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID', extract=r'(HMDB\d+)')),
                         CV(term=IdentifierNamespaceCv.NAME, value=f('standard_metName')),
                         CV(term=IdentifierNamespaceCv.SYNONYM, value=f('metName', delimiter='; ')),
                     ),

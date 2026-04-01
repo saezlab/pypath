@@ -305,7 +305,6 @@ class MoleculeAnnotationsCv(CvEnum):
     COMPOUND_CLASS = ("OM:0662", "Compound classification class (e.g., Flavonoids, Phenolic acids)")
     COMPOUND_SUBCLASS = ("OM:0663", "Compound classification subclass (e.g., Anthocyanins, Flavanols)")
     BOTANICAL_FAMILY = ("OM:0664", "Botanical family of a food source")
-    SCIENTIFIC_NAME = ("OM:0665", "Scientific name of a food source organism")
     AGLYCONE = ("OM:0666", "Aglycone (non-sugar) component of a glycoside compound")
 
     # Concentration and measurement statistics (OM:0680-0699 range)

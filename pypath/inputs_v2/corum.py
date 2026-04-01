@@ -45,6 +45,9 @@ config = ResourceConfig(
 
 f = FieldConfig(
     delimiter=';',
+    extract={
+        'uniprot': r'((?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?)',
+    },
     map={
         'organism_taxid': {
             'Human': '9606',
@@ -74,7 +77,7 @@ complexes_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(
                     term=IdentifierNamespaceCv.UNIPROT,
-                    value=f('subunits(UniProt IDs)', delimiter=';'),
+                    value=f('subunits(UniProt IDs)', delimiter=';', extract='uniprot'),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(

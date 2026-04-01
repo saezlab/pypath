@@ -47,6 +47,11 @@ config = ResourceConfig(
 entity_type_map = {value.value: value for value in EntityTypeCv}
 
 f = FieldConfig(
+    extract={
+        'ensembl_id': r'^(ENS[A-Z0-9]*\d+(?:\.\d+)?)$',
+        'uniprot_id': r'^((?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?)$',
+        'entrez_id': r'^(\d+)$',
+    },
     map={
         'entity_type': lambda value: entity_type_map.get(value, EntityTypeCv.PHYSICAL_ENTITY),
     },
@@ -76,9 +81,9 @@ def _member(prefix: str, role) -> Member:
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.NAME, value=f(f'{prefix}_label')),
                 CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f(f'{prefix}_uri')),
-                CV(term=IdentifierNamespaceCv.UNIPROT, value=f(f'{prefix}_uniprot', delimiter=';')),
-                CV(term=IdentifierNamespaceCv.ENTREZ, value=f(f'{prefix}_entrez', delimiter=';')),
-                CV(term=IdentifierNamespaceCv.ENSEMBL, value=f(f'{prefix}_ensembl', delimiter=';')),
+                CV(term=IdentifierNamespaceCv.UNIPROT, value=f(f'{prefix}_uniprot', delimiter=';', extract='uniprot_id')),
+                CV(term=IdentifierNamespaceCv.ENTREZ, value=f(f'{prefix}_entrez', delimiter=';', extract='entrez_id')),
+                CV(term=IdentifierNamespaceCv.ENSEMBL, value=f(f'{prefix}_ensembl', delimiter=';', extract='ensembl_id')),
                 CV(term=IdentifierNamespaceCv.CHEBI, value=f(f'{prefix}_chebi', delimiter=';')),
                 CV(term=IdentifierNamespaceCv.HMDB, value=f(f'{prefix}_hmdb', delimiter=';')),
                 CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f(f'{prefix}_kegg_compound', delimiter=';')),
@@ -86,7 +91,7 @@ def _member(prefix: str, role) -> Member:
                     term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
                     value=f(f'{prefix}_pubchem_compound', delimiter=';'),
                 ),
-                CV(term=IdentifierNamespaceCv.HGNC, value=f(f'{prefix}_hgnc', delimiter=';')),
+                CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f(f'{prefix}_hgnc', delimiter=';')),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),

@@ -102,11 +102,11 @@ foods_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.PHENOL_EXPLORER, value=f('id')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+        CV(term=IdentifierNamespaceCv.SCIENTIFIC_NAME, value=f('scientific_name')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.FOOD_CLASS, value=f('food_group')),
         CV(term=MoleculeAnnotationsCv.FOOD_SUBCLASS, value=f('food_subgroup')),
-        CV(term=MoleculeAnnotationsCv.SCIENTIFIC_NAME, value=f('scientific_name')),
         CV(term=MoleculeAnnotationsCv.BOTANICAL_FAMILY, value=f('botanical_family')),
     ),
     membership=MembershipBuilder(
