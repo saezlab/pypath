@@ -44,7 +44,12 @@ config = ResourceConfig(
     ),
 )
 
-f = FieldConfig()
+f = FieldConfig(
+    transform={
+        'extract_source': lambda x: f"{x}_source",
+        'extract_target': lambda x: f"{x}_target",
+    }
+)
 
 interactions_schema = EntityBuilder(
     entity_type=EntityTypeCv.INTERACTION,
@@ -60,7 +65,7 @@ interactions_schema = EntityBuilder(
             entity=EntityBuilder(
                 entity_type=EntityTypeCv.COMPLEX,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform=lambda x: f"{x}_source")),
+                    CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform="extract_source")),
                 ),
                 membership=MembershipBuilder(
                     MembersFromList(
@@ -79,7 +84,7 @@ interactions_schema = EntityBuilder(
             entity=EntityBuilder(
                 entity_type=EntityTypeCv.COMPLEX,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform=lambda x: f"{x}_target")),
+                    CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform="extract_target")),
                 ),
                 membership=MembershipBuilder(
                     MembersFromList(
@@ -98,25 +103,28 @@ interactions_schema = EntityBuilder(
 )
 
 
-def get_neuronchat_dataset(species: str, taxon: int) -> Dataset:
-    """
-    Helper to create a NeuronChat dataset for a given species.
-    """
-    return Dataset(
+resource = Resource(
+    config,
+    human_interactions=Dataset(
         download=Download(
-            url=f'https://github.com/Wei-BioMath/NeuronChat/raw/main/data/interactionDB_{species}.rda',
-            filename=f'neuronchat_interactions_{species}.rda',
+            url=f'https://github.com/Wei-BioMath/NeuronChat/raw/main/data/interactionDB_human.rda',
+            filename=f'neuronchat_interactions_human.rda',
             subfolder='neuronchat',
             default_mode='rb',
-            encoding=None, # Crucial: avoid encoding in binary mode
+        encoding=None, # avoid encoding in binary mode
         ),
         mapper=interactions_schema,
         raw_parser=iter_neuronchat,
-    )
-
-
-resource = Resource(
-    config,
-    human=get_neuronchat_dataset('human', 9606),
-    mouse=get_neuronchat_dataset('mouse', 10090),
+    ),
+    mouse_interactions=Dataset(
+        download=Download(
+            url=f'https://github.com/Wei-BioMath/NeuronChat/raw/main/data/interactionDB_mouse.rda',
+            filename=f'neuronchat_interactions_mouse.rda',
+            subfolder='neuronchat',
+            default_mode='rb',
+        encoding=None, # avoid encoding in binary mode
+        ),
+        mapper=interactions_schema,
+        raw_parser=iter_neuronchat,
+    ),
 )
