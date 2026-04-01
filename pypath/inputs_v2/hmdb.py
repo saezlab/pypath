@@ -46,9 +46,11 @@ f = FieldConfig(
     extract={
         'chebi': r'^(?:CHEBI:)?(\d+)$',
         'drugbank': r'^(DB\d+)$',
+        'kegg_compound': r'^([CDGcdg])(\d{4,5})$',
     },
     transform={
         'chebi': lambda v: f'CHEBI:{v}' if v else None,
+        'kegg_compound': lambda v: f'{v[0].upper()}{v[1].zfill(5)}' if v and len(v) == 2 else None,
     },
 )
 
@@ -68,7 +70,7 @@ metabolites_schema = EntityBuilder(
             value=f('chebi_id', extract='chebi'),
         ),
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_compound_id')),
-        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_id')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_id', extract='kegg_compound', transform='kegg_compound')),
         CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('drugbank_id', extract='drugbank')),
         CV(term=IdentifierNamespaceCv.CAS, value=f('cas_registry_number')),
     ),
