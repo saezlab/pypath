@@ -49,9 +49,11 @@ config = ResourceConfig(
 f = FieldConfig(
     extract={
         'chebi': r'^(?:CHEBI:)?(\d+)$',
+        'hmdb': r'^(HMDB\d{5,8})$',
     },
     transform={
         'chebi': lambda v: f'CHEBI:{v}' if v else None,
+        'hmdb': lambda v: v.upper() if v else None,
     },
 )
 
@@ -72,7 +74,7 @@ lipids_schema = EntityBuilder(
             value=f('CHEBI_ID', extract='chebi'),
         ),
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PUBCHEM_CID')),
-        CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID')),
+        CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID', extract='hmdb', transform='hmdb')),
         CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=f('SWISSLIPIDS_ID')),
     ),
     annotations=AnnotationsBuilder(

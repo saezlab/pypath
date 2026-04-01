@@ -52,8 +52,8 @@ f = FieldConfig(
         'chebi': r'^(?:CHEBI:)?(\d+)$',
     },
     transform={
-        'inchi': lambda v: None if v == 'InChI=none' else v,
-        'inchikey': lambda v: None if v == 'InChIKey=none' else (str(v).removeprefix('InChIKey=') if v else None),
+        'inchi': lambda v: None if not v or str(v).strip().lower() in {'none', 'inchi=none'} else str(v).strip(),
+        'inchikey': lambda v: None if not v or str(v).strip().lower() in {'none', 'inchikey=none'} else str(v).strip().removeprefix('InChIKey='),
         'chebi': lambda v: f'CHEBI:{v}' if v else None,
     },
 )
