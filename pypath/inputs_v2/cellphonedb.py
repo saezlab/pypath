@@ -171,8 +171,10 @@ interactions_schema = EntityBuilder(
             entity=EntityBuilder(
                 entity_type=_get_partner_type('partner_a'),
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('partner_a', extract='uniprot_acc')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('partner_a', extract='non_uniprot')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT,
+                       value=f('partner_a', extract='uniprot_acc')),
+                    CV(term=IdentifierNamespaceCv.NAME,
+                       value=f('partner_a', extract='non_uniprot')),
                 ),
             ),
         ),
@@ -180,8 +182,10 @@ interactions_schema = EntityBuilder(
             entity=EntityBuilder(
                 entity_type=_get_partner_type('partner_b'),
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('partner_b', extract='uniprot_acc')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('partner_b', extract='non_uniprot')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT,
+                       value=f('partner_b', extract='uniprot_acc')),
+                    CV(term=IdentifierNamespaceCv.NAME, 
+                       value=f('partner_b', extract='non_uniprot')),
                 ),
             ),
         ),
