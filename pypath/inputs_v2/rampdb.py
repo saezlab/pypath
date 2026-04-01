@@ -5,6 +5,7 @@ This module converts annotations of lipids and metabolites into Entity records
 using the declarative schema pattern.
 """
 
+import os
 import re
 import requests
 
@@ -27,7 +28,6 @@ def get_ramp_latest_ver(branch='main'):
     return url + files[-1]
 
 
-
 config = ResourceConfig(
     id=ResourceCv.RAMPDB,
     name='RaMP-DB',
@@ -43,7 +43,12 @@ config = ResourceConfig(
     )
 )
 
-#download = Download(
-#    url=get_ramp_latest_ver(),
+url = get_ramp_latest_ver()
 
-#)
+download = Download(
+    url=url,
+    filename=os.path.basename(url),
+    subfolder='ramp',
+    large=True,
+    ext=url.split('.')[-1],
+)
