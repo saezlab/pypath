@@ -123,5 +123,6 @@ resource = Resource(
             for raw_row in _raw(opener, **kwargs)
             if (row := _id_translation_row(raw_row)) is not None
         ),
+        kind='id_translation',
     ),
 )

@@ -140,6 +140,7 @@ resource = Resource(
             for raw_row in _raw(opener, data_type='molecules', **kwargs)
             if (row := _id_translation_mapper(raw_row)) is not None
         ),
+        kind='id_translation',
     ),
     ontology=OntologyDataset(
         download=download,

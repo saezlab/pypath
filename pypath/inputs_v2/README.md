@@ -139,6 +139,10 @@ dataset = Dataset(
     mapper=schema,        # EntityBuilder schema
     raw_parser=iter_tsv,  # Parser function
 )
+
+# Optional special kinds:
+# Dataset(..., kind='id_translation')  # excluded from regular silver parquet output
+# OntologyDataset(...)                 # ontology export, not silver parquet
 ```
 
 A resource may also expose a narrow tabular dataset for a specific downstream use case.

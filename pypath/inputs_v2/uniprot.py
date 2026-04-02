@@ -303,10 +303,12 @@ resource = Resource(
         ),
         mapper=lambda row: row,
         raw_parser=_reference_id_translation_raw,
+        kind='id_translation',
     ),
     secondary_to_primary=Dataset(
         download=None,
         mapper=lambda row: row,
         raw_parser=_secondary_to_primary_raw,
+        kind='id_translation',
     ),
 )

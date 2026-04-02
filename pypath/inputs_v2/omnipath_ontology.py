@@ -120,5 +120,6 @@ resource = Resource(
         renderer=render_omnipath_obo,
         extension='obo',
         file_stem='omnipath_mi',
+        kind='ontology',
     ),
 )

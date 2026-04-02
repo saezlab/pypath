@@ -137,5 +137,6 @@ resource = Resource(
         download=download,
         mapper=lambda row: row,
         raw_parser=_id_translation_raw,
+        kind='id_translation',
     ),
 )
