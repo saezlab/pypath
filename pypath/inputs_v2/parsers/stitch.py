@@ -72,13 +72,7 @@ def _parse_links(handle: Any) -> dict[tuple, dict[str, int]]:
         prot = _parse_entity(row['protein'])
         if not chem or not prot:
             continue
-        lookup[(chem.id, prot.id, prot.ncbi_tax_id, chem.stereospecific)] = {
-            'experimental': int(row['experimental']),
-            'prediction': int(row['prediction']),
-            'database': int(row['database']),
-            'textmining': int(row['textmining']),
-            'combined_score': int(row['combined_score']),
-        }
+        lookup[(chem.id, prot.id, prot.ncbi_tax_id, chem.stereospecific)] = int(row['combined_score'])
     return lookup
 
 
@@ -103,6 +97,7 @@ def _parse_action_row(row: dict[str, str]) -> dict | None:
         'mode': row['mode'],
         'a_is_acting': row['a_is_acting'].lower() == 't',
         'action': row['action'],
+        'action_score': int(row['score']),
     }
 
 
@@ -193,14 +188,14 @@ def _merge_entry(
         prot = entry['a']
 
     if entry['a_is_acting']:
-        chem_is_acting = entry['a'].type == 'small_molecule'
-        prot_is_acting = entry['a'].type == 'protein'
+        chem_role = 'source' if entry['a'].type == 'small_molecule' else 'target'
+        prot_role = 'source' if entry['a'].type == 'protein' else 'target'
     else:
-        chem_is_acting = False
-        prot_is_acting = False
+        chem_role = 'undirected'
+        prot_role = 'undirected'
 
-    link = link_lookup.get((chem.id, prot.id, prot.ncbi_tax_id, chem.stereospecific))
-    if link is None or link['combined_score'] <= score_threshold:
+    combined_score = link_lookup.get((chem.id, prot.id, prot.ncbi_tax_id, chem.stereospecific))
+    if combined_score is None or combined_score <= score_threshold:
         return None
 
     return {
@@ -211,13 +206,10 @@ def _merge_entry(
         'ncbi_tax_id': str(prot.ncbi_tax_id),
         'mode': entry['mode'],
         'action': entry['action'],
-        'chem_is_acting': str(chem_is_acting),
-        'prot_is_acting': str(prot_is_acting),
-        'combined_score': str(link['combined_score']),
-        'experimental': f'experimental:{link["experimental"]}',
-        'prediction': f'prediction:{link["prediction"]}',
-        'database': f'database:{link["database"]}',
-        'textmining': f'textmining:{link["textmining"]}',
+        'chem_role': chem_role,
+        'prot_role': prot_role,
+        'combined_score': str(combined_score),
+        'action_score': str(entry['action_score']),
     }
 
 

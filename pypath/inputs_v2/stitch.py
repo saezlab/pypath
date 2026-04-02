@@ -15,7 +15,9 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     InteractionMetadataCv,
+    InteractionTypeCv,
     LicenseCV,
+    ParticipantMetadataCv,
     PharmacologicalActionCv,
     ResourceCv,
     UpdateCategoryCV,
@@ -111,6 +113,15 @@ f = FieldConfig(
             'activation': PharmacologicalActionCv.ACTIVATION,
             'inhibition': PharmacologicalActionCv.INHIBITION,
             'binding': PharmacologicalActionCv.BINDING,
+            'reaction': InteractionTypeCv.ENZYMATIC_REACTION,
+            'catalysis': InteractionTypeCv.ENZYMATIC_REACTION,
+            'expression': InteractionTypeCv.CAUSAL_REGULATORY_MECHANISM,
+            'ptmod': InteractionTypeCv.PTM_MODIFICATION,
+        },
+        'role_cv': {
+            'source': ParticipantMetadataCv.SOURCE,
+            'target': ParticipantMetadataCv.TARGET,
+            'undirected': None,
         },
     },
 )
@@ -122,14 +133,9 @@ interactions_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.CONFIDENCE_VALUE, value=f('combined_score')),
-        CV(term=InteractionMetadataCv.CONFIDENCE_VALUE, value=f('experimental')),
-        CV(term=InteractionMetadataCv.CONFIDENCE_VALUE, value=f('prediction')),
-        CV(term=InteractionMetadataCv.CONFIDENCE_VALUE, value=f('database')),
-        CV(term=InteractionMetadataCv.CONFIDENCE_VALUE, value=f('textmining')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('mode', map='mode_cv')),
+        CV(term=InteractionMetadataCv.STITCH_ACTION_SCORE, value=f('action_score')),
+        CV(term=f('mode', map='mode_cv')),
         CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('stereospecific')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('chem_is_acting')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('prot_is_acting')),
         CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('action', map='action_cv')),
     ),
     membership=MembershipBuilder(
@@ -142,6 +148,9 @@ interactions_schema = EntityBuilder(
                         value=f('chemical_id'),
                     ),
                 ),
+                annotations=AnnotationsBuilder(
+                    CV(term=f('chem_role', map='role_cv')),
+                ),
             ),
         ),
         Member(
@@ -150,6 +159,9 @@ interactions_schema = EntityBuilder(
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('protein_id')),
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
+                ),
+                annotations=AnnotationsBuilder(
+                    CV(term=f('prot_role', map='role_cv')),
                 ),
             ),
         ),
@@ -161,7 +173,6 @@ interactions_schema = EntityBuilder(
 # Resource Definition
 # =============================================================================
 
-_SUBFOLDER = 'stitch'
 _LINKS_URL = (
     'http://stitch.embl.de/download/'
     'protein_chemical.links.detailed.v5.0/'
@@ -187,12 +198,12 @@ def _stitch_download(ncbi_tax_id: int) -> StitchDownload:
         links=Download(
             url=_LINKS_URL.format(taxid=ncbi_tax_id),
             filename=f'{ncbi_tax_id}.protein_chemical.links.detailed.v5.0.tsv.gz',
-            subfolder=_SUBFOLDER,
+            subfolder='stitch',
         ),
         actions=Download(
             url=_ACTIONS_URL.format(taxid=ncbi_tax_id),
             filename=f'{ncbi_tax_id}.actions.v5.0.tsv.gz',
-            subfolder=_SUBFOLDER,
+            subfolder='stitch',
         ),
     )
 
