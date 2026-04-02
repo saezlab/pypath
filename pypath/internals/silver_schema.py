@@ -170,19 +170,34 @@ ANNOTATION_FIELDS = [
     pa.field('units', pa.string()),
 ]
 
-# Base member entity fields (without nested membership to avoid circular reference)
-# Important: member entities must still retain their own annotations, otherwise
-# tax IDs and other entity-scoped metadata on interaction/complex members are
-# lost before local table construction.
+# Base member entity fields.
+#
+# We intentionally support one additional nested membership layer for member
+# entities. This is needed for sources such as NeuronChat where an interaction
+# contains complex participants and those complexes themselves contain protein
+# members (interaction -> complex -> protein).
+#
+# We stop at one nested layer to avoid a recursive Arrow schema.
 BASE_ENTITY_FIELDS = [
     pa.field('type', pa.string()),
     pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS))),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
 ]
 
+BASE_MEMBERSHIP_FIELDS = [
+    pa.field('member', pa.struct(BASE_ENTITY_FIELDS)),
+    pa.field('is_parent', pa.bool_()),
+    pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
+]
+
+NESTED_ENTITY_FIELDS = [
+    *BASE_ENTITY_FIELDS,
+    pa.field('membership', pa.list_(pa.struct(BASE_MEMBERSHIP_FIELDS))),
+]
+
 # Membership structure (entity + is_parent + membership annotations)
 MEMBERSHIP_FIELDS = [
-    pa.field('member', pa.struct(BASE_ENTITY_FIELDS)),
+    pa.field('member', pa.struct(NESTED_ENTITY_FIELDS)),
     pa.field('is_parent', pa.bool_()),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
 ]
