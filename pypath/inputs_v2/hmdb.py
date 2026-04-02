@@ -80,18 +80,43 @@ metabolites_schema = EntityBuilder(
     ),
 )
 
+download = Download(
+    url='https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
+    filename='hmdb_metabolites.zip',
+    subfolder='hmdb',
+    large=True,
+    ext='zip',
+    default_mode='rb',
+)
+
+
+def _id_translation_row(row: dict) -> dict | None:
+    hmdb_id = row.get('accession')
+    standard_inchi = row.get('inchi')
+    if not hmdb_id or not standard_inchi:
+        return None
+    return {
+        'source': 'hmdb',
+        'key_type': 'OM:0004:Hmdb',
+        'key_value': hmdb_id,
+        'standard_inchi': standard_inchi,
+    }
+
+
 resource = Resource(
     config,
     metabolites=Dataset(
-        download=Download(
-            url='https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
-            filename='hmdb_metabolites.zip',
-            subfolder='hmdb',
-            large=True,
-            ext='zip',
-            default_mode='rb',
-        ),
+        download=download,
         mapper=metabolites_schema,
         raw_parser=_raw,
+    ),
+    id_translation=Dataset(
+        download=download,
+        mapper=lambda row: row,
+        raw_parser=lambda opener, **kwargs: (
+            row
+            for raw_row in _raw(opener, **kwargs)
+            if (row := _id_translation_row(raw_row)) is not None
+        ),
     ),
 )

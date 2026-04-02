@@ -73,6 +73,19 @@ pathway_ontology_document = OntologyDocument(
 )
 
 
+def _id_translation_mapper(row: dict) -> dict | None:
+    chebi_id = row.get('chebi_id')
+    standard_inchi = row.get('inchi')
+    if not chebi_id or not standard_inchi:
+        return None
+    return {
+        'source': 'chebi',
+        'key_type': 'MI:0474:Chebi',
+        'key_value': chebi_id,
+        'standard_inchi': standard_inchi,
+    }
+
+
 def _ontology_mapper(row: dict) -> OntologyTerm | None:
     term_id = row.get('id')
     name = row.get('name')
@@ -118,6 +131,15 @@ resource = Resource(
         download=download,
         mapper=molecules_schema,
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='molecules', **kwargs),
+    ),
+    id_translation=Dataset(
+        download=download,
+        mapper=lambda row: row,
+        raw_parser=lambda opener, **kwargs: (
+            row
+            for raw_row in _raw(opener, data_type='molecules', **kwargs)
+            if (row := _id_translation_mapper(raw_row)) is not None
+        ),
     ),
     ontology=OntologyDataset(
         download=download,

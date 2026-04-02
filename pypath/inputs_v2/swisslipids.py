@@ -93,16 +93,49 @@ lipids_schema = EntityBuilder(
     ),
 )
 
+download = Download(
+    url='https://swisslipids.org/api/file.php?cas=download_files&file=lipids.tsv',
+    filename='lipids.tsv.gz',
+    subfolder='swisslipids',
+    encoding='latin-1',
+)
+
+
+def _id_translation_row(row: dict) -> dict | None:
+    swisslipids_id = row.get('Lipid ID')
+    standard_inchi = f.transform['inchi'](row.get('InChI (pH7.3)'))
+    if not swisslipids_id or not standard_inchi:
+        return None
+    return {
+        'source': 'swisslipids',
+        'key_type': 'OM:0009:Swisslipids',
+        'key_value': swisslipids_id,
+        'standard_inchi': standard_inchi,
+    }
+
+
+def _id_translation_raw(opener, max_records: int | None = None, **kwargs):
+    emitted = 0
+    for raw_row in iter_tsv(opener, **kwargs):
+        row = _id_translation_row(raw_row)
+        if row is None:
+            continue
+        yield row
+        emitted += 1
+        if max_records is not None and emitted >= max_records:
+            break
+
+
 resource = Resource(
     config,
     lipids=Dataset(
-        download=Download(
-            url='https://swisslipids.org/api/file.php?cas=download_files&file=lipids.tsv',
-            filename='lipids.tsv.gz',
-            subfolder='swisslipids',
-            encoding='latin-1',
-        ),
+        download=download,
         mapper=lipids_schema,
         raw_parser=iter_tsv,
+    ),
+    id_translation=Dataset(
+        download=download,
+        mapper=lambda row: row,
+        raw_parser=_id_translation_raw,
     ),
 )

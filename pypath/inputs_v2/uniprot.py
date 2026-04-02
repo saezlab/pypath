@@ -2,12 +2,17 @@
 Parse UniProt data and emit Entity records.
 
 This module converts UniProt protein data into Entity records using the schema
-defined in pypath.internals.silver_schema.
+defined in pypath.internals.silver_schema. It also exposes narrow row-oriented
+translation datasets for reference identifiers and secondary accessions.
 """
 
 from __future__ import annotations
 
-from collections.abc import Generator
+from collections.abc import Generator, Iterable
+import re
+from urllib.parse import quote_plus
+
+from pypath.inputs import uniprot as uniprot_input
 
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -66,8 +71,161 @@ f = FieldConfig(
     },
 )
 
+PROTEIN_REFERENCE_KEY_TYPES: tuple[str, ...] = (
+    'MI:1097:Uniprot',
+    'OM:0221:Uniprot Entry Name',
+    'OM:0200:Gene Name Primary',
+    'OM:0201:Gene Name Synonym',
+    'MI:0477:Entrez',
+    'MI:0476:Ensembl',
+)
+
+_REFERENCE_FIELDS = (
+    'accession',
+    'id',
+    'gene_primary',
+    'gene_synonym',
+    'organism_id',
+    'xref_ensembl',
+    'xref_geneid',
+)
+
+_UNIPROT_ENSEMBL_RE = re.compile(r'(ENS[A-Z0-9]*\d+(?:\.\d+)?)')
+
 protein_name_column = f('Protein names', extract='protein_name')
 protein_synonym_column = f('Protein names', delimiter='(', extract='protein_synonym')
+
+def _build_uniprot_reference_query(taxonomy_ids: Iterable[int | str] | None = None) -> str:
+    if taxonomy_ids is None:
+        return 'reviewed:true'
+
+    tax_terms = [f'taxonomy_id:{int(t)}' for t in taxonomy_ids]
+    if not tax_terms:
+        return 'reviewed:true'
+    if len(tax_terms) == 1:
+        return f'{tax_terms[0]} AND reviewed:true'
+    return f"({' OR '.join(tax_terms)}) AND reviewed:true"
+
+
+def _build_uniprot_reference_url(taxonomy_ids: Iterable[int | str] | None = None, **_kwargs: object) -> str:
+    query = quote_plus(_build_uniprot_reference_query(taxonomy_ids))
+    fields = ','.join(_REFERENCE_FIELDS)
+    return (
+        'https://rest.uniprot.org/uniprotkb/stream'
+        f'?compressed=true&format=tsv&query={query}&fields={fields}'
+    )
+
+
+def _reference_filename(taxonomy_ids: Iterable[int | str] | None = None, **_kwargs: object) -> str:
+    if taxonomy_ids is None:
+        suffix = 'all_reviewed_swissprot'
+    else:
+        values = [str(int(t)) for t in taxonomy_ids]
+        suffix = '_'.join(values) if values else 'all_reviewed_swissprot'
+    return f'uniprot_reference_{suffix}.tsv.gz'
+
+
+def _split_semicolon_field(value: str | None) -> list[str]:
+    if not value:
+        return []
+    return [item.strip() for item in value.split(';') if item.strip()]
+
+
+def _split_gene_synonym_field(value: str | None) -> list[str]:
+    if not value:
+        return []
+    return [item.strip() for item in value.split() if item.strip()]
+
+
+def _extract_ensembl_ids(value: str | None) -> list[str]:
+    if not value:
+        return []
+    return sorted({match.group(1) for match in _UNIPROT_ENSEMBL_RE.finditer(value)})
+
+
+def _reference_id_translation_raw(opener, max_records: int | None = None, **kwargs):
+    emitted = 0
+    for rec in iter_tsv(opener, **kwargs):
+        primary_uniprot = (rec.get('Entry') or '').strip()
+        if not primary_uniprot:
+            continue
+
+        entry_name = (rec.get('Entry Name') or '').strip()
+        taxonomy_id = (rec.get('Organism (ID)') or '').strip() or None
+        gene_primary = (rec.get('Gene Names (primary)') or '').strip()
+
+        rows = [
+            {
+                'key_type': 'MI:1097:Uniprot',
+                'key_value': primary_uniprot,
+                'taxonomy_id': None,
+                'primary_uniprot': primary_uniprot,
+            },
+        ]
+
+        if entry_name:
+            rows.append({
+                'key_type': 'OM:0221:Uniprot Entry Name',
+                'key_value': entry_name,
+                'taxonomy_id': None,
+                'primary_uniprot': primary_uniprot,
+            })
+        if gene_primary:
+            rows.append({
+                'key_type': 'OM:0200:Gene Name Primary',
+                'key_value': gene_primary,
+                'taxonomy_id': taxonomy_id,
+                'primary_uniprot': primary_uniprot,
+            })
+
+        rows.extend(
+            {
+                'key_type': 'OM:0201:Gene Name Synonym',
+                'key_value': synonym,
+                'taxonomy_id': taxonomy_id,
+                'primary_uniprot': primary_uniprot,
+            }
+            for synonym in _split_gene_synonym_field(rec.get('Gene Names (synonym)'))
+        )
+        rows.extend(
+            {
+                'key_type': 'MI:0477:Entrez',
+                'key_value': entrez,
+                'taxonomy_id': taxonomy_id,
+                'primary_uniprot': primary_uniprot,
+            }
+            for entrez in _split_semicolon_field(rec.get('GeneID'))
+        )
+        rows.extend(
+            {
+                'key_type': 'MI:0476:Ensembl',
+                'key_value': ensembl,
+                'taxonomy_id': taxonomy_id,
+                'primary_uniprot': primary_uniprot,
+            }
+            for ensembl in _extract_ensembl_ids(rec.get('Ensembl'))
+        )
+
+        for row in rows:
+            yield row
+            emitted += 1
+            if max_records is not None and emitted >= max_records:
+                return
+
+
+def _secondary_to_primary_raw(_opener, max_records: int | None = None, **_kwargs):
+    emitted = 0
+    for secondary, primary in uniprot_input.get_uniprot_sec(organism=None):
+        if set(secondary) == {'_'} or set(primary) == {'_'}:
+            continue
+        yield {
+            'secondary_uniprot': secondary,
+            'primary_uniprot': primary,
+        }
+        emitted += 1
+        if max_records is not None and emitted >= max_records:
+            break
+
 
 proteins_schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
@@ -132,5 +290,23 @@ resource = Resource(
         ),
         mapper=proteins_schema,
         raw_parser=iter_tsv,
+    ),
+    reference_id_translation=Dataset(
+        download=Download(
+            url=_build_uniprot_reference_url,
+            filename=_reference_filename,
+            subfolder='uniprot',
+            large=True,
+            encoding='utf-8',
+            default_mode='r',
+            ext='gz',
+        ),
+        mapper=lambda row: row,
+        raw_parser=_reference_id_translation_raw,
+    ),
+    secondary_to_primary=Dataset(
+        download=None,
+        mapper=lambda row: row,
+        raw_parser=_secondary_to_primary_raw,
     ),
 )
