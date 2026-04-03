@@ -20,6 +20,7 @@ config = ResourceConfig(
     url='https://omnipathdb.org/',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
+    primary_category='ontologies',
     description='Combined PSI-MI and OmniPath controlled vocabulary ontology export.',
 )
 

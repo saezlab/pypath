@@ -143,6 +143,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37953288',
+    primary_category='interactions',
     description=(
         'IntAct provides a freely available, open source database system '
         'and analysis tools for molecular interaction data. All interactions '

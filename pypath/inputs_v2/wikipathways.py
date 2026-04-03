@@ -36,6 +36,7 @@ config = ResourceConfig(
     license=LicenseCV.CC0_1_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='22073070',
+    primary_category='pathways',
     description=(
         'WikiPathways is a community-curated pathway database. '
         'This inputs_v2 module parses the current RDF pathway export and '

@@ -72,6 +72,8 @@ config = ResourceConfig(
     url="https://www.ebi.ac.uk/chembl/",
     license=LicenseCV.CC_BY_SA_3_0,
     update_category=UpdateCategoryCV.REGULAR,
+    pubmed='21948594',
+    primary_category='interactions',
     description=(
         "ChEMBL is a manually curated chemical database of bioactive molecules "
         "with drug-like properties."

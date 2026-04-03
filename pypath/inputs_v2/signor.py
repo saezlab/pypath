@@ -271,6 +271,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='31665520',
+    primary_category='interactions',
     description=(
         'SIGNOR (SIGnaling Network Open Resource) is a comprehensive '
         'resource of causal relationships between biological entities '

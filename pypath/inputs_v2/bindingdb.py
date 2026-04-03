@@ -45,6 +45,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='26481362',
+    primary_category='interactions',
     description=(
         'BindingDB is a public, web-accessible database of measured binding '
         'affinities, focusing chiefly on the interactions of proteins considered '

@@ -35,6 +35,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='25943471',
+    primary_category='lipids',
     description=(
         'SwissLipids is a curated resource providing a framework for the '
         'annotation of mass spectrometry data. It provides over 750,000 lipid '

@@ -35,6 +35,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_NC_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='30357367',
+    primary_category='complexes',
     description=(
         'CORUM is a manually curated repository of experimentally characterized '
         'protein complexes from mammalian organisms. Each complex includes '

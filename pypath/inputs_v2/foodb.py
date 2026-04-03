@@ -40,6 +40,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_NC_4_0,  # From website terms
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='29059383',  # FooDB publication
+    primary_category='foods',
     description=(
         'FooDB is the world\'s largest and most comprehensive resource on food '
         'constituents, chemistry and biology. It provides information on both '

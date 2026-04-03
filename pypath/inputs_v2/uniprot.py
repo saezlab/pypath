@@ -54,6 +54,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33237286',
+    primary_category='proteins',
     description=(
         'UniProt is a comprehensive resource for protein sequence and '
         'functional information. It provides high-quality, manually annotated '

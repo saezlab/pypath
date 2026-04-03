@@ -35,6 +35,7 @@ config = ResourceConfig(
     license=LicenseCV.GPL_2_0,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='36373969',
+    primary_category='pathways',
     description=(
         'RaMP-DB (Relational database of Metabolomic Pathways) is a '
         'multi-sourced integrated database with comprehensive annotations on '

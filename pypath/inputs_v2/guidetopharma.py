@@ -190,6 +190,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_SA_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37953350',
+    primary_category='interactions',
     description=(
         'The IUPHAR/BPS Guide to PHARMACOLOGY is an expert-curated resource '
         'of ligand-activity-target relationships, providing quantitative '

@@ -42,6 +42,7 @@ class ResourceConfig:
     update_category: UpdateCategoryCV
     description: str
     pubmed: str | None = None
+    primary_category: str | None = None
 
     def metadata(self) -> Entity:
         annotations = [

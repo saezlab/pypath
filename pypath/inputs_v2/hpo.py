@@ -35,6 +35,7 @@ config = ResourceConfig(
     license=LicenseCV.HPO,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33264411',
+    primary_category='phenotypes',
     description=(
         'The Human Phenotype Ontology (HPO) provides a standardized vocabulary '
         'for describing phenotypic abnormalities encountered in human disease. '

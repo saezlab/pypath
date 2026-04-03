@@ -33,6 +33,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37953221',
+    primary_category='small_molecules',
     description=(
         'The Human Metabolome Database (HMDB) is a comprehensive database '
         'containing detailed information about small molecule metabolites '

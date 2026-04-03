@@ -29,6 +29,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='17932068',
+    primary_category='small_molecules',
     description=(
         'ChEBI is a manually curated database and ontology of small molecular '
         'entities. This inputs_v2 module emits searchable small-molecule '

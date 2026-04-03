@@ -36,6 +36,7 @@ config = ResourceConfig(
     license=LicenseCV.GPL_3_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='36800000', # Zhao et al. 2023 DOI: 10.1038/s41467-023-36800-w
+    primary_category='interactions',
     description=(
         'NeuronChat is a manually curated resource of neural-specific '
         'intercellular molecular interactions, designed for inferring '

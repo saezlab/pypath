@@ -46,6 +46,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='26590256',
+    primary_category='interactions',
     description=(
         'STITCH is a database of known and predicted interactions between '
         'chemicals and proteins. Interactions include direct (physical) and '

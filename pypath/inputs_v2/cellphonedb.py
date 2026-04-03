@@ -44,6 +44,7 @@ config = ResourceConfig(
     license=LicenseCV.MIT,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='40133495',
+    primary_category='interactions',
     description=(
         'CellPhoneDB is a publicly available repository of curated receptors, '
         'ligands and their interactions, designed to enable the analysis of '

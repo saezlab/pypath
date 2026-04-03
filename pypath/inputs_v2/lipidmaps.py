@@ -34,6 +34,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37855672',
+    primary_category='lipids',
     description=(
         'The LIPID MAPS Structure Database (LMSD) is a comprehensive database '
         'of lipid structures, annotations, and cross-references. It contains '
