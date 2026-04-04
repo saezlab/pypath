@@ -2,7 +2,7 @@
 Parse Reactome BioPAX data and emit Entity records.
 
 This module converts Reactome BioPAX data into Entity records using the
-declarative schema pattern.
+ declarative schema pattern.
 """
 
 from __future__ import annotations
@@ -28,7 +28,9 @@ from pypath.internals.tabular_builder import (
     MembersFromList,
     MembershipBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.internals.ontology_builder import OntologyBuilder, RelationshipBuilder
+from pypath.internals.ontology_schema import OntologyDocument, OntologyTypedef
+from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.reactome import _raw
 
 
@@ -39,6 +41,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='34788843',
+    primary_category='pathways',
     description=(
         'Reactome is a free, open-source, curated and peer-reviewed '
         'pathway database.'
@@ -46,11 +49,7 @@ config = ResourceConfig(
 )
 
 
-# --------------------------------------------------------------------------- #
-# Processing Helpers
-# --------------------------------------------------------------------------- #
-
-_MISSING_VALUE = "__MISSING__"
+_MISSING_VALUE = '__MISSING__'
 
 entity_type_map = {v.value: v for v in EntityTypeCv}
 role_map = {
@@ -94,6 +93,7 @@ reactions_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed')),
         CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=f('ec_number')),
         CV(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=f('direction')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession', map='split')),
     ),
     membership=MembershipBuilder(
         MembersFromList(
@@ -126,41 +126,9 @@ reactions_schema = EntityBuilder(
                     term=IdentifierNamespaceCv.NCBI_TAX_ID,
                     value=f('participant_ncbi_tax_id', delimiter='||', map='missing'),
                 ),
-            ),
-        ),
-    ),
-)
-
-
-pathways_schema = EntityBuilder(
-    entity_type=EntityTypeCv.PATHWAY,
-    identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.NAME, value=f('display_name')),
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms')),
-        CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('reactome_stable_id')),
-        CV(term=IdentifierNamespaceCv.REACTOME_ID, value=f('reactome_id')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('go')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed')),
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
-        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('description')),
-    ),
-    membership=MembershipBuilder(
-        MembersFromList(
-            entity_type=f('component_entity_type', delimiter='||', map='entity_type'),
-            identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.NAME, value=f('component_display_name', delimiter='||', map='missing')),
                 CV(
-                    term=IdentifierNamespaceCv.REACTOME_STABLE_ID,
-                    value=f('component_reactome_stable_id', delimiter='||', map='split'),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.PATHWAY_COMPONENT),
-                CV(
-                    term=ParticipantMetadataCv.STEP_ORDER,
-                    value=f('component_step_order', delimiter='||', map='missing'),
+                    term=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+                    value=f('participant_pathway_term_accession', delimiter='||', map='split'),
                 ),
             ),
         ),
@@ -178,6 +146,7 @@ controls_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('control_type')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession', map='split')),
     ),
     membership=MembershipBuilder(
         Member(
@@ -195,6 +164,7 @@ controls_schema = EntityBuilder(
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controller_ncbi_tax_id', map='missing')),
+                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_pathway_term_accession', map='split')),
                 ),
             ),
             annotations=AnnotationsBuilder(
@@ -216,6 +186,7 @@ controls_schema = EntityBuilder(
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controlled_ncbi_tax_id', map='missing')),
+                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controlled_pathway_term_accession', map='split')),
                 ),
             ),
             annotations=AnnotationsBuilder(
@@ -240,6 +211,7 @@ control_groups_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controller_ncbi_tax_id', map='missing')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_pathway_term_accession', map='split')),
     ),
     membership=MembershipBuilder(
         MembersFromList(
@@ -256,20 +228,48 @@ control_groups_schema = EntityBuilder(
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controller_member_ncbi_tax_id', delimiter='||', map='missing')),
+                CV(
+                    term=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+                    value=f('controller_member_pathway_term_accession', delimiter='||', map='split'),
+                ),
             ),
         ),
     ),
 )
 
 
-download=Download(
-            url='https://reactome.org/download/current/biopax.zip',
-            filename='reactome_biopax.zip',
-            subfolder='reactome',
-            large=True,
-            ext='zip',
-            default_mode='rb',
-        )
+pathway_ontology_schema = OntologyBuilder(
+    id='id',
+    name='name',
+    definition='definition',
+    synonyms=f('synonyms', delimiter=';'),
+    comments=f('comments', delimiter=';'),
+    xrefs=f('xrefs', delimiter=';'),
+    relationships=[
+        RelationshipBuilder(
+            type='part_of',
+            target=f('parent_ids', delimiter=';'),
+            target_name=f('parent_names', delimiter=';'),
+        ),
+    ],
+)
+
+pathway_ontology_document = OntologyDocument(
+    ontology='reactome_pathways',
+    default_namespace='reactome_pathways',
+    remark='Reactome pathway ontology exported from Reactome BioPAX via pypath.',
+    typedefs=[OntologyTypedef(id='part_of', name='part_of')],
+)
+
+
+download = Download(
+    url='https://reactome.org/download/current/biopax.zip',
+    filename='reactome_biopax.zip',
+    subfolder='reactome',
+    large=True,
+    ext='zip',
+    default_mode='rb',
+)
 
 resource = Resource(
     config,
@@ -277,11 +277,6 @@ resource = Resource(
         download=download,
         mapper=reactions_schema,
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='reactions', **kwargs),
-    ),
-    pathways=Dataset(
-        download=download,
-        mapper=pathways_schema,
-        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='pathways', **kwargs),
     ),
     controls=Dataset(
         download=download,
@@ -292,5 +287,13 @@ resource = Resource(
         download=download,
         mapper=control_groups_schema,
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='control_groups', **kwargs),
+    ),
+    pathway_ontology=OntologyDataset(
+        download=download,
+        mapper=pathway_ontology_schema,
+        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='pathway_terms', **kwargs),
+        document=pathway_ontology_document,
+        extension='obo',
+        file_stem='reactome_pathways',
     ),
 )

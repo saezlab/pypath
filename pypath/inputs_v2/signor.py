@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import csv
+import re
 
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -51,7 +52,7 @@ _IDENTIFIER_CV_MAPPING = {
 }
 
 _PREFIX_REGEX = r'^([^:]+):'
-_GENERAL_VALUE_REGEX = r'^[^:]+:([^|"]+)'
+_GENERAL_VALUE_REGEX = r'^[^:]+:\"?([^|\"]+)\"?'
 _INTERACTION_VALUE_REGEX = r'^[^:]+:(.*)'
 # Tax fields can look like:
 # taxid:9606(human)|taxid:9606(Homo sapiens)
@@ -63,6 +64,16 @@ _MI_REGEX = r'(MI:\d+)'
 _TERM_MAPPING = {
     'signor': IdentifierNamespaceCv.SIGNOR,
     'signor-interaction': IdentifierNamespaceCv.SIGNOR,
+}
+
+_INTERACTOR_TYPE_MAPPING = {
+    'MI:0326': EntityTypeCv.PROTEIN,
+    'MI:0314': EntityTypeCv.COMPLEX,
+    'MI:0328': EntityTypeCv.SMALL_MOLECULE,
+    'MI:2261': EntityTypeCv.PHENOTYPE,
+    'MI:2260': EntityTypeCv.STIMULUS,
+    'MI:2258': EntityTypeCv.SMALL_MOLECULE,  # xenobiotic
+    'MI:1304': EntityTypeCv.PROTEIN_FAMILY,  # molecule set
 }
 
 # The SIGNOR complex and protein-family exports currently used here do not
@@ -78,6 +89,8 @@ f = FieldConfig(
         'tax': _TAX_REGEX,
         'pubmed': _PUBMED_REGEX,
         'mi': _MI_REGEX,
+        'signor_member': r'^(SIGNOR-[A-Z0-9-]+)$',
+        'uniprot_member': r'^((?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?)$',
     },
     map={
         'identifier_cv': _IDENTIFIER_CV_MAPPING,
@@ -94,10 +107,53 @@ def interaction_identifier_cv() -> CV:
     )
 
 
+def _normalize_signor_identifier(prefix: str, value: str) -> tuple[object | None, str | None]:
+    prefix = prefix.lower()
+    value = value.strip().strip('"')
+    lower_value = value.lower()
+
+    if value.startswith('URS'):
+        return IdentifierNamespaceCv.RNACENTRAL, value
+    if value.startswith('SIGNOR-'):
+        return IdentifierNamespaceCv.SIGNOR, value
+    if value.startswith('CHEBI:'):
+        return IdentifierNamespaceCv.CHEBI, value
+    if value.startswith('DB') and value[2:].isdigit():
+        return IdentifierNamespaceCv.DRUGBANK, value
+    if value.startswith('PUBCHEM:'):
+        return IdentifierNamespaceCv.PUBCHEM, value.split(':', 1)[1]
+    if prefix == 'pubchem' and value.upper().startswith('CID:'):
+        return IdentifierNamespaceCv.PUBCHEM, value.split(':', 1)[1]
+    if prefix == 'pubchem' and value.upper().startswith('SID:'):
+        return None, None
+    if value.startswith('uniprotkb:'):
+        return _normalize_signor_identifier('uniprotkb', value.split(':', 1)[1])
+    if prefix == 'uniprotkb' and '-PRO_' in value:
+        value = value.split('-PRO_', 1)[0]
+    if prefix == 'uniprotkb' and value.startswith('SIGNOR-'):
+        return IdentifierNamespaceCv.SIGNOR, value
+    if prefix == 'uniprotkb' and value.startswith('URS'):
+        return IdentifierNamespaceCv.RNACENTRAL, value
+
+    return _IDENTIFIER_CV_MAPPING.get(prefix), value or None
+
+
+def _parse_signor_identifier_pairs(raw: object) -> list[tuple[object, str]]:
+    pairs: list[tuple[object, str]] = []
+    for item in _split_signor_field(raw):
+        if ':' not in item:
+            continue
+        prefix, value = item.split(':', 1)
+        mapped, normalized_value = _normalize_signor_identifier(prefix, value)
+        if mapped is not None and normalized_value:
+            pairs.append((mapped, normalized_value))
+    return pairs
+
+
 def general_identifier_cv(column_name: str) -> CV:
     return CV(
-        term=f(column_name, extract='prefix_lower', map='identifier_cv'),
-        value=f(column_name, extract='general_value'),
+        term=lambda row: [term for term, _ in _parse_signor_identifier_pairs(row.get(column_name))],
+        value=lambda row: [value for _, value in _parse_signor_identifier_pairs(row.get(column_name))],
     )
 
 
@@ -105,8 +161,45 @@ def mi_term_cv(column_name: str) -> CV:
     return CV(term=f(column_name, extract='mi'))
 
 
-def mi_term_string(column_name: str):
-    return f(column_name, extract='mi')
+def _infer_signor_interactor_type(row: dict[str, object], suffix: str) -> EntityTypeCv:
+    raw_type = str(row.get(f'Type(s) interactor {suffix}') or '').strip()
+    if raw_type and raw_type != '-':
+        mi_match = re.search(_MI_REGEX, raw_type)
+        if mi_match:
+            mapped = _INTERACTOR_TYPE_MAPPING.get(mi_match.group(1))
+            if mapped is not None:
+                return mapped
+
+    id_fields = [
+        f'\ufeff#ID(s) interactor {suffix}' if suffix == 'A' else f'ID(s) interactor {suffix}',
+        f'Alt. ID(s) interactor {suffix}',
+        f'Alias(es) interactor {suffix}',
+    ]
+    values: list[str] = []
+    for field in id_fields:
+        raw = row.get(field)
+        values.extend(_split_signor_field(raw))
+
+    lower_values = [value.lower() for value in values]
+
+    if any(value.startswith('chebi:') or value.startswith('pubchem:') for value in lower_values):
+        return EntityTypeCv.SMALL_MOLECULE
+    if any('signor-c' in value for value in lower_values):
+        return EntityTypeCv.COMPLEX
+    if any('signor-pf' in value or 'signor-fp' in value for value in lower_values):
+        return EntityTypeCv.PROTEIN_FAMILY
+    if any('mir' in value or 'urs' in value for value in lower_values):
+        return EntityTypeCv.RNA
+    if any(value.startswith('uniprotkb:') for value in lower_values):
+        return EntityTypeCv.PROTEIN
+    if any(value.startswith('signor:') for value in lower_values):
+        return EntityTypeCv.PHYSICAL_ENTITY
+
+    return EntityTypeCv.PHYSICAL_ENTITY
+
+
+def interactor_entity_type(suffix: str):
+    return lambda row: _infer_signor_interactor_type(row, suffix)
 
 
 def pubmed_annotation(column_name: str) -> CV:
@@ -123,6 +216,54 @@ def tax_cv(column_name: str) -> CV:
     )
 
 
+def _split_signor_field(raw: object) -> list[str]:
+    if raw is None:
+        return []
+    text = str(raw).strip()
+    if not text or text == '-':
+        return []
+    return [part.strip() for part in text.split('|') if part and part.strip() and part.strip() != '-']
+
+
+def _clean_signor_value(value: str) -> str | None:
+    cleaned = value.strip().strip('"').strip()
+    return cleaned or None
+
+
+def _parse_term_value_annotations(
+    raw: object,
+    *,
+    default_term: str | None = None,
+) -> list[tuple[str, str | None]]:
+    annotations: list[tuple[str, str | None]] = []
+    for item in _split_signor_field(raw):
+        if ':' in item:
+            term, value = item.split(':', 1)
+            parsed_term = _clean_signor_value(term)
+            parsed_value = _clean_signor_value(value)
+            if parsed_term:
+                annotations.append((parsed_term, parsed_value))
+        elif default_term:
+            parsed_value = _clean_signor_value(item)
+            if parsed_value:
+                annotations.append((default_term, parsed_value))
+    return annotations
+
+
+def parsed_annotation_terms(column_name: str, *, default_term: str | None = None):
+    return lambda row: [
+        term
+        for term, _ in _parse_term_value_annotations(row.get(column_name), default_term=default_term)
+    ]
+
+
+def parsed_annotation_values(column_name: str, *, default_term: str | None = None):
+    return lambda row: [
+        value
+        for _, value in _parse_term_value_annotations(row.get(column_name), default_term=default_term)
+    ]
+
+
 config = ResourceConfig(
     id=ResourceCv.SIGNOR,
     name='SIGNOR',
@@ -130,6 +271,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='31665520',
+    primary_category='interactions',
     description=(
         'SIGNOR (SIGnaling Network Open Resource) is a comprehensive '
         'resource of causal relationships between biological entities '
@@ -152,7 +294,11 @@ complexes_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(
                     term=IdentifierNamespaceCv.UNIPROT,
-                    value=f('LIST OF ENTITIES', delimiter=','),
+                    value=f('LIST OF ENTITIES', delimiter=',', extract='uniprot_member'),
+                ),
+                CV(
+                    term=IdentifierNamespaceCv.SIGNOR,
+                    value=f('LIST OF ENTITIES', delimiter=',', extract='signor_member'),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(
@@ -175,7 +321,11 @@ protein_families_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(
                     term=IdentifierNamespaceCv.UNIPROT,
-                    value=f('LIST OF ENTITIES', delimiter=','),
+                    value=f('LIST OF ENTITIES', delimiter=',', extract='uniprot_member'),
+                ),
+                CV(
+                    term=IdentifierNamespaceCv.SIGNOR,
+                    value=f('LIST OF ENTITIES', delimiter=',', extract='signor_member'),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(
@@ -218,11 +368,21 @@ interactions_schema = EntityBuilder(
         mi_term_cv('Causal statement'),
         mi_term_cv('Causal Regulatory Mechanism'),
         pubmed_annotation('Publication Identifier(s)'),
+        CV(
+            term=parsed_annotation_terms(
+                'Interaction annotation(s)',
+                default_term='signor:interaction_annotation',
+            ),
+            value=parsed_annotation_values(
+                'Interaction annotation(s)',
+                default_term='signor:interaction_annotation',
+            ),
+        ),
     ),
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
-                entity_type=mi_term_string('Type(s) interactor A'),
+                entity_type=interactor_entity_type('A'),
                 identifiers=IdentifiersBuilder(
                     general_identifier_cv('\ufeff#ID(s) interactor A'),
                     general_identifier_cv('Alt. ID(s) interactor A'),
@@ -232,11 +392,15 @@ interactions_schema = EntityBuilder(
             annotations=AnnotationsBuilder(
                 mi_term_cv('Biological role(s) interactor A'),
                 mi_term_cv('Experimental role(s) interactor A'),
+                CV(
+                    term=parsed_annotation_terms('Feature(s) interactor A'),
+                    value=parsed_annotation_values('Feature(s) interactor A'),
+                ),
             ),
         ),
         Member(
             entity=EntityBuilder(
-                entity_type=mi_term_string('Type(s) interactor B'),
+                entity_type=interactor_entity_type('B'),
                 identifiers=IdentifiersBuilder(
                     general_identifier_cv('ID(s) interactor B'),
                     general_identifier_cv('Alt. ID(s) interactor B'),
@@ -246,6 +410,10 @@ interactions_schema = EntityBuilder(
             annotations=AnnotationsBuilder(
                 mi_term_cv('Biological role(s) interactor B'),
                 mi_term_cv('Experimental role(s) interactor B'),
+                CV(
+                    term=parsed_annotation_terms('Feature(s) interactor B'),
+                    value=parsed_annotation_values('Feature(s) interactor B'),
+                ),
             ),
         ),
     ),

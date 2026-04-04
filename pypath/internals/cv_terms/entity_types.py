@@ -25,6 +25,8 @@ class EntityTypeCv(CvEnum):
     PHENOTYPE = "MI:2261"
     STIMULUS = "MI:2260"
     DNA = "MI:0681"
+    MACROMOLECULE = "MI:0317"
+    NUCLEIC_ACID = "MI:0318"
 
     # OmniPath high-level types
     PROTEIN_FAMILY = "OM:0010"
@@ -40,6 +42,9 @@ class EntityTypeCv(CvEnum):
     FOOD = ("OM:0020", "Food or food product")
     ASSAY = ("OM:0030", "Experimental assay or protocol used to measure biological activity")
     PUBLICATION = ("OM:0031", "A research article, book, patent, or other formal publication.")
+    ORGANISM = ("OM:0032", "A living organism, such as a species or strain.")
+    CELL_LINE = ("OM:0033", "A cell line or cell culture used in research.")
+    TISSUE = ("OM:0034", "A tissue or organ from an organism")
 
 
 class MoleculeSubtypeCv(CvEnum):
@@ -53,7 +58,7 @@ class MoleculeSubtypeCv(CvEnum):
     INORGANIC = ("OM:0023", "Inorganic compound")
     PEPTIDE = ("OM:0024", "Peptide molecule")
     ANTIBODY = ("OM:0025", "Antibody or immunoglobulin")
-    NUCLEIC_ACID = ("OM:0026", "DNA/RNA/nucleotide-based molecule")
+    NUCLEIC_ACID = ("OM:0026", "Nucleic acid molecule")
 
 
 class ProteinFunctionalClassCv(CvEnum):

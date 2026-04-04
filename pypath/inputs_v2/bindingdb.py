@@ -45,6 +45,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='26481362',
+    primary_category='interactions',
     description=(
         'BindingDB is a public, web-accessible database of measured binding '
         'affinities, focusing chiefly on the interactions of proteins considered '
@@ -63,6 +64,7 @@ f = FieldConfig(
         'pubchem_cid': r'^CID[:\s]?(\d+)$',
         'kegg': r'^(C\d{5})$',
         'tax': r'(\d+)',
+        'uniprot': r'^([A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2}|[OPQ][0-9][A-Z0-9]{3}[0-9])$',
     },
 )
 
@@ -109,7 +111,7 @@ interactions_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PubChem CID')),
                     CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem SID')),
                     CV(term=IdentifierNamespaceCv.CHEBI, value=f('ChEBI ID of Ligand')),
-                    CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('ChEMBL ID of Ligand')),
+                    CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('ChEMBL ID of Ligand', delimiter='::', extract='chembl')),
                     CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('DrugBank ID of Ligand')),
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('KEGG ID of Ligand')),
                     CV(term=IdentifierNamespaceCv.ZINC, value=f('ZINC ID of Ligand')),
@@ -121,9 +123,9 @@ interactions_schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.NAME, value=f('Target Name')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt (SwissProt) Primary ID of Target Chain 1')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt (SwissProt) Primary ID of Target Chain 1', delimiter=' ', extract='uniprot')),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (SwissProt) Recommended Name of Target Chain 1')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT_TREMBL, value=f('UniProt (TrEMBL) Primary ID of Target Chain 1')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT_TREMBL, value=f('UniProt (TrEMBL) Primary ID of Target Chain 1', delimiter=' ', extract='uniprot')),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (TrEMBL) Submitted Name of Target Chain 1')),
                 ),
                 annotations=AnnotationsBuilder(

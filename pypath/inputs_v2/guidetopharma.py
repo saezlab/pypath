@@ -190,6 +190,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_SA_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37953350',
+    primary_category='interactions',
     description=(
         'The IUPHAR/BPS Guide to PHARMACOLOGY is an expert-curated resource '
         'of ligand-activity-target relationships, providing quantitative '
@@ -208,7 +209,7 @@ targets_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Human SwissProt')),
         CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Human Ensembl Gene')),
         CV(term=IdentifierNamespaceCv.ENTREZ, value=f('Human Entrez Gene')),
-        CV(term=IdentifierNamespaceCv.REFSEQ_PROTEIN, value=f('Human protein RefSeq')),
+        CV(term=IdentifierNamespaceCv.REFSEQ_PROTEIN, value=f('Human protein RefSeq', delimiter='|')),
         CV(term=IdentifierNamespaceCv.HGNC, value=f('HGNC id')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('Target name')),
         CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('HGNC symbol')),
@@ -260,7 +261,7 @@ interactions_schema = EntityBuilder(
     entity_type=EntityTypeCv.INTERACTION,
     identifiers=IdentifiersBuilder(
         CV(
-            term=IdentifierNamespaceCv.GUIDETOPHARMA,
+            term=IdentifierNamespaceCv.NAME,
             value=f(
                 lambda row: f"{row['Target ID']}_{row['Ligand ID']}"
                 if row.get('Target ID') and row.get('Ligand ID')

@@ -82,6 +82,11 @@ class InteractionTypeCv(CvEnum):
     DIRECT_INTERACTION = "MI:0407"
     PHOSPHORYLATION_REACTION = "MI:0217"
     PHENOTYPE_RESULT = "MI:2283"
+    ENZYMATIC_REACTION = "MI:0414"
+    CAUSAL_REGULATORY_MECHANISM = "MI:2245"
+
+    # OmniPath-specific interaction type extensions (OM:1230-1239 range)
+    PTM_MODIFICATION = ("OM:1230", "Post-translational modification of a protein by a chemical or enzyme")
 
 
 class DetectionMethodCv(CvEnum):
@@ -305,7 +310,6 @@ class MoleculeAnnotationsCv(CvEnum):
     COMPOUND_CLASS = ("OM:0662", "Compound classification class (e.g., Flavonoids, Phenolic acids)")
     COMPOUND_SUBCLASS = ("OM:0663", "Compound classification subclass (e.g., Anthocyanins, Flavanols)")
     BOTANICAL_FAMILY = ("OM:0664", "Botanical family of a food source")
-    SCIENTIFIC_NAME = ("OM:0665", "Scientific name of a food source organism")
     AGLYCONE = ("OM:0666", "Aglycone (non-sugar) component of a glycoside compound")
 
     # Concentration and measurement statistics (OM:0680-0699 range)
@@ -362,6 +366,7 @@ class InteractionParameterCv(CvEnum):
     KD = "MI:0646"  # The equilibrium dissociation constant. Unit Molar.
     IC50 = "MI:0641"  # Molar concentration producing 50% of maximum inhibitory response. Unit Molar.
     EC50 = "MI:0642"  # Molar concentration producing 50% of maximum response for agonist. Unit Molar.
+    PCHEMBL_VALUE = ("OM:0708", "Negative logarithm of molar IC50/EC50/Ki/Kd/Km value (-log10(molar value))")
 
     # Rate constants
     KON = "MI:0834"  # Association rate constant or rate of complex formation. Unit M-1 s-1
@@ -449,6 +454,7 @@ class InteractionMetadataCv(CvEnum):
     # Reaction/process metadata (OM:1211-1219 range)
     CONVERSION_DIRECTION = ("OM:1211", "Direction of a biochemical conversion (e.g., LEFT_TO_RIGHT, RIGHT_TO_LEFT, REVERSIBLE)")
     CONTROL_TYPE = ("OM:1212", "Type of regulatory control (e.g., ACTIVATION, INHIBITION)")
+    STITCH_ACTION_SCORE = ("OM:1213", "STITCH action-specific confidence score for the stated interaction mode or action type")
 
 
 class ParticipantMetadataCv(CvEnum):

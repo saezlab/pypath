@@ -36,10 +36,10 @@ from __future__ import annotations
 __all__ = ['metanetx_metabolite_chebi']
 
 import io
-import urllib.request
 
 import pypath.resources.urls as urls
 import pypath.share.session as session_mod
+from pypath.share.downloads import dm, _resolve_data_dir
 
 
 _logger = session_mod.Logger(name='inputs.metanetx')
@@ -50,8 +50,9 @@ def metanetx_metabolite_chebi() -> dict[str, str]:
     Build a MetaNetX compound ID (MNXM) → ChEBI ID mapping.
 
     Downloads the MNXref chemical cross-reference file
-    (``chem_xref.tsv``) and returns a dict mapping each
-    ``MNXM`` identifier to its first ChEBI annotation.
+    (``chem_xref.tsv``) once and caches it to disk under
+    ``<cachedir>/metanetx/chem_xref.tsv``.  Subsequent calls in any
+    process read the cached file without re-downloading.
 
     The cross-reference file has tab-separated columns
     ``source_id``, ``mnx_id``, ``description``.  Only rows where
@@ -65,12 +66,22 @@ def metanetx_metabolite_chebi() -> dict[str, str]:
     """
 
     url = urls.urls['metanetx']['chem_xref']
+    local_path = _resolve_data_dir() / 'metanetx' / 'chem_xref.tsv'
+    local_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not local_path.exists():
+        try:
+            dm.download(url, dest=str(local_path))
+        except Exception as exc:
+            _logger._log(
+                f'MetaNetX: download failed ({exc}); returning empty mapping.'
+            )
+            return {}
 
     try:
-        resp = urllib.request.urlopen(url, timeout=60)
-        raw = resp.read().decode('utf-8')
+        raw = local_path.read_text(encoding='utf-8')
     except Exception as exc:
-        _logger._log(f'MetaNetX: download failed ({exc}); returning empty mapping.')
+        _logger._log(f'MetaNetX: could not read cache ({exc}); returning empty mapping.')
         return {}
 
     result: dict[str, str] = {}

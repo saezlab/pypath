@@ -34,6 +34,8 @@ class ResourceCv(CvEnum):
     CHEMBL = ("OM:1155", "ChEMBL", "https://www.ebi.ac.uk/chembl/")
     CELLPHONEDB = ("OM:1156", "CellPhoneDB", "https://www.cellphonedb.org/")
     WIKIPATHWAYS = ("OM:1157", "WikiPathways", "https://www.wikipathways.org/")
+    NEURONCHAT = ("OM:1158", "NeuronChat", "https://github.com/Wei-BioMath/NeuronChat")
+    STITCH = ("OM:1159", "STITCH", "https://stitch.embl.de/")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
@@ -43,6 +45,8 @@ class ResourceCv(CvEnum):
     FOODB = ("OM:1174", "FooDB", "https://foodb.ca/")
     PTFI = ("OM:1175", "PTFI Discover", "https://ptfidiscover.markerlab.com/")
     MEBOCOST = ("OM:1176", "MEBOCOST DB", "https://github.com/kaifuchenlab/MEBOCOST")
+    RAMPDB = ("OM:1177", "RaMP-DB", "https://rampdb.nih.gov/")
+    CHEBI = ("OM:1178", "ChEBI", "https://www.ebi.ac.uk/chebi/")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")

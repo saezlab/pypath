@@ -23,18 +23,32 @@ import lxml.etree as etree
 
 from pypath.inputs.hmdb.schema.common import XMLNS
 import pypath.resources.urls as urls
-from pypath.share.downloads import dm
+from pypath.share.downloads import dm, _resolve_data_dir
 
 
 def hmdb_xml(dataset: Literal['metabolites']) -> etree.iterparse:
     """
     Download and open the XML file of a dataset from the HMDB.
+
+    If a pre-downloaded plain XML file exists at
+    ``<cachedir>/hmdb/hmdb_{dataset}.xml`` it is used directly, bypassing
+    the download.  This is the recommended workaround when Cloudflare blocks
+    automated requests to hmdb.ca: download the file manually in a browser
+    and place it at that path.
     """
 
     RECORD_TAGNAMES = {
         'metabolites': 'metabolite',
         'proteins': 'protein',
     }
+
+    tag = f'{XMLNS}{RECORD_TAGNAMES[dataset]}'
+
+    # Use pre-downloaded plain XML if available (Cloudflare bypass).
+    xml_path = _resolve_data_dir() / 'hmdb' / f'hmdb_{dataset}.xml'
+
+    if xml_path.exists():
+        return etree.iterparse(str(xml_path), tag=tag)
 
     url = urls.urls['hmdb'][dataset]
 
@@ -49,7 +63,4 @@ def hmdb_xml(dataset: Literal['metabolites']) -> etree.iterparse:
     import zipfile
     with zipfile.ZipFile(file_path) as zf:
         xml_file = zf.open(f'hmdb_{dataset}.xml')
-        return etree.iterparse(
-            xml_file,
-            tag = f'{XMLNS}{RECORD_TAGNAMES[dataset]}',
-        )
+        return etree.iterparse(xml_file, tag=tag)

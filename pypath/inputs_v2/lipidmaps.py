@@ -34,6 +34,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37855672',
+    primary_category='lipids',
     description=(
         'The LIPID MAPS Structure Database (LMSD) is a comprehensive database '
         'of lipid structures, annotations, and cross-references. It contains '
@@ -49,9 +50,11 @@ config = ResourceConfig(
 f = FieldConfig(
     extract={
         'chebi': r'^(?:CHEBI:)?(\d+)$',
+        'hmdb': r'^(HMDB\d{5,8})$',
     },
     transform={
         'chebi': lambda v: f'CHEBI:{v}' if v else None,
+        'hmdb': lambda v: v.upper() if v else None,
     },
 )
 
@@ -72,7 +75,7 @@ lipids_schema = EntityBuilder(
             value=f('CHEBI_ID', extract='chebi'),
         ),
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PUBCHEM_CID')),
-        CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID')),
+        CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID', extract='hmdb', transform='hmdb')),
         CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=f('SWISSLIPIDS_ID')),
     ),
     annotations=AnnotationsBuilder(
@@ -83,18 +86,44 @@ lipids_schema = EntityBuilder(
     ),
 )
 
+download = Download(
+    url='https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip',
+    filename='structures.zip',
+    subfolder='lipidmaps',
+    large=True,
+    ext='zip',
+    default_mode='rb',
+)
+
+
+def _id_translation_row(row: dict) -> dict | None:
+    lipidmaps_id = row.get('LM_ID')
+    standard_inchi = row.get('INCHI')
+    if not lipidmaps_id or not standard_inchi:
+        return None
+    return {
+        'source': 'lipidmaps',
+        'key_type': 'OM:0003:Lipidmaps',
+        'key_value': lipidmaps_id,
+        'standard_inchi': standard_inchi,
+    }
+
+
 resource = Resource(
     config,
     lipids=Dataset(
-        download=Download(
-            url='https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip',
-            filename='structures.zip',
-            subfolder='lipidmaps',
-            large=True,
-            ext='zip',
-            default_mode='rb',
-        ),
+        download=download,
         mapper=lipids_schema,
         raw_parser=_raw,
+    ),
+    id_translation=Dataset(
+        download=download,
+        mapper=lambda row: row,
+        raw_parser=lambda opener, **kwargs: (
+            row
+            for raw_row in _raw(opener, **kwargs)
+            if (row := _id_translation_row(raw_row)) is not None
+        ),
+        kind='id_translation',
     ),
 )

@@ -40,6 +40,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_NC_4_0,  # TODO: Verify license
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='20428313',  # Original Phenol-Explorer publication
+    primary_category='foods',
     description=(
         'Phenol-Explorer is the first comprehensive database on polyphenol '
         'content in foods. It contains data on the content and composition of '
@@ -102,11 +103,11 @@ foods_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.PHENOL_EXPLORER, value=f('id')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+        CV(term=IdentifierNamespaceCv.SCIENTIFIC_NAME, value=f('scientific_name')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.FOOD_CLASS, value=f('food_group')),
         CV(term=MoleculeAnnotationsCv.FOOD_SUBCLASS, value=f('food_subgroup')),
-        CV(term=MoleculeAnnotationsCv.SCIENTIFIC_NAME, value=f('scientific_name')),
         CV(term=MoleculeAnnotationsCv.BOTANICAL_FAMILY, value=f('botanical_family')),
     ),
     membership=MembershipBuilder(

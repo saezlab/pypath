@@ -4,6 +4,17 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import csv
+import re
+
+
+_CHEMBL_RUN_RE = re.compile(r'(CHEMBL\d+)(?=CHEMBL\d+)')
+
+
+def _normalize_row(row: dict[str, str]) -> dict[str, str]:
+    value = (row.get('ChEMBL ID of Ligand') or '').strip()
+    if value and value.count('CHEMBL') > 1 and '::' not in value and ';' not in value and '|' not in value:
+        row['ChEMBL ID of Ligand'] = _CHEMBL_RUN_RE.sub(r'\1::', value)
+    return row
 
 
 def _raw(opener, max_lines: int | None = None, **_kwargs: object) -> Generator[dict[str, str], None, None]:
@@ -22,8 +33,9 @@ def _raw(opener, max_lines: int | None = None, **_kwargs: object) -> Generator[d
             for i, row in enumerate(reader):
                 if i >= max_lines:
                     break
-                yield row
+                yield _normalize_row(row)
         else:
-            yield from reader
+            for row in reader:
+                yield _normalize_row(row)
 
         break

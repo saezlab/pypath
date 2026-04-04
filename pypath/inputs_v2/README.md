@@ -22,12 +22,6 @@ inputs_v2/
 │   ├── lipidmaps.py      # LIPID MAPS SDF parser
 │   ├── reactome.py       # Reactome BioPAX parser
 │   └── bindingdb.py      # BindingDB parser
-├── ontologies/           # Ontology-specific modules
-│   ├── shared.py         # Common OBO parsing utilities
-│   ├── gene_ontology.py  # Gene Ontology
-│   ├── psi_mi.py         # PSI-MI ontology
-│   ├── omnipath.py       # OmniPath internal ontology
-│   └── uniprot_keywords.py  # UniProt Keywords
 ├── bindingdb.py          # BindingDB interactions & compounds
 ├── guidetopharma.py      # Guide to Pharmacology
 ├── hmdb.py               # Human Metabolome Database
@@ -145,7 +139,26 @@ dataset = Dataset(
     mapper=schema,        # EntityBuilder schema
     raw_parser=iter_tsv,  # Parser function
 )
+
+# Optional special kinds:
+# Dataset(..., kind='id_translation')  # excluded from regular silver parquet output
+# OntologyDataset(...)                 # ontology export, not silver parquet
 ```
+
+A resource may also expose a narrow tabular dataset for a specific downstream use case.
+For example, some small-molecule resources export an `id_translation` dataset with rows like:
+
+```python
+{
+    'source': 'chebi',
+    'key_type': 'MI:0474:Chebi',
+    'key_value': 'CHEBI:15377',
+    'standard_inchi': 'InChI=...'
+}
+```
+
+Use this when a source can provide a stable, source-owned translation view directly,
+rather than forcing downstream code to reinterpret broader entity datasets.
 
 ### 6. Resource
 

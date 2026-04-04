@@ -23,6 +23,7 @@ from collections.abc import Generator
 from collections import namedtuple
 from typing import Any
 import os
+import re
 import sqlite3
 
 import pandas as pd
@@ -34,6 +35,8 @@ import pypath.share.cache as cache
 from pypath.formats import sqlite as _sqlite
 from ._common import _log, _show_tables
 
+
+_FALLBACK_VERSION = '2.5.4'
 
 _INDEXES = (
     ('idx_source_rampId', 'source', 'rampId'),
@@ -60,8 +63,52 @@ def _ensure_indexes(con: sqlite3.Connection):
     con.commit()
 
 
+def _latest_version() -> str:
+    """
+    Retrieve the latest RaMP database version from GitHub.
+
+    Fetches the RaMP-DB GitHub repository db directory listing
+    and extracts the highest version number from the SQLite file
+    names.
+
+    Returns:
+        The latest version string, or the fallback version if
+        the lookup fails.
+    """
+
+    try:
+
+        url = urls.urls['ramp']['github_db']
+
+        c = curl.Curl(
+            url,
+            silent = True,
+            large = False,
+            cache = False,
+        )
+
+        versions = sorted(
+            re.findall(r'RaMP_SQLite_v([\d.]+)\.sqlite\.gz', c.result),
+        )
+
+        if versions:
+
+            version = versions[-1]
+            _log(f'Latest RaMP version from GitHub: {version}')
+
+            return version
+
+        _log('No RaMP versions found on GitHub, using fallback.')
+
+    except Exception as e:
+
+        _log(f'Failed to retrieve latest RaMP version: {e}')
+
+    return _FALLBACK_VERSION
+
+
 def ramp_sqlite(
-        version: str = '2.5.4',
+        version: str | None = None,
         connect: bool = True,
     ) -> sqlite3.Connection | str:
     """
@@ -74,23 +121,27 @@ def ramp_sqlite(
     Args
         version:
             The version of the RaMP database to download.
+            If None, the latest version is looked up from GitHub.
 
     Returns
         A SQLite database connection.
     """
 
+    version = version or _latest_version()
     url = urls.urls['ramp']['github_sqlite'] % version
-    def _ramp_download() -> curl.Curl:
-        """Callback to download the RaMP database."""
-        return curl.Curl(urls,
-                         large = True,
-                         silent = False,
-                         compr = 'gz'
-                         )
 
+    def _ramp_download() -> curl.Curl:
+        return curl.Curl(
+            url,
+            large = True,
+            silent = False,
+            compr = 'gz',
+            slow = True,
+        )
 
     result = _sqlite.download_sqlite(
         download_callback = _ramp_download,
+        extractor = lambda c: c.gzfile,
         database = 'RaMP',
         version = version,
         connect = connect,

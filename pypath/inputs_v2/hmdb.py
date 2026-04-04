@@ -33,6 +33,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37953221',
+    primary_category='small_molecules',
     description=(
         'The Human Metabolome Database (HMDB) is a comprehensive database '
         'containing detailed information about small molecule metabolites '
@@ -45,9 +46,12 @@ config = ResourceConfig(
 f = FieldConfig(
     extract={
         'chebi': r'^(?:CHEBI:)?(\d+)$',
+        'drugbank': r'^(DB\d+)$',
+        'kegg_compound': r'^([CDGcdg])(\d{4,5})$',
     },
     transform={
         'chebi': lambda v: f'CHEBI:{v}' if v else None,
+        'kegg_compound': lambda v: f'{v[0].upper()}{v[1].zfill(5)}' if v and len(v) == 2 else None,
     },
 )
 
@@ -67,8 +71,8 @@ metabolites_schema = EntityBuilder(
             value=f('chebi_id', extract='chebi'),
         ),
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_compound_id')),
-        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_id')),
-        CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('drugbank_id')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_id', extract='kegg_compound', transform='kegg_compound')),
+        CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('drugbank_id', extract='drugbank')),
         CV(term=IdentifierNamespaceCv.CAS, value=f('cas_registry_number')),
     ),
     annotations=AnnotationsBuilder(
@@ -77,18 +81,44 @@ metabolites_schema = EntityBuilder(
     ),
 )
 
+download = Download(
+    url='https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
+    filename='hmdb_metabolites.zip',
+    subfolder='hmdb',
+    large=True,
+    ext='zip',
+    default_mode='rb',
+)
+
+
+def _id_translation_row(row: dict) -> dict | None:
+    hmdb_id = row.get('accession')
+    standard_inchi = row.get('inchi')
+    if not hmdb_id or not standard_inchi:
+        return None
+    return {
+        'source': 'hmdb',
+        'key_type': 'OM:0004:Hmdb',
+        'key_value': hmdb_id,
+        'standard_inchi': standard_inchi,
+    }
+
+
 resource = Resource(
     config,
     metabolites=Dataset(
-        download=Download(
-            url='https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
-            filename='hmdb_metabolites.zip',
-            subfolder='hmdb',
-            large=True,
-            ext='zip',
-            default_mode='rb',
-        ),
+        download=download,
         mapper=metabolites_schema,
         raw_parser=_raw,
+    ),
+    id_translation=Dataset(
+        download=download,
+        mapper=lambda row: row,
+        raw_parser=lambda opener, **kwargs: (
+            row
+            for raw_row in _raw(opener, **kwargs)
+            if (row := _id_translation_row(raw_row)) is not None
+        ),
+        kind='id_translation',
     ),
 )

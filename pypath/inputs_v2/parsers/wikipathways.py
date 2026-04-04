@@ -102,6 +102,7 @@ def _load_records(opener, force_refresh: bool = False) -> dict[str, list[dict[st
 
     records = {
         'pathways': [],
+        'pathway_terms': [],
         'interactions': [],
     }
 
@@ -125,6 +126,7 @@ def _load_records(opener, force_refresh: bool = False) -> dict[str, list[dict[st
             continue
 
         records['pathways'].append(pathway)
+        records['pathway_terms'].append(_extract_pathway_term_record(pathway))
         records['interactions'].extend(_extract_interaction_records(graph, pathway))
 
     _DATA_CACHE.clear()
@@ -157,6 +159,29 @@ def _extract_pathway_record(graph: Graph) -> dict[str, str] | None:
     }
 
 
+def _extract_pathway_term_record(pathway: dict[str, str]) -> dict[str, str]:
+    xrefs = []
+    if pathway.get('pathway_id'):
+        xrefs.append(f"WikiPathways:{pathway['pathway_id']}")
+    if pathway.get('pathway_version_id'):
+        xrefs.append(f"WikiPathwaysVersion:{pathway['pathway_version_id']}")
+    if pathway.get('taxon_id'):
+        xrefs.append(f"NCBITaxon:{pathway['taxon_id']}")
+    for pubmed_id in pathway.get('pubmed_ids', '').split(';'):
+        if pubmed_id:
+            xrefs.append(f"PMID:{pubmed_id}")
+
+    return {
+        'id': pathway.get('pathway_id', ''),
+        'name': pathway.get('title', ''),
+        'definition': pathway.get('description', ''),
+        'synonyms': pathway.get('pathway_version_id', ''),
+        'comments': '',
+        'xrefs': _join_unique(xrefs),
+    }
+
+
+
 def _extract_interaction_records(
         graph: Graph,
         pathway: dict[str, str],
@@ -174,6 +199,13 @@ def _extract_interaction_records(
 
         source = _extract_entity_record(graph, source_uri)
         target = _extract_entity_record(graph, target_uri)
+
+        if (
+            source['entity_type'] == EntityTypeCv.PATHWAY.value
+            or target['entity_type'] == EntityTypeCv.PATHWAY.value
+        ):
+            continue
+
         interaction_types = _interaction_types(graph, interaction_uri)
         interaction_uri_str = str(interaction_uri)
 
@@ -184,6 +216,8 @@ def _extract_interaction_records(
                 'interaction_types': _join_unique(interaction_types),
                 'pathway_id': pathway['pathway_id'],
                 'pathway_version_id': pathway['pathway_version_id'],
+                'pathway_term_accession': pathway['pathway_id'],
+                'pathway_ontology_terms': pathway['ontology_terms'],
                 'organism_name': pathway['organism_name'],
                 'taxon_id': pathway['taxon_id'],
                 **_prefix_record('source', source),

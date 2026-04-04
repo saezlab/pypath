@@ -29,7 +29,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 3
+_CACHE_VERSION = 5
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
@@ -221,6 +221,7 @@ _PARTICIPANT_FIELDS = [
     'go',
     'ncbi_tax_id',
     'stoichiometry',
+    'pathway_term_accession',
 ]
 
 _CONTROLLER_MEMBER_FIELDS = [
@@ -234,6 +235,7 @@ _CONTROLLER_MEMBER_FIELDS = [
     'kegg',
     'go',
     'ncbi_tax_id',
+    'pathway_term_accession',
 ]
 
 
@@ -254,13 +256,13 @@ def _flatten_participants(participants: list[dict], prefix: str = 'participant')
     return data
 
 
-def _flatten_components(components: list[dict], prefix: str = 'component') -> dict[str, str]:
-    fields = ['entity_type', 'display_name', 'reactome_stable_id', 'step_order']
+def _flatten_child_pathways(child_pathways: list[dict], prefix: str = 'child_pathway') -> dict[str, str]:
+    fields = ['display_name', 'reactome_stable_id', 'uri', 'step_order']
     data: dict[str, str] = {}
     for field in fields:
         items = []
-        for component in components:
-            value = component.get(field, '')
+        for child_pathway in child_pathways:
+            value = child_pathway.get(field, '')
             if value in (None, ''):
                 value = _MISSING_VALUE
             items.append(str(value))
@@ -279,6 +281,173 @@ def _flatten_controller_members(members: list[dict], prefix: str = 'controller_m
             items.append(str(value))
         data[f'{prefix}_{field}'] = _join_list(items)
     return data
+
+
+def _join_unique_values(values: list[str]) -> str:
+    seen: list[str] = []
+    for value in values:
+        if value and value not in seen:
+            seen.append(value)
+    return ';'.join(seen)
+
+
+def _split_field(value: str, delimiter: str = _LIST_DELIMITER) -> list[str]:
+    if not value:
+        return []
+    return [item for item in value.split(delimiter) if item and item != _MISSING_VALUE]
+
+
+
+def _build_pathway_terms(pathway_records: list[dict]) -> list[dict]:
+    terms: dict[str, dict] = {}
+    parent_map: defaultdict[str, list[tuple[str, str]]] = defaultdict(list)
+
+    for record in pathway_records:
+        stable_id = record.get('reactome_stable_id', '').split(';')[0]
+        if not stable_id:
+            continue
+
+        term = terms.setdefault(
+            stable_id,
+            {
+                'id': stable_id,
+                'name': record.get('display_name', ''),
+                'definition': record.get('definition', ''),
+                'synonyms': [],
+                'comments': [],
+                'xrefs': [],
+                'parent_ids': [],
+                'parent_names': [],
+            },
+        )
+        term['synonyms'].extend([s for s in record.get('synonyms', '').split(';') if s])
+        term['comments'].extend([c for c in record.get('comments', '').split(';') if c])
+
+        reactome_id = record.get('reactome_id', '')
+        if reactome_id:
+            term['xrefs'].append(f'Reactome:{reactome_id}')
+        term['xrefs'].extend([g for g in record.get('go', '').split(';') if g])
+        taxon_id = record.get('ncbi_tax_id', '')
+        if taxon_id:
+            term['xrefs'].append(f'NCBITaxon:{taxon_id}')
+
+        child_ids = _split_field(record.get('child_pathway_reactome_stable_id', ''))
+        child_names = _split_field(record.get('child_pathway_display_name', ''))
+        for idx, child_id_field in enumerate(child_ids):
+            child_id = child_id_field.split(';')[0]
+            if not child_id:
+                continue
+            child_name = child_names[idx] if idx < len(child_names) else ''
+            parent_map[child_id].append((stable_id, record.get('display_name', '')))
+            terms.setdefault(
+                child_id,
+                {
+                    'id': child_id,
+                    'name': child_name,
+                    'definition': '',
+                    'synonyms': [],
+                    'comments': [],
+                    'xrefs': [],
+                    'parent_ids': [],
+                    'parent_names': [],
+                },
+            )
+
+    for term_id, parents in parent_map.items():
+        seen: set[tuple[str, str]] = set()
+        for parent_id, parent_name in parents:
+            key = (parent_id, parent_name)
+            if key in seen:
+                continue
+            seen.add(key)
+            terms[term_id]['parent_ids'].append(parent_id)
+            terms[term_id]['parent_names'].append(parent_name)
+
+    for term in terms.values():
+        term['synonyms'] = sorted(set(term['synonyms']))
+        term['comments'] = list(dict.fromkeys(term['comments']))
+        term['xrefs'] = list(dict.fromkeys(term['xrefs']))
+        term['synonyms'] = ';'.join(term['synonyms'])
+        term['comments'] = ';'.join(term['comments'])
+        term['xrefs'] = ';'.join(term['xrefs'])
+        term['parent_ids'] = ';'.join(term['parent_ids'])
+        term['parent_names'] = ';'.join(term['parent_names'])
+
+    return sorted(terms.values(), key=lambda t: t['id'])
+
+
+
+def _build_pathway_membership_index(g: Graph, xref_cache: dict[str, dict]) -> dict[str, list[dict[str, str]]]:
+    entity_to_pathways: defaultdict[str, list[dict[str, str]]] = defaultdict(list)
+    pathway_info_by_uri: dict[str, dict[str, str]] = {}
+    pathway_parent_map: defaultdict[str, set[str]] = defaultdict(set)
+
+    for pathway_uri in g.subjects(RDF.type, BP.Pathway):
+        props = _get_entity_props(g, pathway_uri)
+        names = _extract_names_from_props(props, BP)
+        xrefs = _extract_xrefs_from_props(props, xref_cache, BP)
+        pathway_uri_str = str(pathway_uri)
+        pathway_info = {
+            'uri': pathway_uri_str,
+            'display_name': names.get('display_name', ''),
+            'reactome_stable_id': _join_unique_values(xrefs.get('reactome_stable_id', [])),
+        }
+        pathway_info_by_uri[pathway_uri_str] = pathway_info
+
+        for component_uri in props.get(BP.pathwayComponent, []):
+            entity_to_pathways[str(component_uri)].append(pathway_info)
+            component_props = _get_entity_props(g, component_uri)
+            component_types = {str(t).split('#')[-1].lower() for t in component_props.get(RDF.type, [])}
+            if 'pathway' in component_types:
+                pathway_parent_map[str(component_uri)].add(pathway_uri_str)
+
+        for step_uri in props.get(BP.pathwayOrder, []):
+            step_props = _get_entity_props(g, step_uri)
+            for process_uri in step_props.get(BP.stepProcess, []):
+                entity_to_pathways[str(process_uri)].append(pathway_info)
+                process_props = _get_entity_props(g, process_uri)
+                process_types = {str(t).split('#')[-1].lower() for t in process_props.get(RDF.type, [])}
+                if 'pathway' in process_types:
+                    pathway_parent_map[str(process_uri)].add(pathway_uri_str)
+
+    def ancestors(pathway_uri_str: str, seen: set[str] | None = None) -> list[dict[str, str]]:
+        seen = seen or set()
+        result: list[dict[str, str]] = []
+        for parent_uri in pathway_parent_map.get(pathway_uri_str, set()):
+            if parent_uri in seen:
+                continue
+            seen.add(parent_uri)
+            parent_info = pathway_info_by_uri.get(parent_uri)
+            if parent_info:
+                result.append(parent_info)
+            result.extend(ancestors(parent_uri, seen))
+        return result
+
+    deduped: dict[str, list[dict[str, str]]] = {}
+    for entity_uri, pathways in entity_to_pathways.items():
+        expanded = list(pathways)
+        for pathway in list(pathways):
+            pathway_uri_str = pathway.get('uri', '')
+            if pathway_uri_str:
+                expanded.extend(ancestors(pathway_uri_str))
+
+        seen: set[tuple[str, str]] = set()
+        deduped[entity_uri] = []
+        for pathway in expanded:
+            key = (pathway.get('reactome_stable_id', ''), pathway.get('display_name', ''))
+            if key in seen:
+                continue
+            seen.add(key)
+            deduped[entity_uri].append(pathway)
+
+    return deduped
+
+
+def _pathway_term_accessions(pathway_index: dict[str, list[dict[str, str]]], entity_uri: URIRef | str) -> str:
+    return _join_unique_values([
+        pathway.get('reactome_stable_id', '')
+        for pathway in pathway_index.get(str(entity_uri), [])
+    ])
 
 
 def _get_organism_tax_id(g: Graph, organism_uri: URIRef, xref_cache: dict, bp_ns: Namespace) -> str:
@@ -559,6 +728,7 @@ def _iterate_reactions(
     g: Graph,
     xref_cache: dict,
     entity_reference_index: dict,
+    pathway_index: dict[str, list[dict[str, str]]],
     max_records: int | None = None,
 ) -> Generator[dict, None, None]:
 
@@ -651,7 +821,11 @@ def _iterate_reactions(
                     'stoichiometry': '',
                 })
 
+        pathway_term_accession = _pathway_term_accessions(pathway_index, reaction_uri)
+
         participants = reactants + products + templates
+        for participant in participants:
+            participant['pathway_term_accession'] = pathway_term_accession
         participant_data = _flatten_participants(participants, prefix='participant')
 
         yield {
@@ -665,6 +839,7 @@ def _iterate_reactions(
             'pubmed': ';'.join(xrefs.get('pubmed', [])),
             'ec_number': ec_number,
             'direction': direction,
+            'pathway_term_accession': pathway_term_accession,
             **participant_data,
         }
         count += 1
@@ -708,33 +883,48 @@ def _iterate_pathways(
                 step_order_map[str(process)] = step_index
             step_index += 1
 
-        components = []
+        child_pathways = []
+        seen_child_pathways: set[str] = set()
         for comp in props.get(BP.pathwayComponent, []):
             c_props = _get_entity_props(g, comp)
             c_types = c_props.get(RDF.type, [])
             type_str = str(c_types[0]).split('#')[-1] if c_types else ''
-            type_str_lower = type_str.lower()
-            if 'pathway' in type_str_lower:
-                component_type = EntityTypeCv.PATHWAY
-            elif 'biochemicalreaction' in type_str_lower:
-                component_type = EntityTypeCv.REACTION
-            elif 'catalysis' in type_str_lower:
-                component_type = EntityTypeCv.CATALYSIS
-            elif 'control' in type_str_lower:
-                component_type = EntityTypeCv.CONTROL
-            else:
-                component_type = EntityTypeCv.INTERACTION
+            if 'pathway' not in type_str.lower():
+                continue
+            if str(comp) in seen_child_pathways:
+                continue
+            seen_child_pathways.add(str(comp))
 
             c_names = _extract_names_from_props(c_props, BP)
             c_xrefs = _extract_xrefs_from_props(c_props, xref_cache, BP)
 
-            components.append({
-                'type': type_str,
-                'entity_type': component_type.value,
+            child_pathways.append({
                 'display_name': c_names.get('display_name', ''),
                 'reactome_stable_id': ';'.join(c_xrefs.get('reactome_stable_id', [])),
+                'uri': str(comp),
                 'step_order': step_order_map.get(str(comp), None),
             })
+
+        for step in props.get(BP.pathwayOrder, []):
+            step_props = _get_entity_props(g, step)
+            for process in step_props.get(BP.stepProcess, []):
+                process_props = _get_entity_props(g, process)
+                process_types = process_props.get(RDF.type, [])
+                type_str = str(process_types[0]).split('#')[-1] if process_types else ''
+                if 'pathway' not in type_str.lower():
+                    continue
+                if str(process) in seen_child_pathways:
+                    continue
+                seen_child_pathways.add(str(process))
+
+                process_names = _extract_names_from_props(process_props, BP)
+                process_xrefs = _extract_xrefs_from_props(process_props, xref_cache, BP)
+                child_pathways.append({
+                    'display_name': process_names.get('display_name', ''),
+                    'reactome_stable_id': ';'.join(process_xrefs.get('reactome_stable_id', [])),
+                    'uri': str(process),
+                    'step_order': step_order_map.get(str(process), None),
+                })
 
         yield {
             'uri': str(s),
@@ -745,9 +935,9 @@ def _iterate_pathways(
             'pubmed': ';'.join(xrefs.get('pubmed', [])),
             'go': ';'.join(xrefs.get('go', [])),
             'ncbi_tax_id': ncbi_tax_id,
-            'description': ' '.join(descriptions),
+            'definition': ' '.join(descriptions),
             'comments': ';'.join(comments),
-            **_flatten_components(components, prefix='component'),
+            **_flatten_child_pathways(child_pathways, prefix='child_pathway'),
         }
         count += 1
 
@@ -775,6 +965,7 @@ def _iterate_controls(
     g: Graph,
     xref_cache: dict,
     entity_reference_index: dict,
+    pathway_index: dict[str, list[dict[str, str]]],
     max_records: int | None = None,
 ) -> Generator[dict, None, None]:
 
@@ -801,6 +992,7 @@ def _iterate_controls(
         xrefs = _extract_xrefs_from_props(props, xref_cache, BP)
 
         control_type_val = str(props[BP.controlType][0]) if props.get(BP.controlType) else ''
+        pathway_term_accession = _pathway_term_accessions(pathway_index, s)
 
         controller_info = {}
         controller_members: list[dict[str, str]] = []
@@ -828,6 +1020,7 @@ def _iterate_controls(
                 'go': '',
                 'ncbi_tax_id': '',
                 'stoichiometry': '',
+                'pathway_term_accession': pathway_term_accession,
             }
 
             controller_refs_to_merge: list[str] = []
@@ -862,6 +1055,7 @@ def _iterate_controls(
                         'kegg': '',
                         'go': '',
                         'ncbi_tax_id': '',
+                        'pathway_term_accession': pathway_term_accession,
                     }
 
                     member_refs = member_props.get(BP.entityReference, [])
@@ -971,7 +1165,7 @@ def _iterate_controls(
             if 'biochemicalreaction' in cd_type_str_lower:
                 controlled_entity_type = EntityTypeCv.REACTION
             elif 'pathway' in cd_type_str_lower:
-                controlled_entity_type = EntityTypeCv.PATHWAY
+                controlled_entity_type = EntityTypeCv.CV_TERM
             else:
                 controlled_entity_type = EntityTypeCv.INTERACTION
 
@@ -988,6 +1182,7 @@ def _iterate_controls(
                 'go': '',
                 'ncbi_tax_id': '',
                 'stoichiometry': '',
+                'pathway_term_accession': pathway_term_accession,
             }
 
         control_display_name = names.get('display_name', '')
@@ -1003,6 +1198,7 @@ def _iterate_controls(
             'reactome_id': ';'.join(xrefs.get('reactome_id', [])),
             'go': ';'.join(xrefs.get('go', [])),
             'control_type': control_type_val,
+            'pathway_term_accession': pathway_term_accession,
             'controller_entity_type': controller_info.get('entity_type', ''),
             'controller_display_name': controller_info.get('display_name', ''),
             'controller_synonyms': controller_info.get('synonyms', ''),
@@ -1013,6 +1209,7 @@ def _iterate_controls(
             'controller_kegg': controller_info.get('kegg', ''),
             'controller_go': controller_info.get('go', ''),
             'controller_ncbi_tax_id': controller_info.get('ncbi_tax_id', ''),
+            'controller_pathway_term_accession': controller_info.get('pathway_term_accession', ''),
             'controlled_entity_type': controlled_info.get('entity_type', ''),
             'controlled_display_name': controlled_info.get('display_name', ''),
             'controlled_synonyms': controlled_info.get('synonyms', ''),
@@ -1023,6 +1220,7 @@ def _iterate_controls(
             'controlled_kegg': controlled_info.get('kegg', ''),
             'controlled_go': controlled_info.get('go', ''),
             'controlled_ncbi_tax_id': controlled_info.get('ncbi_tax_id', ''),
+            'controlled_pathway_term_accession': controlled_info.get('pathway_term_accession', ''),
             **_flatten_controller_members(controller_members, prefix='controller_member'),
         }
         count += 1
@@ -1032,12 +1230,13 @@ def _iterate_control_groups(
     g: Graph,
     xref_cache: dict,
     entity_reference_index: dict,
+    pathway_index: dict[str, list[dict[str, str]]],
     max_records: int | None = None,
 ) -> Generator[dict, None, None]:
     seen: set[tuple[str, str, str, str]] = set()
     count = 0
 
-    for record in _iterate_controls(g, xref_cache, entity_reference_index, max_records=None):
+    for record in _iterate_controls(g, xref_cache, entity_reference_index, pathway_index, max_records=None):
         member_types = record.get('controller_member_entity_type', '')
         member_names = record.get('controller_member_display_name', '')
         member_stable_ids = record.get('controller_member_reactome_stable_id', '')
@@ -1079,6 +1278,8 @@ def _iterate_control_groups(
             'controller_kegg': record.get('controller_kegg', ''),
             'controller_go': record.get('controller_go', ''),
             'controller_ncbi_tax_id': record.get('controller_ncbi_tax_id', ''),
+            'pathway_term_accession': record.get('pathway_term_accession', ''),
+            'controller_pathway_term_accession': record.get('controller_pathway_term_accession', ''),
             'controller_member_entity_type': member_types,
             'controller_member_display_name': member_names,
             'controller_member_synonyms': record.get('controller_member_synonyms', ''),
@@ -1089,6 +1290,7 @@ def _iterate_control_groups(
             'controller_member_kegg': member_kegg,
             'controller_member_go': member_go,
             'controller_member_ncbi_tax_id': member_tax,
+            'controller_member_pathway_term_accession': record.get('controller_member_pathway_term_accession', ''),
         }
         count += 1
 
@@ -1103,7 +1305,7 @@ def _ensure_all_caches_populated(
     force_refresh: bool = False,
 ) -> bool:
     """Ensure all data types are cached."""
-    data_types = ['reactions', 'pathways', 'controls', 'control_groups']
+    data_types = ['reactions', 'pathways', 'pathway_terms', 'controls', 'control_groups']
 
     if not force_refresh:
         all_cached = all(_load_cached_data(dt) is not None for dt in data_types)
@@ -1116,21 +1318,27 @@ def _ensure_all_caches_populated(
 
     xref_cache = _build_xref_cache(g, BP)
     ref_index = _load_entity_reference_index(g, xref_cache)
+    pathway_index = _build_pathway_membership_index(g, xref_cache)
 
     if _load_cached_data('reactions', force_refresh) is None:
-        data = list(_iterate_reactions(g, xref_cache, ref_index, max_records=None))
+        data = list(_iterate_reactions(g, xref_cache, ref_index, pathway_index, max_records=None))
         _save_cached_data('reactions', data)
 
     if _load_cached_data('pathways', force_refresh) is None:
         data = list(_iterate_pathways(g, xref_cache, max_records=None))
         _save_cached_data('pathways', data)
 
+    if _load_cached_data('pathway_terms', force_refresh) is None:
+        pathway_records = _load_cached_data('pathways', force_refresh) or []
+        data = _build_pathway_terms(pathway_records)
+        _save_cached_data('pathway_terms', data)
+
     if _load_cached_data('controls', force_refresh) is None:
-        data = list(_iterate_controls(g, xref_cache, ref_index, max_records=None))
+        data = list(_iterate_controls(g, xref_cache, ref_index, pathway_index, max_records=None))
         _save_cached_data('controls', data)
 
     if _load_cached_data('control_groups', force_refresh) is None:
-        data = list(_iterate_control_groups(g, xref_cache, ref_index, max_records=None))
+        data = list(_iterate_control_groups(g, xref_cache, ref_index, pathway_index, max_records=None))
         _save_cached_data('control_groups', data)
 
     return True

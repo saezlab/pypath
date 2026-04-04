@@ -35,6 +35,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_NC_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='30357367',
+    primary_category='complexes',
     description=(
         'CORUM is a manually curated repository of experimentally characterized '
         'protein complexes from mammalian organisms. Each complex includes '
@@ -45,6 +46,9 @@ config = ResourceConfig(
 
 f = FieldConfig(
     delimiter=';',
+    extract={
+        'uniprot': r'((?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?)',
+    },
     map={
         'organism_taxid': {
             'Human': '9606',
@@ -74,7 +78,7 @@ complexes_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(
                     term=IdentifierNamespaceCv.UNIPROT,
-                    value=f('subunits(UniProt IDs)', delimiter=';'),
+                    value=f('subunits(UniProt IDs)', delimiter=';', extract='uniprot'),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(
