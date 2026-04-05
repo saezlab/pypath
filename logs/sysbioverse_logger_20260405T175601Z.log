@@ -1,0 +1,5 @@
+[2026-04-05 19:56:01] [DEBUG] [pkg_infra.session        ] ▸ Using app logger: default
+[2026-04-05 19:56:01] [DEBUG] [pkg_infra.session        ] ▸ Session time initialized: utc=2026-04-05 17:56:01.430108+00:00, local=2026-04-05 19:56:01.430110+02:00, timezone=CEST
+[2026-04-05 19:56:01] [DEBUG] [pkg_infra.session        ] ▸ Location lookup skipped
+[2026-04-05 19:56:01] [INFO ] [pkg_infra.session        ] ▸ Creating new session...
+[2026-04-05 19:56:01] [INFO ] [pkg_infra.session        ] ▸ Session has been created
