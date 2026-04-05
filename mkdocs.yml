@@ -1,0 +1,39 @@
+site_name: pypath
+site_url: https://pypath.omnipathdb.org
+repo_url: https://github.com/saezlab/pypath
+repo_name: saezlab/pypath
+
+theme:
+    name: material
+    palette:
+    -   media: "(prefers-color-scheme: light)"
+        scheme: default
+        primary: blue grey
+        accent: indigo
+    -   media: "(prefers-color-scheme: dark)"
+        scheme: slate
+        primary: blue grey
+        accent: indigo
+
+plugins:
+-   search
+-   mkdocstrings:
+        handlers:
+            python:
+                paths: ["."]
+                options:
+                    show_source: true
+                    show_root_heading: true
+
+nav:
+-   Home: index.md
+-   Installation: installation.md
+
+markdown_extensions:
+-   pymdownx.highlight
+-   pymdownx.superfences
+-   pymdownx.tabbed:
+        alternate_style: true
+-   admonition
+-   toc:
+        permalink: true
