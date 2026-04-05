@@ -28,12 +28,14 @@ import json
 import collections
 import itertools
 import functools
+import gzip
 import urllib.parse
 
 import pandas as pd
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+from pypath.share.downloads import dm
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
 import pypath.share.common as common
@@ -653,26 +655,28 @@ class UniprotQuery:
 
     def __iter__(self):
 
-        c = curl.Curl(
+        path = dm.download(
             self._baseurl,
-            get = self._get,
-            silent = False,
-            large = True,
-            compr = 'gz',
-            slow = True,
+            query = self._get,
         )
-        result = c.result if c.result or self.fail_on_empty else [0].__iter__()
-        _ = next(result)
+
+        if not path and not self.fail_on_empty:
+            return
+
         _proc0 = functools.partial(self._FIELDEND.sub, '')
         _proc1 = self._FIELDSEP.split if self.name_process else common.identity
 
-        for line in result:
+        with gzip.open(path, 'rt') as f:
 
-            line = line.strip('\n\r')
+            _ = next(f)  # skip header
 
-            if line.strip():
+            for line in f:
 
-                yield [_proc1(_proc0(f)) for f in line.split('\t')]
+                line = line.strip('\n\r')
+
+                if line.strip():
+
+                    yield [_proc1(_proc0(field)) for field in line.split('\t')]
 
 
     def perform(self) -> list[str] | dict[str, str] | dict[str, dict[str, str]]:
