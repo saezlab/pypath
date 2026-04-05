@@ -20,7 +20,7 @@
 import collections
 
 import pypath.resources.urls as urls
-from download_manager import DownloadManager
+from dlmachine import DownloadManager
 
 
 

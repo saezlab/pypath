@@ -28,8 +28,8 @@ from typing import Optional, List
 from dotenv import load_dotenv
 
 import pypath.share.settings as settings
-from download_manager import DownloadManager
-from cache_manager._open import Opener
+from dlmachine import DownloadManager
+from cachedir._open import Opener
 
 
 def _load_env_file() -> None:
