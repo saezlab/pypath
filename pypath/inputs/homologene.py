@@ -22,9 +22,9 @@ import itertools
 
 import pypath.utils.mapping as mapping
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
 import pypath.inputs.uniprot_db as uniprot_db
 import pypath.share.session as session
+from pypath.share.downloads import dm
 
 _logger = session.Logger(name = 'homologene_input')
 _log = _logger._log
@@ -38,15 +38,9 @@ def get_homologene():
 
     url = urls.urls['homologene']['url_rescued']
 
-    c = curl.Curl(
-        url = url,
-        silent = False,
-        large = True,
-        timeout = 1800,
-        ignore_content_length = True,
-    )
+    path = dm.download(url)
 
-    return c.result
+    return open(path) if path else None
 
 
 def homologene_dict(source, target, id_type):
