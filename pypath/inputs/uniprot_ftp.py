@@ -199,3 +199,71 @@ def all_id_types(ncbi_tax_id: int = 9606) -> set[str]:
         types.add(id_type_name)
 
     return types
+
+
+def full_idmapping_urls() -> list[str]:
+    """URLs for the complete idmapping.dat.gz (all organisms)."""
+    return [
+        f"{base}/{IDMAPPING_PATH}/idmapping.dat.gz"
+        for base in FTP_BASES
+    ]
+
+
+def idmapping_full_stream(
+    id_types: set[str] | None = None,
+    include_taxids: bool = True,
+):
+    """Stream ALL records from the complete idmapping.dat.gz.
+
+    This file is ~18GB compressed. Lines are streamed from gzip.
+
+    Args:
+        id_types: If given, only yield rows for these ID type names.
+            NCBI_TaxID rows are always included if include_taxids is True.
+        include_taxids: Always yield NCBI_TaxID rows (for organism assignment).
+
+    Yields:
+        Tuples of (uniprot_ac, id_type_name, id_value).
+    """
+    urls = full_idmapping_urls()
+
+    path = None
+    for url in urls:
+        _log.info("Trying full idmapping: %s", url)
+        try:
+            path = dm.download(url, connecttimeout=10)
+            if path and os.path.getsize(path) > 1000:
+                break
+            path = None
+        except Exception as e:
+            _log.warning("Failed %s: %s", url, e)
+
+    if not path:
+        _log.error("All mirrors failed for full idmapping.dat.gz")
+        return
+
+    _log.info("Streaming full idmapping from %s", path)
+
+    filter_types = set(id_types) if id_types else None
+    if filter_types and include_taxids:
+        filter_types.add("NCBI_TaxID")
+
+    count = 0
+    with gzip.open(path, "rt") as f:
+        for line in f:
+            parts = line.rstrip("\n").split("\t")
+            if len(parts) != 3:
+                continue
+
+            uniprot_ac, id_type_name, id_value = parts
+
+            if filter_types and id_type_name not in filter_types:
+                continue
+
+            yield uniprot_ac, id_type_name, id_value
+            count += 1
+
+            if count % 10_000_000 == 0:
+                _log.info("Streamed %dM records", count // 1_000_000)
+
+    _log.info("Finished streaming: %d total records", count)
