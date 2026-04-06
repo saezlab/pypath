@@ -17,27 +17,26 @@
 #  Website: https://pypath.omnipathdb.org/
 #
 
-from future.utils import iteritems
-
 from typing import Literal
 
 import re
 import collections
 import itertools
 
-import pypath.inputs.uniprot as uniprot_input
-import pypath.share.curl as curl
+from pypath.share.downloads import dm
 import pypath.resources.urls as urls
 import pypath.share.common as common
-import pypath_common._constants as _const
 
 
 def _mirbase_table(name: str):
 
     url = urls.urls['mirbase']['root'] % name
-    c = curl.Curl(url, silent = False, large = False)
+    path = dm.download(url)
 
-    for row in c.result.strip('<>/p\n')[:-3].split('<br>'):
+    with open(path) as f:
+        _content = f.read()
+
+    for row in _content.strip('<>/p\n')[:-3].split('<br>'):
 
         yield row.split('\t')
 
