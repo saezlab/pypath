@@ -28,16 +28,20 @@ from __future__ import annotations
 
 import gzip
 import logging
+import os
 from collections import defaultdict
 
 from pypath.share.downloads import dm
 
 _log = logging.getLogger(__name__)
 
-FTP_BASE = (
-    'https://ftp.uniprot.org/pub/databases/uniprot/'
-    'current_release/knowledgebase/idmapping'
+FTP_BASES = (
+    'https://ftp.uniprot.org/pub/databases/uniprot',
+    'https://ftp.ebi.ac.uk/pub/databases/uniprot',
+    'https://ftp.expasy.org/databases/uniprot',
 )
+
+IDMAPPING_PATH = 'current_release/knowledgebase/idmapping'
 
 # ID type names in the idmapping.dat file -> our canonical names
 IDTYPE_MAP = {
@@ -68,23 +72,25 @@ IDTYPE_MAP = {
 }
 
 
-def organism_url(ncbi_tax_id: int) -> str | None:
-    """Get the URL for a per-organism idmapping file."""
+_CODES = {
+    9606: 'HUMAN', 10090: 'MOUSE', 10116: 'RAT',
+    559292: 'YEAST', 83333: 'ECOLI', 7227: 'DROME',
+    7955: 'DANRE', 6239: 'CAEEL', 9031: 'CHICK',
+    3702: 'ARATH', 44689: 'DICDI', 284812: 'SCHPO',
+}
 
-    # The filename pattern is {CODE}_{TAXID}_idmapping.dat.gz
-    _CODES = {
-        9606: 'HUMAN', 10090: 'MOUSE', 10116: 'RAT',
-        559292: 'YEAST', 83333: 'ECOLI', 7227: 'DROME',
-        7955: 'DANRE', 6239: 'CAEEL', 9031: 'CHICK',
-        3702: 'ARATH', 44689: 'DICDI', 284812: 'SCHPO',
-    }
+
+def organism_urls(ncbi_tax_id: int) -> list[str]:
+    """Get URLs for per-organism idmapping files (primary + mirrors)."""
 
     code = _CODES.get(ncbi_tax_id)
 
     if not code:
-        return None
+        return []
 
-    return f'{FTP_BASE}/by_organism/{code}_{ncbi_tax_id}_idmapping.dat.gz'
+    path = f'{IDMAPPING_PATH}/by_organism/{code}_{ncbi_tax_id}_idmapping.dat.gz'
+
+    return [f'{base}/{path}' for base in FTP_BASES]
 
 
 def idmapping_stream(
@@ -105,22 +111,34 @@ def idmapping_stream(
     """
 
     if ncbi_tax_id:
-        url = organism_url(ncbi_tax_id)
-
-        if not url:
-            _log.warning(
-                'No per-organism FTP file for taxid %d', ncbi_tax_id,
-            )
-            return
+        urls = organism_urls(ncbi_tax_id)
     else:
-        url = f'{FTP_BASE}/idmapping.dat.gz'
+        urls = [f'{base}/{IDMAPPING_PATH}/idmapping.dat.gz' for base in FTP_BASES]
 
-    _log.info('Downloading UniProt FTP idmapping from %s', url)
+    if not urls:
+        _log.warning('No FTP URL for taxid %s', ncbi_tax_id)
+        return
 
-    path = dm.download(url)
+    path = None
+
+    for url in urls:
+        _log.info('Trying UniProt FTP: %s', url)
+
+        try:
+            path = dm.download(url, connecttimeout=10)
+
+            if path and os.path.getsize(path) > 0:
+                break
+
+            if path:
+                _log.warning('Empty file from %s, trying next mirror', url)
+                path = None
+
+        except Exception as e:
+            _log.warning('Failed %s: %s', url, e)
 
     if not path:
-        _log.error('Failed to download %s', url)
+        _log.error('All UniProt FTP mirrors failed')
         return
 
     _log.info('Parsing %s', path)
