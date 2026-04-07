@@ -12,7 +12,8 @@ from collections.abc import Generator, Iterable
 import re
 from urllib.parse import quote_plus
 
-from pypath.inputs import uniprot as uniprot_input
+from pypath.resources import urls
+from pypath.share.downloads import dm
 
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -218,16 +219,28 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
 
 def _secondary_to_primary_raw(_opener, max_records: int | None = None, **_kwargs):
     emitted = 0
-    for secondary, primary in uniprot_input.get_uniprot_sec(organism=None):
-        if set(secondary) == {'_'} or set(primary) == {'_'}:
-            continue
-        yield {
-            'secondary_uniprot': secondary,
-            'primary_uniprot': primary,
-        }
-        emitted += 1
-        if max_records is not None and emitted >= max_records:
-            break
+    path = dm.download(urls.urls['uniprot_sec']['url'])
+
+    with open(path) as handle:
+        for i, line in enumerate(handle):
+            if i < 30:
+                continue
+
+            parts = line.split()
+            if len(parts) != 2:
+                continue
+
+            secondary, primary = parts
+            if set(secondary) == {'_'} or set(primary) == {'_'}:
+                continue
+
+            yield {
+                'secondary_uniprot': secondary,
+                'primary_uniprot': primary,
+            }
+            emitted += 1
+            if max_records is not None and emitted >= max_records:
+                break
 
 
 proteins_schema = EntityBuilder(
