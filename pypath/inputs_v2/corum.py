@@ -12,6 +12,7 @@ from pypath.internals.cv_terms import (
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
@@ -36,6 +37,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='30357367',
     primary_category='complexes',
+    annotation_ontologies=(OntologyCv.GENE_ONTOLOGY,),
     description=(
         'CORUM is a manually curated repository of experimentally characterized '
         'protein complexes from mammalian organisms. Each complex includes '

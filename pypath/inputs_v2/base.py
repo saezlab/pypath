@@ -16,6 +16,7 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceAnnotationCv,
     ResourceCv,
@@ -43,6 +44,7 @@ class ResourceConfig:
     description: str
     pubmed: str | None = None
     primary_category: str | None = None
+    annotation_ontologies: tuple[OntologyCv, ...] = ()
 
     def metadata(self) -> Entity:
         annotations = [

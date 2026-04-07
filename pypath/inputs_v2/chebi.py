@@ -7,6 +7,7 @@ from pypath.internals.cv_terms import (
     IdentifierNamespaceCv,
     LicenseCV,
     MoleculeAnnotationsCv,
+    OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
@@ -30,6 +31,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='17932068',
     primary_category='small_molecules',
+    annotation_ontologies=(OntologyCv.CHEBI,),
     description=(
         'ChEBI is a manually curated database and ontology of small molecular '
         'entities. This inputs_v2 module emits searchable small-molecule '

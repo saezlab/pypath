@@ -19,6 +19,7 @@ from pypath.internals.cv_terms import (
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
@@ -55,6 +56,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33237286',
     primary_category='proteins',
+    annotation_ontologies=(OntologyCv.GENE_ONTOLOGY, OntologyCv.UNIPROT_KEYWORDS),
     description=(
         'UniProt is a comprehensive resource for protein sequence and '
         'functional information. It provides high-quality, manually annotated '

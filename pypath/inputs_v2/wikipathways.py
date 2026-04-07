@@ -10,6 +10,7 @@ from pypath.internals.cv_terms import (
     InteractionMetadataCv,
     LicenseCV,
     MoleculeAnnotationsCv,
+    OntologyCv,
     ParticipantMetadataCv,
     ResourceCv,
     UpdateCategoryCV,
@@ -37,6 +38,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='22073070',
     primary_category='pathways',
+    annotation_ontologies=(OntologyCv.WIKIPATHWAYS,),
     description=(
         'WikiPathways is a community-curated pathway database. '
         'This inputs_v2 module parses the current RDF pathway export and '

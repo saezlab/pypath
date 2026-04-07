@@ -63,3 +63,4 @@ from .annotations import (
 )
 from .resource_metadata import LicenseCV, UpdateCategoryCV
 from .resources import ResourceCv
+from .ontologies import OntologyCv
