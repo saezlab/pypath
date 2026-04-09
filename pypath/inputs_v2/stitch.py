@@ -136,7 +136,7 @@ interactions_schema = EntityBuilder(
         CV(term=InteractionMetadataCv.CONFIDENCE_VALUE, value=f('combined_score')),
         CV(term=InteractionMetadataCv.STITCH_ACTION_SCORE, value=f('action_score')),
         CV(term=f('mode', map='mode_cv')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('stereospecific')),
+        CV(term=InteractionMetadataCv.STEREOSPECIFIC, value=f('stereospecific')),
         CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('action', map='action_cv')),
     ),
     membership=MembershipBuilder(
