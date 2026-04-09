@@ -200,11 +200,13 @@ def _stitch_download(ncbi_tax_id: int) -> StitchDownload:
             url=_LINKS_URL.format(taxid=ncbi_tax_id),
             filename=f'{ncbi_tax_id}.protein_chemical.links.detailed.v5.0.tsv.gz',
             subfolder='stitch',
+            ext='gz',
         ),
         actions=Download(
             url=_ACTIONS_URL.format(taxid=ncbi_tax_id),
             filename=f'{ncbi_tax_id}.actions.v5.0.tsv.gz',
             subfolder='stitch',
+            ext='gz',
         ),
     )
 
