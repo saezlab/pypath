@@ -82,15 +82,15 @@ python -m py_compile pypath/inputs_v2/<resource>.py pypath/inputs_v2/parsers/<re
 ```
 
 ```bash
-poetry run python -c "from pypath.inputs import <legacy_module>; x = <legacy_call>; print(type(x)); print(next(iter(x)) if hasattr(x, '__iter__') else x)"
+uv run python -c "from pypath.inputs import <legacy_module>; x = <legacy_call>; print(type(x)); print(next(iter(x)) if hasattr(x, '__iter__') else x)"
 ```
 
 ```bash
-poetry run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>.raw()))"
+uv run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>.raw()))"
 ```
 
 ```bash
-poetry run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>()))"
+uv run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>()))"
 ```
 
 Compare:
@@ -111,4 +111,4 @@ If exact parity is not possible or not desirable, say so clearly.
 6. Parity / intentional differences
 7. Next steps
 
-Always include the exact `poetry run python -c ...` commands for the new `inputs_v2` module.
+Always include the exact `uv run python -c ...` commands for the new `inputs_v2` module.

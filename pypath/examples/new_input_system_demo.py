@@ -80,7 +80,7 @@ def demo_change_detection():
     print("\n=== Change Detection Demo ===")
     
     # This would work with the extended download manager
-    from download_manager._change_detection import ChangeDetector
+    from dlmachine._change_detection import ChangeDetector
     
     # Example URL to check
     url = "https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/BIOGRID-MV-Physical-LATEST.tab3.zip"

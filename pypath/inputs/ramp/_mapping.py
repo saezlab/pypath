@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+import pypath.share.common as common
 from ._sqlite import ramp_sqlite
 
 
@@ -32,6 +33,10 @@ def ramp_mapping(
     ) -> dict[str, set[str]] | pd.DataFrame:
     """
     Retrieve the mapping between two identifiers.
+
+    When one of the ID types is ``'synonym'``, the mapping is done
+    against the ``analytesynonym`` table instead of the ``source``
+    table.
 
     Args:
         id_type_a:
@@ -46,6 +51,30 @@ def ramp_mapping(
     Returns:
         A dictionary with the mapping between the two identifiers.
     """
+
+    if id_type_b == 'synonym':
+
+        return ramp_synonym_mapping(
+            id_type = id_type_a,
+            return_df = return_df,
+            curies = curies,
+        )
+
+    elif id_type_a == 'synonym':
+
+        data = ramp_synonym_mapping(
+            id_type = id_type_b,
+            return_df = return_df,
+            curies = curies,
+        )
+
+        if return_df:
+
+            return data.rename(
+                columns = {'source_id': 'synonym', 'synonym': 'source_id'},
+            )
+
+        return common.swap_dict(data, force_sets = True)
 
     query = (
         'SELECT DISTINCT a.sourceId as id_type_a, b.sourceId as id_type_b '

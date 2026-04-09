@@ -7,6 +7,7 @@ from pypath.internals.cv_terms import (
     IdentifierNamespaceCv,
     LicenseCV,
     MoleculeAnnotationsCv,
+    OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
@@ -29,6 +30,8 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='17932068',
+    primary_category='small_molecules',
+    annotation_ontologies=(OntologyCv.CHEBI,),
     description=(
         'ChEBI is a manually curated database and ontology of small molecular '
         'entities. This inputs_v2 module emits searchable small-molecule '
@@ -71,6 +74,19 @@ pathway_ontology_document = OntologyDocument(
     default_namespace='chebi',
     remark='ChEBI ontology exported from chebi.obo.gz via pypath.',
 )
+
+
+def _id_translation_mapper(row: dict) -> dict | None:
+    chebi_id = row.get('chebi_id')
+    standard_inchi = row.get('inchi')
+    if not chebi_id or not standard_inchi:
+        return None
+    return {
+        'source': 'chebi',
+        'key_type': 'MI:0474:Chebi',
+        'key_value': chebi_id,
+        'standard_inchi': standard_inchi,
+    }
 
 
 def _ontology_mapper(row: dict) -> OntologyTerm | None:
@@ -118,6 +134,16 @@ resource = Resource(
         download=download,
         mapper=molecules_schema,
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='molecules', **kwargs),
+    ),
+    id_translation=Dataset(
+        download=download,
+        mapper=lambda row: row,
+        raw_parser=lambda opener, **kwargs: (
+            row
+            for raw_row in _raw(opener, data_type='molecules', **kwargs)
+            if (row := _id_translation_mapper(raw_row)) is not None
+        ),
+        kind='id_translation',
     ),
     ontology=OntologyDataset(
         download=download,

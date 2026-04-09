@@ -40,6 +40,7 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_NC_4_0,  # TODO: Verify license
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='20428313',  # Original Phenol-Explorer publication
+    primary_category='foods',
     description=(
         'Phenol-Explorer is the first comprehensive database on polyphenol '
         'content in foods. It contains data on the content and composition of '

@@ -36,6 +36,7 @@ config = ResourceConfig(
     license=LicenseCV.GPL_3_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='36573906',
+    primary_category='interactions',
     description=(
         'MEBOCOST DB is a curated resource of metabolite-sensor interactions '
         'collected through computational text-mining and manual curation '

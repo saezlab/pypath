@@ -16,6 +16,7 @@ from pypath.internals.cv_terms import (
     InteractionMetadataCv,
     ParticipantMetadataCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
@@ -143,6 +144,8 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37953288',
+    annotation_ontologies=(OntologyCv.PSI_MI,),
+    primary_category='interactions',
     description=(
         'IntAct provides a freely available, open source database system '
         'and analysis tools for molecular interaction data. All interactions '

@@ -14,6 +14,7 @@ from pypath.internals.cv_terms import (
     InteractionMetadataCv,
     LicenseCV,
     MoleculeAnnotationsCv,
+    OntologyCv,
     ParticipantMetadataCv,
     ResourceCv,
     UpdateCategoryCV,
@@ -41,6 +42,8 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='34788843',
+    primary_category='pathways',
+    annotation_ontologies=(OntologyCv.GENE_ONTOLOGY, OntologyCv.REACTOME_PATHWAYS),
     description=(
         'Reactome is a free, open-source, curated and peer-reviewed '
         'pathway database.'

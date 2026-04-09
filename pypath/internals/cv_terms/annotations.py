@@ -82,6 +82,11 @@ class InteractionTypeCv(CvEnum):
     DIRECT_INTERACTION = "MI:0407"
     PHOSPHORYLATION_REACTION = "MI:0217"
     PHENOTYPE_RESULT = "MI:2283"
+    ENZYMATIC_REACTION = "MI:0414"
+    CAUSAL_REGULATORY_MECHANISM = "MI:2245"
+
+    # OmniPath-specific interaction type extensions (OM:1230-1239 range)
+    PTM_MODIFICATION = ("OM:1230", "Post-translational modification of a protein by a chemical or enzyme")
 
 
 class DetectionMethodCv(CvEnum):
@@ -449,6 +454,8 @@ class InteractionMetadataCv(CvEnum):
     # Reaction/process metadata (OM:1211-1219 range)
     CONVERSION_DIRECTION = ("OM:1211", "Direction of a biochemical conversion (e.g., LEFT_TO_RIGHT, RIGHT_TO_LEFT, REVERSIBLE)")
     CONTROL_TYPE = ("OM:1212", "Type of regulatory control (e.g., ACTIVATION, INHIBITION)")
+    STITCH_ACTION_SCORE = ("OM:1213", "STITCH action-specific confidence score for the stated interaction mode or action type")
+    STEREOSPECIFIC = ("OM:1214", "Indicates whether the chemical interaction is stereospecific")
 
 
 class ParticipantMetadataCv(CvEnum):

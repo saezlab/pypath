@@ -44,6 +44,7 @@ config = ResourceConfig(
     license=LicenseCV.MIT,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='40133495',
+    primary_category='interactions',
     description=(
         'CellPhoneDB is a publicly available repository of curated receptors, '
         'ligands and their interactions, designed to enable the analysis of '
@@ -171,8 +172,10 @@ interactions_schema = EntityBuilder(
             entity=EntityBuilder(
                 entity_type=_get_partner_type('partner_a'),
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('partner_a', extract='uniprot_acc')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('partner_a', extract='non_uniprot')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT,
+                       value=f('partner_a', extract='uniprot_acc')),
+                    CV(term=IdentifierNamespaceCv.NAME,
+                       value=f('partner_a', extract='non_uniprot')),
                 ),
             ),
         ),
@@ -180,8 +183,10 @@ interactions_schema = EntityBuilder(
             entity=EntityBuilder(
                 entity_type=_get_partner_type('partner_b'),
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('partner_b', extract='uniprot_acc')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('partner_b', extract='non_uniprot')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT,
+                       value=f('partner_b', extract='uniprot_acc')),
+                    CV(term=IdentifierNamespaceCv.NAME, 
+                       value=f('partner_b', extract='non_uniprot')),
                 ),
             ),
         ),

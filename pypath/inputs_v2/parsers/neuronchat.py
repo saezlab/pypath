@@ -17,8 +17,8 @@ def _first_handle(opener) -> Any | None:
     # Opener.result can be a handle, a dict, or a generator/iterator
     if isinstance(opener.result, dict):
         return next(iter(opener.result.values()), None)
-    
-    # If it's a generator/iterator (which it seems to be from the error)
+   
+    # If it's a generator/iterator
     if hasattr(opener.result, '__next__'):
         return opener.result
 

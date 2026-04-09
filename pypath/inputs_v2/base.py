@@ -8,7 +8,7 @@ from collections.abc import Callable, Generator
 from dataclasses import dataclass
 import csv
 import json
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 
 from pypath.internals.silver_schema import Entity, Identifier, Annotation
 from pypath.internals.ontology_schema import OntologyDocument, OntologyTerm
@@ -16,6 +16,7 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceAnnotationCv,
     ResourceCv,
@@ -42,6 +43,8 @@ class ResourceConfig:
     update_category: UpdateCategoryCV
     description: str
     pubmed: str | None = None
+    primary_category: str | None = None
+    annotation_ontologies: tuple[OntologyCv, ...] = ()
 
     def metadata(self) -> Entity:
         annotations = [
@@ -95,6 +98,9 @@ class Download:
         )
 
 
+DatasetKind = Literal['ontology', 'id_translation']
+
+
 class Dataset:
     """A Lego brick: download + raw parsing + mapping to Entities."""
 
@@ -103,10 +109,13 @@ class Dataset:
         download: Download | None,
         mapper: Callable[[dict[str, Any]], Entity],
         raw_parser: Callable[..., Generator[dict[str, Any], None, None]],
+        *,
+        kind: DatasetKind | None = None,
     ) -> None:
         self.download = download
         self.mapper = mapper
         self._raw_parser = raw_parser
+        self.kind = kind
 
     def raw(self, force_refresh: bool = False, **kwargs: Any) -> Generator[dict[str, Any], None, None]:
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
@@ -119,6 +128,8 @@ class Dataset:
 
 class OntologyDataset:
     """Structured ontology dataset rendered as an ontology artifact such as OBO."""
+
+    kind: DatasetKind = 'ontology'
 
     def __init__(
         self,
@@ -158,11 +169,13 @@ class ArtifactDataset:
         download: Download | None = None,
         extension: str,
         file_stem: str | None = None,
+        kind: DatasetKind | None = None,
     ) -> None:
         self.renderer = renderer
         self.download = download
         self.extension = extension
         self.file_stem = file_stem
+        self.kind = kind
 
     def render(self, force_refresh: bool = False, **kwargs: Any) -> str:
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None

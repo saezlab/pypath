@@ -14,6 +14,7 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
@@ -35,6 +36,8 @@ config = ResourceConfig(
     license=LicenseCV.HPO,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33264411',
+    primary_category='phenotypes',
+    annotation_ontologies=(OntologyCv.HUMAN_PHENOTYPE_ONTOLOGY,),
     description=(
         'The Human Phenotype Ontology (HPO) provides a standardized vocabulary '
         'for describing phenotypic abnormalities encountered in human disease. '

@@ -48,6 +48,7 @@ config = ResourceConfig(
     url='https://ptfidiscover.markerlab.com/',
     license=LicenseCV.UNSPECIFIED,  # TODO: Verify license
     update_category=UpdateCategoryCV.REGULAR,
+    primary_category='foods',
     description=(
         'PTFI Discover is a comprehensive database of food composition '
         'and metabolomics data, providing detailed information on chemical '

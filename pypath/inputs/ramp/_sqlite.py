@@ -23,20 +23,90 @@ from collections.abc import Generator
 from collections import namedtuple
 from typing import Any
 import os
+import re
 import sqlite3
 
 import pandas as pd
 
 from pypath_common import _misc
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
+from pypath.share.downloads import dm
 import pypath.share.cache as cache
 from pypath.formats import sqlite as _sqlite
 from ._common import _log, _show_tables
 
 
+_FALLBACK_VERSION = '2.5.4'
+
+_INDEXES = (
+    ('idx_source_rampId', 'source', 'rampId'),
+    ('idx_source_IDtype_geneOrCompound', 'source', 'IDtype, geneOrCompound'),
+    ('idx_analytesynonym_rampId', 'analytesynonym', 'rampId'),
+    ('idx_metabolite_class_ramp_id', 'metabolite_class', 'ramp_id'),
+    ('idx_chem_props_ramp_id', 'chem_props', 'ramp_id'),
+)
+
+
+def _ensure_indexes(con: sqlite3.Connection):
+    """
+    Create indexes on the RaMP database if they do not exist.
+    """
+
+    cur = con.cursor()
+
+    for name, table, columns in _INDEXES:
+
+        cur.execute(
+            f'CREATE INDEX IF NOT EXISTS {name} ON {table} ({columns})'
+        )
+
+    con.commit()
+
+
+def _latest_version() -> str:
+    """
+    Retrieve the latest RaMP database version from GitHub.
+
+    Fetches the RaMP-DB GitHub repository db directory listing
+    and extracts the highest version number from the SQLite file
+    names.
+
+    Returns:
+        The latest version string, or the fallback version if
+        the lookup fails.
+    """
+
+    try:
+
+        import requests as _requests
+
+        url = urls.urls['ramp']['github_db']
+        resp = _requests.get(url, timeout=30)
+        resp.raise_for_status()
+        page_content = resp.text
+
+        versions = sorted(
+            re.findall(r'RaMP_SQLite_v([\d.]+)\.sqlite\.gz', page_content),
+        )
+
+        if versions:
+
+            version = versions[-1]
+            _log(f'Latest RaMP version from GitHub: {version}')
+
+            return version
+
+        _log('No RaMP versions found on GitHub, using fallback.')
+
+    except Exception as e:
+
+        _log(f'Failed to retrieve latest RaMP version: {e}')
+
+    return _FALLBACK_VERSION
+
+
 def ramp_sqlite(
-        version: str = '2.5.4',
+        version: str | None = None,
         connect: bool = True,
     ) -> sqlite3.Connection | str:
     """
@@ -49,42 +119,52 @@ def ramp_sqlite(
     Args
         version:
             The version of the RaMP database to download.
+            If None, the latest version is looked up from GitHub.
 
     Returns
         A SQLite database connection.
     """
 
+    version = version or _latest_version()
     url = urls.urls['ramp']['github_sqlite'] % version
+
+    import gzip
+    import requests
+    from pathlib import Path
+
     sqlite_path = _sqlite.sqlite_cache_path('RaMP', version)
 
-    if not sqlite_path.exists() or sqlite_path.stat().st_size == 0:
+    if not sqlite_path.exists():
+        gz_path = Path(str(sqlite_path) + '.gz')
 
-        import gzip
-        import requests
-
-        _log(f'Downloading RaMP SQLite v{version} from {url}')
-
-        with requests.get(url, stream = True, timeout = 120) as resp:
-
+        if not gz_path.exists():
+            _log(f'Downloading RaMP SQLite from {url}')
+            gz_path.parent.mkdir(parents=True, exist_ok=True)
+            resp = requests.get(url, stream=True, timeout=600)
             resp.raise_for_status()
 
-            with gzip.GzipFile(fileobj = resp.raw) as gz_stream:
+            with open(gz_path, 'wb') as fp:
+                for chunk in resp.iter_content(chunk_size=1024 ** 2):
+                    fp.write(chunk)
 
-                with open(sqlite_path, 'wb') as fp:
+        _log(f'Decompressing RaMP SQLite...')
+        with gzip.open(gz_path, 'rb') as gz_in:
+            with open(sqlite_path, 'wb') as out:
+                while chunk := gz_in.read(1024 ** 2):
+                    out.write(chunk)
 
-                    while chunk := gz_stream.read(1024 ** 2):
+        _log(f'Decompressed RaMP SQLite to {sqlite_path}')
 
-                        fp.write(chunk)
-
-        _log(f'RaMP SQLite written to {sqlite_path}')
+    if connect:
+        result = sqlite3.connect(sqlite_path)
+    else:
+        result = sqlite_path
 
     if connect:
 
-        _log(f'Opening SQLite: `{sqlite_path}`')
+        _ensure_indexes(result)
 
-        return sqlite3.connect(sqlite_path)
-
-    return sqlite_path
+    return result
 
 
 def raw(

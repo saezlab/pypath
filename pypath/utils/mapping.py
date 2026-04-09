@@ -94,7 +94,17 @@ except Exception as e:
     _logger._log_traceback()
     UNICHEM_NAME_TYPES = ()
 
+try:
+    RAMP_NAME_TYPES = ramp_input.ramp_id_types('compound')
+except Exception as e:
+    exc = sys.exc_info()
+    _log('Failed to retrieve RaMP ID types:')
+    _logger._log_traceback()
+    RAMP_NAME_TYPES = ()
+
 RESOURCES_EXPLICIT = ('uniprot', 'basic', 'mirbase', 'ipi')
+
+SMALLMOLECULE_SERVICES = {'ramp', 'unichem', 'hmdb'}
 
 RESOURCES_IMPLICIT = (
     (
@@ -126,7 +136,7 @@ RESOURCES_IMPLICIT = (
         dict(
             **{
                 it: it
-                for it in ramp_input.ramp_id_types('compound')
+                for it in RAMP_NAME_TYPES
             },
             **input_formats.RAMP_MAPPING,
         ),
@@ -144,6 +154,19 @@ RESOURCES_IMPLICIT = (
         'hmdb',
         input_formats.HmdbMapping,
     ),
+)
+
+SMALLMOLECULE_ID_TYPES = frozenset(
+    id_type
+    for service_ids, service_id_type, _ in RESOURCES_IMPLICIT
+    if service_id_type in SMALLMOLECULE_SERVICES
+    for id_type in (
+        (
+            set(service_ids.keys()) | set(service_ids.values())
+        )
+            if isinstance(service_ids, dict) else
+        service_ids
+    )
 )
 
 UNIPROT_ID_TYPES = {
@@ -1464,6 +1487,32 @@ class Mapper(session_mod.Logger):
         tbl = None
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
+        self._log(
+            'Looking up ID translation table: '
+            '`%s` -> `%s`, organism: %s, load: %s.' % (
+                id_type,
+                target_id_type,
+                ncbi_tax_id,
+                load,
+            )
+        )
+
+        if (
+            id_type in SMALLMOLECULE_ID_TYPES and
+            target_id_type in SMALLMOLECULE_ID_TYPES
+        ):
+
+            ncbi_tax_id = _const.NOT_ORGANISM_SPECIFIC
+
+            self._log(
+                'Both `%s` and `%s` are small molecule ID types, '
+                'setting organism to %s.' % (
+                    id_type,
+                    target_id_type,
+                    ncbi_tax_id,
+                )
+            )
+
 
         def check_loaded():
 
@@ -1536,6 +1585,19 @@ class Mapper(session_mod.Logger):
 
                 resources = getattr(maps, resource_attr)
 
+                self._log(
+                    'Checking explicit resource `%s` for '
+                    '`%s` -> `%s`: %s.' % (
+                        resource_attr,
+                        id_type,
+                        target_id_type,
+                        'match' if (
+                            id_types in resources or
+                            id_types_rev in resources
+                        ) else 'no match',
+                    )
+                )
+
                 if id_types in resources:
 
                     resource = resources[id_types]
@@ -1583,15 +1645,37 @@ class Mapper(session_mod.Logger):
                     RESOURCES_IMPLICIT
                 ):
 
+                    _possible = (
+                        input_cls.possible(
+                            id_type,
+                            target_id_type,
+                            ncbi_tax_id,
+                        ) and
+                        id_type != target_id_type
+                    )
+                    _symmetric = (
+                        service_id_type in symmetric_services and
+                        id_type in service_ids and
+                        target_id_type in service_ids
+                    )
+
+                    self._log(
+                        'Checking implicit service `%s` for '
+                        '`%s` -> `%s`: possible=%s, symmetric=%s, '
+                        'a_in_service=%s, b_in_service=%s.' % (
+                            service_id_type,
+                            id_type,
+                            target_id_type,
+                            _possible,
+                            _symmetric,
+                            id_type in service_ids,
+                            target_id_type in service_ids,
+                        )
+                    )
+
                     if (
-                        (
-                            input_cls.possible(
-                                id_type,
-                                target_id_type,
-                                ncbi_tax_id,
-                            ) and
-                            id_type != target_id_type
-                        ) or (
+                        _possible
+                        or (
                             service_id_type == 'pro' and (
                                 (
                                     id_type in service_ids or
@@ -1603,12 +1687,7 @@ class Mapper(session_mod.Logger):
                                 )
                             )
                         ) or (
-                            service_id_type in symmetric_services and (
-                                (
-                                    id_type in service_ids and
-                                    target_id_type in service_ids
-                                )
-                            )
+                            _symmetric
                         ) or (
                             service_id_type == 'array' and (
                                 (
@@ -1682,11 +1761,21 @@ class Mapper(session_mod.Logger):
                             )
                         )
 
-                    tbl = check_loaded()
+                        tbl = check_loaded()
 
-                    if tbl:
+                        self._log(
+                            'Service `%s` for `%s` -> `%s`: '
+                            'table %s after loading.' % (
+                                service_id_type,
+                                id_type,
+                                target_id_type,
+                                'found' if tbl else 'NOT found',
+                            )
+                        )
 
-                        break
+                        if tbl:
+
+                            break
 
             if tbl is None and id_type == 'genesymbol5':
 

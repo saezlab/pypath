@@ -1,0 +1,17 @@
+[2026-04-05 19:50:51] [DEBUG] [pkg_infra.session        ] ▸ Using app logger: default
+[2026-04-05 19:50:51] [DEBUG] [pkg_infra.session        ] ▸ Session time initialized: utc=2026-04-05 17:50:51.933168+00:00, local=2026-04-05 19:50:51.933169+02:00, timezone=CEST
+[2026-04-05 19:50:51] [DEBUG] [pkg_infra.session        ] ▸ Location lookup skipped
+[2026-04-05 19:50:51] [INFO ] [pkg_infra.session        ] ▸ Creating new session...
+[2026-04-05 19:50:51] [INFO ] [pkg_infra.session        ] ▸ Session has been created
+[2026-04-05 19:50:51] [WARNING] [dlmachine._metadata      ] ▸ No local pyproject metadata found, trying installed metadata
+[2026-04-05 19:50:51] [DEBUG] [pkg_infra.session        ] ▸ get_session called with workspace=., include_location=False, config_path=None
+[2026-04-05 19:50:51] [INFO ] [pkg_infra.session        ] ▸ Initialization of a session:
+[2026-04-05 19:50:51] [INFO ] [pkg_infra.session        ] ▸ Reusing existing session
+[2026-04-05 19:50:51] [INFO ] [pkg_infra.session        ] ▸   hostname: beauty
+  username: omnipath
+  workspace: /home/omnipath/dev/pypath
+  id: 5119230c-c8c5-4439-80ec-32469d4e33f2
+  started_at_utc: 2026-04-05 17:50:51.933168+00:00
+  started_at_local: 2026-04-05 19:50:51.933169+02:00
+  timezone: CEST
+  location: None

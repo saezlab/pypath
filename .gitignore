@@ -24,4 +24,5 @@ download-manager/
 download_manager_log/
 *.parquet
 raw_data/
-.env
+.envlogs/
+logs/

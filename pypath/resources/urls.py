@@ -1794,6 +1794,9 @@ urls = {
             'https://media.githubusercontent.com/media/ncats/RaMP-DB/'
             'refs/heads/main/db/RaMP_SQLite_v%s.sqlite.gz'
         ),
+        'github_db': (
+            'https://github.com/ncats/RaMP-DB/tree/main/db'
+        ),
     },
     'expasy': {
         'label': 'Enzyme nomenclature database',
