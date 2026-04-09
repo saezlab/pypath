@@ -455,6 +455,7 @@ class InteractionMetadataCv(CvEnum):
     CONVERSION_DIRECTION = ("OM:1211", "Direction of a biochemical conversion (e.g., LEFT_TO_RIGHT, RIGHT_TO_LEFT, REVERSIBLE)")
     CONTROL_TYPE = ("OM:1212", "Type of regulatory control (e.g., ACTIVATION, INHIBITION)")
     STITCH_ACTION_SCORE = ("OM:1213", "STITCH action-specific confidence score for the stated interaction mode or action type")
+    STEREOSPECIFIC = ("OM:1214", "Indicates whether the chemical interaction is stereospecific")
 
 
 class ParticipantMetadataCv(CvEnum):
