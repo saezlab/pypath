@@ -13,7 +13,6 @@ import json
 from pathlib import Path
 import sqlite3
 from typing import Any
-import os
 
 
 def _first_handle(opener) -> Any | None:
@@ -108,7 +107,7 @@ def iter_sqlite(
         Dictionary representing a row from the table or query.
     """
 
-    if sqlite_path and not os.path.exists(sqlite_path):
+    if sqlite_path and not sqlite_path.exists():
 
         if not opener or not opener.result:
 
