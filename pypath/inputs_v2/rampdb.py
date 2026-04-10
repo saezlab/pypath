@@ -13,25 +13,55 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import sqlite3
 
-from pypath.inputs_v2.base import ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_sqlite
-from pypath.internals.cv_terms import ResourceCv, LicenseCV, UpdateCategoryCV
-from pypath.inputs_v2.base import Download
 
+from pypath.inputs_v2.base import ResourceConfig, Download
+from pypath.internals.tabular_builder import (
+    AnnotationsBuilder,
+    CV,
+    EntityBuilder,
+    FieldConfig,
+    IdentifiersBuilder,
+    Member,
+    MembershipBuilder,
+    MembersFromList,
+)
+from pypath.internals.cv_terms import (
+    EntityTypeCv,
+    IdentifierNamespaceCv,
+    LicenseCV,
+    UpdateCategoryCV,
+    ResourceCv,
+    MoleculeSubtypeCv,
+    ProteinFunctionalClassCv,
+    MoleculeAnnotationsCv,
+    AssayTypeCv,
+    AssayAnnotationsCv,
+    CurationCv,
+    PharmacologicalActionCv,
+    InteractionMetadataCv,
+    InteractionParameterCv,
+)
+
+# =================================== SET-UP ===================================
+
+BASE_URL = 'https://github.com/ncats/RaMP-DB/raw/refs/heads/%s/db/'
+VERSION, URL = get_ramp_latest_ver()
 
 def get_ramp_latest_ver(branch='main'):
     '''
     Retrieves the URL for the latest version of the database SQL file
     '''
 
-    url = f'https://github.com/ncats/RaMP-DB/raw/refs/heads/{branch}/db/'
-    res = requests.get(url)
+    res = requests.get(BASE_URL % branch)
     soup = BeautifulSoup(res.text, 'html.parser')
     files = sorted({
         f.text for f in soup.find_all(title=re.compile("\\.sqlite.gz$"))
     })
 
-    return url + files[-1]
+    ver = re.search(r'(\d+\.\d+\.\d+)', files[-1]).group(1)
+
+    return ver, BASE_URL % branch + files[-1]
 
 
 config = ResourceConfig(
@@ -50,14 +80,14 @@ config = ResourceConfig(
     )
 )
 
-url = get_ramp_latest_ver()
+# ================================== DOWNLOAD ==================================
 
 download = Download(
-    url=url,
-    filename=os.path.basename(url),
+    url=URL,
+    filename=os.path.basename(URL),
     subfolder='ramp',
     large=False,
-    ext=url.split('.')[-1],
+    ext=URL.split('.')[-1],
     default_mode='rb',
 )
 opener = download.open()
@@ -67,26 +97,26 @@ with open(path, 'wb') as f:
     f.write(opener.result)
 
 table_names = [
-    'analyte',
-    'entity_status_info',
-    'reaction2met',
-    'analytehasontology',
-    'metabolite_class',
-    'reaction2protein',
-    'analytehaspathway',
-    'ontology',
-    'reaction_ec_class',
-    'analytesynonym',
-    'pathway',
-    'reaction_protein2met',
-    'catalyzed',
-    'pathway_duplicates',
-    'source',
-    'chem_props',
-    'pathway_similarity',
-    'version_info',
-    'db_version',
-    'reaction',
+    'analyte', # XXX
+    #'entity_status_info',
+    #'reaction2met',
+    #'analytehasontology',
+    'metabolite_class', # XXX
+    #'reaction2protein',
+    #'analytehaspathway',
+    #'ontology',
+    #'reaction_ec_class',
+    #'analytesynonym',
+    #'pathway',
+    #'reaction_protein2met',
+    #'catalyzed',
+    #'pathway_duplicates',
+    'source', # XXX
+    'chem_props', # XXX
+    #'pathway_similarity',
+    #'version_info',
+    #'db_version',
+    #'reaction',
 ]
 
 datasets = dict()
@@ -94,6 +124,33 @@ datasets = dict()
 for tbl in table_names:
 
     datasets[tbl] = iter_sqlite(opener, table_name=tbl, sqlite_path=path)
+
+# =================================== SCHEMA ===================================
+
+MOLECULE_TYPE_TO_ENTITY_TYPE = {
+    'gene': EntityTypeCv.GENE,
+    'comound': EntityTypeCv.SMALL_MOLECULE,
+}
+
+f = FieldConfig(
+    extract={
+        'rampID':  r'^(?:RAMP_[A-Z]+_)?(\d+)$',
+    },
+    map={
+        'entity_type': MOLECULE_TYPE_TO_ENTITY_TYPE,
+    }
+)
+
+analyte_schema = EntityBuilder(
+    entity_type=f('type', map='entity_type'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId', extract='rampID')),
+        CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('common_name')),
+    ),
+)
+
+
+# ================================= REFERENCE ==================================
 
 # SQL tables and content:
 
