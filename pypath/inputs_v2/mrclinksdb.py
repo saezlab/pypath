@@ -9,6 +9,7 @@ and supporting literature references.
 from __future__ import annotations
 
 from pypath.internals.cv_terms import (
+    CurationCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
@@ -74,6 +75,7 @@ interactions_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pmid', delimiter=';')),
+        CV(term=CurationCv.COMMENT, value=f('other_db', delimiter=';')),
     ),
     membership=MembershipBuilder(
         # Metabolite (small molecule)
@@ -107,6 +109,8 @@ interactions_schema = EntityBuilder(
                         entity_type=EntityTypeCv.PROTEIN,
                         identifiers=IdentifiersBuilder(
                             CV(term=IdentifierNamespaceCv.UNIPROT, value=f('receptor_uniprot_id', delimiter='_')),
+                            CV(term=IdentifierNamespaceCv.ENTREZ, value=f('receptor_gene_id')),
+                            CV(term=IdentifierNamespaceCv.NAME, value=f('protein_name')),
                         ),
                     ),
                 ),
