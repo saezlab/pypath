@@ -72,6 +72,7 @@ class IdentifierNamespaceCv(CvEnum):
     GTO_M_PDB = ("OM:0122", "Guide to Malaria Pharmacology identifier", "https://www.guidetopharmacology.org/malaria.jsp")
     REACTOME_STABLE_ID = ("OM:0130", "Reactome stable identifier", "https://reactome.org")
     REACTOME_ID = ("OM:0131", "Reactome internal database identifier", "https://reactome.org")
+    RAMP_ID = ("OM:0132", "RaMP internal database identifier", "https://rampdb.nh.gov/")
     # Gene and protein names (OM:0200-0209 range)
     GENE_NAME_PRIMARY = ("OM:0200", "Primary gene name or symbol")
     GENE_NAME_SYNONYM = ("OM:0201", "Alternative gene name or synonym")
