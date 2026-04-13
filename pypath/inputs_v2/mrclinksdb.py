@@ -169,6 +169,81 @@ interactions_schema = EntityBuilder(
 
 
 # =============================================================================
+# Transporter Schemas
+# =============================================================================
+
+human_transporters_schema = EntityBuilder(
+    entity_type=EntityTypeCv.TRANSPORT,
+    identifiers=IdentifiersBuilder(
+        CV(
+            term=IdentifierNamespaceCv.NAME,
+            value=f(lambda row: f"{row.get('hmdb_id', '')}_{row.get('uniprot_id', '')}"),
+        ),
+    ),
+    membership=MembershipBuilder(
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
+                    CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
+                ),
+            ),
+        ),
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.UNIPROT,           value=f('uniprot_id')),
+                    CV(term=IdentifierNamespaceCv.ENTREZ,            value=f('human_geneid')),
+                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('gene_name')),
+                    CV(term=IdentifierNamespaceCv.NAME,              value=f('enzyme_name')),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=ParticipantMetadataCv.TARGET),
+            ),
+        ),
+    ),
+)
+
+mouse_transporters_schema = EntityBuilder(
+    entity_type=EntityTypeCv.TRANSPORT,
+    identifiers=IdentifiersBuilder(
+        CV(
+            term=IdentifierNamespaceCv.NAME,
+            value=f(lambda row: f"{row.get('hmdb_id', '')}_{row.get('mouse_uniprot', '')}"),
+        ),
+    ),
+    membership=MembershipBuilder(
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
+                    CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
+                ),
+            ),
+        ),
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.UNIPROT,           value=f('mouse_uniprot')),
+                    CV(term=IdentifierNamespaceCv.ENTREZ,            value=f('mouse_geneid')),
+                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('mouse_gene_symbol')),
+                    CV(term=IdentifierNamespaceCv.NAME,              value=f('enzyme_name')),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=ParticipantMetadataCv.TARGET),
+            ),
+        ),
+    ),
+)
+
+
+# =============================================================================
 # Resource Definition
 # =============================================================================
 
@@ -192,6 +267,26 @@ resource = Resource(
             ext='txt',
         ),
         mapper=interactions_schema,
+        raw_parser=iter_mrclinksdb_interactions,
+    ),
+    human_transporters=Dataset(
+        download=Download(
+            url='https://www.cellknowledge.com.cn/mrclinkdb/download/Homo%20sapiens%20transporter%20protein.txt',
+            filename='mrclinksdb_human_transporters.txt',
+            subfolder='mrclinksdb',
+            ext='txt',
+        ),
+        mapper=human_transporters_schema,
+        raw_parser=iter_mrclinksdb_interactions,
+    ),
+    mouse_transporters=Dataset(
+        download=Download(
+            url='https://www.cellknowledge.com.cn/mrclinkdb/download/Mus%20musculus%20transporter%20protein.txt',
+            filename='mrclinksdb_mouse_transporters.txt',
+            subfolder='mrclinksdb',
+            ext='txt',
+        ),
+        mapper=mouse_transporters_schema,
         raw_parser=iter_mrclinksdb_interactions,
     ),
 )
