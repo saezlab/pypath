@@ -20,6 +20,7 @@ from pypath.internals.cv_terms import (
 )
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
+    Column,
     CV,
     EntityBuilder,
     FieldConfig,
@@ -64,6 +65,33 @@ f = FieldConfig(
 )
 
 
+def _if_single(field: str) -> Column:
+    """Return a Column that yields *field* only for single-protein receptors.
+
+    Gates on the absence of ``_`` in ``receptor_uniprot_id``. When the row
+    represents a heteromeric complex the selector returns ``None``, causing
+    the enclosing ``EntityBuilder`` to produce no identifiers and be silently
+    skipped.
+    """
+    return f(
+        lambda row, _f=field: row.get(_f) if '_' not in
+        row.get('receptor_uniprot_id', '') else None,
+    )
+
+
+def _if_complex(field: str) -> Column:
+    """Return a Column that yields *field* only for heteromeric complex receptors.
+
+    Gates on the presence of ``_`` in ``receptor_uniprot_id``. When the row
+    represents a single-protein receptor the selector returns ``None``, causing
+    the enclosing ``EntityBuilder`` to produce no identifiers and be silently
+    skipped.
+    """
+    return f(
+        lambda row, _f=field: row.get(_f) if '_' in row.get('receptor_uniprot_id', '') else None,
+    )
+
+
 # =============================================================================
 # Schema
 # =============================================================================
@@ -84,7 +112,8 @@ interactions_schema = EntityBuilder(
                 entity_type=EntityTypeCv.SMALL_MOLECULE,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_cid_sid', transform='pubchem_cid')),
+                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, 
+                       value=f('pubchem_cid_sid', transform='pubchem_cid')),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
                     CV(term=IdentifierNamespaceCv.SMILES, value=f('canonical_smiles')),
                     CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('molecular_formula')),
@@ -96,21 +125,37 @@ interactions_schema = EntityBuilder(
                 ),
             ),
         ),
-        # Receptor — represented as a complex to accommodate heterodimers;
-        # for single-protein receptors the complex has exactly one member.
+        # Single-protein receptor
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.UNIPROT, value=_if_single('receptor_uniprot_id')),
+                    CV(term=IdentifierNamespaceCv.ENTREZ,  value=_if_single('receptor_gene_id')),
+                    CV(term=IdentifierNamespaceCv.NAME,    value=_if_single('protein_name')),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=ParticipantMetadataCv.TARGET),
+            ),
+        ),
+        # Heteromeric complex receptor
         Member(
             entity=EntityBuilder(
                 entity_type=EntityTypeCv.COMPLEX,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('receptor_symbol')),
+                    CV(term=IdentifierNamespaceCv.NAME, value=_if_complex('protein_name')),
                 ),
                 membership=MembershipBuilder(
                     MembersFromList(
                         entity_type=EntityTypeCv.PROTEIN,
                         identifiers=IdentifiersBuilder(
-                            CV(term=IdentifierNamespaceCv.UNIPROT, value=f('receptor_uniprot_id', delimiter='_')),
-                            CV(term=IdentifierNamespaceCv.ENTREZ, value=f('receptor_gene_id')),
-                            CV(term=IdentifierNamespaceCv.NAME, value=f('protein_name')),
+                            CV(term=IdentifierNamespaceCv.UNIPROT,
+                                value=f('receptor_uniprot_id', delimiter='_')),
+                            CV(term=IdentifierNamespaceCv.ENTREZ,
+                                value=f('receptor_gene_id',    delimiter='_')),
+                            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
+                               value=f('receptor_symbol',     delimiter='_')),
                         ),
                     ),
                 ),
