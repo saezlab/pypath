@@ -116,3 +116,124 @@ def metanetx_metabolite_chebi() -> dict[str, str]:
     )
 
     return result
+
+
+# ------------------------------------------------------------------
+# General cross-reference functions
+# ------------------------------------------------------------------
+
+# Map chem_xref.tsv source_id prefixes to canonical id_type names.
+_PREFIX_TO_ID_TYPE: dict[str, str] = {
+    "chebi:": "chebi",
+    "hmdb:": "hmdb",
+    "kegg.compound:": "kegg",
+    "kegg.drug:": "kegg",
+    "bigg.metabolite:": "bigg",
+    "seed.compound:": "seed",
+    "lipidmaps:": "lipidmaps",
+    "metacyc.compound:": "metacyc",
+    "reactome:": "reactome",
+    "swisslipids:": "swisslipids",
+}
+
+
+def _strip_prefix(source_id: str) -> tuple[str | None, str]:
+    """Return (id_type, bare_id) for a chem_xref source_id string."""
+
+    for prefix, id_type in _PREFIX_TO_ID_TYPE.items():
+        if source_id.startswith(prefix):
+            bare = source_id[len(prefix):]
+
+            if id_type == "chebi":
+                bare = f"CHEBI:{bare}"
+
+            return id_type, bare
+
+    return None, source_id
+
+
+def _load_chem_xref() -> str:
+    """Download or read cached chem_xref.tsv, return raw text."""
+
+    url = urls.urls["metanetx"]["chem_xref"]
+    local_path = _resolve_data_dir() / "metanetx" / "chem_xref.tsv"
+    local_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not local_path.exists():
+        dm.download(url, dest=str(local_path))
+
+    return local_path.read_text(encoding="utf-8")
+
+
+def metanetx_mapping(
+    source_type: str,
+    target_type: str,
+) -> dict[str, set[str]]:
+    """Pairwise metabolite ID mapping via MetaNetX bridge.
+
+    Parses ``chem_xref.tsv`` and extracts all pairs where an MNXM
+    entry has both *source_type* and *target_type* external references.
+    For example, ``metanetx_mapping("bigg", "chebi")`` returns
+    ``{"atp": {"CHEBI:30616"}, ...}``.
+
+    Supported id_type values: ``chebi``, ``hmdb``, ``kegg``, ``bigg``,
+    ``seed``, ``lipidmaps``, ``metacyc``, ``reactome``, ``swisslipids``.
+
+    Args:
+        source_type: Canonical id_type name for the source.
+        target_type: Canonical id_type name for the target.
+
+    Returns:
+        Dict mapping source IDs to sets of target IDs.
+    """
+
+    from collections import defaultdict
+
+    text = _load_chem_xref()
+
+    # First pass: collect all external IDs per MNXM entry
+    mnx: dict[str, dict[str, set[str]]] = defaultdict(
+        lambda: defaultdict(set)
+    )
+
+    for line in io.StringIO(text):
+        line = line.strip()
+
+        if not line or line.startswith("#"):
+            continue
+
+        fields = line.split("\t")
+
+        if len(fields) < 2:
+            continue
+
+        source_id = fields[0].strip()
+        mnx_id = fields[1].strip()
+
+        if not mnx_id.startswith("MNXM"):
+            continue
+
+        id_type, bare = _strip_prefix(source_id)
+
+        if id_type is not None and id_type in (source_type, target_type):
+            mnx[mnx_id][id_type].add(bare)
+
+    # Second pass: build pairwise mapping
+    result: dict[str, set[str]] = defaultdict(set)
+
+    for _mnx_id, xrefs in mnx.items():
+        src_ids = xrefs.get(source_type)
+        tgt_ids = xrefs.get(target_type)
+
+        if not src_ids or not tgt_ids:
+            continue
+
+        for sid in src_ids:
+            result[sid].update(tgt_ids)
+
+    _logger._log(
+        f"MetaNetX: {source_type} -> {target_type}: "
+        f"{len(result):,} entries from MNXref chem_xref.tsv."
+    )
+
+    return dict(result)
