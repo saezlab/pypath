@@ -45,6 +45,7 @@ class EntityTypeCv(CvEnum):
     ORGANISM = ("OM:0032", "A living organism, such as a species or strain.")
     CELL_LINE = ("OM:0033", "A cell line or cell culture used in research.")
     TISSUE = ("OM:0034", "A tissue or organ from an organism")
+    TRANSPORT = ("OM:0035", "Transport of a molecule across a membrane by a transporter protein")
 
 
 class MoleculeSubtypeCv(CvEnum):

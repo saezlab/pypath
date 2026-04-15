@@ -116,17 +116,17 @@ def _normalize_signor_identifier(prefix: str, value: str) -> tuple[object | None
         return IdentifierNamespaceCv.RNACENTRAL, value
     if value.startswith('SIGNOR-'):
         return IdentifierNamespaceCv.SIGNOR, value
-    if value.startswith('CHEBI:'):
-        return IdentifierNamespaceCv.CHEBI, value
+    if lower_value.startswith('chebi:'):
+        return IdentifierNamespaceCv.CHEBI, f'CHEBI:{value.split(":", 1)[1]}'
     if value.startswith('DB') and value[2:].isdigit():
         return IdentifierNamespaceCv.DRUGBANK, value
-    if value.startswith('PUBCHEM:'):
+    if lower_value.startswith('pubchem:'):
         return IdentifierNamespaceCv.PUBCHEM, value.split(':', 1)[1]
     if prefix == 'pubchem' and value.upper().startswith('CID:'):
         return IdentifierNamespaceCv.PUBCHEM, value.split(':', 1)[1]
     if prefix == 'pubchem' and value.upper().startswith('SID:'):
         return None, None
-    if value.startswith('uniprotkb:'):
+    if lower_value.startswith('uniprotkb:'):
         return _normalize_signor_identifier('uniprotkb', value.split(':', 1)[1])
     if prefix == 'uniprotkb' and '-PRO_' in value:
         value = value.split('-PRO_', 1)[0]

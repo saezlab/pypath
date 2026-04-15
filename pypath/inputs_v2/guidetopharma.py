@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import csv
+import re
 
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -175,6 +176,48 @@ f = FieldConfig(
 )
 
 
+def _split_pipe_values(raw: object) -> list[str]:
+    if raw is None:
+        return []
+    return [part.strip() for part in str(raw).split('|') if part and part.strip()]
+
+
+def _filter_refseq(raw: object, prefixes: tuple[str, ...]) -> list[str]:
+    values = []
+    for value in _split_pipe_values(raw):
+        if value.upper().startswith(prefixes):
+            values.append(value)
+    return values
+
+
+_UNIPROT_ACCESSION_RE = re.compile(
+    r'^(?:'
+    r'[OPQ][0-9][A-Z0-9]{3}[0-9]'
+    r'|'
+    r'[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2}'
+    r')(?:-\d+)?$'
+)
+_UNIPROT_ENTRY_NAME_RE = re.compile(r'^[A-Z0-9]+_[A-Z0-9]+$')
+
+
+
+def _normalize_chembl(raw: object) -> list[str]:
+    values = []
+    for value in _split_pipe_values(raw):
+        upper = value.upper()
+        if upper.startswith('CHEMBL'):
+            values.append(f'CHEMBL{value[len("CHEMBL"):]}')
+    return values
+
+
+def _filter_uniprot_accessions(raw: object) -> list[str]:
+    return [value for value in _split_pipe_values(raw) if _UNIPROT_ACCESSION_RE.fullmatch(value)]
+
+
+def _filter_uniprot_entry_names(raw: object) -> list[str]:
+    return [value for value in _split_pipe_values(raw) if _UNIPROT_ENTRY_NAME_RE.fullmatch(value)]
+
+
 def _iter_guidetopharma_csv(opener, **_kwargs: object):
     if not opener or not opener.result:
         return
@@ -206,13 +249,33 @@ targets_schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Target id')),
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Human SwissProt')),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Human Ensembl Gene')),
-        CV(term=IdentifierNamespaceCv.ENTREZ, value=f('Human Entrez Gene')),
-        CV(term=IdentifierNamespaceCv.REFSEQ_PROTEIN, value=f('Human protein RefSeq', delimiter='|')),
-        CV(term=IdentifierNamespaceCv.HGNC, value=f('HGNC id')),
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Human SwissProt', delimiter='|')),
+        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Human Ensembl Gene', delimiter='|')),
+        CV(term=IdentifierNamespaceCv.ENTREZ, value=f('Human Entrez Gene', delimiter='|')),
+        CV(
+            term=IdentifierNamespaceCv.REFSEQ,
+            value=lambda row: _filter_refseq(
+                row.get('Human nucleotide RefSeq'),
+                ('NM_', 'XM_', 'NR_', 'XR_', 'NG_', 'NT_', 'NW_', 'NC_', 'AC_', 'NP_'),
+            ),
+        ),
+        CV(
+            term=IdentifierNamespaceCv.REFSEQ_PROTEIN,
+            value=lambda row: _filter_refseq(
+                row.get('Human protein RefSeq'),
+                ('NP_', 'XP_', 'YP_', 'WP_', 'AP_', 'ZP_'),
+            ),
+        ),
+        CV(
+            term=IdentifierNamespaceCv.REFSEQ,
+            value=lambda row: _filter_refseq(
+                row.get('Human protein RefSeq'),
+                ('NM_', 'XM_', 'NR_', 'XR_'),
+            ),
+        ),
+        CV(term=IdentifierNamespaceCv.HGNC, value=f('HGNC id', delimiter='|')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('Target name')),
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('HGNC symbol')),
+        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('HGNC symbol', delimiter='|')),
         CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter='|')),
         CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('Target systematic name')),
         CV(term=IdentifierNamespaceCv.ABBREVIATED_NAME, value=f('Target abbreviated name')),
@@ -230,9 +293,13 @@ ligands_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Ligand ID')),
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PubChem SID')),
         CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem CID')),
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt ID')),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl ID')),
-        CV(term=IdentifierNamespaceCv.CHEMBL, value=f('ChEMBL ID')),
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=lambda row: _filter_uniprot_accessions(row.get('UniProt ID'))),
+        CV(
+            term=IdentifierNamespaceCv.UNIPROT_ENTRY_NAME,
+            value=lambda row: _filter_uniprot_entry_names(row.get('UniProt ID')),
+        ),
+        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl ID', delimiter='|')),
+        CV(term=IdentifierNamespaceCv.CHEMBL, value=lambda row: _normalize_chembl(row.get('ChEMBL ID'))),
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('InChIKey')),
         CV(term=IdentifierNamespaceCv.SYNONYM, value=f('Synonyms')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('Name')),

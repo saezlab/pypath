@@ -46,7 +46,6 @@ from pypath.internals.cv_terms import (
 # =================================== SET-UP ===================================
 
 BASE_URL = 'https://github.com/ncats/RaMP-DB/raw/refs/heads/%s/db/'
-VERSION, URL = get_ramp_latest_ver()
 
 def get_ramp_latest_ver(branch='main'):
     '''
@@ -62,6 +61,8 @@ def get_ramp_latest_ver(branch='main'):
     ver = re.search(r'(\d+\.\d+\.\d+)', files[-1]).group(1)
 
     return ver, BASE_URL % branch + files[-1]
+
+VERSION, URL = get_ramp_latest_ver()
 
 
 config = ResourceConfig(

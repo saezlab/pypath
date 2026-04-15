@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import csv
+import re
 
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -39,7 +40,8 @@ _IDENTIFIER_CV_MAPPING = {
     'chebi': IdentifierNamespaceCv.CHEBI,
     'chembl': IdentifierNamespaceCv.CHEMBL,
     'chembl compound': IdentifierNamespaceCv.CHEMBL_COMPOUND,
-    'ddbj/embl/genbank': IdentifierNamespaceCv.REFSEQ,
+    'chembl internal id': IdentifierNamespaceCv.CHEMBL_INTERNAL_ID,
+    'ddbj/embl/genbank': IdentifierNamespaceCv.GENBANK_IDENTIFIER,
     'dip': IdentifierNamespaceCv.DIP,
     'ensembl': IdentifierNamespaceCv.ENSEMBL,
     'ensemblgenomes': IdentifierNamespaceCv.ENSEMBL_GENOMES,
@@ -63,6 +65,10 @@ _IDENTIFIER_CV_MAPPING = {
     'uniprotkb': IdentifierNamespaceCv.UNIPROT,
 }
 
+_ENSEMBL_RE = re.compile(r'^ENS[A-Z0-9]*\d+(?:\.\d+)?$')
+_REFSEQ_RE = re.compile(r'^[A-Z]{2}_[0-9]+(?:\.\d+)?$')
+
+
 f = FieldConfig(
     extract={
         'prefix_lower': [r'^([^:]+):', str.lower],
@@ -85,7 +91,7 @@ f = FieldConfig(
 def _normalize_identifier_prefix(prefix: str, value: str) -> str | None:
     prefix = prefix.lower()
     value = value.strip().strip('"')
-    if prefix == 'intact' and value.startswith('MINT-'):
+    if value.startswith('MINT-') and prefix in {'intact', 'psi-mi'}:
         return 'mint'
     if prefix == 'intact' and not (value.startswith('EBI-') or value.startswith('IM-')):
         return None
@@ -112,6 +118,18 @@ def _parse_identifier_pairs(raw: object) -> list[tuple[object, str]]:
             continue
         if prefix == 'uniprotkb' and '-PRO_' in value:
             value = value.split('-PRO_', 1)[0]
+        if prefix == 'chembl' and value.upper().startswith('CHEMBL'):
+            value = f'CHEMBL{value[len("CHEMBL"): ]}'
+        if prefix == 'chembl compound' and value.isdigit():
+            prefix = 'chembl internal id'
+        if prefix == 'refseq' and not _REFSEQ_RE.fullmatch(value):
+            prefix = 'genbank identifier'
+        if prefix == 'entrezgene/locuslink' and not value.isdigit():
+            prefix = 'genbank identifier'
+        if prefix == 'ensembl' and not _ENSEMBL_RE.fullmatch(value):
+            prefix = 'genbank identifier'
+        if prefix in {'genbank_nucl_gi', 'genbank_protein_gi'} and not value.isdigit():
+            prefix = 'genbank identifier'
         mapped = _IDENTIFIER_CV_MAPPING.get(prefix)
         if mapped is not None and value and value != '-':
             pairs.append((mapped, value))

@@ -1870,6 +1870,12 @@ urls = {
             '3.01/Recon3DModel_301.mat'
         ),
     },
+    'bigg': {
+        'label': 'BiGG Models universal metabolite cross-references',
+        'metabolites_tsv': (
+            'http://bigg.ucsd.edu/static/namespace/bigg_models_metabolites.txt'
+        ),
+    },
     'metanetx': {
         'label': 'MetaNetX/MNXref metabolite cross-references',
         'chem_xref': (

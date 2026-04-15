@@ -36,6 +36,7 @@ class ResourceCv(CvEnum):
     WIKIPATHWAYS = ("OM:1157", "WikiPathways", "https://www.wikipathways.org/")
     NEURONCHAT = ("OM:1158", "NeuronChat", "https://github.com/Wei-BioMath/NeuronChat")
     STITCH = ("OM:1159", "STITCH", "https://stitch.embl.de/")
+    MRCLINKSDB = ("OM:1160", "MRClinksDB", "https://www.cellknowledge.com.cn/mrclinkdb/")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
