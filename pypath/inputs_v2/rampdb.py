@@ -98,11 +98,11 @@ with open(path, 'wb') as f:
     f.write(opener.result)
 
 table_names = [
-    'analyte', # XXX
+    'analyte',
     #'entity_status_info',
     #'reaction2met',
     #'analytehasontology',
-    'metabolite_class', # XXX
+    'metabolite_class',
     #'reaction2protein',
     #'analytehaspathway',
     #'ontology',
@@ -112,7 +112,7 @@ table_names = [
     #'reaction_protein2met',
     #'catalyzed',
     #'pathway_duplicates',
-    'source', # XXX
+    'source',
     'chem_props', # XXX
     #'pathway_similarity',
     #'version_info',
@@ -136,9 +136,17 @@ SOURCE_TO_ENTITY_TYPE = {
     'hmdb': MoleculeSubtypeCv.METABOLITE,
     'lipidmaps': EntityTypeCv.LIPID,
 }
-CLASS_SOURCE_ID_TO_TERM = {
+SOURCE_TO_TERM = {
     'hmdb': IdentifierNamespaceCv.HMDB,
     'lipidmaps': IdentifierNamespaceCv.LIPIDMAPS,
+    'cas': IdentifierNamespaceCv.CAS,
+    'en':  IdentifierNamespaceCv.EC,
+    'brenda': IdentifierNamespaceCv.EC,
+    'chebi': IdentifierNamespaceCv.CHEBI,
+    'chemspider': IdentifierNamespaceCv.CHEMSPIDER,
+    'ensembl': IdentifierNamespaceCv.ENSEMBL,
+    'entrez': IdentifierNamespaceCv.ENTREZ,
+    'gene_symbol': IdentifierNamespaceCv.GENE_NAME_PRIMARY,
 }
 CLASS_LEVEL_NAME_TO_TERM ={
     'LipidMaps_category': MoleculeAnnotationsCv.LIPID_CATEGORY,
@@ -155,12 +163,12 @@ f = FieldConfig(
         'rampID':  r'^(RAMP_[A-Z]+_\d+)$',
         #'hmdbID': r'^(?:hmdb:)?(HMDB\d+)$',
         #'lipidmapsID': r'^(?:LIPIDMAPS:)?(LMSP\d+)$',
-        'sourceID': r'^([a-zA-Z]*):(?:[a-zA-Z]+\d+)$'
+        #'sourceID': r'^([a-zA-Z]*):(?:[a-zA-Z]+\d+)$'
     },
     map={
         'type_to_entity': MOLECULE_TYPE_TO_ENTITY_TYPE,
         'source_to_entity': SOURCE_TO_ENTITY_TYPE,
-        'source_to_term': CLASS_SOURCE_ID_TO_TERM,
+        'source_to_term': SOURCE_TO_TERM,
         'class_level_to_term': CLASS_LEVEL_NAME_TO_TERM,
     },
     transform={
@@ -169,6 +177,10 @@ f = FieldConfig(
         'postcolon': lambda x: x.split(':')[-1]
     }
 )
+
+# X = Info added in some way
+# ? = No clue what is this
+# - = Skipped
 
 # analyte
 # X  0|rampId|VARCHAR(30)|1||1
@@ -183,6 +195,7 @@ analyte_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('common_name')),
     ),
 )
+
 # metabolite_class
 # X  0|ramp_id|VARCHAR(32)|1||2
 # X  1|class_source_id|VARCHAR(32)|1||1
@@ -196,7 +209,7 @@ metabolite_class_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('ramp_id', extract='rampID')),
         CV(
-            term=f('class_source_id', map='source_to_term', extract='sourceID', transform='lower'),
+            term=f('source', map='source_to_term', transform='lower'),
             value=f('class_source_id', transform='postcolon'),
         ),
     ),
@@ -205,6 +218,32 @@ metabolite_class_schema = EntityBuilder(
     ),
 )
 
+# source
+# X  0|sourceId|VARCHAR(30)|1||0
+# X  1|rampId|VARCHAR(30)|0||0
+# X  2|IDtype|VARCHAR(30)|0||0
+# X  3|geneOrCompound|VARCHAR(30)|0||0
+# X  4|commonName|VARCHAR(256)|0||0
+# X  5|priorityHMDBStatus|VARCHAR(32)|0||0
+# -  6|dataSource|VARCHAR(32)|0||0
+# ?  7|pathwayCount|INTEGER|1|'0'|0
+#   e.g. LIPIDMAPS:LMFA04010056|RAMP_C_000225217|LIPIDMAPS|compound|(10S,14S,16R)-10-F4-NeuroP[13R,17R]|no_HMDB_status|lipidmaps|0
+
+source_schema = EntityBuilder(
+    entity_type=f('geneOrCompound', map='type_to_entity'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId', extract='rampID')),
+        CV(
+            term=f('IDtype', map='source_to_term', transform='lower'),
+            value=f('sourceId', transform='postcolon'),
+        ),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('commonName')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=AssayAnnotationsCv.ASSAY_CATEGORY, value=f('priorityHMDBStatus')),
+
+    ),
+)
 # ================================= REFERENCE ==================================
 
 # SQL tables and content:
