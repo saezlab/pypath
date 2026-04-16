@@ -130,16 +130,15 @@ for tbl in table_names:
 
 MOLECULE_TYPE_TO_ENTITY_TYPE = {
     'gene': EntityTypeCv.GENE,
-    'compound': EntityTypeCv.SMALL_MOLECULE,
+    'compound': MoleculeSubtypeCv.METABOLITE,
 }
-
 SOURCE_TO_ENTITY_TYPE = {
-    'hmdb': EntityTypeCv.SMALL_MOLECULE,
+    'hmdb': MoleculeSubtypeCv.METABOLITE,
     'lipidmaps': EntityTypeCv.LIPID,
 }
 CLASS_SOURCE_ID_TO_TERM = {
-    'hmdb': EntityTypeCv.SMALL_MOLECULE,
-    'lipidmaps': EntityTypeCv.LIPID,
+    'hmdb': IdentifierNamespaceCv.HMDB,
+    'lipidmaps': IdentifierNamespaceCv.LIPIDMAPS,
 }
 CLASS_LEVEL_NAME_TO_TERM ={
     'LipidMaps_category': MoleculeAnnotationsCv.LIPID_CATEGORY,
