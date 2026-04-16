@@ -130,26 +130,68 @@ for tbl in table_names:
 
 MOLECULE_TYPE_TO_ENTITY_TYPE = {
     'gene': EntityTypeCv.GENE,
-    'comound': EntityTypeCv.SMALL_MOLECULE,
+    'compound': EntityTypeCv.SMALL_MOLECULE,
+}
+
+SOURCE_TO_ENTITY_TYPE = {
+    'hmdb': EntityTypeCv.SMALL_MOLECULE,
+    'lipidmaps': EntityTypeCv.LIPID,
+}
+CLASS_SOURCE_ID_TO_TERM = {
+    'hmdb': EntityTypeCv.SMALL_MOLECULE,
+    'lipidmaps': EntityTypeCv.LIPID,
 }
 
 f = FieldConfig(
     extract={
-        'rampID':  r'^(?:RAMP_[A-Z]+_)?(\d+)$',
+        'rampID':  r'^(RAMP_[A-Z]+_\d+)$',
+        #'hmdbID': r'^(?:hmdb:)?(HMDB\d+)$',
+        #'lipidmapsID': r'^(?:LIPIDMAPS:)?(LMSP\d+)$',
+        'sourceID': r'^([a-zA-Z]*):(?:[a-zA-Z]+\d+)$'
     },
     map={
-        'entity_type': MOLECULE_TYPE_TO_ENTITY_TYPE,
+        'type_to_entity': MOLECULE_TYPE_TO_ENTITY_TYPE,
+        'source_to_entity': SOURCE_TO_ENTITY_TYPE,
+        'source_to_term': CLASS_SOURCE_ID_TO_TERM,
+    },
+    transform={
+        'lower': lambda x: x.lower(),
+        'upper': lambda x: x.upper(),
+        'postcolon': lambda x: x.split(':')[-1]
     }
 )
 
+# analyte
+# X  0|rampId|VARCHAR(30)|1||1
+# X  1|type|VARCHAR(30)|0||0
+# X  2|common_name|TEXT|0||0
+#   e.g. RAMP_C_000225217|compound|(10S,14S,16R)-10-F4-NeuroP[13R,17R]
+
 analyte_schema = EntityBuilder(
-    entity_type=f('type', map='entity_type'),
+    entity_type=f('type', map='type_to_entity'),
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId', extract='rampID')),
         CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('common_name')),
     ),
 )
+# metabolite_class
+# X  0|ramp_id|VARCHAR(32)|1||2
+# X  1|class_source_id|VARCHAR(32)|1||1
+#   2|class_level_name|VARCHAR(128)|1||3
+#   3|class_name|VARCHAR(128)|1||0
+#   4|source|VARCHAR(32)|1||0
+#   e.g. RAMP_C_000000001|hmdb:HMDB0000001|ClassyFire_super_class|Organic acids and derivatives|hmdb
 
+metabolite_class_schema = EntityBuilder(
+    entity_type=f('source', map='source_to_entity'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('ramp_id', extract='rampID')),
+        CV(
+            term=f('class_source_id', map='source_to_term', extract='sourceID', transform='lower'),
+            value=f('class_source_id', transform='postcolon'),
+        ),
+    ),
+)
 
 # ================================= REFERENCE ==================================
 
