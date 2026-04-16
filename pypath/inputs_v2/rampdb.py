@@ -141,6 +141,15 @@ CLASS_SOURCE_ID_TO_TERM = {
     'hmdb': EntityTypeCv.SMALL_MOLECULE,
     'lipidmaps': EntityTypeCv.LIPID,
 }
+CLASS_LEVEL_NAME_TO_TERM ={
+    'LipidMaps_category': MoleculeAnnotationsCv.LIPID_CATEGORY,
+    'LipidMaps_main_class': MoleculeAnnotationsCv.LIPID_MAIN_CLASS,
+    'LipidMaps_sub_class': MoleculeAnnotationsCv.LIPID_SUB_CLASS,
+    'ClassyFire_class': MoleculeAnnotationsCv.COMPOUND_CLASS,
+    'ClassyFire_sub_class': MoleculeAnnotationsCv.COMPOUND_SUBCLASS,
+    'ClassyFire_super_class': MoleculeAnnotationsCv.COMPOUND_SUPERCLASS,
+}
+
 
 f = FieldConfig(
     extract={
@@ -153,6 +162,7 @@ f = FieldConfig(
         'type_to_entity': MOLECULE_TYPE_TO_ENTITY_TYPE,
         'source_to_entity': SOURCE_TO_ENTITY_TYPE,
         'source_to_term': CLASS_SOURCE_ID_TO_TERM,
+        'class_level_to_term': CLASS_LEVEL_NAME_TO_TERM,
     },
     transform={
         'lower': lambda x: x.lower(),
@@ -177,9 +187,9 @@ analyte_schema = EntityBuilder(
 # metabolite_class
 # X  0|ramp_id|VARCHAR(32)|1||2
 # X  1|class_source_id|VARCHAR(32)|1||1
-#   2|class_level_name|VARCHAR(128)|1||3
-#   3|class_name|VARCHAR(128)|1||0
-#   4|source|VARCHAR(32)|1||0
+# X  2|class_level_name|VARCHAR(128)|1||3
+# X  3|class_name|VARCHAR(128)|1||0
+# X  4|source|VARCHAR(32)|1||0
 #   e.g. RAMP_C_000000001|hmdb:HMDB0000001|ClassyFire_super_class|Organic acids and derivatives|hmdb
 
 metabolite_class_schema = EntityBuilder(
@@ -190,6 +200,9 @@ metabolite_class_schema = EntityBuilder(
             term=f('class_source_id', map='source_to_term', extract='sourceID', transform='lower'),
             value=f('class_source_id', transform='postcolon'),
         ),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=f('class_level_name', map='class_level_to_term'), value=f('class_name')),
     ),
 )
 
