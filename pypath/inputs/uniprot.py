@@ -725,7 +725,7 @@ class UniprotQuery:
 
         else:
 
-            result = list(_id)
+            result = {} if self.fields else list(_id)
 
         return result
 
