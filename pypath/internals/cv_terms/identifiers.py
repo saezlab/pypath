@@ -54,6 +54,7 @@ class IdentifierNamespaceCv(CvEnum):
     GENBANK_PROTEIN_GI = ("OM:0117", "GenBank protein GI number")
     GENBANK_IDENTIFIER = ("OM:0118", "GenBank sequence identifier")
     BIND = ("OM:0119", "BIND (Biomolecular Interaction Network Database) identifier", "http://bind.ca")
+    CHEMSPIDER = ("OM:0124", "ChemSpider internal database identifier", "https://www.chemspider.com/")
 
     # Additional specialized identifiers (OM:0001-0009 range)
     REFSEQ_PROTEIN = ("OM:0001", "NCBI RefSeq protein accession (NP_* format)")
@@ -73,6 +74,8 @@ class IdentifierNamespaceCv(CvEnum):
     REACTOME_STABLE_ID = ("OM:0130", "Reactome stable identifier", "https://reactome.org")
     REACTOME_ID = ("OM:0131", "Reactome internal database identifier", "https://reactome.org")
     RAMP_ID = ("OM:0132", "RaMP internal database identifier", "https://rampdb.nh.gov/")
+    EC = ("OM:0133", "Enzyme Class identifier (e.g. 1.7.99.4)")
+
     # Gene and protein names (OM:0200-0209 range)
     GENE_NAME_PRIMARY = ("OM:0200", "Primary gene name or symbol")
     GENE_NAME_SYNONYM = ("OM:0201", "Alternative gene name or synonym")
