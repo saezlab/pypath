@@ -241,8 +241,41 @@ source_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=AssayAnnotationsCv.ASSAY_CATEGORY, value=f('priorityHMDBStatus')),
-
     ),
+)
+
+# chem_props
+# X  0|ramp_id|VARCHAR(30)|1||0
+# X  1|chem_data_source|VARCHAR(32)|0||0
+# X  2|chem_source_id|VARCHAR(45)|0||0
+# X  3|iso_smiles|VARCHAR(256)|0||0
+# -  4|inchi_key_prefix|VARCHAR(32)|0||0
+# X  5|inchi_key|VARCHAR(32)|0||0
+# X  6|inchi|VARCHAR(4096)|0||0
+# X  7|mw|FLOAT|0||0
+# X  8|monoisotop_mass|FLOAT|0||0
+# X  9|common_name|VARCHAR(1024)|0||0
+# X  10|mol_formula|VARCHAR(64)|0||0
+#   e.g. RAMP_C_000000001|hmdb|hmdb:HMDB0000001|[H]OC(=O)[C@@]([H])(N([H])[H])C([H])([H])C1=C([H])N(C([H])=N1)C([H])([H])[H]|BRMWTNUJHUMWMS|BRMWTNUJHUMWMS-LURJTMIESA-N|InChI=1S/C7H11N3O2/c1-10-3-5(9-4-10)2-6(8)7(11)12/h3-4,6H,2,8H2,1H3,(H,11,12)/t6-/m0/s1|169.1811|169.085126611|1-Methylhistidine|C7H11N3O2
+
+chem_props_schema = EntityBuilder(
+    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('ramp_id', extract='rampID')),
+        CV(
+            term=f('chem_data_source', map='source_to_term', transform='lower'),
+            value=f('chem_source_id', transform='postcolon'),
+        ),
+        CV(term=IdentifierNamespaceCv.SMILES, value=f('iso_smiles')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('inchi_key')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('inchi')),
+        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('mol_formula')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('common_name')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('mw')),
+        CV(term=MoleculeAnnotationsCv.MW_MONOISOTOPIC, value=f('monoisotop_mass')),
+    )
 )
 # ================================= REFERENCE ==================================
 
