@@ -113,7 +113,7 @@ table_names = [
     #'catalyzed',
     #'pathway_duplicates',
     'source',
-    'chem_props', # XXX
+    'chem_props',
     #'pathway_similarity',
     #'version_info',
     #'db_version',
@@ -191,7 +191,10 @@ f = FieldConfig(
 analyte_schema = EntityBuilder(
     entity_type=f('type', map='type_to_entity'),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId', extract='rampID')),
+        CV(
+            term=IdentifierNamespaceCv.RAMP_ID,
+            value=f('rampId', extract='rampID')
+        ),
         CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('common_name')),
     ),
 )
@@ -207,14 +210,20 @@ analyte_schema = EntityBuilder(
 metabolite_class_schema = EntityBuilder(
     entity_type=f('source', map='source_to_entity'),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('ramp_id', extract='rampID')),
+        CV(
+            term=IdentifierNamespaceCv.RAMP_ID,
+            value=f('ramp_id', extract='rampID')
+        ),
         CV(
             term=f('source', map='source_to_term', transform='lower'),
             value=f('class_source_id', transform='postcolon'),
         ),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=f('class_level_name', map='class_level_to_term'), value=f('class_name')),
+        CV(
+            term=f('class_level_name', map='class_level_to_term'),
+            value=f('class_name')
+        ),
     ),
 )
 
@@ -232,7 +241,10 @@ metabolite_class_schema = EntityBuilder(
 source_schema = EntityBuilder(
     entity_type=f('geneOrCompound', map='type_to_entity'),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId', extract='rampID')),
+        CV(
+            term=IdentifierNamespaceCv.RAMP_ID,
+            value=f('rampId', extract='rampID')
+        ),
         CV(
             term=f('IDtype', map='source_to_term', transform='lower'),
             value=f('sourceId', transform='postcolon'),
@@ -240,7 +252,10 @@ source_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('commonName')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=AssayAnnotationsCv.ASSAY_CATEGORY, value=f('priorityHMDBStatus')),
+        CV(
+            term=AssayAnnotationsCv.ASSAY_CATEGORY,
+            value=f('priorityHMDBStatus')
+        ),
     ),
 )
 
@@ -261,7 +276,10 @@ source_schema = EntityBuilder(
 chem_props_schema = EntityBuilder(
     entity_type=EntityTypeCv.SMALL_MOLECULE,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('ramp_id', extract='rampID')),
+        CV(
+            term=IdentifierNamespaceCv.RAMP_ID,
+            value=f('ramp_id', extract='rampID')
+        ),
         CV(
             term=f('chem_data_source', map='source_to_term', transform='lower'),
             value=f('chem_source_id', transform='postcolon'),
@@ -269,14 +287,21 @@ chem_props_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.SMILES, value=f('iso_smiles')),
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('inchi_key')),
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('inchi')),
-        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('mol_formula')),
+        CV(
+            term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
+            value=f('mol_formula')
+        ),
         CV(term=IdentifierNamespaceCv.NAME, value=f('common_name')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('mw')),
-        CV(term=MoleculeAnnotationsCv.MW_MONOISOTOPIC, value=f('monoisotop_mass')),
+        CV(
+            term=MoleculeAnnotationsCv.MW_MONOISOTOPIC,
+            value=f('monoisotop_mass')
+        ),
     )
 )
+
 # ================================= REFERENCE ==================================
 
 # SQL tables and content:
