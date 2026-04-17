@@ -8,23 +8,19 @@ using the declarative schema pattern.
 import os
 import re
 import requests
+from functools import partial
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-import sqlite3
 
 from pypath.inputs_v2.parsers.base import iter_sqlite
-
-from pypath.inputs_v2.base import ResourceConfig, Download
+from pypath.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
-    MembersFromList,
 )
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -33,14 +29,8 @@ from pypath.internals.cv_terms import (
     UpdateCategoryCV,
     ResourceCv,
     MoleculeSubtypeCv,
-    ProteinFunctionalClassCv,
     MoleculeAnnotationsCv,
-    AssayTypeCv,
     AssayAnnotationsCv,
-    CurationCv,
-    PharmacologicalActionCv,
-    InteractionMetadataCv,
-    InteractionParameterCv,
 )
 
 # =================================== SET-UP ===================================
@@ -63,7 +53,6 @@ def get_ramp_latest_ver(branch='main'):
     return ver, BASE_URL % branch + files[-1]
 
 VERSION, URL = get_ramp_latest_ver()
-
 
 config = ResourceConfig(
     id=ResourceCv.RAMPDB,
@@ -91,11 +80,6 @@ download = Download(
     ext=URL.split('.')[-1],
     default_mode='rb',
 )
-opener = download.open()
-path = Path(opener.path.replace('.gz', ''))
-
-with open(path, 'wb') as f:
-    f.write(opener.result)
 
 table_names = [
     'analyte',
@@ -120,11 +104,23 @@ table_names = [
     #'reaction',
 ]
 
-datasets = dict()
+#opener = download.open()
+#path = Path(opener.path.replace('.gz', ''))
 
-for tbl in table_names:
+#with open(path, 'wb') as f:
+#    f.write(opener.result)
 
-    datasets[tbl] = iter_sqlite(opener, table_name=tbl, sqlite_path=path)
+#datasets = dict()
+
+#for tbl in table_names:
+
+#    datasets[tbl] = iter_sqlite(opener, table_name=tbl, sqlite_path=path)
+
+def parser(opener, table=None):
+
+    path = Path(opener.path.replace('.gz', ''))
+
+    yield from iter_sqlite(opener, table_name=table, sqlite_path=path)
 
 # =================================== SCHEMA ===================================
 
@@ -156,7 +152,6 @@ CLASS_LEVEL_NAME_TO_TERM ={
     'ClassyFire_sub_class': MoleculeAnnotationsCv.COMPOUND_SUBCLASS,
     'ClassyFire_super_class': MoleculeAnnotationsCv.COMPOUND_SUPERCLASS,
 }
-
 
 f = FieldConfig(
     extract={
@@ -301,6 +296,19 @@ chem_props_schema = EntityBuilder(
         ),
     )
 )
+
+# ================================= RESOURCE ===================================
+
+kwargs = {
+    t: Dataset(
+        download=download,
+        mapper=locals().get('%s_schema' % t),
+        raw_parser=partial(parser, table=t)
+    )
+    for t in table_names
+}
+
+resource = Resource(config=config, **kwargs)
 
 # ================================= REFERENCE ==================================
 
