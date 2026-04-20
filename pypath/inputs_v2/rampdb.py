@@ -24,6 +24,7 @@ from pypath.internals.tabular_builder import (
 )
 from pypath.internals.cv_terms import (
     EntityTypeCv,
+    BiologicalRoleCv,
     IdentifierNamespaceCv,
     LicenseCV,
     UpdateCategoryCV,
@@ -88,11 +89,11 @@ table_names = [
     #'analytehasontology',
     'metabolite_class',
     #'reaction2protein',
-    #'analytehaspathway',
+    'analytehaspathway',
     #'ontology',
     #'reaction_ec_class',
     #'analytesynonym',
-    #'pathway',
+    'pathway',
     #'reaction_protein2met',
     #'catalyzed',
     #'pathway_duplicates',
@@ -143,6 +144,10 @@ SOURCE_TO_TERM = {
     'ensembl': IdentifierNamespaceCv.ENSEMBL,
     'entrez': IdentifierNamespaceCv.ENTREZ,
     'gene_symbol': IdentifierNamespaceCv.GENE_NAME_PRIMARY,
+    'kegg': IdentifierNamespaceCv.KEGG,
+    'reactome': IdentifierNamespaceCv.REACTOME_ID,
+    'wiki': IdentifierNamespaceCv.WIKIPATHWAYS,
+    'pfocr': IdentifierNamespaceCv.PFOCR,
 }
 CLASS_LEVEL_NAME_TO_TERM ={
     'LipidMaps_category': MoleculeAnnotationsCv.LIPID_CATEGORY,
@@ -152,10 +157,14 @@ CLASS_LEVEL_NAME_TO_TERM ={
     'ClassyFire_sub_class': MoleculeAnnotationsCv.COMPOUND_SUBCLASS,
     'ClassyFire_super_class': MoleculeAnnotationsCv.COMPOUND_SUPERCLASS,
 }
+ID_TO_ENTITY = {
+    'G': EntityTypeCv.GENE,
+    'C': MoleculeSubtypeCv.METABOLITE,
+}
 
 f = FieldConfig(
     extract={
-        'rampID':  r'^(RAMP_[A-Z]+_\d+)$',
+        'rampID':  r'^RAMP_([A-Z]+)_\d+$',
         #'hmdbID': r'^(?:hmdb:)?(HMDB\d+)$',
         #'lipidmapsID': r'^(?:LIPIDMAPS:)?(LMSP\d+)$',
         #'sourceID': r'^([a-zA-Z]*):(?:[a-zA-Z]+\d+)$'
@@ -165,6 +174,7 @@ f = FieldConfig(
         'source_to_entity': SOURCE_TO_ENTITY_TYPE,
         'source_to_term': SOURCE_TO_TERM,
         'class_level_to_term': CLASS_LEVEL_NAME_TO_TERM,
+        'id_to_entity': ID_TO_ENTITY
     },
     transform={
         'lower': lambda x: x.lower(),
@@ -186,10 +196,7 @@ f = FieldConfig(
 analyte_schema = EntityBuilder(
     entity_type=f('type', map='type_to_entity'),
     identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.RAMP_ID,
-            value=f('rampId', extract='rampID')
-        ),
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId')),
         CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('common_name')),
     ),
 )
@@ -207,7 +214,7 @@ metabolite_class_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(
             term=IdentifierNamespaceCv.RAMP_ID,
-            value=f('ramp_id', extract='rampID')
+            value=f('ramp_id')
         ),
         CV(
             term=f('source', map='source_to_term', transform='lower'),
@@ -236,10 +243,7 @@ metabolite_class_schema = EntityBuilder(
 source_schema = EntityBuilder(
     entity_type=f('geneOrCompound', map='type_to_entity'),
     identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.RAMP_ID,
-            value=f('rampId', extract='rampID')
-        ),
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId')),
         CV(
             term=f('IDtype', map='source_to_term', transform='lower'),
             value=f('sourceId', transform='postcolon'),
@@ -271,10 +275,7 @@ source_schema = EntityBuilder(
 chem_props_schema = EntityBuilder(
     entity_type=EntityTypeCv.SMALL_MOLECULE,
     identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.RAMP_ID,
-            value=f('ramp_id', extract='rampID')
-        ),
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('ramp_id')),
         CV(
             term=f('chem_data_source', map='source_to_term', transform='lower'),
             value=f('chem_source_id', transform='postcolon'),
@@ -294,7 +295,39 @@ chem_props_schema = EntityBuilder(
             term=MoleculeAnnotationsCv.MW_MONOISOTOPIC,
             value=f('monoisotop_mass')
         ),
-    )
+    ),
+)
+
+# analytehaspathway
+# X  0|rampId|VARCHAR(30)|0||0
+# X  1|pathwayRampId|VARCHAR(30)|0||0
+# -  2|pathwaySource|VARCHAR(30)|0||0
+#   e.g. RAMP_C_000000001|RAMP_P_000000001|hmdb
+
+analytehaspathway_schema = EntityBuilder(
+    entity_type=f('rampId', map='id_to_entity', extract='rampID'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId')),
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('pathwayRampId')),
+    ),
+)
+# pathway
+# X  0|pathwayRampId|varchar(30)|0||1
+# X  1|sourceId|varchar(30)|0||0
+# X  2|type|varchar(30)|0||0
+# -  3|pathwayCategory|varchar(30)|0||0
+# X  4|pathwayName|varchar(250)|0||0
+#   e.g. RAMP_P_000000001|SMP0124716|hmdb|smpdb3|1-Methylhistidine Metabolism
+
+pathway_schema = EntityBuilder(
+    entity_type=EntityTypeCv.PATHWAY,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('pathwayRampId')),
+        CV(term=f('type', map='source_to_term'), value=f('sourceId')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=BiologicalRoleCv.PATHWAY, value=f('pathwayName')),
+    ),
 )
 
 # ================================= RESOURCE ===================================
