@@ -48,6 +48,7 @@ class BiologicalRoleCv(CvEnum):
     CONTROLLER = ("OM:0313", "Entity that controls or regulates a process")
     CONTROLLED = ("OM:0314", "Process or entity being controlled or regulated")
     PATHWAY_COMPONENT = ("OM:0315", "Component entity within a pathway")
+    PATHWAY = ("OM:0316", "Molecular pathway name")
 
 
 class ExperimentalRoleCv(CvEnum):
