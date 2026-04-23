@@ -1874,6 +1874,10 @@ urls = {
             '3.01/Recon3DModel_301.mat'
         ),
     },
+    'imm1415': {
+        'label': 'iMM1415 mouse genome-scale metabolic model',
+        'bigg_json': 'http://bigg.ucsd.edu/static/models/iMM1415.json',
+    },
     'bigg': {
         'label': 'BiGG Models universal metabolite cross-references',
         'metabolites_tsv': (
