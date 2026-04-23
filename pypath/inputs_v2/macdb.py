@@ -14,7 +14,13 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
+from pypath.inputs_v2.base import (
+    ResourceConfig,
+    Download,
+    Resource,
+    Dataset,
+    OntologyDataset
+)
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -22,9 +28,15 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
+from pypath.internals.ontology_builder import (
+    OntologyBuilder,
+    RelationshipBuilder
+)
+from pypath.internals.ontology_schema import OntologyDocument, OntologyTypedef
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     BiologicalRoleCv,
+    OntologyCv,
     IdentifierNamespaceCv,
     LicenseCV,
     UpdateCategoryCV,
@@ -100,10 +112,45 @@ metabolite_schema = EntityBuilder(
     ),
 )
 
-trait_schema = EntityBuilder()
+trait_schema = OntologyBuilder(
+    id='Trait_Ontology_ID',
+    name='Trait_Ontology',
+    relationships=[
+        RelationshipBuilder(
+            type='part_of',
+            target=f('Trait_Type'),
+        ),
+        RelationshipBuilder(
+            type='is_a',
+            target=f('EFO_ID'),
+            target_name=f('EFO_Ontology'),
+        ),
+    ]
+)
+
+trait_ontology_document = OntologyDocument(
+    ontology='macdb_traits',
+    default_namespace='macdb_traits',
+    remark='MACdb trait ontology exported via pypath.',
+    typedefs=[
+        OntologyTypedef(id='part_of', name='part_of'),
+        OntologyTypedef(id='is_a', name='is_a')
+    ],
+)
 
 study_schema = EntityBuilder()
 
 publication_schema = EntityBuilder()
 
 # ================================= RESOURCE ===================================
+
+kwargs = {
+    t: Dataset(
+        download=download[t],
+        mapper=locals().get('%s_schema' % t),
+        raw_parser=iter_tsv,
+    )
+    for t in TABLES
+}
+
+resource = Resource(config=config, **kwargs)
