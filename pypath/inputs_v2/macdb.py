@@ -73,13 +73,31 @@ for t in TABLES:
 # =================================== SCHEMA ===================================
 
 f = FieldConfig(
-    extract={},
+    extract={
+        'metacID': r'^(METAC_\d+)$',
+    },
     map={},
     transform={},
 )
 
 metabolite_schema = EntityBuilder(
-
+    entity_type=MoleculeSubtypeCv.METABOLITE,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_CID')),
+        CV(term=IdentifierNamespaceCv.METAC, value=f('Cohort_id', extract='metacID')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEAN, value=f('case_concentration')),
+        CV(term=MoleculeAnnotationsCv.CONCENTRATION_MIN, value=f('case_concentration_low')),
+        CV(term=MoleculeAnnotationsCv.CONCENTRATION_MAX, value=f('case_concentration_high')),
+        CV(term=MoleculeAnnotationsCv.CONCENTRATION_SD, value=f('case_confidence_interval')),
+        #CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEAN, value=f('control_concentration')),
+        #CV(term=MoleculeAnnotationsCv.CONCENTRATION_MIN, value=f('control_concentration_low')),
+        #CV(term=MoleculeAnnotationsCv.CONCENTRATION_MAX, value=f('control_concentration_high')),
+        #CV(term=MoleculeAnnotationsCv.CONCENTRATION_SD, value=f('control_confidence_interval')),
+        CV(term=AssayAnnotationsCv.CONTRAST_P_VAL, value=f('case_control_p-value')),
+        CV(term=AssayAnnotationsCv.CONTRAST_LOGFC, value=f('log2FC')),
+    ),
 )
 
 trait_schema = EntityBuilder()
