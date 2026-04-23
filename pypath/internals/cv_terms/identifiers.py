@@ -76,6 +76,7 @@ class IdentifierNamespaceCv(CvEnum):
     RAMP_ID = ("OM:0132", "RaMP internal database identifier", "https://rampdb.nh.gov/")
     EC = ("OM:0133", "Enzyme Class identifier (e.g. 1.7.99.4)")
     PFOCR = ("OM:0134", "Pathway Figure OCR (in the form '[PMC id]__F[fig num]')", "https://pfocr.wikipathways.org/")
+    METAC = ("OM:0135", "MACdb study/cohort identifier (e.g. METAC_123)", "https://ngdc.cncb.ac.cn/macdb")
 
     # Gene and protein names (OM:0200-0209 range)
     GENE_NAME_PRIMARY = ("OM:0200", "Primary gene name or symbol")

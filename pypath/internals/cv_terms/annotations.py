@@ -352,6 +352,8 @@ class AssayAnnotationsCv(CvEnum):
     TISSUE = ("OM:0764", "Tissue or organ source for the assay")
     CELL_TYPE = ("OM:0765", "Cell type used in the assay")
     DESCRIPTION = ("OM:0766", "Textual description of the assay protocol and objectives")
+    CONTRAST_P_VAL = ("OM:0767", "P-value associated to a contrast between case-control")
+    CONTRAST_LOGFC = ("OM:0768", "log2(FC) associated to a contrast between case-control")
 
 
 class InteractionParameterCv(CvEnum):
