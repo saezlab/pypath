@@ -1861,6 +1861,10 @@ urls = {
             'https://www.cellknowledge.com.cn/mrclinkdb/download/'
             r'Metabolite-cell%20interaction.txt'
         ),
+        'transporter': (
+            'https://www.cellknowledge.com.cn/mrclinkdb/download/'
+            r'%s%%20transporter%%20protein.txt'
+        ),
     },
     'recon3d': {
         'label': 'Recon3D human genome-scale metabolic model',
