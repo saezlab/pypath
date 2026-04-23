@@ -1861,6 +1861,10 @@ urls = {
             'https://www.cellknowledge.com.cn/mrclinkdb/download/'
             r'Metabolite-cell%20interaction.txt'
         ),
+        'transporter': (
+            'https://www.cellknowledge.com.cn/mrclinkdb/download/'
+            r'%s%%20transporter%%20protein.txt'
+        ),
     },
     'recon3d': {
         'label': 'Recon3D human genome-scale metabolic model',
@@ -1869,6 +1873,10 @@ urls = {
             'https://www.vmh.life/files/reconstructions/Recon3D/'
             '3.01/Recon3DModel_301.mat'
         ),
+    },
+    'imm1415': {
+        'label': 'iMM1415 mouse genome-scale metabolic model',
+        'bigg_json': 'http://bigg.ucsd.edu/static/models/iMM1415.json',
     },
     'bigg': {
         'label': 'BiGG Models universal metabolite cross-references',
