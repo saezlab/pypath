@@ -148,6 +148,7 @@ controls_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('control_type')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('causal_statement', map='missing')),
         CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession', map='split')),
     ),
     membership=MembershipBuilder(
