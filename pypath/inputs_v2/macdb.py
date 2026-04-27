@@ -35,6 +35,8 @@ from pypath.internals.ontology_builder import (
 from pypath.internals.ontology_schema import OntologyDocument, OntologyTypedef
 from pypath.internals.cv_terms import (
     EntityTypeCv,
+    CurationCv,
+    InteractionMetadataCv,
     BiologicalRoleCv,
     OntologyCv,
     DiseaseAnnotationCv,
@@ -88,6 +90,7 @@ for t in TABLES:
 f = FieldConfig(
     extract={
         'metacID': r'^(METAC_\d+)$',
+        'year':  r'^(\d{4})',
     },
     map={},
     transform={},
@@ -213,7 +216,28 @@ study_schema = EntityBuilder(
     ),
 )
 
-publication_schema = EntityBuilder()
+publication_schema = EntityBuilder(
+    entity_type=EntityTypeCv.PUBLICATION,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.PUBMED, value=f('PMID')),
+        CV(term=IdentifierNamespaceCv.PUBMED_CENTRAL, value=f('PMC_ID')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=CurationCv.TITLE, value=f('Title')),
+        CV(term=CurationCv.JOURNAL, value=f('Journal_Title')),
+        CV(
+            term=CurationCv.YEAR,
+            value=f('Date_of_Publication', extract='year')
+        ),
+        CV(
+            term=CurationCv.AUTHORS,
+            value=f('Authors_Full_Name', delimiter='||')
+        ),
+        CV(term=CurationCv.PAGES, value=f('Pages')),
+        CV(term=CurationCv.VOLUME, value=f('Volume')),
+        CV(term=CurationCv.ISSUE, value=f('Issue')),
+    ),
+)
 
 # ================================= RESOURCE ===================================
 
