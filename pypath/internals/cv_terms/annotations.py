@@ -248,6 +248,10 @@ class CurationCv(CvEnum):
     TITLE = ("OM:0412", "Title of the publication")
     ABSTRACT = ("OM:0413", "Abstract or summary text")
     DOC_TYPE = ("OM:0414", "Type of publication (e.g. journal article, patent, book chapter)")
+    AUTHORS = ("OM:0415", "List of the publication author(s)")
+    PAGES = ("OM:0416", "Journal pages of the publication")
+    VOLUME = ("OM:0417", "Journal volume of the publication")
+    ISSUE = ("OM:0418", "Journal issue of the publication")
 
 class MoleculeAnnotationsCv(CvEnum):
     """Controlled vocabulary for molecule annotation types.
