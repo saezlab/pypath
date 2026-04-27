@@ -37,6 +37,7 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     BiologicalRoleCv,
     OntologyCv,
+    DiseaseAnnotationCv,
     IdentifierNamespaceCv,
     LicenseCV,
     UpdateCategoryCV,
@@ -95,20 +96,56 @@ f = FieldConfig(
 metabolite_schema = EntityBuilder(
     entity_type=MoleculeSubtypeCv.METABOLITE,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_CID')),
-        CV(term=IdentifierNamespaceCv.METAC, value=f('Cohort_id', extract='metacID')),
+        CV(
+            term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
+            value=f('pubchem_CID')
+        ),
+        CV(
+            term=IdentifierNamespaceCv.METAC,
+            value=f('Cohort_id', extract='metacID')
+        ),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEAN, value=f('case_concentration')),
-        CV(term=MoleculeAnnotationsCv.CONCENTRATION_MIN, value=f('case_concentration_low')),
-        CV(term=MoleculeAnnotationsCv.CONCENTRATION_MAX, value=f('case_concentration_high')),
-        CV(term=MoleculeAnnotationsCv.CONCENTRATION_SD, value=f('case_confidence_interval')),
-        #CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEAN, value=f('control_concentration')),
-        #CV(term=MoleculeAnnotationsCv.CONCENTRATION_MIN, value=f('control_concentration_low')),
-        #CV(term=MoleculeAnnotationsCv.CONCENTRATION_MAX, value=f('control_concentration_high')),
-        #CV(term=MoleculeAnnotationsCv.CONCENTRATION_SD, value=f('control_confidence_interval')),
-        CV(term=AssayAnnotationsCv.CONTRAST_P_VAL, value=f('case_control_p-value')),
-        CV(term=AssayAnnotationsCv.CONTRAST_LOGFC, value=f('log2FC')),
+        CV(
+            term=MoleculeAnnotationsCv.CONCENTRATION_MEAN,
+            value=f('case_concentration')
+        ),
+        CV(
+            term=MoleculeAnnotationsCv.CONCENTRATION_MIN,
+            value=f('case_concentration_low')
+        ),
+        CV(
+            term=MoleculeAnnotationsCv.CONCENTRATION_MAX,
+            value=f('case_concentration_high')
+        ),
+        CV(
+            term=MoleculeAnnotationsCv.CONCENTRATION_SD,
+            value=f('case_confidence_interval')
+        ),
+        #CV
+        # (term=MoleculeAnnotationsCv.CONCENTRATION_MEAN,
+        # value=f('control_concentration')
+        #),
+        #CV
+        # (term=MoleculeAnnotationsCv.CONCENTRATION_MIN,
+        # value=f('control_concentration_low')
+        #),
+        #CV
+        # (term=MoleculeAnnotationsCv.CONCENTRATION_MAX,
+        # value=f('control_concentration_high')
+        #),
+        #CV
+        # (term=MoleculeAnnotationsCv.CONCENTRATION_SD,
+        # value=f('control_confidence_interval')
+        #),
+        CV(
+            term=AssayAnnotationsCv.CONTRAST_P_VAL,
+            value=f('case_control_p-value')
+        ),
+        CV(
+            term=AssayAnnotationsCv.CONTRAST_LOGFC,
+            value=f('log2FC')
+        ),
     ),
 )
 
@@ -138,19 +175,69 @@ trait_ontology_document = OntologyDocument(
     ],
 )
 
-study_schema = EntityBuilder()
+study_schema = EntityBuilder(
+    entity_type=EntityTypeCv.ASSAY,
+    identifiers=IdentifiersBuilder(
+        CV(
+            term=IdentifierNamespaceCv.METAC,
+            value=f('Cohort_id', extract='metacID')
+        ),
+        CV(term=IdentifierNamespaceCv.DOID, value=f('Cancer_DOID')),
+        CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(
+            term=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            value=f('Trait_onto_ID', extract='metacID'),
+        ),
+        CV(term=DiseaseAnnotationCv.TYPE, value=f('Cancer_type')),
+        CV(term=DiseaseAnnotationCv.SUBTYPE, value=f('Cancer_subtype')),
+        CV(term=AssayAnnotationsCv.CASE_DESCRIPTION, value=f('Case_name')),
+        CV(term=AssayAnnotationsCv.CASE_AGE, value=f('Case_age_group')),
+        CV(term=AssayAnnotationsCv.CASE_SEX, value=f('Case_sex')),
+        CV(term=AssayAnnotationsCv.CASE_SAMPLE_COUNT, value=f('Case_size')),
+        CV(
+            term=AssayAnnotationsCv.CONTROL_DESCRIPTION,
+            value=f('Control_name')
+        ),
+        CV(term=AssayAnnotationsCv.CONTROL_AGE, value=f('Control_age_group')),
+        CV(term=AssayAnnotationsCv.CONTROL_SEX, value=f('Control_sex')),
+        CV(
+            term=AssayAnnotationsCv.CONTROL_SAMPLE_COUNT,
+            value=f('Control_size')
+        ),
+        CV(term=AssayAnnotationsCv.DESCRIPTION, value=f('Condition')),
+        CV(term=AssayAnnotationsCv.CONCLUSION, value=f('Conclusion')),
+        CV(term=MoleculeAnnotationsCv.EXPERIMENTAL_METHOD, value=f('Platform')),
+        CV(term=AssayAnnotationsCv.TISSUE, value=f('Tissue')),
+    ),
+)
 
 publication_schema = EntityBuilder()
 
 # ================================= RESOURCE ===================================
 
-kwargs = {
-    t: Dataset(
-        download=download[t],
-        mapper=locals().get('%s_schema' % t),
-        raw_parser=iter_tsv,
-    )
-    for t in TABLES
-}
+kwargs = dict()
+
+for t in TABLES:
+
+    if t == 'trait':
+
+        kwargs[t] = OntologyDataset(
+            download=download[t],
+            mapper=locals().get('%s_schema' % t),
+            raw_parser=iter_tsv,
+            document=trait_ontology_document,
+            extension='obo',
+            file_stem='macdb',
+        )
+
+    else:
+
+        kwargs[t] = Dataset(
+            download=download[t],
+            mapper=locals().get('%s_schema' % t),
+            raw_parser=iter_tsv,
+        )
 
 resource = Resource(config=config, **kwargs)
