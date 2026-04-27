@@ -188,6 +188,7 @@ def _extract_interaction_records(
     ) -> list[dict[str, str]]:
 
     result = []
+    seen_records = set()
 
     for interaction_uri in sorted(set(graph.subjects(RDF.type, WP.Interaction)), key=str):
 
@@ -197,33 +198,45 @@ def _extract_interaction_records(
         if not source_uri or not target_uri:
             continue
 
-        source = _extract_entity_record(graph, source_uri)
-        target = _extract_entity_record(graph, target_uri)
+        sources = _terminal_entity_records(graph, source_uri)
+        targets = _terminal_entity_records(graph, target_uri)
 
-        if (
-            source['entity_type'] == EntityTypeCv.PATHWAY.value
-            or target['entity_type'] == EntityTypeCv.PATHWAY.value
-        ):
+        if not sources or not targets:
             continue
 
         interaction_types = _interaction_types(graph, interaction_uri)
         interaction_uri_str = str(interaction_uri)
 
-        result.append(
-            {
-                'interaction_uri': interaction_uri_str,
-                'interaction_local_id': _interaction_local_id(interaction_uri_str),
-                'interaction_types': _join_unique(interaction_types),
-                'pathway_id': pathway['pathway_id'],
-                'pathway_version_id': pathway['pathway_version_id'],
-                'pathway_term_accession': pathway['pathway_id'],
-                'pathway_ontology_terms': pathway['ontology_terms'],
-                'organism_name': pathway['organism_name'],
-                'taxon_id': pathway['taxon_id'],
-                **_prefix_record('source', source),
-                **_prefix_record('target', target),
-            }
-        )
+        for source in sources:
+            for target in targets:
+
+                if (
+                    source['uri'] == target['uri']
+                    or source['entity_type'] == EntityTypeCv.PATHWAY.value
+                    or target['entity_type'] == EntityTypeCv.PATHWAY.value
+                ):
+                    continue
+
+                record_key = (interaction_uri_str, source['uri'], target['uri'])
+                if record_key in seen_records:
+                    continue
+                seen_records.add(record_key)
+
+                result.append(
+                    {
+                        'interaction_uri': interaction_uri_str,
+                        'interaction_local_id': _interaction_local_id(interaction_uri_str),
+                        'interaction_types': _join_unique(interaction_types),
+                        'pathway_id': pathway['pathway_id'],
+                        'pathway_version_id': pathway['pathway_version_id'],
+                        'pathway_term_accession': pathway['pathway_id'],
+                        'pathway_ontology_terms': pathway['ontology_terms'],
+                        'organism_name': pathway['organism_name'],
+                        'taxon_id': pathway['taxon_id'],
+                        **_prefix_record('source', source),
+                        **_prefix_record('target', target),
+                    }
+                )
 
     return result
 
@@ -272,6 +285,66 @@ def _extract_entity_record(graph: Graph, entity_uri: str) -> dict[str, str]:
     }
 
 
+def _terminal_entity_records(
+        graph: Graph,
+        entity_uri: str,
+        visited: set[str] | None = None,
+    ) -> list[dict[str, str]]:
+    """
+    Resolve WikiPathways interaction references to biological participants.
+
+    WikiPathways RDF may use another ``wp:Interaction`` node as the source or
+    target of an interaction (line segments chained through anchors in GPML).
+    Those nodes are graphical/relational constructs, not biological entities, so
+    we recursively expand them to their terminal non-interaction endpoints.
+    """
+
+    visited = visited or set()
+
+    if entity_uri in visited:
+        return []
+
+    visited.add(entity_uri)
+
+    if not _is_interaction_node(graph, entity_uri):
+        return [_extract_entity_record(graph, entity_uri)]
+
+    subject = URIRef(entity_uri)
+    records = []
+
+    for predicate in (WP.source, WP.target):
+        nested_uri = _first_uri(graph, subject, predicate)
+        if nested_uri:
+            records.extend(_terminal_entity_records(graph, nested_uri, visited.copy()))
+
+    return _unique_entity_records(records)
+
+
+def _unique_entity_records(records: Iterable[dict[str, str]]) -> list[dict[str, str]]:
+
+    result = []
+    seen = set()
+
+    for record in records:
+        uri = record.get('uri')
+        if uri and uri not in seen:
+            seen.add(uri)
+            result.append(record)
+
+    return result
+
+
+def _is_interaction_node(graph: Graph, entity_uri: str) -> bool:
+
+    subject = URIRef(entity_uri)
+    rdf_types = {
+        _local_name(obj)
+        for obj in graph.objects(subject, RDF.type)
+    }
+
+    return bool(rdf_types & _INTERACTION_TYPES)
+
+
 def _interaction_types(graph: Graph, interaction_uri: URIRef) -> list[str]:
     return [
         rdf_type
@@ -287,9 +360,6 @@ def _entity_type(rdf_types: set[str]) -> EntityTypeCv:
 
     if 'Complex' in rdf_types:
         return EntityTypeCv.COMPLEX
-
-    if rdf_types & _INTERACTION_TYPES:
-        return EntityTypeCv.INTERACTION
 
     if 'Metabolite' in rdf_types:
         return EntityTypeCv.SMALL_MOLECULE
