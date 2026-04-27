@@ -352,8 +352,20 @@ class AssayAnnotationsCv(CvEnum):
     TISSUE = ("OM:0764", "Tissue or organ source for the assay")
     CELL_TYPE = ("OM:0765", "Cell type used in the assay")
     DESCRIPTION = ("OM:0766", "Textual description of the assay protocol and objectives")
+    CONCLUSION = ("OM:0778", "Textual description of the assay conculsions")
+    # Contrast
+
     CONTRAST_P_VAL = ("OM:0767", "P-value associated to a contrast between case-control")
     CONTRAST_LOGFC = ("OM:0768", "log2(FC) associated to a contrast between case-control")
+    CASE_AGE = ("OM:0769", "Patient/case age")
+    CASE_SEX = ("OM:0770", "Patient/case sex")
+    CASE_SAMPLE_COUNT = ("OM:0773", "Number of patient/case samples")
+    CASE_DESCRIPTION = ("OM:0775", "Description of case/patient samples")
+    CONTROL_AGE = ("OM:0771", "Control age")
+    CONTROL_SEX = ("OM:0772", "Control sex")
+    CONTROL_SAMPLE_COUNT = ("OM:0774", "Number of control samples")
+    CONTROL_DESCRIPTION = ("OM:0776", "Description of control samples")
+
 
 
 class InteractionParameterCv(CvEnum):
@@ -508,3 +520,18 @@ class ResourceAnnotationCv(CvEnum):
     UPDATE_CATEGORY = ("OM:0852", "Update frequency category (value from UpdateCategoryCV)")
     URL = ("OM:0853", "Resource homepage or API URL")
     DESCRIPTION = ("OM:0854", "Textual description of the resource")
+
+
+class DiseaseAnnotationCv(CvEnum):
+    """Disease-related annotation terms.
+
+    Describes metadata for diseases, stages, subtypes, etc.
+    """
+
+    parent_cv_term = ("OM:1250", "Disease annotation term", "Describes metadata for diseases.")
+
+    # Disease metadata (OM:1250-1300 range)
+    NAME = ("OM:1251", "Disease name")
+    TYPE = ("OM:1252", "Disease type/category")
+    SUBTYPE = ("OM:1253", "Disease subtype/subcategory")
+    STAGE = ("OM:1254", "Disease stage")
