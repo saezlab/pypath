@@ -45,6 +45,7 @@ class ResourceConfig:
     pubmed: str | None = None
     primary_category: str | None = None
     annotation_ontologies: tuple[OntologyCv, ...] = ()
+    resource_kind: str = 'data_resource'
 
     def metadata(self) -> Entity:
         annotations = [
@@ -207,6 +208,24 @@ def _first_handle(opener) -> Any | None:
     if isinstance(opener.result, dict):
         return next(iter(opener.result.values()), None)
     return opener.result
+
+
+def read_opener_text(opener, **_kwargs: Any) -> str:
+    """Read text content from a download opener.
+
+    ``Opener.result`` may be a plain file handle, an archive mapping, or a
+    line iterator depending on the downloaded file and cachedir settings.
+    """
+    handle = _first_handle(opener)
+    if handle is None:
+        return ''
+    if hasattr(handle, 'read'):
+        content = handle.read()
+        return content.decode('utf-8') if isinstance(content, bytes) else str(content)
+    return ''.join(
+        chunk.decode('utf-8') if isinstance(chunk, bytes) else str(chunk)
+        for chunk in handle
+    )
 
 
 def iter_csv(opener, delimiter: str = ',', **_kwargs: Any) -> Generator[dict[str, Any], None, None]:

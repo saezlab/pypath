@@ -3,15 +3,9 @@
 from __future__ import annotations
 
 import inspect
-import re
-import urllib.request
-
 from pypath.internals import cv_terms
 from pypath.internals.cv_terms import CvEnum, LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.inputs_v2.base import ArtifactDataset, Resource, ResourceConfig
-
-
-PSI_MI_URL = 'https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo'
 
 
 config = ResourceConfig(
@@ -21,21 +15,9 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     primary_category='ontologies',
-    description='Combined PSI-MI and OmniPath controlled vocabulary ontology export.',
+    resource_kind='ontology',
+    description='OmniPath controlled vocabulary ontology export.',
 )
-
-
-def _fetch_psi_mi() -> str:
-    with urllib.request.urlopen(PSI_MI_URL) as response:
-        return response.read().decode('utf-8')
-
-
-
-def _fix_malformed_dates(content: str) -> str:
-    content = re.sub(r'^date: \d{2}:\d{2}:\d{4}.*\n', '', content, flags=re.MULTILINE)
-    content = re.sub(r'^creation_date:.*\n', '', content, flags=re.MULTILINE)
-    return content
-
 
 
 def _format_name(name: str) -> str:
@@ -110,9 +92,8 @@ def _format_om_terms(terms: list[dict]) -> str:
 
 
 def render_omnipath_obo(_opener=None, **_kwargs) -> str:
-    psi_mi = _fix_malformed_dates(_fetch_psi_mi())
     om_obo = _format_om_terms(_extract_om_terms())
-    return psi_mi + '\n' + om_obo
+    return 'format-version: 1.2\nontology: omnipath\n\n' + om_obo
 
 
 resource = Resource(

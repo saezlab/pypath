@@ -207,11 +207,7 @@ molecules_schema = EntityBuilder(
         CV(term=f('inorganic_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.INORGANIC))),
         CV(term=f('natural_product', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.NATURAL_PRODUCT))),
         CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('full_mwt')),
-        CV(term=MoleculeAnnotationsCv.MW_MONOISOTOPIC, value=f('mw_monoisotopic')),
         CV(term=MoleculeAnnotationsCv.ALOGP, value=f('alogp')),
-        CV(term=MoleculeAnnotationsCv.CX_LOGP, value=f('cx_logp')),
-        CV(term=MoleculeAnnotationsCv.CX_LOGD, value=f('cx_logd')),
-        CV(term=MoleculeAnnotationsCv.MOLECULAR_SPECIES, value=f('molecular_species')),
     ),
 )
 

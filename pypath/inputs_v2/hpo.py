@@ -25,7 +25,14 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2.base import (
+    ArtifactDataset,
+    Dataset,
+    Download,
+    Resource,
+    ResourceConfig,
+    read_opener_text,
+)
 from pypath.inputs_v2.parsers.base import iter_tsv
 
 
@@ -37,6 +44,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33264411',
     primary_category='phenotypes',
+    resource_kind='ontology',
     annotation_ontologies=(OntologyCv.HUMAN_PHENOTYPE_ONTOLOGY,),
     description=(
         'The Human Phenotype Ontology (HPO) provides a standardized vocabulary '
@@ -60,8 +68,21 @@ annotations_schema = EntityBuilder(
     ),
 )
 
+
 resource = Resource(
     config,
+    ontology=ArtifactDataset(
+        download=Download(
+            url='https://purl.obolibrary.org/obo/hp.obo',
+            filename='hp.obo',
+            subfolder='hpo',
+            large=True,
+        ),
+        renderer=read_opener_text,
+        extension='obo',
+        file_stem='hp',
+        kind='ontology',
+    ),
     annotations=Dataset(
         download=Download(
             url='https://purl.obolibrary.org/obo/hp/hpoa/genes_to_phenotype.txt',

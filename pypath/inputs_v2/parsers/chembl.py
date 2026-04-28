@@ -31,11 +31,7 @@ def molecules_parser(
         cs.standard_inchi_key,
         cp.full_mwt,
         cp.full_molformula,
-        cp.mw_monoisotopic,
-        cp.alogp,
-        cp.cx_logp,
-        cp.cx_logd,
-        cp.molecular_species
+        cp.alogp
     FROM molecule_dictionary md
     LEFT JOIN compound_structures cs ON md.molregno = cs.molregno
     LEFT JOIN compound_properties cp ON md.molregno = cp.molregno
