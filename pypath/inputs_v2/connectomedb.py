@@ -126,12 +126,11 @@ interactions_schema = EntityBuilder(
             entity=EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
-                       value=f('Ligand Symbols', extract='primary_gene')),
-                ),
-                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Ligand Symbols', extract='primary_gene')),
                     CV(term=IdentifierNamespaceCv.HGNC, value=f('Ligand HGNC ID')),
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ligand ENSEMBL ID')),
+                ),
+                annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Ligand Symbols', extract='gene_alias')),
                     CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Ligand Location')),
                 )
@@ -141,12 +140,11 @@ interactions_schema = EntityBuilder(
             entity=EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
-                       value=f('Receptor Symbols', extract='primary_gene')),
-                ),
-                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Receptor Symbols', extract='primary_gene')),
                     CV(term=IdentifierNamespaceCv.HGNC, value=f('Receptor HGNC ID')),
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Receptor ENSEMBL ID')),
+                ),
+                annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Receptor Symbols', extract='gene_alias')),
                     CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Receptor Location')),
                 )
