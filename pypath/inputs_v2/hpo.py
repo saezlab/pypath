@@ -25,15 +25,16 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
+from pypath.internals.ontology_schema import OntologyDocument
 from pypath.inputs_v2.base import (
-    ArtifactDataset,
     Dataset,
     Download,
+    OntologyDataset,
     Resource,
     ResourceConfig,
-    read_opener_text,
 )
 from pypath.inputs_v2.parsers.base import iter_tsv
+from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
 
 config = ResourceConfig(
@@ -71,17 +72,18 @@ annotations_schema = EntityBuilder(
 
 resource = Resource(
     config,
-    ontology=ArtifactDataset(
+    ontology=OntologyDataset(
         download=Download(
             url='https://purl.obolibrary.org/obo/hp.obo',
             filename='hp.obo',
             subfolder='hpo',
             large=True,
         ),
-        renderer=read_opener_text,
+        mapper=obo_record_to_term,
+        raw_parser=iter_obo,
+        document=OntologyDocument(ontology='hp', default_namespace='human_phenotype'),
         extension='obo',
         file_stem='hp',
-        kind='ontology',
     ),
     annotations=Dataset(
         download=Download(

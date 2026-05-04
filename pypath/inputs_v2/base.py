@@ -18,6 +18,7 @@ from pypath.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
     UpdateCategoryCV,
+    OntologyAnnotationCv,
     ResourceAnnotationCv,
     ResourceCv,
 )
@@ -158,6 +159,37 @@ class OntologyDataset:
             term = self.mapper(record)
             if term is not None:
                 yield term
+
+
+def ontology_term_to_entity(term: OntologyTerm) -> Entity:
+    """Convert a structured ontology term into a first-class CV-term entity."""
+    identifiers = [Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=term.id)]
+
+    for alt_id in term.alt_ids or []:
+        if alt_id and alt_id != term.id:
+            identifiers.append(Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=alt_id))
+
+    if term.name:
+        identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=term.name))
+
+    for synonym in term.synonyms or []:
+        if synonym and synonym != term.name:
+            identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=synonym))
+
+    annotations: list[Annotation] = []
+    if term.definition:
+        annotations.append(Annotation(term=OntologyAnnotationCv.DEFINITION, value=term.definition))
+    for comment in term.comments or []:
+        if comment:
+            annotations.append(Annotation(term=OntologyAnnotationCv.COMMENT, value=comment))
+    if term.is_obsolete is not None:
+        annotations.append(Annotation(term=OntologyAnnotationCv.IS_OBSOLETE, value=str(bool(term.is_obsolete)).lower()))
+
+    return Entity(
+        type=EntityTypeCv.CV_TERM,
+        identifiers=identifiers,
+        annotations=annotations or None,
+    )
 
 
 class ArtifactDataset:

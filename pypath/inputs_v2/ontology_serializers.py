@@ -69,6 +69,12 @@ def format_obo(document: OntologyDocument, terms: list[OntologyTerm]) -> str:
         lines.append(f'id: {term.id}')
         lines.append(f'name: {escape_obo_string(term.name or term.id)}')
 
+        if term.namespace:
+            lines.append(f'namespace: {term.namespace}')
+
+        for alt_id in term.alt_ids or []:
+            lines.append(f'alt_id: {alt_id}')
+
         if term.definition:
             lines.append(f'def: "{escape_obo_string(term.definition)}" []')
 

@@ -3,13 +3,9 @@
 from __future__ import annotations
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.inputs_v2.base import (
-    ArtifactDataset,
-    Download,
-    Resource,
-    ResourceConfig,
-    read_opener_text,
-)
+from pypath.internals.ontology_schema import OntologyDocument
+from pypath.inputs_v2.base import Download, OntologyDataset, Resource, ResourceConfig
+from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
 
 config = ResourceConfig(
@@ -26,16 +22,17 @@ config = ResourceConfig(
 
 resource = Resource(
     config,
-    ontology=ArtifactDataset(
+    ontology=OntologyDataset(
         download=Download(
             url='https://purl.obolibrary.org/obo/go.obo',
             filename='go.obo',
             subfolder='go',
             large=True,
         ),
-        renderer=read_opener_text,
+        mapper=obo_record_to_term,
+        raw_parser=iter_obo,
+        document=OntologyDocument(ontology='go', default_namespace='gene_ontology'),
         extension='obo',
         file_stem='go',
-        kind='ontology',
     ),
 )

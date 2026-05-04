@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import inspect
+from collections.abc import Generator
+from typing import Any
+
 from pypath.internals import cv_terms
 from pypath.internals.cv_terms import CvEnum, LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.inputs_v2.base import ArtifactDataset, Resource, ResourceConfig
+from pypath.internals.ontology_schema import OntologyDocument, OntologyTerm
+from pypath.inputs_v2.base import OntologyDataset, Resource, ResourceConfig
 
 
 config = ResourceConfig(
@@ -22,13 +26,6 @@ config = ResourceConfig(
 
 def _format_name(name: str) -> str:
     return name.lower().replace('_', ' ')
-
-
-
-def _escape_obo_string(value: str) -> str:
-    if not value:
-        return ''
-    return value.replace('\\', '\\\\').replace('"', '\\"')
 
 
 
@@ -76,32 +73,27 @@ def _extract_om_terms() -> list[dict]:
 
 
 
-def _format_om_terms(terms: list[dict]) -> str:
-    lines = []
-    for term in sorted(terms, key=lambda t: t['accession']):
-        lines.append('[Term]')
-        lines.append(f"id: {term['accession']}")
-        lines.append(f"name: {term['name']}")
-        if term['definition']:
-            lines.append(f'def: "{_escape_obo_string(term["definition"])}" []')
-        if term['is_a']:
-            lines.append(f"is_a: {term['is_a']}")
-        lines.append('')
-    return '\n'.join(lines)
+def _iter_om_terms(_opener=None, **_kwargs: Any) -> Generator[dict[str, Any], None, None]:
+    yield from _extract_om_terms()
 
 
-
-def render_omnipath_obo(_opener=None, **_kwargs) -> str:
-    om_obo = _format_om_terms(_extract_om_terms())
-    return 'format-version: 1.2\nontology: omnipath\n\n' + om_obo
+def _map_om_term(row: dict[str, Any]) -> OntologyTerm:
+    return OntologyTerm(
+        id=row['accession'],
+        name=row['name'],
+        definition=row.get('definition') or None,
+        is_a=[row['is_a']] if row.get('is_a') else None,
+    )
 
 
 resource = Resource(
     config,
-    ontology=ArtifactDataset(
-        renderer=render_omnipath_obo,
+    ontology=OntologyDataset(
+        download=None,
+        mapper=_map_om_term,
+        raw_parser=_iter_om_terms,
+        document=OntologyDocument(ontology='omnipath'),
         extension='obo',
         file_stem='omnipath_mi',
-        kind='ontology',
     ),
 )

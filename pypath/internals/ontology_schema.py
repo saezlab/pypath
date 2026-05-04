@@ -27,6 +27,8 @@ class OntologyTerm(NamedTuple):
     is_a: list[str] | None = None
     relationships: list[OntologyRelationship] | None = None
     is_obsolete: bool | None = None
+    alt_ids: list[str] | None = None
+    namespace: str | None = None
 
 
 class OntologyTypedef(NamedTuple):

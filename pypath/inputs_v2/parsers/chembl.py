@@ -101,7 +101,8 @@ def mechanisms_parser(
     FROM drug_mechanism dm
     LEFT JOIN molecule_dictionary md ON dm.molregno = md.molregno
     LEFT JOIN target_dictionary td ON dm.tid = td.tid
-    LEFT JOIN docs d ON dm.doc_id = d.doc_id
+    LEFT JOIN compound_records cr ON dm.record_id = cr.record_id
+    LEFT JOIN docs d ON cr.doc_id = d.doc_id
     LEFT JOIN mechanism_refs mr ON dm.mec_id = mr.mec_id
     GROUP BY dm.mec_id
     """

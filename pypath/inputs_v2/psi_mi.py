@@ -5,13 +5,9 @@ from __future__ import annotations
 import re
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.inputs_v2.base import (
-    ArtifactDataset,
-    Download,
-    Resource,
-    ResourceConfig,
-    read_opener_text,
-)
+from pypath.internals.ontology_schema import OntologyDocument
+from pypath.inputs_v2.base import Download, OntologyDataset, Resource, ResourceConfig
+from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
 
 config = ResourceConfig(
@@ -26,24 +22,28 @@ config = ResourceConfig(
 )
 
 
-def _read_and_fix_obo(opener, **_kwargs) -> str:
-    content = read_opener_text(opener)
+def _fix_obo_text(content: str) -> str:
     content = re.sub(r'^date: \d{2}:\d{2}:\d{4}.*\n', '', content, flags=re.MULTILINE)
     return re.sub(r'^creation_date:.*\n', '', content, flags=re.MULTILINE)
 
 
+def _iter_fixed_obo(opener, **kwargs):
+    yield from iter_obo(opener, preprocess_text=_fix_obo_text, **kwargs)
+
+
 resource = Resource(
     config,
-    ontology=ArtifactDataset(
+    ontology=OntologyDataset(
         download=Download(
             url='https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo',
             filename='psi-mi.obo',
             subfolder='psi_mi',
             large=True,
         ),
-        renderer=_read_and_fix_obo,
+        mapper=obo_record_to_term,
+        raw_parser=_iter_fixed_obo,
+        document=OntologyDocument(ontology='psi-mi'),
         extension='obo',
         file_stem='psi_mi',
-        kind='ontology',
     ),
 )
