@@ -320,6 +320,10 @@ def _build_pathway_terms(pathway_records: list[dict]) -> list[dict]:
                 'parent_names': [],
             },
         )
+        if record.get('display_name'):
+            term['name'] = record['display_name']
+        if record.get('definition'):
+            term['definition'] = record['definition']
         term['synonyms'].extend([s for s in record.get('synonyms', '').split(';') if s])
         term['comments'].extend([c for c in record.get('comments', '').split(';') if c])
 

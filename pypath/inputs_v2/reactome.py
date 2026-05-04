@@ -248,13 +248,7 @@ pathway_ontology_schema = OntologyBuilder(
     synonyms=f('synonyms', delimiter=';'),
     comments=f('comments', delimiter=';'),
     xrefs=f('xrefs', delimiter=';'),
-    relationships=[
-        RelationshipBuilder(
-            type='part_of',
-            target=f('parent_ids', delimiter=';'),
-            target_name=f('parent_names', delimiter=';'),
-        ),
-    ],
+    is_a=f('parent_ids', delimiter=';'),
 )
 
 download = Download(
@@ -289,7 +283,7 @@ resource = Resource(
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='pathway_terms', **kwargs),
         ontology_id='reactome_pathways',
         remark='Reactome pathway ontology exported from Reactome BioPAX via pypath.',
-        typedefs=[OntologyTypedef(id='part_of', name='part_of')],
+        typedefs=[],
         extension='obo',
         file_stem='reactome_pathways',
     ),
