@@ -11,7 +11,7 @@ from pypath.internals.cv_terms import (
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.ontology_schema import OntologyDocument, OntologyRelationship, OntologyTerm
+from pypath.internals.ontology_schema import OntologyRelationship, OntologyTerm
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -66,13 +66,6 @@ molecules_schema = EntityBuilder(
         CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE, value=f('charge')),
         CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=lambda row: row.get('ancestor_terms', [])),
     ),
-)
-
-
-pathway_ontology_document = OntologyDocument(
-    ontology='chebi',
-    default_namespace='chebi',
-    remark='ChEBI ontology exported from chebi.obo.gz via pypath.',
 )
 
 
@@ -149,7 +142,8 @@ resource = Resource(
         download=download,
         mapper=_ontology_mapper,
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='ontology_terms', **kwargs),
-        document=pathway_ontology_document,
+        ontology_id='chebi',
+        remark='ChEBI ontology exported from chebi.obo.gz via pypath.',
         extension='obo',
         file_stem='chebi',
     ),

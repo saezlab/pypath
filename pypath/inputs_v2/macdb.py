@@ -32,7 +32,7 @@ from pypath.internals.ontology_builder import (
     OntologyBuilder,
     RelationshipBuilder
 )
-from pypath.internals.ontology_schema import OntologyDocument, OntologyTypedef
+from pypath.internals.ontology_schema import OntologyTypedef
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     CurationCv,
@@ -168,16 +168,6 @@ trait_schema = OntologyBuilder(
     ]
 )
 
-trait_ontology_document = OntologyDocument(
-    ontology='macdb_traits',
-    default_namespace='macdb_traits',
-    remark='MACdb trait ontology exported via pypath.',
-    typedefs=[
-        OntologyTypedef(id='part_of', name='part_of'),
-        OntologyTypedef(id='is_a', name='is_a')
-    ],
-)
-
 study_schema = EntityBuilder(
     entity_type=EntityTypeCv.ASSAY,
     identifiers=IdentifiersBuilder(
@@ -251,7 +241,12 @@ for t in TABLES:
             download=download[t],
             mapper=locals().get('%s_schema' % t),
             raw_parser=iter_tsv,
-            document=trait_ontology_document,
+            ontology_id='macdb_traits',
+            remark='MACdb trait ontology exported via pypath.',
+            typedefs=[
+                OntologyTypedef(id='part_of', name='part_of'),
+                OntologyTypedef(id='is_a', name='is_a'),
+            ],
             extension='obo',
             file_stem='macdb',
         )

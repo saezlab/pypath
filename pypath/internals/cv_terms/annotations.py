@@ -506,6 +506,7 @@ class OntologyAnnotationCv(CvEnum):
 
     # Core ontology metadata (OM:0800-0899 range)
     DEFINITION = ("OM:0801", "Textual definition of an ontology term")
+    ONTOLOGY_ID = ("OM:0803", "Ontology identifier or OBO document ID")
     COMMENT = ("OM:0805", "Additional comment or note about an ontology term")
     IS_OBSOLETE = ("OM:0806", "Indicates whether the term is obsolete")
 

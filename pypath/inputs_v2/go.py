@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.ontology_schema import OntologyDocument
 from pypath.inputs_v2.base import Download, OntologyDataset, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
@@ -31,7 +30,7 @@ resource = Resource(
         ),
         mapper=obo_record_to_term,
         raw_parser=iter_obo,
-        document=OntologyDocument(ontology='go', default_namespace='gene_ontology'),
+        ontology_id='gene_ontology',
         extension='obo',
         file_stem='go',
     ),

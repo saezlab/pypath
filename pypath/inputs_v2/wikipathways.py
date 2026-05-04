@@ -25,7 +25,6 @@ from pypath.internals.tabular_builder import (
     MembershipBuilder,
 )
 from pypath.internals.ontology_builder import OntologyBuilder
-from pypath.internals.ontology_schema import OntologyDocument
 from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.wikipathways import _raw, current_rdf_url
 
@@ -69,13 +68,6 @@ pathway_ontology_schema = OntologyBuilder(
     comments=f('comments', delimiter=';'),
     xrefs=f('xrefs', delimiter=';'),
 )
-
-pathway_ontology_document = OntologyDocument(
-    ontology='wikipathways',
-    default_namespace='wikipathways',
-    remark='WikiPathways pathway ontology exported from the current RDF pathway archive via pypath.',
-)
-
 
 def _member(prefix: str, role) -> Member:
     return Member(
@@ -145,7 +137,8 @@ resource = Resource(
         download=download,
         mapper=pathway_ontology_schema,
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='pathway_terms', **kwargs),
-        document=pathway_ontology_document,
+        ontology_id='wikipathways',
+        remark='WikiPathways pathway ontology exported from the current RDF pathway archive via pypath.',
         extension='obo',
         file_stem='wikipathways',
     ),

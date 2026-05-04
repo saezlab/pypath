@@ -434,7 +434,7 @@ class _BaseCvBuilder:
                 if term is None:
                     continue
 
-                key = (term, value, unit if self.silver_cls is SilverAnnotation else None)
+                key = self._dedupe_key(term, value, unit if self.silver_cls is SilverAnnotation else None)
                 if key in seen:
                     continue
                 seen.add(key)
@@ -482,7 +482,7 @@ class _BaseCvBuilder:
             if cv.value_source is None:
                 if self.silver_cls is not SilverAnnotation:
                     continue
-                key = (term, None, None)
+                key = self._dedupe_key(term, None, None)
                 if key in seen:
                     continue
                 seen.add(key)
@@ -500,7 +500,7 @@ class _BaseCvBuilder:
                 unit_items = [unit_items[0] if unit_items else None] * len(value_items)
 
             for value_item, unit_item in zip(value_items, unit_items):
-                key = (term, value_item, unit_item if self.silver_cls is SilverAnnotation else None)
+                key = self._dedupe_key(term, value_item, unit_item if self.silver_cls is SilverAnnotation else None)
                 if key in seen:
                     continue
                 seen.add(key)
@@ -633,6 +633,39 @@ class _BaseCvBuilder:
         if _BaseCvBuilder._has_value(value):
             return [value]
         return []
+
+    @staticmethod
+    def _dedupe_key(term: Any, value: Any, unit: Any) -> tuple[Any, Any, Any]:
+        return (
+            _BaseCvBuilder._make_hashable(term),
+            _BaseCvBuilder._make_hashable(value),
+            _BaseCvBuilder._make_hashable(unit),
+        )
+
+    @staticmethod
+    def _make_hashable(value: Any) -> Any:
+        try:
+            hash(value)
+            return value
+        except TypeError:
+            pass
+
+        if hasattr(value, '_asdict'):
+            return tuple(
+                (key, _BaseCvBuilder._make_hashable(item))
+                for key, item in value._asdict().items()
+            )
+        if isinstance(value, dict):
+            return tuple(
+                sorted(
+                    (_BaseCvBuilder._make_hashable(key), _BaseCvBuilder._make_hashable(item))
+                    for key, item in value.items()
+                )
+            )
+        if isinstance(value, (list, tuple, set)):
+            return tuple(_BaseCvBuilder._make_hashable(item) for item in value)
+
+        return repr(value)
 
     @staticmethod
     def _validate_term(term: Any) -> None:  # noqa: D401 - validation hook

@@ -30,7 +30,7 @@ from pypath.internals.tabular_builder import (
     MembershipBuilder,
 )
 from pypath.internals.ontology_builder import OntologyBuilder, RelationshipBuilder
-from pypath.internals.ontology_schema import OntologyDocument, OntologyTypedef
+from pypath.internals.ontology_schema import OntologyTypedef
 from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.reactome import _raw
 
@@ -257,14 +257,6 @@ pathway_ontology_schema = OntologyBuilder(
     ],
 )
 
-pathway_ontology_document = OntologyDocument(
-    ontology='reactome_pathways',
-    default_namespace='reactome_pathways',
-    remark='Reactome pathway ontology exported from Reactome BioPAX via pypath.',
-    typedefs=[OntologyTypedef(id='part_of', name='part_of')],
-)
-
-
 download = Download(
     url='https://reactome.org/download/current/biopax.zip',
     filename='reactome_biopax.zip',
@@ -295,7 +287,9 @@ resource = Resource(
         download=download,
         mapper=pathway_ontology_schema,
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='pathway_terms', **kwargs),
-        document=pathway_ontology_document,
+        ontology_id='reactome_pathways',
+        remark='Reactome pathway ontology exported from Reactome BioPAX via pypath.',
+        typedefs=[OntologyTypedef(id='part_of', name='part_of')],
         extension='obo',
         file_stem='reactome_pathways',
     ),

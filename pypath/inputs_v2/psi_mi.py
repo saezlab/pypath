@@ -5,7 +5,6 @@ from __future__ import annotations
 import re
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.ontology_schema import OntologyDocument
 from pypath.inputs_v2.base import Download, OntologyDataset, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
@@ -42,7 +41,7 @@ resource = Resource(
         ),
         mapper=obo_record_to_term,
         raw_parser=_iter_fixed_obo,
-        document=OntologyDocument(ontology='psi-mi'),
+        ontology_id='psi-mi',
         extension='obo',
         file_stem='psi_mi',
     ),

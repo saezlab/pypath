@@ -25,7 +25,6 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.internals.ontology_schema import OntologyDocument
 from pypath.inputs_v2.base import (
     Dataset,
     Download,
@@ -81,7 +80,7 @@ resource = Resource(
         ),
         mapper=obo_record_to_term,
         raw_parser=iter_obo,
-        document=OntologyDocument(ontology='hp', default_namespace='human_phenotype'),
+        ontology_id='hpo',
         extension='obo',
         file_stem='hp',
     ),

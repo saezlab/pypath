@@ -11,7 +11,7 @@ import json
 from typing import Any, Literal, Protocol
 
 from pypath.internals.silver_schema import Entity, Identifier, Annotation
-from pypath.internals.ontology_schema import OntologyDocument, OntologyTerm
+from pypath.internals.ontology_schema import OntologyDocument, OntologyTerm, OntologyTypedef
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -139,14 +139,24 @@ class OntologyDataset:
         download: Download | None,
         mapper: Callable[[dict[str, Any]], OntologyTerm | None],
         raw_parser: Callable[..., Generator[dict[str, Any], None, None]],
-        document: OntologyDocument,
+        ontology_id: str,
+        document: OntologyDocument | None = None,
+        remark: str | None = None,
+        typedefs: list[OntologyTypedef] | None = None,
         extension: str = 'obo',
         file_stem: str | None = None,
     ) -> None:
         self.download = download
         self.mapper = mapper
         self._raw_parser = raw_parser
-        self.document = document
+        if not ontology_id or not ontology_id.strip():
+            raise ValueError('OntologyDataset requires a non-empty ontology_id')
+        self.ontology_id = ontology_id.strip()
+        self.document = document or OntologyDocument(
+            ontology=self.ontology_id,
+            remark=remark,
+            typedefs=typedefs,
+        )
         self.extension = extension
         self.file_stem = file_stem
 
@@ -161,7 +171,11 @@ class OntologyDataset:
                 yield term
 
 
-def ontology_term_to_entity(term: OntologyTerm) -> Entity:
+def ontology_term_to_entity(
+    term: OntologyTerm,
+    *,
+    ontology_id: str,
+) -> Entity:
     """Convert a structured ontology term into a first-class CV-term entity."""
     identifiers = [Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=term.id)]
 
@@ -176,7 +190,9 @@ def ontology_term_to_entity(term: OntologyTerm) -> Entity:
         if synonym and synonym != term.name:
             identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=synonym))
 
-    annotations: list[Annotation] = []
+    annotations: list[Annotation] = [
+        Annotation(term=OntologyAnnotationCv.ONTOLOGY_ID, value=ontology_id),
+    ]
     if term.definition:
         annotations.append(Annotation(term=OntologyAnnotationCv.DEFINITION, value=term.definition))
     for comment in term.comments or []:

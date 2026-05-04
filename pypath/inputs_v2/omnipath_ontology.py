@@ -8,7 +8,7 @@ from typing import Any
 
 from pypath.internals import cv_terms
 from pypath.internals.cv_terms import CvEnum, LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.ontology_schema import OntologyDocument, OntologyTerm
+from pypath.internals.ontology_schema import OntologyTerm
 from pypath.inputs_v2.base import OntologyDataset, Resource, ResourceConfig
 
 
@@ -92,7 +92,7 @@ resource = Resource(
         download=None,
         mapper=_map_om_term,
         raw_parser=_iter_om_terms,
-        document=OntologyDocument(ontology='omnipath'),
+        ontology_id='omnipath',
         extension='obo',
         file_stem='omnipath_mi',
     ),
