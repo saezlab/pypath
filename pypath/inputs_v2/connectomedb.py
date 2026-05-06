@@ -132,7 +132,7 @@ interactions_schema = EntityBuilder(
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Ligand Symbols', extract='gene_alias')),
-                    CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Ligand Location')),
+                    CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('Ligand Location')),
                 )
             ),
         ),
