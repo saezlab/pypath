@@ -148,6 +148,7 @@ interactions_schema = EntityBuilder(
                 annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Receptor Symbols', extract='gene_alias')),
                     CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('Receptor Location')),
+                    CV(term=ParticipantMetadataCv.TARGET),
                 )
             ),
         ),
