@@ -124,3 +124,4 @@ class IdentifierNamespaceCv(CvEnum):
     CHEMBL_COMPONENT_ID = ("OM:0229", "ChEMBL internal component identifier (component_id)")
     SCIENTIFIC_NAME = ("OM:0230", "Scientific name of a food source organism")
     MRCLINKSDB = ("OM:0231", "MRClinksDB interaction identifier", "https://www.cellknowledge.com.cn/mrclinkdb/")
+    CDB = ("OM:0232", "ConnectomeDB interaction identifier", "https://connectomedb.org/")
