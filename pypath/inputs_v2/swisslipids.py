@@ -55,7 +55,6 @@ f = FieldConfig(
     transform={
         'inchi': lambda v: None if not v or str(v).strip().lower() in {'none', 'inchi=none'} else str(v).strip(),
         'inchikey': lambda v: None if not v or str(v).strip().lower() in {'none', 'inchikey=none'} else str(v).strip().removeprefix('InChIKey='),
-        'chebi': lambda v: f'CHEBI:{v}' if v else None,
     },
 )
 
@@ -75,7 +74,7 @@ lipids_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.SMILES, value=f('SMILES (pH7.3)')),
         CV(
             term=IdentifierNamespaceCv.CHEBI,
-            value=f('CHEBI', extract='chebi', transform='chebi'),
+            value=f('CHEBI', extract='chebi'),
         ),
         CV(term=IdentifierNamespaceCv.LIPIDMAPS, value=f('LIPID MAPS')),
         CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB')),

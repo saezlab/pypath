@@ -53,7 +53,6 @@ f = FieldConfig(
         'hmdb': r'^(HMDB\d{5,8})$',
     },
     transform={
-        'chebi': lambda v: f'CHEBI:{v}' if v else None,
         'hmdb': lambda v: v.upper() if v else None,
     },
 )
@@ -69,7 +68,7 @@ lipids_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('INCHI_KEY')),
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('INCHI')),
         CV(term=IdentifierNamespaceCv.SMILES, value=f('SMILES')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('FORMULA')),
+        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('FORMULA')),
         CV(
             term=IdentifierNamespaceCv.CHEBI,
             value=f('CHEBI_ID', extract='chebi'),

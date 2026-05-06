@@ -118,6 +118,9 @@ def _parse_identifier_pairs(raw: object) -> list[tuple[object, str]]:
             continue
         if prefix == 'uniprotkb' and '-PRO_' in value:
             value = value.split('-PRO_', 1)[0]
+        if prefix == 'chebi':
+            match = re.fullmatch(r'(?:CHEBI:)?(\d+)', value, flags=re.IGNORECASE)
+            value = match.group(1) if match else None
         if prefix == 'chembl' and value.upper().startswith('CHEMBL'):
             value = f'CHEMBL{value[len("CHEMBL"): ]}'
         if prefix == 'chembl compound' and value.isdigit():

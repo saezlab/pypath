@@ -7,6 +7,8 @@ This module converts Reactome BioPAX data into Entity records using the
 
 from __future__ import annotations
 
+import re
+
 from pypath.internals.cv_terms import (
     BiologicalRoleCv,
     EntityTypeCv,
@@ -62,6 +64,7 @@ role_map = {
     'controlled': BiologicalRoleCv.CONTROLLED,
 }
 
+
 f = FieldConfig(
     delimiter=';',
     map={
@@ -78,6 +81,11 @@ f = FieldConfig(
         'missing': lambda value: '' if not value or value == _MISSING_VALUE else value,
         'split': lambda value: [] if not value or value == _MISSING_VALUE else [
             item for item in value.split(';') if item
+        ],
+        'split_chebi': lambda value: [] if not value or value == _MISSING_VALUE else [
+            match.group(1)
+            for item in value.split(';')
+            if (match := re.fullmatch(r'(?:CHEBI:)?(\d+)', item.strip()))
         ],
     },
 )
@@ -108,7 +116,7 @@ reactions_schema = EntityBuilder(
                     value=f('participant_reactome_stable_id', delimiter='||', map='split'),
                 ),
                 CV(term=IdentifierNamespaceCv.UNIPROT, value=f('participant_uniprot', delimiter='||', map='split')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f('participant_chebi', delimiter='||', map='split')),
+                CV(term=IdentifierNamespaceCv.CHEBI, value=f('participant_chebi', delimiter='||', map='split_chebi')),
                 CV(
                     term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
                     value=f('participant_pubchem_compound', delimiter='||', map='split'),
@@ -160,7 +168,7 @@ controls_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controller_synonyms', map='split')),
                     CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controller_reactome_stable_id', map='split')),
                     CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controller_uniprot', map='split')),
-                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split')),
+                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split_chebi')),
                     CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_pubchem_compound', map='split')),
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_kegg', map='split')),
                     CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_go', map='split')),
@@ -182,7 +190,7 @@ controls_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controlled_synonyms', map='split')),
                     CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controlled_reactome_stable_id', map='split')),
                     CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controlled_uniprot', map='split')),
-                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('controlled_chebi', map='split')),
+                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('controlled_chebi', map='split_chebi')),
                     CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controlled_pubchem_compound', map='split')),
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controlled_kegg', map='split')),
                     CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controlled_go', map='split')),
@@ -207,7 +215,7 @@ control_groups_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controller_synonyms', map='split')),
         CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controller_reactome_stable_id', map='split')),
         CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controller_uniprot', map='split')),
-        CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split_chebi')),
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_pubchem_compound', map='split')),
         CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_kegg', map='split')),
         CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_go', map='split')),
@@ -224,7 +232,7 @@ control_groups_schema = EntityBuilder(
                 CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controller_member_synonyms', delimiter='||', map='split')),
                 CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controller_member_reactome_stable_id', delimiter='||', map='split')),
                 CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controller_member_uniprot', delimiter='||', map='split')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_member_chebi', delimiter='||', map='split')),
+                CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_member_chebi', delimiter='||', map='split_chebi')),
                 CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_member_pubchem_compound', delimiter='||', map='split')),
                 CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_member_kegg', delimiter='||', map='split')),
                 CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_member_go', delimiter='||', map='split')),

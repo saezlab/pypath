@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -40,13 +42,17 @@ config = ResourceConfig(
     ),
 )
 
-f = FieldConfig()
+f = FieldConfig(
+    extract={
+        'chebi': r'^(?:CHEBI:)?(\d+)$',
+    },
+)
 
 
 molecules_schema = EntityBuilder(
     entity_type=EntityTypeCv.SMALL_MOLECULE,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id', extract='chebi')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
         CV(term=IdentifierNamespaceCv.SYNONYM, value=lambda row: row.get('synonyms', [])),
         CV(term=IdentifierNamespaceCv.SMILES, value=f('smiles')),
@@ -70,7 +76,8 @@ molecules_schema = EntityBuilder(
 
 
 def _id_translation_mapper(row: dict) -> dict | None:
-    chebi_id = row.get('chebi_id')
+    chebi_match = re.fullmatch(r'(?:CHEBI:)?(\d+)', str(row.get('chebi_id') or '').strip())
+    chebi_id = chebi_match.group(1) if chebi_match else None
     standard_inchi = row.get('inchi')
     if not chebi_id or not standard_inchi:
         return None

@@ -92,7 +92,12 @@ def mechanisms_parser(
     SELECT
         dm.*,
         md.chembl_id AS molecule_chembl_id,
+        cs.canonical_smiles,
+        cs.standard_inchi,
+        cs.standard_inchi_key,
         td.chembl_id AS target_chembl_id,
+        td.target_type,
+        GROUP_CONCAT(DISTINCT cseq.accession) AS target_component_accessions,
         d.chembl_id AS document_chembl_id,
         d.pubmed_id,
         d.doi,
@@ -100,7 +105,10 @@ def mechanisms_parser(
         GROUP_CONCAT(mr.ref_url, '; ') AS mechanism_refs
     FROM drug_mechanism dm
     LEFT JOIN molecule_dictionary md ON dm.molregno = md.molregno
+    LEFT JOIN compound_structures cs ON dm.molregno = cs.molregno
     LEFT JOIN target_dictionary td ON dm.tid = td.tid
+    LEFT JOIN target_components tc ON dm.tid = tc.tid
+    LEFT JOIN component_sequences cseq ON tc.component_id = cseq.component_id
     LEFT JOIN compound_records cr ON dm.record_id = cr.record_id
     LEFT JOIN docs d ON cr.doc_id = d.doc_id
     LEFT JOIN mechanism_refs mr ON dm.mec_id = mr.mec_id
@@ -180,11 +188,31 @@ def activities_parser(
     SELECT
         act.*,
         md.chembl_id AS molecule_chembl_id,
+        cs.canonical_smiles,
+        cs.standard_inchi,
+        cs.standard_inchi_key,
         a.chembl_id AS assay_chembl_id,
+        a.assay_type,
+        a.assay_tax_id,
+        a.confidence_score,
+        a.assay_category,
+        a.assay_subcellular_fraction,
+        a.assay_tissue,
+        a.assay_cell_type,
+        a.description AS assay_description,
+        GROUP_CONCAT(
+            COALESCE(ap.standard_type, '') || ':' ||
+            COALESCE(ap.standard_value, '') || ' ' ||
+            COALESCE(ap.standard_units, ''),
+            '; '
+        ) AS assay_parameters,
         td.chembl_id AS target_chembl_id,
+        td.target_type,
         td.tax_id AS target_tax_id,
+        GROUP_CONCAT(DISTINCT cseq.accession) AS target_component_accessions,
         d.chembl_id AS document_chembl_id,
         d.pubmed_id,
+        d.doi,
         le.bei,
         le.le,
         le.lle,
@@ -193,10 +221,15 @@ def activities_parser(
         at.parent_type AS action_parent_type
     FROM activities act
     LEFT JOIN molecule_dictionary md ON act.molregno = md.molregno
+    LEFT JOIN compound_structures cs ON act.molregno = cs.molregno
     LEFT JOIN assays a ON act.assay_id = a.assay_id
+    LEFT JOIN assay_parameters ap ON a.assay_id = ap.assay_id
     LEFT JOIN target_dictionary td ON a.tid = td.tid
+    LEFT JOIN target_components tc ON a.tid = tc.tid
+    LEFT JOIN component_sequences cseq ON tc.component_id = cseq.component_id
     LEFT JOIN docs d ON act.doc_id = d.doc_id
     LEFT JOIN ligand_eff le ON act.activity_id = le.activity_id
     LEFT JOIN action_type at ON act.action_type = at.action_type
+    GROUP BY act.activity_id
     """
     yield from iter_sqlite(opener, query=query, **kwargs)

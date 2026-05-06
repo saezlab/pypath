@@ -50,7 +50,6 @@ f = FieldConfig(
         'kegg_compound': r'^([CDGcdg])(\d{4,5})$',
     },
     transform={
-        'chebi': lambda v: f'CHEBI:{v}' if v else None,
         'kegg_compound': lambda v: f'{v[0].upper()}{v[1].zfill(5)}' if v and len(v) == 2 else None,
     },
 )

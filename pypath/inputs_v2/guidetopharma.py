@@ -291,15 +291,15 @@ ligands_schema = EntityBuilder(
     entity_type=EntityTypeCv.SMALL_MOLECULE,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Ligand ID')),
-        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PubChem SID')),
-        CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem CID')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem SID')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PubChem CID')),
         CV(term=IdentifierNamespaceCv.UNIPROT, value=lambda row: _filter_uniprot_accessions(row.get('UniProt ID'))),
         CV(
             term=IdentifierNamespaceCv.UNIPROT_ENTRY_NAME,
             value=lambda row: _filter_uniprot_entry_names(row.get('UniProt ID')),
         ),
         CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl ID', delimiter='|')),
-        CV(term=IdentifierNamespaceCv.CHEMBL, value=lambda row: _normalize_chembl(row.get('ChEMBL ID'))),
+        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=lambda row: _normalize_chembl(row.get('ChEMBL ID'))),
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('InChIKey')),
         CV(term=IdentifierNamespaceCv.SYNONYM, value=f('Synonyms')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('Name')),

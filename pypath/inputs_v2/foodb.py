@@ -72,6 +72,7 @@ f = FieldConfig(
     extract={
         'taxid': r'^(-?\d+)',
         'cas': r'(\d{1,7}-\d{2}-\d)',
+        'chebi': r'^(?:CHEBI:)?(\d+)$',
     },
 )
 
@@ -102,7 +103,7 @@ foods_schema = EntityBuilder(
                 CV(term=IdentifierNamespaceCv.CAS, value=f('member_cas', extract='cas')),
                 CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('member_inchikey')),
                 CV(term=IdentifierNamespaceCv.SMILES, value=f('member_smiles')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f('member_chebi')),
+                CV(term=IdentifierNamespaceCv.CHEBI, value=f('member_chebi', extract='chebi')),
                 CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('member_kegg')),
                 CV(term=IdentifierNamespaceCv.IUPAC_NAME, value=f('member_iupac')),
                 CV(term=IdentifierNamespaceCv.SYNONYM, value=f('member_synonyms')),

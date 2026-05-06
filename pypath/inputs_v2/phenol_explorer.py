@@ -91,7 +91,13 @@ download_composition = Download(
 # Field configuration
 # =============================================================================
 
-f = FieldConfig(delimiter=MEMBER_DELIMITER, preserve_indices=True)
+f = FieldConfig(
+    delimiter=MEMBER_DELIMITER,
+    preserve_indices=True,
+    extract={
+        'chebi': r'^(?:CHEBI:)?(\d+)$',
+    },
+)
 
 
 # =============================================================================
@@ -116,7 +122,7 @@ foods_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.PHENOL_EXPLORER, value=f('member_compound_id')),
                 CV(term=IdentifierNamespaceCv.NAME, value=f('member_compound_name')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f('member_chebi')),
+                CV(term=IdentifierNamespaceCv.CHEBI, value=f('member_chebi', extract='chebi')),
                 CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('member_pubchem')),
                 CV(term=IdentifierNamespaceCv.CAS, value=f('member_cas')),
                 CV(term=IdentifierNamespaceCv.SMILES, value=f('member_smiles')),

@@ -46,7 +46,7 @@ def _iter_tsv(opener, **_kwargs: object):
 _IDENTIFIER_CV_MAPPING = {
     'chebi': IdentifierNamespaceCv.CHEBI,
     'complexportal': IdentifierNamespaceCv.COMPLEXPORTAL,
-    'pubchem': IdentifierNamespaceCv.PUBCHEM,
+    'pubchem': IdentifierNamespaceCv.PUBCHEM_COMPOUND,
     'signor': IdentifierNamespaceCv.SIGNOR,
     'uniprotkb': IdentifierNamespaceCv.UNIPROT,
 }
@@ -117,13 +117,14 @@ def _normalize_signor_identifier(prefix: str, value: str) -> tuple[object | None
     if value.startswith('SIGNOR-'):
         return IdentifierNamespaceCv.SIGNOR, value
     if lower_value.startswith('chebi:'):
-        return IdentifierNamespaceCv.CHEBI, f'CHEBI:{value.split(":", 1)[1]}'
+        match = re.fullmatch(r'CHEBI:(\d+)', value, flags=re.IGNORECASE)
+        return IdentifierNamespaceCv.CHEBI, match.group(1) if match else None
     if value.startswith('DB') and value[2:].isdigit():
         return IdentifierNamespaceCv.DRUGBANK, value
     if lower_value.startswith('pubchem:'):
-        return IdentifierNamespaceCv.PUBCHEM, value.split(':', 1)[1]
+        return IdentifierNamespaceCv.PUBCHEM_COMPOUND, value.split(':', 1)[1]
     if prefix == 'pubchem' and value.upper().startswith('CID:'):
-        return IdentifierNamespaceCv.PUBCHEM, value.split(':', 1)[1]
+        return IdentifierNamespaceCv.PUBCHEM_COMPOUND, value.split(':', 1)[1]
     if prefix == 'pubchem' and value.upper().startswith('SID:'):
         return None, None
     if lower_value.startswith('uniprotkb:'):

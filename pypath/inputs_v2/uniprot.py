@@ -266,9 +266,9 @@ proteins_schema = EntityBuilder(
         #CV(term=IdentifierNamespaceCv.REFSEQ, value=f('RefSeq', delimiter=';')),
         #CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=f('AlphaFoldDB', delimiter=';')),
         CV(term=IdentifierNamespaceCv.KEGG, value=f('KEGG', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.CHEMBL, value=f('ChEMBL', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.BIOGRID, value=f('BioGRID', delimiter=';')),
+        #CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('ChEMBL', delimiter=';')),
+        #CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR', delimiter=';')),
+        #CV(term=IdentifierNamespaceCv.BIOGRID, value=f('BioGRID', delimiter=';')),
         CV(term=IdentifierNamespaceCv.COMPLEXPORTAL, value=f('ComplexPortal', delimiter=';', extract='complexportal_id')),
     ),
     annotations=AnnotationsBuilder(
