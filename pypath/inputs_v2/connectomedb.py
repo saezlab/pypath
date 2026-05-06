@@ -18,6 +18,7 @@ from pypath.internals.cv_terms import (
     CurationCv,
     InteractionMetadataCv,
     ParticipantMetadataCv,
+    MoleculeAnnotationsCv,
 )
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -62,15 +63,9 @@ config = ResourceConfig(
 
 BASE_URL = 'https://connectomedb.org/downloads/Current-Release/CSV/'
 
-download_human_interactions = Download(
-    url=BASE_URL + 'ConnectomeDB2025_human.csv',
-    filename='connectomedb_human_interactions.csv',
-    subfolder='connectomedb2025',
-)
-
-download_mouse_interactions = Download(
-    url=BASE_URL + 'ConnectomeDB2025_mouse.csv',
-    filename='connectomedb_mouse_interactions.csv',
+download_interactions = Download(
+    url=BASE_URL + 'all_species.csv',
+    filename='connectomedb_all_species_interactions.csv',
     subfolder='connectomedb2025',
 )
 
@@ -79,13 +74,39 @@ download_mouse_interactions = Download(
 # Processing Helpers
 # =============================================================================
 
-_symbols_pat = re.compile(r"^(\w+)(?:\s*\((.+)\))?")
+_symbols_pat = re.compile(r"^([^,(]+)(?:\s*\((.+)\))?")
+
 
 def _extract_primary_gene(token: str):
-    return _symbols_pat.search(token).group(1)
+    match = _symbols_pat.search(token or '')
+    return match.group(1).strip() if match else None
+
 
 def _extract_gene_alias(token: str):
-    return _symbols_pat.search(token).group(2).replace(", ", ";")
+    match = _symbols_pat.search(token or '')
+    return match.group(2).replace(", ", ";") if match and match.group(2) else None
+
+
+_species_taxon = {
+    'human': '9606',
+    'mouse': '10090',
+    'chimp': '9598',
+    'macaque': '9544',
+    'marmoset': '9483',
+    'rat': '10116',
+    'pig': '9823',
+    'cow': '9913',
+    'dog': '9615',
+    'horse': '9796',
+    'sheep': '9940',
+    'chicken': '9031',
+    'frog': '8364',
+    'zebrafish': '7955',
+}
+
+
+def _species_to_taxon(species: str) -> str | None:
+    return _species_taxon.get((species or '').strip().lower())
 
 _cdb_pat = re.compile(r"^CDB\d{2}:(\d+)", re.IGNORECASE)
 
@@ -104,6 +125,9 @@ f = FieldConfig(
         'gene_alias': _extract_gene_alias,
         'cdb': _extract_cdb,
     },
+    map={
+        'species_taxon': _species_to_taxon,
+    },
 )
 
 # -----------------------------------------------------------------------------
@@ -120,6 +144,7 @@ interactions_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('Evidence')),
         CV(term=CurationCv.COMMENT, value=f('AI summary')),
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
     ),
     membership=MembershipBuilder(
         Member(
@@ -127,13 +152,14 @@ interactions_schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Ligand Symbols', extract='primary_gene')),
-                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Ligand HGNC ID')),
+                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Ligand Species ID', extract=r'^HGNC:\d+$')),
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ligand ENSEMBL ID')),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Ligand Symbols', extract='gene_alias')),
                     CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('Ligand Location')),
                     CV(term=ParticipantMetadataCv.SOURCE),
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
                 )
             ),
         ),
@@ -142,13 +168,14 @@ interactions_schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Receptor Symbols', extract='primary_gene')),
-                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Receptor HGNC ID')),
+                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Receptor Species ID', extract=r'^HGNC:\d+$')),
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Receptor ENSEMBL ID')),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Receptor Symbols', extract='gene_alias')),
                     CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('Receptor Location')),
                     CV(term=ParticipantMetadataCv.TARGET),
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
                 )
             ),
         ),
@@ -161,13 +188,8 @@ interactions_schema = EntityBuilder(
 
 resource = Resource(
     config,
-    human_interactions=Dataset(
-        download=download_human_interactions,
-        mapper=interactions_schema,
-        raw_parser=iter_csv,
-    ),
-    mouse_interactions=Dataset(
-        download=download_mouse_interactions,
+    interactions=Dataset(
+        download=download_interactions,
         mapper=interactions_schema,
         raw_parser=iter_csv,
     ),
