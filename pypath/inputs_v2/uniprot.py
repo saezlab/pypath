@@ -31,8 +31,10 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.internals.ontology_schema import OntologyTypedef
+from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
+from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
 # UniProt REST API URL for comprehensive protein data
 # Currently hardcoded for human (9606), mouse (10090), and rat (10116)
@@ -47,6 +49,11 @@ UNIPROT_DATA_URL = (
     "ec,go_id,ft_transmem,protein_families,xref_refseq,xref_alphafolddb,"
     "xref_chembl,xref_phosphositeplus,xref_signor,xref_pathwaycommons,"
     "xref_biogrid,xref_complexportal"
+)
+
+UNIPROT_KEYWORDS_OBO_URL = (
+    'https://rest.uniprot.org/keywords/stream'
+    '?compressed=true&format=obo&query=%28*%29'
 )
 
 config = ResourceConfig(
@@ -286,7 +293,7 @@ proteins_schema = EntityBuilder(
         CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=f('EC number', delimiter=';')),
         CV(term=MoleculeAnnotationsCv.AMINO_ACID_SEQUENCE, value=f('Sequence')),
         CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Gene Ontology IDs', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Keywords IDs', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Keyword ID', delimiter=';')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Organism (ID)')),
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('PubMed ID', delimiter=';')),
     ),
@@ -294,6 +301,24 @@ proteins_schema = EntityBuilder(
 
 resource = Resource(
     config,
+    ontology=OntologyDataset(
+        download=Download(
+            url=UNIPROT_KEYWORDS_OBO_URL,
+            filename='uniprot_keywords.obo.gz',
+            subfolder='uniprot',
+            large=True,
+            encoding='utf-8',
+            default_mode='r',
+            ext='gz',
+        ),
+        mapper=obo_record_to_term,
+        raw_parser=iter_obo,
+        ontology_id='uniprot_keywords',
+        remark='UniProt Keywords ontology exported from the UniProt REST API via pypath.',
+        typedefs=[OntologyTypedef(id='category', name='category')],
+        extension='obo',
+        file_stem='uniprot_keywords',
+    ),
     proteins=Dataset(
         download=Download(
             url=UNIPROT_DATA_URL,
