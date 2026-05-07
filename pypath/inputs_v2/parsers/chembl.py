@@ -97,7 +97,15 @@ def mechanisms_parser(
         cs.standard_inchi_key,
         td.chembl_id AS target_chembl_id,
         td.target_type,
-        GROUP_CONCAT(DISTINCT cseq.accession) AS target_component_accessions,
+        GROUP_CONCAT(DISTINCT CASE
+            WHEN cseq.component_type = 'PROTEIN'
+             AND cseq.db_source IN ('SWISS-PROT', 'TREMBL')
+            THEN cseq.accession
+        END) AS target_component_uniprot_accessions,
+        GROUP_CONCAT(DISTINCT CASE
+            WHEN cseq.accession LIKE 'ENS%'
+            THEN cseq.accession
+        END) AS target_component_ensembl_accessions,
         d.chembl_id AS document_chembl_id,
         d.pubmed_id,
         d.doi,
@@ -157,7 +165,17 @@ def targets_parser(
         td.tax_id,
         td.organism,
         td.chembl_id,
-        GROUP_CONCAT(COALESCE(cs.accession, '')) AS component_accessions,
+        GROUP_CONCAT(CASE
+            WHEN cs.component_type = 'PROTEIN'
+             AND cs.db_source IN ('SWISS-PROT', 'TREMBL')
+            THEN COALESCE(cs.accession, '')
+            ELSE ''
+        END) AS component_uniprot_accessions,
+        GROUP_CONCAT(CASE
+            WHEN cs.accession LIKE 'ENS%'
+            THEN COALESCE(cs.accession, '')
+            ELSE ''
+        END) AS component_ensembl_accessions,
         GROUP_CONCAT(COALESCE(cs.component_type, '')) AS component_types,
         GROUP_CONCAT(COALESCE(tc.component_id, '')) AS component_ids,
         GROUP_CONCAT(COALESCE(cs.description, '')) AS component_descriptions
@@ -209,7 +227,15 @@ def activities_parser(
         td.chembl_id AS target_chembl_id,
         td.target_type,
         td.tax_id AS target_tax_id,
-        GROUP_CONCAT(DISTINCT cseq.accession) AS target_component_accessions,
+        GROUP_CONCAT(DISTINCT CASE
+            WHEN cseq.component_type = 'PROTEIN'
+             AND cseq.db_source IN ('SWISS-PROT', 'TREMBL')
+            THEN cseq.accession
+        END) AS target_component_uniprot_accessions,
+        GROUP_CONCAT(DISTINCT CASE
+            WHEN cseq.accession LIKE 'ENS%'
+            THEN cseq.accession
+        END) AS target_component_ensembl_accessions,
         d.chembl_id AS document_chembl_id,
         d.pubmed_id,
         d.doi,

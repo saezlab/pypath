@@ -168,8 +168,6 @@ STANDARD_TYPE_MAP = {
 f = FieldConfig(
     extract={
         'chebi': r'^(?:CHEBI:)?(\d+)$',
-        'uniprot': r'^([A-NR-Z][0-9][A-Z0-9]{3}[0-9]|[A-Z][A-Z0-9]{2}[0-9][A-Z0-9]{2}[0-9]|[A-Z0-9]{10})$',
-        'ensembl': r'^(ENS[A-Z0-9]*\d+(?:\.\d+)?)$',
     },
     transform={
         'bool_to_cv': lambda v, cv: cv if str(v) == '1' else None,
@@ -270,8 +268,8 @@ mechanisms_schema = EntityBuilder(
                 entity_type=f('target_type', map='target_type'),
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('target_component_accessions', delimiter=',', extract='uniprot')),
-                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('target_component_accessions', delimiter=',', extract='ensembl')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('target_component_uniprot_accessions', delimiter=',')),
+                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('target_component_ensembl_accessions', delimiter=',')),
                 ),
             ),
         ),
@@ -301,8 +299,8 @@ targets_schema = EntityBuilder(
         MembersFromList(
             entity_type=f('component_types', delimiter=',', map='component_type'),
             identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.UNIPROT, value=f('component_accessions', delimiter=',', extract='uniprot')),
-                CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('component_accessions', delimiter=',', extract='ensembl')),
+                CV(term=IdentifierNamespaceCv.UNIPROT, value=f('component_uniprot_accessions', delimiter=',', preserve_indices=True)),
+                CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('component_ensembl_accessions', delimiter=',', preserve_indices=True)),
                 CV(term=IdentifierNamespaceCv.CHEMBL_COMPONENT_ID, value=f('component_ids', delimiter=',')),
             ),
             annotations=AnnotationsBuilder(
@@ -334,8 +332,8 @@ activities_schema = EntityBuilder(
                 entity_type=f('target_type', map='target_type'),
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('target_component_accessions', delimiter=',', extract='uniprot')),
-                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('target_component_accessions', delimiter=',', extract='ensembl')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('target_component_uniprot_accessions', delimiter=',')),
+                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('target_component_ensembl_accessions', delimiter=',')),
                 ),
             ),
         ),
