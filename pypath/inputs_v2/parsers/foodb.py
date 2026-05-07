@@ -15,12 +15,15 @@ Data is cached in a pickle file to speed up subsequent access.
 from __future__ import annotations
 
 import io
+import os
 import pickle
+import tarfile
 from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import polars as pl
 import numpy as np
 
 from pypath.share.downloads import DATA_DIR
@@ -32,8 +35,9 @@ MEMBER_DELIMITER = '||'
 # Module-level cache for parsed data
 _DATA_CACHE: list[dict] | None = None
 
-# Cache version to invalidate older pickled formats
-_CACHE_VERSION = 2  # Bumped version since we changed the parsing approach
+# Cache version to invalidate older pickled formats. The streaming parser below
+# no longer writes this cache; bumping avoids loading old ~1.5 GB pickle files.
+_CACHE_VERSION = 3
 
 
 def _get_cache_path() -> Path:
@@ -88,31 +92,65 @@ def _blank_to_dash(s: pd.Series) -> pd.Series:
     return s.replace('', '-')
 
 
-def _find_csv_file(files: dict[str, Any], csv_name: str) -> io.StringIO | None:
+def _find_csv_file(files: dict[str, Any], csv_name: str) -> Any | None:
     """
     Find a CSV file in the extracted archive files dict.
-    
-    Args:
-        files: Dict mapping filename to file handle from opener.result
-        csv_name: Name of the CSV file to find (e.g., 'Food.csv')
-        
-    Returns:
-        A StringIO or file handle for the CSV file, or None if not found
+
+    Keep archive member handles streaming. The previous implementation read each
+    member into a StringIO; for FooDB's 744 MB Content.csv this alone can push a
+    machine over memory limits before pandas starts parsing.
     """
     for filename, handle in files.items():
         # Match by basename (handles nested paths in tar archives)
         if filename.endswith(csv_name) or filename.endswith(f'/{csv_name}'):
-            # If handle is bytes, decode it
-            if hasattr(handle, 'read'):
-                content = handle.read()
-                if isinstance(content, bytes):
-                    return io.StringIO(content.decode('utf-8'))
-                elif isinstance(content, str):
-                    return io.StringIO(content)
-                # Reset handle if readable
-                handle.seek(0)
-                return handle
+            if isinstance(handle, bytes):
+                return io.BytesIO(handle)
+            if isinstance(handle, str):
+                return io.StringIO(handle)
+            return handle
     return None
+
+
+def _csv_member_name(files: dict[str, Any], csv_name: str) -> str | None:
+    """Return archive member name for a CSV from opener.result keys."""
+    for filename in files.keys():
+        if filename.endswith(csv_name) or filename.endswith(f'/{csv_name}'):
+            return filename
+    return None
+
+
+def _csv_path_from_archive(opener: Any, files: dict[str, Any], csv_name: str) -> Path | None:
+    """
+    Return an on-disk path for a CSV, extracting the tar member if necessary.
+
+    Polars lazy `scan_csv` needs a path (not a tar member file object). We keep
+    extraction selective via Download.needed and materialize only the required
+    CSVs next to the downloaded archive.
+    """
+    archive_path_raw = getattr(opener, 'path', None)
+    if not archive_path_raw:
+        return None
+
+    archive_path = Path(archive_path_raw)
+    member_name = _csv_member_name(files, csv_name)
+    if member_name is None:
+        return None
+
+    output_path = archive_path.parent / member_name
+    if output_path.exists():
+        return output_path
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(archive_path, mode='r:') as archive:
+        member = archive.getmember(member_name)
+        src = archive.extractfile(member)
+        if src is None:
+            return None
+        with output_path.open('wb') as dst:
+            while chunk := src.read(1024 * 1024):
+                dst.write(chunk)
+
+    return output_path
 
 
 def _load_compounds(files: dict[str, Any]) -> pd.DataFrame:
@@ -124,17 +162,23 @@ def _load_compounds(files: dict[str, Any]) -> pd.DataFrame:
     # Correct column order (header in file is mismatched with data in the original file)
     # We skip the header row (skiprows=1) and provide our own names.
     fieldnames = [
-        'id', 'public_id', 'name', 'state', 'annotation_quality', 
-        'description', 'cas_number', 'moldb_smiles', 'moldb_inchi', 
-        'moldb_mono_mass', 'moldb_inchikey', 'moldb_iupac', 
+        'id', 'public_id', 'name', 'state', 'annotation_quality',
+        'description', 'cas_number', 'moldb_smiles', 'moldb_inchi',
+        'moldb_mono_mass', 'moldb_inchikey', 'moldb_iupac',
         'kingdom', 'superklass', 'klass', 'subklass'
     ]
-    
+    needed_cols = [
+        'id', 'public_id', 'name', 'cas_number', 'moldb_smiles',
+        'moldb_mono_mass', 'moldb_inchikey', 'moldb_iupac',
+        'kingdom', 'superklass', 'klass', 'subklass',
+    ]
+
     # Use C engine for speed, handle potential bad lines if any
     df = pd.read_csv(
         handle,
         names=fieldnames,
         skiprows=1,
+        usecols=needed_cols,
         dtype={'id': 'Int64'}, # nullable int
         low_memory=False
     )
@@ -204,6 +248,95 @@ def _load_external_ids(files: dict[str, Any]) -> pd.DataFrame:
     return exts
 
 
+def _clean_pl(col: str) -> pl.Expr:
+    """Clean a string column lazily."""
+    return pl.col(col).fill_null('').cast(pl.Utf8).str.strip_chars()
+
+
+def _blank_to_dash_pl(col: str, alias: str | None = None) -> pl.Expr:
+    """Polars expression equivalent of `_blank_to_dash`."""
+    cleaned = _clean_pl(col)
+    return (
+        pl.when(cleaned == '')
+        .then(pl.lit('-'))
+        .otherwise(cleaned)
+        .alias(alias or col)
+    )
+
+
+def _load_compounds_pl(path: Path) -> pl.DataFrame:
+    """Load Compound.csv with Polars, selecting only columns used downstream."""
+    fieldnames = [
+        'id', 'public_id', 'name', 'state', 'annotation_quality',
+        'description', 'cas_number', 'moldb_smiles', 'moldb_inchi',
+        'moldb_mono_mass', 'moldb_inchikey', 'moldb_iupac',
+        'kingdom', 'superklass', 'klass', 'subklass'
+    ]
+    needed_cols = [
+        'id', 'public_id', 'name', 'cas_number', 'moldb_smiles',
+        'moldb_mono_mass', 'moldb_inchikey', 'moldb_iupac',
+        'kingdom', 'superklass', 'klass', 'subklass',
+    ]
+    return (
+        pl.scan_csv(
+            path,
+            has_header=False,
+            skip_rows=1,
+            new_columns=fieldnames,
+            infer_schema_length=1000,
+        )
+        .select(needed_cols)
+        .with_columns(pl.col('id').cast(pl.Int64, strict=False))
+        .filter(pl.col('id').is_not_null())
+        .collect(engine='streaming')
+    )
+
+
+def _load_synonyms_pl(path: Path) -> pl.DataFrame:
+    """Load CompoundSynonym.csv and aggregate the first five synonyms."""
+    return (
+        pl.scan_csv(path, infer_schema_length=1000)
+        .select('source_id', 'source_type', 'synonym')
+        .filter(pl.col('source_type') == 'Compound')
+        .with_columns(
+            pl.col('source_id').cast(pl.Int64, strict=False),
+            _clean_pl('synonym').alias('synonym'),
+        )
+        .filter(pl.col('source_id').is_not_null() & (pl.col('synonym') != ''))
+        .with_columns(pl.int_range(pl.len()).over('source_id').alias('_rank'))
+        .filter(pl.col('_rank') < 5)
+        .group_by('source_id')
+        .agg(pl.col('synonym').str.join(delimiter=';'))
+        .rename({'source_id': 'id', 'synonym': 'synonyms'})
+        .collect(engine='streaming')
+    )
+
+
+def _load_external_ids_pl(path: Path) -> pl.DataFrame:
+    """Load external descriptors and extract first ChEBI/KEGG IDs per compound."""
+    df = (
+        pl.scan_csv(path, infer_schema_length=1000)
+        .select('compound_id', 'external_id')
+        .with_columns(
+            pl.col('compound_id').cast(pl.Int64, strict=False),
+            _clean_pl('external_id').alias('external_id'),
+        )
+        .filter(pl.col('compound_id').is_not_null() & (pl.col('external_id') != ''))
+        .collect(engine='streaming')
+    )
+    chebis = (
+        df.filter(pl.col('external_id').str.starts_with('CHEBI:'))
+        .unique(subset=['compound_id'], keep='first')
+        .select(pl.col('compound_id').alias('id'), pl.col('external_id').alias('chebi'))
+    )
+    keggs = (
+        df.filter(pl.col('external_id').str.contains(r'^C\d{5}'))
+        .unique(subset=['compound_id'], keep='first')
+        .select(pl.col('compound_id').alias('id'), pl.col('external_id').alias('kegg'))
+    )
+    return chebis.join(keggs, on='id', how='full', coalesce=True)
+
+
 def _raw(
     opener,
     force_refresh: bool = False,
@@ -230,95 +363,20 @@ def _raw(
         raise ValueError(f"Expected dict of files from tar archive, got {type(opener.result)}")
     
     files = opener.result
+    paths = {
+        name: _csv_path_from_archive(opener, files, name)
+        for name in (
+            'Food.csv',
+            'Content.csv',
+            'Compound.csv',
+            'CompoundSynonym.csv',
+            'CompoundExternalDescriptor.csv',
+        )
+    }
+    missing = [name for name, path in paths.items() if path is None]
+    if missing:
+        raise ValueError(f"FooDB required CSV(s) not found in archive: {', '.join(missing)}")
 
-    # 1. Load Food
-    food_handle = _find_csv_file(files, 'Food.csv')
-    if food_handle is None:
-        raise ValueError("Food.csv not found in archive")
-    
-    df_food = pd.read_csv(food_handle, dtype={'id': 'Int64'}, low_memory=False)
-    df_food = df_food.dropna(subset=['id'])
-    
-    # Keep only necessary food columns and clean them
-    food_cols = [
-        'id', 'public_id', 'name', 'name_scientific', 'description',
-        'food_group', 'food_subgroup', 'ncbi_taxonomy_id'
-    ]
-    # Ensure columns exist (Food.csv should have them)
-    existing_food_cols = [c for c in food_cols if c in df_food.columns]
-    df_food = df_food[existing_food_cols]
-    
-    for col in existing_food_cols:
-        if col != 'id':
-            df_food[col] = _clean_str(df_food[col])
-            
-    # 2. Load Content (The link between Food and Compound)
-    content_handle = _find_csv_file(files, 'Content.csv')
-    if content_handle is None:
-        raise ValueError("Content.csv not found in archive")
-    
-    df_content = pd.read_csv(content_handle, low_memory=False)
-    
-    # Filter for source_type == 'Compound'
-    df_content = df_content[df_content['source_type'] == 'Compound']
-    # Ensure IDs are numeric
-    df_content['food_id'] = pd.to_numeric(df_content['food_id'], errors='coerce')
-    df_content['source_id'] = pd.to_numeric(df_content['source_id'], errors='coerce') # this is compound_id
-    df_content = df_content.dropna(subset=['food_id', 'source_id'])
-    
-    # 3. Load Compound Info
-    df_compounds = _load_compounds(files)
-    df_synonyms = _load_synonyms(files)
-    df_ext = _load_external_ids(files)
-    
-    # Merge Compound details
-    # Compound base + Synonyms + Ext IDs
-    # df_compounds has 'id'
-    df_full_compounds = df_compounds.merge(df_synonyms, on='id', how='left')
-    df_full_compounds = df_full_compounds.merge(df_ext, on='id', how='left')
-    
-    # 4. Merge Content with Compounds
-    df_merged = df_content.merge(
-        df_full_compounds, 
-        left_on='source_id', 
-        right_on='id', 
-        how='left',
-        suffixes=('_content', '_compound')
-    )
-    
-    # 5. Prepare data for aggregation
-    # Helper to safe get column
-    def get_col(df, col):
-        return df[col] if col in df.columns else pd.Series([''] * len(df))
-
-    # Compound fields
-    df_merged['member_compound_id'] = df_merged['source_id'].astype(str)
-    df_merged['member_compound_public_id'] = get_col(df_merged, 'public_id')
-    df_merged['member_compound_name'] = get_col(df_merged, 'name')
-    df_merged['member_cas'] = get_col(df_merged, 'cas_number')
-    df_merged['member_inchikey'] = get_col(df_merged, 'moldb_inchikey')
-    df_merged['member_smiles'] = get_col(df_merged, 'moldb_smiles')
-    df_merged['member_mass'] = get_col(df_merged, 'moldb_mono_mass')
-    df_merged['member_iupac'] = get_col(df_merged, 'moldb_iupac')
-    df_merged['member_chebi'] = get_col(df_merged, 'chebi')
-    df_merged['member_kegg'] = get_col(df_merged, 'kegg')
-    df_merged['member_synonyms'] = get_col(df_merged, 'synonyms')
-    df_merged['member_kingdom'] = get_col(df_merged, 'kingdom')
-    df_merged['member_superklass'] = get_col(df_merged, 'superklass')
-    df_merged['member_klass'] = get_col(df_merged, 'klass')
-    df_merged['member_subklass'] = get_col(df_merged, 'subklass')
-    
-    # Content fields
-    df_merged['member_content'] = get_col(df_merged, 'orig_content')
-    df_merged['member_min'] = get_col(df_merged, 'orig_min')
-    df_merged['member_max'] = get_col(df_merged, 'orig_max')
-    df_merged['member_unit'] = get_col(df_merged, 'orig_unit')
-    df_merged['member_citation'] = get_col(df_merged, 'citation')
-    df_merged['member_method'] = get_col(df_merged, 'orig_method')
-    df_merged['member_food_part'] = get_col(df_merged, 'orig_food_part')
-    df_merged['member_preparation'] = get_col(df_merged, 'preparation_type')
-    
-    # List of all member columns to aggregate
     member_cols = [
         'member_compound_id', 'member_compound_public_id', 'member_compound_name',
         'member_cas', 'member_inchikey', 'member_smiles', 'member_mass',
@@ -327,28 +385,78 @@ def _raw(
         'member_content', 'member_min', 'member_max', 'member_unit',
         'member_citation', 'member_method', 'member_food_part', 'member_preparation'
     ]
-    
-    # Apply _blank_to_dash to all member columns to ensure alignment
-    for col in member_cols:
-        df_merged[col] = _blank_to_dash(df_merged[col])
-        
-    # 6. Aggregate by food_id
-    # We group by food_id and join all member columns with delimiter
-    agg_funcs = {col: lambda x: MEMBER_DELIMITER.join(x) for col in member_cols}
-    
-    df_members = df_merged.groupby('food_id').agg(agg_funcs).reset_index()
-    
-    # 7. Merge back with Food info
-    df_final = df_food.merge(df_members, left_on='id', right_on='food_id', how='left')
-    
-    # For foods with no members, the member columns will be NaN. Fill with empty string.
-    for col in member_cols:
-        df_final[col] = df_final[col].fillna('')
-        
-    # 8. Save to cache and yield
-    # Materialize list of dicts
-    final_data = df_final.to_dict('records')
-    
-    _save_cached_data(final_data)
-    
-    yield from final_data
+
+    food_cols = [
+        'id', 'public_id', 'name', 'name_scientific', 'description',
+        'food_group', 'food_subgroup', 'ncbi_taxonomy_id'
+    ]
+    df_food = (
+        pl.scan_csv(paths['Food.csv'], infer_schema_length=1000)
+        .select(food_cols)
+        .with_columns(pl.col('id').cast(pl.Int64, strict=False))
+        .filter(pl.col('id').is_not_null())
+        .with_columns(_clean_pl(col).alias(col) for col in food_cols if col != 'id')
+        .collect(engine='streaming')
+    )
+
+    df_full_compounds = (
+        _load_compounds_pl(paths['Compound.csv'])
+        .join(_load_synonyms_pl(paths['CompoundSynonym.csv']), on='id', how='left')
+        .join(_load_external_ids_pl(paths['CompoundExternalDescriptor.csv']), on='id', how='left')
+    )
+
+    content_cols = [
+        'food_id', 'source_id', 'source_type', 'orig_content', 'orig_min',
+        'orig_max', 'orig_unit', 'citation', 'orig_method', 'orig_food_part',
+        'preparation_type',
+    ]
+    lf_merged = (
+        pl.scan_csv(paths['Content.csv'], infer_schema_length=1000)
+        .select(content_cols)
+        .filter(pl.col('source_type') == 'Compound')
+        .with_columns(
+            pl.col('food_id').cast(pl.Int64, strict=False),
+            pl.col('source_id').cast(pl.Int64, strict=False),
+        )
+        .filter(pl.col('food_id').is_not_null() & pl.col('source_id').is_not_null())
+        .join(df_full_compounds.lazy(), left_on='source_id', right_on='id', how='left')
+        .with_columns(
+            pl.col('source_id').cast(pl.Int64).cast(pl.Utf8).alias('member_compound_id'),
+            _blank_to_dash_pl('public_id', 'member_compound_public_id'),
+            _blank_to_dash_pl('name', 'member_compound_name'),
+            _blank_to_dash_pl('cas_number', 'member_cas'),
+            _blank_to_dash_pl('moldb_inchikey', 'member_inchikey'),
+            _blank_to_dash_pl('moldb_smiles', 'member_smiles'),
+            _blank_to_dash_pl('moldb_mono_mass', 'member_mass'),
+            _blank_to_dash_pl('moldb_iupac', 'member_iupac'),
+            _blank_to_dash_pl('chebi', 'member_chebi'),
+            _blank_to_dash_pl('kegg', 'member_kegg'),
+            _blank_to_dash_pl('synonyms', 'member_synonyms'),
+            _blank_to_dash_pl('kingdom', 'member_kingdom'),
+            _blank_to_dash_pl('superklass', 'member_superklass'),
+            _blank_to_dash_pl('klass', 'member_klass'),
+            _blank_to_dash_pl('subklass', 'member_subklass'),
+            _blank_to_dash_pl('orig_content', 'member_content'),
+            _blank_to_dash_pl('orig_min', 'member_min'),
+            _blank_to_dash_pl('orig_max', 'member_max'),
+            _blank_to_dash_pl('orig_unit', 'member_unit'),
+            _blank_to_dash_pl('citation', 'member_citation'),
+            _blank_to_dash_pl('orig_method', 'member_method'),
+            _blank_to_dash_pl('orig_food_part', 'member_food_part'),
+            _blank_to_dash_pl('preparation_type', 'member_preparation'),
+        )
+        .select('food_id', *member_cols)
+    )
+
+    df_members = (
+        lf_merged
+        .group_by('food_id')
+        .agg(pl.col(col).str.join(delimiter=MEMBER_DELIMITER) for col in member_cols)
+        .collect(engine='streaming')
+    )
+
+    df_final = df_food.join(df_members, left_on='id', right_on='food_id', how='left')
+    df_final = df_final.with_columns(pl.col(col).fill_null('') for col in member_cols)
+
+    # Yield records directly; do not write/load the old ~1.5 GB pickle cache.
+    yield from df_final.iter_rows(named=True)
