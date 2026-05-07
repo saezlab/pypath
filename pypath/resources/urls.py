@@ -1839,7 +1839,7 @@ urls = {
     'bindingdb': {
         'label': 'A database of protein-ligand interactions',
         'url':
-        'https://bindingdb.org/rwd/bind/downloads/BindingDB_%s_202506_tsv.zip',
+        'https://bindingdb.org/rwd/bind/chemsearch/marvin/SDFdownload.jsp?download_file=/rwd/bind/downloads/BindingDB_%s_202605_tsv.zip',
         'mapping': 'https://bindingdb.org/rwd/bind/BindingDB_%s.txt',
     },
     'hint': {
