@@ -5,8 +5,10 @@ This module converts annotations of lipids and metabolites into Entity records
 using the declarative schema pattern.
 """
 
+import gzip
 import os
 import re
+import shutil
 import requests
 from functools import partial
 from pathlib import Path
@@ -77,7 +79,7 @@ download = Download(
     url=URL,
     filename=os.path.basename(URL),
     subfolder='ramp',
-    large=False,
+    large=True,
     ext=URL.split('.')[-1],
     default_mode='rb',
 )
@@ -120,6 +122,11 @@ table_names = [
 def parser(opener, table=None):
 
     path = Path(opener.path.replace('.gz', ''))
+
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with gzip.open(opener.path, 'rb') as src, path.open('wb') as dst:
+            shutil.copyfileobj(src, dst, length=1024 * 1024)
 
     yield from iter_sqlite(opener, table_name=table, sqlite_path=path)
 

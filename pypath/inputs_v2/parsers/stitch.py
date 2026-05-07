@@ -55,7 +55,7 @@ def _parse_entity(raw_id: str) -> StitchEntity | None:
     )
 
 
-def _parse_links(handle: Any) -> dict[tuple, dict[str, int]]:
+def _parse_links(handle: Any, score_threshold: int = 700) -> dict[tuple, int]:
     """
     Parse the STITCH links file into a confidence score lookup.
 
@@ -64,7 +64,7 @@ def _parse_links(handle: Any) -> dict[tuple, dict[str, int]]:
 
     Returns:
         Dict mapping (chemical_id, protein_id, ncbi_tax_id, stereospecific)
-        to a dict of integer confidence sub-scores and combined score.
+        to combined score. Scores below the configured threshold are not stored.
     """
     lookup = {}
     for row in csv.DictReader(handle, delimiter='\t'):
@@ -72,7 +72,9 @@ def _parse_links(handle: Any) -> dict[tuple, dict[str, int]]:
         prot = _parse_entity(row['protein'])
         if not chem or not prot:
             continue
-        lookup[(chem.id, prot.id, prot.ncbi_tax_id, chem.stereospecific)] = int(row['combined_score'])
+        combined_score = int(row['combined_score'])
+        if combined_score > score_threshold:
+            lookup[(chem.id, prot.id, prot.ncbi_tax_id, chem.stereospecific)] = combined_score
     return lookup
 
 
@@ -161,7 +163,7 @@ def _iter_unique(
 
 def _merge_entry(
         entry: dict,
-        link_lookup: dict[tuple, dict[str, int]],
+        link_lookup: dict[tuple, int],
         score_threshold: int,
 ) -> dict[str, str] | None:
     """
@@ -239,7 +241,7 @@ def iter_stitch_interactions(
     actions_handle = _first_handle(opener.actions)
     if links_handle is None or actions_handle is None:
         return
-    link_lookup = _parse_links(links_handle)
+    link_lookup = _parse_links(links_handle, score_threshold=score_threshold)
     if not link_lookup:
         return
     parsed_rows = (
