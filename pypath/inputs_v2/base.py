@@ -76,7 +76,7 @@ class Download:
     filename: str | _Resolver
     subfolder: str
     large: bool = True
-    encoding: str = 'utf-8'
+    encoding: str | None = 'utf-8'
     default_mode: str = 'r'
     ext: str | None = None
     needed: list[str] | None = None

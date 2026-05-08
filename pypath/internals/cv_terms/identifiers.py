@@ -73,7 +73,7 @@ class IdentifierNamespaceCv(CvEnum):
     GTO_M_PDB = ("OM:0122", "Guide to Malaria Pharmacology identifier", "https://www.guidetopharmacology.org/malaria.jsp")
     REACTOME_STABLE_ID = ("OM:0130", "Reactome stable identifier", "https://reactome.org")
     REACTOME_ID = ("OM:0131", "Reactome internal database identifier", "https://reactome.org")
-    RAMP_ID = ("OM:0132", "RaMP internal database identifier", "https://rampdb.nh.gov/")
+    RAMP_ID = ("OM:0132", "RaMP internal database identifier", "https://rampdb.nih.gov/")
     EC = ("OM:0133", "Enzyme Class identifier (e.g. 1.7.99.4)")
     PFOCR = ("OM:0134", "Pathway Figure OCR (in the form '[PMC id]__F[fig num]')", "https://pfocr.wikipathways.org/")
     METAC = ("OM:0135", "MACdb study/cohort identifier (e.g. METAC_123)", "https://ngdc.cncb.ac.cn/macdb")

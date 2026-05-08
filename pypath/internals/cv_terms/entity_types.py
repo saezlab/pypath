@@ -33,6 +33,7 @@ class EntityTypeCv(CvEnum):
     LIPID = ("OM:0011", "Lipid molecule or lipid-like compound")
     CV_TERM = "OM:0012"
     INTERACTION = "OM:0013"
+    ASSOCIATION = ("OM:0036", "A non-mechanistic association between two entities supported by evidence.")
     PATHWAY = "OM:0014"
     REACTION = "OM:0015"
     PHYSICAL_ENTITY = "OM:0016"

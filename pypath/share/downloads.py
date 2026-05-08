@@ -147,6 +147,8 @@ def download_and_open(
     target_dir = data_dir / subfolder
     target_dir.mkdir(parents=True, exist_ok=True)
     file_path = target_dir / filename
+    if file_path.exists() and file_path.stat().st_size == 0:
+        file_path.unlink()
     dm = get_download_manager()
     dm.download(url, dest=str(file_path), **download_kwargs)
 
