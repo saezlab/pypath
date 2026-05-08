@@ -114,6 +114,20 @@ def _extract_cdb(val: str) -> str | None:
     return val if _cdb_pat.match(val) else None
 
 
+def _location_terms(location: str | None) -> list[MoleculeAnnotationsCv]:
+    """Map ConnectomeDB location labels to UniProt keyword CV terms."""
+    location_lower = (location or '').lower()
+    terms: list[MoleculeAnnotationsCv] = []
+
+    if 'secreted' in location_lower:
+        terms.append(MoleculeAnnotationsCv.SECRETED)
+    if 'membrane' in location_lower:
+        terms.append(MoleculeAnnotationsCv.MEMBRANE)
+    if 'cytoplasm' in location_lower:
+        terms.append(MoleculeAnnotationsCv.CYTOPLASM)
+
+    return terms
+
 
 # =============================================================================
 # Field and Schema Definitions
@@ -157,10 +171,12 @@ interactions_schema = EntityBuilder(
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Ligand Symbols', extract='gene_alias')),
-                    CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('Ligand Location')),
-                    CV(term=ParticipantMetadataCv.SOURCE),
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
                 )
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=lambda row: _location_terms(row.get('Ligand Location'))),
+                CV(term=ParticipantMetadataCv.LIGAND),
             ),
         ),
         Member(
@@ -173,10 +189,12 @@ interactions_schema = EntityBuilder(
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Receptor Symbols', extract='gene_alias')),
-                    CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('Receptor Location')),
-                    CV(term=ParticipantMetadataCv.TARGET),
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
                 )
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=lambda row: _location_terms(row.get('Receptor Location'))),
+                CV(term=ParticipantMetadataCv.RECEPTOR),
             ),
         ),
     ),
