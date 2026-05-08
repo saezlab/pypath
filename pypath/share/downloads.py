@@ -60,8 +60,14 @@ def _resolve_data_dir() -> Path:
     return data_dir
 
 
+def get_data_dir() -> Path:
+    """Return the configured download storage directory for inputs_v2 raw files."""
+
+    return _resolve_data_dir()
+
+
 # Kept as module-level constant for compatibility with modules importing DATA_DIR
-DATA_DIR = _resolve_data_dir()
+DATA_DIR = get_data_dir()
 
 
 _thread_local = threading.local()
