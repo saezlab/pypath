@@ -871,7 +871,7 @@ class EntityBuilder:
         self,
         *,
         entity_type: EntityTypeCv | Column | Callable[[Any], EntityTypeCv],
-        identifiers: IdentifiersBuilder,
+        identifiers: IdentifiersBuilder | None = None,
         annotations: AnnotationsBuilder | None = None,
         membership: MembershipBuilder | None = None,
     ) -> None:
@@ -885,12 +885,6 @@ class EntityBuilder:
 
     def build(self, row: Any) -> SilverEntity | None:
         cache = ColumnCache()
-        identifiers = self.identifiers.build(row, cache)
-        if not identifiers:
-            return None
-
-        annotations = self.annotations.build(row, cache) if self.annotations else None
-        membership = self.membership.build(row, cache) if self.membership else None
 
         # Resolve entity_type dynamically if it's a Column / callable
         resolved_type: Any = self.entity_type
@@ -909,12 +903,30 @@ class EntityBuilder:
                 logger.debug("Entity type callable failed: %s", exc)
                 return None
 
+        identifiers = self.identifiers.build(row, cache) if self.identifiers else []
+        if not identifiers and not self._allows_empty_identifiers(resolved_type):
+            return None
+
+        annotations = self.annotations.build(row, cache) if self.annotations else None
+        membership = self.membership.build(row, cache) if self.membership else None
+
         return SilverEntity(
             type=resolved_type,
             identifiers=identifiers,
             annotations=annotations if annotations else None,
             membership=membership if membership else None,
         )
+
+    def _allows_empty_identifiers(self, entity_type: Any) -> bool:
+        return entity_type in {
+            EntityTypeCv.ASSOCIATION,
+            EntityTypeCv.INTERACTION,
+            EntityTypeCv.REACTION,
+            EntityTypeCv.CATALYSIS,
+            EntityTypeCv.CONTROL,
+            EntityTypeCv.DEGRADATION,
+            EntityTypeCv.TRANSPORT,
+        }
 
 
 __all__ = [

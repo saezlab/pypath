@@ -29,3 +29,4 @@ class OntologyCv(CvEnum):
     WIKIPATHWAYS = ("OM:1206", "WikiPathways Ontology", "https://www.wikipathways.org/")
     UNIPROT_KEYWORDS = ("OM:1207", "UniProt Keywords", "https://www.uniprot.org/keywords/")
     OMNIPATH = ("OM:1208", "OmniPath Ontology", "https://omnipathdb.org/")
+    MONDO = ("OM:1209", "Mondo Disease Ontology", "https://mondo.monarchinitiative.org/")

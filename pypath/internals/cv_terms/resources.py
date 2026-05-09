@@ -21,6 +21,7 @@ class ResourceCv(CvEnum):
     UNIPROT_KEYWORDS = ("OM:1102", "UniProt Keywords", "https://www.uniprot.org/keywords/")
     GENE_ONTOLOGY = ("OM:1103", "Gene Ontology", "https://geneontology.org")
     PSI_MI = ("OM:1104", "PSI-MI Controlled Vocabulary", "https://github.com/HUPO-PSI/psi-mi-CV")
+    MONDO = ("OM:1105", "Mondo Disease Ontology", "https://mondo.monarchinitiative.org/")
 
     # Protein databases (OM:1120-1149 range)
     UNIPROT = ("OM:1120", "UniProt", "https://www.uniprot.org")

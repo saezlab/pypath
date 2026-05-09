@@ -109,16 +109,6 @@ trait_schema = OntologyBuilder(
 
 association_schema = EntityBuilder(
     entity_type=EntityTypeCv.ASSOCIATION,
-    identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.METAC,
-            value=f('Cohort_id', extract='metacID')
-        ),
-        CV(
-            term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-            value=f('pubchem_CID')
-        ),
-    ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionTypeCv.PHENOTYPE_RESULT),
         CV(

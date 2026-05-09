@@ -44,7 +44,7 @@ UNIPROT_DATA_URL = (
     "&format=tsv"
     "&query=(taxonomy_id:9606 OR taxonomy_id:10090 OR taxonomy_id:10116) AND reviewed:true"
     "&fields=accession,id,protein_name,length,mass,sequence,gene_primary,gene_synonym,"
-    "organism_id,cc_disease,ft_mutagen,cc_subcellular_location,cc_ptm,lit_pubmed_id,"
+    "organism_id,xref_hgnc,cc_disease,ft_mutagen,cc_subcellular_location,cc_ptm,lit_pubmed_id,"
     "cc_function,xref_ensembl,xref_geneid,xref_kegg,cc_pathway,cc_activity_regulation,keywordid,"
     "ec,go_id,ft_transmem,protein_families,xref_refseq,xref_alphafolddb,"
     "xref_chembl,xref_phosphositeplus,xref_signor,xref_pathwaycommons,"
@@ -79,6 +79,7 @@ f = FieldConfig(
         'protein_synonym': r'^([^)]+)\)',
         'ensembl_id': r'^(ENS[A-Z0-9]*\d+(?:\.\d+)?)',
         'complexportal_id': r'^(CPX-\d+)',
+        'hgnc_id': r'^(?:HGNC:)?(\d+)',
     },
 )
 
@@ -89,6 +90,7 @@ PROTEIN_REFERENCE_KEY_TYPES: tuple[str, ...] = (
     'OM:0201:Gene Name Synonym',
     'MI:0477:Entrez',
     'MI:0476:Ensembl',
+    'MI:1095:HGNC',
 )
 
 _REFERENCE_FIELDS = (
@@ -99,6 +101,7 @@ _REFERENCE_FIELDS = (
     'organism_id',
     'xref_ensembl',
     'xref_geneid',
+    'xref_hgnc',
 )
 
 _UNIPROT_ENSEMBL_RE = re.compile(r'(ENS[A-Z0-9]*\d+(?:\.\d+)?)')
@@ -152,6 +155,17 @@ def _extract_ensembl_ids(value: str | None) -> list[str]:
     if not value:
         return []
     return sorted({match.group(1) for match in _UNIPROT_ENSEMBL_RE.finditer(value)})
+
+
+def _extract_hgnc_ids(value: str | None) -> list[str]:
+    if not value:
+        return []
+    hgnc_ids = []
+    for item in _split_semicolon_field(value):
+        match = re.match(r'^(?:HGNC:)?(\d+)$', item.strip())
+        if match:
+            hgnc_ids.append(match.group(1))
+    return sorted(set(hgnc_ids))
 
 
 def _reference_id_translation_raw(opener, max_records: int | None = None, **kwargs):
@@ -216,6 +230,15 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
             }
             for ensembl in _extract_ensembl_ids(rec.get('Ensembl'))
         )
+        rows.extend(
+            {
+                'key_type': 'MI:1095:HGNC',
+                'key_value': hgnc,
+                'taxonomy_id': taxonomy_id,
+                'primary_uniprot': primary_uniprot,
+            }
+            for hgnc in _extract_hgnc_ids(rec.get('HGNC'))
+        )
 
         for row in rows:
             yield row
@@ -270,6 +293,7 @@ proteins_schema = EntityBuilder(
         ),
         CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl', delimiter=';', extract='ensembl_id')),
         CV(term=IdentifierNamespaceCv.ENTREZ, value=f('GeneID', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.HGNC, value=f('HGNC', delimiter=';', extract='hgnc_id')),
         #CV(term=IdentifierNamespaceCv.REFSEQ, value=f('RefSeq', delimiter=';')),
         #CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=f('AlphaFoldDB', delimiter=';')),
         CV(term=IdentifierNamespaceCv.KEGG, value=f('KEGG', delimiter=';')),

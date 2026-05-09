@@ -545,3 +545,5 @@ class DiseaseAnnotationCv(CvEnum):
     TYPE = ("OM:1252", "Disease type/category")
     SUBTYPE = ("OM:1253", "Disease subtype/subcategory")
     STAGE = ("OM:1254", "Disease stage")
+    RELATIONSHIP = ("OM:1255", "Disease association relationship predicate")
+    SOURCE = ("OM:1256", "Disease association source or evidence reference")
