@@ -133,7 +133,6 @@ def gene_disease_association_to_entity(row: dict[str, Any]) -> Entity:
     """Map a MONDO-HGNC association to an association entity."""
     gene_identifiers = [
         Identifier(type=IdentifierNamespaceCv.HGNC, value=row['hgnc_id']),
-        Identifier(type=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
     ]
     if row.get('gene_symbol'):
         gene_identifiers.append(
@@ -146,6 +145,7 @@ def gene_disease_association_to_entity(row: dict[str, Any]) -> Entity:
 
     return Entity(
         type=EntityTypeCv.ASSOCIATION,
+        identifiers=[],
         annotations=annotations,
         membership=[
             Membership(
@@ -160,6 +160,7 @@ def gene_disease_association_to_entity(row: dict[str, Any]) -> Entity:
                 member=Entity(
                     type=EntityTypeCv.PROTEIN,
                     identifiers=gene_identifiers,
+                    annotations=[Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606')],
                 ),
             ),
         ],
