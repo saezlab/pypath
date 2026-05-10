@@ -8,6 +8,7 @@ from collections.abc import Callable, Generator
 from dataclasses import dataclass
 import csv
 import json
+from pathlib import Path
 from typing import Any, Literal, Protocol
 
 from pypath.internals.silver_schema import Entity, Identifier, Annotation
@@ -23,6 +24,16 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from pypath.share.downloads import download_and_open
+from pypath.inputs_v2.raw_records import (
+    RawRecordProvenance,
+    RawSnapshot,
+    ProvenancedRecord,
+    accept_raw_snapshot,
+    changed_keys,
+    default_raw_records_root,
+    iter_raw_record_dicts,
+    materialize_raw_records,
+)
 
 
 class _Resolver(Protocol):
@@ -118,12 +129,101 @@ class Dataset:
         self.mapper = mapper
         self._raw_parser = raw_parser
         self.kind = kind
+        self._last_raw_snapshot: RawSnapshot | None = None
 
-    def raw(self, force_refresh: bool = False, **kwargs: Any) -> Generator[dict[str, Any], None, None]:
+    def preparse(
+        self,
+        *,
+        source: str,
+        dataset: str,
+        raw_records_root: str | Path | None = None,
+        force_refresh: bool = False,
+        **kwargs: Any,
+    ) -> RawSnapshot:
+        opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
+        records = self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
+        self._last_raw_snapshot = materialize_raw_records(
+            records=records,
+            source=source,
+            dataset=dataset,
+            output_root=Path(raw_records_root) if raw_records_root else default_raw_records_root(),
+        )
+        return self._last_raw_snapshot
+
+    def raw(
+        self,
+        force_refresh: bool = False,
+        *,
+        source: str | None = None,
+        dataset: str | None = None,
+        raw_records_root: str | Path | None = None,
+        use_preparse: bool = False,
+        changed_only: bool = False,
+        raw_snapshot: RawSnapshot | None = None,
+        **kwargs: Any,
+    ) -> Generator[dict[str, Any], None, None]:
+        if use_preparse:
+            if not source or not dataset:
+                raise ValueError('source and dataset are required when use_preparse=True')
+            snapshot = raw_snapshot or self.preparse(
+                source=source,
+                dataset=dataset,
+                raw_records_root=raw_records_root,
+                force_refresh=force_refresh,
+                **kwargs,
+            )
+            if raw_snapshot is not None:
+                self._last_raw_snapshot = raw_snapshot
+            keys = changed_keys(snapshot.delta_path) if changed_only else None
+            yield from iter_raw_record_dicts(snapshot.records_path, keys=keys)
+            return
+
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
         yield from self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
 
-    def __call__(self, force_refresh: bool = False, **kwargs: Any) -> Generator[Entity, None, None]:
+    def accept_last_preparse(self) -> None:
+        if self._last_raw_snapshot is not None:
+            accept_raw_snapshot(self._last_raw_snapshot)
+            self._last_raw_snapshot = None
+
+    def __call__(self, force_refresh: bool = False, **kwargs: Any) -> Generator[Entity | ProvenancedRecord, None, None]:
+        if kwargs.get('use_preparse'):
+            source = kwargs.get('source')
+            dataset = kwargs.get('dataset')
+            if not source or not dataset:
+                raise ValueError('source and dataset are required when use_preparse=True')
+            snapshot = kwargs.get('raw_snapshot') or self.preparse(
+                source=source,
+                dataset=dataset,
+                raw_records_root=kwargs.get('raw_records_root'),
+                force_refresh=force_refresh,
+                **{
+                    key: value
+                    for key, value in kwargs.items()
+                    if key not in {'source', 'dataset', 'raw_records_root', 'use_preparse', 'changed_only', 'raw_snapshot'}
+                },
+            )
+            if kwargs.get('raw_snapshot') is not None:
+                self._last_raw_snapshot = snapshot
+            keys = changed_keys(snapshot.delta_path) if kwargs.get('changed_only') else None
+            for raw_row in iter_raw_record_dicts(snapshot.records_path, keys=keys, include_metadata=True):
+                record = {
+                    k: v
+                    for k, v in raw_row.items()
+                    if k not in {'_source', '_dataset', '_raw_record_key', '_raw_record_id'}
+                }
+                yield ProvenancedRecord(
+                    record=self.mapper(record),
+                    provenance=RawRecordProvenance(
+                        source=str(raw_row.get('_source') or source),
+                        dataset=str(raw_row.get('_dataset') or dataset),
+                        snapshot_id=snapshot.snapshot_id,
+                        raw_record_key=str(raw_row['_raw_record_key']),
+                        raw_record_id=int(raw_row['_raw_record_id']),
+                    ),
+                )
+            return
+
         for record in self.raw(force_refresh=force_refresh, **kwargs):
             yield self.mapper(record)
 
@@ -149,6 +249,7 @@ class OntologyDataset:
         self.download = download
         self.mapper = mapper
         self._raw_parser = raw_parser
+        self._last_raw_snapshot: RawSnapshot | None = None
         if not ontology_id or not ontology_id.strip():
             raise ValueError('OntologyDataset requires a non-empty ontology_id')
         self.ontology_id = ontology_id.strip()
@@ -160,9 +261,56 @@ class OntologyDataset:
         self.extension = extension
         self.file_stem = file_stem
 
-    def raw(self, force_refresh: bool = False, **kwargs: Any) -> Generator[dict[str, Any], None, None]:
+    def preparse(
+        self,
+        *,
+        source: str,
+        dataset: str,
+        raw_records_root: str | Path | None = None,
+        force_refresh: bool = False,
+        **kwargs: Any,
+    ) -> RawSnapshot:
+        opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
+        records = self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
+        self._last_raw_snapshot = materialize_raw_records(
+            records=records,
+            source=source,
+            dataset=dataset,
+            output_root=Path(raw_records_root) if raw_records_root else default_raw_records_root(),
+        )
+        return self._last_raw_snapshot
+
+    def raw(
+        self,
+        force_refresh: bool = False,
+        *,
+        source: str | None = None,
+        dataset: str | None = None,
+        raw_records_root: str | Path | None = None,
+        use_preparse: bool = False,
+        changed_only: bool = False,
+        **kwargs: Any,
+    ) -> Generator[dict[str, Any], None, None]:
+        if use_preparse:
+            if not source or not dataset:
+                raise ValueError('source and dataset are required when use_preparse=True')
+            snapshot = self.preparse(
+                source=source,
+                dataset=dataset,
+                raw_records_root=raw_records_root,
+                force_refresh=force_refresh,
+                **kwargs,
+            )
+            keys = changed_keys(snapshot.delta_path) if changed_only else None
+            yield from iter_raw_record_dicts(snapshot.records_path, keys=keys)
+            return
+
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
         yield from self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
+
+    def accept_last_preparse(self) -> None:
+        if self._last_raw_snapshot is not None:
+            accept_raw_snapshot(self._last_raw_snapshot)
 
     def __call__(self, force_refresh: bool = False, **kwargs: Any) -> Generator[OntologyTerm, None, None]:
         for record in self.raw(force_refresh=force_refresh, **kwargs):
