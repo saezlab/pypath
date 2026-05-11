@@ -5,35 +5,35 @@ This module converts annotations of lipids and metabolites into Entity records
 using the declarative schema pattern.
 """
 
+from functools import partial
 import gzip
 import os
+from pathlib import Path
 import re
 import shutil
-import requests
-from functools import partial
-from pathlib import Path
 
 from bs4 import BeautifulSoup
+import requests
 
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_sqlite
-from pypath.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
+from pypath.internals.cv_terms import (
+    AssayAnnotationsCv,
+    BiologicalRoleCv,
+    EntityTypeCv,
+    IdentifierNamespaceCv,
+    LicenseCV,
+    MoleculeAnnotationsCv,
+    MoleculeSubtypeCv,
+    ResourceCv,
+    UpdateCategoryCV,
+)
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-)
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    BiologicalRoleCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    ResourceCv,
-    MoleculeSubtypeCv,
-    MoleculeAnnotationsCv,
-    AssayAnnotationsCv,
 )
 
 # =================================== SET-UP ===================================
@@ -119,7 +119,7 @@ table_names = [
 
 #    datasets[tbl] = iter_sqlite(opener, table_name=tbl, sqlite_path=path)
 
-def parser(opener, table=None):
+def parser(opener, table=None, **_kwargs):
 
     path = Path(opener.path.replace('.gz', ''))
 
@@ -330,10 +330,10 @@ pathway_schema = EntityBuilder(
     entity_type=EntityTypeCv.PATHWAY,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('pathwayRampId')),
-        CV(term=f('type', map='source_to_term'), value=f('sourceId')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=BiologicalRoleCv.PATHWAY, value=f('pathwayName')),
+        CV(term=f('type', map='source_to_term'), value=f('sourceId')),
     ),
 )
 

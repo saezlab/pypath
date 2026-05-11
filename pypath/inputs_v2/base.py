@@ -5,35 +5,44 @@ Shared building blocks for inputs_v2 datasets.
 from __future__ import annotations
 
 from collections.abc import Callable, Generator
-from dataclasses import dataclass
 import csv
+from dataclasses import dataclass
+import functools
+import hashlib
+import itertools
 import json
+import os
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
-from pypath.internals.silver_schema import Entity, Identifier, Annotation
-from pypath.internals.ontology_schema import OntologyDocument, OntologyTerm, OntologyTypedef
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    OntologyCv,
-    UpdateCategoryCV,
-    OntologyAnnotationCv,
-    ResourceAnnotationCv,
-    ResourceCv,
-)
-from pypath.share.downloads import download_and_open
 from pypath.inputs_v2.raw_records import (
+    ProvenancedRecord,
     RawRecordProvenance,
     RawSnapshot,
-    ProvenancedRecord,
     accept_raw_snapshot,
     changed_keys,
     default_raw_records_root,
     iter_raw_record_dicts,
     materialize_raw_records,
+    reuse_raw_snapshot_if_unchanged,
 )
+from pypath.internals.cv_terms import (
+    EntityTypeCv,
+    IdentifierNamespaceCv,
+    LicenseCV,
+    OntologyAnnotationCv,
+    OntologyCv,
+    ResourceAnnotationCv,
+    ResourceCv,
+    UpdateCategoryCV,
+)
+from pypath.internals.ontology_schema import (
+    OntologyDocument,
+    OntologyTerm,
+    OntologyTypedef,
+)
+from pypath.internals.silver_schema import Annotation, Entity, Identifier
+from pypath.share.downloads import download_and_open
 
 
 class _Resolver(Protocol):
@@ -44,6 +53,97 @@ def _resolve(value: str | _Resolver, **kwargs: Any) -> str:
     if callable(value):
         return value(**kwargs)
     return value
+
+
+def _jsonable(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {str(k): _jsonable(v) for k, v in sorted(value.items())}
+    if isinstance(value, (list, tuple, set)):
+        return [_jsonable(item) for item in value]
+    try:
+        json.dumps(value, sort_keys=True)
+    except TypeError:
+        return repr(value)
+    return value
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open('rb') as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b''):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _download_fingerprint(
+    download: Download | None,
+    opener: Any,
+    kwargs: dict[str, Any],
+) -> dict[str, Any] | None:
+    if download is None or opener is None:
+        return None
+    path_value = getattr(opener, 'path', None)
+    if not path_value:
+        return None
+    path = Path(path_value)
+    if not path.exists():
+        return None
+    stat = path.stat()
+    download_kwargs = dict(download.download_kwargs or {})
+    return {
+        'path': str(path),
+        'sha256': _file_sha256(path),
+        'size': stat.st_size,
+        'mtime_ns': stat.st_mtime_ns,
+        'url': _resolve(download.url, **kwargs),
+        'filename': _resolve(download.filename, **kwargs),
+        'subfolder': download.subfolder,
+        'needed': list(download.needed or []),
+        'download_kwargs': _jsonable(download_kwargs),
+    }
+
+
+def _download_fingerprint_from_cache(
+    download: Download | None,
+    kwargs: dict[str, Any],
+) -> dict[str, Any] | None:
+    if download is None:
+        return None
+    filename = _resolve(download.filename, **kwargs)
+    cache_root = Path(os.environ.get('PYPATH_DOWNLOAD_DATADIR', 'pypath-data'))
+    path = cache_root / download.subfolder / filename
+    if not path.exists():
+        return None
+    stat = path.stat()
+    download_kwargs = dict(download.download_kwargs or {})
+    return {
+        'path': str(path),
+        'sha256': _file_sha256(path),
+        'size': stat.st_size,
+        'mtime_ns': stat.st_mtime_ns,
+        'url': _resolve(download.url, **kwargs),
+        'filename': filename,
+        'subfolder': download.subfolder,
+        'needed': list(download.needed or []),
+        'download_kwargs': _jsonable(download_kwargs),
+    }
+
+
+def _callable_name(parser: Callable[..., Any]) -> Any:
+    if isinstance(parser, functools.partial):
+        return {
+            'callable': _callable_name(parser.func),
+            'args': _jsonable(parser.args),
+            'keywords': _jsonable(parser.keywords or {}),
+        }
+    return f'{getattr(parser, "__module__", "")}.{getattr(parser, "__qualname__", repr(parser))}'
+
+
+def _parser_contract(parser: Callable[..., Any], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        'raw_parser': _callable_name(parser),
+        'kwargs': _jsonable(kwargs),
+    }
 
 
 @dataclass(frozen=True)
@@ -140,13 +240,47 @@ class Dataset:
         force_refresh: bool = False,
         **kwargs: Any,
     ) -> RawSnapshot:
+        max_lines = kwargs.pop('max_lines', None)
+        contract_kwargs = dict(kwargs)
+        if max_lines is not None:
+            contract_kwargs['max_lines'] = int(max_lines)
+        parser_contract = _parser_contract(self._raw_parser, contract_kwargs)
+        output_root = Path(raw_records_root) if raw_records_root else default_raw_records_root()
+        if not force_refresh:
+            cached_fingerprint = _download_fingerprint_from_cache(self.download, kwargs)
+            reusable = reuse_raw_snapshot_if_unchanged(
+                source=source,
+                dataset=dataset,
+                output_root=output_root,
+                download_fingerprint=cached_fingerprint,
+                parser_contract=parser_contract,
+            )
+            if reusable is not None:
+                self._last_raw_snapshot = reusable
+                return reusable
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
+        download_fingerprint = _download_fingerprint(self.download, opener, kwargs)
+        if not force_refresh:
+            reusable = reuse_raw_snapshot_if_unchanged(
+                source=source,
+                dataset=dataset,
+                output_root=output_root,
+                download_fingerprint=download_fingerprint,
+                parser_contract=parser_contract,
+            )
+            if reusable is not None:
+                self._last_raw_snapshot = reusable
+                return reusable
         records = self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
+        if max_lines is not None:
+            records = itertools.islice(records, int(max_lines))
         self._last_raw_snapshot = materialize_raw_records(
             records=records,
             source=source,
             dataset=dataset,
-            output_root=Path(raw_records_root) if raw_records_root else default_raw_records_root(),
+            output_root=output_root,
+            download_fingerprint=download_fingerprint,
+            parser_contract=parser_contract,
         )
         return self._last_raw_snapshot
 
@@ -270,13 +404,41 @@ class OntologyDataset:
         force_refresh: bool = False,
         **kwargs: Any,
     ) -> RawSnapshot:
+        parser_contract = _parser_contract(self._raw_parser, kwargs)
+        output_root = Path(raw_records_root) if raw_records_root else default_raw_records_root()
+        if not force_refresh:
+            cached_fingerprint = _download_fingerprint_from_cache(self.download, kwargs)
+            reusable = reuse_raw_snapshot_if_unchanged(
+                source=source,
+                dataset=dataset,
+                output_root=output_root,
+                download_fingerprint=cached_fingerprint,
+                parser_contract=parser_contract,
+            )
+            if reusable is not None:
+                self._last_raw_snapshot = reusable
+                return reusable
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
+        download_fingerprint = _download_fingerprint(self.download, opener, kwargs)
+        if not force_refresh:
+            reusable = reuse_raw_snapshot_if_unchanged(
+                source=source,
+                dataset=dataset,
+                output_root=output_root,
+                download_fingerprint=download_fingerprint,
+                parser_contract=parser_contract,
+            )
+            if reusable is not None:
+                self._last_raw_snapshot = reusable
+                return reusable
         records = self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
         self._last_raw_snapshot = materialize_raw_records(
             records=records,
             source=source,
             dataset=dataset,
-            output_root=Path(raw_records_root) if raw_records_root else default_raw_records_root(),
+            output_root=output_root,
+            download_fingerprint=download_fingerprint,
+            parser_contract=parser_contract,
         )
         return self._last_raw_snapshot
 
@@ -289,18 +451,21 @@ class OntologyDataset:
         raw_records_root: str | Path | None = None,
         use_preparse: bool = False,
         changed_only: bool = False,
+        raw_snapshot: RawSnapshot | None = None,
         **kwargs: Any,
     ) -> Generator[dict[str, Any], None, None]:
         if use_preparse:
             if not source or not dataset:
                 raise ValueError('source and dataset are required when use_preparse=True')
-            snapshot = self.preparse(
+            snapshot = raw_snapshot or self.preparse(
                 source=source,
                 dataset=dataset,
                 raw_records_root=raw_records_root,
                 force_refresh=force_refresh,
                 **kwargs,
             )
+            if raw_snapshot is not None:
+                self._last_raw_snapshot = raw_snapshot
             keys = changed_keys(snapshot.delta_path) if changed_only else None
             yield from iter_raw_record_dicts(snapshot.records_path, keys=keys)
             return

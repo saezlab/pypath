@@ -5,17 +5,24 @@ from __future__ import annotations
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from pathlib import Path
 import hashlib
 import json
 import os
+from pathlib import Path
 import shutil
 import tempfile
+import time
 from typing import Any
 
 import duckdb
 import pyarrow as pa
 import pyarrow.parquet as pq
+
+try:
+    from omnipath_build.pipeline.progress import update_phase
+except ImportError:  # pragma: no cover - pypath can run without omnipath_build
+    def update_phase(detail: str = '') -> None:
+        return None
 
 PREPARSE_VERSION = 'parser_dict_columns_v1'
 METADATA_COLUMNS = {
@@ -60,6 +67,10 @@ def default_raw_records_root() -> Path:
     )
 
 
+def _log_bronze(source: str, dataset: str, message: str) -> None:
+    print(f'[bronze:{source}.{dataset}] {message}', flush=True)
+
+
 def materialize_raw_records(
     *,
     records: Iterable[dict[str, Any]],
@@ -68,6 +79,8 @@ def materialize_raw_records(
     output_root: Path | None = None,
     batch_size: int = 50_000,
     accept: bool = False,
+    download_fingerprint: dict[str, Any] | None = None,
+    parser_contract: dict[str, Any] | None = None,
 ) -> RawSnapshot:
     """Write a complete raw-record snapshot and delta against latest."""
     output_root = output_root or default_raw_records_root()
@@ -90,10 +103,21 @@ def materialize_raw_records(
     snapshot_dir.mkdir(parents=True, exist_ok=True)
 
     started = datetime.now(UTC)
+    phase_started = time.perf_counter()
+    previous = str(old_snapshot_id) if old_snapshot_id else '-'
+    _log_bronze(
+        source,
+        dataset,
+        f'preparse start -> snapshot={snapshot_id} previous={previous} '
+        f'output={snapshot_dir}',
+    )
+    update_phase(f'preparse snapshot={snapshot_id}')
     with tempfile.TemporaryDirectory(dir=snapshot_dir.parent) as tmpdir:
         tmp_unassigned_records = Path(tmpdir) / 'records.unassigned.parquet'
         tmp_records = Path(tmpdir) / 'records.parquet'
         tmp_delta = Path(tmpdir) / 'delta.parquet'
+        _log_bronze(source, dataset, 'raw parser materialization started')
+        update_phase('raw parser materialization')
         stats = _write_records(
             records,
             output_path=tmp_unassigned_records,
@@ -102,17 +126,38 @@ def materialize_raw_records(
             snapshot_id=snapshot_id,
             batch_size=batch_size,
         )
+        _log_bronze(
+            source,
+            dataset,
+            f'raw parser materialization done -> rows={stats.get("rows", 0):,}',
+        )
+        update_phase(f'raw parser materialized rows={stats.get("rows", 0):,}')
+        _log_bronze(source, dataset, 'raw record id assignment started')
+        update_phase('raw record id assignment')
         id_stats = _write_records_with_ids(
             new_records=tmp_unassigned_records,
             old_records=old_records,
             output_path=tmp_records,
         )
+        _log_bronze(
+            source,
+            dataset,
+            'raw record id assignment done -> '
+            f'distinct_ids={id_stats.get("distinct_raw_record_ids", 0):,}',
+        )
+        _log_bronze(source, dataset, 'delta computation started')
+        update_phase('delta computation')
         delta_stats = _write_delta(
             new_records=tmp_records,
             old_records=old_records,
             output_path=tmp_delta,
             old_snapshot_id=str(old_snapshot_id) if old_snapshot_id else None,
             new_snapshot_id=snapshot_id,
+        )
+        _log_bronze(
+            source,
+            dataset,
+            f'delta computation done -> {delta_stats.get("delta_keys_by_type", {})}',
         )
         shutil.move(str(tmp_records), records_path)
         shutil.move(str(tmp_delta), delta_path)
@@ -127,6 +172,8 @@ def materialize_raw_records(
         'preparse_version': PREPARSE_VERSION,
         'records_path': str(records_path),
         'delta_path': str(delta_path),
+        'download_fingerprint': download_fingerprint,
+        'parser_contract': parser_contract,
         **stats,
         **id_stats,
         **delta_stats,
@@ -145,7 +192,90 @@ def materialize_raw_records(
     if accept:
         accept_raw_snapshot(snapshot)
 
+    elapsed = time.perf_counter() - phase_started
+    _log_bronze(
+        source,
+        dataset,
+        f'preparse done -> rows={manifest.get("rows", 0):,} '
+        f'delta={manifest.get("delta_keys_by_type", {})} '
+        f'elapsed={elapsed:.1f}s',
+    )
+    update_phase(f'preparse done rows={manifest.get("rows", 0):,}')
     return snapshot
+
+
+def reuse_raw_snapshot_if_unchanged(
+    *,
+    source: str,
+    dataset: str,
+    output_root: Path | None = None,
+    download_fingerprint: dict[str, Any] | None = None,
+    parser_contract: dict[str, Any] | None = None,
+) -> RawSnapshot | None:
+    """Create an empty-delta raw snapshot when cached download inputs are unchanged."""
+    if download_fingerprint is None or parser_contract is None:
+        return None
+
+    output_root = output_root or default_raw_records_root()
+    dataset_dir = output_root / source / dataset
+    latest = _read_latest(dataset_dir)
+    if latest is None:
+        return None
+
+    previous_manifest_path = Path(latest.get('manifest_path', ''))
+    records_path = Path(latest.get('records_path', ''))
+    if not previous_manifest_path.exists() or not records_path.exists():
+        return None
+
+    previous_manifest = json.loads(previous_manifest_path.read_text())
+    if previous_manifest.get('download_fingerprint') != download_fingerprint:
+        return None
+    if previous_manifest.get('parser_contract') != parser_contract:
+        return None
+
+    snapshot_id = datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')
+    snapshot_dir = dataset_dir / snapshot_id
+    delta_path = snapshot_dir / 'delta.parquet'
+    manifest_path = snapshot_dir / 'manifest.json'
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
+
+    _write_empty_delta(delta_path)
+    manifest = {
+        'source': source,
+        'dataset': dataset,
+        'snapshot_id': snapshot_id,
+        'previous_snapshot_id': latest.get('snapshot_id'),
+        'created_at': datetime.now(UTC).isoformat(),
+        'completed_at': datetime.now(UTC).isoformat(),
+        'preparse_version': PREPARSE_VERSION,
+        'records_path': str(records_path),
+        'delta_path': str(delta_path),
+        'download_fingerprint': download_fingerprint,
+        'parser_contract': parser_contract,
+        'reused_from_snapshot_id': latest.get('snapshot_id'),
+        'reused_without_preparse': True,
+        'delta_keys_by_type': {},
+        'rows': int(previous_manifest.get('rows', 0) or 0),
+        'min_raw_record_id': int(previous_manifest.get('min_raw_record_id', 0) or 0),
+        'max_raw_record_id': int(previous_manifest.get('max_raw_record_id', 0) or 0),
+        'distinct_raw_record_ids': int(previous_manifest.get('distinct_raw_record_ids', 0) or 0),
+    }
+    _write_json(manifest_path, manifest)
+    _log_bronze(
+        source,
+        dataset,
+        f'download unchanged; reused raw snapshot {latest.get("snapshot_id")} '
+        f'-> snapshot={snapshot_id}',
+    )
+    update_phase(f'preparse skipped snapshot={snapshot_id}')
+    return RawSnapshot(
+        source=source,
+        dataset=dataset,
+        snapshot_id=snapshot_id,
+        records_path=records_path,
+        delta_path=delta_path,
+        manifest_path=manifest_path,
+    )
 
 
 def accept_raw_snapshot(snapshot: RawSnapshot) -> None:
@@ -213,6 +343,19 @@ def changed_keys(delta_path: Path) -> set[str]:
     return set(table.column('_raw_record_key').to_pylist())
 
 
+def _write_empty_delta(output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    table = pa.Table.from_arrays(
+        [
+            pa.array([], type=pa.string()),
+            pa.array([], type=pa.int64()),
+            pa.array([], type=pa.string()),
+        ],
+        names=['_raw_record_key', '_raw_record_id', '_change_type'],
+    )
+    pq.write_table(table, output_path, compression='zstd')
+
+
 def _write_records(
     records: Iterable[dict[str, Any]],
     *,
@@ -226,9 +369,11 @@ def _write_records(
     batch: list[dict[str, Any]] = []
     schema_names: list[str] | None = None
     rows = 0
+    last_logged_rows = 0
+    started = time.perf_counter()
 
     def flush() -> None:
-        nonlocal writer, batch, schema_names
+        nonlocal writer, batch, schema_names, last_logged_rows
         if not batch:
             return
         if schema_names is None:
@@ -253,6 +398,15 @@ def _write_records(
             table = table.cast(writer.schema, safe=False)
         writer.write_table(table)
         batch = []
+        if rows - last_logged_rows >= batch_size:
+            elapsed = time.perf_counter() - started
+            _log_bronze(
+                source,
+                dataset,
+                f'raw parser materialized {rows:,} rows in {elapsed:.1f}s',
+            )
+            update_phase(f'raw parser materialized rows={rows:,}')
+            last_logged_rows = rows
 
     try:
         for record in records:
