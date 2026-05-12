@@ -407,11 +407,49 @@ def iter_changed_raw_record_dicts(
         con.close()
 
 
-def changed_keys(delta_path: Path) -> set[str]:
+def changed_keys(delta_path: Path) -> Iterator[str]:
     if not delta_path.exists():
-        return set()
-    table = ds.dataset(delta_path, format='parquet').to_table(columns=['_raw_record_key'])
-    return set(table.column('_raw_record_key').to_pylist())
+        return
+    dataset = ds.dataset(delta_path, format='parquet')
+    for batch in dataset.to_batches(columns=['_raw_record_key'], batch_size=10_000):
+        for value in batch.column('_raw_record_key').to_pylist():
+            if value is None:
+                continue
+            yield str(value)
+
+
+def changed_key_count(delta_path: Path) -> int:
+    if not delta_path.exists():
+        return 0
+    con = duckdb.connect()
+    try:
+        return int(con.execute(f"""
+            SELECT count(DISTINCT _raw_record_key)
+            FROM {_read_records_sql(delta_path)}
+            WHERE _raw_record_key IS NOT NULL
+        """).fetchone()[0] or 0)
+    finally:
+        con.close()
+
+
+def changed_key_counts_by_type(delta_path: Path) -> dict[str, int]:
+    if not delta_path.exists():
+        return {'added': 0, 'removed': 0}
+    con = duckdb.connect()
+    try:
+        rows = con.execute(f"""
+            SELECT _change_type, count(DISTINCT _raw_record_key) AS count
+            FROM {_read_records_sql(delta_path)}
+            WHERE _raw_record_key IS NOT NULL
+            GROUP BY _change_type
+        """).fetchall()
+    finally:
+        con.close()
+    counts = {str(change_type): int(count) for change_type, count in rows}
+    return {
+        'added': counts.get('added', 0),
+        'removed': counts.get('removed', 0),
+    }
 
 
 def _write_empty_delta(output_path: Path, *, part_count: int = 1) -> None:
