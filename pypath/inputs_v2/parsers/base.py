@@ -14,6 +14,11 @@ from pathlib import Path
 import sqlite3
 from typing import Any
 
+try:
+    import duckdb
+except ImportError:  # pragma: no cover - optional dependency
+    duckdb = None
+
 
 def _first_handle(opener) -> Any | None:
     """Extract the first file handle from an opener result."""
@@ -80,6 +85,40 @@ def iter_jsonl(opener, **_kwargs: Any) -> Generator[dict[str, Any], None, None]:
     for line in handle:
         if line.strip():
             yield json.loads(line)
+
+
+def iter_parquet(
+    opener=None,
+    path: Path | str | None = None,
+    query: str | None = None,
+    batch_size: int = 100_000,
+    **_kwargs: Any,
+) -> Generator[dict[str, Any], None, None]:
+    """Iterate over rows from a Parquet file or dataset using DuckDB."""
+    if duckdb is None:
+        raise ImportError("duckdb is required to iterate Parquet inputs.")
+
+    if path is None:
+        handle = _first_handle(opener)
+        path = getattr(handle, 'name', None)
+
+    if path is None:
+        return
+
+    connection = duckdb.connect(':memory:')
+    try:
+        if query is None:
+            query = "SELECT * FROM read_parquet(?)"
+            cursor = connection.execute(query, [str(path)])
+        else:
+            cursor = connection.execute(query, [str(path)])
+
+        columns = [desc[0] for desc in cursor.description]
+        while rows := cursor.fetchmany(batch_size):
+            for row in rows:
+                yield dict(zip(columns, row))
+    finally:
+        connection.close()
 
 
 def iter_sqlite(

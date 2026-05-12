@@ -20,8 +20,8 @@ from pypath.inputs_v2.raw_records import (
     RawRecordProvenance,
     RawSnapshot,
     accept_raw_snapshot,
-    changed_keys,
     default_raw_records_root,
+    iter_changed_raw_record_dicts,
     iter_raw_record_dicts,
     materialize_raw_records,
     reuse_raw_snapshot_if_unchanged,
@@ -308,8 +308,10 @@ class Dataset:
             )
             if raw_snapshot is not None:
                 self._last_raw_snapshot = raw_snapshot
-            keys = changed_keys(snapshot.delta_path) if changed_only else None
-            yield from iter_raw_record_dicts(snapshot.records_path, keys=keys)
+            if changed_only:
+                yield from iter_changed_raw_record_dicts(snapshot.records_path, snapshot.delta_path)
+            else:
+                yield from iter_raw_record_dicts(snapshot.records_path)
             return
 
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
@@ -339,8 +341,16 @@ class Dataset:
             )
             if kwargs.get('raw_snapshot') is not None:
                 self._last_raw_snapshot = snapshot
-            keys = changed_keys(snapshot.delta_path) if kwargs.get('changed_only') else None
-            for raw_row in iter_raw_record_dicts(snapshot.records_path, keys=keys, include_metadata=True):
+            raw_rows = (
+                iter_changed_raw_record_dicts(
+                    snapshot.records_path,
+                    snapshot.delta_path,
+                    include_metadata=True,
+                )
+                if kwargs.get('changed_only')
+                else iter_raw_record_dicts(snapshot.records_path, include_metadata=True)
+            )
+            for raw_row in raw_rows:
                 record = {
                     k: v
                     for k, v in raw_row.items()
@@ -354,6 +364,8 @@ class Dataset:
                         snapshot_id=snapshot.snapshot_id,
                         raw_record_key=str(raw_row['_raw_record_key']),
                         raw_record_id=int(raw_row['_raw_record_id']),
+                        raw_record_bucket=int(raw_row['raw_record_bucket']),
+                        raw_record_part=int(raw_row['raw_record_part']),
                     ),
                 )
             return
@@ -466,8 +478,10 @@ class OntologyDataset:
             )
             if raw_snapshot is not None:
                 self._last_raw_snapshot = raw_snapshot
-            keys = changed_keys(snapshot.delta_path) if changed_only else None
-            yield from iter_raw_record_dicts(snapshot.records_path, keys=keys)
+            if changed_only:
+                yield from iter_changed_raw_record_dicts(snapshot.records_path, snapshot.delta_path)
+            else:
+                yield from iter_raw_record_dicts(snapshot.records_path)
             return
 
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None

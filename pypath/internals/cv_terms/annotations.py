@@ -265,9 +265,6 @@ class MoleculeAnnotationsCv(CvEnum):
     MASS_DALTON = ("OM:0602", "Molecular mass in Daltons")
     FUNCTION = ("OM:0603", "Functional description of the molecule")
     SUBCELLULAR_LOCATION = ("OM:0604", "Subcellular localization information")
-    MEMBRANE = ("KW-0472", "Membrane-associated subcellular location")
-    CYTOPLASM = ("KW-0963", "Cytoplasmic subcellular location")
-    SECRETED = ("KW-0964", "Secreted subcellular location")
     POST_TRANSLATIONAL_MODIFICATION = ("OM:0605", "Post-translational modification details")
     DISEASE_INVOLVEMENT = ("OM:0606", "Information about involvement in diseases")
     PATHWAY_PARTICIPATION = ("OM:0607", "Pathways in which the molecule is involved")
@@ -496,8 +493,18 @@ class ParticipantMetadataCv(CvEnum):
     STEP_ORDER = ("OM:1227", "Order or position of a step within a pathway or process")
     SOURCE = ("OM:1228", "Participant designated as the source of a directed interaction")
     TARGET = ("OM:1229", "Participant designated as the target of a directed interaction")
-    LIGAND = ("KW-9993", "Participant designated as a ligand")
-    RECEPTOR = ("KW-0675", "Participant designated as a receptor")
+
+class InterCellAnnotations(CvEnum):
+    """Annotations for intercellular interactions and roles."""
+
+    parent_cv_term = ("OM:1230", "Intercellular annotation term", "Describes annotations specific to intercellular interactions and roles.")
+    
+    LIGAND = ("OM:7777", "Participant designated as a ligand")
+    RECEPTOR = ("OM:7778", "Participant designated as a receptor")
+    MEMBRANE = ("OM:7779", "Membrane-associated subcellular location")
+    CYTOPLASM = ("OM:7780", "Cytoplasmic subcellular location")
+    SECRETED = ("OM:7781", "Secreted subcellular location")
+
 
 
 class OntologyAnnotationCv(CvEnum):

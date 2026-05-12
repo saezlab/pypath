@@ -61,6 +61,7 @@ from .annotations import (
     AssayTypeCv,
     AssayAnnotationsCv,
     DiseaseAnnotationCv,
+    InterCellAnnotations
 )
 from .resource_metadata import LicenseCV, UpdateCategoryCV
 from .resources import ResourceCv

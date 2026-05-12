@@ -18,7 +18,7 @@ from pypath.internals.cv_terms import (
     CurationCv,
     InteractionMetadataCv,
     ParticipantMetadataCv,
-    MoleculeAnnotationsCv,
+    InterCellAnnotations,
 )
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -114,17 +114,17 @@ def _extract_cdb(val: str) -> str | None:
     return val if _cdb_pat.match(val) else None
 
 
-def _location_terms(location: str | None) -> list[MoleculeAnnotationsCv]:
+def _location_terms(location: str | None) -> list[InterCellAnnotations]:
     """Map ConnectomeDB location labels to UniProt keyword CV terms."""
     location_lower = (location or '').lower()
-    terms: list[MoleculeAnnotationsCv] = []
+    terms: list[InterCellAnnotations] = []
 
     if 'secreted' in location_lower:
-        terms.append(MoleculeAnnotationsCv.SECRETED)
+        terms.append(InterCellAnnotations.SECRETED)
     if 'membrane' in location_lower:
-        terms.append(MoleculeAnnotationsCv.MEMBRANE)
+        terms.append(InterCellAnnotations.MEMBRANE)
     if 'cytoplasm' in location_lower:
-        terms.append(MoleculeAnnotationsCv.CYTOPLASM)
+        terms.append(InterCellAnnotations.CYTOPLASM)
 
     return terms
 
@@ -172,11 +172,9 @@ interactions_schema = EntityBuilder(
                 annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Ligand Symbols', extract='gene_alias')),
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
+                    CV(term=lambda row: _location_terms(row.get('Ligand Location'))),
+                    CV(term=InterCellAnnotations.LIGAND),
                 )
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=lambda row: _location_terms(row.get('Ligand Location'))),
-                CV(term=ParticipantMetadataCv.LIGAND),
             ),
         ),
         Member(
@@ -190,11 +188,9 @@ interactions_schema = EntityBuilder(
                 annotations=AnnotationsBuilder(
                     CV(term=ParticipantMetadataCv.ALIAS, value=f('Receptor Symbols', extract='gene_alias')),
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
+                    CV(term=lambda row: _location_terms(row.get('Receptor Location'))),
+                    CV(term=InterCellAnnotations.RECEPTOR),
                 )
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=lambda row: _location_terms(row.get('Receptor Location'))),
-                CV(term=ParticipantMetadataCv.RECEPTOR),
             ),
         ),
     ),
