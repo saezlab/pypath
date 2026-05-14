@@ -7,28 +7,27 @@ defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
-from collections.abc import Generator
 import csv
 import re
 
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
-    UpdateCategoryCV,
     ResourceCv,
+    UpdateCategoryCV,
 )
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
     Member,
-    MembershipBuilder,
     MembersFromList,
+    MembershipBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
 
 def _iter_semicolon(opener, **_kwargs: object):
@@ -223,7 +222,23 @@ def _split_signor_field(raw: object) -> list[str]:
     text = str(raw).strip()
     if not text or text == '-':
         return []
-    return [part.strip() for part in text.split('|') if part and part.strip() and part.strip() != '-']
+    parts: list[str] = []
+    current: list[str] = []
+    in_quotes = False
+    for char in text:
+        if char == '"':
+            in_quotes = not in_quotes
+        if char == '|' and not in_quotes:
+            part = ''.join(current).strip()
+            if part and part != '-':
+                parts.append(part)
+            current = []
+            continue
+        current.append(char)
+    part = ''.join(current).strip()
+    if part and part != '-':
+        parts.append(part)
+    return parts
 
 
 def _clean_signor_value(value: str) -> str | None:
