@@ -104,14 +104,16 @@ def iter_parquet(
 
     if path is None:
         return
+    path = Path(path)
+    parquet_path = str(path / '**' / '*.parquet') if path.is_dir() else str(path)
 
     connection = duckdb.connect(':memory:')
     try:
         if query is None:
             query = "SELECT * FROM read_parquet(?)"
-            cursor = connection.execute(query, [str(path)])
+            cursor = connection.execute(query, [parquet_path])
         else:
-            cursor = connection.execute(query, [str(path)])
+            cursor = connection.execute(query, [parquet_path])
 
         columns = [desc[0] for desc in cursor.description]
         while rows := cursor.fetchmany(batch_size):
