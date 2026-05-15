@@ -514,9 +514,8 @@ def _write_records(
         ]
         table = pa.Table.from_pylist(normalized)
         if schema is None:
-            schema = table.schema
-        else:
-            table = table.cast(schema, safe=False)
+            schema = _schema_with_storable_nulls(table.schema)
+        table = table.cast(schema, safe=False)
         for part in sorted(set(table.column('raw_record_part').to_pylist())):
             if part is None:
                 continue
@@ -651,6 +650,14 @@ def _stringify_if_unsupported(value: Any) -> Any:
     if isinstance(value, dict):
         return {str(k): _stringify_if_unsupported(v) for k, v in value.items()}
     return str(value)
+
+
+def _schema_with_storable_nulls(schema: pa.Schema) -> pa.Schema:
+    fields = [
+        pa.field(field.name, pa.string() if pa.types.is_null(field.type) else field.type)
+        for field in schema
+    ]
+    return pa.schema(fields)
 
 
 def _write_records_with_ids(
