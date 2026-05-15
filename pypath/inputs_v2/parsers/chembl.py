@@ -21,7 +21,7 @@ from pypath.inputs_v2.parsers.base import (
 )
 
 CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE = int(
-    os.environ.get('OMNIPATH_CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE', '100000')
+    os.environ.get('OMNIPATH_CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE', '50000')
 )
 
 
