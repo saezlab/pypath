@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import csv
+import os
 from pathlib import Path
 import re
 import zipfile
@@ -173,17 +174,24 @@ def _iter_csv_fallback(opener, max_lines: int | None = None) -> Generator[dict[s
 def _raw(
     opener,
     max_lines: int | None = None,
-    use_duckdb: bool = True,
+    use_duckdb: bool | None = None,
     batch_size: int = 50_000,
     **_kwargs: object,
 ) -> Generator[dict[str, str], None, None]:
     """Parse BindingDB TSV rows.
 
-    The preferred path uses DuckDB to stream a projected subset of columns from
-    the large TSV into the bronze/preparse writer. If an on-disk TSV path is not
-    available, or DuckDB fails, this falls back to the original streaming
-    ``csv.DictReader`` implementation.
+    The default path streams rows from the downloaded archive with
+    ``csv.DictReader``. Set ``use_duckdb=True`` or
+    ``OMNIPATH_BINDINGDB_USE_DUCKDB=1`` to extract an on-disk TSV and let DuckDB
+    stream a projected subset of columns into the bronze/preparse writer.
     """
+    if use_duckdb is None:
+        use_duckdb = os.environ.get('OMNIPATH_BINDINGDB_USE_DUCKDB', '').lower() in {
+            '1',
+            'true',
+            'yes',
+        }
+
     if use_duckdb:
         try:
             # Avoid extracting the full ~8 GB TSV for small max_lines smoke tests;
