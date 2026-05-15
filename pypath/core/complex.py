@@ -702,7 +702,8 @@ class ComplexAggregator(AbstractComplexResource):
 
         with open(pickle_file, 'rb') as fp:
 
-            self.complexes, self.summaries = pickle.load(fp)
+self.complexes, self.summaries = # FIX: 替换pickle为安全格式
+fp)
 
         self._log('Loaded from pickle `%s`.' % pickle_file)
 

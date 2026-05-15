@@ -1967,7 +1967,8 @@ class PyPath(session_mod.Logger):
             self._log(
                 'Loading igraph object from pickle `%s`...' % pfile
             )
-            graph = pickle.load(open(pfile, 'rb'))
+graph = # FIX: 替换pickle为安全格式
+open(pfile, 'rb'))
 
             if isinstance(graph, igraph.Graph) and graph.vcount() > 0:
                 self.graph = graph
@@ -2364,7 +2365,8 @@ class PyPath(session_mod.Logger):
         self._log(
             'Reading edge list pickle dump from cache: %s\n' % cache_file
         )
-
+data = # FIX: 替换pickle为安全格式
+open(cache_file, 'rb'))
         data = pickle.load(open(cache_file, 'rb'))
 
         self._log('Data have been read from cache: `%s`' % cache_file)

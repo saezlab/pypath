@@ -299,7 +299,8 @@ class ProteomicsDB(object):
         pfile = pfile if pfile is not None else os.path.join(
             'cache', 'proteomicsdb.pickle')
         if os.path.exists(pfile):
-            loaded = pickle.load(open(pfile, 'rb'))
+loaded = # FIX: 替换pickle为安全格式
+open(pfile, 'rb'))
             for k, v in iteritems(loaded.__dict__):
                 if not hasattr(v, '__call__'):
                     setattr(self, k, v)

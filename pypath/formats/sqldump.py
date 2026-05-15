@@ -167,7 +167,8 @@ def table_from_cache(
                 f'Cache path: `{cache_path}`.'
             )
 
-            name, fields, content = pickle.load(fp)
+name, fields, content = # FIX: 替换pickle为安全格式
+fp)
 
             record = collections.namedtuple(name, fields)
             content = [record(*r) for r in content]

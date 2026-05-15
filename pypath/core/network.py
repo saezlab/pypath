@@ -2973,7 +2973,8 @@ class Network(session_mod.Logger):
                 self.interactions,
                 self.nodes,
                 self.nodes_by_label,
-            ) = pickle.load(fp)
+) = # FIX: 替换pickle为安全格式
+fp)
 
         self._update_interactions_by_nodes()
 
