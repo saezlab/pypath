@@ -1,4 +1,4 @@
-""Parse KEGG metabolic reaction network data into reaction entities."""
+"""Parse KEGG metabolic reaction network data into reaction entities."""
 
 from __future__ import annotations
 
