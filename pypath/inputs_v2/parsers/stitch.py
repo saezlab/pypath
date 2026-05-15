@@ -9,13 +9,17 @@ from __future__ import annotations
 
 import csv
 import re
+import sqlite3
+import tempfile
 from collections.abc import Generator, Iterable
+from pathlib import Path
 from typing import Any, NamedTuple
 
 from pypath.inputs_v2.base import _first_handle
 
 
 RE_STITCH_ID = re.compile(r'((?:\d+)?)\.?(CID|ENS[A-Z]*P)([ms]?)(0*)(\d+)')
+SQLITE_BATCH_SIZE = 100_000
 
 
 class StitchEntity(NamedTuple):
@@ -163,7 +167,7 @@ def _iter_unique(
 
 def _merge_entry(
         entry: dict,
-        link_lookup: dict[tuple, int],
+        combined_score: int | None,
         score_threshold: int,
 ) -> dict[str, str] | None:
     """
@@ -174,7 +178,7 @@ def _merge_entry(
 
     Args:
         entry: Parsed action entry dict from _parse_action_row.
-        link_lookup: Confidence score lookup returned by _parse_links.
+        combined_score: Link confidence score, or None when no link exists.
         score_threshold: Minimum combined_score required to retain an
             interaction.
 
@@ -182,12 +186,10 @@ def _merge_entry(
         Flat dict of string values for EntityBuilder mapping, or None if
         no matching link exists or the combined score is below the threshold.
     """
-    if entry['a'].type == 'small_molecule':
-        chem = entry['a']
-        prot = entry['b']
-    else:
-        chem = entry['b']
-        prot = entry['a']
+    entities = _entry_chemical_protein(entry)
+    if entities is None:
+        return None
+    chem, prot = entities
 
     if entry['a_is_acting']:
         chem_role = 'source' if entry['a'].type == 'small_molecule' else 'target'
@@ -196,7 +198,6 @@ def _merge_entry(
         chem_role = 'undirected'
         prot_role = 'undirected'
 
-    combined_score = link_lookup.get((chem.id, prot.id, prot.ncbi_tax_id, chem.stereospecific))
     if combined_score is None or combined_score <= score_threshold:
         return None
 
@@ -213,6 +214,136 @@ def _merge_entry(
         'combined_score': str(combined_score),
         'action_score': str(entry['action_score']),
     }
+
+
+def _entry_chemical_protein(entry: dict) -> tuple[StitchEntity, StitchEntity] | None:
+    if entry['a'].type == 'small_molecule' and entry['b'].type == 'protein':
+        return entry['a'], entry['b']
+    if entry['b'].type == 'small_molecule' and entry['a'].type == 'protein':
+        return entry['b'], entry['a']
+    return None
+
+
+def _link_lookup_key(chem: StitchEntity, prot: StitchEntity) -> tuple[str, str, str, int]:
+    return (
+        chem.id,
+        prot.id,
+        '' if prot.ncbi_tax_id is None else str(prot.ncbi_tax_id),
+        1 if chem.stereospecific else 0,
+    )
+
+
+def _action_seen_key(entry: dict) -> tuple[str, str, str]:
+    first, second = sorted((entry['a'].id, entry['b'].id))
+    return first, second, entry['mode']
+
+
+def _create_stitch_db(path: Path) -> sqlite3.Connection:
+    con = sqlite3.connect(path)
+    con.execute('PRAGMA journal_mode = OFF')
+    con.execute('PRAGMA synchronous = OFF')
+    con.execute('PRAGMA temp_store = FILE')
+    con.execute(
+        """
+        CREATE TABLE links (
+            chemical_id TEXT NOT NULL,
+            protein_id TEXT NOT NULL,
+            ncbi_tax_id TEXT NOT NULL,
+            stereospecific INTEGER NOT NULL,
+            combined_score INTEGER NOT NULL,
+            PRIMARY KEY (
+                chemical_id,
+                protein_id,
+                ncbi_tax_id,
+                stereospecific
+            )
+        )
+        """
+    )
+    con.execute(
+        """
+        CREATE TABLE seen_actions (
+            entity_a TEXT NOT NULL,
+            entity_b TEXT NOT NULL,
+            mode TEXT NOT NULL,
+            PRIMARY KEY (entity_a, entity_b, mode)
+        )
+        """
+    )
+    return con
+
+
+def _load_links_db(
+    con: sqlite3.Connection,
+    handle: Any,
+    *,
+    score_threshold: int,
+) -> None:
+    rows: list[tuple[str, str, str, int, int]] = []
+    for row in csv.DictReader(handle, delimiter='\t'):
+        chem = _parse_entity(row['chemical'])
+        prot = _parse_entity(row['protein'])
+        if not chem or not prot:
+            continue
+        combined_score = int(row['combined_score'])
+        if combined_score <= score_threshold:
+            continue
+        rows.append((*_link_lookup_key(chem, prot), combined_score))
+        if len(rows) >= SQLITE_BATCH_SIZE:
+            _insert_link_rows(con, rows)
+            rows = []
+    if rows:
+        _insert_link_rows(con, rows)
+    con.commit()
+
+
+def _insert_link_rows(
+    con: sqlite3.Connection,
+    rows: list[tuple[str, str, str, int, int]],
+) -> None:
+    con.executemany(
+        """
+        INSERT OR REPLACE INTO links (
+            chemical_id,
+            protein_id,
+            ncbi_tax_id,
+            stereospecific,
+            combined_score
+        ) VALUES (?, ?, ?, ?, ?)
+        """,
+        rows,
+    )
+
+
+def _lookup_score(
+    con: sqlite3.Connection,
+    chem: StitchEntity,
+    prot: StitchEntity,
+) -> int | None:
+    row = con.execute(
+        """
+        SELECT combined_score
+        FROM links
+        WHERE chemical_id = ?
+          AND protein_id = ?
+          AND ncbi_tax_id = ?
+          AND stereospecific = ?
+        """,
+        _link_lookup_key(chem, prot),
+    ).fetchone()
+    return int(row[0]) if row is not None else None
+
+
+def _mark_action_seen(con: sqlite3.Connection, entry: dict) -> bool:
+    key = _action_seen_key(entry)
+    cursor = con.execute(
+        """
+        INSERT OR IGNORE INTO seen_actions (entity_a, entity_b, mode)
+        VALUES (?, ?, ?)
+        """,
+        key,
+    )
+    return cursor.rowcount > 0
 
 
 def iter_stitch_interactions(
@@ -241,16 +372,29 @@ def iter_stitch_interactions(
     actions_handle = _first_handle(opener.actions)
     if links_handle is None or actions_handle is None:
         return
-    link_lookup = _parse_links(links_handle, score_threshold=score_threshold)
-    if not link_lookup:
-        return
-    parsed_rows = (
-        _parse_action_row(row)
-        for row in csv.DictReader(actions_handle, delimiter='\t')
-    )
-    for entry in _iter_unique(_iter_deduplicated(
-        r for r in parsed_rows if r is not None
-    )):
-        rec = _merge_entry(entry, link_lookup, score_threshold)
-        if rec is not None:
-            yield rec
+    with tempfile.TemporaryDirectory(prefix='stitch-sqlite-') as tmpdir:
+        con = _create_stitch_db(Path(tmpdir) / 'stitch.sqlite')
+        try:
+            _load_links_db(con, links_handle, score_threshold=score_threshold)
+            parsed_rows = (
+                _parse_action_row(row)
+                for row in csv.DictReader(actions_handle, delimiter='\t')
+            )
+            seen_since_commit = 0
+            for entry in _iter_deduplicated(r for r in parsed_rows if r is not None):
+                if not _mark_action_seen(con, entry):
+                    continue
+                seen_since_commit += 1
+                if seen_since_commit >= SQLITE_BATCH_SIZE:
+                    con.commit()
+                    seen_since_commit = 0
+                entities = _entry_chemical_protein(entry)
+                if entities is None:
+                    continue
+                chem, prot = entities
+                rec = _merge_entry(entry, _lookup_score(con, chem, prot), score_threshold)
+                if rec is not None:
+                    yield rec
+            con.commit()
+        finally:
+            con.close()
