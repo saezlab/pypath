@@ -51,6 +51,7 @@ class ResourceCv(CvEnum):
     MEBOCOST = ("OM:1176", "MEBOCOST DB", "https://github.com/kaifuchenlab/MEBOCOST")
     RAMPDB = ("OM:1177", "RaMP-DB", "https://rampdb.nih.gov/")
     CHEBI = ("OM:1178", "ChEBI", "https://www.ebi.ac.uk/chebi/")
+    RECON3D = ("OM:1179", "Recon3D", "https://www.vmh.life/")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")

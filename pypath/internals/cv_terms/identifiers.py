@@ -125,3 +125,6 @@ class IdentifierNamespaceCv(CvEnum):
     SCIENTIFIC_NAME = ("OM:0230", "Scientific name of a food source organism")
     MRCLINKSDB = ("OM:0231", "MRClinksDB interaction identifier", "https://www.cellknowledge.com.cn/mrclinkdb/")
     CDB = ("OM:0232", "ConnectomeDB interaction identifier", "https://connectomedb.org/")
+    BIGG_METABOLITE = ("OM:0233", "BiGG Models metabolite identifier (base ID without compartment suffix)", "http://bigg.ucsd.edu")
+    BIGG_REACTION = ("OM:0234", "BiGG Models reaction identifier", "http://bigg.ucsd.edu")
+    METANETX_REACTION = ("OM:0235", "MetaNetX/MNXref reaction identifier (MNXR prefix)", "https://www.metanetx.org")
