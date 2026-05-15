@@ -1104,7 +1104,8 @@ class ProteinOrthology(Proteomes):
 
             with open(self.pickle_path, 'rb') as fp:
 
-                self.data = pickle.load(fp)
+self.data = # FIX: 替换pickle为安全格式
+fp)
                 _log(
                     'Orthology table from taxon %u to %u (only SwissProt: %s; '
                     'resource: %s; ID type: %s) has been loaded from `%s`.' % (

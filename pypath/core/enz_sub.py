@@ -734,7 +734,8 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
         with open(self.pickle_file, 'rb') as fp:
 
-            self.enz_sub, self.references = pickle.load(fp)
+self.enz_sub, self.references = # FIX: 替换pickle为安全格式
+fp)
 
         self.update_ptm_lookup_dict()
 

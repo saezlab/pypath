@@ -446,7 +446,8 @@ class CustomAnnotation(session_mod.Logger):
                 self.composite_resource_name,
                 self._class_definitions,
                 self._excludes,
-            ) = pickle.load(fp)
+) = # FIX: 替换pickle为安全格式
+fp)
 
         self._update_complex_attribute_classes()
 
@@ -6263,7 +6264,8 @@ class AnnotationTable(session_mod.Logger):
 
         with open(pickle_file, 'rb') as fp:
 
-            self.proteins, self.complexes, self.reference_set, annots = (
+# FIX: 替换pickle为安全格式
+fp)
                 pickle.load(fp)
             )
 
