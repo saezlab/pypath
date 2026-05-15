@@ -16,8 +16,8 @@ from pypath.internals.cv_terms import (
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
-    CurationCv,
     InteractionMetadataCv,
+    InterCellAnnotations,
 )
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -136,6 +136,16 @@ def _get_partner_type(col: str) -> Any:
     return _type_selector
 
 
+def _directional_role(row: dict[str, Any], partner: str) -> InterCellAnnotations | None:
+    if (row.get('directionality') or '').strip().lower() != 'ligand-receptor':
+        return None
+    if partner == 'partner_a':
+        return InterCellAnnotations.LIGAND
+    if partner == 'partner_b':
+        return InterCellAnnotations.RECEPTOR
+    return None
+
+
 # =============================================================================
 # Field and Schema Definitions
 # =============================================================================
@@ -164,8 +174,6 @@ interactions_schema = EntityBuilder(
         CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('directionality')),
         CV(term=IdentifierNamespaceCv.PUBMED, value=f(_source_split, extract='pmid')),
         CV(term=IdentifierNamespaceCv.PUBMED_CENTRAL, value=f(_source_split, extract='pmc')),
-        CV(term=CurationCv.COMMENT, value=f(_source_split, extract='comment')),
-        CV(term=CurationCv.COMMENT, value=f('version')),
     ),
     membership=MembershipBuilder(
         Member(
@@ -177,6 +185,12 @@ interactions_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.NAME,
                        value=f('partner_a', extract='non_uniprot')),
                 ),
+                annotations=AnnotationsBuilder(
+                    CV(term=lambda row: _directional_role(row, 'partner_a')),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=lambda row: _directional_role(row, 'partner_a')),
             ),
         ),
         Member(
@@ -188,6 +202,12 @@ interactions_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.NAME, 
                        value=f('partner_b', extract='non_uniprot')),
                 ),
+                annotations=AnnotationsBuilder(
+                    CV(term=lambda row: _directional_role(row, 'partner_b')),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=lambda row: _directional_role(row, 'partner_b')),
             ),
         ),
     ),
@@ -201,9 +221,6 @@ complexes_schema = EntityBuilder(
     entity_type=EntityTypeCv.COMPLEX,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('complex_name')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=CurationCv.COMMENT, value=f('version')),
     ),
     membership=MembershipBuilder(
         MembersFromList(

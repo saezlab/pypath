@@ -128,3 +128,5 @@ class IdentifierNamespaceCv(CvEnum):
     BIGG_METABOLITE = ("OM:0233", "BiGG Models metabolite identifier (base ID without compartment suffix)", "http://bigg.ucsd.edu")
     BIGG_REACTION = ("OM:0234", "BiGG Models reaction identifier", "http://bigg.ucsd.edu")
     METANETX_REACTION = ("OM:0235", "MetaNetX/MNXref reaction identifier (MNXR prefix)", "https://www.metanetx.org")
+    ICELLNET = ("OM:0236", "ICELLNET interaction identifier", "https://github.com/soumelis-lab/ICELLNET")
+    NICHENET = ("OM:0237", "NicheNet interaction identifier", "https://zenodo.org/records/7074291")

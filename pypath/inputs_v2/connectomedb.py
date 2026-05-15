@@ -15,9 +15,7 @@ from pypath.internals.cv_terms import (
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
-    CurationCv,
     InteractionMetadataCv,
-    ParticipantMetadataCv,
     InterCellAnnotations,
 )
 from pypath.internals.tabular_builder import (
@@ -157,7 +155,6 @@ interactions_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('Evidence')),
-        CV(term=CurationCv.COMMENT, value=f('AI summary')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
     ),
     membership=MembershipBuilder(
@@ -170,11 +167,13 @@ interactions_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ligand ENSEMBL ID')),
                 ),
                 annotations=AnnotationsBuilder(
-                    CV(term=ParticipantMetadataCv.ALIAS, value=f('Ligand Symbols', extract='gene_alias')),
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
                     CV(term=lambda row: _location_terms(row.get('Ligand Location'))),
                     CV(term=InterCellAnnotations.LIGAND),
                 )
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=InterCellAnnotations.LIGAND),
             ),
         ),
         Member(
@@ -186,11 +185,13 @@ interactions_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Receptor ENSEMBL ID')),
                 ),
                 annotations=AnnotationsBuilder(
-                    CV(term=ParticipantMetadataCv.ALIAS, value=f('Receptor Symbols', extract='gene_alias')),
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
                     CV(term=lambda row: _location_terms(row.get('Receptor Location'))),
                     CV(term=InterCellAnnotations.RECEPTOR),
                 )
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=InterCellAnnotations.RECEPTOR),
             ),
         ),
     ),

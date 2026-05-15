@@ -40,6 +40,9 @@ class ResourceCv(CvEnum):
     STITCH = ("OM:1159", "STITCH", "https://stitch.embl.de/")
     MRCLINKSDB = ("OM:1160", "MRClinksDB", "https://www.cellknowledge.com.cn/mrclinkdb/")
     CONNECTOMEDB = ("OM:1161", "ConnectomeDB2025", "https://connectomedb.org/")
+    ICELLNET = ("OM:1162", "ICELLNET", "https://github.com/soumelis-lab/ICELLNET")
+    CELLCHAT = ("OM:1163", "CellChatDB", "https://github.com/jinworks/CellChat")
+    NICHENET = ("OM:1164", "NicheNet", "https://zenodo.org/records/7074291")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
