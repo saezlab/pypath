@@ -183,7 +183,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
             {
                 'key_type': 'MI:1097:Uniprot',
                 'key_value': primary_uniprot,
-                'taxonomy_id': None,
+                'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             },
         ]
@@ -192,7 +192,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
             rows.append({
                 'key_type': 'OM:0221:Uniprot Entry Name',
                 'key_value': entry_name,
-                'taxonomy_id': None,
+                'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             })
         if gene_primary:

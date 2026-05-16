@@ -86,6 +86,7 @@ download_proteins = Download(
 UNIPROT_ACC_RE = re.compile(
     r'^([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})$'
 )
+HUMAN_TAXON_ID = '9606'
 
 
 def _extract_pmid(token: str) -> str | None:
@@ -186,6 +187,7 @@ interactions_schema = EntityBuilder(
                        value=f('partner_a', extract='non_uniprot')),
                 ),
                 annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
                     CV(term=lambda row: _directional_role(row, 'partner_a')),
                 ),
             ),
@@ -203,6 +205,7 @@ interactions_schema = EntityBuilder(
                        value=f('partner_b', extract='non_uniprot')),
                 ),
                 annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
                     CV(term=lambda row: _directional_role(row, 'partner_b')),
                 ),
             ),
@@ -236,6 +239,9 @@ complexes_schema = EntityBuilder(
                         ],
                     ),
                 ),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
             ),
         )
     ),
