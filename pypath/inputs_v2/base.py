@@ -146,6 +146,39 @@ def _parser_contract(parser: Callable[..., Any], kwargs: dict[str, Any]) -> dict
     }
 
 
+def _prepared_cache_available(
+    raw_parser: Callable[..., Generator[dict[str, Any], None, None]],
+    *,
+    force_refresh: bool,
+    kwargs: dict[str, Any],
+) -> bool:
+    if force_refresh:
+        return False
+
+    cache_available = getattr(raw_parser, 'prepared_cache_available', None)
+    parser_kwargs = dict(kwargs)
+    raw_parser_func = getattr(raw_parser, 'func', None)
+    partial_keywords = getattr(raw_parser, 'keywords', None)
+    if raw_parser_func is not None:
+        cache_available = cache_available or getattr(
+            raw_parser_func,
+            'prepared_cache_available',
+            None,
+        )
+        if partial_keywords:
+            parser_kwargs = {**partial_keywords, **parser_kwargs}
+
+    if cache_available is None:
+        return False
+
+    return bool(
+        cache_available(
+            force_refresh=force_refresh,
+            **parser_kwargs,
+        )
+    )
+
+
 @dataclass(frozen=True)
 class ResourceConfig:
     id: ResourceCv
@@ -314,7 +347,19 @@ class Dataset:
                 yield from iter_raw_record_dicts(snapshot.records_path)
             return
 
-        opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
+        skip_download_open = bool(kwargs.pop('skip_download_open', False))
+        skip_download_open = skip_download_open or _prepared_cache_available(
+            self._raw_parser,
+            force_refresh=force_refresh,
+            kwargs=kwargs,
+        )
+        opener = (
+            None
+            if skip_download_open
+            else self.download.open(force_refresh=force_refresh, **kwargs)
+            if self.download
+            else None
+        )
         yield from self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
 
     def accept_last_preparse(self) -> None:

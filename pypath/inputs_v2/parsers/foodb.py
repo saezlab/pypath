@@ -76,6 +76,14 @@ def _save_cached_data(data: list[dict]) -> None:
         pass
 
 
+def _prepared_cache_available(
+    *,
+    force_refresh: bool = False,
+    **_kwargs: Any,
+) -> bool:
+    return not force_refresh and _get_cache_path().exists()
+
+
 def _clean_str(s: pd.Series) -> pd.Series:
     """Clean string series: replace NaN with empty string, strip whitespace."""
     return s.fillna('').astype(str).str.strip()
@@ -460,3 +468,6 @@ def _raw(
 
     # Yield records directly; do not write/load the old ~1.5 GB pickle cache.
     yield from df_final.iter_rows(named=True)
+
+
+_raw.prepared_cache_available = _prepared_cache_available

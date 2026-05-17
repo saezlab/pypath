@@ -7,6 +7,7 @@ This module converts Reactome BioPAX data into Entity records using the
 
 from __future__ import annotations
 
+from functools import partial
 import re
 
 from pypath.internals.cv_terms import (
@@ -273,22 +274,22 @@ resource = Resource(
     reactions=Dataset(
         download=download,
         mapper=reactions_schema,
-        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='reactions', **kwargs),
+        raw_parser=partial(_raw, data_type='reactions'),
     ),
     controls=Dataset(
         download=download,
         mapper=controls_schema,
-        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='controls', **kwargs),
+        raw_parser=partial(_raw, data_type='controls'),
     ),
     control_groups=Dataset(
         download=download,
         mapper=control_groups_schema,
-        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='control_groups', **kwargs),
+        raw_parser=partial(_raw, data_type='control_groups'),
     ),
     pathway_ontology=OntologyDataset(
         download=download,
         mapper=pathway_ontology_schema,
-        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='pathway_terms', **kwargs),
+        raw_parser=partial(_raw, data_type='pathway_terms'),
         ontology_id='reactome_pathways',
         remark='Reactome pathway ontology exported from Reactome BioPAX via pypath.',
         typedefs=[],
