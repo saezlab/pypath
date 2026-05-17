@@ -96,8 +96,8 @@ MOLECULE_TYPE_TO_ENTITY_TYPE = {
     'Oligonucleotide': EntityTypeCv.SMALL_MOLECULE,
     'Gene': EntityTypeCv.GENE,
     'Cell': EntityTypeCv.PHYSICAL_ENTITY,
-    'Unknown': EntityTypeCv.PHYSICAL_ENTITY,
-    'Unclassified': EntityTypeCv.PHYSICAL_ENTITY,
+    'Unknown': EntityTypeCv.SMALL_MOLECULE,
+    'Unclassified': EntityTypeCv.SMALL_MOLECULE,
 }
 
 # Mapping of ChEMBL molecule_type strings to more specific subclasses
