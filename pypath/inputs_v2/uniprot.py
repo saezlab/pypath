@@ -36,19 +36,19 @@ from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, 
 from pypath.inputs_v2.parsers.base import iter_tsv
 from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
-# UniProt REST API URL for comprehensive protein data
-# Currently hardcoded for human (9606), mouse (10090), and rat (10116)
+# UniProt REST API URL for protein data.
+# Currently hardcoded for human (9606), mouse (10090), and rat (10116).
+# Cross-reference identifiers are loaded through reference_id_translation and
+# restored on canonical entities from the resolver, so protein evidence rows
+# only need the primary UniProt accession.
 UNIPROT_DATA_URL = (
     "https://rest.uniprot.org/uniprotkb/stream"
     "?compressed=true"
     "&format=tsv"
     "&query=(taxonomy_id:9606 OR taxonomy_id:10090 OR taxonomy_id:10116) AND reviewed:true"
-    "&fields=accession,id,protein_name,length,mass,sequence,gene_primary,gene_synonym,"
-    "organism_id,xref_hgnc,cc_disease,ft_mutagen,cc_subcellular_location,cc_ptm,lit_pubmed_id,"
-    "cc_function,xref_ensembl,xref_geneid,xref_kegg,cc_pathway,cc_activity_regulation,keywordid,"
-    "ec,go_id,ft_transmem,protein_families,xref_refseq,xref_alphafolddb,"
-    "xref_chembl,xref_phosphositeplus,xref_signor,xref_pathwaycommons,"
-    "xref_biogrid,xref_complexportal"
+    "&fields=accession,length,mass,sequence,organism_id,cc_disease,ft_mutagen,"
+    "cc_subcellular_location,cc_ptm,lit_pubmed_id,cc_function,cc_pathway,"
+    "cc_activity_regulation,keywordid,ec,go_id,ft_transmem,protein_families"
 )
 
 UNIPROT_KEYWORDS_OBO_URL = (
@@ -73,15 +73,7 @@ config = ResourceConfig(
     ),
 )
 
-f = FieldConfig(
-    extract={
-        'protein_name': r'^([^(]+)',
-        'protein_synonym': r'^([^)]+)\)',
-        'ensembl_id': r'^(ENS[A-Z0-9]*\d+(?:\.\d+)?)',
-        'complexportal_id': r'^(CPX-\d+)',
-        'hgnc_id': r'^(?:HGNC:)?(\d+)',
-    },
-)
+f = FieldConfig()
 
 PROTEIN_REFERENCE_KEY_TYPES: tuple[str, ...] = (
     'MI:1097:Uniprot',
@@ -105,9 +97,6 @@ _REFERENCE_FIELDS = (
 )
 
 _UNIPROT_ENSEMBL_RE = re.compile(r'(ENS[A-Z0-9]*\d+(?:\.\d+)?)')
-
-protein_name_column = f('Protein names', extract='protein_name')
-protein_synonym_column = f('Protein names', delimiter='(', extract='protein_synonym')
 
 def _build_uniprot_reference_query(taxonomy_ids: Iterable[int | str] | None = None) -> str:
     if taxonomy_ids is None:
@@ -277,30 +266,6 @@ proteins_schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry')),
-        CV(term=IdentifierNamespaceCv.UNIPROT_ENTRY_NAME, value=f('Entry Name')),
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Gene Names (primary)')),
-        CV(
-            term=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
-            value=f('Gene Names (synonym)', delimiter=' '),
-        ),
-        CV(
-            term=IdentifierNamespaceCv.NAME,
-            value=protein_name_column,
-        ),
-        CV(
-            term=IdentifierNamespaceCv.SYNONYM,
-            value=protein_synonym_column,
-        ),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl', delimiter=';', extract='ensembl_id')),
-        CV(term=IdentifierNamespaceCv.ENTREZ, value=f('GeneID', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.HGNC, value=f('HGNC', delimiter=';', extract='hgnc_id')),
-        #CV(term=IdentifierNamespaceCv.REFSEQ, value=f('RefSeq', delimiter=';')),
-        #CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=f('AlphaFoldDB', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.KEGG, value=f('KEGG', delimiter=';')),
-        #CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('ChEMBL', delimiter=';')),
-        #CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR', delimiter=';')),
-        #CV(term=IdentifierNamespaceCv.BIOGRID, value=f('BioGRID', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.COMPLEXPORTAL, value=f('ComplexPortal', delimiter=';', extract='complexportal_id')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.SEQUENCE_LENGTH, value=f('Length')),
@@ -346,7 +311,7 @@ resource = Resource(
     proteins=Dataset(
         download=Download(
             url=UNIPROT_DATA_URL,
-            filename='uniprot_proteins_9606_10090_10116.tsv.gz',
+            filename='uniprot_proteins_slim_9606_10090_10116.tsv.gz',
             subfolder='uniprot',
             large=True,
             encoding='utf-8',
