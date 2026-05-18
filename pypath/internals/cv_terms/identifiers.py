@@ -130,3 +130,4 @@ class IdentifierNamespaceCv(CvEnum):
     METANETX_REACTION = ("OM:0235", "MetaNetX/MNXref reaction identifier (MNXR prefix)", "https://www.metanetx.org")
     ICELLNET = ("OM:0236", "ICELLNET interaction identifier", "https://github.com/soumelis-lab/ICELLNET")
     NICHENET = ("OM:0237", "NicheNet interaction identifier", "https://zenodo.org/records/7074291")
+    TCDB = ("OM:0238", "Transporter Classification Database identifier", "https://www.tcdb.org")

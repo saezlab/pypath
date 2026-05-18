@@ -62,3 +62,4 @@ class ResourceCv(CvEnum):
     # Phenotype and ontology databases (OM:1190-1199 range)
     HPO = ("OM:1190", "Human Phenotype Ontology", "https://hpo.jax.org/")
     MACDB = ("OM:1191", "MACdb", "https://ngdc.cncb.ac.cn/macdb/")
+    TCDB = ("OM:1192", "TCDB", "https://www.tcdb.org/")
