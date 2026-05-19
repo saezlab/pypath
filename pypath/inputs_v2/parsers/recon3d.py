@@ -156,9 +156,9 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
 
     Iterates over the ``reactions`` array in the BiGG JSON and encodes
     stoichiometry as ``||``-delimited ``base_id:compartment:coefficient``
-    strings for reactants and products separately.  Direction is ``'reversible'`` when
+    strings for reactants and products separately.  Direction is ``'REVERSIBLE'`` when
     ``lower_bound < 0 < upper_bound`` (consistent with the legacy module),
-    and ``'left_to_right'`` otherwise.
+    and ``'LEFT-TO-RIGHT'`` otherwise.
 
     Args:
         data: The parsed top-level BiGG JSON dict.
@@ -181,7 +181,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
                 products.append(f'{base_id}:{compartment}:{stoich}')
         lb = r.get('lower_bound', 0)
         ub = r.get('upper_bound', 0)
-        direction = 'reversible' if lb < 0 < ub else 'left_to_right'
+        direction = 'REVERSIBLE' if lb < 0 < ub else 'LEFT-TO-RIGHT'
         yield {
             'bigg_reaction_id': r['id'],
             'name': r.get('name'),
