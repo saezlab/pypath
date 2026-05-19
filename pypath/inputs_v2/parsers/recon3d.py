@@ -12,7 +12,7 @@ import re
 from collections.abc import Generator
 from typing import Any
 
-from pypath.inputs_v2.base import _first_handle
+from pypath.inputs_v2.base import read_opener_text
 
 _ISOFORM_RE = re.compile(r'_[A-Z]+\d*$')
 
@@ -335,5 +335,5 @@ def _raw(opener: Any, data_type: str, **kwargs) -> Generator[dict, None, None]:
         dict: One record dict per entity.  The keys differ by data type;
             see the corresponding ``_parse_*`` function for field definitions.
     """
-    data = json.load(_first_handle(opener))
+    data = json.loads(read_opener_text(opener))
     yield from _PARSERS[data_type](data)
