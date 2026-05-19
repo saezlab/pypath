@@ -131,3 +131,6 @@ class IdentifierNamespaceCv(CvEnum):
     ICELLNET = ("OM:0236", "ICELLNET interaction identifier", "https://github.com/soumelis-lab/ICELLNET")
     NICHENET = ("OM:0237", "NicheNet interaction identifier", "https://zenodo.org/records/7074291")
     TCDB = ("OM:0238", "Transporter Classification Database identifier", "https://www.tcdb.org")
+    RHEA_ID = ("OM:0239", "Rhea reaction identifier", "https://www.rhea-db.org/")
+    ECOCYC = ("OM:0240", "EcoCyc reaction identifier", "https://ecocyc.org/")
+    METACYC = ("OM:0241", "MetaCyc reaction identifier", "https://metacyc.org/")

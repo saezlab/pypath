@@ -63,3 +63,4 @@ class ResourceCv(CvEnum):
     HPO = ("OM:1190", "Human Phenotype Ontology", "https://hpo.jax.org/")
     MACDB = ("OM:1191", "MACdb", "https://ngdc.cncb.ac.cn/macdb/")
     TCDB = ("OM:1192", "TCDB", "https://www.tcdb.org/")
+    RHEA = ("OM:1193", "Rhea", "https://www.rhea-db.org/")
