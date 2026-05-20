@@ -134,3 +134,5 @@ class IdentifierNamespaceCv(CvEnum):
     RHEA_ID = ("OM:0239", "Rhea reaction identifier", "https://www.rhea-db.org/")
     ECOCYC = ("OM:0240", "EcoCyc reaction identifier", "https://ecocyc.org/")
     METACYC = ("OM:0241", "MetaCyc reaction identifier", "https://metacyc.org/")
+    HUMAN_GEM_METABOLITE = ("OM:0242", "Human-GEM metabolite identifier (MAM prefix, compartment suffix stripped)", "https://github.com/SysBioChalmers/Human-GEM")
+    HUMAN_GEM_REACTION = ("OM:0243", "Human-GEM reaction identifier", "https://github.com/SysBioChalmers/Human-GEM")

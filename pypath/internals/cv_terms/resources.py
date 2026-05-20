@@ -55,6 +55,7 @@ class ResourceCv(CvEnum):
     RAMPDB = ("OM:1177", "RaMP-DB", "https://rampdb.nih.gov/")
     CHEBI = ("OM:1178", "ChEBI", "https://www.ebi.ac.uk/chebi/")
     RECON3D = ("OM:1179", "Recon3D", "https://www.vmh.life/")
+    HUMAN_GEM = ("OM:1194", "Human-GEM", "https://github.com/SysBioChalmers/Human-GEM")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
