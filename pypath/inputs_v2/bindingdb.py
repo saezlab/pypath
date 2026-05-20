@@ -80,6 +80,7 @@ interactions_schema = EntityBuilder(
         CV(term=InteractionParameterCv.KD, value=f('Kd (nM)'), unit=AffinityUnitCv.NANOMOLAR),
         CV(term=InteractionParameterCv.IC50, value=f('IC50 (nM)'), unit=AffinityUnitCv.NANOMOLAR),
         CV(term=InteractionParameterCv.EC50, value=f('EC50 (nM)'), unit=AffinityUnitCv.NANOMOLAR),
+        CV(term=InteractionParameterCv.PCHEMBL_VALUE, value=f('pchembl_value')),
         CV(term=InteractionParameterCv.KON, value=f('kon (M-1-s-1)'), unit=AffinityUnitCv.PER_MOLAR_PER_SECOND),
         CV(term=InteractionParameterCv.KOFF, value=f('koff (s-1)'), unit=AffinityUnitCv.PER_SECOND),
         CV(term=InteractionParameterCv.PH, value=f('pH')),

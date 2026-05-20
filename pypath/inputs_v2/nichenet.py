@@ -11,7 +11,6 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     InterCellAnnotations,
-    InteractionMetadataCv,
     LicenseCV,
     ResourceCv,
     UpdateCategoryCV,
@@ -90,14 +89,6 @@ def map_nichenet_interaction(row: dict[str, Any]) -> Entity:
         ],
         annotations=[
             Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-            Annotation(
-                term=InteractionMetadataCv.INTERACTION_ANNOTATION,
-                value=str(row.get('database') or '').strip(),
-            ),
-            Annotation(
-                term=InteractionMetadataCv.INTERACTION_ANNOTATION,
-                value=str(row.get('source') or '').strip(),
-            ),
         ],
         membership=[
             Membership(

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import csv
+import math
 import os
 from pathlib import Path
 import re
@@ -16,7 +17,6 @@ except ImportError:  # pragma: no cover - optional dependency
 
 from pypath.inputs_v2.parsers.chemical_filters import (
     chemical_resolver_filter_sql,
-    chemical_resolver_inchikey_filter_enabled,
     chemical_resolver_lookup_path,
     chemical_resolver_sources,
     row_has_allowed_chemical_inchikey,
@@ -25,6 +25,14 @@ from pypath.inputs_v2.parsers.base import iter_parquet
 
 
 _CHEMBL_RUN_RE = re.compile(r'(CHEMBL\d+)(?=CHEMBL\d+)')
+_AFFINITY_VALUE_RE = re.compile(r'([0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)')
+_BINDINGDB_AFFINITY_COLUMNS = (
+    'Ki (nM)',
+    'Kd (nM)',
+    'IC50 (nM)',
+    'EC50 (nM)',
+)
+BINDINGDB_MIN_PCHEMBL = 5.0
 
 # Keep the raw parser schema narrow. These are the only BindingDB columns used by
 # pypath.inputs_v2.bindingdb.interactions_schema.
@@ -61,7 +69,7 @@ _BINDINGDB_COLUMNS = [
     'UniProt (TrEMBL) Primary ID of Target Chain 1',
     'UniProt (TrEMBL) Submitted Name of Target Chain 1',
 ]
-BINDINGDB_FILTERED_PARQUET_CACHE_VERSION = 1
+BINDINGDB_FILTERED_PARQUET_CACHE_VERSION = 2
 
 
 def _normalize_row(row: dict[str, str | None]) -> dict[str, str]:
@@ -69,7 +77,92 @@ def _normalize_row(row: dict[str, str | None]) -> dict[str, str]:
     value = normalized.get('ChEMBL ID of Ligand', '').strip()
     if value and value.count('CHEMBL') > 1 and '::' not in value and ';' not in value and '|' not in value:
         normalized['ChEMBL ID of Ligand'] = _CHEMBL_RUN_RE.sub(r'\1::', value)
+    pchembl_value = _bindingdb_pchembl_value(normalized)
+    normalized['pchembl_value'] = (
+        f'{pchembl_value:.6g}'
+        if pchembl_value is not None
+        else ''
+    )
     return normalized
+
+
+def _pchembl_from_nm(value: object) -> float | None:
+    """Convert a BindingDB nM affinity cell to a pChEMBL-like value.
+
+    Values with a leading ``>`` are weak-activity upper bounds in pChEMBL space,
+    so they are not used to pass the potency filter.
+    """
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text or text.startswith('>'):
+        return None
+    match = _AFFINITY_VALUE_RE.search(text)
+    if not match:
+        return None
+    try:
+        nm_value = float(match.group(1))
+    except ValueError:
+        return None
+    if nm_value <= 0:
+        return None
+    return 9.0 - math.log10(nm_value)
+
+
+def _bindingdb_pchembl_value(row: dict[str, object]) -> float | None:
+    values = [
+        value
+        for value in (
+            _pchembl_from_nm(row.get(column))
+            for column in _BINDINGDB_AFFINITY_COLUMNS
+        )
+        if value is not None
+    ]
+    return max(values) if values else None
+
+
+def _bindingdb_pchembl_filter_enabled(kwargs: dict[str, object]) -> bool:
+    return bool(kwargs.get('filter_bindingdb_pchembl', True))
+
+
+def _bindingdb_chemical_resolver_filter_enabled(kwargs: dict[str, object]) -> bool:
+    return bool(kwargs.get('filter_chemical_resolver_inchikeys', False))
+
+
+def _bindingdb_min_pchembl(kwargs: dict[str, object]) -> float:
+    return float(kwargs.get('bindingdb_min_pchembl', BINDINGDB_MIN_PCHEMBL))
+
+
+def _row_has_allowed_pchembl(
+    row: dict[str, str],
+    *,
+    kwargs: dict[str, object],
+) -> bool:
+    if not _bindingdb_pchembl_filter_enabled(kwargs):
+        return True
+    value = row.get('pchembl_value')
+    if value in (None, ''):
+        return False
+    try:
+        return float(value) > _bindingdb_min_pchembl(kwargs)
+    except ValueError:
+        return False
+
+
+def _row_passes_filters(
+    row: dict[str, str],
+    *,
+    kwargs: dict[str, object],
+) -> bool:
+    if not _row_has_allowed_pchembl(row, kwargs=kwargs):
+        return False
+    if _bindingdb_chemical_resolver_filter_enabled(kwargs):
+        return row_has_allowed_chemical_inchikey(
+            row,
+            'Ligand InChI Key',
+            kwargs=kwargs,
+        )
+    return True
 
 
 def _quote_identifier(name: str) -> str:
@@ -272,7 +365,7 @@ def _raw(
     stream a projected subset of columns into the bronze/preparse writer.
     """
     if use_duckdb is None:
-        use_duckdb = chemical_resolver_inchikey_filter_enabled(kwargs) or (
+        use_duckdb = _bindingdb_chemical_resolver_filter_enabled(kwargs) or (
             os.environ.get('OMNIPATH_BINDINGDB_USE_DUCKDB', '').lower()
             in {'1', 'true', 'yes'}
         )
@@ -285,37 +378,32 @@ def _raw(
             if tsv_path is not None:
                 if (
                     max_lines is None
-                    and chemical_resolver_inchikey_filter_enabled(kwargs)
+                    and _bindingdb_chemical_resolver_filter_enabled(kwargs)
                 ):
                     parquet_path = _ensure_filtered_parquet(
                         tsv_path,
                         kwargs=kwargs,
                     )
                     if parquet_path is not None:
-                        yield from iter_parquet(
+                        for row in iter_parquet(
                             path=parquet_path,
                             batch_size=batch_size,
-                        )
+                        ):
+                            row = _normalize_row(row)
+                            if _row_passes_filters(row, kwargs=kwargs):
+                                yield row
                         return
                 for row in _iter_duckdb_tsv(
                     tsv_path,
                     max_lines=max_lines,
                     batch_size=batch_size,
                 ):
-                    if row_has_allowed_chemical_inchikey(
-                        row,
-                        'Ligand InChI Key',
-                        kwargs=kwargs,
-                    ):
+                    if _row_passes_filters(row, kwargs=kwargs):
                         yield row
                 return
         except Exception as error:
             print(f'BindingDB DuckDB parser unavailable; falling back to csv. Reason: {error}', flush=True)
 
     for row in _iter_csv_fallback(opener, max_lines=max_lines):
-        if row_has_allowed_chemical_inchikey(
-            row,
-            'Ligand InChI Key',
-            kwargs=kwargs,
-        ):
+        if _row_passes_filters(row, kwargs=kwargs):
             yield row

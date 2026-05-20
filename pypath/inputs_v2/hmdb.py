@@ -81,7 +81,7 @@ metabolites_schema = EntityBuilder(
 )
 
 download = Download(
-    url='https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
+    url='https://rescued.omnipathdb.org/hmdb_metabolites.zip',
     filename='hmdb_metabolites.zip',
     subfolder='hmdb',
     large=True,

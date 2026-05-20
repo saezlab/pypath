@@ -12,10 +12,10 @@ import re
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
+    InteractionMetadataCv,
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
-    InteractionMetadataCv,
     InterCellAnnotations,
 )
 from pypath.internals.tabular_builder import (
@@ -107,9 +107,15 @@ def _species_to_taxon(species: str) -> str | None:
     return _species_taxon.get((species or '').strip().lower())
 
 _cdb_pat = re.compile(r"^CDB\d{2}:(\d+)", re.IGNORECASE)
+_hgnc_pat = re.compile(r"^HGNC:(\d+)$", re.IGNORECASE)
 
 def _extract_cdb(val: str) -> str | None:
     return val if _cdb_pat.match(val) else None
+
+
+def _extract_hgnc_id(val: str) -> str | None:
+    match = _hgnc_pat.match((val or '').strip())
+    return match.group(1) if match else None
 
 
 def _location_terms(location: str | None) -> list[InterCellAnnotations]:
@@ -136,6 +142,7 @@ f = FieldConfig(
         'primary_gene': _extract_primary_gene,
         'gene_alias': _extract_gene_alias,
         'cdb': _extract_cdb,
+        'hgnc_id': _extract_hgnc_id,
     },
     map={
         'species_taxon': _species_to_taxon,
@@ -154,7 +161,7 @@ interactions_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('LR Pair')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('Evidence')),
+        CV(term=InteractionMetadataCv.INTERACTION_DIRECTNESS, value=f('Evidence')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
     ),
     membership=MembershipBuilder(
@@ -163,7 +170,7 @@ interactions_schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Ligand Symbols', extract='primary_gene')),
-                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Ligand Species ID', extract=r'^HGNC:\d+$')),
+                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Ligand Species ID', extract='hgnc_id')),
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ligand ENSEMBL ID')),
                 ),
                 annotations=AnnotationsBuilder(
@@ -181,7 +188,7 @@ interactions_schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Receptor Symbols', extract='primary_gene')),
-                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Receptor Species ID', extract=r'^HGNC:\d+$')),
+                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Receptor Species ID', extract='hgnc_id')),
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Receptor ENSEMBL ID')),
                 ),
                 annotations=AnnotationsBuilder(

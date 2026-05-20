@@ -77,6 +77,7 @@ class IdentifierNamespaceCv(CvEnum):
     EC = ("OM:0133", "Enzyme Class identifier (e.g. 1.7.99.4)")
     PFOCR = ("OM:0134", "Pathway Figure OCR (in the form '[PMC id]__F[fig num]')", "https://pfocr.wikipathways.org/")
     METAC = ("OM:0135", "MACdb study/cohort identifier (e.g. METAC_123)", "https://ngdc.cncb.ac.cn/macdb")
+    DOID = ("OM:0136", "Human Disease Ontology identifier")
 
     # Gene and protein names (OM:0200-0209 range)
     GENE_NAME_PRIMARY = ("OM:0200", "Primary gene name or symbol")
@@ -134,5 +135,6 @@ class IdentifierNamespaceCv(CvEnum):
     RHEA_ID = ("OM:0239", "Rhea reaction identifier", "https://www.rhea-db.org/")
     ECOCYC = ("OM:0240", "EcoCyc reaction identifier", "https://ecocyc.org/")
     METACYC = ("OM:0241", "MetaCyc reaction identifier", "https://metacyc.org/")
-    HUMAN_GEM_METABOLITE = ("OM:0242", "Human-GEM metabolite identifier (MAM prefix, compartment suffix stripped)", "https://github.com/SysBioChalmers/Human-GEM")
-    HUMAN_GEM_REACTION = ("OM:0243", "Human-GEM reaction identifier", "https://github.com/SysBioChalmers/Human-GEM")
+    DRUGCENTRAL = ("OM:0242", "DrugCentral identifier", "https://drugcentral.org/")
+    HUMAN_GEM_METABOLITE = ("OM:0243", "Human-GEM metabolite identifier (MAM prefix, compartment suffix stripped)", "https://github.com/SysBioChalmers/Human-GEM")
+    HUMAN_GEM_REACTION = ("OM:0244", "Human-GEM reaction identifier", "https://github.com/SysBioChalmers/Human-GEM")

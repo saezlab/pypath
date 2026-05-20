@@ -11,7 +11,6 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     InterCellAnnotations,
-    InteractionMetadataCv,
     LicenseCV,
     ResourceCv,
     UpdateCategoryCV,
@@ -46,17 +45,25 @@ download = Download(
 
 
 _pmid_re = re.compile(r'\d+')
+_spreadsheet_currency_gene_re = re.compile(r'^(\d+),00[\s\xa0]+(DKK)$')
 
 
 def _clean(value: Any) -> str:
     return str(value or '').strip()
 
 
+def _clean_gene(value: Any) -> str:
+    value = _clean(value)
+    if match := _spreadsheet_currency_gene_re.fullmatch(value):
+        return f'{match.group(2)}{match.group(1)}'
+    return value
+
+
 def _components(row: dict[str, Any], prefix: str, count: int) -> list[str]:
     return [
         value
         for idx in range(1, count + 1)
-        if (value := _clean(row.get(f'{prefix} {idx}')))
+        if (value := _clean_gene(row.get(f'{prefix} {idx}')))
     ]
 
 
@@ -75,11 +82,6 @@ def _annotations(*items: Annotation | None) -> list[Annotation] | None:
             out.append(item)
             seen.add(key)
     return out or None
-
-
-def _annotation(term: Any, value: Any) -> Annotation | None:
-    value = _clean(value)
-    return Annotation(term=term, value=value) if value else None
 
 
 def _protein(
@@ -138,9 +140,6 @@ def map_icellnet_interaction(row: dict[str, Any]) -> Entity | None:
 
     annotations = _annotations(
         Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('Family')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('Subfamily')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('Other family')),
         *[
             Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid)
             for pmid in _pubmeds(row.get('Reference'))
