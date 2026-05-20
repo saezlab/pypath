@@ -22,6 +22,8 @@ from __future__ import annotations
 from typing import Literal
 import collections
 import itertools
+import json
+import time
 
 import pandas as pd
 
@@ -97,22 +99,92 @@ def oma_orthologs(
     rel_type = common.to_set(rel_type)
     url = urls.urls['oma']['url']
     page = 1
-    n_pages = 1e6
+    per_page = 500
+    total_pages = None
+    retryable_statuses = {502, 503, 504}
+    max_attempts = 4
     # first decleration is set to prevent recurrency.
     # But at the end it will return as a list
     result = set()
 
     while True:
 
-        page_url = f'{url}{organism_a}/{organism_b}/?page={page}&per_page=1000'
-        c = curl.Curl(page_url, silent = False)
+        page_url = (
+            f'{url}{organism_a}/{organism_b}/?page={page}&per_page={per_page}'
+        )
+        data = None
 
-        if not c.result: break
+        for attempt in range(1, max_attempts + 1):
 
-        c.get_headers()
-        n_pages = float(c.resp_headers_dict.get('x-total-count', 1e8)) / 100
-        page += 1
-        data = inputs_common.json_read(c.result)
+            c = curl.Curl(
+                page_url,
+                silent = False,
+                retries = 5,
+                timeout = 60,
+                req_headers = {
+                    'Accept': 'application/json',
+                    'User-Agent': (
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                        'AppleWebKit/537.36 (KHTML, like Gecko) '
+                        'Chrome/131.0 Safari/537.36'
+                    ),
+                },
+            )
+
+            if c.status == 404:
+                data = []
+                break
+
+            if c.status in retryable_statuses:
+
+                if attempt < max_attempts:
+                    time.sleep(2 ** (attempt - 1))
+                    continue
+
+                raise RuntimeError(
+                    f'OMA API temporary error HTTP {c.status} at: {page_url}'
+                )
+
+            if c.status >= 400:
+                raise RuntimeError(
+                    f'OMA API returned HTTP {c.status} at: {page_url}'
+                )
+
+            if not c.result:
+                data = []
+                break
+
+            if not c.result.lstrip().startswith(('[', '{')):
+
+                if attempt < max_attempts:
+                    time.sleep(2 ** (attempt - 1))
+                    continue
+
+                raise RuntimeError(
+                    f'OMA API returned non-JSON content at: {page_url}'
+                )
+
+            try:
+                data = inputs_common.json_read(c.result)
+                if total_pages is None:
+                    c.get_headers()
+                    total_count = c.resp_headers_dict.get('x-total-count')
+
+                    if total_count and str(total_count).isdigit():
+                        total_pages = (
+                            int(total_count) + per_page - 1
+                        ) // per_page
+                break
+            except json.JSONDecodeError:
+
+                if attempt < max_attempts:
+                    time.sleep(2 ** (attempt - 1))
+                    continue
+
+                raise
+
+        if not data:
+            break
 
         for rec in data:
 
@@ -159,7 +231,15 @@ def oma_orthologs(
                 }
             )
 
-        if page > n_pages: break
+        if (
+            (total_pages is not None and page >= total_pages) or
+            len(data) < per_page
+        ):
+            break
+
+        page += 1
+
+
 
     result = list(result)
 
