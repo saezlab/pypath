@@ -190,8 +190,6 @@ def pharos_general(
         url=url,
         req_headers=req_headers,
         binary_data=binary_data,
-        compressed=True,
-        compr='gz',
     )
     result = json.loads(c.result)
 
@@ -249,6 +247,8 @@ def pharos_targets(
 
         result.extend(response)
         variables['step'] += chunk_size
+
+
 
     return result
 
