@@ -135,3 +135,4 @@ class IdentifierNamespaceCv(CvEnum):
     RHEA_ID = ("OM:0239", "Rhea reaction identifier", "https://www.rhea-db.org/")
     ECOCYC = ("OM:0240", "EcoCyc reaction identifier", "https://ecocyc.org/")
     METACYC = ("OM:0241", "MetaCyc reaction identifier", "https://metacyc.org/")
+    DRUGCENTRAL = ("OM:0242", "DrugCentral identifier", "https://drugcentral.org/")

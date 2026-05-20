@@ -43,6 +43,7 @@ class ResourceCv(CvEnum):
     ICELLNET = ("OM:1162", "ICELLNET", "https://github.com/soumelis-lab/ICELLNET")
     CELLCHAT = ("OM:1163", "CellChatDB", "https://github.com/jinworks/CellChat")
     NICHENET = ("OM:1164", "NicheNet", "https://zenodo.org/records/7074291")
+    CELLINKER = ("OM:1165", "Cellinker", "https://www.cellknowledge.com.cn/cellinker/")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
@@ -58,6 +59,7 @@ class ResourceCv(CvEnum):
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
+    DRUGCENTRAL = ("OM:1181", "DrugCentral", "https://drugcentral.org/")
 
     # Phenotype and ontology databases (OM:1190-1199 range)
     HPO = ("OM:1190", "Human Phenotype Ontology", "https://hpo.jax.org/")
