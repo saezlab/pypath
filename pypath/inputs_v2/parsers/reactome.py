@@ -92,6 +92,15 @@ def _load_cached_data(data_type: str, force_refresh: bool = False) -> list[dict]
     return None
 
 
+def _prepared_cache_available(
+    *,
+    data_type: str,
+    force_refresh: bool = False,
+    **_kwargs: object,
+) -> bool:
+    return not force_refresh and _load_cached_data(data_type) is not None
+
+
 def _save_cached_data(data_type: str, data: list[dict]) -> None:
     _DATA_CACHE[data_type] = data
     pickle_path = _get_cache_path(data_type)
@@ -1532,3 +1541,6 @@ def _raw(
         if max_records is not None and i >= max_records:
             break
         yield record
+
+
+_raw.prepared_cache_available = _prepared_cache_available

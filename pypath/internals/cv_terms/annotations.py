@@ -494,6 +494,18 @@ class ParticipantMetadataCv(CvEnum):
     SOURCE = ("OM:1228", "Participant designated as the source of a directed interaction")
     TARGET = ("OM:1229", "Participant designated as the target of a directed interaction")
 
+class InterCellAnnotations(CvEnum):
+    """Annotations for intercellular interactions and roles."""
+
+    parent_cv_term = ("OM:1230", "Intercellular annotation term", "Describes annotations specific to intercellular interactions and roles.")
+    
+    LIGAND = ("OM:7777", "Participant designated as a ligand")
+    RECEPTOR = ("OM:7778", "Participant designated as a receptor")
+    MEMBRANE = ("OM:7779", "Membrane-associated subcellular location")
+    CYTOPLASM = ("OM:7780", "Cytoplasmic subcellular location")
+    SECRETED = ("OM:7781", "Secreted subcellular location")
+
+
 
 class OntologyAnnotationCv(CvEnum):
     """Ontology annotation terms.
@@ -540,3 +552,5 @@ class DiseaseAnnotationCv(CvEnum):
     TYPE = ("OM:1252", "Disease type/category")
     SUBTYPE = ("OM:1253", "Disease subtype/subcategory")
     STAGE = ("OM:1254", "Disease stage")
+    RELATIONSHIP = ("OM:1255", "Disease association relationship predicate")
+    SOURCE = ("OM:1256", "Disease association source or evidence reference")

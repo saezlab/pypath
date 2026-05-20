@@ -10,6 +10,10 @@ from typing import Any
 _NON_MEMBER_ATTRIBUTES = {'parent_cv_term'}
 
 
+def _label_from_member_name(name: str) -> str:
+    return name.replace('_', ' ').title()
+
+
 class CvEnumMeta(EnumMeta):
     """Enum metaclass that preserves metadata attributes without creating members."""
 
@@ -85,6 +89,7 @@ class CvEnum(str, Enum, metaclass=CvEnumMeta):
         """
         obj = str.__new__(cls, accession)
         obj._value_ = accession
+        obj._label_override = None
 
         # Handle both 2-tuple and 3-tuple formats
         # 2-tuple: (accession, definition) or (accession, definition, source)
@@ -94,6 +99,40 @@ class CvEnum(str, Enum, metaclass=CvEnumMeta):
         obj.source = definition_or_source
         return obj
 
+    @property
+    def accession(self) -> str:
+        """The stable CV accession for this term."""
+
+        return self.value
+
+    @property
+    def label(self) -> str:
+        """A display label for this term."""
+
+        return self._label_override or _label_from_member_name(self.name)
+
+    @property
+    def label_accession(self) -> str:
+        """Canonical label/accession serialization."""
+
+        return f'{self.label}:{self.accession}'
+
+    def __init__(self, *args: object) -> None:
+        """Populate derived metadata after Enum assigns the member name."""
+
+        self._label_override = _label_from_member_name(self.name)
+
     def __str__(self):
         """Return the accession value as a string."""
         return self.value
+
+
+def cv_term_label_accession(value: object) -> str | None:
+    """Render CV enum values as Label:ACCESSION."""
+
+    if value is None:
+        return None
+    if isinstance(value, CvEnum):
+        return value.label_accession
+    text = str(value).strip()
+    return text or None

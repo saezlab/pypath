@@ -31,22 +31,29 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.internals.ontology_schema import OntologyTypedef
+from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
+from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
-# UniProt REST API URL for comprehensive protein data
-# Currently hardcoded for human (9606), mouse (10090), and rat (10116)
+# UniProt REST API URL for protein data.
+# Currently hardcoded for human (9606), mouse (10090), and rat (10116).
+# Cross-reference identifiers are loaded through reference_id_translation and
+# restored on canonical entities from the resolver, so protein evidence rows
+# only need the primary UniProt accession.
 UNIPROT_DATA_URL = (
     "https://rest.uniprot.org/uniprotkb/stream"
     "?compressed=true"
     "&format=tsv"
     "&query=(taxonomy_id:9606 OR taxonomy_id:10090 OR taxonomy_id:10116) AND reviewed:true"
-    "&fields=accession,id,protein_name,length,mass,sequence,gene_primary,gene_synonym,"
-    "organism_id,cc_disease,ft_mutagen,cc_subcellular_location,cc_ptm,lit_pubmed_id,"
-    "cc_function,xref_ensembl,xref_geneid,xref_kegg,cc_pathway,cc_activity_regulation,keywordid,"
-    "ec,go_id,ft_transmem,protein_families,xref_refseq,xref_alphafolddb,"
-    "xref_chembl,xref_phosphositeplus,xref_signor,xref_pathwaycommons,"
-    "xref_biogrid,xref_complexportal"
+    "&fields=accession,length,mass,sequence,organism_id,cc_disease,ft_mutagen,"
+    "cc_subcellular_location,cc_ptm,lit_pubmed_id,cc_function,cc_pathway,"
+    "cc_activity_regulation,keywordid,ec,go_id,ft_transmem,protein_families"
+)
+
+UNIPROT_KEYWORDS_OBO_URL = (
+    'https://rest.uniprot.org/keywords/stream'
+    '?compressed=true&format=obo&query=%28*%29'
 )
 
 config = ResourceConfig(
@@ -66,14 +73,7 @@ config = ResourceConfig(
     ),
 )
 
-f = FieldConfig(
-    extract={
-        'protein_name': r'^([^(]+)',
-        'protein_synonym': r'^([^)]+)\)',
-        'ensembl_id': r'^(ENS[A-Z0-9]*\d+(?:\.\d+)?)',
-        'complexportal_id': r'^(CPX-\d+)',
-    },
-)
+f = FieldConfig()
 
 PROTEIN_REFERENCE_KEY_TYPES: tuple[str, ...] = (
     'MI:1097:Uniprot',
@@ -82,6 +82,7 @@ PROTEIN_REFERENCE_KEY_TYPES: tuple[str, ...] = (
     'OM:0201:Gene Name Synonym',
     'MI:0477:Entrez',
     'MI:0476:Ensembl',
+    'MI:1095:HGNC',
 )
 
 _REFERENCE_FIELDS = (
@@ -92,12 +93,10 @@ _REFERENCE_FIELDS = (
     'organism_id',
     'xref_ensembl',
     'xref_geneid',
+    'xref_hgnc',
 )
 
 _UNIPROT_ENSEMBL_RE = re.compile(r'(ENS[A-Z0-9]*\d+(?:\.\d+)?)')
-
-protein_name_column = f('Protein names', extract='protein_name')
-protein_synonym_column = f('Protein names', delimiter='(', extract='protein_synonym')
 
 def _build_uniprot_reference_query(taxonomy_ids: Iterable[int | str] | None = None) -> str:
     if taxonomy_ids is None:
@@ -147,6 +146,17 @@ def _extract_ensembl_ids(value: str | None) -> list[str]:
     return sorted({match.group(1) for match in _UNIPROT_ENSEMBL_RE.finditer(value)})
 
 
+def _extract_hgnc_ids(value: str | None) -> list[str]:
+    if not value:
+        return []
+    hgnc_ids = []
+    for item in _split_semicolon_field(value):
+        match = re.match(r'^(?:HGNC:)?(\d+)$', item.strip())
+        if match:
+            hgnc_ids.append(match.group(1))
+    return sorted(set(hgnc_ids))
+
+
 def _reference_id_translation_raw(opener, max_records: int | None = None, **kwargs):
     emitted = 0
     for rec in iter_tsv(opener, **kwargs):
@@ -162,7 +172,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
             {
                 'key_type': 'MI:1097:Uniprot',
                 'key_value': primary_uniprot,
-                'taxonomy_id': None,
+                'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             },
         ]
@@ -171,7 +181,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
             rows.append({
                 'key_type': 'OM:0221:Uniprot Entry Name',
                 'key_value': entry_name,
-                'taxonomy_id': None,
+                'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             })
         if gene_primary:
@@ -208,6 +218,15 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
                 'primary_uniprot': primary_uniprot,
             }
             for ensembl in _extract_ensembl_ids(rec.get('Ensembl'))
+        )
+        rows.extend(
+            {
+                'key_type': 'MI:1095:HGNC',
+                'key_value': hgnc,
+                'taxonomy_id': taxonomy_id,
+                'primary_uniprot': primary_uniprot,
+            }
+            for hgnc in _extract_hgnc_ids(rec.get('HGNC'))
         )
 
         for row in rows:
@@ -247,29 +266,6 @@ proteins_schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry')),
-        CV(term=IdentifierNamespaceCv.UNIPROT_ENTRY_NAME, value=f('Entry Name')),
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Gene Names (primary)')),
-        CV(
-            term=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
-            value=f('Gene Names (synonym)', delimiter=' '),
-        ),
-        CV(
-            term=IdentifierNamespaceCv.NAME,
-            value=protein_name_column,
-        ),
-        CV(
-            term=IdentifierNamespaceCv.SYNONYM,
-            value=protein_synonym_column,
-        ),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl', delimiter=';', extract='ensembl_id')),
-        CV(term=IdentifierNamespaceCv.ENTREZ, value=f('GeneID', delimiter=';')),
-        #CV(term=IdentifierNamespaceCv.REFSEQ, value=f('RefSeq', delimiter=';')),
-        #CV(term=IdentifierNamespaceCv.ALPHAFOLDDB, value=f('AlphaFoldDB', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.KEGG, value=f('KEGG', delimiter=';')),
-        #CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('ChEMBL', delimiter=';')),
-        #CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR', delimiter=';')),
-        #CV(term=IdentifierNamespaceCv.BIOGRID, value=f('BioGRID', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.COMPLEXPORTAL, value=f('ComplexPortal', delimiter=';', extract='complexportal_id')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.SEQUENCE_LENGTH, value=f('Length')),
@@ -286,7 +282,7 @@ proteins_schema = EntityBuilder(
         CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=f('EC number', delimiter=';')),
         CV(term=MoleculeAnnotationsCv.AMINO_ACID_SEQUENCE, value=f('Sequence')),
         CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Gene Ontology IDs', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Keywords IDs', delimiter=';')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Keyword ID', delimiter=';')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Organism (ID)')),
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('PubMed ID', delimiter=';')),
     ),
@@ -294,10 +290,28 @@ proteins_schema = EntityBuilder(
 
 resource = Resource(
     config,
+    ontology=OntologyDataset(
+        download=Download(
+            url=UNIPROT_KEYWORDS_OBO_URL,
+            filename='uniprot_keywords.obo.gz',
+            subfolder='uniprot',
+            large=True,
+            encoding='utf-8',
+            default_mode='r',
+            ext='gz',
+        ),
+        mapper=obo_record_to_term,
+        raw_parser=iter_obo,
+        ontology_id='uniprot_keywords',
+        remark='UniProt Keywords ontology exported from the UniProt REST API via pypath.',
+        typedefs=[OntologyTypedef(id='category', name='category')],
+        extension='obo',
+        file_stem='uniprot_keywords',
+    ),
     proteins=Dataset(
         download=Download(
             url=UNIPROT_DATA_URL,
-            filename='uniprot_proteins_9606_10090_10116.tsv.gz',
+            filename='uniprot_proteins_slim_9606_10090_10116.tsv.gz',
             subfolder='uniprot',
             large=True,
             encoding='utf-8',

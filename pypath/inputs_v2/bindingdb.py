@@ -31,11 +31,11 @@ from pypath.inputs_v2.parsers.bindingdb import _raw
 
 
 def _bindingdb_url(dataset: str = 'All', **_kwargs: object) -> str:
-    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{dataset}_202603_tsv.zip'
+    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{dataset}_202605_tsv.zip'
 
 
 def _bindingdb_filename(dataset: str = 'All', **_kwargs: object) -> str:
-    return f'BindingDB_{dataset}_202603_tsv.zip'
+    return f'BindingDB_{dataset}_202605_tsv.zip'
 
 
 config = ResourceConfig(
@@ -80,6 +80,7 @@ interactions_schema = EntityBuilder(
         CV(term=InteractionParameterCv.KD, value=f('Kd (nM)'), unit=AffinityUnitCv.NANOMOLAR),
         CV(term=InteractionParameterCv.IC50, value=f('IC50 (nM)'), unit=AffinityUnitCv.NANOMOLAR),
         CV(term=InteractionParameterCv.EC50, value=f('EC50 (nM)'), unit=AffinityUnitCv.NANOMOLAR),
+        CV(term=InteractionParameterCv.PCHEMBL_VALUE, value=f('pchembl_value')),
         CV(term=InteractionParameterCv.KON, value=f('kon (M-1-s-1)'), unit=AffinityUnitCv.PER_MOLAR_PER_SECOND),
         CV(term=InteractionParameterCv.KOFF, value=f('koff (s-1)'), unit=AffinityUnitCv.PER_SECOND),
         CV(term=InteractionParameterCv.PH, value=f('pH')),

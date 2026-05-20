@@ -59,6 +59,13 @@ download_csv = Download(
     subfolder='foodb',
     large=True,
     ext='tar',  # Actually a plain tar despite .tar.gz extension
+    needed=[
+        'foodb_2020_04_07_csv/Food.csv',
+        'foodb_2020_04_07_csv/Content.csv',
+        'foodb_2020_04_07_csv/Compound.csv',
+        'foodb_2020_04_07_csv/CompoundSynonym.csv',
+        'foodb_2020_04_07_csv/CompoundExternalDescriptor.csv',
+    ],
 )
 
 

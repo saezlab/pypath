@@ -60,8 +60,14 @@ def _resolve_data_dir() -> Path:
     return data_dir
 
 
+def get_data_dir() -> Path:
+    """Return the configured download storage directory for inputs_v2 raw files."""
+
+    return _resolve_data_dir()
+
+
 # Kept as module-level constant for compatibility with modules importing DATA_DIR
-DATA_DIR = _resolve_data_dir()
+DATA_DIR = get_data_dir()
 
 
 _thread_local = threading.local()
@@ -147,6 +153,8 @@ def download_and_open(
     target_dir = data_dir / subfolder
     target_dir.mkdir(parents=True, exist_ok=True)
     file_path = target_dir / filename
+    if file_path.exists() and file_path.stat().st_size == 0:
+        file_path.unlink()
     dm = get_download_manager()
     dm.download(url, dest=str(file_path), **download_kwargs)
 

@@ -12,6 +12,7 @@ import pyarrow as pa
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
+    cv_term_label_accession,
 )
 
 __all__ = [
@@ -30,7 +31,7 @@ class Identifier(NamedTuple):
 
     def __repr__(self) -> str:
         """Compact representation showing namespace and value."""
-        type_name = self.type.name if hasattr(self.type, 'name') else str(self.type)
+        type_name = cv_term_label_accession(self.type)
         return f"{type_name}:{self.value}"
 
 class Annotation(NamedTuple):
@@ -42,7 +43,7 @@ class Annotation(NamedTuple):
 
     def __repr__(self) -> str:
         """Compact representation of annotation."""
-        term_str = self.term.name if hasattr(self.term, 'name') else str(self.term)
+        term_str = cv_term_label_accession(self.term)
         if self.value is None:
             return f"{term_str}"
         elif self.units:
@@ -103,7 +104,7 @@ class Entity(NamedTuple):
     def pretty(self, indent: int = 0) -> str:
         """Tree-like representation with full details."""
         prefix = "  " * indent
-        type_name = self.type.name if hasattr(self.type, 'name') else str(self.type)
+        type_name = cv_term_label_accession(self.type)
 
         lines = [f"{prefix}{type_name}"]
 

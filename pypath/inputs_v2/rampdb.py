@@ -5,53 +5,57 @@ This module converts annotations of lipids and metabolites into Entity records
 using the declarative schema pattern.
 """
 
-import os
-import re
-import requests
 from functools import partial
+import gzip
+import os
 from pathlib import Path
+import re
+import shutil
 
 from bs4 import BeautifulSoup
+import requests
 
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_sqlite
-from pypath.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
+from pypath.internals.cv_terms import (
+    AssayAnnotationsCv,
+    BiologicalRoleCv,
+    EntityTypeCv,
+    IdentifierNamespaceCv,
+    LicenseCV,
+    MoleculeAnnotationsCv,
+    MoleculeSubtypeCv,
+    ResourceCv,
+    UpdateCategoryCV,
+)
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-)
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    BiologicalRoleCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    ResourceCv,
-    MoleculeSubtypeCv,
-    MoleculeAnnotationsCv,
-    AssayAnnotationsCv,
 )
 
 # =================================== SET-UP ===================================
 
 BASE_URL = 'https://github.com/ncats/RaMP-DB/raw/refs/heads/%s/db/'
 
+
 def get_ramp_latest_ver(branch='main'):
-    '''
+    """
     Retrieves the URL for the latest version of the database SQL file
-    '''
+    """
 
     res = requests.get(BASE_URL % branch)
     soup = BeautifulSoup(res.text, 'html.parser')
-    files = sorted({
-        f.text for f in soup.find_all(title=re.compile("\\.sqlite.gz$"))
-    })
+    files = sorted(
+        {f.text for f in soup.find_all(title=re.compile('\\.sqlite.gz$'))}
+    )
 
     ver = re.search(r'(\d+\.\d+\.\d+)', files[-1]).group(1)
 
     return ver, BASE_URL % branch + files[-1]
+
 
 VERSION, URL = get_ramp_latest_ver()
 
@@ -68,7 +72,7 @@ config = ResourceConfig(
         'multi-sourced integrated database with comprehensive annotations on '
         'biological pathways, structure/chemistry, disease and ontology '
         'annotations for genes, proteins, and metabolites.'
-    )
+    ),
 )
 
 # ================================== DOWNLOAD ==================================
@@ -77,7 +81,7 @@ download = Download(
     url=URL,
     filename=os.path.basename(URL),
     subfolder='ramp',
-    large=False,
+    large=True,
     ext=URL.split('.')[-1],
     default_mode='rb',
 )
@@ -105,23 +109,29 @@ table_names = [
     #'reaction',
 ]
 
-#opener = download.open()
-#path = Path(opener.path.replace('.gz', ''))
+# opener = download.open()
+# path = Path(opener.path.replace('.gz', ''))
 
-#with open(path, 'wb') as f:
+# with open(path, 'wb') as f:
 #    f.write(opener.result)
 
-#datasets = dict()
+# datasets = dict()
 
-#for tbl in table_names:
+# for tbl in table_names:
 
 #    datasets[tbl] = iter_sqlite(opener, table_name=tbl, sqlite_path=path)
 
-def parser(opener, table=None):
 
+def parser(opener, table=None, **_kwargs):
     path = Path(opener.path.replace('.gz', ''))
 
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with gzip.open(opener.path, 'rb') as src, path.open('wb') as dst:
+            shutil.copyfileobj(src, dst, length=1024 * 1024)
+
     yield from iter_sqlite(opener, table_name=table, sqlite_path=path)
+
 
 # =================================== SCHEMA ===================================
 
@@ -137,7 +147,7 @@ SOURCE_TO_TERM = {
     'hmdb': IdentifierNamespaceCv.HMDB,
     'lipidmaps': IdentifierNamespaceCv.LIPIDMAPS,
     'cas': IdentifierNamespaceCv.CAS,
-    'en':  IdentifierNamespaceCv.EC,
+    'en': IdentifierNamespaceCv.EC,
     'brenda': IdentifierNamespaceCv.EC,
     'chebi': IdentifierNamespaceCv.CHEBI,
     'chemspider': IdentifierNamespaceCv.CHEMSPIDER,
@@ -149,7 +159,7 @@ SOURCE_TO_TERM = {
     'wiki': IdentifierNamespaceCv.WIKIPATHWAYS,
     'pfocr': IdentifierNamespaceCv.PFOCR,
 }
-CLASS_LEVEL_NAME_TO_TERM ={
+CLASS_LEVEL_NAME_TO_TERM = {
     'LipidMaps_category': MoleculeAnnotationsCv.LIPID_CATEGORY,
     'LipidMaps_main_class': MoleculeAnnotationsCv.LIPID_MAIN_CLASS,
     'LipidMaps_sub_class': MoleculeAnnotationsCv.LIPID_SUB_CLASS,
@@ -164,7 +174,7 @@ ID_TO_ENTITY = {
 
 f = FieldConfig(
     extract={
-        'rampID':  r'^RAMP_([A-Z]+)_\d+$',
+        'rampID': r'^RAMP_([A-Z]+)_\d+$',
         #'hmdbID': r'^(?:hmdb:)?(HMDB\d+)$',
         #'lipidmapsID': r'^(?:LIPIDMAPS:)?(LMSP\d+)$',
         #'sourceID': r'^([a-zA-Z]*):(?:[a-zA-Z]+\d+)$'
@@ -174,13 +184,13 @@ f = FieldConfig(
         'source_to_entity': SOURCE_TO_ENTITY_TYPE,
         'source_to_term': SOURCE_TO_TERM,
         'class_level_to_term': CLASS_LEVEL_NAME_TO_TERM,
-        'id_to_entity': ID_TO_ENTITY
+        'id_to_entity': ID_TO_ENTITY,
     },
     transform={
         'lower': lambda x: x.lower(),
         'upper': lambda x: x.upper(),
-        'postcolon': lambda x: x.split(':')[-1]
-    }
+        'postcolon': lambda x: x.split(':')[-1],
+    },
 )
 
 # X = Info added in some way
@@ -212,10 +222,7 @@ analyte_schema = EntityBuilder(
 metabolite_class_schema = EntityBuilder(
     entity_type=f('source', map='source_to_entity'),
     identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.RAMP_ID,
-            value=f('ramp_id')
-        ),
+        CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('ramp_id')),
         CV(
             term=f('source', map='source_to_term', transform='lower'),
             value=f('class_source_id', transform='postcolon'),
@@ -224,7 +231,7 @@ metabolite_class_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(
             term=f('class_level_name', map='class_level_to_term'),
-            value=f('class_name')
+            value=f('class_name'),
         ),
     ),
 )
@@ -253,7 +260,7 @@ source_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(
             term=AssayAnnotationsCv.ASSAY_CATEGORY,
-            value=f('priorityHMDBStatus')
+            value=f('priorityHMDBStatus'),
         ),
     ),
 )
@@ -284,8 +291,7 @@ chem_props_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('inchi_key')),
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('inchi')),
         CV(
-            term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
-            value=f('mol_formula')
+            term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('mol_formula')
         ),
         CV(term=IdentifierNamespaceCv.NAME, value=f('common_name')),
     ),
@@ -293,7 +299,7 @@ chem_props_schema = EntityBuilder(
         CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('mw')),
         CV(
             term=MoleculeAnnotationsCv.MW_MONOISOTOPIC,
-            value=f('monoisotop_mass')
+            value=f('monoisotop_mass'),
         ),
     ),
 )
@@ -323,20 +329,29 @@ pathway_schema = EntityBuilder(
     entity_type=EntityTypeCv.PATHWAY,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('pathwayRampId')),
-        CV(term=f('type', map='source_to_term'), value=f('sourceId')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=BiologicalRoleCv.PATHWAY, value=f('pathwayName')),
+        CV(term=f('type', map='source_to_term'), value=f('sourceId')),
     ),
 )
 
 # ================================= RESOURCE ===================================
 
+schemas = {
+    'analyte': analyte_schema,
+    'metabolite_class': metabolite_class_schema,
+    'analytehaspathway': analytehaspathway_schema,
+    'pathway': pathway_schema,
+    'source': source_schema,
+    'chem_props': chem_props_schema,
+}
+
 kwargs = {
     t: Dataset(
         download=download,
-        mapper=locals().get('%s_schema' % t),
-        raw_parser=partial(parser, table=t)
+        mapper=schemas[t],
+        raw_parser=partial(parser, table=t),
     )
     for t in table_names
 }

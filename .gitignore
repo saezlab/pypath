@@ -26,3 +26,6 @@ download_manager_log/
 raw_data/
 .envlogs/
 logs/
+
+# Ignore local symlink
+saez_verse

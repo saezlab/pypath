@@ -35,7 +35,7 @@ Accession Ranges:
 
 from typing import Union
 
-from .core import CvEnum
+from .core import CvEnum, cv_term_label_accession
 from .entity_types import EntityTypeCv, MoleculeSubtypeCv,ProteinFunctionalClassCv
 from .identifiers import IdentifierNamespaceCv
 from .annotations import (
@@ -61,6 +61,7 @@ from .annotations import (
     AssayTypeCv,
     AssayAnnotationsCv,
     DiseaseAnnotationCv,
+    InterCellAnnotations
 )
 from .resource_metadata import LicenseCV, UpdateCategoryCV
 from .resources import ResourceCv
