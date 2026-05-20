@@ -30,8 +30,9 @@ CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE = int(
     os.environ.get('OMNIPATH_CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE', '50000')
 )
 
-CHEMBL_PARQUET_CACHE_VERSION = 4
+CHEMBL_PARQUET_CACHE_VERSION = 6
 CHEMBL_FILTERED_PARQUET_CACHE_VERSION = 1
+CHEMBL_ACTIVITY_MIN_PCHEMBL = 5.0
 
 
 DUCKDB_TABLES: dict[str, str] = {
@@ -110,7 +111,7 @@ DUCKDB_TABLES: dict[str, str] = {
 
 
 PARQUET_QUERIES: dict[str, str] = {
-    'molecules': """
+    'molecules': f"""
         SELECT
             md.chembl_id,
             md.pref_name,
@@ -129,6 +130,15 @@ PARQUET_QUERIES: dict[str, str] = {
         FROM molecule_dictionary md
         LEFT JOIN compound_structures cs ON md.molregno = cs.molregno
         LEFT JOIN compound_properties cp ON md.molregno = cp.molregno
+        WHERE md.molregno IN (
+            SELECT molregno
+            FROM activities
+            WHERE pchembl_value > {CHEMBL_ACTIVITY_MIN_PCHEMBL}
+            UNION
+            SELECT molregno
+            FROM drug_mechanism
+            WHERE molregno IS NOT NULL
+        )
     """,
     'assays': """
         WITH assay_params_agg AS (
@@ -209,18 +219,37 @@ PARQUET_QUERIES: dict[str, str] = {
         )
         SELECT
             dm.*,
+            NULL AS standard_type,
+            NULL AS standard_relation,
+            NULL AS standard_value,
+            NULL AS pchembl_value,
+            NULL AS data_validity_comment,
             md.chembl_id AS molecule_chembl_id,
             cs.canonical_smiles,
             cs.standard_inchi,
             cs.standard_inchi_key,
             td.chembl_id AS target_chembl_id,
             td.target_type,
+            td.pref_name AS target_pref_name,
+            td.tax_id AS target_tax_id,
+            td.organism AS target_organism,
             tca.target_component_uniprot_accessions,
             tca.target_component_ensembl_accessions,
+            NULL AS assay_chembl_id,
+            NULL AS assay_type,
+            NULL AS assay_tax_id,
+            NULL AS confidence_score,
+            NULL AS assay_category,
+            NULL AS assay_subcellular_fraction,
+            NULL AS assay_tissue,
+            NULL AS assay_cell_type,
             d.chembl_id AS document_chembl_id,
             d.pubmed_id,
             d.doi,
             d.title AS document_title,
+            ax.description AS action_description,
+            ax.parent_type AS action_parent_type,
+            dm.action_type AS mechanism_action_type,
             mra.mechanism_refs
         FROM drug_mechanism dm
         LEFT JOIN molecule_dictionary md ON dm.molregno = md.molregno
@@ -230,8 +259,9 @@ PARQUET_QUERIES: dict[str, str] = {
         LEFT JOIN compound_records cr ON dm.record_id = cr.record_id
         LEFT JOIN docs d ON cr.doc_id = d.doc_id
         LEFT JOIN mechanism_refs_agg mra ON dm.mec_id = mra.mec_id
+        LEFT JOIN action_type ax ON dm.action_type = ax.action_type
     """,
-    'activities': """
+    'activities': f"""
         WITH target_components_agg AS (
             SELECT
                 tc.tid,
@@ -264,6 +294,7 @@ PARQUET_QUERIES: dict[str, str] = {
             GROUP BY molregno, tid
         )
         SELECT
+            act.activity_id,
             act.standard_type,
             act.standard_relation,
             act.standard_value,
@@ -289,6 +320,7 @@ PARQUET_QUERIES: dict[str, str] = {
             td.organism AS target_organism,
             tca.target_component_uniprot_accessions,
             tca.target_component_ensembl_accessions,
+            d.chembl_id AS document_chembl_id,
             d.pubmed_id,
             d.doi,
             ax.description AS action_description,
@@ -310,12 +342,7 @@ PARQUET_QUERIES: dict[str, str] = {
         LEFT JOIN docs d ON act.doc_id = d.doc_id
         LEFT JOIN action_type ax ON act.action_type = ax.action_type
         LEFT JOIN mechanism_agg ma ON ma.molregno = act.molregno AND ma.tid = a.tid
-        WHERE td.target_type = 'SINGLE PROTEIN'
-          AND td.tax_id IS NOT NULL
-          AND (
-            tca.target_component_uniprot_accessions IS NOT NULL
-            OR tca.target_component_ensembl_accessions IS NOT NULL
-          )
+        WHERE act.pchembl_value > {CHEMBL_ACTIVITY_MIN_PCHEMBL}
     """,
 }
 
@@ -601,7 +628,7 @@ def _iter_chembl_prepared(
             _ensure_sqlite(opener, sqlite_path, db_rel_path)
             _ensure_duckdb_cache(sqlite_path, duckdb_path)
             if (
-                dataset in {'molecules', 'activities'}
+                dataset == 'molecules'
                 and chemical_resolver_inchikey_filter_enabled(kwargs)
             ):
                 parquet_path = (
@@ -644,7 +671,7 @@ _iter_chembl_prepared.prepared_cache_available = _prepared_cache_available
 
 
 SQLITE_QUERIES: dict[str, str] = {
-    'molecules': """
+    'molecules': f"""
         SELECT
             md.chembl_id,
             md.pref_name,
@@ -663,6 +690,15 @@ SQLITE_QUERIES: dict[str, str] = {
         FROM molecule_dictionary md
         LEFT JOIN compound_structures cs ON md.molregno = cs.molregno
         LEFT JOIN compound_properties cp ON md.molregno = cp.molregno
+        WHERE md.molregno IN (
+            SELECT molregno
+            FROM activities
+            WHERE pchembl_value > {CHEMBL_ACTIVITY_MIN_PCHEMBL}
+            UNION
+            SELECT molregno
+            FROM drug_mechanism
+            WHERE molregno IS NOT NULL
+        )
     """,
     'assays': """
         SELECT
@@ -685,12 +721,20 @@ SQLITE_QUERIES: dict[str, str] = {
     'mechanisms': """
         SELECT
             dm.*,
+            NULL AS standard_type,
+            NULL AS standard_relation,
+            NULL AS standard_value,
+            NULL AS pchembl_value,
+            NULL AS data_validity_comment,
             md.chembl_id AS molecule_chembl_id,
             cs.canonical_smiles,
             cs.standard_inchi,
             cs.standard_inchi_key,
             td.chembl_id AS target_chembl_id,
             td.target_type,
+            td.pref_name AS target_pref_name,
+            td.tax_id AS target_tax_id,
+            td.organism AS target_organism,
             GROUP_CONCAT(DISTINCT CASE
                 WHEN cseq.component_type = 'PROTEIN'
                  AND cseq.db_source IN ('SWISS-PROT', 'TREMBL')
@@ -700,10 +744,21 @@ SQLITE_QUERIES: dict[str, str] = {
                 WHEN cseq.accession LIKE 'ENS%'
                 THEN cseq.accession
             END) AS target_component_ensembl_accessions,
+            NULL AS assay_chembl_id,
+            NULL AS assay_type,
+            NULL AS assay_tax_id,
+            NULL AS confidence_score,
+            NULL AS assay_category,
+            NULL AS assay_subcellular_fraction,
+            NULL AS assay_tissue,
+            NULL AS assay_cell_type,
             d.chembl_id AS document_chembl_id,
             d.pubmed_id,
             d.doi,
             d.title AS document_title,
+            ax.description AS action_description,
+            ax.parent_type AS action_parent_type,
+            dm.action_type AS mechanism_action_type,
             GROUP_CONCAT(mr.ref_url, '; ') AS mechanism_refs
         FROM drug_mechanism dm
         LEFT JOIN molecule_dictionary md ON dm.molregno = md.molregno
@@ -714,6 +769,7 @@ SQLITE_QUERIES: dict[str, str] = {
         LEFT JOIN compound_records cr ON dm.record_id = cr.record_id
         LEFT JOIN docs d ON cr.doc_id = d.doc_id
         LEFT JOIN mechanism_refs mr ON dm.mec_id = mr.mec_id
+        LEFT JOIN action_type ax ON dm.action_type = ax.action_type
         GROUP BY dm.mec_id
     """,
     'targets': """
@@ -742,7 +798,7 @@ SQLITE_QUERIES: dict[str, str] = {
         LEFT JOIN component_sequences cs ON tc.component_id = cs.component_id
         GROUP BY td.tid
     """,
-    'activities': """
+    'activities': f"""
         WITH target_components_agg AS MATERIALIZED (
             SELECT
                 tc.tid,
@@ -775,6 +831,7 @@ SQLITE_QUERIES: dict[str, str] = {
             GROUP BY molregno, tid
         )
         SELECT
+            act.activity_id,
             act.standard_type,
             act.standard_relation,
             act.standard_value,
@@ -800,6 +857,7 @@ SQLITE_QUERIES: dict[str, str] = {
             td.organism AS target_organism,
             tca.target_component_uniprot_accessions,
             tca.target_component_ensembl_accessions,
+            d.chembl_id AS document_chembl_id,
             d.pubmed_id,
             d.doi,
             ax.description AS action_description,
@@ -821,12 +879,7 @@ SQLITE_QUERIES: dict[str, str] = {
         LEFT JOIN docs d ON act.doc_id = d.doc_id
         LEFT JOIN action_type ax ON act.action_type = ax.action_type
         LEFT JOIN mechanism_agg ma ON ma.molregno = act.molregno AND ma.tid = a.tid
-        WHERE td.target_type = 'SINGLE PROTEIN'
-          AND td.tax_id IS NOT NULL
-          AND (
-            tca.target_component_uniprot_accessions IS NOT NULL
-            OR tca.target_component_ensembl_accessions IS NOT NULL
-          )
+        WHERE act.pchembl_value > {CHEMBL_ACTIVITY_MIN_PCHEMBL}
     """,
 }
 

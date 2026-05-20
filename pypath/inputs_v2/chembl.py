@@ -15,6 +15,7 @@ from pypath.inputs_v2.parsers.chembl import (
     molecules_parser,
     targets_parser,
     activities_parser,
+    mechanisms_parser,
 )
 from pypath.share import cache
 
@@ -193,19 +194,10 @@ def _split_chembl_list(value: object) -> list[str]:
     ]
 
 
-def _single_protein_target_values(row: dict[str, object], key: str) -> list[str]:
+def _target_component_values(row: dict[str, object], key: str) -> list[str]:
     if row.get('target_type') != 'SINGLE PROTEIN':
         return []
     return _split_chembl_list(row.get(key))
-
-
-def _single_protein_target_value(row: dict[str, object], key: str) -> str | None:
-    if row.get('target_type') != 'SINGLE PROTEIN':
-        return None
-    value = row.get(key)
-    if value is None or str(value) == '':
-        return None
-    return str(value)
 
 
 molecules_schema = EntityBuilder(
@@ -268,11 +260,13 @@ activities_schema = EntityBuilder(
         ),
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
+                entity_type=f('target_type', map='target_type', default=EntityTypeCv.PHYSICAL_ENTITY),
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=lambda row: _single_protein_target_values(row, 'target_component_uniprot_accessions')),
-                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=lambda row: _single_protein_target_values(row, 'target_component_ensembl_accessions')),
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=lambda row: _single_protein_target_value(row, 'target_tax_id')),
+                    CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
+                    CV(term=IdentifierNamespaceCv.NAME, value=f('target_pref_name')),
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('target_tax_id')),
+                    CV(term=IdentifierNamespaceCv.UNIPROT, value=lambda row: _target_component_values(row, 'target_component_uniprot_accessions')),
+                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=lambda row: _target_component_values(row, 'target_component_ensembl_accessions')),
                 ),
             ),
         ),
@@ -291,6 +285,9 @@ activities_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('target_tax_id')),
         CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('target_organism')),
         CV(term=IdentifierNamespaceCv.CHEMBL_ASSAY, value=f('assay_chembl_id')),
+        CV(term=IdentifierNamespaceCv.CHEMBL_DOCUMENT, value=f('document_chembl_id')),
+        CV(term=IdentifierNamespaceCv.CHEMBL_MECHANISM, value=f('mec_id')),
+        CV(term=IdentifierNamespaceCv.CHEMBL_ACTIVITY, value=f('activity_id')),
         CV(term=f('assay_type', map='assay_type')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('assay_tax_id')),
         CV(term=AssayAnnotationsCv.CONFIDENCE_SCORE, value=f('confidence_score')),
@@ -327,6 +324,15 @@ resource = Resource(
         mapper=activities_schema,
         raw_parser=partial(
             activities_parser,
+            sqlite_path=SQLITE_PATH,
+            db_rel_path=DB_REL_PATH,
+        ),
+    ),
+    mechanisms=Dataset(
+        download=download,
+        mapper=activities_schema,
+        raw_parser=partial(
+            mechanisms_parser,
             sqlite_path=SQLITE_PATH,
             db_rel_path=DB_REL_PATH,
         ),
