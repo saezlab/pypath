@@ -197,7 +197,7 @@ analyte_schema = EntityBuilder(
     entity_type=f('type', map='type_to_entity'),
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId')),
-        CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('common_name')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('common_name')),
     ),
 )
 
