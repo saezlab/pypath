@@ -46,17 +46,25 @@ download = Download(
 
 
 _pmid_re = re.compile(r'\d+')
+_spreadsheet_currency_gene_re = re.compile(r'^(\d+),00[\s\xa0]+(DKK)$')
 
 
 def _clean(value: Any) -> str:
     return str(value or '').strip()
 
 
+def _clean_gene(value: Any) -> str:
+    value = _clean(value)
+    if match := _spreadsheet_currency_gene_re.fullmatch(value):
+        return f'{match.group(2)}{match.group(1)}'
+    return value
+
+
 def _components(row: dict[str, Any], prefix: str, count: int) -> list[str]:
     return [
         value
         for idx in range(1, count + 1)
-        if (value := _clean(row.get(f'{prefix} {idx}')))
+        if (value := _clean_gene(row.get(f'{prefix} {idx}')))
     ]
 
 
