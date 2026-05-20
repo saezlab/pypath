@@ -477,6 +477,8 @@ class InteractionMetadataCv(CvEnum):
     CONTROL_TYPE = ("OM:1212", "Type of regulatory control (e.g., ACTIVATION, INHIBITION)")
     STITCH_ACTION_SCORE = ("OM:1213", "STITCH action-specific confidence score for the stated interaction mode or action type")
     STEREOSPECIFIC = ("OM:1214", "Indicates whether the chemical interaction is stereospecific")
+    NEUROTRANSMITTER_INTERACTION = ("OM:1215", "Interaction annotated as neurotransmitter related")
+    INTERACTION_DIRECTNESS = ("OM:1216", "Indicates whether an interaction is directly supported or inferred")
 
 
 class ParticipantMetadataCv(CvEnum):

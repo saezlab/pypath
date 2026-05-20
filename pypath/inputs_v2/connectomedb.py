@@ -12,10 +12,10 @@ import re
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
+    InteractionMetadataCv,
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
-    InteractionMetadataCv,
     InterCellAnnotations,
 )
 from pypath.internals.tabular_builder import (
@@ -161,7 +161,7 @@ interactions_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('LR Pair')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('Evidence')),
+        CV(term=InteractionMetadataCv.INTERACTION_DIRECTNESS, value=f('Evidence')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
     ),
     membership=MembershipBuilder(

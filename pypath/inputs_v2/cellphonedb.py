@@ -16,7 +16,6 @@ from pypath.internals.cv_terms import (
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
-    InteractionMetadataCv,
     InterCellAnnotations,
 )
 from pypath.internals.tabular_builder import (
@@ -171,8 +170,6 @@ interactions_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('interactors')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('classification')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('directionality')),
         CV(term=IdentifierNamespaceCv.PUBMED, value=f(_source_split, extract='pmid')),
         CV(term=IdentifierNamespaceCv.PUBMED_CENTRAL, value=f(_source_split, extract='pmc')),
     ),

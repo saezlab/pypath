@@ -71,7 +71,7 @@ def _parser(parser: Any, species: str) -> Any:
 
 
 _pmid_re = re.compile(r'PMID:?\s*(\d+)', re.IGNORECASE)
-_pmc_re = re.compile(r'\b(PMC\d+)\b', re.IGNORECASE)
+_pmc_re = re.compile(r'\bPMC(?:ID)?\s*:?\s*(\d+)', re.IGNORECASE)
 
 
 def _values(value: Any) -> list[str]:
@@ -108,6 +108,12 @@ def _annotation(term: Any, value: Any = None) -> Annotation | None:
     return Annotation(term=term, value=value) if value else None
 
 
+def _neurotransmitter_annotation(value: Any) -> Annotation | None:
+    if str(value or '').strip().upper() != 'TRUE':
+        return None
+    return Annotation(term=InteractionMetadataCv.NEUROTRANSMITTER_INTERACTION)
+
+
 def _location_terms(location: str | None) -> list[Annotation]:
     location_lower = (location or '').lower()
     terms: list[Annotation] = []
@@ -124,13 +130,12 @@ def _pubmed_annotations(evidence: str) -> list[Annotation]:
     return [
         Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid)
         for pmid in sorted(set(_pmid_re.findall(evidence or '')))
-        if not pmid.startswith('23209')
     ]
 
 
 def _pmc_annotations(evidence: str) -> list[Annotation]:
     return [
-        Annotation(term=IdentifierNamespaceCv.PUBMED_CENTRAL, value=pmc.upper())
+        Annotation(term=IdentifierNamespaceCv.PUBMED_CENTRAL, value=f'PMC{pmc}')
         for pmc in sorted(set(_pmc_re.findall(evidence or '')))
     ]
 
@@ -251,13 +256,9 @@ def map_cellchat_interaction(row: dict[str, Any]) -> Entity:
     taxon_id = _first(row.get('taxon_id'))
     evidence = _first(row.get('evidence'))
 
-    interaction_annotations = _annotations(
+    annotations = _annotations(
         Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('pathway_name')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('annotation')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('version')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, evidence),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('is_neurotransmitter')),
+        _neurotransmitter_annotation(row.get('is_neurotransmitter')),
         *_pubmed_annotations(evidence),
         *_pmc_annotations(evidence),
     )
@@ -295,7 +296,7 @@ def map_cellchat_interaction(row: dict[str, Any]) -> Entity:
                 value=_first(row.get('interaction_name_2')) or _first(row.get('interaction_name')),
             ),
         ],
-        annotations=interaction_annotations,
+        annotations=annotations,
         membership=[
             Membership(
                 member=ligand,
@@ -317,18 +318,10 @@ def map_cellchat_cofactor_interaction(row: dict[str, Any]) -> Entity:
     taxon_id = _first(row.get('taxon_id'))
     evidence = _first(row.get('evidence'))
     effect = _first(row.get('effect'))
-    cofactor_role = _first(row.get('cofactor_role'))
     cofactor_gene = _first(row.get('cofactor_gene'))
 
-    interaction_annotations = _annotations(
+    annotations = _annotations(
         Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('pathway_name')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('annotation')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('version')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, evidence),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, cofactor_role),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('cofactor_group')),
-        _annotation(InteractionMetadataCv.CONTROL_TYPE, effect),
         *_pubmed_annotations(evidence),
         *_pmc_annotations(evidence),
     )
@@ -365,7 +358,7 @@ def map_cellchat_cofactor_interaction(row: dict[str, Any]) -> Entity:
                 ),
             ),
         ],
-        annotations=interaction_annotations,
+        annotations=annotations,
         membership=[
             Membership(
                 member=cofactor,

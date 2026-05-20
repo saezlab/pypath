@@ -11,7 +11,6 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     InterCellAnnotations,
-    InteractionMetadataCv,
     LicenseCV,
     ResourceCv,
     UpdateCategoryCV,
@@ -85,11 +84,6 @@ def _annotations(*items: Annotation | None) -> list[Annotation] | None:
     return out or None
 
 
-def _annotation(term: Any, value: Any) -> Annotation | None:
-    value = _clean(value)
-    return Annotation(term=term, value=value) if value else None
-
-
 def _protein(
     gene: str,
     annotations: list[Annotation] | None = None,
@@ -146,9 +140,6 @@ def map_icellnet_interaction(row: dict[str, Any]) -> Entity | None:
 
     annotations = _annotations(
         Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('Family')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('Subfamily')),
-        _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('Other family')),
         *[
             Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid)
             for pmid in _pubmeds(row.get('Reference'))
