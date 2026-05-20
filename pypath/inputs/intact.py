@@ -32,14 +32,10 @@ def intact_interactions(
         organism: int = 9606,
         complex_expansion: bool = False,
         only_proteins: bool = False,
-        only_ids: bool = False,
     ) -> List[tuple]:
     """
     only_proteins : bool
         Keep only records of protein-protein interactions.
-    only_ids : bool
-        Load only the identifiers of interacting pairs
-        (smaller memory footprint).
     """
 
     id_types = {
