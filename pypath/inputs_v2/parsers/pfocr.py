@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import re
-import urllib.request
 from typing import Any
+
+from pypath.share.downloads import download_and_open
 
 
 _CURRENT_PFOCR_URL = 'https://data.wikipathways.org/pfocr/current/'
 _PFOCR_FILE_RE = re.compile(r'href="(pfocr-\d+-(chemical-)?gmt-([A-Za-z_]+)\.gmt)"')
+_CURRENT_PFOCR_INDEX_FILENAME = 'current-index.html'
+_CURRENT_PFOCR_HTML: str | None = None
 _TAXONOMY_IDS = {
     'Caenorhabditis_elegans': '6239',
     'Danio_rerio': '7955',
@@ -20,12 +23,36 @@ _TAXONOMY_IDS = {
 }
 
 
+def _current_pfocr_html() -> str:
+    """Download the current PFOCR index through the shared download manager."""
+
+    global _CURRENT_PFOCR_HTML
+
+    if _CURRENT_PFOCR_HTML is not None:
+        return _CURRENT_PFOCR_HTML
+
+    opener = download_and_open(
+        url=_CURRENT_PFOCR_URL,
+        filename=_CURRENT_PFOCR_INDEX_FILENAME,
+        subfolder='pfocr',
+        large=False,
+        encoding='utf-8',
+        default_mode='r',
+        force_download=True,
+    )
+
+    try:
+        _CURRENT_PFOCR_HTML = opener.result
+    finally:
+        opener.close()
+
+    return _CURRENT_PFOCR_HTML
+
+
 def current_pfocr_filename(*, species: str = 'Homo_sapiens', data_type: str = 'gene', **_kwargs: Any) -> str:
     """Resolve the current PFOCR GMT filename for a species and data type."""
     chemical = data_type == 'chemical'
-
-    with urllib.request.urlopen(_CURRENT_PFOCR_URL, timeout=30) as response:
-        html = response.read().decode('utf-8', 'ignore')
+    html = _current_pfocr_html()
 
     matches = [
         filename

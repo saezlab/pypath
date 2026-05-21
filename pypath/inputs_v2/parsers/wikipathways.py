@@ -5,7 +5,6 @@ WikiPathways RDF parser.
 from __future__ import annotations
 
 import re
-import urllib.request
 from collections.abc import Generator, Iterable
 from typing import Any
 
@@ -13,6 +12,7 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import DC, DCTERMS, FOAF, OWL, RDF, RDFS
 
 from pypath.internals.cv_terms import EntityTypeCv
+from pypath.share.downloads import download_and_open
 
 
 WP = Namespace('http://vocabularies.wikipathways.org/wp#')
@@ -21,6 +21,8 @@ CITO = Namespace('http://purl.org/spar/cito/')
 
 _CURRENT_RDF_URL = 'https://data.wikipathways.org/current/rdf/'
 _RDF_FILENAME_RE = re.compile(r'href="(wikipathways-\d+-rdf-wp\.zip)"')
+_CURRENT_RDF_INDEX_FILENAME = 'current-rdf-index.html'
+_CURRENT_RDF_HTML: str | None = None
 _WP_ID_RE = re.compile(r'(WP\d+(?:_r\d+)?)')
 _NCBI_TAXON_RE = re.compile(r'NCBITaxon_(\d+)$')
 _PUBMED_RE = re.compile(r'(\d+)$')
@@ -65,13 +67,40 @@ _INTERACTION_TYPES = {
 }
 
 
+def _current_rdf_html() -> str:
+    """
+    Download the current WikiPathways RDF index through the shared manager.
+    """
+
+    global _CURRENT_RDF_HTML
+
+    if _CURRENT_RDF_HTML is not None:
+        return _CURRENT_RDF_HTML
+
+    opener = download_and_open(
+        url=_CURRENT_RDF_URL,
+        filename=_CURRENT_RDF_INDEX_FILENAME,
+        subfolder='wikipathways',
+        large=False,
+        encoding='utf-8',
+        default_mode='r',
+        force_download=True,
+    )
+
+    try:
+        _CURRENT_RDF_HTML = opener.result
+    finally:
+        opener.close()
+
+    return _CURRENT_RDF_HTML
+
+
 def current_rdf_url(**_kwargs: Any) -> str:
     """
     Resolve the current WikiPathways RDF pathway zip URL.
     """
 
-    with urllib.request.urlopen(_CURRENT_RDF_URL, timeout=30) as response:
-        html = response.read().decode('utf-8', 'ignore')
+    html = _current_rdf_html()
 
     match = _RDF_FILENAME_RE.search(html)
 
