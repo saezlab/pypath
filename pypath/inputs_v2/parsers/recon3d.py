@@ -194,6 +194,82 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
         }
 
 
+def _is_transport(record: dict) -> bool:
+    """
+    Return True if the reaction moves a metabolite across a compartment boundary.
+
+    Checks whether any metabolite base ID appears in both reactants and products
+    with different compartment codes — the same criterion used by the legacy
+    ``recon3d_transporter_network()`` function.
+
+    Args:
+        record: A reaction record dict as produced by :func:`_parse_reactions`,
+            with ``reactants`` and ``products`` as ``||``-delimited
+            ``base_id:compartment:coef`` strings.
+
+    Returns:
+        ``True`` if at least one metabolite crosses a compartment boundary.
+    """
+
+    def _comps(field: str) -> dict[str, str]:
+        raw = record.get(field, '') or ''
+        result = {}
+
+        for entry in raw.split('||'):
+            parts = entry.split(':')
+            if len(parts) >= 2:
+                result[parts[0]] = parts[1]
+
+        return result
+
+    reactant_comps = _comps('reactants')
+    product_comps = _comps('products')
+
+    return any(
+        reactant_comps[base] != product_comps[base]
+        for base in reactant_comps
+        if base in product_comps
+    )
+
+
+def _transport_reactions(data: dict) -> Generator[dict, None, None]:
+    """
+    Yield reaction records for transport reactions only.
+
+    Transport reactions are identified by compartment-boundary crossing:
+    the same metabolite base ID appears on both sides with different compartment
+    codes.
+
+    Args:
+        data: The parsed top-level BiGG JSON dict.
+
+    Yields:
+        One dict per transport reaction; same keys as :func:`_parse_reactions`.
+    """
+
+    for record in _parse_reactions(data):
+
+        if _is_transport(record):
+            yield record
+
+
+def _metabolic_reactions(data: dict) -> Generator[dict, None, None]:
+    """
+    Yield reaction records for metabolic (non-transport) reactions only.
+
+    Args:
+        data: The parsed top-level BiGG JSON dict.
+
+    Yields:
+        One dict per metabolic reaction; same keys as :func:`_parse_reactions`.
+    """
+
+    for record in _parse_reactions(data):
+
+        if not _is_transport(record):
+            yield record
+
+
 def _parse_genes(data: dict) -> Generator[dict, None, None]:
     """Yield one record per unique Entrez gene ID.
 
@@ -310,6 +386,8 @@ def _parse_enzyme_complexes(data: dict) -> Generator[dict, None, None]:
 _PARSERS = {
     'metabolites': _parse_metabolites,
     'reactions': _parse_reactions,
+    'transport_reactions': _transport_reactions,
+    'metabolic_reactions': _metabolic_reactions,
     'genes': _parse_genes,
     'catalysis': _parse_catalysis,
     'enzyme_complexes': _parse_enzyme_complexes,

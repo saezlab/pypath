@@ -239,6 +239,46 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
         }
 
 
+_TRANSPORT_SUBSYSTEM = 'Transport reactions'
+
+
+def _transport_reactions(data: dict) -> Generator[dict, None, None]:
+    """
+    Yield reaction records for transport reactions only.
+
+    Transport reactions are identified by ``subsystem == 'Transport reactions'``
+    in the Human-GEM YAML, consistent with the expert-curated annotation.
+
+    Args:
+        data: The parsed top-level Human-GEM YAML dict.
+
+    Yields:
+        One dict per transport reaction; same keys as :func:`_reactions`.
+    """
+
+    for record in _reactions(data):
+
+        if record.get('subsystem') == _TRANSPORT_SUBSYSTEM:
+            yield record
+
+
+def _metabolic_reactions(data: dict) -> Generator[dict, None, None]:
+    """
+    Yield reaction records for metabolic (non-transport) reactions only.
+
+    Args:
+        data: The parsed top-level Human-GEM YAML dict.
+
+    Yields:
+        One dict per metabolic reaction; same keys as :func:`_reactions`.
+    """
+
+    for record in _reactions(data):
+
+        if record.get('subsystem') != _TRANSPORT_SUBSYSTEM:
+            yield record
+
+
 def _catalysis(data: dict) -> Generator[dict, None, None]:
     """
     Yield one record per unique (enzyme, reaction) catalysis association.
@@ -356,6 +396,8 @@ def _enzyme_complexes(data: dict) -> Generator[dict, None, None]:
 _PARSERS = {
     'metabolites': _metabolites,
     'reactions': _reactions,
+    'transport_reactions': _transport_reactions,
+    'metabolic_reactions': _metabolic_reactions,
     'catalysis': _catalysis,
     'enzyme_complexes': _enzyme_complexes,
 }

@@ -181,6 +181,64 @@ reactions_schema = EntityBuilder(
 )
 
 
+# ── transport_reactions ──────────────────────────────────────────────────────
+
+transport_reactions_schema = EntityBuilder(
+    entity_type = EntityTypeCv.TRANSPORT,
+    identifiers = IdentifiersBuilder(
+        CV(term = IdentifierNamespaceCv.NAME, value = f('name')),
+        CV(term = IdentifierNamespaceCv.HUMAN_GEM_REACTION, value = f('human_gem_reaction_id')),
+        CV(term = IdentifierNamespaceCv.EC, value = f('eccodes')),
+    ),
+    annotations = AnnotationsBuilder(
+        CV(term = InteractionMetadataCv.CONVERSION_DIRECTION, value = f('direction')),
+        CV(term = MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value = f('subsystem')),
+    ),
+    membership = MembershipBuilder(
+        MembersFromList(
+            entity_type = MoleculeSubtypeCv.METABOLITE,
+            identifiers = IdentifiersBuilder(
+                CV(
+                    term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
+                    value = f('reactants', delimiter = '||', map = 'stoich_id'),
+                ),
+            ),
+            annotations = AnnotationsBuilder(
+                CV(term = BiologicalRoleCv.REACTANT),
+                CV(
+                    term = ParticipantMetadataCv.STOICHIOMETRY,
+                    value = f('reactants', delimiter = '||', map = 'stoich_val'),
+                ),
+                CV(
+                    term = MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
+                    value = f('reactants', delimiter = '||', map = 'stoich_comp'),
+                ),
+            ),
+        ),
+        MembersFromList(
+            entity_type = MoleculeSubtypeCv.METABOLITE,
+            identifiers = IdentifiersBuilder(
+                CV(
+                    term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
+                    value = f('products', delimiter = '||', map = 'stoich_id'),
+                ),
+            ),
+            annotations = AnnotationsBuilder(
+                CV(term = BiologicalRoleCv.PRODUCT),
+                CV(
+                    term = ParticipantMetadataCv.STOICHIOMETRY,
+                    value = f('products', delimiter = '||', map = 'stoich_val'),
+                ),
+                CV(
+                    term = MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
+                    value = f('products', delimiter = '||', map = 'stoich_comp'),
+                ),
+            ),
+        ),
+    ),
+)
+
+
 # ── catalysis ────────────────────────────────────────────────────────────────
 
 catalysis_schema = EntityBuilder(
@@ -251,6 +309,16 @@ resource = Resource(
         download = download,
         mapper = reactions_schema,
         raw_parser = lambda opener, **kwargs: _raw(opener, data_type = 'reactions', **kwargs),
+    ),
+    transport_reactions = Dataset(
+        download = download,
+        mapper = transport_reactions_schema,
+        raw_parser = lambda opener, **kwargs: _raw(opener, data_type = 'transport_reactions', **kwargs),
+    ),
+    metabolic_reactions = Dataset(
+        download = download,
+        mapper = reactions_schema,
+        raw_parser = lambda opener, **kwargs: _raw(opener, data_type = 'metabolic_reactions', **kwargs),
     ),
     catalysis = Dataset(
         download = download,
