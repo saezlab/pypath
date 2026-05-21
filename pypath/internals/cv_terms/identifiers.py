@@ -32,6 +32,7 @@ class IdentifierNamespaceCv(CvEnum):
     DRUGBANK = 'MI:2002'
     KEGG = 'MI:0470'
     KEGG_COMPOUND = 'MI:2012'
+    KEGG_REACTION = 'MI:2013'
     CAS = 'MI:2011'
 
     # Structure and interaction databases (OM:0100-0199 range)
