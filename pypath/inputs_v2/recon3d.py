@@ -33,6 +33,8 @@ Note:
 
 from __future__ import annotations
 
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2.parsers.recon3d import _raw
 from pypath.internals.cv_terms import (
     BiologicalRoleCv,
     EntityTypeCv,
@@ -46,8 +48,8 @@ from pypath.internals.cv_terms import (
     UpdateCategoryCV,
 )
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
@@ -55,9 +57,6 @@ from pypath.internals.tabular_builder import (
     MembersFromList,
     MembershipBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.recon3d import _raw
-
 
 config = ResourceConfig(
     id=ResourceCv.RECON3D,
@@ -99,6 +98,8 @@ download = Download(
     default_mode='r',
 )
 
+HUMAN_TAXON_ID = '9606'
+
 
 # ── metabolites ──────────────────────────────────────────────────────────────
 
@@ -137,28 +138,28 @@ reactions_schema = EntityBuilder(
         MembersFromList(
             entity_type=MoleculeSubtypeCv.METABOLITE,
             identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.BIGG_METABOLITE, 
+                CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('reactants', delimiter='||', map='stoich_id')),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=BiologicalRoleCv.REACTANT),
-                CV(term=ParticipantMetadataCv.STOICHIOMETRY, 
+                CV(term=ParticipantMetadataCv.STOICHIOMETRY,
                    value=f('reactants', delimiter='||', map='stoich_val')),
-                CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, 
+                CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
                    value=f('reactants', delimiter='||', map='stoich_comp')),
             ),
         ),
         MembersFromList(
             entity_type=MoleculeSubtypeCv.METABOLITE,
             identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.BIGG_METABOLITE, 
+                CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('products', delimiter='||', map='stoich_id')),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=BiologicalRoleCv.PRODUCT),
-                CV(term=ParticipantMetadataCv.STOICHIOMETRY, 
+                CV(term=ParticipantMetadataCv.STOICHIOMETRY,
                    value=f('products', delimiter='||', map='stoich_val')),
-                CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, 
+                CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
                    value=f('products', delimiter='||', map='stoich_comp')),
             ),
         ),
@@ -183,6 +184,9 @@ catalysis_schema = EntityBuilder(
                 entity_type=f('enzyme_type', map='entity_type'),
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.ENTREZ, value=f('enzyme_entrez')),
+                ),
+                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
                 ),
             ),
             annotations=AnnotationsBuilder(CV(term=BiologicalRoleCv.CONTROLLER)),
@@ -213,6 +217,9 @@ enzyme_complexes_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.ENTREZ, value=f('complex_subunits', delimiter='||')),
             ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
+            ),
         ),
     ),
 )
@@ -225,6 +232,9 @@ genes_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.ENTREZ, value=f('entrez_id')),
         CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('name')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
     ),
 )
 
