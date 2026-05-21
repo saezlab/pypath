@@ -14,7 +14,6 @@ import tempfile
 import time
 from typing import Any
 
-import duckdb
 import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.dataset as ds
@@ -381,7 +380,7 @@ def iter_changed_raw_record_dicts(
     include_metadata: bool = False,
 ) -> Iterator[dict[str, Any]]:
     """Yield changed current records by joining partitioned records to delta."""
-    con = duckdb.connect()
+    import duckdb; con = duckdb.connect()
     try:
         reader = con.execute(
             f"""
@@ -421,7 +420,7 @@ def changed_keys(delta_path: Path) -> Iterator[str]:
 def changed_key_count(delta_path: Path) -> int:
     if not delta_path.exists():
         return 0
-    con = duckdb.connect()
+    import duckdb; con = duckdb.connect()
     try:
         return int(con.execute(f"""
             SELECT count(DISTINCT _raw_record_key)
@@ -435,7 +434,7 @@ def changed_key_count(delta_path: Path) -> int:
 def changed_key_counts_by_type(delta_path: Path) -> dict[str, int]:
     if not delta_path.exists():
         return {'added': 0, 'removed': 0}
-    con = duckdb.connect()
+    import duckdb; con = duckdb.connect()
     try:
         rows = con.execute(f"""
             SELECT _change_type, count(DISTINCT _raw_record_key) AS count
@@ -671,7 +670,7 @@ def _write_records_with_ids(
     if output_path.exists():
         shutil.rmtree(output_path)
     output_path.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect()
+    import duckdb; con = duckdb.connect()
     try:
         part_expr = _raw_record_part_sql(part_count)
         part_expr_n = _raw_record_part_sql(part_count, table_alias='n')
@@ -785,7 +784,7 @@ def _write_delta(
     if output_path.exists():
         shutil.rmtree(output_path)
     output_path.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect()
+    import duckdb; con = duckdb.connect()
     try:
         part_expr = _raw_record_part_sql(part_count)
         for part in range(part_count):
@@ -864,7 +863,7 @@ def _old_raw_record_id_map_sql(old_records: Path | None, part: int, part_count: 
 
 
 def _duplicate_stats(records_path: Path) -> dict[str, Any]:
-    con = duckdb.connect()
+    import duckdb; con = duckdb.connect()
     try:
         duplicate_key_count, duplicate_row_count = con.execute(
             f"""
