@@ -57,6 +57,7 @@ class ResourceCv(CvEnum):
     CHEBI = ("OM:1178", "ChEBI", "https://www.ebi.ac.uk/chebi/")
     RECON3D = ("OM:1179", "Recon3D", "https://www.vmh.life/")
     HUMAN_GEM = ("OM:1194", "Human-GEM", "https://github.com/SysBioChalmers/Human-GEM")
+    KEGG_METABOLIC = ("OM:1195", "KEGG Metabolic Reactions", "https://www.genome.jp/kegg/reaction/")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
