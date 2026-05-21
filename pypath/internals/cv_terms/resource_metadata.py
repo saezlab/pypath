@@ -64,6 +64,11 @@ class LicenseCV(CvEnum):
         "HPO License - free for academic and non-profit use",
         "https://hpo.jax.org/app/license"
     )
+    KEGG_ACADEMIC = (
+        "OM:0508",
+        "KEGG license - free for academic use, commercial use requires a license",
+        "https://www.kegg.jp/kegg/legal.html"
+    )
     UNSPECIFIED = (
         "OM:0599",
         "License not specified or unclear"
