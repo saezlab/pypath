@@ -85,7 +85,7 @@ reactions_schema = EntityBuilder(
         ),
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.METABOLITE,
+                entity_type=EntityTypeCv.SMALL_MOLECULE,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('compound_kegg_id', extract='kegg_cpd')),
                     CV(term=IdentifierNamespaceCv.CHEBI,          value=f('compound_chebi',   extract='chebi')),
@@ -98,7 +98,7 @@ reactions_schema = EntityBuilder(
         ),
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.METABOLITE,
+                entity_type=EntityTypeCv.SMALL_MOLECULE,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('compound_kegg_id', extract='kegg_cpd')),
                     CV(term=IdentifierNamespaceCv.CHEBI,          value=f('compound_chebi',   extract='chebi')),
