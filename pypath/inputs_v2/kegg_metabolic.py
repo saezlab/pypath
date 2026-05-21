@@ -153,8 +153,13 @@ def _download_kegg_files(organism_code: str) -> _MultiOpener:
     Download all six KEGG REST endpoints needed for the reaction network
     and return a :class:`_MultiOpener` whose ``.result`` dict maps each
     endpoint key to an open text handle (cached by dlmachine).
+
+    Files are downloaded into ``<pypath_data_dir>/kegg_metabolic_{organism_code}/``
+    and opened directly with plain ``open()`` to avoid the cachedir ``Opener``
+    ``UnboundLocalError`` bug on plain TSV files.
     """
-    from pypath.share.downloads import download_and_open
+    from pathlib import Path
+    from pypath.share.downloads import get_download_manager, _resolve_data_dir
 
     urls = {
         'conv_uniprot': f'https://rest.kegg.jp/conv/uniprot/{organism_code}',
@@ -162,26 +167,21 @@ def _download_kegg_files(organism_code: str) -> _MultiOpener:
         **_SHARED_URLS,
     }
     subfolder = f'kegg_metabolic_{organism_code}'
+    data_dir: Path = _resolve_data_dir() / subfolder
+    data_dir.mkdir(parents=True, exist_ok=True)
+    dm = get_download_manager()
     result: dict = {}
 
     for key, url in urls.items():
-        filename = f'kegg_{key}_{organism_code}.tsv' if key in ('conv_uniprot', 'link_enzyme') else f'kegg_{key}.tsv'
-        _log.debug('[KEGG] downloading %s → %s', key, url)
-        opener = download_and_open(
-            url=url,
-            filename=filename,
-            subfolder=subfolder,
-            large=False,
-            encoding='utf-8',
-            default_mode='r',
+        filename = (
+            f'kegg_{key}_{organism_code}.tsv'
+            if key in ('conv_uniprot', 'link_enzyme')
+            else f'kegg_{key}.tsv'
         )
-        handle = opener.result if not isinstance(opener.result, dict) else list(opener.result.values())[0]
-        if handle is not None and hasattr(handle, 'read'):
-            result[key] = io.StringIO(handle.read())
-        elif isinstance(handle, str):
-            result[key] = io.StringIO(handle)
-        else:
-            result[key] = handle
+        file_path = data_dir / filename
+        _log.debug('[KEGG] %s → %s', key, file_path)
+        dm.download(url, dest=str(file_path))
+        result[key] = open(file_path, encoding='utf-8')  # noqa: SIM115
 
     return _MultiOpener(result)
 
