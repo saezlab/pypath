@@ -35,6 +35,7 @@ class BiologicalRoleCv(CvEnum):
     # PSI-MI standard biological roles
     ENZYME = "MI:0501"
     SUBSTRATE = "MI:0502"
+    CATALYST = "MI:0501"  # alias for ENZYME (catalytic role in a reaction)
     INHIBITOR = "MI:0586"
     STIMULATOR = "MI:0840"
     ALLOSTERIC_EFFECTOR = "MI:1160"

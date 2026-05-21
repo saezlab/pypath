@@ -1,5 +1,4 @@
-"""
-Parse UniProt data and emit Entity records.
+"""Parse UniProt data and emit Entity records.
 
 This module converts UniProt protein data into Entity records using the schema
 defined in pypath.internals.silver_schema. It also exposes narrow row-oriented
@@ -8,33 +7,38 @@ translation datasets for reference identifiers and secondary accessions.
 
 from __future__ import annotations
 
-from collections.abc import Generator, Iterable
+from collections.abc import Iterable
 import re
 from urllib.parse import quote_plus
 
-from pypath.resources import urls
-from pypath.share.downloads import dm
-
+from pypath.inputs_v2.base import (
+    Dataset,
+    Download,
+    OntologyDataset,
+    Resource,
+    ResourceConfig,
+)
+from pypath.inputs_v2.parsers.base import iter_tsv
+from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
-    MoleculeAnnotationsCv,
     LicenseCV,
+    MoleculeAnnotationsCv,
     OntologyCv,
-    UpdateCategoryCV,
     ResourceCv,
+    UpdateCategoryCV,
 )
+from pypath.internals.ontology_schema import OntologyTypedef
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.internals.ontology_schema import OntologyTypedef
-from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
+from pypath.resources import urls
+from pypath.share.downloads import dm
 
 # UniProt REST API URL for protein data.
 # Currently hardcoded for human (9606), mouse (10090), and rat (10116).
@@ -42,13 +46,13 @@ from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 # restored on canonical entities from the resolver, so protein evidence rows
 # only need the primary UniProt accession.
 UNIPROT_DATA_URL = (
-    "https://rest.uniprot.org/uniprotkb/stream"
-    "?compressed=true"
-    "&format=tsv"
-    "&query=(taxonomy_id:9606 OR taxonomy_id:10090 OR taxonomy_id:10116) AND reviewed:true"
-    "&fields=accession,length,mass,sequence,organism_id,cc_disease,ft_mutagen,"
-    "cc_subcellular_location,cc_ptm,lit_pubmed_id,cc_function,cc_pathway,"
-    "cc_activity_regulation,keywordid,ec,go_id,ft_transmem,protein_families"
+    'https://rest.uniprot.org/uniprotkb/stream'
+    '?compressed=true'
+    '&format=tsv'
+    '&query=(taxonomy_id:9606 OR taxonomy_id:10090 OR taxonomy_id:10116) AND reviewed:true'
+    '&fields=accession,length,mass,sequence,organism_id,cc_disease,ft_mutagen,'
+    'cc_subcellular_location,cc_ptm,lit_pubmed_id,cc_function,cc_pathway,'
+    'cc_activity_regulation,keywordid,ec,go_id,ft_transmem,protein_families'
 )
 
 UNIPROT_KEYWORDS_OBO_URL = (
