@@ -58,6 +58,7 @@ class ResourceCv(CvEnum):
     RECON3D = ("OM:1179", "Recon3D", "https://www.vmh.life/")
     HUMAN_GEM = ("OM:1194", "Human-GEM", "https://github.com/SysBioChalmers/Human-GEM")
     KEGG_METABOLIC = ("OM:1195", "KEGG Metabolic Reactions", "https://www.genome.jp/kegg/reaction/")
+    REFMET = ("OM:1196", "RefMet metabolite entries", "https://www.metabolomicsworkbench.org/databases/refmet/")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
