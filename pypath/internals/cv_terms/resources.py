@@ -25,6 +25,7 @@ class ResourceCv(CvEnum):
 
     # Protein databases (OM:1120-1149 range)
     UNIPROT = ("OM:1120", "UniProt", "https://www.uniprot.org")
+    SLC_TABLES = ("OM:1121", "SLC Tables", "https://slc.bioparadigms.org/")
 
     # Interaction databases (OM:1150-1179 range)
     INTACT = ("OM:1150", "IntAct", "https://www.ebi.ac.uk/intact")
