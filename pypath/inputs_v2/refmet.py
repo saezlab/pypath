@@ -57,7 +57,7 @@ download = Download(
         large=True,
         ext='.csv',
         default_mode='r',
-    )
+)
 
 # =================================== SCHEMA ===================================
 
@@ -88,7 +88,7 @@ f = FieldConfig(
         'class_to_entity': CLASS_ENTITY,
         'super_class': SUPERCLASS,
         'class': CLASS,
-        'subclass': SUBCLASS,
+        'sub_class': SUBCLASS,
     },
     transform={
         'is_lipid': lambda x: is_lipid(x),
