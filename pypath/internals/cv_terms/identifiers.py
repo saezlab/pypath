@@ -79,6 +79,7 @@ class IdentifierNamespaceCv(CvEnum):
     PFOCR = ('OM:0134', "Pathway Figure OCR (in the form '[PMC id]__F[fig num]')", 'https://pfocr.wikipathways.org/')
     METAC = ('OM:0135', 'MACdb study/cohort identifier (e.g. METAC_123)', 'https://ngdc.cncb.ac.cn/macdb')
     DOID = ('OM:0136', 'Human Disease Ontology identifier')
+    REFMET = ('OM:0137', 'RefMet identifier')
 
     # Gene and protein names (OM:0200-0209 range)
     GENE_NAME_PRIMARY = ('OM:0200', 'Primary gene name or symbol')
