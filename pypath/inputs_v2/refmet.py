@@ -98,7 +98,7 @@ f = FieldConfig(
 schema = EntityBuilder(
     entity_type=f('super_class', map='class_to_entity', transform='is_lipid'),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.REFMET, value='refmet_id'),
+        CV(term=IdentifierNamespaceCv.REFMET, value=' refmet_id'),
         CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value='formula'),
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value='pubchem_id'),
         CV(term=IdentifierNamespaceCv.CHEBI, value='chebi_id'),
