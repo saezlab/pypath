@@ -98,29 +98,29 @@ f = FieldConfig(
 schema = EntityBuilder(
     entity_type=f('super_class', map='class_to_entity', transform='is_lipid'),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.REFMET, value=' refmet_id'),
-        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value='formula'),
-        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value='pubchem_id'),
-        CV(term=IdentifierNamespaceCv.CHEBI, value='chebi_id'),
-        CV(term=IdentifierNamespaceCv.HMDB, value='hmdb_id'),
-        CV(term=IdentifierNamespaceCv.LIPIDMAPS, value='lipidmaps_id'),
-        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value='kegg_id'),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value='inchi_key'),
-        CV(term=IdentifierNamespaceCv.NAME, value='refmet_name'),
+        CV(term=IdentifierNamespaceCv.REFMET, value=f('refmet_id')),
+        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('formula')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_id')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id')),
+        CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
+        CV(term=IdentifierNamespaceCv.LIPIDMAPS, value=f('lipidmaps_id')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_id')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('inchi_key')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('refmet_name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value='exactmass'),
+        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('exactmass')),
         CV(
             term=f('super_class', transform='is_lipid', map='super_class'),
-            value='super_class'
+            value=f('super_class')
         ),
         CV(
             term=f('super_class', transform='is_lipid', map='class'),
-            value='main_class'
+            value=f('main_class')
         ),
         CV(
             term=f('super_class', transform='is_lipid', map='sub_class'),
-            value='sub_class'
+            value=f('sub_class')
         ),
     ),
 )
