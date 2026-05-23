@@ -146,7 +146,7 @@ f = FieldConfig(
 schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value='SLC name'),
+        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('SLC name')),
         CV(
             term=IdentifierNamespaceCv.NAME,
             value=f('Protein name', delimiter=', ')
@@ -157,8 +157,8 @@ schema = EntityBuilder(
         ),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value='SLC_family'),
-        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value='Transport type*'),
+        CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('SLC_family')),
+        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('Transport type*')),
         CV(
             term=BiologicalRoleCv.CONTROLLED,
             value=f('Substrates', delimiter=', ')
