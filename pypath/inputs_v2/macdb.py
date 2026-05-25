@@ -177,13 +177,19 @@ association_schema = EntityBuilder(
         ),
         Member(
             entity=EntityBuilder(
-                entity_type=MoleculeSubtypeCv.METABOLITE,
+                entity_type=EntityTypeCv.SMALL_MOLECULE,
                 identifiers=IdentifiersBuilder(
                     CV(
                         term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
                         value=f('pubchem_CID')
                     ),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('original_metabolite_name')),
+                ),
+                annotations=AnnotationsBuilder(
+                    CV(
+                        term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+                        value=MoleculeSubtypeCv.METABOLITE,
+                    ),
                 ),
             ),
         ),

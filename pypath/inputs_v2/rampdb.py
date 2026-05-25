@@ -136,10 +136,17 @@ def parser(opener, table=None, **_kwargs):
 # =================================== SCHEMA ===================================
 
 MOLECULE_TYPE_TO_ENTITY_TYPE = {
-    'gene': EntityTypeCv.GENE,
-    'compound': MoleculeSubtypeCv.METABOLITE,
+    'gene': EntityTypeCv.PROTEIN,
+    'compound': EntityTypeCv.SMALL_MOLECULE,
 }
 SOURCE_TO_ENTITY_TYPE = {
+    'hmdb': EntityTypeCv.SMALL_MOLECULE,
+    'lipidmaps': EntityTypeCv.SMALL_MOLECULE,
+}
+MOLECULE_TYPE_TO_SUBTYPE = {
+    'compound': MoleculeSubtypeCv.METABOLITE,
+}
+SOURCE_TO_MOLECULE_SUBTYPE = {
     'hmdb': MoleculeSubtypeCv.METABOLITE,
     'lipidmaps': EntityTypeCv.LIPID,
 }
@@ -168,7 +175,10 @@ CLASS_LEVEL_NAME_TO_TERM = {
     'ClassyFire_super_class': MoleculeAnnotationsCv.COMPOUND_SUPERCLASS,
 }
 ID_TO_ENTITY = {
-    'G': EntityTypeCv.GENE,
+    'G': EntityTypeCv.PROTEIN,
+    'C': EntityTypeCv.SMALL_MOLECULE,
+}
+ID_TO_MOLECULE_SUBTYPE = {
     'C': MoleculeSubtypeCv.METABOLITE,
 }
 
@@ -182,9 +192,12 @@ f = FieldConfig(
     map={
         'type_to_entity': MOLECULE_TYPE_TO_ENTITY_TYPE,
         'source_to_entity': SOURCE_TO_ENTITY_TYPE,
+        'type_to_subtype': MOLECULE_TYPE_TO_SUBTYPE,
+        'source_to_subtype': SOURCE_TO_MOLECULE_SUBTYPE,
         'source_to_term': SOURCE_TO_TERM,
         'class_level_to_term': CLASS_LEVEL_NAME_TO_TERM,
         'id_to_entity': ID_TO_ENTITY,
+        'id_to_subtype': ID_TO_MOLECULE_SUBTYPE,
     },
     transform={
         'lower': lambda x: x.lower(),
@@ -209,6 +222,12 @@ analyte_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('common_name')),
     ),
+    annotations=AnnotationsBuilder(
+        CV(
+            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+            value=f('type', map='type_to_subtype'),
+        ),
+    ),
 )
 
 # metabolite_class
@@ -229,6 +248,10 @@ metabolite_class_schema = EntityBuilder(
         ),
     ),
     annotations=AnnotationsBuilder(
+        CV(
+            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+            value=f('source', map='source_to_subtype'),
+        ),
         CV(
             term=f('class_level_name', map='class_level_to_term'),
             value=f('class_name'),
@@ -258,6 +281,10 @@ source_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('commonName')),
     ),
     annotations=AnnotationsBuilder(
+        CV(
+            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+            value=f('geneOrCompound', map='type_to_subtype'),
+        ),
         CV(
             term=AssayAnnotationsCv.ASSAY_CATEGORY,
             value=f('priorityHMDBStatus'),
@@ -296,6 +323,10 @@ chem_props_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('common_name')),
     ),
     annotations=AnnotationsBuilder(
+        CV(
+            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+            value=f('chem_data_source', map='source_to_subtype', transform='lower'),
+        ),
         CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('mw')),
         CV(
             term=MoleculeAnnotationsCv.MW_MONOISOTOPIC,
@@ -315,6 +346,12 @@ analytehaspathway_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('rampId')),
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('pathwayRampId')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(
+            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+            value=f('rampId', map='id_to_subtype', extract='rampID'),
+        ),
     ),
 )
 # pathway

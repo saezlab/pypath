@@ -4,11 +4,11 @@ Provides a :class:`~pypath.inputs_v2.base.Resource` with five datasets
 parsed from the Recon3D BiGG JSON (``Recon3D.json``):
 
 Datasets:
-    metabolites: METABOLITE entities, one per unique base ID (compartment
+    metabolites: SMALL_MOLECULE entities, one per unique base ID (compartment
         suffix stripped and deduplicated).  Cross-references to HMDB, ChEBI,
-        KEGG Compound, and MetaNetX are included as identifiers; molecular
-        formula and charge are stored as annotations.
-    reactions: REACTION entities with METABOLITE sub-members carrying
+        KEGG Compound, and MetaNetX are included as identifiers; metabolite
+        subtype, molecular formula and charge are stored as annotations.
+    reactions: REACTION entities with SMALL_MOLECULE sub-members carrying
         stoichiometry and reactant/product role annotations.  Direction is
         derived from the ``lower_bound`` field.
     catalysis: INTERACTION entities linking an enzyme (PROTEIN or COMPLEX)
@@ -20,7 +20,7 @@ Datasets:
         Each COMPLEX has PROTEIN sub-members identified by Entrez ID.
         Complexes are deduplicated across reactions by their sorted subunit
         composition.
-    genes: GENE entities, one per unique Entrez ID.  Recon3D-internal
+    genes: PROTEIN entities, one per unique Entrez ID.  Recon3D-internal
         isoform suffixes (e.g. ``_AT1``) are stripped and duplicate entries
         collapsed.  The placeholder gene ``'0'`` is discarded.
 
@@ -104,7 +104,7 @@ HUMAN_TAXON_ID = '9606'
 # ── metabolites ──────────────────────────────────────────────────────────────
 
 metabolites_schema = EntityBuilder(
-    entity_type=MoleculeSubtypeCv.METABOLITE,
+    entity_type=EntityTypeCv.SMALL_MOLECULE,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
         CV(term=IdentifierNamespaceCv.BIGG_METABOLITE, value=f('bigg_metabolite_id')),
@@ -114,6 +114,7 @@ metabolites_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.METANETX, value=f('metanetx')),
     ),
     annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
         CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('formula')),
         CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE, value=f('charge')),
     ),
@@ -136,7 +137,7 @@ reactions_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=MoleculeSubtypeCv.METABOLITE,
+            entity_type=EntityTypeCv.SMALL_MOLECULE,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('reactants', delimiter='||', map='stoich_id')),
@@ -148,9 +149,12 @@ reactions_schema = EntityBuilder(
                 CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
                    value=f('reactants', delimiter='||', map='stoich_comp')),
             ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
+            ),
         ),
         MembersFromList(
-            entity_type=MoleculeSubtypeCv.METABOLITE,
+            entity_type=EntityTypeCv.SMALL_MOLECULE,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('products', delimiter='||', map='stoich_id')),
@@ -161,6 +165,9 @@ reactions_schema = EntityBuilder(
                    value=f('products', delimiter='||', map='stoich_val')),
                 CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
                    value=f('products', delimiter='||', map='stoich_comp')),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
             ),
         ),
     ),
@@ -183,7 +190,7 @@ transport_reactions_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=MoleculeSubtypeCv.METABOLITE,
+            entity_type=EntityTypeCv.SMALL_MOLECULE,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('reactants', delimiter='||', map='stoich_id')),
@@ -195,9 +202,12 @@ transport_reactions_schema = EntityBuilder(
                 CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
                    value=f('reactants', delimiter='||', map='stoich_comp')),
             ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
+            ),
         ),
         MembersFromList(
-            entity_type=MoleculeSubtypeCv.METABOLITE,
+            entity_type=EntityTypeCv.SMALL_MOLECULE,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('products', delimiter='||', map='stoich_id')),
@@ -208,6 +218,9 @@ transport_reactions_schema = EntityBuilder(
                    value=f('products', delimiter='||', map='stoich_val')),
                 CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
                    value=f('products', delimiter='||', map='stoich_comp')),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
             ),
         ),
     ),
@@ -275,7 +288,7 @@ enzyme_complexes_schema = EntityBuilder(
 # ── genes ────────────────────────────────────────────────────────────────────
 
 genes_schema = EntityBuilder(
-    entity_type=EntityTypeCv.GENE,
+    entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.ENTREZ, value=f('entrez_id')),
         CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('name')),

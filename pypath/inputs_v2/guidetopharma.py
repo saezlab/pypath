@@ -283,7 +283,10 @@ targets_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
         CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('Family name')),
-        CV(term=f('Type', map='target_type')),
+        CV(
+            term=MoleculeAnnotationsCv.PROTEIN_FUNCTIONAL_CLASS,
+            value=f('Type', map='target_type'),
+        ),
     ),
 )
 
@@ -318,7 +321,10 @@ ligands_schema = EntityBuilder(
         CV(term=f('Labelled', extract='lower', map={'yes': MoleculeAnnotationsCv.LABELLED})),
         CV(term=f('Radioactive', extract='lower', map={'yes': MoleculeAnnotationsCv.RADIOACTIVE})),
         CV(term=f('Antibacterial', extract='lower', map={'yes': MoleculeAnnotationsCv.ANTIBACTERIAL})),
-        CV(term=f('Type', map='ligand_chemical_type')),
+        CV(
+            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+            value=f('Type', map='ligand_chemical_type'),
+        ),
     ),
 )
 
