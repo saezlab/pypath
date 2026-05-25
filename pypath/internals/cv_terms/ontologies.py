@@ -30,3 +30,4 @@ class OntologyCv(CvEnum):
     UNIPROT_KEYWORDS = ("OM:1247", "UniProt Keywords", "https://www.uniprot.org/keywords/")
     OMNIPATH = ("OM:1248", "OmniPath Ontology", "https://omnipathdb.org/")
     MONDO = ("OM:1249", "Mondo Disease Ontology", "https://mondo.monarchinitiative.org/")
+    KEGG_PATHWAYS = ("OM:1250", "KEGG Pathway Ontology", "https://www.genome.jp/kegg/pathway.html")

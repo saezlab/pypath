@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import json
 import re
 import xml.etree.ElementTree as ET
-from collections.abc import Generator
+from collections.abc import Generator, Iterable
 from typing import Any
 
 
@@ -25,6 +26,7 @@ _STOICH_RE = re.compile(r'^(?:>\s*)?(?:\d+|[a-zA-Z]|\([^)]+\))\s+')
 _EQUATION_PART_RE = re.compile(
     r'^(?:(?P<stoich>\d+|[A-Za-z]|\([^)]+\))\s+)?(?P<compound>[CG]\d{5})$'
 )
+_PATHWAY_CODE_RE = re.compile(r'^(?P<prefix>[A-Za-z]+)(?P<number>\d{5})$')
 
 
 def _raw(
@@ -53,6 +55,20 @@ def _raw(
     max_records:
         If set, yield at most this many records (useful during development).
     """
+    if data_type == 'pathway_terms':
+        cache_key = f'pathway_terms:{organism}'
+        if _DATA_CACHE.get(cache_key) and not force_refresh:
+            rows = _DATA_CACHE[cache_key]['pathway_terms']
+        else:
+            rows = _build_pathway_term_records(_get_handles(opener))
+            _DATA_CACHE[cache_key] = {'pathway_terms': rows}
+
+        if max_records is not None:
+            rows = rows[:max_records]
+
+        yield from rows
+        return
+
     records = _load_records(opener, organism=organism, force_refresh=force_refresh)
     rows = records.get(data_type, [])
 
@@ -459,6 +475,223 @@ def _parse_pathways(entry: dict[str, list[str]]) -> list[dict[str, str]]:
     return pathways
 
 
+def _parse_pathway_link_ids(entry: dict[str, list[str]], field: str) -> list[str]:
+    pathway_ids: list[str] = []
+    for line in _entry_values(entry, field):
+        parts = line.split(None, 1)
+        if parts:
+            pathway_ids.append(parts[0].strip())
+    return pathway_ids
+
+
+def _pathway_reference_id(pathway_id: str) -> str:
+    """Return the canonical KEGG reference map ID for a pathway variant ID."""
+    pathway_id = _strip_kegg_object_prefix(pathway_id.strip())
+    match = _PATHWAY_CODE_RE.match(pathway_id)
+    if not match:
+        return pathway_id
+    return f"map{match.group('number')}"
+
+
+def _pathway_term_id(pathway_id: str) -> str:
+    """Normalize a KEGG pathway object ID for use as a CV term accession."""
+    return _strip_kegg_object_prefix(pathway_id.strip())
+
+
+def _parse_brite_leaf_name(name: str) -> tuple[str, str] | None:
+    parts = name.strip().split(None, 1)
+    if not parts or not parts[0].isdigit() or len(parts[0]) != 5:
+        return None
+    return f'map{parts[0]}', parts[1].strip() if len(parts) > 1 else parts[0]
+
+
+def _slug(value: str) -> str:
+    slug = re.sub(r'[^A-Za-z0-9]+', '_', value.strip().lower()).strip('_')
+    return slug or 'term'
+
+
+def _category_id(path: tuple[str, ...]) -> str:
+    return 'KEGG_PATHWAY_CATEGORY:' + '.'.join(_slug(part) for part in path)
+
+
+def _append_unique(values: list[str], value: str) -> None:
+    if value and value not in values:
+        values.append(value)
+
+
+def _join_unique(values: Iterable[str]) -> str:
+    seen: list[str] = []
+    for value in values:
+        _append_unique(seen, str(value).strip())
+    return ';'.join(seen)
+
+
+def _parse_pathway_brite(handle) -> dict[str, dict[str, Any]]:
+    """Flatten KEGG BRITE br08901 into category and reference-map term rows."""
+    if not handle:
+        return {}
+    if hasattr(handle, 'seek'):
+        handle.seek(0)
+    data = json.load(handle)
+    terms: dict[str, dict[str, Any]] = {
+        'br08901': {
+            'id': 'br08901',
+            'name': 'KEGG pathway maps',
+            'definition': '',
+            'synonyms': '',
+            'comments': '',
+            'xrefs': 'KEGG_BRITE:br08901',
+            'parent_ids': '',
+        },
+    }
+
+    def ensure_category(path: tuple[str, ...]) -> str:
+        term_id = _category_id(path)
+        if term_id not in terms:
+            terms[term_id] = {
+                'id': term_id,
+                'name': path[-1],
+                'definition': '',
+                'synonyms': '',
+                'comments': '',
+                'xrefs': 'KEGG_BRITE:br08901',
+                'parent_ids': _category_id(path[:-1]) if len(path) > 1 else 'br08901',
+            }
+        return term_id
+
+    def walk(node: dict, category_path: tuple[str, ...] = ()) -> None:
+        name = str(node.get('name') or '').strip()
+        children = node.get('children') or []
+        leaf = _parse_brite_leaf_name(name)
+
+        if leaf:
+            map_id, map_name = leaf
+            parent_id = ensure_category(category_path) if category_path else 'br08901'
+            term = terms.setdefault(
+                map_id,
+                {
+                    'id': map_id,
+                    'name': map_name,
+                    'definition': '',
+                    'synonyms': '',
+                    'comments': '',
+                    'xrefs': f'KEGG_PATHWAY:{map_id}',
+                    'parent_ids': '',
+                },
+            )
+            term['name'] = term.get('name') or map_name
+            parents = [parent for parent in str(term.get('parent_ids') or '').split(';') if parent]
+            _append_unique(parents, parent_id)
+            term['parent_ids'] = ';'.join(parents)
+            return
+
+        next_path = category_path
+        if name and name != str(data.get('name') or '').strip():
+            next_path = category_path + (name,)
+            ensure_category(next_path)
+
+        for child in children:
+            walk(child, next_path)
+
+    for child in data.get('children') or []:
+        walk(child)
+
+    return terms
+
+
+def _parse_pathway_details(handle) -> dict[str, dict[str, Any]]:
+    """Parse KEGG reference pathway flat files into metadata by map ID."""
+    details: dict[str, dict[str, Any]] = {}
+    for entry in _iter_kegg_flat_entries(handle):
+        map_id = _entry_id(entry)
+        if not map_id:
+            continue
+        names = _parse_names(entry)
+        dblinks = _parse_dblinks(entry)
+        xrefs = [f'KEGG_PATHWAY:{map_id}']
+        xrefs.extend(f'GO:{go_id}' for go_id in dblinks.get('GO', []))
+        xrefs.extend(f'KEGG_PATHWAY:{pathway_id}' for pathway_id in _parse_whitespace_values(entry, 'KO_PATHWAY'))
+        xrefs.extend(f'KEGG_PATHWAY:{pathway_id}' for pathway_id in _parse_pathway_link_ids(entry, 'REL_PATHWAY'))
+        details[map_id] = {
+            'name': names[0] if names else map_id,
+            'definition': ' '.join(_entry_values(entry, 'DESCRIPTION')),
+            'synonyms': ';'.join(names[1:]),
+            'comments': ';'.join(_entry_values(entry, 'CLASS')),
+            'xrefs': _join_unique(xrefs),
+            'ko_pathways': _parse_whitespace_values(entry, 'KO_PATHWAY'),
+        }
+    return details
+
+
+def _build_pathway_term_records(handles: dict[str, Any]) -> list[dict[str, Any]]:
+    """Build KEGG pathway ontology rows from BRITE, reference maps and organisms."""
+    terms = _parse_pathway_brite(handles.get('pathway_brite'))
+    details = _parse_pathway_details(handles.get('get_pathway_maps'))
+
+    for map_id, metadata in details.items():
+        term = terms.setdefault(
+            map_id,
+            {
+                'id': map_id,
+                'name': metadata.get('name') or map_id,
+                'definition': '',
+                'synonyms': '',
+                'comments': '',
+                'xrefs': '',
+                'parent_ids': 'br08901',
+            },
+        )
+        for field in ('name', 'definition', 'synonyms', 'comments'):
+            if metadata.get(field):
+                term[field] = metadata[field]
+        term['xrefs'] = _join_unique(
+            [*(str(term.get('xrefs') or '').split(';')), *(str(metadata.get('xrefs') or '').split(';'))]
+        )
+
+        number = map_id[-5:]
+        for variant_id, variant_name in (
+            (f'rn{number}', f"{term['name']} - KEGG reaction pathway"),
+            *(
+                (ko_id, f"{term['name']} - KEGG orthology pathway")
+                for ko_id in metadata.get('ko_pathways', [])
+            ),
+        ):
+            terms.setdefault(
+                variant_id,
+                {
+                    'id': variant_id,
+                    'name': variant_name,
+                    'definition': term.get('definition', ''),
+                    'synonyms': '',
+                    'comments': '',
+                    'xrefs': f'KEGG_PATHWAY:{variant_id}',
+                    'parent_ids': map_id,
+                },
+            )
+
+    organism_list_pathways = handles.get('organism_list_pathways') or {}
+    for organism_code, handle in organism_list_pathways.items():
+        taxon_id = _ORGANISM_TAXA.get(organism_code, '')
+        for pathway_id, pathway_name in _iter_tsv(handle):
+            pathway_id = _pathway_term_id(pathway_id)
+            map_id = _pathway_reference_id(pathway_id)
+            reference = terms.get(map_id, {})
+            terms[pathway_id] = {
+                'id': pathway_id,
+                'name': pathway_name,
+                'definition': reference.get('definition', ''),
+                'synonyms': '',
+                'comments': '',
+                'xrefs': _join_unique([
+                    f'KEGG_PATHWAY:{pathway_id}',
+                    f'NCBITaxon:{taxon_id}' if taxon_id else '',
+                ]),
+                'parent_ids': map_id,
+            }
+
+    return sorted(terms.values(), key=lambda term: term['id'])
+
+
 def _empty_pathway_record(
     pathway_id: str,
     pathway_name: str = '',
@@ -466,6 +699,7 @@ def _empty_pathway_record(
 ) -> dict[str, Any]:
     return {
         'pathway_id': pathway_id,
+        'pathway_term_accession': _pathway_term_id(pathway_id),
         'pathway_name': pathway_name,
         'reaction_ids': set(),
         'taxon_id': taxon_id,
@@ -640,6 +874,7 @@ def _parse_kgml_documents(
                         pathway['linked_pathway_members'],
                         {
                             'pathway_id': linked_id,
+                            'pathway_term_accession': _pathway_term_id(linked_id),
                             'pathway_name': graphics_name or linked_id,
                         },
                         ('pathway_id',),
@@ -667,6 +902,7 @@ def _pathway_record_to_row(pathway: dict[str, Any]) -> dict[str, str]:
 
     return {
         'pathway_id': pathway['pathway_id'],
+        'pathway_term_accession': pathway.get('pathway_term_accession') or _pathway_term_id(pathway['pathway_id']),
         'pathway_name': pathway.get('pathway_name', ''),
         'reaction_ids': ';'.join(sorted(pathway.get('reaction_ids', set()))),
         'taxon_id': pathway.get('taxon_id', ''),
@@ -681,6 +917,7 @@ def _pathway_record_to_row(pathway: dict[str, Any]) -> dict[str, str]:
         'small_molecule_member_pubchem_ids': _join_member_field(small_molecule_members, 'pubchem_id'),
         'ortholog_member_kegg_ids': _join_member_field(ortholog_members, 'kegg_id'),
         'ortholog_member_names': _join_member_field(ortholog_members, 'name'),
+        'linked_pathway_term_accessions': _join_member_field(linked_pathway_members, 'pathway_term_accession'),
         'linked_pathway_ids': _join_member_field(linked_pathway_members, 'pathway_id'),
         'linked_pathway_names': _join_member_field(linked_pathway_members, 'pathway_name'),
     }
@@ -759,6 +996,10 @@ def _build_records(
     reactions: list[dict[str, Any]] = []
     pathways_by_id: dict[str, dict[str, Any]] = {}
     taxon_id = _ORGANISM_TAXA.get(organism, '')
+    organism_pathway_names = {
+        _pathway_term_id(pathway_id): pathway_name
+        for pathway_id, pathway_name in _iter_tsv(handles.get('list_pathway'))
+    }
 
     for entry in _iter_kegg_flat_entries(handles.get('get_reaction')):
         rxn_id = _entry_id(entry)
@@ -796,6 +1037,7 @@ def _build_records(
             'rclass_ids': ';'.join(f'rc:{rclass_id}' for rclass_id in _parse_rclass(entry)),
             'rhea_ids': ';'.join(dblinks.get('RHEA', [])),
             'pathway_ids': ';'.join(pathway['pathway_id'] for pathway in pathways),
+            'pathway_term_accessions': ';'.join(_pathway_term_id(pathway['pathway_id']) for pathway in pathways),
             'pathway_names': ';'.join(pathway['pathway_name'] for pathway in pathways),
             'reactant_kegg_id': reactant_fields['kegg_id'],
             'reactant_name': reactant_fields['name'],
@@ -819,9 +1061,13 @@ def _build_records(
             taxon_id=taxon_id,
         )
         for pathway_id, kgml_pathway in kgml_pathways.items():
+            if organism_pathway_names.get(pathway_id):
+                kgml_pathway['pathway_name'] = organism_pathway_names[pathway_id]
             pathway_record = pathways_by_id.setdefault(pathway_id, kgml_pathway)
             if not pathway_record['pathway_name'] and kgml_pathway.get('pathway_name'):
                 pathway_record['pathway_name'] = kgml_pathway['pathway_name']
+            elif organism_pathway_names.get(pathway_id):
+                pathway_record['pathway_name'] = organism_pathway_names[pathway_id]
             pathway_record['taxon_id'] = kgml_pathway.get('taxon_id', pathway_record.get('taxon_id', ''))
             pathway_record['reaction_ids'].update(kgml_pathway.get('reaction_ids', set()))
             for field in (

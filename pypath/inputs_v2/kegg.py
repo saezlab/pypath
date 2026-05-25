@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+import json
 import logging
 import time
 import urllib.request
@@ -34,6 +35,7 @@ _SHARED_URLS: dict[str, str] = {
     'list_reaction': 'https://rest.kegg.jp/list/reaction',
 }
 _SHARED_SUBFOLDER = 'kegg_shared'
+_KEGG_PATHWAY_BRITE = 'br08901'
 
 
 def kegg_organism_code(ncbi_tax_id: int) -> str | None:
@@ -80,6 +82,7 @@ try:
         InteractionMetadataCv,
         LicenseCV,
         MoleculeAnnotationsCv,
+        OntologyCv,
         ParticipantMetadataCv,
         ResourceCv,
         UpdateCategoryCV,
@@ -93,6 +96,8 @@ try:
         MembersFromList,
         MembershipBuilder,
     )
+    from pypath.internals.ontology_builder import OntologyBuilder
+    from pypath.inputs_v2.base import OntologyDataset
 
     config = ResourceConfig(
         id=ResourceCv.KEGG_METABOLIC,
@@ -102,6 +107,7 @@ try:
         update_category=UpdateCategoryCV.REGULAR,
         pubmed='10592173',
         primary_category='metabolism',
+        annotation_ontologies=(OntologyCv.KEGG_PATHWAYS,),
         description=(
             'Biochemical reactions from KEGG REACTION, with exact KEGG '
             'compound participants parsed from reaction equations and enriched '
@@ -133,6 +139,7 @@ try:
             CV(term=IdentifierNamespaceCv.KEGG, value=f('ko_ids', delimiter=';')),
             CV(term=IdentifierNamespaceCv.KEGG, value=f('rclass_ids', delimiter=';')),
             CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('pathway_ids', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accessions', delimiter=';')),
             CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=f('pathway_names', delimiter=';')),
         ),
         membership=MembershipBuilder(
@@ -178,10 +185,14 @@ try:
     )
 
     pathways_schema = EntityBuilder(
-        entity_type=EntityTypeCv.PATHWAY,
+        entity_type=EntityTypeCv.CV_TERM,
         identifiers=IdentifiersBuilder(
+            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession')),
             CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('pathway_id')),
             CV(term=IdentifierNamespaceCv.NAME, value=f('pathway_name')),
+        ),
+        annotations=AnnotationsBuilder(
+            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
         ),
         membership=MembershipBuilder(
             MembersFromList(
@@ -232,8 +243,9 @@ try:
                 ),
             ),
             MembersFromList(
-                entity_type=EntityTypeCv.PATHWAY,
+                entity_type=EntityTypeCv.CV_TERM,
                 identifiers=IdentifiersBuilder(
+                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('linked_pathway_term_accessions', delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('linked_pathway_ids', delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('linked_pathway_names', delimiter='||', preserve_indices=True)),
                 ),
@@ -244,11 +256,22 @@ try:
         ),
     )
 
+    pathway_ontology_schema = OntologyBuilder(
+        id='id',
+        name='name',
+        definition='definition',
+        synonyms=f('synonyms', delimiter=';'),
+        comments=f('comments', delimiter=';'),
+        xrefs=f('xrefs', delimiter=';'),
+        is_a=f('parent_ids', delimiter=';'),
+    )
+
 except Exception as _e:  # pragma: no cover
     _log.debug('kegg: schema objects unavailable (%s)', _e)
     config = None  # type: ignore[assignment]
     reactions_schema = None  # type: ignore[assignment]
     pathways_schema = None  # type: ignore[assignment]
+    pathway_ontology_schema = None  # type: ignore[assignment]
 
 
 # ---------------------------------------------------------------------------
@@ -402,6 +425,126 @@ def _fetch_pathway_kgml(
             )
 
 
+def _reference_map_ids_from_brite(path) -> list[str]:
+    """Return reference ``mapNNNNN`` IDs listed in the KEGG pathway BRITE tree."""
+    with open(path, encoding='utf-8') as handle:
+        data = json.load(handle)
+
+    map_ids: list[str] = []
+
+    def walk(node: dict) -> None:
+        name = str(node.get('name') or '').strip()
+        parts = name.split(None, 1)
+        if parts and parts[0].isdigit() and len(parts[0]) == 5:
+            map_ids.append(f'map{parts[0]}')
+        for child in node.get('children') or []:
+            walk(child)
+
+    walk(data)
+    return list(dict.fromkeys(map_ids))
+
+
+def _fetch_pathway_map_details(
+    map_ids: list[str],
+    dest: str,
+    delay: float = _KEGG_REST_DELAY,
+) -> None:
+    """Fetch KEGG reference pathway flat files in REST batches."""
+    from pathlib import Path
+
+    dest_path = Path(dest)
+    tmp_path = dest_path.with_suffix(dest_path.suffix + '.tmp')
+    expected = len(map_ids)
+
+    completed = _completed_kegg_entries(dest_path)
+    if completed == expected:
+        return
+    if completed and not tmp_path.exists():
+        dest_path.replace(tmp_path)
+    completed = _completed_kegg_entries(tmp_path)
+    if completed > expected or completed % _KEGG_BATCH_SIZE:
+        tmp_path.unlink(missing_ok=True)
+        completed = 0
+
+    mode = 'a' if completed else 'w'
+    _log.info('[KEGG] fetching pathway map entries %d/%d', completed, expected)
+
+    with open(tmp_path, mode, encoding='utf-8') as out:
+        for start in range(completed, expected, _KEGG_BATCH_SIZE):
+            batch = map_ids[start:start + _KEGG_BATCH_SIZE]
+            url = f"{_KEGG_REST}/get/{'+'.join(batch)}"
+            request = urllib.request.Request(
+                url,
+                headers={'User-Agent': 'pypath-kegg/1.0'},
+            )
+            with urllib.request.urlopen(request, timeout=60) as response:
+                out.write(response.read().decode('utf-8'))
+            if delay:
+                time.sleep(delay)
+            if (start + len(batch)) % 100 == 0 or start + len(batch) >= expected:
+                _log.info(
+                    '[KEGG] fetched pathway map entries %d/%d',
+                    start + len(batch),
+                    expected,
+                )
+
+    if _completed_kegg_entries(tmp_path) != expected:
+        raise RuntimeError(
+            f'Incomplete KEGG pathway map cache: '
+            f'{_completed_kegg_entries(tmp_path)}/{expected} entries'
+        )
+    tmp_path.replace(dest_path)
+
+
+def _download_kegg_pathway_ontology_files(
+    organism_codes: Iterable[str],
+    *,
+    force_refresh: bool = False,
+) -> _MultiOpener:
+    """Download only the KEGG files needed for the pathway ontology."""
+    from pathlib import Path
+
+    from pypath.share.downloads import _resolve_data_dir, get_download_manager
+
+    organism_codes = tuple(dict.fromkeys(organism_codes))
+    base_dir: Path = _resolve_data_dir()
+    shared_dir = base_dir / _SHARED_SUBFOLDER
+    shared_dir.mkdir(parents=True, exist_ok=True)
+    dm = get_download_manager()
+
+    brite_path = shared_dir / f'kegg_{_KEGG_PATHWAY_BRITE}.json'
+    dm.download(
+        f'{_KEGG_REST}/get/br:{_KEGG_PATHWAY_BRITE}/json',
+        dest=str(brite_path),
+    )
+    map_ids = _reference_map_ids_from_brite(brite_path)
+
+    map_details_path = shared_dir / 'kegg_get_pathway_maps.txt'
+    if (
+        force_refresh
+        or _completed_kegg_entries(map_details_path) != len(map_ids)
+    ):
+        _fetch_pathway_map_details(map_ids, str(map_details_path))
+
+    organism_list_pathways = {}
+    for organism_code in organism_codes:
+        data_dir = base_dir / f'kegg_{organism_code}'
+        data_dir.mkdir(parents=True, exist_ok=True)
+        file_path = data_dir / f'kegg_list_pathway_{organism_code}.tsv'
+        dm.download(
+            f'{_KEGG_REST}/list/pathway/{organism_code}',
+            dest=str(file_path),
+        )
+        organism_list_pathways[organism_code] = open(file_path, encoding='utf-8')  # noqa: SIM115
+
+    return _MultiOpener({
+        'pathway_brite': open(brite_path, encoding='utf-8'),  # noqa: SIM115
+        'get_pathway_maps': open(map_details_path, encoding='utf-8'),  # noqa: SIM115
+        'organism_list_pathways': organism_list_pathways,
+        'ontology_organism_codes': organism_codes,
+    })
+
+
 def _download_kegg_files(
     organism_code: str,
     *,
@@ -489,6 +632,19 @@ class _KeggDataset:
     def raw(self, **kwargs):
         from pypath.inputs_v2.parsers.kegg import _raw
         organism_codes = _kegg_organism_codes(kwargs.pop('organism', self._orgs))
+        if self._data_type == 'pathway_terms':
+            opener = _download_kegg_pathway_ontology_files(
+                organism_codes,
+                force_refresh=bool(kwargs.get('force_refresh', False)),
+            )
+            yield from _raw(
+                opener,
+                data_type=self._data_type,
+                organism='ontology:' + ','.join(organism_codes),
+                **kwargs,
+            )
+            return
+
         for organism in organism_codes:
             opener = _download_kegg_files(
                 organism,
@@ -498,7 +654,7 @@ class _KeggDataset:
 
 
 class _KeggResource:
-    """Minimal Resource wrapper with ``reactions`` and ``pathways`` datasets."""
+    """Minimal Resource wrapper with KEGG reaction, pathway and ontology datasets."""
 
     def __init__(
         self,
@@ -506,6 +662,7 @@ class _KeggResource:
     ) -> None:
         self.reactions = _KeggDataset(organism_codes, 'reactions')
         self.pathways = _KeggDataset(organism_codes, 'pathways')
+        self.pathway_ontology = _KeggDataset(organism_codes, 'pathway_terms')
 
 
 # ---------------------------------------------------------------------------
@@ -569,7 +726,31 @@ def _default_pathways_raw(opener=None, **kwargs):
     yield from _default_raw('pathways', opener=opener, **kwargs)
 
 
-if config is not None and reactions_schema is not None and pathways_schema is not None:
+def _default_pathway_terms_raw(opener=None, **kwargs):
+    from pypath.inputs_v2.parsers.kegg import _raw
+    requested_organism = kwargs.pop('organism', None)
+    organism_codes = _kegg_organism_codes(requested_organism)
+
+    if opener is None:
+        opener = _download_kegg_pathway_ontology_files(
+            organism_codes,
+            force_refresh=bool(kwargs.get('force_refresh', False)),
+        )
+
+    yield from _raw(
+        opener,
+        data_type='pathway_terms',
+        organism='ontology:' + ','.join(organism_codes),
+        **kwargs,
+    )
+
+
+if (
+    config is not None
+    and reactions_schema is not None
+    and pathways_schema is not None
+    and pathway_ontology_schema is not None
+):
     resource = Resource(
         config,
         reactions=Dataset(
@@ -581,6 +762,15 @@ if config is not None and reactions_schema is not None and pathways_schema is no
             download=None,
             mapper=pathways_schema,
             raw_parser=_default_pathways_raw,
+        ),
+        pathway_ontology=OntologyDataset(
+            download=None,
+            mapper=pathway_ontology_schema,
+            raw_parser=_default_pathway_terms_raw,
+            ontology_id='kegg_pathways',
+            remark='KEGG pathway ontology exported from BRITE br08901 and KEGG PATHWAY flat files via pypath.',
+            extension='obo',
+            file_stem='kegg_pathways',
         ),
     )
 else:  # pragma: no cover
