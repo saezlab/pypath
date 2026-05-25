@@ -33,6 +33,7 @@ _SHARED_URLS: dict[str, str] = {
     'conv_pubchem':  'https://rest.kegg.jp/conv/pubchem/compound',
     'list_reaction': 'https://rest.kegg.jp/list/reaction',
 }
+_SHARED_SUBFOLDER = 'kegg_shared'
 
 
 def kegg_organism_code(ncbi_tax_id: int) -> str | None:
@@ -138,8 +139,7 @@ try:
             MembersFromList(
                 entity_type=EntityTypeCv.SMALL_MOLECULE,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG,          value=f('reactant_kegg_id', delimiter='||')),
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('reactant_kegg_id', delimiter='||', extract='kegg_cpd')),
+                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('reactant_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME,          value=f('reactant_name',    delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.CHEBI,         value=f('reactant_chebi',   delimiter='||', extract='chebi', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.PUBCHEM,       value=f('reactant_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
@@ -152,8 +152,7 @@ try:
             MembersFromList(
                 entity_type=EntityTypeCv.SMALL_MOLECULE,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG,          value=f('product_kegg_id', delimiter='||')),
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('product_kegg_id', delimiter='||', extract='kegg_cpd')),
+                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('product_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME,          value=f('product_name',    delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.CHEBI,         value=f('product_chebi',   delimiter='||', extract='chebi', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.PUBCHEM,       value=f('product_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
@@ -188,7 +187,7 @@ try:
             MembersFromList(
                 entity_type=EntityTypeCv.REACTION,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG_REACTION, value=f('reaction_ids', delimiter=';')),
+                    CV(term=IdentifierNamespaceCv.KEGG_REACTION, value=f('reaction_ids', delimiter=';', preserve_indices=True)),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=BiologicalRoleCv.PATHWAY_COMPONENT),
@@ -197,7 +196,7 @@ try:
             MembersFromList(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG, value=f('protein_member_kegg_ids', delimiter='||')),
+                    CV(term=IdentifierNamespaceCv.KEGG, value=f('protein_member_kegg_ids', delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.ENTREZ, value=f('protein_member_entrez_ids', delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.UNIPROT, value=f('protein_member_uniprot_ids', delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('protein_member_names', delimiter='||', preserve_indices=True)),
@@ -213,8 +212,7 @@ try:
             MembersFromList(
                 entity_type=EntityTypeCv.SMALL_MOLECULE,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG, value=f('small_molecule_member_kegg_ids', delimiter='||')),
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('small_molecule_member_kegg_ids', delimiter='||', extract='kegg_cpd')),
+                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('small_molecule_member_kegg_ids', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('small_molecule_member_names', delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.CHEBI, value=f('small_molecule_member_chebi_ids', delimiter='||', extract='chebi', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('small_molecule_member_pubchem_ids', delimiter='||', extract='pubchem', preserve_indices=True)),
@@ -226,7 +224,7 @@ try:
             MembersFromList(
                 entity_type=EntityTypeCv.CV_TERM,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG, value=f('ortholog_member_kegg_ids', delimiter='||')),
+                    CV(term=IdentifierNamespaceCv.KEGG, value=f('ortholog_member_kegg_ids', delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('ortholog_member_names', delimiter='||', preserve_indices=True)),
                 ),
                 annotations=AnnotationsBuilder(
@@ -236,7 +234,7 @@ try:
             MembersFromList(
                 entity_type=EntityTypeCv.PATHWAY,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('linked_pathway_ids', delimiter='||')),
+                    CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('linked_pathway_ids', delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('linked_pathway_names', delimiter='||', preserve_indices=True)),
                 ),
                 annotations=AnnotationsBuilder(
@@ -414,38 +412,43 @@ def _download_kegg_files(
     and return a :class:`_MultiOpener` whose ``.result`` dict maps each
     endpoint key to an open text handle (cached by dlmachine).
 
-    Files are downloaded into ``<pypath_data_dir>/kegg_{organism_code}/``
-    and opened directly with plain ``open()`` to avoid the cachedir ``Opener``
-    ``UnboundLocalError`` bug on plain TSV files.
+    Organism-specific files are downloaded into
+    ``<pypath_data_dir>/kegg_{organism_code}/``. Shared KEGG reaction and
+    compound files are downloaded once into ``<pypath_data_dir>/kegg_shared/``.
+    Files are opened directly with plain ``open()`` to avoid the cachedir
+    ``Opener`` ``UnboundLocalError`` bug on plain TSV files.
     """
     from pathlib import Path
 
     from pypath.share.downloads import _resolve_data_dir, get_download_manager
 
-    urls = {
+    organism_urls = {
         'conv_uniprot': f'https://rest.kegg.jp/conv/uniprot/{organism_code}',
         'link_enzyme':  f'https://rest.kegg.jp/link/enzyme/{organism_code}',
         'list_pathway': f'https://rest.kegg.jp/list/pathway/{organism_code}',
-        **_SHARED_URLS,
     }
-    subfolder = f'kegg_{organism_code}'
-    data_dir: Path = _resolve_data_dir() / subfolder
+    base_dir: Path = _resolve_data_dir()
+    data_dir = base_dir / f'kegg_{organism_code}'
+    shared_dir = base_dir / _SHARED_SUBFOLDER
     data_dir.mkdir(parents=True, exist_ok=True)
+    shared_dir.mkdir(parents=True, exist_ok=True)
     dm = get_download_manager()
     result: dict = {}
 
-    for key, url in urls.items():
-        filename = (
-            f'kegg_{key}_{organism_code}.tsv'
-            if key in ('conv_uniprot', 'link_enzyme', 'list_pathway')
-            else f'kegg_{key}.tsv'
-        )
+    for key, url in organism_urls.items():
+        filename = f'kegg_{key}_{organism_code}.tsv'
         file_path = data_dir / filename
         _log.debug('[KEGG] %s → %s', key, file_path)
         dm.download(url, dest=str(file_path))
         result[key] = open(file_path, encoding='utf-8')  # noqa: SIM115
 
-    details_path = data_dir / 'kegg_get_reaction.txt'
+    for key, url in _SHARED_URLS.items():
+        file_path = shared_dir / f'kegg_{key}.tsv'
+        _log.debug('[KEGG] %s → %s', key, file_path)
+        dm.download(url, dest=str(file_path))
+        result[key] = open(file_path, encoding='utf-8')  # noqa: SIM115
+
+    details_path = shared_dir / 'kegg_get_reaction.txt'
     reaction_ids = _reaction_ids(result['list_reaction'])
     if (
         force_refresh
@@ -517,8 +520,9 @@ def make_kegg_resource(
 
     Downloads KEGG REST endpoints for organism-specific gene mappings,
     shared compound cross-references, and batched reaction flat files via the
-    dlmachine cache infrastructure. Each file is stored under
-    ``kegg_{organism_code}/`` in the pypath data directory.
+    dlmachine cache infrastructure. Organism-specific files are stored under
+    ``kegg_{organism_code}/`` and shared files under ``kegg_shared/`` in the
+    pypath data directory.
 
     Args:
         organism_code: KEGG organism code, NCBI taxonomy ID, iterable of either,
