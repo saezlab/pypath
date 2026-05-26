@@ -70,8 +70,8 @@ _transporters_schema = EntityBuilder(
     ),
 )
 
-_substrates_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+_transport_schema = EntityBuilder(
+    entity_type=EntityTypeCv.TRANSPORT,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.TCDB, value=f('tcid')),
     ),
@@ -119,16 +119,16 @@ resource = Resource(
             ),
         ),
     ),
-    substrates=Dataset(
+    transports=Dataset(
         download=Download(
             url='https://www.tcdb.org/cgi-bin/substrates/getSubstrates.py',
             filename='tcdb_substrates.tsv',
             subfolder='tcdb',
             ext='tsv',
         ),
-        mapper=_substrates_schema,
+        mapper=_transport_schema,
         raw_parser=functools.partial(
-            _parsers.substrates,
+            _parsers.transport_substrates,
             acc2tc_download=_acc2tc,
         ),
     ),

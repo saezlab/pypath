@@ -230,7 +230,7 @@ transport_reactions_schema = EntityBuilder(
 # ── catalysis ────────────────────────────────────────────────────────────────
 
 catalysis_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+    entity_type=EntityTypeCv.CATALYSIS,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('reaction_name')),
         CV(term=IdentifierNamespaceCv.BIGG_REACTION, value=f('reaction_bigg_id')),

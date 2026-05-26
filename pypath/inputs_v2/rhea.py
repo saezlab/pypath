@@ -154,7 +154,7 @@ catalysis_download = Download(
 
 
 catalysis_schema = EntityBuilder(
-    entity_type = EntityTypeCv.INTERACTION,
+    entity_type = EntityTypeCv.CATALYSIS,
     identifiers = IdentifiersBuilder(
         CV(term = IdentifierNamespaceCv.RHEA_ID, value = g('MASTER_ID', extract = _RHEA_ID_RE)),
     ),
