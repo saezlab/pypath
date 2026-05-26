@@ -35,8 +35,6 @@ from pypath.internals.cv_terms import (
     AssayAnnotationsCv,
 )
 
-# XXX: Do we need just base tables or also the info inside each href of each SLC
-
 # =================================== SET-UP ===================================
 
 BASE_URL = 'https://slc.bioparadigms.org/'
@@ -190,3 +188,6 @@ resource = Resource(
 # X Transport type*                   C / Na+, H+, K+
 # X Substrates                        L-Glu, D/L-Asp
 # X Tissue and cellular expression    brain (neurons), intestine, kidney, ...
+
+# XXX: Thought about splitting the last columns but they have inconsistent
+# separators/formatting across thables :(
