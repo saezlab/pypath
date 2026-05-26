@@ -140,3 +140,4 @@ class IdentifierNamespaceCv(CvEnum):
     DRUGCENTRAL = ('OM:0242', 'DrugCentral identifier', 'https://drugcentral.org/')
     HUMAN_GEM_METABOLITE = ('OM:0243', 'Human-GEM metabolite identifier (MAM prefix, compartment suffix stripped)', 'https://github.com/SysBioChalmers/Human-GEM')
     HUMAN_GEM_REACTION = ('OM:0244', 'Human-GEM reaction identifier', 'https://github.com/SysBioChalmers/Human-GEM')
+    KEGG_PATHWAY = ('OM:0245', 'KEGG pathway identifier', 'https://www.genome.jp/kegg/pathway.html')

@@ -59,7 +59,7 @@ f = FieldConfig(
 )
 
 lipids_schema = EntityBuilder(
-    entity_type=EntityTypeCv.LIPID,
+    entity_type=EntityTypeCv.SMALL_MOLECULE,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=f('Lipid ID')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('Name')),
@@ -83,6 +83,7 @@ lipids_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.SYNONYM, value=f('Abbreviation*')),
     ),
     annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=EntityTypeCv.LIPID),
         CV(term=MoleculeAnnotationsCv.LIPID_HIERARCHY_LEVEL, value=f('Level')),
         CV(term=MoleculeAnnotationsCv.LIPID_MAIN_CLASS, value=f('Lipid class*')),
         CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=f('Parent')),

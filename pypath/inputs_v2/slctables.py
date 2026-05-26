@@ -5,12 +5,8 @@ This module converts SLC tables reference data into Entity records using the
 declarative schema pattern.
 """
 
-import requests
-from functools import reduce
-
 from bs4 import BeautifulSoup
 
-from pypath.inputs_v2.parsers.base import iter_csv
 from pypath.inputs_v2.base import (
     ResourceConfig,
     Download,
@@ -89,7 +85,7 @@ def chunk_this(L, n):
 def parser(opener, **_kwargs):
 
     # Obtaining plain text from Opener instance as single string
-    txt = reduce(str.__add__, list(opener.result))
+    txt = ''.join(opener.result)
 
     # Parsing HTML text
     soup = BeautifulSoup(txt, 'html.parser')
@@ -97,30 +93,23 @@ def parser(opener, **_kwargs):
     # Extracting list of SLC families and corresponding tables
     fams = [t.text for t in soup.find_all('span', attrs={'class': 'slcname'})]
     raw_tables = soup.find_all('table')
+    if not raw_tables:
+        return
 
     headers = ['SLC_family'] + [
         t.text
         for t in raw_tables[0].find_all('td', attrs={'class': 'tbl_head'})
     ]
 
-    # Bear with me on this one, from the innermost comprehenstion outwards:
-    #    - Extract the text of every cell
-    #    - Make chunks (lists) of cells - correspond to rows in the table
-    #    - For each SLC family table
-    rows = [
-        [
-            [slc] + chunk
-            for chunk in chunk_this([
-                t.text
-                for t in raw_tables[i].find_all(
-                    'td', attrs={'class': 'tbl_cell'}
-                )
-            ], len(headers) - 1)
+    for slc, table in zip(fams, raw_tables):
+        cells = [
+            t.text
+            for t in table.find_all('td', attrs={'class': 'tbl_cell'})
         ]
-        for i, slc in enumerate(fams)
-    ]
-
-    yield from iter([headers] + rows)
+        for chunk in chunk_this(cells, len(headers) - 1):
+            if len(chunk) != len(headers) - 1:
+                continue
+            yield dict(zip(headers, [slc] + chunk))
 
 
 download = Download(

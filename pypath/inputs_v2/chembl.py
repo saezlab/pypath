@@ -95,17 +95,19 @@ MOLECULE_TYPE_TO_ENTITY_TYPE = {
     'Enzyme': EntityTypeCv.PROTEIN,
     'Oligosaccharide': EntityTypeCv.SMALL_MOLECULE,
     'Oligonucleotide': EntityTypeCv.SMALL_MOLECULE,
-    'Gene': EntityTypeCv.GENE,
+    'Gene': EntityTypeCv.PROTEIN,
     'Cell': EntityTypeCv.PHYSICAL_ENTITY,
     'Unknown': EntityTypeCv.SMALL_MOLECULE,
     'Unclassified': EntityTypeCv.SMALL_MOLECULE,
 }
 
 # Mapping of ChEMBL molecule_type strings to more specific subclasses
-MOLECULE_TYPE_TO_SUBTYPE = {
+MOLECULE_TYPE_TO_MOLECULE_SUBTYPE = {
     'Antibody': MoleculeSubtypeCv.ANTIBODY,
-    'Enzyme': ProteinFunctionalClassCv.ENZYME,
     'Small molecule': MoleculeSubtypeCv.SYNTHETIC_ORGANIC,
+}
+MOLECULE_TYPE_TO_PROTEIN_FUNCTIONAL_CLASS = {
+    'Enzyme': ProteinFunctionalClassCv.ENZYME,
 }
 
 # Mapping of ChEMBL assay_type codes to AssayTypeCv
@@ -174,7 +176,8 @@ f = FieldConfig(
     },
     map={
         'entity_type': MOLECULE_TYPE_TO_ENTITY_TYPE,
-        'subtype': MOLECULE_TYPE_TO_SUBTYPE,
+        'molecule_subtype': MOLECULE_TYPE_TO_MOLECULE_SUBTYPE,
+        'protein_functional_class': MOLECULE_TYPE_TO_PROTEIN_FUNCTIONAL_CLASS,
         'assay_type': ASSAY_TYPE_MAP,
         'action_type': ACTION_TYPE_MAP,
         'target_type': TARGET_TYPE_MAP,
@@ -211,7 +214,14 @@ molecules_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.CLINICAL_PHASE, value=f('max_phase')),
-        CV(term=f('molecule_type', map='subtype')),
+        CV(
+            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+            value=f('molecule_type', map='molecule_subtype'),
+        ),
+        CV(
+            term=MoleculeAnnotationsCv.PROTEIN_FUNCTIONAL_CLASS,
+            value=f('molecule_type', map='protein_functional_class'),
+        ),
         CV(term=f('therapeutic_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.APPROVED))),
         CV(term=f('withdrawn_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.WITHDRAWN))),
         CV(term=f('polymer_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.POLYMER))),

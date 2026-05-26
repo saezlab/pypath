@@ -26,6 +26,7 @@ from pypath.internals.cv_terms import (
     UpdateCategoryCV,
     ResourceCv,
     MoleculeAnnotationsCv,
+    MoleculeSubtypeCv,
 )
 
 # =================================== SET-UP ===================================
@@ -66,8 +67,12 @@ def is_lipid(x):
     return 'lipid' if 'lipid' in x.lower() else 'small_molecule'
 
 CLASS_ENTITY = {
-    'lipid': EntityTypeCv.LIPID,
+    'lipid': EntityTypeCv.SMALL_MOLECULE,
     'small_molecule': EntityTypeCv.SMALL_MOLECULE,
+}
+MOLECULE_SUBTYPE = {
+    'lipid': EntityTypeCv.LIPID,
+    'small_molecule': MoleculeSubtypeCv.METABOLITE,
 }
 SUPERCLASS = {
     'lipid': MoleculeAnnotationsCv.LIPID_CATEGORY,
@@ -86,6 +91,7 @@ f = FieldConfig(
     extract={},
     map={
         'class_to_entity': CLASS_ENTITY,
+        'class_to_subtype': MOLECULE_SUBTYPE,
         'super_class': SUPERCLASS,
         'class': CLASS,
         'sub_class': SUBCLASS,
@@ -109,6 +115,10 @@ schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('refmet_name')),
     ),
     annotations=AnnotationsBuilder(
+        CV(
+            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+            value=f('super_class', transform='is_lipid', map='class_to_subtype'),
+        ),
         CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('exactmass')),
         CV(
             term=f('super_class', transform='is_lipid', map='super_class'),

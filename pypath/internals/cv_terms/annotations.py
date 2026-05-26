@@ -282,6 +282,8 @@ class MoleculeAnnotationsCv(CvEnum):
     CX_LOGP = ("OM:0633", "LogP value calculated at specific pH")
     CX_LOGD = ("OM:0634", "LogD value calculated at specific pH")
     MOLECULAR_SPECIES = ("OM:0635", "Molecular species (e.g. ACID, BASE, NEUTRAL)")
+    MOLECULE_SUBTYPE = ("OM:0636", "Specific molecule subtype such as lipid, metabolite, peptide, or antibody")
+    PROTEIN_FUNCTIONAL_CLASS = ("OM:0637", "Specific protein functional class such as enzyme, GPCR, or transporter")
 
     # Lipid classification terms (OM:0614-0622 range)
     LIPID_CATEGORY = ("OM:0614", "Lipid category classification (e.g., Fatty Acyls, Glycerolipids)")

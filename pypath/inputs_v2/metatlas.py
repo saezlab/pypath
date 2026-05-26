@@ -5,10 +5,10 @@ from the Human-GEM YAML (``model/Human-GEM.yml``) downloaded directly from
 the SysBioChalmers GitHub repository.
 
 Datasets:
-    metabolites: METABOLITE entities, one per unique base MAM ID (compartment
-        suffix stripped and deduplicated).  Molecular formula and charge are
-        stored as annotations.
-    reactions: REACTION entities with METABOLITE sub-members carrying
+    metabolites: SMALL_MOLECULE entities, one per unique base MAM ID
+        (compartment suffix stripped and deduplicated). Metabolite subtype,
+        molecular formula and charge are stored as annotations.
+    reactions: REACTION entities with SMALL_MOLECULE sub-members carrying
         stoichiometry and reactant/product role annotations.  Direction is
         derived from the ``lower_bound`` / ``upper_bound`` bounds.
     catalysis: INTERACTION entities linking an Ensembl gene (PROTEIN) or
@@ -111,12 +111,13 @@ download = Download(
 # ── metabolites ──────────────────────────────────────────────────────────────
 
 metabolites_schema = EntityBuilder(
-    entity_type = MoleculeSubtypeCv.METABOLITE,
+    entity_type = EntityTypeCv.SMALL_MOLECULE,
     identifiers = IdentifiersBuilder(
         CV(term = IdentifierNamespaceCv.NAME, value = f('name')),
         CV(term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE, value = f('human_gem_metabolite_id')),
     ),
     annotations = AnnotationsBuilder(
+        CV(term = MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value = MoleculeSubtypeCv.METABOLITE),
         CV(term = IdentifierNamespaceCv.MOLECULAR_FORMULA, value = f('formula')),
         CV(term = MoleculeAnnotationsCv.MOLECULAR_CHARGE, value = f('charge')),
     ),
@@ -138,7 +139,7 @@ reactions_schema = EntityBuilder(
     ),
     membership = MembershipBuilder(
         MembersFromList(
-            entity_type = MoleculeSubtypeCv.METABOLITE,
+            entity_type = EntityTypeCv.SMALL_MOLECULE,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
@@ -156,9 +157,12 @@ reactions_schema = EntityBuilder(
                     value = f('reactants', delimiter = '||', map = 'stoich_comp'),
                 ),
             ),
+            entity_annotations = AnnotationsBuilder(
+                CV(term = MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value = MoleculeSubtypeCv.METABOLITE),
+            ),
         ),
         MembersFromList(
-            entity_type = MoleculeSubtypeCv.METABOLITE,
+            entity_type = EntityTypeCv.SMALL_MOLECULE,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
@@ -175,6 +179,9 @@ reactions_schema = EntityBuilder(
                     term = MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
                     value = f('products', delimiter = '||', map = 'stoich_comp'),
                 ),
+            ),
+            entity_annotations = AnnotationsBuilder(
+                CV(term = MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value = MoleculeSubtypeCv.METABOLITE),
             ),
         ),
     ),
@@ -196,7 +203,7 @@ transport_reactions_schema = EntityBuilder(
     ),
     membership = MembershipBuilder(
         MembersFromList(
-            entity_type = MoleculeSubtypeCv.METABOLITE,
+            entity_type = EntityTypeCv.SMALL_MOLECULE,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
@@ -214,9 +221,12 @@ transport_reactions_schema = EntityBuilder(
                     value = f('reactants', delimiter = '||', map = 'stoich_comp'),
                 ),
             ),
+            entity_annotations = AnnotationsBuilder(
+                CV(term = MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value = MoleculeSubtypeCv.METABOLITE),
+            ),
         ),
         MembersFromList(
-            entity_type = MoleculeSubtypeCv.METABOLITE,
+            entity_type = EntityTypeCv.SMALL_MOLECULE,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
@@ -233,6 +243,9 @@ transport_reactions_schema = EntityBuilder(
                     term = MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
                     value = f('products', delimiter = '||', map = 'stoich_comp'),
                 ),
+            ),
+            entity_annotations = AnnotationsBuilder(
+                CV(term = MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value = MoleculeSubtypeCv.METABOLITE),
             ),
         ),
     ),

@@ -39,7 +39,7 @@ _MISSING_VALUE = "__MISSING__"
 PHYSICAL_ENTITY_TYPE_MAP = {
     'smallmolecule': EntityTypeCv.SMALL_MOLECULE,
     'protein': EntityTypeCv.PROTEIN,
-    'gene': EntityTypeCv.GENE,
+    'gene': EntityTypeCv.PROTEIN,
     'complex': EntityTypeCv.COMPLEX,
     'complexassembly': EntityTypeCv.COMPLEX,
     'dna': EntityTypeCv.DNA,

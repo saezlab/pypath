@@ -28,6 +28,54 @@ from pypath.internals.cv_terms import (
 
 logger = logging.getLogger(__name__)
 
+_NON_CANONICAL_ENTITY_TYPES = {
+    EntityTypeCv.GENE,
+    EntityTypeCv.LIPID,
+}
+
+_CANONICAL_ENTITY_TYPES = tuple(
+    entity_type
+    for entity_type in EntityTypeCv
+    if entity_type not in _NON_CANONICAL_ENTITY_TYPES
+)
+
+_ENTITY_TYPE_BY_TEXT = {
+    text: entity_type
+    for entity_type in EntityTypeCv
+    for text in (
+        entity_type.value,
+        entity_type.label_accession,
+        entity_type.label,
+        entity_type.label.lower(),
+        entity_type.label.replace(' ', '_').lower(),
+        entity_type.name.lower(),
+    )
+}
+
+
+def _canonical_entity_type(value: Any) -> EntityTypeCv | None:
+    if isinstance(value, EntityTypeCv):
+        entity_type = value
+    elif isinstance(value, str):
+        text = value.strip()
+        entity_type = _ENTITY_TYPE_BY_TEXT.get(text)
+    else:
+        return None
+
+    if entity_type not in _CANONICAL_ENTITY_TYPES:
+        return None
+    return entity_type
+
+
+def _validate_static_entity_type(value: Any) -> None:
+    if isinstance(value, Column) or callable(value):
+        return
+    if _canonical_entity_type(value) is None:
+        raise ValueError(
+            'EntityBuilder entity_type must be a canonical EntityTypeCv value; '
+            f'got {value!r}. Put more specific classes in annotations.'
+        )
+
 
 class Column:
     """Column definition describing how to extract and normalize values from a row.
@@ -737,6 +785,7 @@ class MembersFromList:
         annotations: AnnotationsBuilder | None = None,
         entity_annotations: AnnotationsBuilder | None = None,
     ) -> None:
+        _validate_static_entity_type(entity_type)
         self.entity_type = entity_type
         self.identifiers = identifiers
         self.membership_annotations = annotations
@@ -762,6 +811,8 @@ class MembersFromList:
                 continue
 
             member_entity_type = self._resolve_entity_type(row, cache, index)
+            if member_entity_type is None:
+                continue
             entity_annotations = (
                 self.entity_annotations.build_for_index(row, index, cache)
                 if self.entity_annotations
@@ -789,7 +840,12 @@ class MembersFromList:
 
         return memberships
 
-    def _resolve_entity_type(self, row: Any, cache: ColumnCache, index: int) -> EntityTypeCv:
+    def _resolve_entity_type(
+        self,
+        row: Any,
+        cache: ColumnCache,
+        index: int,
+    ) -> EntityTypeCv | None:
         if isinstance(self.entity_type, Column):
             values = cache.values(self.entity_type, row)
             value = _BaseCvBuilder._pick_index(values, index)
@@ -798,18 +854,16 @@ class MembersFromList:
                 value = self.entity_type(row)
             except Exception as exc:  # pragma: no cover - defensive
                 logger.debug("MembersFromList entity_type callable failed: %s", exc)
-                return EntityTypeCv.PHYSICAL_ENTITY
+                return None
             if isinstance(value, (list, tuple)):
                 value = _BaseCvBuilder._pick_index(list(value), index)
         else:
             value = self.entity_type
 
-        if isinstance(value, EntityTypeCv):
-            return value
-        if isinstance(value, str):
-            entity_type_map = {item.value: item for item in EntityTypeCv}
-            return entity_type_map.get(value, EntityTypeCv.PHYSICAL_ENTITY)
-        return EntityTypeCv.PHYSICAL_ENTITY
+        entity_type = _canonical_entity_type(value)
+        if entity_type is None:
+            logger.debug("Invalid member entity_type: %r", value)
+        return entity_type
 
 
 class Member:
@@ -875,6 +929,7 @@ class EntityBuilder:
         annotations: AnnotationsBuilder | None = None,
         membership: MembershipBuilder | None = None,
     ) -> None:
+        _validate_static_entity_type(entity_type)
         self.entity_type = entity_type
         self.identifiers = identifiers
         self.annotations = annotations
@@ -902,6 +957,11 @@ class EntityBuilder:
             except Exception as exc:  # pragma: no cover - defensive
                 logger.debug("Entity type callable failed: %s", exc)
                 return None
+
+        resolved_type = _canonical_entity_type(resolved_type)
+        if resolved_type is None:
+            logger.debug("Invalid entity_type for row")
+            return None
 
         identifiers = self.identifiers.build(row, cache) if self.identifiers else []
         if not identifiers and not self._allows_empty_identifiers(resolved_type):
