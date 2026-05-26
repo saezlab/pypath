@@ -15,6 +15,7 @@ from typing import Any
 from pypath.inputs_v2.base import read_opener_text
 
 _ISOFORM_RE = re.compile(r'_[A-Z]+\d*$')
+_MEMBER_VALUE_DELIMITER = ';;'
 
 
 def _annotation_list(annotation_dict: dict, key: str) -> list[str] | None:
@@ -79,6 +80,123 @@ def _strip_isoform(gene_id: str) -> str:
     return _ISOFORM_RE.sub('', gene_id)
 
 
+def _merge_unique(
+    values: list[str],
+    new_values: list[str] | None,
+) -> list[str]:
+    """Append new values while preserving order and removing duplicates."""
+
+    if not new_values:
+        return values
+
+    seen = set(values)
+    for value in new_values:
+        if value and value not in seen:
+            values.append(value)
+            seen.add(value)
+
+    return values
+
+
+def _build_metabolite_index(data: dict) -> dict[str, dict[str, Any]]:
+    """Aggregate metabolite metadata by BiGG base identifier."""
+
+    metabolites: dict[str, dict[str, Any]] = {}
+
+    for metabolite in data.get('metabolites', []):
+        base_id, _ = _strip_compartment(metabolite['id'])
+        record = metabolites.setdefault(
+            base_id,
+            {
+                'bigg_metabolite_id': base_id,
+                'name': None,
+                'formula': None,
+                'charge': None,
+                'hmdb': [],
+                'chebi': [],
+                'kegg_compound': [],
+                'metanetx': [],
+            },
+        )
+
+        if not record['name'] and metabolite.get('name'):
+            record['name'] = metabolite.get('name')
+
+        if record['formula'] is None and metabolite.get('formula') is not None:
+            record['formula'] = metabolite.get('formula')
+
+        if record['charge'] is None and metabolite.get('charge') is not None:
+            record['charge'] = metabolite.get('charge')
+
+        annotation = metabolite.get('annotation', {})
+        _merge_unique(record['hmdb'], _annotation_list(annotation, 'hmdb'))
+        _merge_unique(record['chebi'], _annotation_list(annotation, 'chebi'))
+        _merge_unique(
+            record['kegg_compound'],
+            _annotation_list(annotation, 'kegg.compound'),
+        )
+        _merge_unique(
+            record['metanetx'],
+            _annotation_list(annotation, 'metanetx.chemical'),
+        )
+
+    return metabolites
+
+
+def _reaction_metabolite_ids(data: dict) -> set[str]:
+    """Return BiGG base identifiers that participate in any reaction."""
+
+    metabolite_ids: set[str] = set()
+
+    for reaction in data.get('reactions', []):
+        for metabolite_id in reaction.get('metabolites', {}):
+            base_id, _ = _strip_compartment(metabolite_id)
+            metabolite_ids.add(base_id)
+
+    return metabolite_ids
+
+
+def _serialize_member_value(value: str | list[str] | None) -> str:
+    """Serialize member metadata into one token per member."""
+
+    if value is None:
+        return ''
+
+    if isinstance(value, list):
+        return _MEMBER_VALUE_DELIMITER.join(item for item in value if item)
+
+    return str(value)
+
+
+def _reaction_member_fields(
+    metabolite_index: dict[str, dict[str, Any]],
+    base_id: str,
+) -> dict[str, Any]:
+    """Return the identifier payload for one reaction member metabolite."""
+
+    record = metabolite_index.get(base_id)
+    if record is None:
+        return {
+            'name': None,
+            'formula': None,
+            'charge': None,
+            'hmdb': [],
+            'chebi': [],
+            'kegg_compound': [],
+            'metanetx': [],
+        }
+
+    return {
+        'name': record.get('name'),
+        'formula': record.get('formula'),
+        'charge': record.get('charge'),
+        'hmdb': record.get('hmdb', []),
+        'chebi': record.get('chebi', []),
+        'kegg_compound': record.get('kegg_compound', []),
+        'metanetx': record.get('metanetx', []),
+    }
+
+
 def _parse_gene_rule(rule: str) -> list[list[str]]:
     """Parse a Boolean gene reaction rule into structured enzyme groups.
 
@@ -132,23 +250,12 @@ def _parse_metabolites(data: dict) -> Generator[dict, None, None]:
             Absent annotation values are ``None`` and will be skipped by
             the framework.
     """
-    seen: set[str] = set()
-    for m in data.get('metabolites', []):
-        base_id, _ = _strip_compartment(m['id'])
-        if base_id in seen:
+    reaction_metabolites = _reaction_metabolite_ids(data)
+
+    for metabolite in _build_metabolite_index(data).values():
+        if metabolite['bigg_metabolite_id'] in reaction_metabolites:
             continue
-        seen.add(base_id)
-        ann = m.get('annotation', {})
-        yield {
-            'bigg_metabolite_id': base_id,
-            'name': m.get('name'),
-            'formula': m.get('formula'),
-            'charge': m.get('charge'),
-            'hmdb': _annotation_list(ann, 'hmdb'),
-            'chebi': _annotation_list(ann, 'chebi'),
-            'kegg_compound': _annotation_list(ann, 'kegg.compound'),
-            'metanetx': _annotation_list(ann, 'metanetx.chemical'),
-        }
+        yield metabolite
 
 
 def _parse_reactions(data: dict) -> Generator[dict, None, None]:
@@ -169,16 +276,66 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
             and ``products``.  Absent values are ``None`` and will be
             skipped by the framework.
     """
+    metabolite_index = _build_metabolite_index(data)
+
     for r in data.get('reactions', []):
         ann = r.get('annotation', {})
         reactants = []
         products = []
+        reactant_name = []
+        reactant_formula = []
+        reactant_charge = []
+        reactant_hmdb = []
+        reactant_chebi = []
+        reactant_kegg_compound = []
+        reactant_metanetx = []
+        product_name = []
+        product_formula = []
+        product_charge = []
+        product_hmdb = []
+        product_chebi = []
+        product_kegg_compound = []
+        product_metanetx = []
+
         for met_id, stoich in r.get('metabolites', {}).items():
             base_id, compartment = _strip_compartment(met_id)
+            member_fields = _reaction_member_fields(metabolite_index, base_id)
+
             if stoich < 0:
                 reactants.append(f'{base_id}:{compartment}:{abs(stoich)}')
+                reactant_name.append(_serialize_member_value(member_fields['name']))
+                reactant_formula.append(
+                    _serialize_member_value(member_fields['formula'])
+                )
+                reactant_charge.append(
+                    _serialize_member_value(member_fields['charge'])
+                )
+                reactant_hmdb.append(_serialize_member_value(member_fields['hmdb']))
+                reactant_chebi.append(_serialize_member_value(member_fields['chebi']))
+                reactant_kegg_compound.append(
+                    _serialize_member_value(member_fields['kegg_compound'])
+                )
+                reactant_metanetx.append(
+                    _serialize_member_value(member_fields['metanetx'])
+                )
             else:
                 products.append(f'{base_id}:{compartment}:{stoich}')
+                product_name.append(_serialize_member_value(member_fields['name']))
+                product_formula.append(
+                    _serialize_member_value(member_fields['formula'])
+                )
+                product_charge.append(
+                    _serialize_member_value(member_fields['charge'])
+                )
+                product_hmdb.append(_serialize_member_value(member_fields['hmdb']))
+                product_chebi.append(_serialize_member_value(member_fields['chebi']))
+                product_kegg_compound.append(
+                    _serialize_member_value(member_fields['kegg_compound'])
+                )
+                product_metanetx.append(
+                    _serialize_member_value(member_fields['metanetx'])
+                )
+
         lb = r.get('lower_bound', 0)
         ub = r.get('upper_bound', 0)
         direction = 'REVERSIBLE' if lb < 0 < ub else 'LEFT-TO-RIGHT'
@@ -190,7 +347,21 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
             'ec': _annotation_list(ann, 'ec-code'),
             'metanetx_reaction': _annotation_list(ann, 'metanetx.reaction'),
             'reactants': '||'.join(reactants),
+            'reactant_name': '||'.join(reactant_name),
+            'reactant_formula': '||'.join(reactant_formula),
+            'reactant_charge': '||'.join(reactant_charge),
+            'reactant_hmdb': '||'.join(reactant_hmdb),
+            'reactant_chebi': '||'.join(reactant_chebi),
+            'reactant_kegg_compound': '||'.join(reactant_kegg_compound),
+            'reactant_metanetx': '||'.join(reactant_metanetx),
             'products': '||'.join(products),
+            'product_name': '||'.join(product_name),
+            'product_formula': '||'.join(product_formula),
+            'product_charge': '||'.join(product_charge),
+            'product_hmdb': '||'.join(product_hmdb),
+            'product_chebi': '||'.join(product_chebi),
+            'product_kegg_compound': '||'.join(product_kegg_compound),
+            'product_metanetx': '||'.join(product_metanetx),
         }
 
 
