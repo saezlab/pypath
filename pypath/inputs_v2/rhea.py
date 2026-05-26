@@ -1,17 +1,25 @@
 """Rhea reaction database — inputs_v2 module.
 
-Provides a :class:`~pypath.inputs_v2.base.Resource` with two datasets parsed
+Provides a :class:`~pypath.inputs_v2.base.Resource` with four datasets parsed
 from the Rhea web API and FTP export:
 
 Datasets:
-    reactions: REACTION entities, one per master reaction.  ChEBI participants
-        are included as SMALL_MOLECULE sub-members with REACTANT/PRODUCT role
-        annotations derived from equation order.  Cross-references to EC,
+    reactions: REACTION entities for all master reactions (metabolic and
+        transport).  ChEBI participants are included as SMALL_MOLECULE
+        sub-members with REACTANT/PRODUCT role and SUBCELLULAR_LOCATION
+        annotations derived from the equation.  Cross-references to EC,
         PubMed, GO, EcoCyc, MetaCyc, KEGG, and Reactome are stored as
         annotations.
-    catalysis: INTERACTION entities linking a UniProt PROTEIN as CONTROLLER
-        to a Rhea master REACTION as CONTROLLED.  Reaction direction is derived
-        from the DIRECTION column of the rhea2uniprot FTP export
+    metabolic_reactions: As ``reactions`` but restricted to metabolic
+        (non-transport) reactions only.
+    transport_reactions: TRANSPORT entities for reactions that move a
+        molecule across a compartment boundary.  Identified by the presence
+        of ``[compartment]`` suffixes in the equation string.  Compartment
+        labels are stored as SUBCELLULAR_LOCATION annotations on each
+        participant.
+    catalysis: CATALYSIS entities linking a UniProt PROTEIN as CONTROLLER
+        to a Rhea master REACTION as CONTROLLED.  Reaction direction is
+        derived from the DIRECTION column of the rhea2uniprot FTP export
         (LR → LEFT-TO-RIGHT, RL → RIGHT-TO-LEFT, BI → REVERSIBLE).
 """
 
@@ -26,6 +34,7 @@ from pypath.internals.cv_terms import (
     InteractionMetadataCv,
     LicenseCV,
     MoleculeAnnotationsCv,
+    ParticipantMetadataCv,
     ResourceCv,
     UpdateCategoryCV,
 )
@@ -135,6 +144,48 @@ reactions_schema = EntityBuilder(
 )
 
 
+# ── transport_reactions ───────────────────────────────────────────────────────
+
+transport_reactions_schema = EntityBuilder(
+    entity_type = EntityTypeCv.TRANSPORT,
+    identifiers = IdentifiersBuilder(
+        CV(term = IdentifierNamespaceCv.RHEA_ID, value = f('rhea_id')),
+        CV(term = IdentifierNamespaceCv.NAME, value = f('equation')),
+    ),
+    annotations = AnnotationsBuilder(
+        CV(term = MoleculeAnnotationsCv.EC_NUMBER, value = f('ec')),
+        CV(term = IdentifierNamespaceCv.PUBMED, value = f('pubmed')),
+        CV(term = IdentifierNamespaceCv.CV_TERM_ACCESSION, value = f('go')),
+        CV(term = IdentifierNamespaceCv.ECOCYC, value = f('ecocyc')),
+        CV(term = IdentifierNamespaceCv.METACYC, value = f('metacyc')),
+        CV(term = IdentifierNamespaceCv.KEGG, value = f('kegg')),
+        CV(term = IdentifierNamespaceCv.REACTOME_STABLE_ID, value = f('reactome')),
+    ),
+    membership = MembershipBuilder(
+        MembersFromList(
+            entity_type = EntityTypeCv.SMALL_MOLECULE,
+            identifiers = IdentifiersBuilder(
+                CV(
+                    term = IdentifierNamespaceCv.CHEBI,
+                    value = f('participant_chebi', delimiter = '||', extract = _CHEBI_RE),
+                ),
+                CV(
+                    term = IdentifierNamespaceCv.NAME,
+                    value = f('participant_display_name', delimiter = '||'),
+                ),
+            ),
+            annotations = AnnotationsBuilder(
+                CV(term = f('participant_role', delimiter = '||', map = 'role')),
+                CV(
+                    term = ParticipantMetadataCv.MEMBRANE_SIDE,
+                    value = f('participant_compartment', delimiter = '||'),
+                ),
+            ),
+        ),
+    ),
+)
+
+
 # ── catalysis ─────────────────────────────────────────────────────────────────
 
 g = FieldConfig(
@@ -198,6 +249,16 @@ resource = Resource(
         download = reactions_download,
         mapper = reactions_schema,
         raw_parser = _raw,
+    ),
+    metabolic_reactions = Dataset(
+        download = reactions_download,
+        mapper = reactions_schema,
+        raw_parser = lambda opener, **kwargs: _raw(opener, data_type = 'metabolic_reactions', **kwargs),
+    ),
+    transport_reactions = Dataset(
+        download = reactions_download,
+        mapper = transport_reactions_schema,
+        raw_parser = lambda opener, **kwargs: _raw(opener, data_type = 'transport_reactions', **kwargs),
     ),
     catalysis = Dataset(
         download = catalysis_download,
