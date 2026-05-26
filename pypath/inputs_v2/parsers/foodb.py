@@ -355,6 +355,7 @@ def _read_member_lists(path: Path, member_cols: list[str]) -> dict[str, list[str
 def _raw(
     opener: object,
     force_refresh: bool = False,
+    max_records: int | None = None,
     **_kwargs: object,
 ) -> Generator[dict[str, object], None, None]:
     """Parse FooDB CSV files from tar archive and produce flat rows.
@@ -406,6 +407,9 @@ def _raw(
         'food_group', 'food_subgroup', 'ncbi_taxonomy_id'
     ]
     food_records = _load_food_records(paths['Food.csv'], food_cols)
+    if max_records is not None:
+        food_records = food_records[:max_records]
+    food_ids = {int(food['id']) for food in food_records}
     compound_lookup = _load_compound_lookup(paths)
 
     # Content.csv is hundreds of MB and is not ordered by food_id. Spool member
@@ -418,6 +422,8 @@ def _raw(
                 paths['Content.csv'],
                 compound_lookup,
             ):
+                if max_records is not None and food_id not in food_ids:
+                    continue
                 spool.write(food_id, values)
         finally:
             spool.close()

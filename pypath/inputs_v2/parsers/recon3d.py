@@ -16,6 +16,8 @@ from pypath.inputs_v2.base import read_opener_text
 
 _ISOFORM_RE = re.compile(r'_[A-Z]+\d*$')
 _MEMBER_VALUE_DELIMITER = ';;'
+_CHEBI_RE = re.compile(r'^(?:CHEBI:)?(\d+)$', re.IGNORECASE)
+_HMDB_RE = re.compile(r'^HMDB(\d+)$', re.IGNORECASE)
 
 
 def _annotation_list(annotation_dict: dict, key: str) -> list[str] | None:
@@ -37,8 +39,28 @@ def _annotation_list(annotation_dict: dict, key: str) -> list[str] | None:
     values = annotation_dict.get(key, [])
     if isinstance(values, str):
         values = [values]
-    cleaned = [v.split('/')[-1] if '/' in v else v for v in values]
+    cleaned = [
+        _normalize_annotation_value(key, v.split('/')[-1] if '/' in v else v)
+        for v in values
+    ]
+    cleaned = [value for value in cleaned if value]
     return cleaned or None
+
+
+def _normalize_annotation_value(key: str, value: object) -> str | None:
+    value = str(value or '').strip()
+    if not value:
+        return None
+
+    if key == 'chebi':
+        match = _CHEBI_RE.fullmatch(value)
+        return match.group(1) if match else None
+
+    if key == 'hmdb':
+        match = _HMDB_RE.fullmatch(value)
+        return f'HMDB{int(match.group(1)):07d}' if match else None
+
+    return value
 
 
 def _strip_compartment(met_id: str) -> tuple[str, str]:
