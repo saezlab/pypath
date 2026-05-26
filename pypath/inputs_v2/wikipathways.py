@@ -93,7 +93,6 @@ def _member(prefix: str, role) -> Member:
             entity_type=f(f'{prefix}_entity_type', map='entity_type'),
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.NAME, value=f(f'{prefix}_label')),
-                CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f(f'{prefix}_uri')),
                 CV(term=IdentifierNamespaceCv.UNIPROT, value=f(f'{prefix}_uniprot', delimiter=';', extract='uniprot_id')),
                 CV(term=IdentifierNamespaceCv.ENTREZ, value=f(f'{prefix}_entrez', delimiter=';', extract='entrez_id')),
                 CV(term=IdentifierNamespaceCv.ENSEMBL, value=f(f'{prefix}_ensembl', delimiter=';', extract='ensembl_id')),
@@ -122,7 +121,6 @@ interactions_schema = EntityBuilder(
     entity_type=EntityTypeCv.INTERACTION,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_local_id')),
-        CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('interaction_uri')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('interaction_types', delimiter=';')),
