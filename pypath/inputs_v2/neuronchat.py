@@ -52,56 +52,59 @@ f = FieldConfig(
     }
 )
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
-    identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('ligand_type')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('interaction_type')),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.COMPLEX,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform="extract_source")),
+def interactions_schema(taxon_id: str) -> EntityBuilder:
+    return EntityBuilder(
+        entity_type=EntityTypeCv.INTERACTION,
+        identifiers=IdentifiersBuilder(
+            CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name')),
+        ),
+        annotations=AnnotationsBuilder(
+            CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('ligand_type')),
+            CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('interaction_type')),
+        ),
+        membership=MembershipBuilder(
+            Member(
+                entity=EntityBuilder(
+                    entity_type=EntityTypeCv.COMPLEX,
+                    identifiers=IdentifiersBuilder(
+                        CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform="extract_source")),
+                    ),
+                    membership=MembershipBuilder(
+                        MembersFromList(
+                            entity_type=EntityTypeCv.PROTEIN,
+                            identifiers=IdentifiersBuilder(
+                                CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('lig_contributor')),
+                                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+                            ),
+                        )
+                    ),
                 ),
-                membership=MembershipBuilder(
-                    MembersFromList(
-                        entity_type=EntityTypeCv.PROTEIN,
-                        identifiers=IdentifiersBuilder(
-                            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('lig_contributor')),
-                        ),
-                    )
+                annotations=AnnotationsBuilder(
+                    CV(term=ParticipantMetadataCv.SOURCE),
                 ),
             ),
-            annotations=AnnotationsBuilder(
-                CV(term=ParticipantMetadataCv.SOURCE),
+            Member(
+                entity=EntityBuilder(
+                    entity_type=EntityTypeCv.COMPLEX,
+                    identifiers=IdentifiersBuilder(
+                        CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform="extract_target")),
+                    ),
+                    membership=MembershipBuilder(
+                        MembersFromList(
+                            entity_type=EntityTypeCv.PROTEIN,
+                            identifiers=IdentifiersBuilder(
+                                CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('receptor_subunit')),
+                                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+                            ),
+                        )
+                    ),
+                ),
+                annotations=AnnotationsBuilder(
+                    CV(term=ParticipantMetadataCv.TARGET),
+                ),
             ),
         ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.COMPLEX,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform="extract_target")),
-                ),
-                membership=MembershipBuilder(
-                    MembersFromList(
-                        entity_type=EntityTypeCv.PROTEIN,
-                        identifiers=IdentifiersBuilder(
-                            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('receptor_subunit')),
-                        ),
-                    )
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=ParticipantMetadataCv.TARGET),
-            ),
-        ),
-    ),
-)
+    )
 
 
 resource = Resource(
@@ -114,7 +117,7 @@ resource = Resource(
             default_mode='rb',
         encoding=None, # avoid encoding in binary mode
         ),
-        mapper=interactions_schema,
+        mapper=interactions_schema('9606'),
         raw_parser=iter_neuronchat,
     ),
     mouse_interactions=Dataset(
@@ -125,7 +128,7 @@ resource = Resource(
             default_mode='rb',
         encoding=None, # avoid encoding in binary mode
         ),
-        mapper=interactions_schema,
+        mapper=interactions_schema('10090'),
         raw_parser=iter_neuronchat,
     ),
 )
