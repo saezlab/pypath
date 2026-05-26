@@ -64,6 +64,12 @@ role_map = {
     'controller': BiologicalRoleCv.CONTROLLER,
     'controlled': BiologicalRoleCv.CONTROLLED,
 }
+_TAXON_SCOPED_ENTITY_TYPES = {
+    EntityTypeCv.PROTEIN,
+    EntityTypeCv.GENE,
+    EntityTypeCv.RNA,
+    EntityTypeCv.DNA,
+}
 
 
 f = FieldConfig(
@@ -90,6 +96,30 @@ f = FieldConfig(
         ],
     },
 )
+
+
+def _participant_taxon_ids(row):
+    entity_types = f(
+        'participant_entity_type',
+        delimiter='||',
+        map='entity_type',
+        preserve_indices=True,
+    ).extract(row)
+    taxon_ids = f(
+        'participant_ncbi_tax_id',
+        delimiter='||',
+        map='missing',
+        preserve_indices=True,
+    ).extract(row)
+    size = max(len(entity_types), len(taxon_ids))
+    values = []
+    for idx in range(size):
+        entity_type = entity_types[idx] if idx < len(entity_types) else None
+        taxon_id = taxon_ids[idx] if idx < len(taxon_ids) else None
+        values.append(
+            taxon_id if entity_type in _TAXON_SCOPED_ENTITY_TYPES and taxon_id else None
+        )
+    return values
 
 
 reactions_schema = EntityBuilder(
@@ -135,7 +165,7 @@ reactions_schema = EntityBuilder(
             entity_annotations=AnnotationsBuilder(
                 CV(
                     term=IdentifierNamespaceCv.NCBI_TAX_ID,
-                    value=f('participant_ncbi_tax_id', delimiter='||', map='missing'),
+                    value=_participant_taxon_ids,
                 ),
                 CV(
                     term=IdentifierNamespaceCv.CV_TERM_ACCESSION,

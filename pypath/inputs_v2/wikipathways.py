@@ -47,6 +47,12 @@ config = ResourceConfig(
 
 
 entity_type_map = {value.value: value for value in EntityTypeCv}
+_TAXON_SCOPED_ENTITY_TYPES = {
+    EntityTypeCv.PROTEIN,
+    EntityTypeCv.GENE,
+    EntityTypeCv.RNA,
+    EntityTypeCv.DNA,
+}
 
 f = FieldConfig(
     extract={
@@ -59,6 +65,17 @@ f = FieldConfig(
         'entity_type': lambda value: entity_type_map.get(value, EntityTypeCv.PHYSICAL_ENTITY),
     },
 )
+
+
+def _member_taxon_id(prefix: str):
+    def _value(row):
+        entity_type = entity_type_map.get(
+            row.get(f'{prefix}_entity_type'),
+            EntityTypeCv.PHYSICAL_ENTITY,
+        )
+        return row.get('taxon_id') if entity_type in _TAXON_SCOPED_ENTITY_TYPES else None
+
+    return _value
 
 
 pathway_ontology_schema = OntologyBuilder(
@@ -90,7 +107,7 @@ def _member(prefix: str, role) -> Member:
                 CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f(f'{prefix}_hgnc', delimiter=';')),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=_member_taxon_id(prefix)),
                 CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession')),
                 CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_ontology_terms', delimiter=';')),
             ),
