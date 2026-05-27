@@ -56,7 +56,7 @@ def _raw(opener, max_records: int | None = None, **_kwargs: object) -> Generator
     def get_from_path(elem, *args):
 
         path = '/'.join([f'{xmlns}{a}' for a in args])
-        res = [e.text.strip() for e in elem.findall(path)]
+        res = [e.text.strip() for e in elem.findall(path) if e.text is not None]
 
         return ';'.join(res)
 
