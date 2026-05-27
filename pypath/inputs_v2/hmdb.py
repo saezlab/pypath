@@ -14,6 +14,8 @@ from pypath.internals.cv_terms import (
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
+    AssayAnnotationsCv,
+    DiseaseAnnotationCv,
 )
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -77,18 +79,21 @@ metabolites_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('description')),
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_ids', delimiter=';')),
+        CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('cellular_locations', delimiter=';')),
+        CV(term=AssayAnnotationsCv.TISSUE, value=f('tissue_locations', delimiter=';')),
+        CV(term=AssayAnnotationsCv.BIOSPECIMEN, value=f('biospecimen_locations', delimiter=';')),
+        CV(term=DiseaseAnnotationCv.NAME, value=f('diseases', delimiter=';')),
     ),
 )
 
-download = Download(
+download = Download(#'https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
     url='https://rescued.omnipathdb.org/hmdb_metabolites.zip',
     filename='hmdb_metabolites.zip',
     subfolder='hmdb',
     large=True,
-    ext='zip',
+    ext='.zip',
     default_mode='rb',
 )
-
 
 def _id_translation_row(row: dict) -> dict | None:
     hmdb_id = row.get('accession')
