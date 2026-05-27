@@ -60,6 +60,7 @@ class IdentifierNamespaceCv(CvEnum):
     # Additional specialized identifiers (OM:0001-0009 range)
     REFSEQ_PROTEIN = ('OM:0001', 'NCBI RefSeq protein accession (NP_* format)')
     PUBCHEM_COMPOUND = ('OM:0002', 'PubChem Compound ID (CID)')
+    PUBCHEM_SUBSTANCE = ('OM:0028', 'PubChem Substance ID (SID)')
     LIPIDMAPS = ('OM:0003', 'LIPID MAPS structure database ID', 'https://www.lipidmaps.org')
     HMDB = ('OM:0004', 'Human Metabolome Database ID', 'https://hmdb.ca')
     METANETX = ('OM:0005', 'MetaNetX/MNXref chemical ID', 'https://www.metanetx.org')
