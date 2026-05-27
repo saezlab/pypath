@@ -176,6 +176,22 @@ f = FieldConfig(
 )
 
 
+_PROTEIN_LIGAND_SUBTYPES = {
+    MoleculeSubtypeCv.PEPTIDE,
+    MoleculeSubtypeCv.ANTIBODY,
+}
+_NUCLEIC_ACID_LIGAND_SUBTYPES = {
+    MoleculeSubtypeCv.NUCLEIC_ACID,
+}
+_TAXON_SCOPED_ENTITY_TYPES = {
+    EntityTypeCv.PROTEIN,
+    EntityTypeCv.GENE,
+    EntityTypeCv.RNA,
+    EntityTypeCv.DNA,
+    EntityTypeCv.NUCLEIC_ACID,
+}
+
+
 def _split_pipe_values(raw: object) -> list[str]:
     if raw is None:
         return []
@@ -224,6 +240,28 @@ def _iter_guidetopharma_csv(opener, **_kwargs: object):
     next(opener.result, None)
     reader = csv.DictReader(opener.result)
     yield from reader
+
+
+def _guidetopharma_ligand_entity_type(row):
+    ligand_subtype = ligand_chemical_type_mapping.get((row.get('Type') or '').strip())
+
+    if ligand_subtype in _PROTEIN_LIGAND_SUBTYPES:
+        return EntityTypeCv.PROTEIN
+
+    if ligand_subtype in _NUCLEIC_ACID_LIGAND_SUBTYPES:
+        return EntityTypeCv.NUCLEIC_ACID
+
+    if _filter_uniprot_accessions(row.get('UniProt ID')):
+        return EntityTypeCv.PROTEIN
+
+    return EntityTypeCv.SMALL_MOLECULE
+
+
+def _guidetopharma_ligand_taxon_id(row):
+    entity_type = _guidetopharma_ligand_entity_type(row)
+    taxon_id = species_to_taxid.get((row.get('Species') or '').strip())
+
+    return taxon_id if entity_type in _TAXON_SCOPED_ENTITY_TYPES else None
 
 
 config = ResourceConfig(
@@ -291,7 +329,7 @@ targets_schema = EntityBuilder(
 )
 
 ligands_schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=_guidetopharma_ligand_entity_type,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Ligand ID')),
         CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem SID')),
@@ -314,7 +352,7 @@ ligands_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(
             term=IdentifierNamespaceCv.NCBI_TAX_ID,
-            value=f('Species', map='species_taxid'),
+            value=_guidetopharma_ligand_taxon_id,
         ),
         CV(term=f('Approved', extract='lower', map={'yes': MoleculeAnnotationsCv.APPROVED})),
         CV(term=f('Withdrawn', extract='lower', map={'yes': MoleculeAnnotationsCv.WITHDRAWN})),
@@ -370,9 +408,15 @@ interactions_schema = EntityBuilder(
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=_guidetopharma_ligand_entity_type,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Ligand ID')),
+                ),
+                annotations=AnnotationsBuilder(
+                    CV(
+                        term=IdentifierNamespaceCv.NCBI_TAX_ID,
+                        value=_guidetopharma_ligand_taxon_id,
+                    ),
                 ),
             ),
         ),

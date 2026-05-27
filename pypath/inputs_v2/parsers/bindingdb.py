@@ -185,7 +185,7 @@ def _bindingdb_tsv_path(opener, *, extract: bool = True) -> Path | None:
     DuckDB's CSV reader operates on paths. The downloaded BindingDB archive is a
     zip containing a single very large TSV, so we extract it in streaming chunks
     next to the zip. This costs disk space but keeps memory bounded and is
-    reused by later preparses.
+    reused by later parser runs.
     """
     archive_path_raw = getattr(opener, 'path', None)
     if not archive_path_raw:
@@ -362,7 +362,7 @@ def _raw(
     The default path streams rows from the downloaded archive with
     ``csv.DictReader``. Set ``use_duckdb=True`` or
     ``OMNIPATH_BINDINGDB_USE_DUCKDB=1`` to extract an on-disk TSV and let DuckDB
-    stream a projected subset of columns into the bronze/preparse writer.
+    stream a projected subset of columns.
     """
     if use_duckdb is None:
         use_duckdb = _bindingdb_chemical_resolver_filter_enabled(kwargs) or (

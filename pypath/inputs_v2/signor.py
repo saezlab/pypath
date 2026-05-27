@@ -74,6 +74,12 @@ _INTERACTOR_TYPE_MAPPING = {
     'MI:2258': EntityTypeCv.SMALL_MOLECULE,  # xenobiotic
     'MI:1304': EntityTypeCv.PROTEIN_FAMILY,  # molecule set
 }
+_TAXON_SCOPED_ENTITY_TYPES = {
+    EntityTypeCv.PROTEIN,
+    EntityTypeCv.GENE,
+    EntityTypeCv.RNA,
+    EntityTypeCv.DNA,
+}
 
 # The SIGNOR complex and protein-family exports currently used here do not
 # expose an organism column. The downloaded tables contain human UniProt
@@ -200,6 +206,17 @@ def _infer_signor_interactor_type(row: dict[str, object], suffix: str) -> Entity
 
 def interactor_entity_type(suffix: str):
     return lambda row: _infer_signor_interactor_type(row, suffix)
+
+
+def interactor_tax_cv(suffix: str) -> CV:
+    return CV(
+        term=IdentifierNamespaceCv.NCBI_TAX_ID,
+        value=lambda row: (
+            next(iter(f(f'Taxid interactor {suffix}', extract='tax').extract(row)), None)
+            if _infer_signor_interactor_type(row, suffix) in _TAXON_SCOPED_ENTITY_TYPES
+            else None
+        ),
+    )
 
 
 def pubmed_annotation(column_name: str) -> CV:
@@ -403,7 +420,7 @@ interactions_schema = EntityBuilder(
                     general_identifier_cv('\ufeff#ID(s) interactor A'),
                     general_identifier_cv('Alt. ID(s) interactor A'),
                 ),
-                annotations=AnnotationsBuilder(tax_cv('Taxid interactor A')),
+                annotations=AnnotationsBuilder(interactor_tax_cv('A')),
             ),
             annotations=AnnotationsBuilder(
                 mi_term_cv('Biological role(s) interactor A'),
@@ -421,7 +438,7 @@ interactions_schema = EntityBuilder(
                     general_identifier_cv('ID(s) interactor B'),
                     general_identifier_cv('Alt. ID(s) interactor B'),
                 ),
-                annotations=AnnotationsBuilder(tax_cv('Taxid interactor B')),
+                annotations=AnnotationsBuilder(interactor_tax_cv('B')),
             ),
             annotations=AnnotationsBuilder(
                 mi_term_cv('Biological role(s) interactor B'),

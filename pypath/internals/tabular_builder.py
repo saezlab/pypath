@@ -338,7 +338,7 @@ class _CallableSource:
             return []
 
         if isinstance(result, (list, tuple)):
-            return [v for v in result if v is not None]
+            return list(result)
 
         return [result]
 

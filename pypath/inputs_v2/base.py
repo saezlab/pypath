@@ -8,24 +8,9 @@ from collections.abc import Callable, Generator
 import csv
 from dataclasses import dataclass
 import functools
-import hashlib
-import itertools
 import json
-import os
-from pathlib import Path
 from typing import Any, Literal, Protocol
 
-from pypath.inputs_v2.raw_records import (
-    ProvenancedRecord,
-    RawRecordProvenance,
-    RawSnapshot,
-    accept_raw_snapshot,
-    default_raw_records_root,
-    iter_changed_raw_record_dicts,
-    iter_raw_record_dicts,
-    materialize_raw_records,
-    reuse_raw_snapshot_if_unchanged,
-)
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -53,97 +38,6 @@ def _resolve(value: str | _Resolver, **kwargs: Any) -> str:
     if callable(value):
         return value(**kwargs)
     return value
-
-
-def _jsonable(value: Any) -> Any:
-    if isinstance(value, dict):
-        return {str(k): _jsonable(v) for k, v in sorted(value.items())}
-    if isinstance(value, (list, tuple, set)):
-        return [_jsonable(item) for item in value]
-    try:
-        json.dumps(value, sort_keys=True)
-    except TypeError:
-        return repr(value)
-    return value
-
-
-def _file_sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open('rb') as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b''):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def _download_fingerprint(
-    download: Download | None,
-    opener: Any,
-    kwargs: dict[str, Any],
-) -> dict[str, Any] | None:
-    if download is None or opener is None:
-        return None
-    path_value = getattr(opener, 'path', None)
-    if not path_value:
-        return None
-    path = Path(path_value)
-    if not path.exists():
-        return None
-    stat = path.stat()
-    download_kwargs = dict(download.download_kwargs or {})
-    return {
-        'path': str(path),
-        'sha256': _file_sha256(path),
-        'size': stat.st_size,
-        'mtime_ns': stat.st_mtime_ns,
-        'url': _resolve(download.url, **kwargs),
-        'filename': _resolve(download.filename, **kwargs),
-        'subfolder': download.subfolder,
-        'needed': list(download.needed or []),
-        'download_kwargs': _jsonable(download_kwargs),
-    }
-
-
-def _download_fingerprint_from_cache(
-    download: Download | None,
-    kwargs: dict[str, Any],
-) -> dict[str, Any] | None:
-    if download is None:
-        return None
-    filename = _resolve(download.filename, **kwargs)
-    cache_root = Path(os.environ.get('PYPATH_DOWNLOAD_DATADIR', 'pypath-data'))
-    path = cache_root / download.subfolder / filename
-    if not path.exists():
-        return None
-    stat = path.stat()
-    download_kwargs = dict(download.download_kwargs or {})
-    return {
-        'path': str(path),
-        'sha256': _file_sha256(path),
-        'size': stat.st_size,
-        'mtime_ns': stat.st_mtime_ns,
-        'url': _resolve(download.url, **kwargs),
-        'filename': filename,
-        'subfolder': download.subfolder,
-        'needed': list(download.needed or []),
-        'download_kwargs': _jsonable(download_kwargs),
-    }
-
-
-def _callable_name(parser: Callable[..., Any]) -> Any:
-    if isinstance(parser, functools.partial):
-        return {
-            'callable': _callable_name(parser.func),
-            'args': _jsonable(parser.args),
-            'keywords': _jsonable(parser.keywords or {}),
-        }
-    return f'{getattr(parser, "__module__", "")}.{getattr(parser, "__qualname__", repr(parser))}'
-
-
-def _parser_contract(parser: Callable[..., Any], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        'raw_parser': _callable_name(parser),
-        'kwargs': _jsonable(kwargs),
-    }
 
 
 def _prepared_cache_available(
@@ -262,91 +156,12 @@ class Dataset:
         self.mapper = mapper
         self._raw_parser = raw_parser
         self.kind = kind
-        self._last_raw_snapshot: RawSnapshot | None = None
-
-    def preparse(
-        self,
-        *,
-        source: str,
-        dataset: str,
-        raw_records_root: str | Path | None = None,
-        force_refresh: bool = False,
-        **kwargs: Any,
-    ) -> RawSnapshot:
-        max_lines = kwargs.pop('max_lines', None)
-        contract_kwargs = dict(kwargs)
-        if max_lines is not None:
-            contract_kwargs['max_lines'] = int(max_lines)
-        parser_contract = _parser_contract(self._raw_parser, contract_kwargs)
-        output_root = Path(raw_records_root) if raw_records_root else default_raw_records_root()
-        if not force_refresh:
-            cached_fingerprint = _download_fingerprint_from_cache(self.download, kwargs)
-            reusable = reuse_raw_snapshot_if_unchanged(
-                source=source,
-                dataset=dataset,
-                output_root=output_root,
-                download_fingerprint=cached_fingerprint,
-                parser_contract=parser_contract,
-            )
-            if reusable is not None:
-                self._last_raw_snapshot = reusable
-                return reusable
-        opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
-        download_fingerprint = _download_fingerprint(self.download, opener, kwargs)
-        if not force_refresh:
-            reusable = reuse_raw_snapshot_if_unchanged(
-                source=source,
-                dataset=dataset,
-                output_root=output_root,
-                download_fingerprint=download_fingerprint,
-                parser_contract=parser_contract,
-            )
-            if reusable is not None:
-                self._last_raw_snapshot = reusable
-                return reusable
-        records = self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
-        if max_lines is not None:
-            records = itertools.islice(records, int(max_lines))
-        self._last_raw_snapshot = materialize_raw_records(
-            records=records,
-            source=source,
-            dataset=dataset,
-            output_root=output_root,
-            download_fingerprint=download_fingerprint,
-            parser_contract=parser_contract,
-        )
-        return self._last_raw_snapshot
 
     def raw(
         self,
         force_refresh: bool = False,
-        *,
-        source: str | None = None,
-        dataset: str | None = None,
-        raw_records_root: str | Path | None = None,
-        use_preparse: bool = False,
-        changed_only: bool = False,
-        raw_snapshot: RawSnapshot | None = None,
         **kwargs: Any,
     ) -> Generator[dict[str, Any], None, None]:
-        if use_preparse:
-            if not source or not dataset:
-                raise ValueError('source and dataset are required when use_preparse=True')
-            snapshot = raw_snapshot or self.preparse(
-                source=source,
-                dataset=dataset,
-                raw_records_root=raw_records_root,
-                force_refresh=force_refresh,
-                **kwargs,
-            )
-            if raw_snapshot is not None:
-                self._last_raw_snapshot = raw_snapshot
-            if changed_only:
-                yield from iter_changed_raw_record_dicts(snapshot.records_path, snapshot.delta_path)
-            else:
-                yield from iter_raw_record_dicts(snapshot.records_path)
-            return
-
         skip_download_open = bool(kwargs.pop('skip_download_open', False))
         skip_download_open = skip_download_open or _prepared_cache_available(
             self._raw_parser,
@@ -362,59 +177,7 @@ class Dataset:
         )
         yield from self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
 
-    def accept_last_preparse(self) -> None:
-        if self._last_raw_snapshot is not None:
-            accept_raw_snapshot(self._last_raw_snapshot)
-            self._last_raw_snapshot = None
-
-    def __call__(self, force_refresh: bool = False, **kwargs: Any) -> Generator[Entity | ProvenancedRecord, None, None]:
-        if kwargs.get('use_preparse'):
-            source = kwargs.get('source')
-            dataset = kwargs.get('dataset')
-            if not source or not dataset:
-                raise ValueError('source and dataset are required when use_preparse=True')
-            snapshot = kwargs.get('raw_snapshot') or self.preparse(
-                source=source,
-                dataset=dataset,
-                raw_records_root=kwargs.get('raw_records_root'),
-                force_refresh=force_refresh,
-                **{
-                    key: value
-                    for key, value in kwargs.items()
-                    if key not in {'source', 'dataset', 'raw_records_root', 'use_preparse', 'changed_only', 'raw_snapshot'}
-                },
-            )
-            if kwargs.get('raw_snapshot') is not None:
-                self._last_raw_snapshot = snapshot
-            raw_rows = (
-                iter_changed_raw_record_dicts(
-                    snapshot.records_path,
-                    snapshot.delta_path,
-                    include_metadata=True,
-                )
-                if kwargs.get('changed_only')
-                else iter_raw_record_dicts(snapshot.records_path, include_metadata=True)
-            )
-            for raw_row in raw_rows:
-                record = {
-                    k: v
-                    for k, v in raw_row.items()
-                    if k not in {'_source', '_dataset', '_raw_record_key', '_raw_record_id'}
-                }
-                yield ProvenancedRecord(
-                    record=self.mapper(record),
-                    provenance=RawRecordProvenance(
-                        source=str(raw_row.get('_source') or source),
-                        dataset=str(raw_row.get('_dataset') or dataset),
-                        snapshot_id=snapshot.snapshot_id,
-                        raw_record_key=str(raw_row['_raw_record_key']),
-                        raw_record_id=int(raw_row['_raw_record_id']),
-                        raw_record_bucket=int(raw_row['raw_record_bucket']),
-                        raw_record_part=int(raw_row['raw_record_part']),
-                    ),
-                )
-            return
-
+    def __call__(self, force_refresh: bool = False, **kwargs: Any) -> Generator[Entity, None, None]:
         for record in self.raw(force_refresh=force_refresh, **kwargs):
             yield self.mapper(record)
 
@@ -440,7 +203,6 @@ class OntologyDataset:
         self.download = download
         self.mapper = mapper
         self._raw_parser = raw_parser
-        self._last_raw_snapshot: RawSnapshot | None = None
         if not ontology_id or not ontology_id.strip():
             raise ValueError('OntologyDataset requires a non-empty ontology_id')
         self.ontology_id = ontology_id.strip()
@@ -452,89 +214,13 @@ class OntologyDataset:
         self.extension = extension
         self.file_stem = file_stem
 
-    def preparse(
-        self,
-        *,
-        source: str,
-        dataset: str,
-        raw_records_root: str | Path | None = None,
-        force_refresh: bool = False,
-        **kwargs: Any,
-    ) -> RawSnapshot:
-        parser_contract = _parser_contract(self._raw_parser, kwargs)
-        output_root = Path(raw_records_root) if raw_records_root else default_raw_records_root()
-        if not force_refresh:
-            cached_fingerprint = _download_fingerprint_from_cache(self.download, kwargs)
-            reusable = reuse_raw_snapshot_if_unchanged(
-                source=source,
-                dataset=dataset,
-                output_root=output_root,
-                download_fingerprint=cached_fingerprint,
-                parser_contract=parser_contract,
-            )
-            if reusable is not None:
-                self._last_raw_snapshot = reusable
-                return reusable
-        opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
-        download_fingerprint = _download_fingerprint(self.download, opener, kwargs)
-        if not force_refresh:
-            reusable = reuse_raw_snapshot_if_unchanged(
-                source=source,
-                dataset=dataset,
-                output_root=output_root,
-                download_fingerprint=download_fingerprint,
-                parser_contract=parser_contract,
-            )
-            if reusable is not None:
-                self._last_raw_snapshot = reusable
-                return reusable
-        records = self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
-        self._last_raw_snapshot = materialize_raw_records(
-            records=records,
-            source=source,
-            dataset=dataset,
-            output_root=output_root,
-            download_fingerprint=download_fingerprint,
-            parser_contract=parser_contract,
-        )
-        return self._last_raw_snapshot
-
     def raw(
         self,
         force_refresh: bool = False,
-        *,
-        source: str | None = None,
-        dataset: str | None = None,
-        raw_records_root: str | Path | None = None,
-        use_preparse: bool = False,
-        changed_only: bool = False,
-        raw_snapshot: RawSnapshot | None = None,
         **kwargs: Any,
     ) -> Generator[dict[str, Any], None, None]:
-        if use_preparse:
-            if not source or not dataset:
-                raise ValueError('source and dataset are required when use_preparse=True')
-            snapshot = raw_snapshot or self.preparse(
-                source=source,
-                dataset=dataset,
-                raw_records_root=raw_records_root,
-                force_refresh=force_refresh,
-                **kwargs,
-            )
-            if raw_snapshot is not None:
-                self._last_raw_snapshot = raw_snapshot
-            if changed_only:
-                yield from iter_changed_raw_record_dicts(snapshot.records_path, snapshot.delta_path)
-            else:
-                yield from iter_raw_record_dicts(snapshot.records_path)
-            return
-
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
         yield from self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
-
-    def accept_last_preparse(self) -> None:
-        if self._last_raw_snapshot is not None:
-            accept_raw_snapshot(self._last_raw_snapshot)
 
     def __call__(self, force_refresh: bool = False, **kwargs: Any) -> Generator[OntologyTerm, None, None]:
         for record in self.raw(force_refresh=force_refresh, **kwargs):

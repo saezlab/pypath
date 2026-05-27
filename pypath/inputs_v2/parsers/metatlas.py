@@ -28,7 +28,9 @@ duplicated.
 
 from __future__ import annotations
 
+import csv
 import re
+from functools import cache
 from collections.abc import Generator
 from typing import Any
 
@@ -36,6 +38,12 @@ import yaml
 
 from pypath.inputs_v2.base import read_opener_text
 from pypath.inputs_v2.parsers.recon3d import _parse_gene_rule
+from pypath.share.downloads import download_and_open
+
+_METABOLITE_XREF_URL = (
+    'https://raw.githubusercontent.com/SysBioChalmers/Human-GEM/main/model/'
+    'metabolites.tsv'
+)
 
 _RE_BROKEN_QUOTES = re.compile(
     r'^(\s*- \w+: )'
@@ -97,6 +105,72 @@ def _load(opener: Any) -> dict:
     return data
 
 
+@cache
+def _metabolite_xrefs() -> dict[str, dict[str, str]]:
+    opener = download_and_open(
+        url = _METABOLITE_XREF_URL,
+        filename = 'Human-GEM-metabolites.tsv',
+        subfolder = 'metatlas',
+        large = True,
+        default_mode = 'r',
+    )
+
+    try:
+        handle = opener.result
+        xrefs: dict[str, dict[str, str]] = {}
+        for row in csv.DictReader(handle, delimiter = '\t'):
+            metabolite_id = row.get('metsNoComp')
+            if not metabolite_id:
+                continue
+
+            current = xrefs.setdefault(metabolite_id, {})
+            for key, value in _metabolite_xref_row(row).items():
+                if value and not current.get(key):
+                    current[key] = value
+
+        return xrefs
+    finally:
+        opener.close()
+
+
+def _metabolite_xref_row(row: dict[str, str]) -> dict[str, str]:
+    return {
+        'chebi': _first_xref(row.get('metChEBIID'), r'^(?:CHEBI:)?\d+$'),
+        'hmdb': _first_xref(row.get('metHMDBID'), r'^HMDB\d+$'),
+        'pubchem_compound': _first_xref(row.get('metPubChemID'), r'^\d+$'),
+        'lipidmaps': _first_xref(row.get('metLipidMapsID'), r'^LM[A-Z0-9]+$'),
+    }
+
+
+def _first_xref(value: str | None, pattern: str) -> str:
+    if not value:
+        return ''
+
+    regex = re.compile(pattern, re.IGNORECASE)
+    return next(
+        (
+            item.strip()
+            for item in re.split(r'[;,|]', value)
+            if item.strip() and regex.fullmatch(item.strip())
+        ),
+        '',
+    )
+
+
+def _xref_fields(
+    member_ids: list[str],
+    xrefs: dict[str, dict[str, str]],
+    prefix: str,
+) -> dict[str, str]:
+    return {
+        f'{prefix}_{xref_name}': '||'.join(
+            xrefs.get(member_id, {}).get(xref_name, '')
+            for member_id in member_ids
+        )
+        for xref_name in ('chebi', 'hmdb', 'pubchem_compound', 'lipidmaps')
+    }
+
+
 def _as_dict(obj) -> dict:
     """
     Normalise a YAML omap (list of pairs) or plain dict to a dict.
@@ -156,6 +230,7 @@ def _metabolites(data: dict) -> Generator[dict, None, None]:
     """
 
     seen: set[str] = set()
+    xrefs = _metabolite_xrefs()
 
     for m in data.get('metabolites', []):
 
@@ -174,6 +249,7 @@ def _metabolites(data: dict) -> Generator[dict, None, None]:
             'name': m.get('name'),
             'formula': m.get('formula'),
             'charge': m.get('charge'),
+            **xrefs.get(base_id, {}),
         }
 
 
@@ -197,6 +273,8 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
         and ``products``.
     """
 
+    xrefs = _metabolite_xrefs()
+
     for r in data.get('reactions', []):
 
         r = _as_dict(r)
@@ -213,7 +291,9 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
             eccodes = '; '.join(str(e) for e in eccodes)
 
         reactants = []
+        reactant_ids = []
         products = []
+        product_ids = []
 
         for met_id, stoich in mets.items():
 
@@ -221,8 +301,10 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
 
             if stoich < 0:
                 reactants.append(f'{base_id}:{compartment}:{abs(stoich)}')
+                reactant_ids.append(base_id)
             else:
                 products.append(f'{base_id}:{compartment}:{stoich}')
+                product_ids.append(base_id)
 
         lb = float(r['lower_bound'])
         ub = float(r['upper_bound'])
@@ -236,6 +318,8 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
             'eccodes': eccodes,
             'reactants': '||'.join(reactants),
             'products': '||'.join(products),
+            **_xref_fields(reactant_ids, xrefs, 'reactant'),
+            **_xref_fields(product_ids, xrefs, 'product'),
         }
 
 

@@ -30,8 +30,8 @@ Intentional differences from the legacy ``pypath.inputs.metatlas`` module:
 
 - Only Human-GEM is supported; the multi-model API and git-infrastructure
   helpers are not ported.
-- No HMDB / ChEBI / KEGG cross-references: these are absent from the YAML and
-  would require additional TSV downloads.
+- Metabolite HMDB, ChEBI, PubChem, and LipidMaps cross-references are loaded
+  from the companion ``model/metabolites.tsv`` file.
 - Transport-network analysis (``metatlas_gem_transport_network``) is not
   ported.
 - Gene identifiers are Ensembl ENSG IDs (as in Human-GEM), not Entrez.
@@ -83,6 +83,9 @@ config = ResourceConfig(
 
 f = FieldConfig(
     delimiter = ';',
+    extract = {
+        'chebi': r'^(?:CHEBI:)?(\d+)$',
+    },
     map = {
         'entity_type': lambda value: (
             EntityTypeCv.COMPLEX if value == 'complex'
@@ -115,6 +118,10 @@ metabolites_schema = EntityBuilder(
     identifiers = IdentifiersBuilder(
         CV(term = IdentifierNamespaceCv.NAME, value = f('name')),
         CV(term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE, value = f('human_gem_metabolite_id')),
+        CV(term = IdentifierNamespaceCv.HMDB, value = f('hmdb')),
+        CV(term = IdentifierNamespaceCv.CHEBI, value = f('chebi', extract = 'chebi')),
+        CV(term = IdentifierNamespaceCv.PUBCHEM_COMPOUND, value = f('pubchem_compound')),
+        CV(term = IdentifierNamespaceCv.LIPIDMAPS, value = f('lipidmaps')),
     ),
     annotations = AnnotationsBuilder(
         CV(term = MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value = MoleculeSubtypeCv.METABOLITE),
@@ -145,6 +152,10 @@ reactions_schema = EntityBuilder(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
                     value = f('reactants', delimiter = '||', map = 'stoich_id'),
                 ),
+                CV(term = IdentifierNamespaceCv.HMDB, value = f('reactant_hmdb', delimiter = '||', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.CHEBI, value = f('reactant_chebi', delimiter = '||', extract = 'chebi', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.PUBCHEM_COMPOUND, value = f('reactant_pubchem_compound', delimiter = '||', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.LIPIDMAPS, value = f('reactant_lipidmaps', delimiter = '||', preserve_indices = True)),
             ),
             annotations = AnnotationsBuilder(
                 CV(term = BiologicalRoleCv.REACTANT),
@@ -168,6 +179,10 @@ reactions_schema = EntityBuilder(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
                     value = f('products', delimiter = '||', map = 'stoich_id'),
                 ),
+                CV(term = IdentifierNamespaceCv.HMDB, value = f('product_hmdb', delimiter = '||', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.CHEBI, value = f('product_chebi', delimiter = '||', extract = 'chebi', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.PUBCHEM_COMPOUND, value = f('product_pubchem_compound', delimiter = '||', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.LIPIDMAPS, value = f('product_lipidmaps', delimiter = '||', preserve_indices = True)),
             ),
             annotations = AnnotationsBuilder(
                 CV(term = BiologicalRoleCv.PRODUCT),
@@ -209,6 +224,10 @@ transport_reactions_schema = EntityBuilder(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
                     value = f('reactants', delimiter = '||', map = 'stoich_id'),
                 ),
+                CV(term = IdentifierNamespaceCv.HMDB, value = f('reactant_hmdb', delimiter = '||', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.CHEBI, value = f('reactant_chebi', delimiter = '||', extract = 'chebi', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.PUBCHEM_COMPOUND, value = f('reactant_pubchem_compound', delimiter = '||', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.LIPIDMAPS, value = f('reactant_lipidmaps', delimiter = '||', preserve_indices = True)),
             ),
             annotations = AnnotationsBuilder(
                 CV(term = BiologicalRoleCv.REACTANT),
@@ -232,6 +251,10 @@ transport_reactions_schema = EntityBuilder(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
                     value = f('products', delimiter = '||', map = 'stoich_id'),
                 ),
+                CV(term = IdentifierNamespaceCv.HMDB, value = f('product_hmdb', delimiter = '||', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.CHEBI, value = f('product_chebi', delimiter = '||', extract = 'chebi', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.PUBCHEM_COMPOUND, value = f('product_pubchem_compound', delimiter = '||', preserve_indices = True)),
+                CV(term = IdentifierNamespaceCv.LIPIDMAPS, value = f('product_lipidmaps', delimiter = '||', preserve_indices = True)),
             ),
             annotations = AnnotationsBuilder(
                 CV(term = BiologicalRoleCv.PRODUCT),
@@ -255,7 +278,7 @@ transport_reactions_schema = EntityBuilder(
 # ── catalysis ────────────────────────────────────────────────────────────────
 
 catalysis_schema = EntityBuilder(
-    entity_type = EntityTypeCv.INTERACTION,
+    entity_type = EntityTypeCv.CATALYSIS,
     identifiers = IdentifiersBuilder(
         CV(term = IdentifierNamespaceCv.NAME, value = f('reaction_name')),
         CV(term = IdentifierNamespaceCv.HUMAN_GEM_REACTION, value = f('reaction_id')),

@@ -26,6 +26,10 @@ _EQ_SEPARATORS = (' <=> ', ' => ', ' <= ', ' = ')
 
 _GO_ID_RE = re.compile(r'GO:\d+')
 
+_TRANSPORT_COMPARTMENT_RE = re.compile(r'\((in|out)\)$')
+_COEFFICIENT_RE = re.compile(r'^\d+ ')
+_EXCLUDED_TERMS = frozenset({'H(+)', 'H2O'})
+
 
 def _count_equation_sides(equation: str) -> tuple[int, int]:
     """
@@ -72,10 +76,97 @@ def _go_ids(raw: str) -> list[str]:
     return _GO_ID_RE.findall(raw)
 
 
+def _strip_term(term: str) -> str:
+    """Strip leading numeric coefficient and trailing (in)/(out) compartment annotation."""
+    term = _COEFFICIENT_RE.sub('', term.strip())
+    return _TRANSPORT_COMPARTMENT_RE.sub('', term)
+
+
+def _is_transport(equation: str) -> bool:
+    """
+    Return True if the equation represents a membrane transport reaction.
+
+    Two conditions must both hold:
+
+    1. At least one compound term ends with ``(in)`` or ``(out)``.
+    2. At least one non-proton, non-water compound name appears unchanged
+       on both sides of the equation (i.e. the molecule is translocated,
+       not chemically transformed).
+
+    Condition 2 correctly excludes oxidative-phosphorylation reactions such
+    as cytochrome c oxidase, where protons appear on both sides but the
+    electron-carrier compounds change oxidation state.  It also excludes
+    pure proton pumps (e.g. V-type H⁺ ATPase) where only ``H(+)`` is shared.
+
+    Args:
+        equation: Reaction equation string from the Rhea API.
+
+    Returns:
+        True if the equation encodes a membrane transport event.
+    """
+
+    if '(in)' not in equation and '(out)' not in equation:
+        return False
+
+    for sep in _EQ_SEPARATORS:
+        if sep in equation:
+            left, right = equation.split(sep, 1)
+            left_terms = [t.strip() for t in left.split(' + ')]
+            right_terms = [t.strip() for t in right.split(' + ')]
+            break
+    else:
+        return False
+
+    if not any(_TRANSPORT_COMPARTMENT_RE.search(t) for t in left_terms + right_terms):
+        return False
+
+    left_names = {_strip_term(t) for t in left_terms} - _EXCLUDED_TERMS
+    right_names = {_strip_term(t) for t in right_terms} - _EXCLUDED_TERMS
+    return bool(left_names & right_names)
+
+
+def _compartments_from_equation(equation: str, n_participants: int) -> list[str]:
+    """
+    Extract the membrane-side label for each participant in equation order.
+
+    Args:
+        equation: Reaction equation string with ``(in)``/``(out)`` annotations.
+        n_participants: Expected number of participants (``len(chebi_ids)``).
+            Used to pad or truncate the result to the correct length.
+
+    Returns:
+        List of compartment strings in equation order (reactants first, then
+        products).  Entries are empty strings where no annotation is found.
+    """
+
+    for sep in _EQ_SEPARATORS:
+        if sep in equation:
+            left, right = equation.split(sep, 1)
+            terms = (
+                [t.strip() for t in left.split(' + ')] +
+                [t.strip() for t in right.split(' + ')]
+            )
+            break
+    else:
+        return [''] * n_participants
+
+    compartments = []
+
+    for term in terms:
+        m = _TRANSPORT_COMPARTMENT_RE.search(term)
+        compartments.append(m.group(1) if m else '')
+
+    if len(compartments) < n_participants:
+        compartments += [''] * (n_participants - len(compartments))
+
+    return compartments[:n_participants]
+
+
 def _participant_fields(
     chebi_ids: list[str],
     chebi_names: list[str],
     n_reactants: int,
+    compartments: list[str] | None = None,
 ) -> dict[str, str]:
     """
     Build ``||``-delimited participant record fields.
@@ -87,11 +178,14 @@ def _participant_fields(
             May be shorter; missing names are filled with empty strings.
         n_reactants: Number of leading entries in ``chebi_ids`` that are
             reactants; the remainder are treated as products.
+        compartments: Compartment label per participant in the same order
+            as ``chebi_ids``.  ``None`` or a short list is padded with
+            empty strings.
 
     Returns:
         Dict with keys ``participant_chebi``, ``participant_display_name``,
-        and ``participant_role``, each a ``||``-joined string aligned by
-        position.
+        ``participant_role``, and ``participant_compartment``, each a
+        ``||``-joined string aligned by position.
     """
 
     n_products = max(len(chebi_ids) - n_reactants, 0)
@@ -99,27 +193,40 @@ def _participant_fields(
 
     names = chebi_names + [''] * max(len(chebi_ids) - len(chebi_names), 0)
 
+    if compartments is None:
+        compartments = [''] * len(chebi_ids)
+    elif len(compartments) < len(chebi_ids):
+        compartments = compartments + [''] * (len(chebi_ids) - len(compartments))
+
     return {
         'participant_chebi': _LIST_DELIMITER.join(chebi_ids),
         'participant_display_name': _LIST_DELIMITER.join(names[:len(chebi_ids)]),
         'participant_role': _LIST_DELIMITER.join(roles),
+        'participant_compartment': _LIST_DELIMITER.join(compartments[:len(chebi_ids)]),
     }
 
 
-def _raw(opener: Any, **_kwargs: Any) -> Generator[dict, None, None]:
+def _raw(
+    opener: Any,
+    data_type: str = 'reactions',
+    **_kwargs: Any,
+) -> Generator[dict, None, None]:
     """
     Parse the Rhea GUI API TSV and yield one dict per master reaction.
 
     Args:
         opener: File-like object for the downloaded TSV, as supplied by the
             ``Dataset`` machinery.
+        data_type: Controls which reactions are yielded.  One of
+            ``'reactions'`` (all), ``'metabolic_reactions'`` (non-transport
+            only), or ``'transport_reactions'`` (transport only).
         **_kwargs: Ignored; present for framework compatibility.
 
     Yields:
         One dict per master reaction with keys: ``rhea_id``, ``equation``,
         ``ec``, ``pubmed``, ``go``, ``ecocyc``, ``metacyc``, ``kegg``,
         ``reactome``, ``participant_chebi``, ``participant_display_name``,
-        and ``participant_role``.
+        ``participant_role``, and ``participant_compartment``.
 
     Note:
         Expected TSV columns (set by the configured API URL):
@@ -138,6 +245,13 @@ def _raw(opener: Any, **_kwargs: Any) -> Generator[dict, None, None]:
         if not rhea_id or not equation:
             continue
 
+        is_transport = _is_transport(equation)
+
+        if data_type == 'metabolic_reactions' and is_transport:
+            continue
+        if data_type == 'transport_reactions' and not is_transport:
+            continue
+
         chebi_ids = _split_semicolons(row.get('ChEBI identifier') or '')
         chebi_names = _split_semicolons(row.get('ChEBI name') or '')
 
@@ -150,8 +264,12 @@ def _raw(opener: Any, **_kwargs: Any) -> Generator[dict, None, None]:
         kegg = (row.get('Cross-reference (KEGG)') or '').strip()
         reactome = (row.get('Cross-reference (Reactome)') or '').strip()
 
-        # Count reactants to assign participant roles
         n_reactants, _ = _count_equation_sides(equation)
+
+        compartments = (
+            _compartments_from_equation(equation, len(chebi_ids))
+            if is_transport else None
+        )
 
         yield {
             'rhea_id': rhea_id,
@@ -163,5 +281,5 @@ def _raw(opener: Any, **_kwargs: Any) -> Generator[dict, None, None]:
             'metacyc': metacyc,
             'kegg': kegg,
             'reactome': reactome,
-            **_participant_fields(chebi_ids, chebi_names, n_reactants),
+            **_participant_fields(chebi_ids, chebi_names, n_reactants, compartments),
         }

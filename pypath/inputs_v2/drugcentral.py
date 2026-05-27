@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import csv
+from functools import cache
+
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
+from pypath.share.downloads import download_and_open
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -17,6 +21,11 @@ from pypath.internals.silver_schema import (
     Entity,
     Identifier,
     Membership,
+)
+
+DRUGCENTRAL_STRUCTURES_URL = (
+    'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/'
+    'structures.smiles.tsv'
 )
 
 config = ResourceConfig(
@@ -92,6 +101,25 @@ def _identifier(term: object, value: object) -> Identifier | None:
     return Identifier(type=term, value=value) if value else None
 
 
+@cache
+def _structure_inchikeys() -> dict[str, str]:
+    opener = download_and_open(
+        url=DRUGCENTRAL_STRUCTURES_URL,
+        filename='structures.smiles.tsv',
+        subfolder='drugcentral',
+        large=True,
+        default_mode='r',
+    )
+    try:
+        return {
+            _clean(row.get('ID')): _clean(row.get('InChIKey'))
+            for row in csv.DictReader(opener.result, delimiter='\t')
+            if _clean(row.get('ID')) and _clean(row.get('InChIKey'))
+        }
+    finally:
+        opener.close()
+
+
 def _interaction_id(row: dict[str, object]) -> str:
     fields = (
         row.get('STRUCT_ID'),
@@ -119,10 +147,15 @@ def _organism_annotation(row: dict[str, object]) -> Annotation | None:
 
 
 def _small_molecule(row: dict[str, object]) -> Entity:
+    struct_id = _clean(row.get('STRUCT_ID'))
     return Entity(
         type=EntityTypeCv.SMALL_MOLECULE,
         identifiers=_identifiers(
-            _identifier(IdentifierNamespaceCv.DRUGCENTRAL, row.get('STRUCT_ID')),
+            _identifier(IdentifierNamespaceCv.DRUGCENTRAL, struct_id),
+            _identifier(
+                IdentifierNamespaceCv.STANDARD_INCHI_KEY,
+                _structure_inchikeys().get(struct_id),
+            ),
             _identifier(IdentifierNamespaceCv.NAME, row.get('DRUG_NAME')),
         ),
     )

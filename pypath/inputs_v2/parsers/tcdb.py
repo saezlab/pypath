@@ -128,7 +128,7 @@ def transporters(
             }
 
 
-def substrates(
+def transport_substrates(
     opener,
     *,
     acc2tc_download,

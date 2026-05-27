@@ -499,6 +499,7 @@ class ParticipantMetadataCv(CvEnum):
     STEP_ORDER = ("OM:1227", "Order or position of a step within a pathway or process")
     SOURCE = ("OM:1228", "Participant designated as the source of a directed interaction")
     TARGET = ("OM:1229", "Participant designated as the target of a directed interaction")
+    MEMBRANE_SIDE = ("OM:1231", "Membrane side of a transport reaction participant (in/out)")
 
 class InterCellAnnotations(CvEnum):
     """Annotations for intercellular interactions and roles."""

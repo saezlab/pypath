@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 import re
-from urllib.parse import quote_plus
 
 from pypath.inputs_v2.base import (
     Dataset,
@@ -18,7 +17,7 @@ from pypath.inputs_v2.base import (
     Resource,
     ResourceConfig,
 )
-from pypath.inputs_v2.parsers.base import iter_tsv
+from pypath.inputs_v2.parsers.base import _first_handle, iter_tsv
 from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -59,6 +58,10 @@ UNIPROT_KEYWORDS_OBO_URL = (
     'https://rest.uniprot.org/keywords/stream'
     '?compressed=true&format=obo&query=%28*%29'
 )
+UNIPROT_SPROT_FLATFILE_URL = (
+    'https://ftp.uniprot.org/pub/databases/uniprot/current_release/'
+    'knowledgebase/complete/uniprot_sprot.dat.gz'
+)
 
 config = ResourceConfig(
     id=ResourceCv.UNIPROT,
@@ -89,47 +92,9 @@ PROTEIN_REFERENCE_KEY_TYPES: tuple[str, ...] = (
     'MI:1095:HGNC',
 )
 
-_REFERENCE_FIELDS = (
-    'accession',
-    'id',
-    'gene_primary',
-    'gene_synonym',
-    'organism_id',
-    'xref_ensembl',
-    'xref_geneid',
-    'xref_hgnc',
-)
-
-_UNIPROT_ENSEMBL_RE = re.compile(r'(ENS[A-Z0-9]*\d+(?:\.\d+)?)')
-
-def _build_uniprot_reference_query(taxonomy_ids: Iterable[int | str] | None = None) -> str:
-    if taxonomy_ids is None:
-        return 'reviewed:true'
-
-    tax_terms = [f'taxonomy_id:{int(t)}' for t in taxonomy_ids]
-    if not tax_terms:
-        return 'reviewed:true'
-    if len(tax_terms) == 1:
-        return f'{tax_terms[0]} AND reviewed:true'
-    return f"({' OR '.join(tax_terms)}) AND reviewed:true"
-
-
-def _build_uniprot_reference_url(taxonomy_ids: Iterable[int | str] | None = None, **_kwargs: object) -> str:
-    query = quote_plus(_build_uniprot_reference_query(taxonomy_ids))
-    fields = ','.join(_REFERENCE_FIELDS)
-    return (
-        'https://rest.uniprot.org/uniprotkb/stream'
-        f'?compressed=true&format=tsv&query={query}&fields={fields}'
-    )
-
-
-def _reference_filename(taxonomy_ids: Iterable[int | str] | None = None, **_kwargs: object) -> str:
-    if taxonomy_ids is None:
-        suffix = 'all_reviewed_swissprot'
-    else:
-        values = [str(int(t)) for t in taxonomy_ids]
-        suffix = '_'.join(values) if values else 'all_reviewed_swissprot'
-    return f'uniprot_reference_{suffix}.tsv.gz'
+_GN_NAME_RE = re.compile(r'(?:^|; )Name=([^;{]+)')
+_GN_SYNONYMS_RE = re.compile(r'(?:^|; )Synonyms=([^;]+)')
+_OX_TAXONOMY_RE = re.compile(r'NCBI_TaxID=(\d+)')
 
 
 def _split_semicolon_field(value: str | None) -> list[str]:
@@ -144,10 +109,17 @@ def _split_gene_synonym_field(value: str | None) -> list[str]:
     return [item.strip() for item in value.split() if item.strip()]
 
 
-def _extract_ensembl_ids(value: str | None) -> list[str]:
-    if not value:
-        return []
-    return sorted({match.group(1) for match in _UNIPROT_ENSEMBL_RE.finditer(value)})
+def _versioned_and_unversioned(identifier: str | None) -> tuple[str, ...]:
+    if not identifier:
+        return ()
+
+    identifier = identifier.strip()
+    if not identifier:
+        return ()
+    if '.' not in identifier:
+        return (identifier,)
+
+    return (identifier, identifier.split('.', maxsplit=1)[0])
 
 
 def _extract_hgnc_ids(value: str | None) -> list[str]:
@@ -161,16 +133,121 @@ def _extract_hgnc_ids(value: str | None) -> list[str]:
     return sorted(set(hgnc_ids))
 
 
-def _reference_id_translation_raw(opener, max_records: int | None = None, **kwargs):
-    emitted = 0
-    for rec in iter_tsv(opener, **kwargs):
-        primary_uniprot = (rec.get('Entry') or '').strip()
-        if not primary_uniprot:
+def _iter_uniprot_flatfile_records(opener):
+    source = _first_handle(opener)
+    if not source:
+        return
+
+    record: list[str] = []
+    for line in source:
+        if line.startswith('//'):
+            if record:
+                yield record
+                record = []
             continue
 
-        entry_name = (rec.get('Entry Name') or '').strip()
-        taxonomy_id = (rec.get('Organism (ID)') or '').strip() or None
-        gene_primary = (rec.get('Gene Names (primary)') or '').strip()
+        record.append(line.rstrip('\n'))
+
+    if record:
+        yield record
+
+
+def _parse_uniprot_flatfile_record(lines: list[str]) -> dict[str, object]:
+    record: dict[str, object] = {
+        'primary_uniprot': None,
+        'entry_name': None,
+        'taxonomy_id': None,
+        'gene_primary': None,
+        'gene_synonyms': [],
+        'ensembl': [],
+        'entrez': [],
+        'hgnc': [],
+    }
+    gene_text = []
+
+    for line in lines:
+        if line.startswith('ID   '):
+            parts = line[5:].split()
+            record['entry_name'] = parts[0] if parts else None
+        elif line.startswith('AC   '):
+            accessions = _split_semicolon_field(line[5:])
+            if accessions and record['primary_uniprot'] is None:
+                record['primary_uniprot'] = accessions[0]
+        elif line.startswith('OX   '):
+            match = _OX_TAXONOMY_RE.search(line)
+            if match:
+                record['taxonomy_id'] = match.group(1)
+        elif line.startswith('GN   '):
+            gene_text.append(line[5:].strip())
+        elif line.startswith('DR   Ensembl;'):
+            record['ensembl'].extend(_parse_ensembl_dr_line(line))
+        elif line.startswith('DR   GeneID;'):
+            parts = _parse_dr_parts(line)
+            if parts:
+                record['entrez'].append(parts[0])
+        elif line.startswith('DR   HGNC;'):
+            parts = _parse_dr_parts(line)
+            if parts:
+                record['hgnc'].extend(_extract_hgnc_ids(parts[0]))
+
+    _parse_gene_text(' '.join(gene_text), record)
+
+    return record
+
+
+def _parse_dr_parts(line: str) -> list[str]:
+    value = line[5:].rstrip('.')
+    parts = [part.strip() for part in value.split(';')]
+    return [part for part in parts[1:] if part and part != '-']
+
+
+def _parse_ensembl_dr_line(line: str) -> list[str]:
+    identifiers: set[str] = set()
+
+    for part in _parse_dr_parts(line):
+        identifiers.update(_versioned_and_unversioned(part))
+
+    return sorted(identifiers)
+
+
+def _parse_gene_text(text: str, record: dict[str, object]) -> None:
+    if not text:
+        return
+
+    name_match = _GN_NAME_RE.search(text)
+    if name_match:
+        record['gene_primary'] = _strip_flatfile_evidence(name_match.group(1))
+
+    synonyms_match = _GN_SYNONYMS_RE.search(text)
+    if synonyms_match:
+        record['gene_synonyms'] = [
+            _strip_flatfile_evidence(value)
+            for value in synonyms_match.group(1).split(',')
+            if _strip_flatfile_evidence(value)
+        ]
+
+
+def _strip_flatfile_evidence(value: str) -> str:
+    return re.sub(r'\s*\{[^}]*\}', '', value).strip()
+
+
+def _reference_id_translation_raw(opener, max_records: int | None = None, **kwargs):
+    emitted = 0
+    taxonomy_ids = kwargs.get('taxonomy_ids')
+    taxonomy_ids = {str(int(t)) for t in taxonomy_ids} if taxonomy_ids else None
+
+    for lines in _iter_uniprot_flatfile_records(opener):
+        rec = _parse_uniprot_flatfile_record(lines)
+        primary_uniprot = rec.get('primary_uniprot')
+        if not primary_uniprot:
+            continue
+        primary_uniprot = str(primary_uniprot)
+
+        entry_name = rec.get('entry_name')
+        taxonomy_id = rec.get('taxonomy_id')
+        taxonomy_id = str(taxonomy_id) if taxonomy_id is not None else None
+        if taxonomy_ids is not None and taxonomy_id not in taxonomy_ids:
+            continue
 
         rows = [
             {
@@ -184,14 +261,15 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
         if entry_name:
             rows.append({
                 'key_type': 'OM:0221:Uniprot Entry Name',
-                'key_value': entry_name,
+                'key_value': str(entry_name),
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             })
-        if gene_primary:
+
+        if rec.get('gene_primary'):
             rows.append({
                 'key_type': 'OM:0200:Gene Name Primary',
-                'key_value': gene_primary,
+                'key_value': rec.get('gene_primary'),
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             })
@@ -203,7 +281,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             }
-            for synonym in _split_gene_synonym_field(rec.get('Gene Names (synonym)'))
+            for synonym in rec.get('gene_synonyms', [])
         )
         rows.extend(
             {
@@ -212,7 +290,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             }
-            for entrez in _split_semicolon_field(rec.get('GeneID'))
+            for entrez in rec.get('entrez', [])
         )
         rows.extend(
             {
@@ -221,7 +299,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             }
-            for ensembl in _extract_ensembl_ids(rec.get('Ensembl'))
+            for ensembl in rec.get('ensembl', [])
         )
         rows.extend(
             {
@@ -230,7 +308,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             }
-            for hgnc in _extract_hgnc_ids(rec.get('HGNC'))
+            for hgnc in rec.get('hgnc', [])
         )
 
         for row in rows:
@@ -327,8 +405,8 @@ resource = Resource(
     ),
     reference_id_translation=Dataset(
         download=Download(
-            url=_build_uniprot_reference_url,
-            filename=_reference_filename,
+            url=UNIPROT_SPROT_FLATFILE_URL,
+            filename='uniprot_sprot.dat.gz',
             subfolder='uniprot',
             large=True,
             encoding='utf-8',
