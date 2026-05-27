@@ -122,6 +122,46 @@ def _participant_taxon_ids(row):
     return values
 
 
+def _taxon_id_for_entity_type(entity_type, taxon_id):
+    mapped_entity_type = (
+        entity_type
+        if isinstance(entity_type, EntityTypeCv)
+        else entity_type_map.get(entity_type, EntityTypeCv.PHYSICAL_ENTITY)
+    )
+    return taxon_id if mapped_entity_type in _TAXON_SCOPED_ENTITY_TYPES and taxon_id else None
+
+
+def _entity_taxon_id(entity_type_field, taxon_field):
+    def extractor(row):
+        entity_type = row.get(entity_type_field)
+        taxon_id = f(taxon_field, map='missing').extract(row)
+        return _taxon_id_for_entity_type(entity_type, taxon_id)
+
+    return extractor
+
+
+def _controller_member_taxon_ids(row):
+    entity_types = f(
+        'controller_member_entity_type',
+        delimiter='||',
+        map='entity_type',
+        preserve_indices=True,
+    ).extract(row)
+    taxon_ids = f(
+        'controller_member_ncbi_tax_id',
+        delimiter='||',
+        map='missing',
+        preserve_indices=True,
+    ).extract(row)
+    size = max(len(entity_types), len(taxon_ids))
+    values = []
+    for idx in range(size):
+        entity_type = entity_types[idx] if idx < len(entity_types) else None
+        taxon_id = taxon_ids[idx] if idx < len(taxon_ids) else None
+        values.append(_taxon_id_for_entity_type(entity_type, taxon_id))
+    return values
+
+
 reactions_schema = EntityBuilder(
     entity_type=f('entity_type', map=entity_type_map),
     identifiers=IdentifiersBuilder(
@@ -205,7 +245,10 @@ controls_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_go', map='split')),
                 ),
                 annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controller_ncbi_tax_id', map='missing')),
+                    CV(
+                        term=IdentifierNamespaceCv.NCBI_TAX_ID,
+                        value=_entity_taxon_id('controller_entity_type', 'controller_ncbi_tax_id'),
+                    ),
                     CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_pathway_term_accession', map='split')),
                 ),
             ),
@@ -227,7 +270,10 @@ controls_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controlled_go', map='split')),
                 ),
                 annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controlled_ncbi_tax_id', map='missing')),
+                    CV(
+                        term=IdentifierNamespaceCv.NCBI_TAX_ID,
+                        value=_entity_taxon_id('controlled_entity_type', 'controlled_ncbi_tax_id'),
+                    ),
                     CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controlled_pathway_term_accession', map='split')),
                 ),
             ),
@@ -252,7 +298,10 @@ control_groups_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_go', map='split')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controller_ncbi_tax_id', map='missing')),
+        CV(
+            term=IdentifierNamespaceCv.NCBI_TAX_ID,
+            value=_entity_taxon_id('controller_entity_type', 'controller_ncbi_tax_id'),
+        ),
         CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_pathway_term_accession', map='split')),
     ),
     membership=MembershipBuilder(
@@ -269,7 +318,10 @@ control_groups_schema = EntityBuilder(
                 CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_member_go', delimiter='||', map='split')),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('controller_member_ncbi_tax_id', delimiter='||', map='missing')),
+                CV(
+                    term=IdentifierNamespaceCv.NCBI_TAX_ID,
+                    value=_controller_member_taxon_ids,
+                ),
                 CV(
                     term=IdentifierNamespaceCv.CV_TERM_ACCESSION,
                     value=f('controller_member_pathway_term_accession', delimiter='||', map='split'),
