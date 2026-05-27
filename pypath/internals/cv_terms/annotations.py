@@ -360,6 +360,7 @@ class AssayAnnotationsCv(CvEnum):
     CELL_TYPE = ("OM:0765", "Cell type used in the assay")
     DESCRIPTION = ("OM:0766", "Textual description of the assay protocol and objectives")
     CONCLUSION = ("OM:0778", "Textual description of the assay conculsions")
+    BIOSPECIMEN = ("OM:0779", "Biospecimen used as sample")
     # Contrast
 
     CONTRAST_P_VAL = ("OM:0767", "P-value associated to a contrast between case-control")
@@ -503,7 +504,7 @@ class InterCellAnnotations(CvEnum):
     """Annotations for intercellular interactions and roles."""
 
     parent_cv_term = ("OM:1230", "Intercellular annotation term", "Describes annotations specific to intercellular interactions and roles.")
-    
+
     LIGAND = ("OM:7777", "Participant designated as a ligand")
     RECEPTOR = ("OM:7778", "Participant designated as a receptor")
     MEMBRANE = ("OM:7779", "Membrane-associated subcellular location")
