@@ -34,6 +34,7 @@ from pypath.internals.cv_terms import (
 # =================================== SET-UP ===================================
 
 BASE_URL = 'https://slc.bioparadigms.org/'
+HUMAN_TAXON_ID = '9606'
 
 config = ResourceConfig(
     id=ResourceCv.SLC_TABLES,
@@ -112,6 +113,29 @@ def parser(opener, **_kwargs):
             yield dict(zip(headers, [slc] + chunk))
 
 
+def _slc_name(row: dict) -> str | None:
+    value = str(row.get('SLC name') or '').strip()
+    return value or None
+
+
+def _primary_slc_gene_names(row: dict) -> list[str]:
+    value = _slc_name(row)
+    if value is None:
+        return []
+    if '_' in value:
+        base = value.split('_', 1)[0].strip()
+        return [base] if base else []
+    return [value]
+
+
+def _slc_gene_synonyms(row: dict) -> list[str]:
+    value = _slc_name(row)
+    synonyms = []
+    if value and '_' in value:
+        synonyms.append(value)
+    return synonyms
+
+
 download = Download(
     url=BASE_URL,
     filename='slctables.html',
@@ -133,7 +157,14 @@ f = FieldConfig(
 schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('SLC name')),
+        CV(
+            term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
+            value=_primary_slc_gene_names,
+        ),
+        CV(
+            term=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
+            value=_slc_gene_synonyms,
+        ),
         CV(
             term=IdentifierNamespaceCv.NAME,
             value=f('Protein name', delimiter=', ')
@@ -144,6 +175,7 @@ schema = EntityBuilder(
         ),
     ),
     annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
         CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('SLC_family')),
         CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('Transport type*')),
         CV(
