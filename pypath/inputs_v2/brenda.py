@@ -67,7 +67,8 @@ PR_ORGANISM_NAME = re.compile(r"#\d+# '?([-\w\s\.\[\]]+[^\s#\{<\('])")
 PR_IDENTIFIER = re.compile(r".*\{(.*?)\;.*")
 REFERENCE = re.compile(r".*\<([\d,]+)\>$")
 ROLE_COMPOUND = re.compile(r"^#[\d,]+# ([^\<#]+) [\(\<].*")
-ROLE_DETAILS = re.compile(r".*\((#.*\>)\).*")
+K_COMPOUND = re.compile(r"^#[\d,]+# ([-\d.]+ \{.*\}).*")
+DETAILS = re.compile(r".*\((#.*\>)\).*")
 
 config = ResourceConfig(
     id=ResourceCv.BRENDA,
@@ -139,19 +140,33 @@ def process_record(record):
         proc[pid]['Organism'].add(org)
         proc[pid]['Refs'].update(refs.split(','))
 
-    proc = process_record_roles(proc, record, 'AC', 'Activator')
-    proc = process_record_roles(proc, record, 'IN', 'Inhibitor')
-    proc = process_record_roles(proc, record, 'CF', 'Cofactor')
+    for k in ['AC', 'IN', 'CF', 'KI', 'KM']:
+
+        proc = process_record_roles(proc, record, k)
 
     return proc
 
 
-def process_record_roles(proc, record, key, new_key):
+ROLES_MAPPER = {
+    'AC': ('Activator', ROLE_COMPOUND),
+    'IN': ('Inhibitor', ROLE_COMPOUND),
+    'CF': ('Cofactor', ROLE_COMPOUND),
+    'KI': ('InhibitionConstant', K_COMPOUND)
+    'KM': ('MMConstant', K_COMPOUND)
+}
+
+def process_record_roles(proc, record, key):
+
+    if key not in ROLES_MAPPER:
+
+        return {'ERROR': '`key` not found in `ROLES_MAPPER` for processing'}
+
+    new_key, comp_regex = ROLES_MAPPER[key]
 
     for r in record.get(key, []):
 
-        compound = ROLE_COMPOUND.match(r).group(1)
-        aux = x.group(1) if (x := ROLE_DETAILS.match(r)) else ''
+        compound = comp_regex.match(r).group(1)
+        aux = x.group(1) if (x := DETAILS.match(r)) else ''
 
         # Making sure all IDs are accounted for (not all described inside
         # parentheses)
