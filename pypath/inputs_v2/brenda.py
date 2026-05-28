@@ -66,8 +66,8 @@ ID = re.compile(r"^#([\d,]+)#")
 PR_ORGANISM_NAME = re.compile(r"#\d+# '?([-\w\s\.\[\]]+[^\s#\{<\('])")
 PR_IDENTIFIER = re.compile(r".*\{(.*?)\;.*")
 REFERENCE = re.compile(r".*\<([\d,]+)\>$")
-AC_COMPOUND = re.compile(r"^#[\d,]+# ([^\<#]+) [\(\<].*")
-AC_DETAILS = re.compile(r".*\((#.*\>)\).*")
+ROLE_COMPOUND = re.compile(r"^#[\d,]+# ([^\<#]+) [\(\<].*")
+ROLE_DETAILS = re.compile(r".*\((#.*\>)\).*")
 
 config = ResourceConfig(
     id=ResourceCv.BRENDA,
@@ -117,11 +117,10 @@ def process_entry(entry):
 
     return record if len(record) > 1 else {}
 
+
 def process_record(record):
 
     eid = record['ID']
-
-    # Processing organisms and identifiers
 
     proc = defaultdict(lambda: defaultdict(set))
 
@@ -140,15 +139,24 @@ def process_record(record):
         proc[pid]['Organism'].add(org)
         proc[pid]['Refs'].update(refs.split(','))
 
-    for ac in record.get('AC', []):
+    proc = process_record_roles(proc, record, 'AC', 'Activator')
+    proc = process_record_roles(proc, record, 'IN', 'Inhibitor')
+    proc = process_record_roles(proc, record, 'CF', 'Cofactor')
 
-        compound = AC_COMPOUND.match(ac).group(1)
-        aux = x.group(1) if (x := AC_DETAILS.match(ac)) else ''
+    return proc
+
+
+def process_record_roles(proc, record, key, new_key):
+
+    for r in record.get(key, []):
+
+        compound = ROLE_COMPOUND.match(r).group(1)
+        aux = x.group(1) if (x := ROLE_DETAILS.match(r)) else ''
 
         # Making sure all IDs are accounted for (not all described inside
         # parentheses)
-        initial_pids = set(ID.match(ac).group(1).split(','))
-        initial_refs = set(REFERENCE.match(ac).group(1).split(','))
+        initial_pids = set(ID.match(r).group(1).split(','))
+        initial_refs = set(REFERENCE.match(r).group(1).split(','))
 
         for entry in aux.split('; '):
 
@@ -161,7 +169,7 @@ def process_record(record):
 
             for pid in pids:
 
-                proc[pid]['Activator'].add(compound)
+                proc[pid][new_key].add(compound)
                 proc[pid]['Refs'].update(refs)
 
                 initial_pids -= {pid}
@@ -171,41 +179,7 @@ def process_record(record):
         # Adding remaining annotations for non-described entries
         for pid in initial_pids:
 
-            proc[pid]['Activator'].add(compound)
-            proc[pid]['Refs'].update(initial_refs) # Assuming a bit here
-
-    for inh in record.get('IN', []):
-
-        compound = AC_COMPOUND.match(inh).group(1)
-        aux = x.group(1) if (x := AC_DETAILS.match(inh)) else ''
-
-        # Making sure all IDs are accounted for (not all described inside
-        # parentheses)
-        initial_pids = set(ID.match(inh).group(1).split(','))
-        initial_refs = set(REFERENCE.match(inh).group(1).split(','))
-
-        for entry in aux.split('; '):
-
-            if not entry:
-
-                continue
-
-            pids = ID.match(entry).group(1).split(',')
-            refs = REFERENCE.match(entry).group(1).split(',')
-
-            for pid in pids:
-
-                proc[pid]['Inhibitor'].add(compound)
-                proc[pid]['Refs'].update(refs)
-
-                initial_pids -= {pid}
-
-            initial_refs -= set(refs)
-
-        # Adding remaining annotations for non-described entries
-        for pid in initial_pids:
-
-            proc[pid]['Inhibitor'].add(compound)
+            proc[pid][new_key].add(compound)
             proc[pid]['Refs'].update(initial_refs) # Assuming a bit here
 
     return proc
