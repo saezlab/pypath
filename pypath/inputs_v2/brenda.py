@@ -69,6 +69,14 @@ REFERENCE = re.compile(r".*\<([\d,]+)\>$")
 ROLE_COMPOUND = re.compile(r"^#[\d,]+# ([^\<#]+) [\(\<].*")
 K_COMPOUND = re.compile(r"^#[\d,]+# ([-\d.]+ \{.*\}).*")
 DETAILS = re.compile(r".*\((#.*\>)\).*")
+REF_ID = re.compile(r"^\<(\d+)\>.*")
+REF_AUTHORS = re.compile(r"^\<\d+\> ([^\:]+).*")
+REF_TITLE = re.compile(r"^\<\d+\> [^\:]+: (.*)::.*")
+REF_JOURNAL = re.compile(r".*:: (.*) \(")
+REF_YEAR = re.compile(r".* \((\d{4})\) .*")
+REF_VOLUME = re.compile(r".* \(\d{4}\) (\d+), .*")
+REF_PAGES = re.compile(r".* \(\d{4}\) \d+, (.*)\..*")
+REF_PMID = re.compile(r".*\{Pubmed:(\d+)\}$")
 
 config = ResourceConfig(
     id=ResourceCv.BRENDA,
@@ -122,6 +130,7 @@ def process_entry(entry):
 def process_record(record):
 
     eid = record['ID']
+    ref_dict = process_references(record)
 
     proc = defaultdict(lambda: defaultdict(set))
 
@@ -144,6 +153,10 @@ def process_record(record):
 
         proc = process_record_roles(proc, record, k)
 
+    for k, v in proc.items():
+
+        v['Refs'] = [ref_dict[i] for i in v['Refs']]
+
     return proc
 
 
@@ -151,8 +164,8 @@ ROLES_MAPPER = {
     'AC': ('Activator', ROLE_COMPOUND),
     'IN': ('Inhibitor', ROLE_COMPOUND),
     'CF': ('Cofactor', ROLE_COMPOUND),
-    'KI': ('InhibitionConstant', K_COMPOUND)
-    'KM': ('MMConstant', K_COMPOUND)
+    'KI': ('InhibitionConstant', K_COMPOUND),
+    'KM': ('MMConstant', K_COMPOUND),
 }
 
 def process_record_roles(proc, record, key):
@@ -198,6 +211,32 @@ def process_record_roles(proc, record, key):
             proc[pid]['Refs'].update(initial_refs) # Assuming a bit here
 
     return proc
+
+
+def process_references(record):
+
+    refs = {}
+    regexes = [
+            REF_ID,
+            REF_AUTHORS,
+            REF_TITLE,
+            REF_JOURNAL,
+            REF_YEAR,
+            REF_VOLUME,
+            REF_PAGES,
+            REF_PMID
+        ]
+
+    for entry in record.get('RF', []):
+
+        res = [
+            x.group(1) if (x := regex.match(entry)) else ''
+            for regex in regexes
+        ]
+
+        refs[res[0]] = res[1:]
+
+    return refs
 
 
 def parser(opener, **kwargs):
