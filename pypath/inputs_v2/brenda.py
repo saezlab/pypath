@@ -153,9 +153,9 @@ def process_record(record):
 
         proc = process_record_roles(proc, record, k)
 
-    for k, v in proc.items():
+    for pid in proc.keys():
 
-        v['Refs'] = [ref_dict[i] for i in v['Refs']]
+        proc[pid]['Refs'] = [ref_dict[i] for i in proc[pid]['Refs']]
 
     return proc
 
@@ -189,7 +189,6 @@ def process_record_roles(proc, record, key):
 
         # XXX: Bypassing cases when they use ";" not as separator :'(
         aux = re.sub(r'; #', r'||#', aux)
-
 
         for entry in aux.split('||'):
 
@@ -295,7 +294,7 @@ f = FieldConfig(
 schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt')),#Extract uniprot
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.EC, value=f('ID')),
@@ -320,3 +319,59 @@ schema = EntityBuilder(
 #)
 
 # ================================= REFERENCE ==================================
+#{ Example entry
+#    'EC': '1.1.1.1', # Enzyme classification
+#    'UniProt': set(), # UniProt IDs as set
+#    '#': '6', # Internal BRENDA identifier, not used
+#    'Organism': {'Mus musculus'}, # Species name
+#    'Refs': [ # References as a list of lists
+#        # Elements are: Authors, Title, Journal, Year, Volume, Pages, PMID
+#        [
+#            'Stroemberg, P.; Svensson, S.; Berst, K.B.; Plapp, B.V.; Höög, J.O.',
+#            'Enzymatic mechanism of low-activity mouse alcohol dehydrogenase 2',
+#            'Biochemistry',
+#            '2004',
+#            '43',
+#            '1323-1328',
+#            '14756569'
+#        ],
+#        [...],
+#        ...
+#    ],
+#    'Activator': { # Activating compounds as set
+#        'S-nitrosoglutathione',
+#        'Valeramide',
+#        'butyramide',
+#        'capronamide',
+#        'tert-butanol'
+#    },
+#    'Inhibitor': { # Inhibiting compounds as set
+#        '1,10-phenanthroline',
+#        '4-Methylpyrazole',
+#        'Vanillin',
+#        'caffeic acid',
+#        'dodecanoic acid',
+#        'ellagic acid',
+#        'pyrazole',
+#        'syringaldehyde'
+#    },
+#    'Cofactor': {'NAD+', 'NADH'}, # Cofactors as set
+#    'InhibitionConstant': { # Ki constant as "concentration {compound}"
+#        '0.00008 {caffeic acid}',
+#        '0.0051 {pyrazole}',
+#        '0.0079 {Vanillin}',
+#        '0.0156 {syringaldehyde}',
+#        '0.022 {ellagic acid}'
+#    },
+#    'MMConstant': { # KM constant as "concentration {compound}"
+#        '-999 {more}',
+#        '0.006 {Hexanol}',
+#        '0.085 {Hexanol}',
+#        '0.48 {ethanol}',
+#        '0.63 {Hexanol}',
+#        '0.83 {ethanol}',
+#        '1.9 {Hexanol}',
+#        '1625 {ethanol}',
+#        '255 {ethanol}'
+#    }
+#}
