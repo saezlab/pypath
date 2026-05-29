@@ -72,11 +72,11 @@ DETAILS = re.compile(r".*\((#.*\>)\).*")
 REF_ID = re.compile(r"^\<(\d+)\>.*")
 REF_AUTHORS = re.compile(r"^\<\d+\> ([^\:]+).*")
 REF_TITLE = re.compile(r"^\<\d+\> [^\:]+: (.*)::.*")
-REF_JOURNAL = re.compile(r".*:: (.*) \(")
+REF_JOURNAL = re.compile(r".*:: (.*) \(\d{4}\)")
 REF_YEAR = re.compile(r".* \((\d{4})\) .*")
-REF_VOLUME = re.compile(r".* \(\d{4}\) (\d+), .*")
-REF_PAGES = re.compile(r".* \(\d{4}\) \d+, (.*)\..*")
-REF_PMID = re.compile(r".*\{Pubmed:(\d+)\}$")
+REF_VOLUME = re.compile(r".* \(\d{4}\) (.*), .*")
+REF_PAGES = re.compile(r".* \(\d{4}\) .*, (.*)\..*")
+REF_PMID = re.compile(r".*\{Pubmed:(\d+)\}")
 
 config = ResourceConfig(
     id=ResourceCv.BRENDA,
@@ -298,32 +298,28 @@ schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.EC, value=f('ID')),
-        CV(
-            term=EntityTypeCv.ORGANISM,
-            value=f('PR', delimiter='||', extract='pr')
-        ),
-        # Put EC as ontology
-        #CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Gene Ontology IDs', delimiter=';')),
+        CV(term=EntityTypeCv.ORGANISM, value=f('Organism')),
+        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('EC')),
     ),
 )
 
 # ================================= RESOURCE ===================================
 
-#resource = Resource(
-#    config=config,
-#    associations=Dataset(
-#        download=download,
-#        mapper=schema,
-#        raw_parser=parser,
-#    ),
-#)
+resource = Resource(
+    config=config,
+    data=Dataset(
+        download=download,
+        mapper=schema,
+        raw_parser=parser,
+    ),
+)
 
 # ================================= REFERENCE ==================================
 #{ Example entry
-#    'EC': '1.1.1.1', # Enzyme classification
-#    'UniProt': set(), # UniProt IDs as set
+# X   'EC': '1.1.1.1', # Enzyme classification
+# X   'UniProt': set(), # UniProt IDs as set
 #    '#': '6', # Internal BRENDA identifier, not used
-#    'Organism': {'Mus musculus'}, # Species name
+# X   'Organism': {'Mus musculus'}, # Species name
 #    'Refs': [ # References as a list of lists
 #        # Elements are: Authors, Title, Journal, Year, Volume, Pages, PMID
 #        [
