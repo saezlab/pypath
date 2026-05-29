@@ -15,6 +15,7 @@ config = ResourceConfig(
     url='https://github.com/HUPO-PSI/psi-mi-CV',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
+    pubmed='14755292',
     primary_category='ontologies',
     resource_kind='ontology',
     description='The PSI-MI controlled vocabulary provides molecular interaction terms and metadata.',
