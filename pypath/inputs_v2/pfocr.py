@@ -23,6 +23,7 @@ config = ResourceConfig(
     license=LicenseCV.CC0_1_0,
     update_category=UpdateCategoryCV.REGULAR,
     primary_category='pathways',
+    pubmed='38007419',
     description=(
         'PFOCR (Pathway Figure OCR) extracts genes and chemicals from pathway '
         'figures in the biomedical literature. This module parses the current '
