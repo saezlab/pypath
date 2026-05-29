@@ -66,8 +66,8 @@ ID = re.compile(r"^#([\d,]+)#")
 PR_ORGANISM_NAME = re.compile(r"#\d+# '?([-\w\s\.\[\]]+[^\s#\{<\('])")
 PR_IDENTIFIER = re.compile(r".*\{(.*?)\;.*")
 REFERENCE = re.compile(r".*\<([\d,]+)\>$")
-ROLE_COMPOUND = re.compile(r"^#[\d,]+# ([^\<#]+) [\(\<].*")
-K_COMPOUND = re.compile(r"^#[\d,]+# ([-\d.]+ \{.*\}).*")
+ROLE_COMPOUND = re.compile(r"^#[\d,]+# ([^#]+) [\(\<].*")
+K_COMPOUND = re.compile(r"^#[\d,]+# ([-\d.e]+ \{.*\}).*")
 DETAILS = re.compile(r".*\((#.*\>)\).*")
 REF_ID = re.compile(r"^\<(\d+)\>.*")
 REF_AUTHORS = re.compile(r"^\<\d+\> ([^\:]+).*")
@@ -168,6 +168,7 @@ ROLES_MAPPER = {
     'KM': ('MMConstant', K_COMPOUND),
 }
 
+
 def process_record_roles(proc, record, key):
 
     if key not in ROLES_MAPPER:
@@ -186,7 +187,11 @@ def process_record_roles(proc, record, key):
         initial_pids = set(ID.match(r).group(1).split(','))
         initial_refs = set(REFERENCE.match(r).group(1).split(','))
 
-        for entry in aux.split('; '):
+        # XXX: Bypassing cases when they use ";" not as separator :'(
+        aux = re.sub(r'; #', r'||#', aux)
+
+
+        for entry in aux.split('||'):
 
             if not entry:
 
@@ -257,7 +262,10 @@ def parser(opener, **kwargs):
         for entry in result.replace('\n\t', '').split('///')[1:] # Ignore first
     ]
 
-    records = [process_record(pe) for e in entries if (pe := process_entry(e))]
+    records = [
+        list(process_record(pe).values())
+        for e in entries if (pe := process_entry(e))
+    ]
 
     yield from records
 
@@ -283,21 +291,21 @@ f = FieldConfig(
     transform={},
 )
 
-#schema = EntityBuilder(
-#    entity_type=EntityTypeCv.PROTEIN,
-#    identifiers=IdentifiersBuilder(
-#        CV(term=IdentifierNamespaceCv.UNIPROT, value=f(#Extract uniprot)),
-#    ),
-#    annotations=AnnotationsBuilder(
-#        CV(term=IdentifierNamespaceCv.EC, value=f('ID')),
-#        CV(
-#            term=EntityTypeCv.ORGANISM,
-#            value=f('PR', delimiter='||', extract='pr')
-#        ),
-#        # Put EC as ontology
-#        #CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Gene Ontology IDs', delimiter=';')),
-#    ),
-#)
+schema = EntityBuilder(
+    entity_type=EntityTypeCv.PROTEIN,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f()),#Extract uniprot
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.EC, value=f('ID')),
+        CV(
+            term=EntityTypeCv.ORGANISM,
+            value=f('PR', delimiter='||', extract='pr')
+        ),
+        # Put EC as ontology
+        #CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Gene Ontology IDs', delimiter=';')),
+    ),
+)
 
 # ================================= RESOURCE ===================================
 
