@@ -58,6 +58,7 @@ config = ResourceConfig(
     id=ResourceCv.MONDO,
     name='Mondo Disease Ontology',
     url='https://mondo.monarchinitiative.org/',
+    pubmed='41052288',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     primary_category='diseases',
