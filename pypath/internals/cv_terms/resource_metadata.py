@@ -59,6 +59,11 @@ class LicenseCV(CvEnum):
         "OM:0505",
         "Free for academic use, restrictions may apply for commercial use"
     )
+    BIGG = (
+        "OM:0512",
+        "BiGG Models license - free for academic and non-profit use",
+        "http://bigg.ucsd.edu/license#license"
+    )
     HPO = (
         "OM:0506",
         "HPO License - free for academic and non-profit use",
