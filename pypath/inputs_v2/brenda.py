@@ -70,12 +70,12 @@ ROLE_COMPOUND = re.compile(r"^#[\d,]+# ([^#]+) [\(\<].*")
 K_COMPOUND = re.compile(r"^#[\d,]+# ([-\d.e]+ \{.*\}).*")
 DETAILS = re.compile(r".*\((#.*\>)\).*")
 REF_ID = re.compile(r"^\<(\d+)\>.*")
-REF_AUTHORS = re.compile(r"^\<\d+\> ([^\:]+).*")
-REF_TITLE = re.compile(r"^\<\d+\> [^\:]+: (.*)::.*")
-REF_JOURNAL = re.compile(r".*:: (.*) \(\d{4}\)")
-REF_YEAR = re.compile(r".* \((\d{4})\) .*")
-REF_VOLUME = re.compile(r".* \(\d{4}\) (.*), .*")
-REF_PAGES = re.compile(r".* \(\d{4}\) .*, (.*)\..*")
+#REF_AUTHORS = re.compile(r"^\<\d+\> ([^\:]+).*")
+#REF_TITLE = re.compile(r"^\<\d+\> [^\:]+: (.*)::.*")
+#REF_JOURNAL = re.compile(r".*:: (.*) \(\d{4}\)")
+#REF_YEAR = re.compile(r".* \((\d{4})\) .*")
+#REF_VOLUME = re.compile(r".* \(\d{4}\) (.*), .*")
+#REF_PAGES = re.compile(r".* \(\d{4}\) .*, (.*)\..*")
 REF_PMID = re.compile(r".*\{Pubmed:(\d+)\}")
 
 config = ResourceConfig(
@@ -155,7 +155,11 @@ def process_record(record):
 
     for pid in proc.keys():
 
-        proc[pid]['Refs'] = [ref_dict[i] for i in proc[pid]['Refs']]
+        proc[pid]['Refs'] = [
+            ref
+            for i in proc[pid]['Refs']
+            if (ref := ref_dict[i])
+        ]
 
     return proc
 
@@ -222,12 +226,12 @@ def process_references(record):
     refs = {}
     regexes = [
             REF_ID,
-            REF_AUTHORS,
-            REF_TITLE,
-            REF_JOURNAL,
-            REF_YEAR,
-            REF_VOLUME,
-            REF_PAGES,
+            #REF_AUTHORS,
+            #REF_TITLE,
+            #REF_JOURNAL,
+            #REF_YEAR,
+            #REF_VOLUME,
+            #REF_PAGES,
             REF_PMID
         ]
 
@@ -238,7 +242,8 @@ def process_references(record):
             for regex in regexes
         ]
 
-        refs[res[0]] = res[1:]
+        # Only PMID
+        refs[res[0]] = res[1]#res[1:]
 
     return refs
 
@@ -320,18 +325,8 @@ resource = Resource(
 # X   'UniProt': set(), # UniProt IDs as set
 #    '#': '6', # Internal BRENDA identifier, not used
 # X   'Organism': {'Mus musculus'}, # Species name
-#    'Refs': [ # References as a list of lists
-#        # Elements are: Authors, Title, Journal, Year, Volume, Pages, PMID
-#        [
-#            'Stroemberg, P.; Svensson, S.; Berst, K.B.; Plapp, B.V.; Höög, J.O.',
-#            'Enzymatic mechanism of low-activity mouse alcohol dehydrogenase 2',
-#            'Biochemistry',
-#            '2004',
-#            '43',
-#            '1323-1328',
-#            '14756569'
-#        ],
-#        [...],
+#    'Refs': [ # References as a list of PMIDS
+#        '14756569',
 #        ...
 #    ],
 #    'Activator': { # Activating compounds as set
