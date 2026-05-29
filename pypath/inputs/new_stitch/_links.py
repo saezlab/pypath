@@ -64,9 +64,9 @@ def links(max_lines: int | None = None,
             protein_id = ens_id,
             experimental = link["experimental"],
             prediction = link["prediction"],
-            database = link["prediction"],
+            database = link["database"],
             textmining = link["textmining"],
-            combined_score = link["textmining"],
+            combined_score = link["combined_score"],
             ncbi_tax_id = int(tax),
             stereospecific = stereo == 's', # True if the ligand is stereospecific
         )
