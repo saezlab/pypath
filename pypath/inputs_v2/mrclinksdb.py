@@ -45,6 +45,7 @@ config = ResourceConfig(
     license=LicenseCV.ACADEMIC_FREE,
     update_category=UpdateCategoryCV.IRREGULAR,
     primary_category='interactions',
+    pubmed='38978014',
     description=(
         'MRClinksDB is a curated database of metabolite–receptor interactions, '
         'covering ligand-receptor pairs with compound classification based on '
