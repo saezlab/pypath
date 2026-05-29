@@ -5,9 +5,7 @@ This module converts information from the BiGG Model iMM1415 into Entity
 records using the declarative schema pattern.
 """
 
-import re
 import json
-from collections import defaultdict
 
 from pypath.inputs_v2.base import (
     ResourceConfig,
@@ -25,8 +23,6 @@ from pypath.internals.tabular_builder import (
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     MoleculeAnnotationsCv,
-    LigandTypeCv,
-    InteractionParameterCv,
     IdentifierNamespaceCv,
     LicenseCV,
     UpdateCategoryCV,
