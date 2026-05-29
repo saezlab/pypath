@@ -263,8 +263,9 @@ def parser(opener, **kwargs):
     ]
 
     records = [
-        list(process_record(pe).values())
+        r
         for e in entries if (pe := process_entry(e))
+        for r in list(process_record(pe).values())
     ]
 
     yield from records
@@ -294,7 +295,7 @@ f = FieldConfig(
 schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f()),#Extract uniprot
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt')),#Extract uniprot
     ),
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.EC, value=f('ID')),
