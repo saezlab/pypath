@@ -388,6 +388,7 @@ class InteractionParameterCv(CvEnum):
 
     # Binding affinity measurements (equilibrium constants)
     KI = "MI:0643"  # Equilibrium constant for dissociation of an inhibitor. Unit Molar.
+    KM = "MI:0644" # Michaelis-Menten constant: concentration of substrate at which the reaction rate is equal to half the maximal rate
     KD = "MI:0646"  # The equilibrium dissociation constant. Unit Molar.
     IC50 = "MI:0641"  # Molar concentration producing 50% of maximum inhibitory response. Unit Molar.
     EC50 = "MI:0642"  # Molar concentration producing 50% of maximum response for agonist. Unit Molar.
