@@ -6,17 +6,13 @@ records using the declarative schema pattern.
 """
 
 import re
-from functools import partial
 from collections import defaultdict
 
-from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.inputs_v2.parsers.macdb import iter_associations
 from pypath.inputs_v2.base import (
     ResourceConfig,
     Download,
     Resource,
     Dataset,
-    OntologyDataset
 )
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -24,27 +20,15 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
 )
-from pypath.internals.ontology_builder import (
-    OntologyBuilder,
-    RelationshipBuilder
-)
-from pypath.internals.ontology_schema import OntologyTypedef
 from pypath.internals.cv_terms import (
     EntityTypeCv,
-    ProteinFunctionalClassCv,
-    InteractionTypeCv,
-    OntologyCv,
-    DiseaseAnnotationCv,
+    LigandTypeCv,
+    InteractionParameterCv,
     IdentifierNamespaceCv,
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
-    MoleculeSubtypeCv,
-    MoleculeAnnotationsCv,
-    AssayAnnotationsCv,
 )
 
 # =================================== SET-UP ===================================
@@ -168,8 +152,8 @@ ROLES_MAPPER = {
     'AC': ('Activator', ROLE_COMPOUND),
     'IN': ('Inhibitor', ROLE_COMPOUND),
     'CF': ('Cofactor', ROLE_COMPOUND),
-    'KI': ('InhibitionConstant', K_COMPOUND),
-    'KM': ('MMConstant', K_COMPOUND),
+    'KI': ('Ki', K_COMPOUND),
+    'KM': ('Km', K_COMPOUND),
 }
 
 
@@ -304,7 +288,13 @@ schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.EC, value=f('ID')),
         CV(term=EntityTypeCv.ORGANISM, value=f('Organism')),
+        CV(term=IdentifierNamespaceCv.PUBMED, value=f('Refs')),
         CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('EC')),
+        CV(term=LigandTypeCv.ACTIVATOR, value=f('Activator')),
+        CV(term=LigandTypeCv.INHIBITOR, value=f('Inhibitor')),
+        CV(term=LigandTypeCv.ALLOSTERIC_MODULATOR, value=f('Cofactor')),
+        CV(term=InteractionParameterCv.KM, value=f('Km')),
+        CV(term=InteractionParameterCv.KI, value=f('Ki')),
     ),
 )
 
@@ -325,18 +315,18 @@ resource = Resource(
 # X   'UniProt': set(), # UniProt IDs as set
 #    '#': '6', # Internal BRENDA identifier, not used
 # X   'Organism': {'Mus musculus'}, # Species name
-#    'Refs': [ # References as a list of PMIDS
+# X   'Refs': [ # References as a list of PMIDS
 #        '14756569',
 #        ...
 #    ],
-#    'Activator': { # Activating compounds as set
+# X    'Activator': { # Activating compounds as set
 #        'S-nitrosoglutathione',
 #        'Valeramide',
 #        'butyramide',
 #        'capronamide',
 #        'tert-butanol'
 #    },
-#    'Inhibitor': { # Inhibiting compounds as set
+# X   'Inhibitor': { # Inhibiting compounds as set
 #        '1,10-phenanthroline',
 #        '4-Methylpyrazole',
 #        'Vanillin',
@@ -346,15 +336,15 @@ resource = Resource(
 #        'pyrazole',
 #        'syringaldehyde'
 #    },
-#    'Cofactor': {'NAD+', 'NADH'}, # Cofactors as set
-#    'InhibitionConstant': { # Ki constant as "concentration {compound}"
+# X    'Cofactor': {'NAD+', 'NADH'}, # Cofactors as set
+# X   'Ki': { # Ki constant as "concentration {compound}"
 #        '0.00008 {caffeic acid}',
 #        '0.0051 {pyrazole}',
 #        '0.0079 {Vanillin}',
 #        '0.0156 {syringaldehyde}',
 #        '0.022 {ellagic acid}'
 #    },
-#    'MMConstant': { # KM constant as "concentration {compound}"
+# X   'Km': { # KM constant as "concentration {compound}"
 #        '-999 {more}',
 #        '0.006 {Hexanol}',
 #        '0.085 {Hexanol}',
