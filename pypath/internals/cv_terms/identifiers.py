@@ -56,6 +56,8 @@ class IdentifierNamespaceCv(CvEnum):
     GENBANK_IDENTIFIER = ('OM:0118', 'GenBank sequence identifier')
     BIND = ('OM:0119', 'BIND (Biomolecular Interaction Network Database) identifier', 'http://bind.ca')
     CHEMSPIDER = ('OM:0124', 'ChemSpider internal database identifier', 'https://www.chemspider.com/')
+    ENVIPATH = ('OM:0125', 'enviPath internal database identifier', 'https://legacy.envipath.org/')
+    SABIORK_COMPOUND = ('OM:0126', 'Sabio-RK compound identifier', 'https://sabiork.h-its.org/')
 
     # Additional specialized identifiers (OM:0001-0009 range)
     REFSEQ_PROTEIN = ('OM:0001', 'NCBI RefSeq protein accession (NP_* format)')
@@ -81,6 +83,7 @@ class IdentifierNamespaceCv(CvEnum):
     METAC = ('OM:0135', 'MACdb study/cohort identifier (e.g. METAC_123)', 'https://ngdc.cncb.ac.cn/macdb')
     DOID = ('OM:0136', 'Human Disease Ontology identifier')
     REFMET = ('OM:0137', 'RefMet identifier')
+    SEED_COMPOUND = ('OM:0138', 'ModelSEED compound identifier', 'https://modelseed.org/')
 
     # Gene and protein names (OM:0200-0209 range)
     GENE_NAME_PRIMARY = ('OM:0200', 'Primary gene name or symbol')
@@ -142,3 +145,4 @@ class IdentifierNamespaceCv(CvEnum):
     HUMAN_GEM_METABOLITE = ('OM:0243', 'Human-GEM metabolite identifier (MAM prefix, compartment suffix stripped)', 'https://github.com/SysBioChalmers/Human-GEM')
     HUMAN_GEM_REACTION = ('OM:0244', 'Human-GEM reaction identifier', 'https://github.com/SysBioChalmers/Human-GEM')
     KEGG_PATHWAY = ('OM:0245', 'KEGG pathway identifier', 'https://www.genome.jp/kegg/pathway.html')
+    KEGG_GLYCAN = ('OM:0246', 'KEGG glycan identifier', 'https://www.genome.jp/kegg/glycan/')
