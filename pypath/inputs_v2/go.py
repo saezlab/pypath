@@ -13,6 +13,7 @@ config = ResourceConfig(
     url='https://geneontology.org/',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
+    pubmed='41413728',
     primary_category='ontologies',
     resource_kind='ontology',
     description='The Gene Ontology provides controlled vocabulary terms for gene product function, process, and cellular location.',
