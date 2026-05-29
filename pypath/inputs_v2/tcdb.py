@@ -43,7 +43,7 @@ config = ResourceConfig(
     url='https://www.tcdb.org/',
     license=LicenseCV.CC_BY_NC_4_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='26394610',
+    pubmed='33170213',
     primary_category='annotations',
     description=(
         'The Transporter Classification Database (TCDB) provides a '
