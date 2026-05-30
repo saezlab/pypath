@@ -61,7 +61,7 @@ config = ResourceConfig(
     url = 'https://www.rhea-db.org/',
     license = LicenseCV.CC_BY_4_0,
     update_category = UpdateCategoryCV.REGULAR,
-    pubmed = '33479744',
+    pubmed = '34755880',
     primary_category = 'reactions',
     description = (
         'Rhea is an expert-curated knowledgebase of chemical and transport '
