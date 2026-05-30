@@ -4,11 +4,11 @@ Provides a :class:`~pypath.inputs_v2.base.Resource` with five datasets
 parsed from the Recon3D BiGG JSON (``Recon3D.json``):
 
 Datasets:
-    metabolites: SMALL_MOLECULE entities, one per unique base ID (compartment
+    metabolites: CHEMICAL entities, one per unique base ID (compartment
         suffix stripped and deduplicated).  Cross-references to HMDB, ChEBI,
         KEGG Compound, and MetaNetX are included as identifiers; metabolite
         subtype, molecular formula and charge are stored as annotations.
-    reactions: REACTION entities with SMALL_MOLECULE sub-members carrying
+    reactions: REACTION entities with CHEMICAL sub-members carrying
         stoichiometry and reactant/product role annotations.  Direction is
         derived from the ``lower_bound`` field.
     catalysis: INTERACTION entities linking an enzyme (PROTEIN or COMPLEX)
@@ -107,7 +107,7 @@ HUMAN_TAXON_ID = '9606'
 # ── metabolites ──────────────────────────────────────────────────────────────
 
 metabolites_schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
         CV(term=IdentifierNamespaceCv.BIGG_METABOLITE, value=f('bigg_metabolite_id')),
@@ -140,7 +140,7 @@ reactions_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.SMALL_MOLECULE,
+            entity_type=EntityTypeCv.CHEMICAL,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('reactants', delimiter='||', map='stoich_id', preserve_indices=True)),
@@ -171,7 +171,7 @@ reactions_schema = EntityBuilder(
             ),
         ),
         MembersFromList(
-            entity_type=EntityTypeCv.SMALL_MOLECULE,
+            entity_type=EntityTypeCv.CHEMICAL,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('products', delimiter='||', map='stoich_id', preserve_indices=True)),
@@ -221,7 +221,7 @@ transport_reactions_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.SMALL_MOLECULE,
+            entity_type=EntityTypeCv.CHEMICAL,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('reactants', delimiter='||', map='stoich_id', preserve_indices=True)),
@@ -252,7 +252,7 @@ transport_reactions_schema = EntityBuilder(
             ),
         ),
         MembersFromList(
-            entity_type=EntityTypeCv.SMALL_MOLECULE,
+            entity_type=EntityTypeCv.CHEMICAL,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.BIGG_METABOLITE,
                    value=f('products', delimiter='||', map='stoich_id', preserve_indices=True)),

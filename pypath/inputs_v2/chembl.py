@@ -89,16 +89,16 @@ download = Download(
 
 # Mapping of ChEMBL molecule_type strings to EntityTypeCv
 MOLECULE_TYPE_TO_ENTITY_TYPE = {
-    'Small molecule': EntityTypeCv.SMALL_MOLECULE,
+    'Small molecule': EntityTypeCv.CHEMICAL,
     'Protein': EntityTypeCv.PROTEIN,
     'Antibody': EntityTypeCv.PROTEIN,
     'Enzyme': EntityTypeCv.PROTEIN,
-    'Oligosaccharide': EntityTypeCv.SMALL_MOLECULE,
-    'Oligonucleotide': EntityTypeCv.SMALL_MOLECULE,
+    'Oligosaccharide': EntityTypeCv.CHEMICAL,
+    'Oligonucleotide': EntityTypeCv.CHEMICAL,
     'Gene': EntityTypeCv.PROTEIN,
     'Cell': EntityTypeCv.PHYSICAL_ENTITY,
-    'Unknown': EntityTypeCv.SMALL_MOLECULE,
-    'Unclassified': EntityTypeCv.SMALL_MOLECULE,
+    'Unknown': EntityTypeCv.CHEMICAL,
+    'Unclassified': EntityTypeCv.CHEMICAL,
 }
 
 # Mapping of ChEMBL molecule_type strings to more specific subclasses
@@ -262,7 +262,7 @@ activities_schema = EntityBuilder(
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('molecule_chembl_id')),
                 ),

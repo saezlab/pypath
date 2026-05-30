@@ -18,7 +18,10 @@ from pypath.internals.cv_terms import (
 __all__ = [
     'Identifier',
     'Annotation',
+    'Association',
     'Membership',
+    'EntityRef',
+    'OntologyRelation',
     'Entity',
     'ENTITY_SCHEMA',
 ]
@@ -51,10 +54,27 @@ class Annotation(NamedTuple):
         else:
             return f"{term_str}={self.value}"
 
+
+class EntityRef(NamedTuple):
+    """Reference to an entity endpoint by one identifier."""
+
+    type: EntityTypeCv | str
+    identifier_type: IdentifierNamespaceCv | str
+    identifier: str
+
+
+class Association(NamedTuple):
+    """Association from the enclosing entity to another first-class entity."""
+
+    object: EntityRef
+    predicate: str | None = None
+
+
 class Membership(NamedTuple):
     member: 'Entity'  # Forward reference since Entity is defined below
     is_parent: bool = False  # For an entity self, in each Membership, is_parent=True means member is a parent of self; is_parent=False means self is parent of member
     annotations: list[Annotation] | None = None
+    associations: list[Association] | None = None
 
     def __repr__(self) -> str:
         """Compact representation of membership."""
@@ -84,6 +104,14 @@ class Membership(NamedTuple):
             lines = [lines[0]] + [lines[1]] + [f"{prefix}   {line}" for line in entity_lines]
         return "\n".join(lines)
 
+class OntologyRelation(NamedTuple):
+    """Ontology hierarchy edge from the enclosing entity to an object entity."""
+
+    predicate: str
+    object: EntityRef
+    ontology_id: str | None = None
+
+
 class Entity(NamedTuple):
     """ Entity record matching entities schema."""
 
@@ -92,6 +120,8 @@ class Entity(NamedTuple):
     annotations: List[Annotation] | None = None
 
     membership: List[Membership] | None = None 
+    ontology_relations: List[OntologyRelation] | None = None
+    associations: List[Association] | None = None
 
     def __repr__(self) -> str:
         """Tree-like detailed representation."""
@@ -111,12 +141,12 @@ class Entity(NamedTuple):
         # Identifiers
         lines.append(f"{prefix}├─ identifiers:")
         for i, id_ in enumerate(self.identifiers):
-            connector = "└─" if i == len(self.identifiers) - 1 and not self.annotations and not self.membership else "├─"
+            connector = "└─" if i == len(self.identifiers) - 1 and not self.annotations and not self.associations and not self.membership and not self.ontology_relations else "├─"
             lines.append(f"{prefix}│  {connector} {id_!r}")
 
         # Annotations
         if self.annotations:
-            is_last = not self.membership
+            is_last = not self.associations and not self.membership and not self.ontology_relations
             connector = "└─" if is_last else "├─"
             lines.append(f"{prefix}{connector} annotations:")
             for i, ann in enumerate(self.annotations):
@@ -124,9 +154,14 @@ class Entity(NamedTuple):
                 ann_prefix = "   " if is_last else "│  "
                 lines.append(f"{prefix}{ann_prefix}{ann_connector} {ann!r}")
 
+        if self.associations:
+            is_last = not self.membership and not self.ontology_relations
+            connector = "└─" if is_last else "├─"
+            lines.append(f"{prefix}{connector} associations: ({len(self.associations)})")
+
         # Membership
         if self.membership:
-            is_last = True
+            is_last = not self.ontology_relations
             connector = "└─" if is_last else "├─"
             lines.append(f"{prefix}{connector} membership: ({len(self.membership)})")
             for i, member in enumerate(self.membership):
@@ -155,6 +190,9 @@ class Entity(NamedTuple):
                     if lines[-len(member_lines)-1].endswith("├─ entity: " + member_lines[0]):
                         lines[-len(member_lines)-1] = f"{prefix}{member_prefix}{continuation}  └─ entity: {member_lines[0]}"
 
+        if self.ontology_relations:
+            lines.append(f"{prefix}└─ ontology_relations: ({len(self.ontology_relations)})")
+
         return "\n".join(lines)
 
 #### PyArrow Schemas (needed for parquet files) ####
@@ -171,6 +209,23 @@ ANNOTATION_FIELDS = [
     pa.field('units', pa.string()),
 ]
 
+ENTITY_REF_FIELDS = [
+    pa.field('type', pa.string()),
+    pa.field('identifier_type', pa.string()),
+    pa.field('identifier', pa.string()),
+]
+
+ONTOLOGY_RELATION_FIELDS = [
+    pa.field('predicate', pa.string()),
+    pa.field('object', pa.struct(ENTITY_REF_FIELDS)),
+    pa.field('ontology_id', pa.string()),
+]
+
+ASSOCIATION_FIELDS = [
+    pa.field('object', pa.struct(ENTITY_REF_FIELDS)),
+    pa.field('predicate', pa.string()),
+]
+
 # Base member entity fields.
 #
 # We intentionally support one additional nested membership layer for member
@@ -183,12 +238,15 @@ BASE_ENTITY_FIELDS = [
     pa.field('type', pa.string()),
     pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS))),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
+    pa.field('ontology_relations', pa.list_(pa.struct(ONTOLOGY_RELATION_FIELDS))),
+    pa.field('associations', pa.list_(pa.struct(ASSOCIATION_FIELDS))),
 ]
 
 BASE_MEMBERSHIP_FIELDS = [
     pa.field('member', pa.struct(BASE_ENTITY_FIELDS)),
     pa.field('is_parent', pa.bool_()),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
+    pa.field('associations', pa.list_(pa.struct(ASSOCIATION_FIELDS))),
 ]
 
 NESTED_ENTITY_FIELDS = [
@@ -201,6 +259,7 @@ MEMBERSHIP_FIELDS = [
     pa.field('member', pa.struct(NESTED_ENTITY_FIELDS)),
     pa.field('is_parent', pa.bool_()),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
+    pa.field('associations', pa.list_(pa.struct(ASSOCIATION_FIELDS))),
 ]
 
 # Full entity schema
@@ -209,6 +268,8 @@ ENTITY_FIELDS = [
     pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS)), nullable=False),
     pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
     pa.field('membership', pa.list_(pa.struct(MEMBERSHIP_FIELDS))),
+    pa.field('ontology_relations', pa.list_(pa.struct(ONTOLOGY_RELATION_FIELDS))),
+    pa.field('associations', pa.list_(pa.struct(ASSOCIATION_FIELDS))),
 ]
 
 ENTITY_SCHEMA = pa.schema(ENTITY_FIELDS)

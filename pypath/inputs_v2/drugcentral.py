@@ -149,7 +149,7 @@ def _organism_annotation(row: dict[str, object]) -> Annotation | None:
 def _small_molecule(row: dict[str, object]) -> Entity:
     struct_id = _clean(row.get('STRUCT_ID'))
     return Entity(
-        type=EntityTypeCv.SMALL_MOLECULE,
+        type=EntityTypeCv.CHEMICAL,
         identifiers=_identifiers(
             _identifier(IdentifierNamespaceCv.DRUGCENTRAL, struct_id),
             _identifier(

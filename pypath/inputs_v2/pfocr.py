@@ -38,7 +38,7 @@ _PMC_RE = re.compile(r'^(PMC\d+)__')
 def association_to_entity(row: dict) -> Entity:
     """Map one PFOCR GMT row to a figure-level association entity."""
     data_type = row.get('data_type') or 'gene'
-    member_type = EntityTypeCv.SMALL_MOLECULE if data_type == 'chemical' else EntityTypeCv.PROTEIN
+    member_type = EntityTypeCv.CHEMICAL if data_type == 'chemical' else EntityTypeCv.PROTEIN
     identifier_type = IdentifierNamespaceCv.CHEBI if data_type == 'chemical' else IdentifierNamespaceCv.ENTREZ
 
     annotations = [

@@ -17,9 +17,12 @@ from typing import Any, Callable, Mapping, Sequence
 
 from pypath.internals.silver_schema import (
     Annotation as SilverAnnotation,
+    Association as SilverAssociation,
     Entity as SilverEntity,
+    EntityRef as SilverEntityRef,
     Identifier as SilverIdentifier,
     Membership as SilverMembership,
+    OntologyRelation as SilverOntologyRelation,
 )
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -61,6 +64,9 @@ def _canonical_entity_type(value: Any) -> EntityTypeCv | None:
         entity_type = _ENTITY_TYPE_BY_TEXT.get(text)
     else:
         return None
+
+    if entity_type is EntityTypeCv.SMALL_MOLECULE:
+        entity_type = EntityTypeCv.CHEMICAL
 
     if entity_type not in _CANONICAL_ENTITY_TYPES:
         return None
@@ -463,6 +469,14 @@ class CV:
         return _ConstantSource(spec)
 
 
+def _normalize_source(spec: Any) -> Any:
+    if isinstance(spec, (Column, _ConstantSource, _CallableSource)):
+        return spec
+    if callable(spec):
+        return _CallableSource(spec)
+    return _ConstantSource(spec)
+
+
 class _BaseCvBuilder:
     """Shared implementation for identifier and annotation builders."""
 
@@ -783,13 +797,17 @@ class MembersFromList:
         entity_type: EntityTypeCv | Column | Callable[[Any], Any],
         identifiers: IdentifiersBuilder,
         annotations: AnnotationsBuilder | None = None,
+        associations: "AssociationsBuilder" | None = None,
         entity_annotations: AnnotationsBuilder | None = None,
+        entity_associations: "AssociationsBuilder" | None = None,
     ) -> None:
         _validate_static_entity_type(entity_type)
         self.entity_type = entity_type
         self.identifiers = identifiers
         self.membership_annotations = annotations
+        self.membership_associations = associations
         self.entity_annotations = entity_annotations
+        self.entity_associations = entity_associations
 
     def build(self, row: Any, cache: ColumnCache) -> list[SilverMembership]:
         lengths: list[int] = []
@@ -799,8 +817,14 @@ class MembersFromList:
         if self.membership_annotations:
             lengths.append(self.membership_annotations.max_length(row, cache))
 
+        if self.membership_associations:
+            lengths.append(self.membership_associations.max_length(row, cache))
+
         if self.entity_annotations:
             lengths.append(self.entity_annotations.max_length(row, cache))
+
+        if self.entity_associations:
+            lengths.append(self.entity_associations.max_length(row, cache))
 
         member_count = max(lengths) if lengths else 0
         memberships: list[SilverMembership] = []
@@ -823,11 +847,22 @@ class MembersFromList:
                 if self.membership_annotations
                 else None
             )
+            entity_associations = (
+                self.entity_associations.build_for_index(row, index, cache)
+                if self.entity_associations
+                else None
+            )
+            membership_associations = (
+                self.membership_associations.build_for_index(row, index, cache)
+                if self.membership_associations
+                else None
+            )
 
             member_entity = SilverEntity(
                 type=member_entity_type,
                 identifiers=member_identifiers,
                 annotations=entity_annotations if entity_annotations else None,
+                associations=entity_associations if entity_associations else None,
                 membership=None,
             )
 
@@ -835,6 +870,7 @@ class MembersFromList:
                 SilverMembership(
                     member=member_entity,
                     annotations=membership_annotations if membership_annotations else None,
+                    associations=membership_associations if membership_associations else None,
                 )
             )
 
@@ -874,9 +910,11 @@ class Member:
         *,
         entity: "EntityBuilder",
         annotations: AnnotationsBuilder | None = None,
+        associations: "AssociationsBuilder" | None = None,
     ) -> None:
         self.entity = entity
         self.annotations = annotations
+        self.associations = associations
 
     def build(self, row: Any, cache: ColumnCache) -> SilverMembership | None:
         member_entity = self.entity.build(row)
@@ -888,10 +926,16 @@ class Member:
             if self.annotations
             else None
         )
+        membership_associations = (
+            self.associations.build(row, cache)
+            if self.associations
+            else None
+        )
 
         return SilverMembership(
             member=member_entity,
             annotations=membership_annot if membership_annot else None,
+            associations=membership_associations if membership_associations else None,
         )
 
 
@@ -918,6 +962,264 @@ class MembershipBuilder:
         return memberships
 
 
+class OntologyRelationBuilder:
+    """Definition of ontology hierarchy edges from the built entity."""
+
+    def __init__(
+        self,
+        *,
+        predicate: Any,
+        object_entity_type: Any,
+        object_identifier_type: Any,
+        object_identifier: Any,
+        ontology_id: Any | None = None,
+    ) -> None:
+        self.predicate_source = _normalize_source(predicate)
+        self.object_entity_type_source = _normalize_source(object_entity_type)
+        self.object_identifier_type_source = _normalize_source(
+            object_identifier_type,
+        )
+        self.object_identifier_source = _normalize_source(object_identifier)
+        self.ontology_id_source = (
+            _normalize_source(ontology_id)
+            if ontology_id is not None
+            else None
+        )
+
+    def build(
+        self,
+        row: Any,
+        cache: ColumnCache,
+    ) -> list[SilverOntologyRelation]:
+        predicates = cache.values(self.predicate_source, row)
+        object_entity_types = cache.values(self.object_entity_type_source, row)
+        object_identifier_types = cache.values(
+            self.object_identifier_type_source,
+            row,
+        )
+        object_identifiers = cache.values(self.object_identifier_source, row)
+        ontology_ids = (
+            cache.values(self.ontology_id_source, row)
+            if self.ontology_id_source is not None
+            else []
+        )
+        relations: list[SilverOntologyRelation] = []
+        seen: set[tuple[str, str, str, str, str | None]] = set()
+        for index, object_identifier in enumerate(object_identifiers):
+            predicate = _pick_index_or_first(predicates, index)
+            object_entity_type = _pick_index_or_first(object_entity_types, index)
+            object_identifier_type = _pick_index_or_first(
+                object_identifier_types,
+                index,
+            )
+            ontology_id = _pick_index_or_first(ontology_ids, index)
+            if not predicate or not object_identifier:
+                continue
+            if object_entity_type is None or object_identifier_type is None:
+                continue
+            key = (
+                str(predicate),
+                str(object_entity_type),
+                str(object_identifier_type),
+                str(object_identifier),
+                str(ontology_id) if ontology_id is not None else None,
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            relations.append(
+                SilverOntologyRelation(
+                    predicate=str(predicate),
+                    object=SilverEntityRef(
+                        type=object_entity_type,
+                        identifier_type=object_identifier_type,
+                        identifier=str(object_identifier),
+                    ),
+                    ontology_id=str(ontology_id) if ontology_id else None,
+                )
+            )
+        return relations
+
+
+class OntologyRelationsBuilder:
+    """Container for one or more ontology relation builders."""
+
+    def __init__(self, *relations: OntologyRelationBuilder) -> None:
+        self.relations = relations
+
+    def build(
+        self,
+        row: Any,
+        cache: ColumnCache,
+    ) -> list[SilverOntologyRelation]:
+        values: list[SilverOntologyRelation] = []
+        for relation in self.relations:
+            values.extend(relation.build(row, cache))
+        return values
+
+
+def _pick_index_or_first(values: list[Any], index: int) -> Any | None:
+    if not values:
+        return None
+    if index < len(values):
+        return values[index]
+    return values[0]
+
+
+class AssociationBuilder:
+    """Definition of graph associations from the built entity to an object."""
+
+    def __init__(
+        self,
+        *,
+        object_entity_type: Any,
+        object_identifier_type: Any,
+        object_identifier: Any,
+        predicate: Any | None = None,
+    ) -> None:
+        self.predicate_source = (
+            _normalize_source(predicate)
+            if predicate is not None
+            else None
+        )
+        self.object_entity_type_source = _normalize_source(object_entity_type)
+        self.object_identifier_type_source = _normalize_source(
+            object_identifier_type,
+        )
+        self.object_identifier_source = _normalize_source(object_identifier)
+
+    def build(
+        self,
+        row: Any,
+        cache: ColumnCache,
+    ) -> list[SilverAssociation]:
+        max_len = self.max_length(row, cache)
+        associations: list[SilverAssociation] = []
+        seen: set[tuple[str | None, str, str, str]] = set()
+        for index in range(max_len):
+            for association in self.build_for_index(row, index, cache):
+                key = (
+                    str(association.predicate) if association.predicate else None,
+                    str(association.object.type),
+                    str(association.object.identifier_type),
+                    str(association.object.identifier),
+                )
+                if key in seen:
+                    continue
+                seen.add(key)
+                associations.append(association)
+        return associations
+
+    def build_for_index(
+        self,
+        row: Any,
+        index: int,
+        cache: ColumnCache,
+    ) -> list[SilverAssociation]:
+        predicates = (
+            cache.values(self.predicate_source, row)
+            if self.predicate_source is not None
+            else []
+        )
+        object_entity_types = cache.values(self.object_entity_type_source, row)
+        object_identifier_types = cache.values(
+            self.object_identifier_type_source,
+            row,
+        )
+        object_identifiers = cache.values(self.object_identifier_source, row)
+        predicate = _pick_index_or_first(predicates, index)
+        object_entity_type = _pick_index_or_first(object_entity_types, index)
+        object_identifier_type = _pick_index_or_first(
+            object_identifier_types,
+            index,
+        )
+        object_identifier = _BaseCvBuilder._pick_index(object_identifiers, index)
+        if object_entity_type is None or object_identifier_type is None:
+            return []
+
+        associations: list[SilverAssociation] = []
+        seen: set[tuple[str | None, str, str, str]] = set()
+        for object_identifier_item in _BaseCvBuilder._explode_values(
+            object_identifier
+        ):
+            key = (
+                str(predicate) if predicate else None,
+                str(object_entity_type),
+                str(object_identifier_type),
+                str(object_identifier_item),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            associations.append(
+                SilverAssociation(
+                    predicate=str(predicate) if predicate else None,
+                    object=SilverEntityRef(
+                        type=object_entity_type,
+                        identifier_type=object_identifier_type,
+                        identifier=str(object_identifier_item),
+                    ),
+                )
+            )
+        return associations
+
+    def max_length(self, row: Any, cache: ColumnCache) -> int:
+        lengths = [
+            len(cache.values(self.object_entity_type_source, row)),
+            len(cache.values(self.object_identifier_type_source, row)),
+            len(cache.values(self.object_identifier_source, row)),
+        ]
+        if self.predicate_source is not None:
+            lengths.append(len(cache.values(self.predicate_source, row)))
+        return max(lengths)
+
+
+class AssociationsBuilder:
+    """Container for one or more association builders."""
+
+    def __init__(self, *associations: AssociationBuilder) -> None:
+        self.associations = associations
+
+    def build(
+        self,
+        row: Any,
+        cache: ColumnCache,
+    ) -> list[SilverAssociation]:
+        values: list[SilverAssociation] = []
+        seen: set[tuple[str | None, str, str, str]] = set()
+        for association_builder in self.associations:
+            for association in association_builder.build(row, cache):
+                key = (
+                    str(association.predicate) if association.predicate else None,
+                    str(association.object.type),
+                    str(association.object.identifier_type),
+                    str(association.object.identifier),
+                )
+                if key in seen:
+                    continue
+                seen.add(key)
+                values.append(association)
+        return values
+
+    def build_for_index(
+        self,
+        row: Any,
+        index: int,
+        cache: ColumnCache,
+    ) -> list[SilverAssociation]:
+        values: list[SilverAssociation] = []
+        for association_builder in self.associations:
+            values.extend(association_builder.build_for_index(row, index, cache))
+        return values
+
+    def max_length(self, row: Any, cache: ColumnCache) -> int:
+        lengths = [
+            association_builder.max_length(row, cache)
+            for association_builder in self.associations
+        ]
+        return max(lengths) if lengths else 0
+
+
 class EntityBuilder:
     """Declarative spec that produces `Entity` records from rows."""
 
@@ -927,13 +1229,19 @@ class EntityBuilder:
         entity_type: EntityTypeCv | Column | Callable[[Any], EntityTypeCv],
         identifiers: IdentifiersBuilder | None = None,
         annotations: AnnotationsBuilder | None = None,
+        associations: AssociationsBuilder | None = None,
         membership: MembershipBuilder | None = None,
+        ontology_relations: OntologyRelationsBuilder
+        | Callable[[Any], list[SilverOntologyRelation]]
+        | None = None,
     ) -> None:
         _validate_static_entity_type(entity_type)
         self.entity_type = entity_type
         self.identifiers = identifiers
         self.annotations = annotations
+        self.associations = associations
         self.membership = membership
+        self.ontology_relations = ontology_relations
 
     def __call__(self, row: Any) -> SilverEntity | None:
         return self.build(row)
@@ -968,14 +1276,35 @@ class EntityBuilder:
             return None
 
         annotations = self.annotations.build(row, cache) if self.annotations else None
+        associations = self.associations.build(row, cache) if self.associations else None
         membership = self.membership.build(row, cache) if self.membership else None
+        ontology_relations = self._build_ontology_relations(row, cache)
 
         return SilverEntity(
             type=resolved_type,
             identifiers=identifiers,
             annotations=annotations if annotations else None,
+            associations=associations if associations else None,
             membership=membership if membership else None,
+            ontology_relations=(
+                ontology_relations if ontology_relations else None
+            ),
         )
+
+    def _build_ontology_relations(
+        self,
+        row: Any,
+        cache: ColumnCache,
+    ) -> list[SilverOntologyRelation]:
+        if self.ontology_relations is None:
+            return []
+        if hasattr(self.ontology_relations, 'build'):
+            return self.ontology_relations.build(row, cache)
+        try:
+            return list(self.ontology_relations(row) or [])
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.debug("Ontology relations callable failed: %s", exc)
+            return []
 
     def _allows_empty_identifiers(self, entity_type: Any) -> bool:
         return entity_type in {
@@ -990,6 +1319,8 @@ class EntityBuilder:
 
 
 __all__ = [
+    "AssociationBuilder",
+    "AssociationsBuilder",
     "AnnotationsBuilder",
     "Column",
     "ColumnCache",

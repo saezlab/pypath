@@ -57,7 +57,7 @@ f = FieldConfig(
 )
 
 metabolites_schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.HMDB, value=f('accession')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),

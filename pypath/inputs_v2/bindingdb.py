@@ -97,7 +97,7 @@ interactions_schema = EntityBuilder(
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.BINDINGDB, value=f('BindingDB MonomerID')),
                     CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='chembl')),

@@ -137,11 +137,11 @@ def parser(opener, table=None, **_kwargs):
 
 MOLECULE_TYPE_TO_ENTITY_TYPE = {
     'gene': EntityTypeCv.PROTEIN,
-    'compound': EntityTypeCv.SMALL_MOLECULE,
+    'compound': EntityTypeCv.CHEMICAL,
 }
 SOURCE_TO_ENTITY_TYPE = {
-    'hmdb': EntityTypeCv.SMALL_MOLECULE,
-    'lipidmaps': EntityTypeCv.SMALL_MOLECULE,
+    'hmdb': EntityTypeCv.CHEMICAL,
+    'lipidmaps': EntityTypeCv.CHEMICAL,
 }
 MOLECULE_TYPE_TO_SUBTYPE = {
     'compound': MoleculeSubtypeCv.METABOLITE,
@@ -176,7 +176,7 @@ CLASS_LEVEL_NAME_TO_TERM = {
 }
 ID_TO_ENTITY = {
     'G': EntityTypeCv.PROTEIN,
-    'C': EntityTypeCv.SMALL_MOLECULE,
+    'C': EntityTypeCv.CHEMICAL,
 }
 ID_TO_MOLECULE_SUBTYPE = {
     'C': MoleculeSubtypeCv.METABOLITE,
@@ -307,7 +307,7 @@ source_schema = EntityBuilder(
 #   e.g. RAMP_C_000000001|hmdb|hmdb:HMDB0000001|[H]OC(=O)[C@@]([H])(N([H])[H])C([H])([H])C1=C([H])N(C([H])=N1)C([H])([H])[H]|BRMWTNUJHUMWMS|BRMWTNUJHUMWMS-LURJTMIESA-N|InChI=1S/C7H11N3O2/c1-10-3-5(9-4-10)2-6(8)7(11)12/h3-4,6H,2,8H2,1H3,(H,11,12)/t6-/m0/s1|169.1811|169.085126611|1-Methylhistidine|C7H11N3O2
 
 chem_props_schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('ramp_id')),
         CV(

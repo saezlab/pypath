@@ -5,10 +5,10 @@ from the Human-GEM YAML (``model/Human-GEM.yml``) downloaded directly from
 the SysBioChalmers GitHub repository.
 
 Datasets:
-    metabolites: SMALL_MOLECULE entities, one per unique base MAM ID
+    metabolites: CHEMICAL entities, one per unique base MAM ID
         (compartment suffix stripped and deduplicated). Metabolite subtype,
         molecular formula and charge are stored as annotations.
-    reactions: REACTION entities with SMALL_MOLECULE sub-members carrying
+    reactions: REACTION entities with CHEMICAL sub-members carrying
         stoichiometry and reactant/product role annotations.  Direction is
         derived from the ``lower_bound`` / ``upper_bound`` bounds.
     catalysis: INTERACTION entities linking an Ensembl gene (PROTEIN) or
@@ -114,7 +114,7 @@ download = Download(
 # ── metabolites ──────────────────────────────────────────────────────────────
 
 metabolites_schema = EntityBuilder(
-    entity_type = EntityTypeCv.SMALL_MOLECULE,
+    entity_type = EntityTypeCv.CHEMICAL,
     identifiers = IdentifiersBuilder(
         CV(term = IdentifierNamespaceCv.NAME, value = f('name')),
         CV(term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE, value = f('human_gem_metabolite_id')),
@@ -146,7 +146,7 @@ reactions_schema = EntityBuilder(
     ),
     membership = MembershipBuilder(
         MembersFromList(
-            entity_type = EntityTypeCv.SMALL_MOLECULE,
+            entity_type = EntityTypeCv.CHEMICAL,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
@@ -173,7 +173,7 @@ reactions_schema = EntityBuilder(
             ),
         ),
         MembersFromList(
-            entity_type = EntityTypeCv.SMALL_MOLECULE,
+            entity_type = EntityTypeCv.CHEMICAL,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
@@ -218,7 +218,7 @@ transport_reactions_schema = EntityBuilder(
     ),
     membership = MembershipBuilder(
         MembersFromList(
-            entity_type = EntityTypeCv.SMALL_MOLECULE,
+            entity_type = EntityTypeCv.CHEMICAL,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,
@@ -245,7 +245,7 @@ transport_reactions_schema = EntityBuilder(
             ),
         ),
         MembersFromList(
-            entity_type = EntityTypeCv.SMALL_MOLECULE,
+            entity_type = EntityTypeCv.CHEMICAL,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.HUMAN_GEM_METABOLITE,

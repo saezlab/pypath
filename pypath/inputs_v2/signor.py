@@ -68,10 +68,10 @@ _TERM_MAPPING = {
 _INTERACTOR_TYPE_MAPPING = {
     'MI:0326': EntityTypeCv.PROTEIN,
     'MI:0314': EntityTypeCv.COMPLEX,
-    'MI:0328': EntityTypeCv.SMALL_MOLECULE,
+    'MI:0328': EntityTypeCv.CHEMICAL,
     'MI:2261': EntityTypeCv.PHENOTYPE,
     'MI:2260': EntityTypeCv.STIMULUS,
-    'MI:2258': EntityTypeCv.SMALL_MOLECULE,  # xenobiotic
+    'MI:2258': EntityTypeCv.CHEMICAL,  # xenobiotic
     'MI:1304': EntityTypeCv.PROTEIN_FAMILY,  # molecule set
 }
 _TAXON_SCOPED_ENTITY_TYPES = {
@@ -193,7 +193,7 @@ def _infer_signor_interactor_type(row: dict[str, object], suffix: str) -> Entity
     lower_values = [value.lower() for value in values]
 
     if any(value.startswith('chebi:') or value.startswith('pubchem:') for value in lower_values):
-        return EntityTypeCv.SMALL_MOLECULE
+        return EntityTypeCv.CHEMICAL
     if any('signor-c' in value for value in lower_values):
         return EntityTypeCv.COMPLEX
     if any('signor-pf' in value or 'signor-fp' in value for value in lower_values):

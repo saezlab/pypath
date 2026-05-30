@@ -103,7 +103,7 @@ foods_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.SMALL_MOLECULE,
+            entity_type=EntityTypeCv.CHEMICAL,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.FOODB, value=f('member_compound_public_id')),
                 CV(term=IdentifierNamespaceCv.NAME, value=f('member_compound_name')),

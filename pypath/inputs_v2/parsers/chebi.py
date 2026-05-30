@@ -7,7 +7,6 @@ from collections.abc import Generator, Iterable
 import re
 from typing import Any
 
-
 _DATA_CACHE: dict[str, list[dict[str, Any]]] = {}
 
 _CHEMICAL_ENTITY_ROOT = 'CHEBI:24431'
@@ -34,6 +33,14 @@ _PUBCHEM_RE = re.compile(r'(?:pubchem(?:\s+compound)?|cid)[:\s]+(\d+)', re.IGNOR
 _HMDB_RE = re.compile(r'(?:^|\b)(HMDB\d+)(?:\b|$)', re.IGNORECASE)
 _LIPIDMAPS_RE = re.compile(r'(?:lipid\s*maps|lipidmaps)[:\s]+([A-Z0-9]+)', re.IGNORECASE)
 _CAS_RE = re.compile(r'\b(\d{2,7}-\d{2}-\d)\b')
+_ESCAPE_RE = re.compile(r'\\([ntr"\\])')
+_ESCAPE_MAP = {
+    'n': '\n',
+    't': '\t',
+    'r': '\r',
+    '"': '"',
+    '\\': '\\',
+}
 
 
 def _raw(
@@ -121,6 +128,7 @@ def _new_term() -> dict[str, Any]:
         'name': '',
         'definition': '',
         'synonyms': [],
+        'alt_ids': [],
         'comments': [],
         'xrefs': [],
         'is_a': [],
@@ -147,6 +155,7 @@ def _store_term(term: dict[str, Any] | None, terms: dict[str, dict[str, Any]]) -
     terms[term_id] = {
         **term,
         'synonyms': _dedupe(term['synonyms']),
+        'alt_ids': _dedupe(term['alt_ids']),
         'comments': _dedupe(term['comments']),
         'xrefs': _dedupe(term['xrefs']),
         'is_a': _dedupe(term['is_a']),
@@ -166,6 +175,10 @@ def _apply_tag(term: dict[str, Any], tag: str, value: str) -> None:
         synonym = _extract_quoted(value)
         if synonym:
             term['synonyms'].append(synonym)
+    elif tag == 'alt_id':
+        alt_id = _strip_inline_comment(value)
+        if alt_id:
+            term['alt_ids'].append(alt_id)
     elif tag == 'comment':
         if value:
             term['comments'].append(value)
@@ -197,7 +210,10 @@ def _extract_quoted(value: str) -> str:
     match = re.search(r'"((?:\\.|[^"\\])*)"', value)
     if not match:
         return value.strip()
-    return bytes(match.group(1), 'utf-8').decode('unicode_escape').strip()
+    return _ESCAPE_RE.sub(
+        lambda escape: _ESCAPE_MAP[escape.group(1)],
+        match.group(1),
+    ).strip()
 
 
 def _parse_relationship(value: str) -> dict[str, str] | None:
@@ -280,7 +296,14 @@ def _build_records(terms: dict[str, dict[str, Any]]) -> dict[str, list[dict[str,
         if not child_map.get(term_id)
     }
 
-    ontology_term_ids = included_terms - structured_leaf_terms
+    resolvable_structured_leaf_terms = {
+        term_id
+        for term_id in structured_leaf_terms
+        if _has_standard_inchikey(terms[term_id])
+    }
+    molecule_term_ids = included_terms
+
+    ontology_term_ids = included_terms - resolvable_structured_leaf_terms
 
     ontology_terms = [
         {
@@ -288,6 +311,7 @@ def _build_records(terms: dict[str, dict[str, Any]]) -> dict[str, list[dict[str,
             'name': terms[term_id].get('name', ''),
             'definition': terms[term_id].get('definition', ''),
             'synonyms': terms[term_id].get('synonyms', []),
+            'alt_ids': terms[term_id].get('alt_ids', []),
             'comments': terms[term_id].get('comments', []),
             'xrefs': terms[term_id].get('xrefs', []),
             'is_a': [parent for parent in terms[term_id].get('is_a', []) if parent in ontology_term_ids],
@@ -297,12 +321,14 @@ def _build_records(terms: dict[str, dict[str, Any]]) -> dict[str, list[dict[str,
                 if relationship.get('target') in ontology_term_ids
             ],
             'is_obsolete': terms[term_id].get('is_obsolete', False),
+            'inchi': terms[term_id].get('properties', {}).get('inchi', ''),
+            'inchikey': terms[term_id].get('properties', {}).get('inchikey', ''),
         }
         for term_id in sorted(ontology_term_ids)
     ]
 
     molecules: list[dict[str, Any]] = []
-    for term_id in sorted(structured_terms):
+    for term_id in sorted(molecule_term_ids):
         term = terms[term_id]
         xrefs = _extract_identifier_xrefs(term.get('xrefs', []))
         properties = term.get('properties', {})
@@ -311,6 +337,7 @@ def _build_records(terms: dict[str, dict[str, Any]]) -> dict[str, list[dict[str,
                 'chebi_id': term_id,
                 'name': term.get('name', ''),
                 'synonyms': term.get('synonyms', []),
+                'alt_ids': term.get('alt_ids', []),
                 'definition': term.get('definition', ''),
                 'ancestor_terms': sorted(ancestor_map.get(term_id, set()) & ontology_term_ids),
                 'kegg_compound': sorted(xrefs['kegg_compound']),
@@ -318,6 +345,16 @@ def _build_records(terms: dict[str, dict[str, Any]]) -> dict[str, list[dict[str,
                 'hmdb': sorted(xrefs['hmdb']),
                 'lipidmaps': sorted(xrefs['lipidmaps']),
                 'cas': sorted(xrefs['cas']),
+                'is_a': [
+                    parent
+                    for parent in term.get('is_a', [])
+                    if parent in molecule_term_ids
+                ],
+                'relationships': [
+                    relationship
+                    for relationship in term.get('relationships', [])
+                    if relationship.get('target') in molecule_term_ids
+                ],
                 'smiles': properties.get('smiles', ''),
                 'inchi': properties.get('inchi', ''),
                 'inchikey': properties.get('inchikey', ''),
@@ -368,6 +405,10 @@ def _is_included_chemical_term(term_id: str, term: dict[str, Any], ancestor_map:
 def _has_structure(term: dict[str, Any]) -> bool:
     properties = term.get('properties', {})
     return any(properties.get(key) for key in _STRUCTURE_SIGNAL_KEYS)
+
+
+def _has_standard_inchikey(term: dict[str, Any]) -> bool:
+    return bool(term.get('properties', {}).get('inchikey'))
 
 
 def _extract_identifier_xrefs(xrefs: Iterable[str]) -> dict[str, set[str]]:

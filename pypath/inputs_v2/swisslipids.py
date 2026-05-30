@@ -59,7 +59,7 @@ f = FieldConfig(
 )
 
 lipids_schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=f('Lipid ID')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('Name')),

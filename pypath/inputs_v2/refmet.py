@@ -67,8 +67,8 @@ def is_lipid(x):
     return 'lipid' if 'lipid' in x.lower() else 'small_molecule'
 
 CLASS_ENTITY = {
-    'lipid': EntityTypeCv.SMALL_MOLECULE,
-    'small_molecule': EntityTypeCv.SMALL_MOLECULE,
+    'lipid': EntityTypeCv.CHEMICAL,
+    'small_molecule': EntityTypeCv.CHEMICAL,
 }
 MOLECULE_SUBTYPE = {
     'lipid': EntityTypeCv.LIPID,

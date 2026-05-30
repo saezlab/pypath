@@ -29,7 +29,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 7
+_CACHE_VERSION = 8
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
@@ -37,7 +37,7 @@ _MISSING_VALUE = "__MISSING__"
 
 # Mapping of BioPAX PhysicalEntity types to EntityTypeCv terms
 PHYSICAL_ENTITY_TYPE_MAP = {
-    'smallmolecule': EntityTypeCv.SMALL_MOLECULE,
+    'smallmolecule': EntityTypeCv.CHEMICAL,
     'protein': EntityTypeCv.PROTEIN,
     'gene': EntityTypeCv.PROTEIN,
     'complex': EntityTypeCv.COMPLEX,
@@ -52,7 +52,7 @@ PHYSICAL_ENTITY_TYPE_MAP = {
 # Mapping of BioPAX EntityReference subtypes to EntityTypeCv terms
 ENTITY_REFERENCE_TYPE_MAP = {
     'proteinreference': EntityTypeCv.PROTEIN,
-    'smallmoleculereference': EntityTypeCv.SMALL_MOLECULE,
+    'smallmoleculereference': EntityTypeCv.CHEMICAL,
     'dnareference': EntityTypeCv.DNA,
     'rnareference': EntityTypeCv.RNA,
 }
@@ -279,6 +279,20 @@ def _flatten_child_pathways(child_pathways: list[dict], prefix: str = 'child_pat
     return data
 
 
+def _flatten_parent_pathways(parent_pathways: list[dict], prefix: str = 'parent_pathway') -> dict[str, str]:
+    fields = ['display_name', 'reactome_stable_id', 'uri']
+    data: dict[str, str] = {}
+    for field in fields:
+        items = []
+        for parent_pathway in parent_pathways:
+            value = parent_pathway.get(field, '')
+            if value in (None, ''):
+                value = _MISSING_VALUE
+            items.append(str(value))
+        data[f'{prefix}_{field}'] = _join_list(items)
+    return data
+
+
 def _flatten_controller_members(members: list[dict], prefix: str = 'controller_member') -> dict[str, str]:
     data: dict[str, str] = {}
     for field in _CONTROLLER_MEMBER_FIELDS:
@@ -298,96 +312,6 @@ def _join_unique_values(values: list[str]) -> str:
         if value and value not in seen:
             seen.append(value)
     return ';'.join(seen)
-
-
-def _split_field(value: str, delimiter: str = _LIST_DELIMITER) -> list[str]:
-    if not value:
-        return []
-    return [item for item in value.split(delimiter) if item and item != _MISSING_VALUE]
-
-
-
-def _build_pathway_terms(pathway_records: list[dict]) -> list[dict]:
-    terms: dict[str, dict] = {}
-    parent_map: defaultdict[str, list[tuple[str, str]]] = defaultdict(list)
-
-    for record in pathway_records:
-        stable_id = record.get('reactome_stable_id', '').split(';')[0]
-        if not stable_id:
-            continue
-
-        term = terms.setdefault(
-            stable_id,
-            {
-                'id': stable_id,
-                'name': record.get('display_name', ''),
-                'definition': record.get('definition', ''),
-                'synonyms': [],
-                'comments': [],
-                'xrefs': [],
-                'parent_ids': [],
-                'parent_names': [],
-            },
-        )
-        if record.get('display_name'):
-            term['name'] = record['display_name']
-        if record.get('definition'):
-            term['definition'] = record['definition']
-        term['synonyms'].extend([s for s in record.get('synonyms', '').split(';') if s])
-        term['comments'].extend([c for c in record.get('comments', '').split(';') if c])
-
-        reactome_id = record.get('reactome_id', '')
-        if reactome_id:
-            term['xrefs'].append(f'Reactome:{reactome_id}')
-        term['xrefs'].extend([g for g in record.get('go', '').split(';') if g])
-        taxon_id = record.get('ncbi_tax_id', '')
-        if taxon_id:
-            term['xrefs'].append(f'NCBITaxon:{taxon_id}')
-
-        child_ids = _split_field(record.get('child_pathway_reactome_stable_id', ''))
-        child_names = _split_field(record.get('child_pathway_display_name', ''))
-        for idx, child_id_field in enumerate(child_ids):
-            child_id = child_id_field.split(';')[0]
-            if not child_id:
-                continue
-            child_name = child_names[idx] if idx < len(child_names) else ''
-            parent_map[child_id].append((stable_id, record.get('display_name', '')))
-            terms.setdefault(
-                child_id,
-                {
-                    'id': child_id,
-                    'name': child_name,
-                    'definition': '',
-                    'synonyms': [],
-                    'comments': [],
-                    'xrefs': [],
-                    'parent_ids': [],
-                    'parent_names': [],
-                },
-            )
-
-    for term_id, parents in parent_map.items():
-        seen: set[tuple[str, str]] = set()
-        for parent_id, parent_name in parents:
-            key = (parent_id, parent_name)
-            if key in seen:
-                continue
-            seen.add(key)
-            terms[term_id]['parent_ids'].append(parent_id)
-            terms[term_id]['parent_names'].append(parent_name)
-
-    for term in terms.values():
-        term['synonyms'] = sorted(set(term['synonyms']))
-        term['comments'] = list(dict.fromkeys(term['comments']))
-        term['xrefs'] = list(dict.fromkeys(term['xrefs']))
-        term['synonyms'] = ';'.join(term['synonyms'])
-        term['comments'] = ';'.join(term['comments'])
-        term['xrefs'] = ';'.join(term['xrefs'])
-        term['parent_ids'] = ';'.join(term['parent_ids'])
-        term['parent_names'] = ';'.join(term['parent_names'])
-
-    return sorted(terms.values(), key=lambda t: t['id'])
-
 
 
 def _build_pathway_membership_index(g: Graph, xref_cache: dict[str, dict]) -> dict[str, list[dict[str, str]]]:
@@ -912,12 +836,69 @@ def _iterate_reactions(
         count += 1
 
 
+def _pathway_info(
+    g: Graph,
+    pathway_uri: URIRef,
+    xref_cache: dict,
+) -> dict[str, str]:
+    props = _get_entity_props(g, pathway_uri)
+    names = _extract_names_from_props(props, BP)
+    xrefs = _extract_xrefs_from_props(props, xref_cache, BP)
+    return {
+        'display_name': names.get('display_name', ''),
+        'reactome_stable_id': ';'.join(xrefs.get('reactome_stable_id', [])),
+        'uri': str(pathway_uri),
+    }
+
+
+def _is_pathway_uri(g: Graph, uri: URIRef) -> bool:
+    props = _get_entity_props(g, uri)
+    types = {str(type_).split('#')[-1].lower() for type_ in props.get(RDF.type, [])}
+    return any('pathway' in type_ for type_ in types)
+
+
+def _build_pathway_parent_index(
+    g: Graph,
+    xref_cache: dict,
+) -> dict[str, list[dict[str, str]]]:
+    parent_index: defaultdict[str, list[dict[str, str]]] = defaultdict(list)
+    seen: defaultdict[str, set[str]] = defaultdict(set)
+
+    for parent_uri in g.subjects(RDF.type, BP.Pathway):
+        parent_info = _pathway_info(g, parent_uri, xref_cache)
+        parent_key = str(parent_uri)
+        props = _get_entity_props(g, parent_uri)
+
+        for child_uri in props.get(BP.pathwayComponent, []):
+            if not _is_pathway_uri(g, child_uri):
+                continue
+            child_key = str(child_uri)
+            if parent_key in seen[child_key]:
+                continue
+            seen[child_key].add(parent_key)
+            parent_index[child_key].append(parent_info)
+
+        for step_uri in props.get(BP.pathwayOrder, []):
+            step_props = _get_entity_props(g, step_uri)
+            for process_uri in step_props.get(BP.stepProcess, []):
+                if not _is_pathway_uri(g, process_uri):
+                    continue
+                child_key = str(process_uri)
+                if parent_key in seen[child_key]:
+                    continue
+                seen[child_key].add(parent_key)
+                parent_index[child_key].append(parent_info)
+
+    return parent_index
+
+
 def _iterate_pathways(
     g: Graph,
     xref_cache: dict,
     max_records: int | None = None,
 ) -> Generator[dict, None, None]:
 
+    parent_index = _build_pathway_parent_index(g, xref_cache)
     count = 0
     for s in g.subjects(RDF.type, BP.Pathway):
         if max_records is not None and count >= max_records:
@@ -1005,6 +986,7 @@ def _iterate_pathways(
             'definition': ' '.join(descriptions),
             'comments': ';'.join(comments),
             **_flatten_child_pathways(child_pathways, prefix='child_pathway'),
+            **_flatten_parent_pathways(parent_index.get(str(s), []), prefix='parent_pathway'),
         }
         count += 1
 
@@ -1469,7 +1451,7 @@ def _ensure_all_caches_populated(
     force_refresh: bool = False,
 ) -> bool:
     """Ensure all data types are cached."""
-    data_types = ['reactions', 'pathways', 'pathway_terms', 'controls', 'control_groups']
+    data_types = ['reactions', 'pathways', 'controls', 'control_groups']
 
     if not force_refresh:
         all_cached = all(_load_cached_data(dt) is not None for dt in data_types)
@@ -1492,11 +1474,6 @@ def _ensure_all_caches_populated(
     if _load_cached_data('pathways', force_refresh) is None:
         data = list(_iterate_pathways(g, xref_cache, max_records=None))
         _save_cached_data('pathways', data)
-
-    if _load_cached_data('pathway_terms', force_refresh) is None:
-        pathway_records = _load_cached_data('pathways', force_refresh) or []
-        data = _build_pathway_terms(pathway_records)
-        _save_cached_data('pathway_terms', data)
 
     if _load_cached_data('controls', force_refresh) is None:
         data = list(_iterate_controls(

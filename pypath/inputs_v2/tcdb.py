@@ -86,7 +86,7 @@ _transport_schema = EntityBuilder(
         ),
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(
                         term=IdentifierNamespaceCv.CHEBI,
