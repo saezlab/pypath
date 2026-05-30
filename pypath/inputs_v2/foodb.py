@@ -1,9 +1,9 @@
 """
 Parse FooDB data and emit Entity records.
 
-FooDB is the world's largest and most comprehensive resource on food 
-constituents, chemistry and biology. This module creates Food entities 
-with compound members, where each compound member includes full identifiers 
+FooDB is the world's largest and most comprehensive resource on food
+constituents, chemistry and biology. This module creates Food entities
+with compound members, where each compound member includes full identifiers
 (SMILES, InChIKey, ChEBI, KEGG, CAS, etc.) and concentration annotations.
 
 Data sources:
@@ -39,7 +39,6 @@ config = ResourceConfig(
     url='https://foodb.ca/',
     license=LicenseCV.CC_BY_NC_4_0,  # From website terms
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='29059383',  # FooDB publication
     primary_category='foods',
     description=(
         'FooDB is the world\'s largest and most comprehensive resource on food '
