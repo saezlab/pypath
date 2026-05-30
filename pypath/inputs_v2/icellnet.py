@@ -26,7 +26,7 @@ config = ResourceConfig(
     url='https://github.com/soumelis-lab/ICELLNET',
     license=LicenseCV.GPL_3_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='33597528',
+    pubmed='38490248',
     primary_category='interactions',
     description=(
         'ICELLNET is a transcriptomic framework with an expert-curated '
