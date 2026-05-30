@@ -1,7 +1,7 @@
 """
 Parse ConnectomeDB2025 data and emit Entity records.
 
-This module converts ConnectomeDB2025 interactions and complexes into Entity 
+This module converts ConnectomeDB2025 interactions and complexes into Entity
 records using the declarative schema pattern.
 """
 
@@ -39,7 +39,7 @@ config = ResourceConfig(
     id=ResourceCv.CONNECTOMEDB,
     name='ConnectomeDB2025',
     url='https://connectomedb.org/',
-    license=LicenseCV.CC_BY_NC_4_0,
+    license=LicenseCV.MIT,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='41171146',
     primary_category='interactions',
