@@ -35,7 +35,7 @@ config = ResourceConfig(
     url='https://github.com/kaifuchenlab/MEBOCOST',
     license=LicenseCV.GPL_3_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='36573906',
+    pubmed='40568942',
     primary_category='interactions',
     description=(
         'MEBOCOST DB is a curated resource of metabolite-sensor interactions '
@@ -57,7 +57,7 @@ f = FieldConfig(
     extract={
         'pubmed': r'^(\d+)$',
         'source': lambda v: evidence_source_map.get(v),
-        'comment': lambda v: v if v.startswith('http') 
+        'comment': lambda v: v if v.startswith('http')
         or (not v.isdigit() and v not in evidence_source_map) else None,
     },
     delimiter='; ',
@@ -77,7 +77,7 @@ def get_interactions_schema(taxon_id: str) -> EntityBuilder:
     return EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         # Generic MEBOCOST ID which is a number, but prefix with "MEBOCOST:" to avoid namespace collisions
-        # Not a Stable Identifier since it's not guaranteed to be stable across releases, 
+        # Not a Stable Identifier since it's not guaranteed to be stable across releases,
         # but still useful for tracing back to the source record
         identifiers=IdentifiersBuilder(
             CV(term=IdentifierNamespaceCv.MEBOCOST, value=f('ID')),
