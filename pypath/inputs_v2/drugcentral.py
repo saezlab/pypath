@@ -34,7 +34,7 @@ config = ResourceConfig(
     url='https://drugcentral.org/',
     license=LicenseCV.CC_BY_SA_4_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='33151290',
+    pubmed='36484092',
     primary_category='interactions',
     description=(
         'DrugCentral is an online drug information resource with active '
