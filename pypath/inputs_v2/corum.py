@@ -17,6 +17,8 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -72,7 +74,13 @@ complexes_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('PubMed ID', delimiter=';')),
         CV(term=MoleculeAnnotationsCv.FUNCAT, value=f('FunCat description', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('GO ID', delimiter=';')),
+    ),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.CV_TERM,
+            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_identifier=f('GO ID', delimiter=';'),
+        ),
     ),
     membership=MembershipBuilder(
         MembersFromList(

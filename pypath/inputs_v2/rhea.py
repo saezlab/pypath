@@ -5,7 +5,7 @@ from the Rhea web API and FTP export:
 
 Datasets:
     reactions: REACTION entities for all master reactions (metabolic and
-        transport).  ChEBI participants are included as SMALL_MOLECULE
+        transport).  ChEBI participants are included as CHEMICAL
         sub-members with REACTANT/PRODUCT role and SUBCELLULAR_LOCATION
         annotations derived from the equation.  Cross-references to EC,
         PubMed, GO, EcoCyc, MetaCyc, KEGG, and Reactome are stored as
@@ -39,6 +39,8 @@ from pypath.internals.cv_terms import (
     UpdateCategoryCV,
 )
 from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -84,6 +86,21 @@ _CHEBI_RE = re.compile(r'(?:CHEBI:)?(\d+)')
 _RHEA_ID_RE = re.compile(r'(?:RHEA:)?(\d+)')
 
 
+def _reaction_associations() -> AssociationsBuilder:
+    return AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.CV_TERM,
+            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_identifier=f('go'),
+        ),
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.REACTION,
+            object_identifier_type=IdentifierNamespaceCv.REACTOME_STABLE_ID,
+            object_identifier=f('reactome'),
+        ),
+    )
+
+
 # ── reactions ─────────────────────────────────────────────────────────────────
 
 f = FieldConfig(
@@ -117,15 +134,14 @@ reactions_schema = EntityBuilder(
     annotations = AnnotationsBuilder(
         CV(term = MoleculeAnnotationsCv.EC_NUMBER, value = f('ec')),
         CV(term = IdentifierNamespaceCv.PUBMED, value = f('pubmed')),
-        CV(term = IdentifierNamespaceCv.CV_TERM_ACCESSION, value = f('go')),
         CV(term = IdentifierNamespaceCv.ECOCYC, value = f('ecocyc')),
         CV(term = IdentifierNamespaceCv.METACYC, value = f('metacyc')),
         CV(term = IdentifierNamespaceCv.KEGG, value = f('kegg')),
-        CV(term = IdentifierNamespaceCv.REACTOME_STABLE_ID, value = f('reactome')),
     ),
+    associations = _reaction_associations(),
     membership = MembershipBuilder(
         MembersFromList(
-            entity_type = EntityTypeCv.SMALL_MOLECULE,
+            entity_type = EntityTypeCv.CHEMICAL,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.CHEBI,
@@ -155,15 +171,14 @@ transport_reactions_schema = EntityBuilder(
     annotations = AnnotationsBuilder(
         CV(term = MoleculeAnnotationsCv.EC_NUMBER, value = f('ec')),
         CV(term = IdentifierNamespaceCv.PUBMED, value = f('pubmed')),
-        CV(term = IdentifierNamespaceCv.CV_TERM_ACCESSION, value = f('go')),
         CV(term = IdentifierNamespaceCv.ECOCYC, value = f('ecocyc')),
         CV(term = IdentifierNamespaceCv.METACYC, value = f('metacyc')),
         CV(term = IdentifierNamespaceCv.KEGG, value = f('kegg')),
-        CV(term = IdentifierNamespaceCv.REACTOME_STABLE_ID, value = f('reactome')),
     ),
+    associations = _reaction_associations(),
     membership = MembershipBuilder(
         MembersFromList(
-            entity_type = EntityTypeCv.SMALL_MOLECULE,
+            entity_type = EntityTypeCv.CHEMICAL,
             identifiers = IdentifiersBuilder(
                 CV(
                     term = IdentifierNamespaceCv.CHEBI,

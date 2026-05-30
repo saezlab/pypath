@@ -201,7 +201,7 @@ def _protein(
 
 def _metabolite(row: dict[str, object]) -> Entity:
     return Entity(
-        type=EntityTypeCv.SMALL_MOLECULE,
+        type=EntityTypeCv.CHEMICAL,
         identifiers=_identifiers(
             _identifier(IdentifierNamespaceCv.HMDB, _row_value(row, 'HMDB ID', 'HMDB_ID')),
             _identifier(IdentifierNamespaceCv.NAME, _row_value(row, 'Metabolite name', 'METABOLITE_NAME', 'mETABOLITE_NAME')),

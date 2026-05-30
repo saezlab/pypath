@@ -228,7 +228,7 @@ foods_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.SMALL_MOLECULE,
+            entity_type=EntityTypeCv.CHEMICAL,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.PTFI, value=f('member_ptfi_id')),
                 CV(term=IdentifierNamespaceCv.NAME, value=f('member_name')),

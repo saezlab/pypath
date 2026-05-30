@@ -1,29 +1,35 @@
-"""Parse ChEBI OBO data into molecule entities and a standalone ontology export."""
+"""Parse ChEBI OBO data into molecule entities with ontology hierarchy edges."""
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 import re
 
+from pypath.inputs_v2.base import (
+    Dataset,
+    Download,
+    Resource,
+    ResourceConfig,
+)
+from pypath.inputs_v2.parsers.chebi import _raw
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
     MoleculeAnnotationsCv,
+    OntologyAnnotationCv,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.ontology_schema import OntologyRelationship, OntologyTerm
+from pypath.internals.silver_schema import EntityRef, OntologyRelation
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.chebi import _raw
-
 
 config = ResourceConfig(
     id=ResourceCv.CHEBI,
@@ -37,8 +43,8 @@ config = ResourceConfig(
     description=(
         'ChEBI is a manually curated database and ontology of small molecular '
         'entities. This inputs_v2 module emits searchable small-molecule '
-        'entities plus a standalone ChEBI ontology export derived from the '
-        'official OBO release.'
+        'entities with ontology hierarchy edges derived from the official OBO '
+        'release.'
     ),
 )
 
@@ -50,9 +56,20 @@ f = FieldConfig(
 
 
 molecules_schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id', extract='chebi')),
+        CV(
+            term=IdentifierNamespaceCv.CHEBI,
+            value=lambda row: [
+                value
+                for value in (
+                    _chebi_identifier(alt_id)
+                    for alt_id in row.get('alt_ids', [])
+                )
+                if value
+            ],
+        ),
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
         CV(term=IdentifierNamespaceCv.SYNONYM, value=lambda row: row.get('synonyms', [])),
         CV(term=IdentifierNamespaceCv.SMILES, value=f('smiles')),
@@ -66,57 +83,90 @@ molecules_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.CAS, value=lambda row: row.get('cas', [])),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('definition')),
+        CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
         CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('mass')),
         CV(term=MoleculeAnnotationsCv.MW_MONOISOTOPIC, value=f('monoisotopic_mass')),
         CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE, value=f('charge')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=lambda row: row.get('ancestor_terms', [])),
     ),
+    ontology_relations=lambda row: _ontology_relations(row),
 )
 
 
-def _id_translation_mapper(row: dict) -> dict | None:
-    chebi_match = re.fullmatch(r'(?:CHEBI:)?(\d+)', str(row.get('chebi_id') or '').strip())
+def _chebi_identifier(value: object) -> str | None:
+    match = re.fullmatch(r'(?:CHEBI:)?(\d+)', str(value or '').strip())
+    return match.group(1) if match else None
+
+
+def _ontology_relations(row: dict) -> list[OntologyRelation]:
+    relations: list[OntologyRelation] = []
+    seen: set[tuple[str, str]] = set()
+    for parent in row.get('is_a') or []:
+        parent_id = _chebi_identifier(parent)
+        if not parent_id:
+            continue
+        key = ('is_a', parent_id)
+        if key in seen:
+            continue
+        seen.add(key)
+        relations.append(
+            OntologyRelation(
+                predicate='is_a',
+                object=EntityRef(
+                    type=EntityTypeCv.CHEMICAL,
+                    identifier_type=IdentifierNamespaceCv.CHEBI,
+                    identifier=parent_id,
+                ),
+                ontology_id='chebi',
+            )
+        )
+    for relationship in row.get('relationships') or []:
+        predicate = relationship.get('type')
+        target_id = _chebi_identifier(relationship.get('target'))
+        if not predicate or not target_id:
+            continue
+        key = (predicate, target_id)
+        if key in seen:
+            continue
+        seen.add(key)
+        relations.append(
+            OntologyRelation(
+                predicate=predicate,
+                object=EntityRef(
+                    type=EntityTypeCv.CHEMICAL,
+                    identifier_type=IdentifierNamespaceCv.CHEBI,
+                    identifier=target_id,
+                ),
+                ontology_id='chebi',
+            )
+        )
+    return relations
+
+
+def _id_translation_rows(row: dict) -> Iterable[dict]:
+    chebi_match = re.fullmatch(
+        r'(?:CHEBI:)?(\d+)',
+        str(row.get('chebi_id') or '').strip(),
+    )
     chebi_id = chebi_match.group(1) if chebi_match else None
     standard_inchi = row.get('inchi')
     if not chebi_id or not standard_inchi:
-        return None
-    return {
-        'source': 'chebi',
-        'key_type': 'MI:0474:Chebi',
-        'key_value': chebi_id,
-        'standard_inchi': standard_inchi,
-    }
+        return
 
-
-def _ontology_mapper(row: dict) -> OntologyTerm | None:
-    term_id = row.get('id')
-    name = row.get('name')
-
-    if not term_id or not name:
-        return None
-
-    relationships = [
-        OntologyRelationship(
-            type=relationship['type'],
-            target=relationship['target'],
-            target_name=relationship.get('target_name') or None,
-        )
-        for relationship in row.get('relationships', [])
-        if relationship.get('type') and relationship.get('target')
-    ]
-
-    return OntologyTerm(
-        id=term_id,
-        name=name,
-        definition=row.get('definition') or None,
-        synonyms=row.get('synonyms') or None,
-        comments=row.get('comments') or None,
-        xrefs=row.get('xrefs') or None,
-        is_a=row.get('is_a') or None,
-        relationships=relationships or None,
-        is_obsolete=bool(row.get('is_obsolete')),
-    )
+    seen = set()
+    for raw_id in (row.get('chebi_id'), *(row.get('alt_ids') or [])):
+        match = re.fullmatch(r'(?:CHEBI:)?(\d+)', str(raw_id or '').strip())
+        if not match:
+            continue
+        key_value = match.group(1)
+        if key_value in seen:
+            continue
+        seen.add(key_value)
+        yield {
+            'source': 'chebi',
+            'key_type': 'MI:0474:Chebi',
+            'key_value': key_value,
+            'standard_inchi': standard_inchi,
+        }
 
 
 download = Download(
@@ -139,19 +189,10 @@ resource = Resource(
         download=download,
         mapper=lambda row: row,
         raw_parser=lambda opener, **kwargs: (
-            row
+            id_row
             for raw_row in _raw(opener, data_type='molecules', **kwargs)
-            if (row := _id_translation_mapper(raw_row)) is not None
+            for id_row in _id_translation_rows(raw_row)
         ),
         kind='id_translation',
-    ),
-    ontology=OntologyDataset(
-        download=download,
-        mapper=_ontology_mapper,
-        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='ontology_terms', **kwargs),
-        ontology_id='chebi',
-        remark='ChEBI ontology exported from chebi.obo.gz via pypath.',
-        extension='obo',
-        file_stem='chebi',
     ),
 )

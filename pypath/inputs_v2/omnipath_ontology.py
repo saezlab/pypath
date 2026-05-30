@@ -9,7 +9,7 @@ from typing import Any
 from pypath.internals import cv_terms
 from pypath.internals.cv_terms import CvEnum, LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.ontology_schema import OntologyTerm
-from pypath.inputs_v2.base import OntologyDataset, Resource, ResourceConfig
+from pypath.inputs_v2.base import Dataset, Resource, ResourceConfig, ontology_entity_mapper
 
 
 config = ResourceConfig(
@@ -86,14 +86,14 @@ def _map_om_term(row: dict[str, Any]) -> OntologyTerm:
     )
 
 
+terms_schema = ontology_entity_mapper(_map_om_term, ontology_id='omnipath')
+
+
 resource = Resource(
     config,
-    ontology=OntologyDataset(
+    terms=Dataset(
         download=None,
-        mapper=_map_om_term,
+        mapper=terms_schema,
         raw_parser=_iter_om_terms,
-        ontology_id='omnipath',
-        extension='obo',
-        file_stem='omnipath_mi',
     ),
 )

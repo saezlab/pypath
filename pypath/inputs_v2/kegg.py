@@ -74,7 +74,12 @@ def _kegg_organism_codes(
 # ---------------------------------------------------------------------------
 
 try:
-    from pypath.inputs_v2.base import Dataset, Resource, ResourceConfig
+    from pypath.inputs_v2.base import (
+        Dataset,
+        Resource,
+        ResourceConfig,
+        ontology_entity_mapper,
+    )
     from pypath.internals.cv_terms import (
         BiologicalRoleCv,
         EntityTypeCv,
@@ -88,6 +93,8 @@ try:
         UpdateCategoryCV,
     )
     from pypath.internals.tabular_builder import (
+        AssociationBuilder,
+        AssociationsBuilder,
         CV,
         AnnotationsBuilder,
         EntityBuilder,
@@ -97,7 +104,6 @@ try:
         MembershipBuilder,
     )
     from pypath.internals.ontology_builder import OntologyBuilder
-    from pypath.inputs_v2.base import OntologyDataset
 
     config = ResourceConfig(
         id=ResourceCv.KEGG_METABOLIC,
@@ -138,13 +144,18 @@ try:
             CV(term=IdentifierNamespaceCv.RHEA_ID, value=f('rhea_ids', delimiter=';', extract='rhea')),
             CV(term=IdentifierNamespaceCv.KEGG, value=f('ko_ids', delimiter=';')),
             CV(term=IdentifierNamespaceCv.KEGG, value=f('rclass_ids', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('pathway_ids', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accessions', delimiter=';')),
             CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=f('pathway_names', delimiter=';')),
+        ),
+        associations=AssociationsBuilder(
+            AssociationBuilder(
+                object_entity_type=EntityTypeCv.PATHWAY,
+                object_identifier_type=IdentifierNamespaceCv.KEGG_PATHWAY,
+                object_identifier=f('pathway_term_accessions', delimiter=';'),
+            ),
         ),
         membership=MembershipBuilder(
             MembersFromList(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('reactant_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME,          value=f('reactant_name',    delimiter='||', preserve_indices=True)),
@@ -157,7 +168,7 @@ try:
                 ),
             ),
             MembersFromList(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('product_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME,          value=f('product_name',    delimiter='||', preserve_indices=True)),
@@ -185,10 +196,9 @@ try:
     )
 
     pathways_schema = EntityBuilder(
-        entity_type=EntityTypeCv.CV_TERM,
+        entity_type=EntityTypeCv.PATHWAY,
         identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession')),
-            CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('pathway_id')),
+            CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('pathway_term_accession')),
             CV(term=IdentifierNamespaceCv.NAME, value=f('pathway_name')),
         ),
         annotations=AnnotationsBuilder(
@@ -221,7 +231,7 @@ try:
                 ),
             ),
             MembersFromList(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('small_molecule_member_kegg_ids', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('small_molecule_member_names', delimiter='||', preserve_indices=True)),
@@ -243,10 +253,9 @@ try:
                 ),
             ),
             MembersFromList(
-                entity_type=EntityTypeCv.CV_TERM,
+                entity_type=EntityTypeCv.PATHWAY,
                 identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('linked_pathway_term_accessions', delimiter='||', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('linked_pathway_ids', delimiter='||', preserve_indices=True)),
+                    CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('linked_pathway_term_accessions', delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('linked_pathway_names', delimiter='||', preserve_indices=True)),
                 ),
                 annotations=AnnotationsBuilder(
@@ -266,12 +275,20 @@ try:
         is_a=f('parent_ids', delimiter=';'),
     )
 
+    pathway_ontology_terms_schema = ontology_entity_mapper(
+        pathway_ontology_schema,
+        ontology_id='kegg_pathways',
+        entity_type=EntityTypeCv.PATHWAY,
+        identifier_type=IdentifierNamespaceCv.KEGG_PATHWAY,
+    )
+
 except Exception as _e:  # pragma: no cover
     _log.debug('kegg: schema objects unavailable (%s)', _e)
     config = None  # type: ignore[assignment]
     reactions_schema = None  # type: ignore[assignment]
     pathways_schema = None  # type: ignore[assignment]
     pathway_ontology_schema = None  # type: ignore[assignment]
+    pathway_ontology_terms_schema = None  # type: ignore[assignment]
 
 
 # ---------------------------------------------------------------------------
@@ -749,7 +766,7 @@ if (
     config is not None
     and reactions_schema is not None
     and pathways_schema is not None
-    and pathway_ontology_schema is not None
+    and pathway_ontology_terms_schema is not None
 ):
     resource = Resource(
         config,
@@ -763,14 +780,10 @@ if (
             mapper=pathways_schema,
             raw_parser=_default_pathways_raw,
         ),
-        pathway_ontology=OntologyDataset(
+        pathway_ontology=Dataset(
             download=None,
-            mapper=pathway_ontology_schema,
+            mapper=pathway_ontology_terms_schema,
             raw_parser=_default_pathway_terms_raw,
-            ontology_id='kegg_pathways',
-            remark='KEGG pathway ontology exported from BRITE br08901 and KEGG PATHWAY flat files via pypath.',
-            extension='obo',
-            file_stem='kegg_pathways',
         ),
     )
 else:  # pragma: no cover

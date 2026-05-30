@@ -117,7 +117,7 @@ interactions_schema = EntityBuilder(
         # Metabolite (small molecule)
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
                     CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
@@ -196,7 +196,7 @@ human_transporters_schema = EntityBuilder(
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
@@ -232,7 +232,7 @@ mouse_transporters_schema = EntityBuilder(
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),

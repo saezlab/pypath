@@ -31,6 +31,7 @@ class EntityTypeCv(CvEnum):
     # OmniPath high-level types
     PROTEIN_FAMILY = "OM:0010"
     LIPID = ("OM:0011", "Lipid molecule or lipid-like compound")
+    CHEMICAL = ("OM:0037", "Chemical entity or chemical class")
     CV_TERM = "OM:0012"
     INTERACTION = "OM:0013"
     ASSOCIATION = ("OM:0036", "A non-mechanistic association between two entities supported by evidence.")
@@ -52,7 +53,7 @@ class EntityTypeCv(CvEnum):
 class MoleculeSubtypeCv(CvEnum):
     """Chemical-nature-based molecule subtypes."""
 
-    parent_cv_term = EntityTypeCv.SMALL_MOLECULE
+    parent_cv_term = EntityTypeCv.CHEMICAL
 
     SYNTHETIC_ORGANIC = ("OM:0029", "Synthetic organic compound")
     NATURAL_PRODUCT = ("OM:0021", "Natural product")

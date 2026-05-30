@@ -19,6 +19,8 @@ from pypath.internals.cv_terms import (
     ResourceCv,
 )
 from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -28,9 +30,9 @@ from pypath.internals.tabular_builder import (
 from pypath.inputs_v2.base import (
     Dataset,
     Download,
-    OntologyDataset,
     Resource,
     ResourceConfig,
+    ontology_entity_mapper,
 )
 from pypath.inputs_v2.parsers.base import iter_tsv
 from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
@@ -62,27 +64,32 @@ annotations_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('gene_symbol')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('hpo_id')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('hpo_name')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
+    ),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.CV_TERM,
+            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_identifier=f('hpo_id'),
+        ),
     ),
 )
 
 
+terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='hpo')
+
+
 resource = Resource(
     config,
-    ontology=OntologyDataset(
+    terms=Dataset(
         download=Download(
             url='https://purl.obolibrary.org/obo/hp.obo',
             filename='hp.obo',
             subfolder='hpo',
             large=True,
         ),
-        mapper=obo_record_to_term,
+        mapper=terms_schema,
         raw_parser=iter_obo,
-        ontology_id='hpo',
-        extension='obo',
-        file_stem='hp',
     ),
     annotations=Dataset(
         download=Download(

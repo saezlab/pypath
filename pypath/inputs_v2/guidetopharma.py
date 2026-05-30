@@ -254,7 +254,7 @@ def _guidetopharma_ligand_entity_type(row):
     if _filter_uniprot_accessions(row.get('UniProt ID')):
         return EntityTypeCv.PROTEIN
 
-    return EntityTypeCv.SMALL_MOLECULE
+    return EntityTypeCv.CHEMICAL
 
 
 def _guidetopharma_ligand_taxon_id(row):

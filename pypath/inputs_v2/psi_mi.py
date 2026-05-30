@@ -5,7 +5,13 @@ from __future__ import annotations
 import re
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.inputs_v2.base import Download, OntologyDataset, Resource, ResourceConfig
+from pypath.inputs_v2.base import (
+    Dataset,
+    Download,
+    Resource,
+    ResourceConfig,
+    ontology_entity_mapper,
+)
 from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
 
@@ -31,19 +37,19 @@ def _iter_fixed_obo(opener, **kwargs):
     yield from iter_obo(opener, preprocess_text=_fix_obo_text, **kwargs)
 
 
+terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='psi-mi')
+
+
 resource = Resource(
     config,
-    ontology=OntologyDataset(
+    terms=Dataset(
         download=Download(
             url='https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo',
             filename='psi-mi.obo',
             subfolder='psi_mi',
             large=True,
         ),
-        mapper=obo_record_to_term,
+        mapper=terms_schema,
         raw_parser=_iter_fixed_obo,
-        ontology_id='psi-mi',
-        extension='obo',
-        file_stem='psi_mi',
     ),
 )

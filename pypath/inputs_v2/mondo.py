@@ -24,9 +24,9 @@ from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membe
 from pypath.inputs_v2.base import (
     Dataset,
     Download,
-    OntologyDataset,
     Resource,
     ResourceConfig,
+    ontology_entity_mapper,
 )
 from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
@@ -213,15 +213,15 @@ def _dedupe(values: Iterable[str]) -> list[str]:
     return out
 
 
+terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='mondo')
+
+
 resource = Resource(
     config,
-    ontology=OntologyDataset(
+    terms=Dataset(
         download=_MONDO_DOWNLOAD,
-        mapper=obo_record_to_term,
+        mapper=terms_schema,
         raw_parser=iter_obo,
-        ontology_id='mondo',
-        extension='obo',
-        file_stem='mondo',
     ),
     annotations=Dataset(
         download=_MONDO_DOWNLOAD,

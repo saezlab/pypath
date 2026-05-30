@@ -14,7 +14,7 @@ from pypath.inputs_v2.base import (
     Download,
     Resource,
     Dataset,
-    OntologyDataset
+    ontology_entity_mapper,
 )
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -29,7 +29,6 @@ from pypath.internals.ontology_builder import (
     OntologyBuilder,
     RelationshipBuilder
 )
-from pypath.internals.ontology_schema import OntologyTypedef
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     InteractionTypeCv,
@@ -107,6 +106,13 @@ trait_schema = OntologyBuilder(
     ]
 )
 
+
+trait_terms_schema = ontology_entity_mapper(
+    trait_schema,
+    ontology_id='macdb_traits',
+)
+
+
 association_schema = EntityBuilder(
     entity_type=EntityTypeCv.ASSOCIATION,
     annotations=AnnotationsBuilder(
@@ -177,7 +183,7 @@ association_schema = EntityBuilder(
         ),
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(
                         term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
@@ -200,18 +206,10 @@ association_schema = EntityBuilder(
 
 resource = Resource(
     config=config,
-    trait=OntologyDataset(
+    trait=Dataset(
         download=download['trait'],
-        mapper=trait_schema,
+        mapper=trait_terms_schema,
         raw_parser=iter_tsv,
-        ontology_id='macdb_traits',
-        remark='MACdb trait ontology exported via pypath.',
-        typedefs=[
-            OntologyTypedef(id='part_of', name='part_of'),
-            OntologyTypedef(id='is_a', name='is_a'),
-        ],
-        extension='obo',
-        file_stem='macdb',
     ),
     associations=Dataset(
         download=download['metabolite'],

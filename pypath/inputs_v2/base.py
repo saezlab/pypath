@@ -21,12 +21,14 @@ from pypath.internals.cv_terms import (
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.ontology_schema import (
-    OntologyDocument,
-    OntologyTerm,
-    OntologyTypedef,
+from pypath.internals.ontology_schema import OntologyTerm
+from pypath.internals.silver_schema import (
+    Annotation,
+    Entity,
+    EntityRef,
+    Identifier,
+    OntologyRelation,
 )
-from pypath.internals.silver_schema import Annotation, Entity, Identifier
 from pypath.share.downloads import download_and_open
 
 
@@ -122,8 +124,8 @@ class Download:
 
     def open(self, *, force_refresh: bool = False, **kwargs: Any):
         download_kwargs = dict(self.download_kwargs or {})
-        url = _resolve(self.url, **kwargs)
-        filename = _resolve(self.filename, **kwargs)
+        url = _resolve(self.url, force_refresh=force_refresh, **kwargs)
+        filename = _resolve(self.filename, force_refresh=force_refresh, **kwargs)
         return download_and_open(
             url=url,
             filename=filename,
@@ -138,7 +140,7 @@ class Download:
         )
 
 
-DatasetKind = Literal['ontology', 'id_translation']
+DatasetKind = Literal['id_translation']
 
 
 class Dataset:
@@ -182,64 +184,21 @@ class Dataset:
             yield self.mapper(record)
 
 
-class OntologyDataset:
-    """Structured ontology dataset rendered as an ontology artifact such as OBO."""
-
-    kind: DatasetKind = 'ontology'
-
-    def __init__(
-        self,
-        *,
-        download: Download | None,
-        mapper: Callable[[dict[str, Any]], OntologyTerm | None],
-        raw_parser: Callable[..., Generator[dict[str, Any], None, None]],
-        ontology_id: str,
-        document: OntologyDocument | None = None,
-        remark: str | None = None,
-        typedefs: list[OntologyTypedef] | None = None,
-        extension: str = 'obo',
-        file_stem: str | None = None,
-    ) -> None:
-        self.download = download
-        self.mapper = mapper
-        self._raw_parser = raw_parser
-        if not ontology_id or not ontology_id.strip():
-            raise ValueError('OntologyDataset requires a non-empty ontology_id')
-        self.ontology_id = ontology_id.strip()
-        self.document = document or OntologyDocument(
-            ontology=self.ontology_id,
-            remark=remark,
-            typedefs=typedefs,
-        )
-        self.extension = extension
-        self.file_stem = file_stem
-
-    def raw(
-        self,
-        force_refresh: bool = False,
-        **kwargs: Any,
-    ) -> Generator[dict[str, Any], None, None]:
-        opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
-        yield from self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
-
-    def __call__(self, force_refresh: bool = False, **kwargs: Any) -> Generator[OntologyTerm, None, None]:
-        for record in self.raw(force_refresh=force_refresh, **kwargs):
-            term = self.mapper(record)
-            if term is not None:
-                yield term
-
-
 def ontology_term_to_entity(
     term: OntologyTerm,
     *,
     ontology_id: str,
+    entity_type: EntityTypeCv | str = EntityTypeCv.CV_TERM,
+    identifier_type: IdentifierNamespaceCv | str = (
+        IdentifierNamespaceCv.CV_TERM_ACCESSION
+    ),
 ) -> Entity:
     """Convert a structured ontology term into a first-class CV-term entity."""
-    identifiers = [Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=term.id)]
+    identifiers = [Identifier(type=identifier_type, value=term.id)]
 
     for alt_id in term.alt_ids or []:
         if alt_id and alt_id != term.id:
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=alt_id))
+            identifiers.append(Identifier(type=identifier_type, value=alt_id))
 
     if term.name:
         identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=term.name))
@@ -259,11 +218,74 @@ def ontology_term_to_entity(
     if term.is_obsolete is not None:
         annotations.append(Annotation(term=OntologyAnnotationCv.IS_OBSOLETE, value=str(bool(term.is_obsolete)).lower()))
 
+    ontology_relations: list[OntologyRelation] = []
+    seen_relations: set[tuple[str, str]] = set()
+
+    for parent in term.is_a or []:
+        if parent and ('is_a', parent) not in seen_relations:
+            seen_relations.add(('is_a', parent))
+            ontology_relations.append(
+                OntologyRelation(
+                    predicate='is_a',
+                    object=EntityRef(
+                        type=entity_type,
+                        identifier_type=identifier_type,
+                        identifier=parent,
+                    ),
+                    ontology_id=ontology_id,
+                )
+            )
+
+    for relationship in term.relationships or []:
+        if not relationship.type or not relationship.target:
+            continue
+        key = (relationship.type, relationship.target)
+        if key in seen_relations:
+            continue
+        seen_relations.add(key)
+        ontology_relations.append(
+            OntologyRelation(
+                predicate=relationship.type,
+                object=EntityRef(
+                    type=entity_type,
+                    identifier_type=identifier_type,
+                    identifier=relationship.target,
+                ),
+                ontology_id=ontology_id,
+            )
+        )
+
     return Entity(
-        type=EntityTypeCv.CV_TERM,
+        type=entity_type,
         identifiers=identifiers,
         annotations=annotations or None,
+        ontology_relations=ontology_relations or None,
     )
+
+
+def ontology_entity_mapper(
+    term_mapper: Callable[[dict[str, Any]], OntologyTerm | None],
+    *,
+    ontology_id: str,
+    entity_type: EntityTypeCv | str = EntityTypeCv.CV_TERM,
+    identifier_type: IdentifierNamespaceCv | str = (
+        IdentifierNamespaceCv.CV_TERM_ACCESSION
+    ),
+) -> Callable[[dict[str, Any]], Entity | None]:
+    """Wrap an ontology-term mapper so a regular Dataset emits term entities."""
+
+    def mapper(row: dict[str, Any]) -> Entity | None:
+        term = term_mapper(row)
+        if term is None:
+            return None
+        return ontology_term_to_entity(
+            term,
+            ontology_id=ontology_id,
+            entity_type=entity_type,
+            identifier_type=identifier_type,
+        )
+
+    return mapper
 
 
 class ArtifactDataset:

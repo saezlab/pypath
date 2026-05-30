@@ -13,9 +13,9 @@ import re
 from pypath.inputs_v2.base import (
     Dataset,
     Download,
-    OntologyDataset,
     Resource,
     ResourceConfig,
+    ontology_entity_mapper,
 )
 from pypath.inputs_v2.parsers.base import _first_handle, iter_tsv
 from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
@@ -28,8 +28,9 @@ from pypath.internals.cv_terms import (
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.ontology_schema import OntologyTypedef
 from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
     CV,
     AnnotationsBuilder,
     EntityBuilder,
@@ -81,6 +82,7 @@ config = ResourceConfig(
 )
 
 f = FieldConfig()
+_UNIPROT_KEYWORDS_ONTOLOGY_ID = 'uniprot_keywords'
 
 PROTEIN_REFERENCE_KEY_TYPES: tuple[str, ...] = (
     'MI:1097:Uniprot',
@@ -363,16 +365,32 @@ proteins_schema = EntityBuilder(
         CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('Protein families', delimiter=',')),
         CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=f('EC number', delimiter=';')),
         CV(term=MoleculeAnnotationsCv.AMINO_ACID_SEQUENCE, value=f('Sequence')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Gene Ontology IDs', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('Keyword ID', delimiter=';')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Organism (ID)')),
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('PubMed ID', delimiter=';')),
     ),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.CV_TERM,
+            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_identifier=f('Gene Ontology IDs', delimiter=';'),
+        ),
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.CV_TERM,
+            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_identifier=f('Keyword ID', delimiter=';'),
+        ),
+    ),
+)
+
+
+keyword_terms_schema = ontology_entity_mapper(
+    obo_record_to_term,
+    ontology_id=_UNIPROT_KEYWORDS_ONTOLOGY_ID,
 )
 
 resource = Resource(
     config,
-    ontology=OntologyDataset(
+    keywords=Dataset(
         download=Download(
             url=UNIPROT_KEYWORDS_OBO_URL,
             filename='uniprot_keywords.obo.gz',
@@ -382,13 +400,8 @@ resource = Resource(
             default_mode='r',
             ext='gz',
         ),
-        mapper=obo_record_to_term,
+        mapper=keyword_terms_schema,
         raw_parser=iter_obo,
-        ontology_id='uniprot_keywords',
-        remark='UniProt Keywords ontology exported from the UniProt REST API via pypath.',
-        typedefs=[OntologyTypedef(id='category', name='category')],
-        extension='obo',
-        file_stem='uniprot_keywords',
     ),
     proteins=Dataset(
         download=Download(

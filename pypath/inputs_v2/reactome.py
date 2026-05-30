@@ -17,12 +17,16 @@ from pypath.internals.cv_terms import (
     InteractionMetadataCv,
     LicenseCV,
     MoleculeAnnotationsCv,
+    OntologyAnnotationCv,
     OntologyCv,
     ParticipantMetadataCv,
     ResourceCv,
     UpdateCategoryCV,
 )
+from pypath.internals.silver_schema import EntityRef, OntologyRelation
 from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -32,9 +36,7 @@ from pypath.internals.tabular_builder import (
     MembersFromList,
     MembershipBuilder,
 )
-from pypath.internals.ontology_builder import OntologyBuilder, RelationshipBuilder
-from pypath.internals.ontology_schema import OntologyTypedef
-from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, ResourceConfig
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.reactome import _raw
 
 
@@ -70,6 +72,7 @@ _TAXON_SCOPED_ENTITY_TYPES = {
     EntityTypeCv.RNA,
     EntityTypeCv.DNA,
 }
+_REACTOME_PATHWAY_ONTOLOGY_ID = 'reactome_pathways'
 
 
 f = FieldConfig(
@@ -162,6 +165,73 @@ def _controller_member_taxon_ids(row):
     return values
 
 
+def _split_values(value: object, *, delimiter: str = ';') -> list[str]:
+    if not value or value == _MISSING_VALUE:
+        return []
+    return [
+        item
+        for item in (part.strip() for part in str(value).split(delimiter))
+        if item and item != _MISSING_VALUE
+    ]
+
+
+def _pathway_ref(stable_id: str) -> EntityRef:
+    return EntityRef(
+        type=EntityTypeCv.PATHWAY,
+        identifier_type=IdentifierNamespaceCv.REACTOME_STABLE_ID,
+        identifier=stable_id,
+    )
+
+
+def _pathway_association(object_identifier) -> AssociationBuilder:
+    return AssociationBuilder(
+        object_entity_type=EntityTypeCv.PATHWAY,
+        object_identifier_type=IdentifierNamespaceCv.REACTOME_STABLE_ID,
+        object_identifier=object_identifier,
+    )
+
+
+def _pathway_associations(object_identifier) -> AssociationsBuilder:
+    return AssociationsBuilder(_pathway_association(object_identifier))
+
+
+def _cv_term_association(object_identifier) -> AssociationBuilder:
+    return AssociationBuilder(
+        object_entity_type=EntityTypeCv.CV_TERM,
+        object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+        object_identifier=object_identifier,
+    )
+
+
+def _cv_term_associations(object_identifier) -> AssociationsBuilder:
+    return AssociationsBuilder(_cv_term_association(object_identifier))
+
+
+def _combined_associations(
+    *associations: AssociationBuilder,
+) -> AssociationsBuilder:
+    return AssociationsBuilder(*associations)
+
+
+def _pathway_ontology_relations(row: dict) -> list[OntologyRelation]:
+    relations: list[OntologyRelation] = []
+    seen: set[tuple[str, str]] = set()
+    for parent_group in _split_values(row.get('parent_pathway_reactome_stable_id'), delimiter='||'):
+        for parent_id in _split_values(parent_group):
+            key = ('part_of', parent_id)
+            if key in seen:
+                continue
+            seen.add(key)
+            relations.append(
+                OntologyRelation(
+                    predicate='part_of',
+                    object=_pathway_ref(parent_id),
+                    ontology_id=_REACTOME_PATHWAY_ONTOLOGY_ID,
+                )
+            )
+    return relations
+
+
 reactions_schema = EntityBuilder(
     entity_type=f('entity_type', map=entity_type_map),
     identifiers=IdentifiersBuilder(
@@ -174,7 +244,9 @@ reactions_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed')),
         CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=f('ec_number')),
         CV(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=f('direction')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession', map='split')),
+    ),
+    associations=_pathway_associations(
+        f('pathway_term_accession', map='split')
     ),
     membership=MembershipBuilder(
         MembersFromList(
@@ -193,7 +265,6 @@ reactions_schema = EntityBuilder(
                     value=f('participant_pubchem_compound', delimiter='||', map='split'),
                 ),
                 CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('participant_kegg', delimiter='||', map='split')),
-                CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('participant_go', delimiter='||', map='split')),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=f('participant_role', delimiter='||', map='role')),
@@ -207,9 +278,13 @@ reactions_schema = EntityBuilder(
                     term=IdentifierNamespaceCv.NCBI_TAX_ID,
                     value=_participant_taxon_ids,
                 ),
-                CV(
-                    term=IdentifierNamespaceCv.CV_TERM_ACCESSION,
-                    value=f('participant_pathway_term_accession', delimiter='||', map='split'),
+            ),
+            entity_associations=_combined_associations(
+                _pathway_association(
+                    f('participant_pathway_term_accession', delimiter='||', map='split')
+                ),
+                _cv_term_association(
+                    f('participant_go', delimiter='||', map='split')
                 ),
             ),
         ),
@@ -223,12 +298,16 @@ controls_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('display_name')),
         CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('reactome_stable_id')),
         CV(term=IdentifierNamespaceCv.REACTOME_ID, value=f('reactome_id')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('go')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('control_type')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('causal_statement', map='missing')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession', map='split')),
+        CV(term=f('causal_statement')),
+    ),
+    associations=_combined_associations(
+        _pathway_association(
+            f('pathway_term_accession', map='split')
+        ),
+        _cv_term_association(f('go')),
     ),
     membership=MembershipBuilder(
         Member(
@@ -242,14 +321,18 @@ controls_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split_chebi')),
                     CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_pubchem_compound', map='split')),
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_kegg', map='split')),
-                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_go', map='split')),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(
                         term=IdentifierNamespaceCv.NCBI_TAX_ID,
                         value=_entity_taxon_id('controller_entity_type', 'controller_ncbi_tax_id'),
                     ),
-                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_pathway_term_accession', map='split')),
+                ),
+                associations=_combined_associations(
+                    _pathway_association(
+                        f('controller_pathway_term_accession', map='split')
+                    ),
+                    _cv_term_association(f('controller_go', map='split')),
                 ),
             ),
             annotations=AnnotationsBuilder(
@@ -267,14 +350,18 @@ controls_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.CHEBI, value=f('controlled_chebi', map='split_chebi')),
                     CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controlled_pubchem_compound', map='split')),
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controlled_kegg', map='split')),
-                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controlled_go', map='split')),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(
                         term=IdentifierNamespaceCv.NCBI_TAX_ID,
                         value=_entity_taxon_id('controlled_entity_type', 'controlled_ncbi_tax_id'),
                     ),
-                    CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controlled_pathway_term_accession', map='split')),
+                ),
+                associations=_combined_associations(
+                    _pathway_association(
+                        f('controlled_pathway_term_accession', map='split')
+                    ),
+                    _cv_term_association(f('controlled_go', map='split')),
                 ),
             ),
             annotations=AnnotationsBuilder(
@@ -282,6 +369,25 @@ controls_schema = EntityBuilder(
             ),
         ),
     ),
+)
+
+
+pathways_schema = EntityBuilder(
+    entity_type=EntityTypeCv.PATHWAY,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.NAME, value=f('display_name')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms')),
+        CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('reactome_stable_id')),
+        CV(term=IdentifierNamespaceCv.REACTOME_ID, value=f('reactome_id')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed')),
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
+        CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
+        CV(term=OntologyAnnotationCv.COMMENT, value=f('comments')),
+    ),
+    associations=_cv_term_associations(f('go')),
+    ontology_relations=_pathway_ontology_relations,
 )
 
 
@@ -295,14 +401,18 @@ control_groups_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split_chebi')),
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_pubchem_compound', map='split')),
         CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_kegg', map='split')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_go', map='split')),
     ),
     annotations=AnnotationsBuilder(
         CV(
             term=IdentifierNamespaceCv.NCBI_TAX_ID,
             value=_entity_taxon_id('controller_entity_type', 'controller_ncbi_tax_id'),
         ),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_pathway_term_accession', map='split')),
+    ),
+    associations=_combined_associations(
+        _pathway_association(
+            f('controller_pathway_term_accession', map='split')
+        ),
+        _cv_term_association(f('controller_go', map='split')),
     ),
     membership=MembershipBuilder(
         MembersFromList(
@@ -315,31 +425,23 @@ control_groups_schema = EntityBuilder(
                 CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_member_chebi', delimiter='||', map='split_chebi')),
                 CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_member_pubchem_compound', delimiter='||', map='split')),
                 CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_member_kegg', delimiter='||', map='split')),
-                CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('controller_member_go', delimiter='||', map='split')),
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(
                     term=IdentifierNamespaceCv.NCBI_TAX_ID,
                     value=_controller_member_taxon_ids,
                 ),
-                CV(
-                    term=IdentifierNamespaceCv.CV_TERM_ACCESSION,
-                    value=f('controller_member_pathway_term_accession', delimiter='||', map='split'),
+            ),
+            entity_associations=_combined_associations(
+                _pathway_association(
+                    f('controller_member_pathway_term_accession', delimiter='||', map='split')
+                ),
+                _cv_term_association(
+                    f('controller_member_go', delimiter='||', map='split')
                 ),
             ),
         ),
     ),
-)
-
-
-pathway_ontology_schema = OntologyBuilder(
-    id='id',
-    name='name',
-    definition='definition',
-    synonyms=f('synonyms', delimiter=';'),
-    comments=f('comments', delimiter=';'),
-    xrefs=f('xrefs', delimiter=';'),
-    is_a=f('parent_ids', delimiter=';'),
 )
 
 download = Download(
@@ -358,6 +460,11 @@ resource = Resource(
         mapper=reactions_schema,
         raw_parser=partial(_raw, data_type='reactions'),
     ),
+    pathways=Dataset(
+        download=download,
+        mapper=pathways_schema,
+        raw_parser=partial(_raw, data_type='pathways'),
+    ),
     controls=Dataset(
         download=download,
         mapper=controls_schema,
@@ -367,15 +474,5 @@ resource = Resource(
         download=download,
         mapper=control_groups_schema,
         raw_parser=partial(_raw, data_type='control_groups'),
-    ),
-    pathway_ontology=OntologyDataset(
-        download=download,
-        mapper=pathway_ontology_schema,
-        raw_parser=partial(_raw, data_type='pathway_terms'),
-        ontology_id='reactome_pathways',
-        remark='Reactome pathway ontology exported from Reactome BioPAX via pypath.',
-        typedefs=[],
-        extension='obo',
-        file_stem='reactome_pathways',
     ),
 )
