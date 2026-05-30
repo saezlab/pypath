@@ -25,6 +25,11 @@ class LicenseCV(CvEnum):
         "Creative Commons Zero 1.0 Universal - public domain dedication",
         "https://creativecommons.org/publicdomain/zero/1.0/"
     )
+    BSD_3 = (
+        "OM:0513",
+        "BSD 3-Clause License ",
+        "https://opensource.org/license/bsd-3-clause"
+    )
     GPL_3_0 = (
         "OM:0503",
         "GNU General Public License v3.0",
