@@ -73,7 +73,7 @@ config = ResourceConfig(
     url = 'https://github.com/SysBioChalmers/Human-GEM',
     license = LicenseCV.CC_BY_4_0,
     update_category = UpdateCategoryCV.IRREGULAR,
-    pubmed = '34619098',
+    pubmed = '41950094',
     primary_category = 'metabolic_network',
     description = (
         'Human-GEM is a genome-scale metabolic model of human metabolism '
