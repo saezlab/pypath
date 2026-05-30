@@ -20,6 +20,11 @@ class LicenseCV(CvEnum):
         "Creative Commons Attribution 4.0 International license",
         "https://creativecommons.org/licenses/by/4.0/"
     )
+    CC_BY_3_0 = (
+        "OM:0514",
+        "Creative Commons Attribution 3.0 International license",
+        "https://creativecommons.org/licenses/by/3.0/"
+    )
     CC0_1_0 = (
         "OM:0502",
         "Creative Commons Zero 1.0 Universal - public domain dedication",
