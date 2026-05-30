@@ -270,7 +270,7 @@ config = ResourceConfig(
     url='https://www.guidetopharmacology.org/',
     license=LicenseCV.CC_BY_SA_4_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='37953350',
+    pubmed='41160876',
     primary_category='interactions',
     description=(
         'The IUPHAR/BPS Guide to PHARMACOLOGY is an expert-curated resource '
