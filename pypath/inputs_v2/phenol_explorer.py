@@ -39,7 +39,7 @@ config = ResourceConfig(
     url='http://phenol-explorer.eu/',
     license=LicenseCV.CC_BY_NC_4_0,  # TODO: Verify license
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='20428313',  # Original Phenol-Explorer publication
+    pubmed='24103452',  # Latest Phenol-Explorer publication
     primary_category='foods',
     description=(
         'Phenol-Explorer is the first comprehensive database on polyphenol '
