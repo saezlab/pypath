@@ -34,7 +34,7 @@ config = ResourceConfig(
     url='https://hmdb.ca/',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='37953221',
+    pubmed='34986597',
     primary_category='small_molecules',
     description=(
         'The Human Metabolome Database (HMDB) is a comprehensive database '
