@@ -64,7 +64,7 @@ config = ResourceConfig(
     url='https://www.vmh.life/',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.IRREGULAR,
-    pubmed='29100515',
+    pubmed='29457794',
     primary_category='metabolic_network',
     description=(
         'Recon3D is a comprehensive human genome-scale metabolic reconstruction '
