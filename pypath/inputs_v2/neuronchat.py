@@ -35,7 +35,7 @@ config = ResourceConfig(
     url='https://github.com/Wei-BioMath/NeuronChat',
     license=LicenseCV.GPL_3_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='36800000', # Zhao et al. 2023 DOI: 10.1038/s41467-023-36800-w
+    pubmed='36854676', # Zhao et al. 2023 DOI: 10.1038/s41467-023-36800-w
     primary_category='interactions',
     description=(
         'NeuronChat is a manually curated resource of neural-specific '
