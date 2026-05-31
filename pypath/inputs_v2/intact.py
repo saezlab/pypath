@@ -206,8 +206,6 @@ interactions_schema = EntityBuilder(
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor A', extract='tax')),
-                    CV(term=ParticipantMetadataCv.ALIAS, value=f('Alias(es) interactor A')),
-                    CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Annotation(s) interactor A')),
                 ),
             ),
             annotations=AnnotationsBuilder(
@@ -228,8 +226,6 @@ interactions_schema = EntityBuilder(
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor B', extract='tax')),
-                    CV(term=ParticipantMetadataCv.ALIAS, value=f('Alias(es) interactor B')),
-                    CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Annotation(s) interactor B')),
                 ),
             ),
             annotations=AnnotationsBuilder(
