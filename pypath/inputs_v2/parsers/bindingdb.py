@@ -15,14 +15,6 @@ try:
 except ImportError:  # pragma: no cover - optional dependency
     duckdb = None
 
-from pypath.inputs_v2.parsers.chemical_filters import (
-    chemical_resolver_filter_sql,
-    chemical_resolver_lookup_path,
-    chemical_resolver_sources,
-    row_has_allowed_chemical_inchikey,
-)
-from pypath.inputs_v2.parsers.base import iter_parquet
-
 
 _CHEMBL_RUN_RE = re.compile(r'(CHEMBL\d+)(?=CHEMBL\d+)')
 _AFFINITY_VALUE_RE = re.compile(r'([0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)')
@@ -69,8 +61,6 @@ _BINDINGDB_COLUMNS = [
     'UniProt (TrEMBL) Primary ID of Target Chain 1',
     'UniProt (TrEMBL) Submitted Name of Target Chain 1',
 ]
-BINDINGDB_FILTERED_PARQUET_CACHE_VERSION = 2
-
 
 def _normalize_row(row: dict[str, str | None]) -> dict[str, str]:
     normalized = {key: '' if value is None else str(value) for key, value in row.items()}
@@ -125,10 +115,6 @@ def _bindingdb_pchembl_filter_enabled(kwargs: dict[str, object]) -> bool:
     return bool(kwargs.get('filter_bindingdb_pchembl', True))
 
 
-def _bindingdb_chemical_resolver_filter_enabled(kwargs: dict[str, object]) -> bool:
-    return bool(kwargs.get('filter_chemical_resolver_inchikeys', False))
-
-
 def _bindingdb_min_pchembl(kwargs: dict[str, object]) -> float:
     return float(kwargs.get('bindingdb_min_pchembl', BINDINGDB_MIN_PCHEMBL))
 
@@ -154,15 +140,7 @@ def _row_passes_filters(
     *,
     kwargs: dict[str, object],
 ) -> bool:
-    if not _row_has_allowed_pchembl(row, kwargs=kwargs):
-        return False
-    if _bindingdb_chemical_resolver_filter_enabled(kwargs):
-        return row_has_allowed_chemical_inchikey(
-            row,
-            'Ligand InChI Key',
-            kwargs=kwargs,
-        )
-    return True
+    return _row_has_allowed_pchembl(row, kwargs=kwargs)
 
 
 def _quote_identifier(name: str) -> str:
@@ -261,82 +239,6 @@ def _iter_duckdb_tsv(
         connection.close()
 
 
-def _filtered_parquet_path(tsv_path: Path) -> Path:
-    return tsv_path.with_name(
-        f'{tsv_path.stem}_chemical_filter_v'
-        f'{BINDINGDB_FILTERED_PARQUET_CACHE_VERSION}.parquet'
-    )
-
-
-def _ensure_filtered_parquet(
-    tsv_path: Path,
-    *,
-    kwargs: dict[str, object],
-) -> Path | None:
-    if duckdb is None:
-        raise ImportError('duckdb is required for BindingDB filtered Parquet.')
-    lookup_path = chemical_resolver_lookup_path(kwargs)
-    if not lookup_path.exists():
-        print(
-            f'Chemical resolver lookup not found; BindingDB filter disabled: '
-            f'{lookup_path}',
-            flush=True,
-        )
-        return None
-
-    parquet_path = _filtered_parquet_path(tsv_path)
-    if parquet_path.exists() and parquet_path.stat().st_mtime_ns >= max(
-        tsv_path.stat().st_mtime_ns,
-        lookup_path.stat().st_mtime_ns,
-    ):
-        return parquet_path
-
-    tmp_path = parquet_path.with_suffix('.parquet.tmp')
-    if tmp_path.exists():
-        tmp_path.unlink()
-
-    available_columns = _read_header(tsv_path)
-    select_exprs = [
-        (
-            f'{_quote_identifier(column)} AS {_quote_identifier(column)}'
-            if column in available_columns
-            else f'NULL AS {_quote_identifier(column)}'
-        )
-        for column in _BINDINGDB_COLUMNS
-    ]
-    filter_sql = chemical_resolver_filter_sql(
-        lookup_path=lookup_path,
-        inchikey_expr=_quote_identifier('Ligand InChI Key'),
-        sources=chemical_resolver_sources(kwargs),
-    )
-    print(f'Creating filtered BindingDB Parquet dataset: {parquet_path}', flush=True)
-    connection = duckdb.connect(':memory:')
-    try:
-        connection.execute(
-            f"""
-            COPY (
-              SELECT {', '.join(select_exprs)}
-              FROM read_csv(
-                {_quote_string(tsv_path)},
-                delim='\t',
-                header=true,
-                all_varchar=true,
-                strict_mode=false,
-                null_padding=true,
-                ignore_errors=true
-              )
-              WHERE {filter_sql}
-            ) TO {_quote_string(tmp_path)}
-            (FORMAT PARQUET, COMPRESSION ZSTD)
-            """
-        )
-    finally:
-        connection.close()
-
-    tmp_path.replace(parquet_path)
-    return parquet_path
-
-
 def _iter_csv_fallback(opener, max_lines: int | None = None) -> Generator[dict[str, str], None, None]:
     if not opener or not opener.result:
         return
@@ -365,7 +267,7 @@ def _raw(
     stream a projected subset of columns.
     """
     if use_duckdb is None:
-        use_duckdb = _bindingdb_chemical_resolver_filter_enabled(kwargs) or (
+        use_duckdb = (
             os.environ.get('OMNIPATH_BINDINGDB_USE_DUCKDB', '').lower()
             in {'1', 'true', 'yes'}
         )
@@ -376,23 +278,6 @@ def _raw(
             # the CSV fallback can stream those directly from the zip handle.
             tsv_path = _bindingdb_tsv_path(opener, extract=max_lines is None)
             if tsv_path is not None:
-                if (
-                    max_lines is None
-                    and _bindingdb_chemical_resolver_filter_enabled(kwargs)
-                ):
-                    parquet_path = _ensure_filtered_parquet(
-                        tsv_path,
-                        kwargs=kwargs,
-                    )
-                    if parquet_path is not None:
-                        for row in iter_parquet(
-                            path=parquet_path,
-                            batch_size=batch_size,
-                        ):
-                            row = _normalize_row(row)
-                            if _row_passes_filters(row, kwargs=kwargs):
-                                yield row
-                        return
                 for row in _iter_duckdb_tsv(
                     tsv_path,
                     max_lines=max_lines,

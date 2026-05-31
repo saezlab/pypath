@@ -19,19 +19,12 @@ from pypath.inputs_v2.parsers.base import (
     iter_parquet,
     iter_sqlite,
 )
-from pypath.inputs_v2.parsers.chemical_filters import (
-    chemical_resolver_filter_sql,
-    chemical_resolver_inchikey_filter_enabled,
-    chemical_resolver_lookup_path,
-    chemical_resolver_sources,
-)
 
 CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE = int(
     os.environ.get('OMNIPATH_CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE', '50000')
 )
 
 CHEMBL_PARQUET_CACHE_VERSION = 6
-CHEMBL_FILTERED_PARQUET_CACHE_VERSION = 1
 CHEMBL_ACTIVITY_MIN_PCHEMBL = 5.0
 
 
@@ -429,91 +422,6 @@ def _ensure_parquet_dataset(dataset: str, duckdb_path: Path, parquet_dir: Path) 
     return parquet_path
 
 
-def _ensure_filtered_parquet_dataset(
-    *,
-    dataset: str,
-    parquet_path: Path | None,
-    parquet_dir: Path,
-    kwargs: dict[str, Any],
-    duckdb_path: Path | None = None,
-) -> Path:
-    if duckdb is None:
-        raise ImportError("duckdb is required to create ChEMBL filtered Parquet datasets.")
-    lookup_path = chemical_resolver_lookup_path(kwargs)
-    if not lookup_path.exists():
-        print(
-            f'Chemical resolver lookup not found; ChEMBL filter disabled: '
-            f'{lookup_path}',
-            flush=True,
-        )
-        return parquet_path
-
-    filtered_dir = (
-        parquet_dir.parent /
-        f'{parquet_dir.name}_chemical_filter_v'
-        f'{CHEMBL_FILTERED_PARQUET_CACHE_VERSION}'
-    )
-    filtered_path = filtered_dir / f'{dataset}.parquet'
-    source_mtime = (
-        parquet_path.stat().st_mtime_ns
-        if parquet_path is not None and parquet_path.exists()
-        else duckdb_path.stat().st_mtime_ns
-        if duckdb_path is not None and duckdb_path.exists()
-        else 0
-    )
-    if filtered_path.exists() and filtered_path.stat().st_mtime_ns >= max(
-        source_mtime,
-        lookup_path.stat().st_mtime_ns,
-    ):
-        return filtered_path
-
-    tmp_path = filtered_path.with_suffix('.parquet.tmp')
-    if tmp_path.exists():
-        if tmp_path.is_dir():
-            shutil.rmtree(tmp_path)
-        else:
-            tmp_path.unlink()
-
-    print(f'Creating filtered ChEMBL Parquet dataset: {filtered_path}', flush=True)
-    filtered_dir.mkdir(parents=True, exist_ok=True)
-    filter_sql = chemical_resolver_filter_sql(
-        lookup_path=lookup_path,
-        inchikey_expr='standard_inchi_key',
-        sources=chemical_resolver_sources(kwargs),
-    )
-    con = None
-    try:
-        if parquet_path is None:
-            if duckdb_path is None:
-                raise ValueError('duckdb_path is required without parquet_path.')
-            con = duckdb.connect(str(duckdb_path), read_only=True)
-            source_sql = PARQUET_QUERIES[dataset]
-        else:
-            source_path = (
-                str(parquet_path / '**' / '*.parquet')
-                if parquet_path.is_dir()
-                else str(parquet_path)
-            ).replace("'", "''")
-            source_sql = f"SELECT * FROM read_parquet('{source_path}')"
-            con = duckdb.connect(':memory:')
-        con.execute(
-            f"""
-            COPY (
-              SELECT *
-              FROM ({source_sql}) AS chembl_source
-              WHERE {filter_sql}
-            ) TO '{str(tmp_path).replace("'", "''")}'
-            (FORMAT PARQUET, COMPRESSION ZSTD)
-            """
-        )
-    finally:
-        if con is not None:
-            con.close()
-
-    tmp_path.replace(filtered_path)
-    return filtered_path
-
-
 def _ensure_activities_parquet_dataset(duckdb_path: Path, parquet_path: Path) -> Path:
     """Write ChEMBL activities as bounded Parquet parts.
 
@@ -627,28 +535,11 @@ def _iter_chembl_prepared(
             )
             _ensure_sqlite(opener, sqlite_path, db_rel_path)
             _ensure_duckdb_cache(sqlite_path, duckdb_path)
-            if (
-                dataset == 'molecules'
-                and chemical_resolver_inchikey_filter_enabled(kwargs)
-            ):
-                parquet_path = (
-                    _ensure_parquet_dataset(dataset, duckdb_path, parquet_dir)
-                    if dataset == 'molecules'
-                    else None
-                )
-                parquet_path = _ensure_filtered_parquet_dataset(
-                    dataset=dataset,
-                    parquet_path=parquet_path,
-                    parquet_dir=parquet_dir,
-                    kwargs=kwargs,
-                    duckdb_path=duckdb_path,
-                )
-            else:
-                parquet_path = _ensure_parquet_dataset(
-                    dataset,
-                    duckdb_path,
-                    parquet_dir,
-                )
+            parquet_path = _ensure_parquet_dataset(
+                dataset,
+                duckdb_path,
+                parquet_dir,
+            )
             query = _limit_query("SELECT * FROM read_parquet(?)", max_records)
             batch_size = min(max_records or 100_000, 100_000)
             yield from iter_parquet(
