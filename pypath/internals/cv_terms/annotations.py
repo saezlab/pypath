@@ -321,6 +321,7 @@ class MoleculeAnnotationsCv(CvEnum):
     AGLYCONE = ("OM:0666", "Aglycone (non-sugar) component of a glycoside compound")
     COMPOUND_KINGDOM = ("OM:0667", "Compound kingdom classification (ClassyFire taxonomy top level, e.g. Organic compounds)")
     COMPOUND_SUPERCLASS = ("OM:0668", "Compound superclass classification (ClassyFire taxonomy second level, e.g. Lipids and lipid-like molecules)")
+    CHEMONT_CLASSIFICATION = ("OM:0669", "ChemOnt classification term accessions")
 
     # Concentration and measurement statistics (OM:0680-0699 range)
     CONCENTRATION_VALUE = ("OM:0679", "Concentration value")

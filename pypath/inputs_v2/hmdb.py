@@ -12,12 +12,15 @@ from pypath.internals.cv_terms import (
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
     AssayAnnotationsCv,
     DiseaseAnnotationCv,
 )
 from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -25,7 +28,10 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.hmdb import _raw
+from pypath.inputs_v2.parsers.hmdb import (
+    _raw,
+    chemont_name_map,
+)
 
 
 config = ResourceConfig(
@@ -36,6 +42,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='34986597',
     primary_category='small_molecules',
+    annotation_ontologies=(OntologyCv.CHEMONT,),
     description=(
         'The Human Metabolome Database (HMDB) is a comprehensive database '
         'containing detailed information about small molecule metabolites '
@@ -84,6 +91,13 @@ metabolites_schema = EntityBuilder(
         CV(term=AssayAnnotationsCv.BIOSPECIMEN, value=f('biospecimen_locations', delimiter=';')),
         CV(term=DiseaseAnnotationCv.NAME, value=f('diseases', delimiter=';')),
     ),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.CV_TERM,
+            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_identifier=f('chemont_ids', delimiter=';'),
+        ),
+    ),
 )
 
 download = Download(#'https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
@@ -94,6 +108,29 @@ download = Download(#'https://hmdb.ca/system/downloads/current/hmdb_metabolites.
     ext='.zip',
     default_mode='rb',
 )
+
+chemont_download = Download(
+    url=(
+        'http://classyfire.wishartlab.com/system/downloads/1_0/'
+        'chemont/ChemOnt_2_1.obo.zip'
+    ),
+    filename='ChemOnt_2_1.obo.zip',
+    subfolder='chemont',
+    large=True,
+    ext='zip',
+    needed=['ChemOnt_2_1.obo'],
+)
+
+def _raw_with_ontology_maps(opener, force_refresh: bool = False, **kwargs):
+    chemont_map = chemont_name_map(
+        chemont_download.open(force_refresh=force_refresh),
+    )
+    yield from _raw(
+        opener,
+        force_refresh=force_refresh,
+        chemont_name_map=chemont_map,
+        **kwargs,
+    )
 
 def _id_translation_row(row: dict) -> dict | None:
     hmdb_id = row.get('accession')
@@ -113,7 +150,7 @@ resource = Resource(
     metabolites=Dataset(
         download=download,
         mapper=metabolites_schema,
-        raw_parser=_raw,
+        raw_parser=_raw_with_ontology_maps,
     ),
     id_translation=Dataset(
         download=download,

@@ -31,3 +31,5 @@ class OntologyCv(CvEnum):
     OMNIPATH = ("OM:1248", "OmniPath Ontology", "https://omnipathdb.org/")
     MONDO = ("OM:1249", "Mondo Disease Ontology", "https://mondo.monarchinitiative.org/")
     KEGG_PATHWAYS = ("OM:1250", "KEGG Pathway Ontology", "https://www.genome.jp/kegg/pathway.html")
+    ENZYME_CLASSIFICATION = ("OM:1251", "Enzyme Classification", "https://www.brenda-enzymes.org/")
+    CHEMONT = ("OM:1252", "ChemOnt", "http://classyfire.wishartlab.com/")

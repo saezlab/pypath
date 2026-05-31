@@ -5,17 +5,19 @@ This module converts enzyme and ligand information from BRENDA into Entity
 records using the declarative schema pattern.
 """
 
-import re
-from collections import defaultdict
+from __future__ import annotations
 
 from pypath.inputs_v2.base import (
     ResourceConfig,
     Download,
     Resource,
     Dataset,
+    ontology_entity_mapper,
 )
+from pypath.inputs_v2.parsers import brenda as _parsers
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
+    AssociationBuilder,
+    AssociationsBuilder,
     CV,
     EntityBuilder,
     FieldConfig,
@@ -23,10 +25,9 @@ from pypath.internals.tabular_builder import (
 )
 from pypath.internals.cv_terms import (
     EntityTypeCv,
-    LigandTypeCv,
-    InteractionParameterCv,
     IdentifierNamespaceCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
@@ -34,33 +35,7 @@ from pypath.internals.cv_terms import (
 # =================================== SET-UP ===================================
 
 URL = 'https://www.brenda-enzymes.org/download.php'
-# XXX: As specified in inputs v1
-RECORDS_ENABLED = {
-    'ID', # EC-class
-    'PR', # protein 	sequence identifier and name of source in {...}
-    'AC', # activating compound
-    'IN', # inhibitors
-    'CF', # cofactor
-    'KI', # Ki-value	inhibitor in {...}
-    'KM', # KM-value	substrate in {...}
-    'RF', # references
-}
-
-ID = re.compile(r"^#([\d,]+)#")
-PR_ORGANISM_NAME = re.compile(r"#\d+# '?([-\w\s\.\[\]]+[^\s#\{<\('])")
-PR_IDENTIFIER = re.compile(r".*\{(.*?)\;.*")
-REFERENCE = re.compile(r".*\<([\d,]+)\>$")
-ROLE_COMPOUND = re.compile(r"^#[\d,]+# ([^#]+) [\(\<].*")
-K_COMPOUND = re.compile(r"^#[\d,]+# ([-\d.e]+ \{.*\}).*")
-DETAILS = re.compile(r".*\((#.*\>)\).*")
-REF_ID = re.compile(r"^\<(\d+)\>.*")
-#REF_AUTHORS = re.compile(r"^\<\d+\> ([^\:]+).*")
-#REF_TITLE = re.compile(r"^\<\d+\> [^\:]+: (.*)::.*")
-#REF_JOURNAL = re.compile(r".*:: (.*) \(\d{4}\)")
-#REF_YEAR = re.compile(r".* \((\d{4})\) .*")
-#REF_VOLUME = re.compile(r".* \(\d{4}\) (.*), .*")
-#REF_PAGES = re.compile(r".* \(\d{4}\) .*, (.*)\..*")
-REF_PMID = re.compile(r".*\{Pubmed:(\d+)\}")
+_ENZYME_CLASSIFICATION_ONTOLOGY_ID = 'enzyme_classification'
 
 config = ResourceConfig(
     id=ResourceCv.BRENDA,
@@ -70,193 +45,12 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='41206471',
     primary_category='enzsub',
+    annotation_ontologies=(OntologyCv.ENZYME_CLASSIFICATION,),
     description=(
         'BRENDA is the main collection of enzyme functional data available to '
         'the scientific community.'
     ),
 )
-
-# ================================== DOWNLOAD ==================================
-
-def process_entry(entry):
-
-    record = defaultdict(list)
-
-    for line in entry:
-
-        # Controlling for empty records
-        if not line:
-
-            break
-
-        else:
-
-            key, value = line
-
-            if key == 'ID':
-
-                # Controlling for deleted, transferred or dummy records
-                if '(' in value:
-
-                    break
-
-                else:
-
-                    record[key] = value
-
-            else:
-
-                record[key].append(value)
-
-    return record if len(record) > 1 else {}
-
-
-def process_record(record):
-
-    eid = record['ID']
-    ref_dict = process_references(record)
-
-    proc = defaultdict(lambda: defaultdict(set))
-
-    for pr in record.get('PR', []):
-
-        pid = ID.match(pr).group(1)
-        org = PR_ORGANISM_NAME.match(pr).group(1)
-        upids = g.group(1) if (g := PR_IDENTIFIER.match(pr)) else ''
-        # Dealing with cases of multiple or empty identifiers
-        upids = [i for i in upids.split(' AND ') if i]
-        refs = REFERENCE.match(pr).group(1)
-
-        proc[pid]['EC'] = eid
-        proc[pid]['UniProt'].update(upids)
-        proc[pid]['#'] = pid
-        proc[pid]['Organism'].add(org)
-        proc[pid]['Refs'].update(refs.split(','))
-
-    for k in ['AC', 'IN', 'CF', 'KI', 'KM']:
-
-        proc = process_record_roles(proc, record, k)
-
-    for pid in proc.keys():
-
-        proc[pid]['Refs'] = [
-            ref
-            for i in proc[pid]['Refs']
-            if (ref := ref_dict[i])
-        ]
-
-    return proc
-
-
-ROLES_MAPPER = {
-    'AC': ('Activator', ROLE_COMPOUND),
-    'IN': ('Inhibitor', ROLE_COMPOUND),
-    'CF': ('Cofactor', ROLE_COMPOUND),
-    'KI': ('Ki', K_COMPOUND),
-    'KM': ('Km', K_COMPOUND),
-}
-
-
-def process_record_roles(proc, record, key):
-
-    if key not in ROLES_MAPPER:
-
-        return {'ERROR': '`key` not found in `ROLES_MAPPER` for processing'}
-
-    new_key, comp_regex = ROLES_MAPPER[key]
-
-    for r in record.get(key, []):
-
-        compound = comp_regex.match(r).group(1)
-        aux = x.group(1) if (x := DETAILS.match(r)) else ''
-
-        # Making sure all IDs are accounted for (not all described inside
-        # parentheses)
-        initial_pids = set(ID.match(r).group(1).split(','))
-        initial_refs = set(REFERENCE.match(r).group(1).split(','))
-
-        # XXX: Bypassing cases when they use ";" not as separator :'(
-        aux = re.sub(r'; #', r'||#', aux)
-
-        for entry in aux.split('||'):
-
-            if not entry:
-
-                continue
-
-            pids = ID.match(entry).group(1).split(',')
-            refs = REFERENCE.match(entry).group(1).split(',')
-
-            for pid in pids:
-
-                proc[pid][new_key].add(compound)
-                proc[pid]['Refs'].update(refs)
-
-                initial_pids -= {pid}
-
-            initial_refs -= set(refs)
-
-        # Adding remaining annotations for non-described entries
-        for pid in initial_pids:
-
-            proc[pid][new_key].add(compound)
-            proc[pid]['Refs'].update(initial_refs) # Assuming a bit here
-
-    return proc
-
-
-def process_references(record):
-
-    refs = {}
-    regexes = [
-            REF_ID,
-            #REF_AUTHORS,
-            #REF_TITLE,
-            #REF_JOURNAL,
-            #REF_YEAR,
-            #REF_VOLUME,
-            #REF_PAGES,
-            REF_PMID
-        ]
-
-    for entry in record.get('RF', []):
-
-        res = [
-            x.group(1) if (x := regex.match(entry)) else ''
-            for regex in regexes
-        ]
-
-        # Only PMID
-        refs[res[0]] = res[1]#res[1:]
-
-    return refs
-
-
-def parser(opener, **kwargs):
-
-    keys = sorted(opener.result)
-    # Serialized raw string
-    result = opener.result[keys[0]].read().decode('utf-8')
-
-    entries = [
-        [
-            split
-            for line in entry.split('\n')
-            if (split := line.split('\t', maxsplit=1))[0] in RECORDS_ENABLED
-        ]
-        # NOTE: Continuation lines start with \t character -> merged from
-        # serialized string by replacing \n\t with empty string before splitting
-        # the lines. Each entry spans multiple lines, separated by "///"
-        for entry in result.replace('\n\t', '').split('///')[1:] # Ignore first
-    ]
-
-    records = [
-        r
-        for e in entries if (pe := process_entry(e))
-        for r in list(process_record(pe).values())
-    ]
-
-    yield from records
 
 
 download = Download(
@@ -280,21 +74,22 @@ f = FieldConfig(
     transform={},
 )
 
+enzyme_ontology_schema = ontology_entity_mapper(
+    _parsers.term_record_to_term,
+    ontology_id=_ENZYME_CLASSIFICATION_ONTOLOGY_ID,
+)
+
 schema = EntityBuilder(
     entity_type=EntityTypeCv.PROTEIN,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt')),
     ),
-    annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.EC, value=f('ID')),
-        CV(term=EntityTypeCv.ORGANISM, value=f('Organism')),
-        CV(term=IdentifierNamespaceCv.PUBMED, value=f('Refs')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('EC')),
-        CV(term=LigandTypeCv.ACTIVATOR, value=f('Activator')),
-        CV(term=LigandTypeCv.INHIBITOR, value=f('Inhibitor')),
-        CV(term=LigandTypeCv.ALLOSTERIC_MODULATOR, value=f('Cofactor')),
-        CV(term=InteractionParameterCv.KM, value=f('Km')),
-        CV(term=InteractionParameterCv.KI, value=f('Ki')),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.CV_TERM,
+            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_identifier=f(_parsers.ec_term_id),
+        ),
     ),
 )
 
@@ -302,10 +97,20 @@ schema = EntityBuilder(
 
 resource = Resource(
     config=config,
+    enzyme_ontology=Dataset(
+        download=download,
+        mapper=enzyme_ontology_schema,
+        raw_parser=_parsers.iter_enzyme_ontology,
+    ),
+    protein_enzyme_class_annotations=Dataset(
+        download=download,
+        mapper=schema,
+        raw_parser=_parsers.iter_protein_enzyme_class_annotations,
+    ),
     data=Dataset(
         download=download,
         mapper=schema,
-        raw_parser=parser,
+        raw_parser=_parsers.parser,
     ),
 )
 
