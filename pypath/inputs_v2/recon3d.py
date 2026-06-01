@@ -44,6 +44,7 @@ from pypath.internals.cv_terms import (
     MoleculeAnnotationsCv,
     MoleculeSubtypeCv,
     ParticipantMetadataCv,
+    ReactionAnnotationsCv,
     ResourceCv,
     UpdateCategoryCV,
 )
@@ -115,10 +116,10 @@ metabolites_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi')),
         CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_compound')),
         CV(term=IdentifierNamespaceCv.METANETX, value=f('metanetx')),
+        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('formula')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
-        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('formula')),
         CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE, value=f('charge')),
     ),
 )
@@ -136,7 +137,7 @@ reactions_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=f('direction')),
-        CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=f('subsystem')),
+        CV(term=ReactionAnnotationsCv.SUBSYSTEM, value=f('subsystem')),
     ),
     membership=MembershipBuilder(
         MembersFromList(
@@ -154,6 +155,8 @@ reactions_schema = EntityBuilder(
                    value=f('reactant_kegg_compound', delimiter='||', map='split_member_values', preserve_indices=True)),
                 CV(term=IdentifierNamespaceCv.METANETX,
                    value=f('reactant_metanetx', delimiter='||', map='split_member_values', preserve_indices=True)),
+                CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
+                   value=f('reactant_formula', delimiter='||', preserve_indices=True)),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=BiologicalRoleCv.REACTANT),
@@ -164,8 +167,6 @@ reactions_schema = EntityBuilder(
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
-                CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
-                   value=f('reactant_formula', delimiter='||', preserve_indices=True)),
                 CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE,
                    value=f('reactant_charge', delimiter='||', preserve_indices=True)),
             ),
@@ -185,6 +186,8 @@ reactions_schema = EntityBuilder(
                    value=f('product_kegg_compound', delimiter='||', map='split_member_values', preserve_indices=True)),
                 CV(term=IdentifierNamespaceCv.METANETX,
                    value=f('product_metanetx', delimiter='||', map='split_member_values', preserve_indices=True)),
+                CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
+                   value=f('product_formula', delimiter='||', preserve_indices=True)),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=BiologicalRoleCv.PRODUCT),
@@ -195,8 +198,6 @@ reactions_schema = EntityBuilder(
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
-                CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
-                   value=f('product_formula', delimiter='||', preserve_indices=True)),
                 CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE,
                    value=f('product_charge', delimiter='||', preserve_indices=True)),
             ),
@@ -217,7 +218,7 @@ transport_reactions_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=f('direction')),
-        CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=f('subsystem')),
+        CV(term=ReactionAnnotationsCv.SUBSYSTEM, value=f('subsystem')),
     ),
     membership=MembershipBuilder(
         MembersFromList(
@@ -235,6 +236,8 @@ transport_reactions_schema = EntityBuilder(
                    value=f('reactant_kegg_compound', delimiter='||', map='split_member_values', preserve_indices=True)),
                 CV(term=IdentifierNamespaceCv.METANETX,
                    value=f('reactant_metanetx', delimiter='||', map='split_member_values', preserve_indices=True)),
+                CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
+                   value=f('reactant_formula', delimiter='||', preserve_indices=True)),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=BiologicalRoleCv.REACTANT),
@@ -245,8 +248,6 @@ transport_reactions_schema = EntityBuilder(
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
-                CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
-                   value=f('reactant_formula', delimiter='||', preserve_indices=True)),
                 CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE,
                    value=f('reactant_charge', delimiter='||', preserve_indices=True)),
             ),
@@ -266,6 +267,8 @@ transport_reactions_schema = EntityBuilder(
                    value=f('product_kegg_compound', delimiter='||', map='split_member_values', preserve_indices=True)),
                 CV(term=IdentifierNamespaceCv.METANETX,
                    value=f('product_metanetx', delimiter='||', map='split_member_values', preserve_indices=True)),
+                CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
+                   value=f('product_formula', delimiter='||', preserve_indices=True)),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=BiologicalRoleCv.PRODUCT),
@@ -276,8 +279,6 @@ transport_reactions_schema = EntityBuilder(
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
-                CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA,
-                   value=f('product_formula', delimiter='||', preserve_indices=True)),
                 CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE,
                    value=f('product_charge', delimiter='||', preserve_indices=True)),
             ),
@@ -295,7 +296,7 @@ catalysis_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.BIGG_REACTION, value=f('reaction_bigg_id')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=f('subsystem')),
+        CV(term=ReactionAnnotationsCv.SUBSYSTEM, value=f('subsystem')),
     ),
     membership=MembershipBuilder(
         Member(

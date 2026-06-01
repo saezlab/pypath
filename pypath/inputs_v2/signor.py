@@ -12,6 +12,7 @@ import re
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.internals.cv_terms import (
+    CurationCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
@@ -379,7 +380,7 @@ phenotypes_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('PHENOTYPE NAME')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('PHENOTYPE DESCRIPTION')),
+        CV(term=CurationCv.COMMENT, value=f('PHENOTYPE DESCRIPTION')),
     ),
 )
 
@@ -390,7 +391,7 @@ stimuli_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('STIMULUS NAME')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('STIMULUS DESCRIPTION')),
+        CV(term=CurationCv.COMMENT, value=f('STIMULUS DESCRIPTION')),
     ),
 )
 

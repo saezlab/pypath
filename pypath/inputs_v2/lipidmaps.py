@@ -12,6 +12,7 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
+    MoleculeSubtypeCv,
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
@@ -78,7 +79,7 @@ lipids_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=f('SWISSLIPIDS_ID')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=EntityTypeCv.LIPID),
+        CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.LIPID),
         CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('EXACT_MASS')),
         CV(term=MoleculeAnnotationsCv.LIPID_CATEGORY, value=f('CATEGORY')),
         CV(term=MoleculeAnnotationsCv.LIPID_MAIN_CLASS, value=f('MAIN_CLASS')),

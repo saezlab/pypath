@@ -7,12 +7,13 @@ into Entity records using the schema defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
-from collections.abc import Generator
+from collections.abc import Callable, Mapping
 import csv
 import re
 
 from pypath.internals.cv_terms import (
     EntityTypeCv,
+    InteractionParameterCv,
     ProteinFunctionalClassCv,
     MoleculeSubtypeCv,
     IdentifierNamespaceCv,
@@ -176,18 +177,19 @@ f = FieldConfig(
 )
 
 
-_PROTEIN_LIGAND_SUBTYPES = {
-    MoleculeSubtypeCv.PEPTIDE,
-    MoleculeSubtypeCv.ANTIBODY,
-}
 _NUCLEIC_ACID_LIGAND_SUBTYPES = {
     MoleculeSubtypeCv.NUCLEIC_ACID,
+}
+_MACROMOLECULE_LIGAND_SUBTYPES = {
+    MoleculeSubtypeCv.PEPTIDE,
+    MoleculeSubtypeCv.ANTIBODY,
 }
 _TAXON_SCOPED_ENTITY_TYPES = {
     EntityTypeCv.PROTEIN,
     EntityTypeCv.GENE,
     EntityTypeCv.RNA,
     EntityTypeCv.DNA,
+    EntityTypeCv.MACROMOLECULE,
     EntityTypeCv.NUCLEIC_ACID,
 }
 
@@ -242,26 +244,102 @@ def _iter_guidetopharma_csv(opener, **_kwargs: object):
     yield from reader
 
 
+def _guidetopharma_rows_by_id(
+    download: Download,
+    key: str,
+    *,
+    force_refresh: bool = False,
+) -> dict[str, dict[str, str]]:
+    rows: dict[str, dict[str, str]] = {}
+    opener = download.open(force_refresh=force_refresh)
+    for row in _iter_guidetopharma_csv(opener):
+        value = (row.get(key) or '').strip()
+        if value:
+            rows[value] = row
+    return rows
+
+
+def _iter_guidetopharma_interactions(opener, **kwargs: object):
+    ligands = _guidetopharma_rows_by_id(
+        _ligands_download,
+        'Ligand ID',
+        force_refresh=bool(kwargs.get('force_refresh', False)),
+    )
+    targets = _guidetopharma_rows_by_id(
+        _targets_download,
+        'Target id',
+        force_refresh=bool(kwargs.get('force_refresh', False)),
+    )
+
+    for row in _iter_guidetopharma_csv(opener):
+        row = dict(row)
+        row['_ligand'] = ligands.get((row.get('Ligand ID') or '').strip(), {})
+        row['_target'] = targets.get((row.get('Target ID') or '').strip(), {})
+        row['_target_ligand'] = ligands.get(
+            (row.get('Target Ligand ID') or '').strip(),
+            {},
+        )
+        yield row
+
+
+def _nested_row(row: Mapping[str, object], key: str) -> Mapping[str, object]:
+    value = row.get(key)
+    return value if isinstance(value, Mapping) else {}
+
+
+def _ligand_row(row: Mapping[str, object]) -> Mapping[str, object]:
+    return _nested_row(row, '_ligand') or row
+
+
+def _interaction_target_row(row: Mapping[str, object]) -> Mapping[str, object]:
+    return _nested_row(row, '_target')
+
+
+def _target_ligand_row(row: Mapping[str, object]) -> Mapping[str, object]:
+    return _nested_row(row, '_target_ligand')
+
+
 def _guidetopharma_ligand_entity_type(row):
+    row = _ligand_row(row)
     ligand_subtype = ligand_chemical_type_mapping.get((row.get('Type') or '').strip())
 
-    if ligand_subtype in _PROTEIN_LIGAND_SUBTYPES:
+    if _filter_uniprot_accessions(row.get('UniProt ID')):
         return EntityTypeCv.PROTEIN
 
     if ligand_subtype in _NUCLEIC_ACID_LIGAND_SUBTYPES:
         return EntityTypeCv.NUCLEIC_ACID
 
-    if _filter_uniprot_accessions(row.get('UniProt ID')):
-        return EntityTypeCv.PROTEIN
+    if ligand_subtype in _MACROMOLECULE_LIGAND_SUBTYPES:
+        return EntityTypeCv.MACROMOLECULE
 
     return EntityTypeCv.CHEMICAL
 
 
 def _guidetopharma_ligand_taxon_id(row):
+    row = _ligand_row(row)
     entity_type = _guidetopharma_ligand_entity_type(row)
     taxon_id = species_to_taxid.get((row.get('Species') or '').strip())
 
     return taxon_id if entity_type in _TAXON_SCOPED_ENTITY_TYPES else None
+
+
+def _guidetopharma_target_entity_type(row):
+    if any(
+        _split_pipe_values(row.get(field))
+        for field in (
+            'Human SwissProt',
+            'Human Ensembl Gene',
+            'Human Entrez Gene',
+            'HGNC id',
+            'HGNC symbol',
+        )
+    ):
+        return EntityTypeCv.PROTEIN
+
+    if _split_pipe_values(row.get('Subunit id')):
+        return EntityTypeCv.COMPLEX
+
+    return EntityTypeCv.PROTEIN_FAMILY
 
 
 config = ResourceConfig(
@@ -283,8 +361,24 @@ config = ResourceConfig(
     ),
 )
 
+_targets_download = Download(
+    url='http://www.guidetopharmacology.org/DATA/targets_and_families.csv',
+    filename='targets_and_families.csv',
+    subfolder='guidetopharma',
+)
+_ligands_download = Download(
+    url='http://www.guidetopharmacology.org/DATA/ligands.csv',
+    filename='ligands.csv',
+    subfolder='guidetopharma',
+)
+_interactions_download = Download(
+    url='http://www.guidetopharmacology.org/DATA/interactions.csv',
+    filename='interactions.csv',
+    subfolder='guidetopharma',
+)
+
 targets_schema = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
+    entity_type=_guidetopharma_target_entity_type,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Target id')),
         CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Human SwissProt', delimiter='|')),
@@ -366,6 +460,30 @@ ligands_schema = EntityBuilder(
     ),
 )
 
+
+class _MappedEntityBuilder:
+    def __init__(
+        self,
+        builder: EntityBuilder,
+        row_getter: Callable[[Mapping[str, object]], Mapping[str, object]],
+    ) -> None:
+        self.builder = builder
+        self.row_getter = row_getter
+
+    def build(self, row: Mapping[str, object]) -> object | None:
+        member_row = self.row_getter(row)
+        return self.builder.build(member_row) if member_row else None
+
+
+class _GuidetopharmaTargetMemberBuilder:
+    def build(self, row: Mapping[str, object]) -> object | None:
+        if row.get('Target ID'):
+            return targets_schema.build(_interaction_target_row(row))
+        if row.get('Target Ligand ID'):
+            return ligands_schema.build(_target_ligand_row(row))
+        return None
+
+
 affinity_units_source = f('Affinity Units', map='affinity_units')
 
 interactions_schema = EntityBuilder(
@@ -383,19 +501,18 @@ interactions_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=f('Action', map='action')),
         CV(term=f('Type', map='ligand_type')),
-        CV(term=MoleculeAnnotationsCv.ENDOGENOUS, value=f('Endogenous')),
         CV(
-            term=MoleculeAnnotationsCv.AFFINITY_HIGH,
+            term=InteractionParameterCv.AFFINITY_HIGH,
             value=f('Affinity High'),
             unit=affinity_units_source,
         ),
         CV(
-            term=MoleculeAnnotationsCv.AFFINITY_LOW,
+            term=InteractionParameterCv.AFFINITY_LOW,
             value=f('Affinity Low'),
             unit=affinity_units_source,
         ),
         CV(
-            term=MoleculeAnnotationsCv.AFFINITY_MEDIAN,
+            term=InteractionParameterCv.AFFINITY_MEDIAN,
             value=f('Affinity Median'),
             unit=affinity_units_source,
         ),
@@ -407,63 +524,22 @@ interactions_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         Member(
-            entity=EntityBuilder(
-                entity_type=_guidetopharma_ligand_entity_type,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Ligand ID')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.NCBI_TAX_ID,
-                        value=_guidetopharma_ligand_taxon_id,
-                    ),
-                ),
+            entity=_MappedEntityBuilder(ligands_schema, _ligand_row),
+            annotations=AnnotationsBuilder(
+                CV(term=MoleculeAnnotationsCv.ENDOGENOUS, value=f('Endogenous')),
             ),
         ),
         Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Target ID')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.NCBI_TAX_ID,
-                        value=f('Target Species', map='species_taxid'),
-                    ),
-                ),
-            ),
+            entity=_GuidetopharmaTargetMemberBuilder(),
         ),
     ),
 )
 
 resource = Resource(
     config,
-    targets=Dataset(
-        download=Download(
-            url='http://www.guidetopharmacology.org/DATA/targets_and_families.csv',
-            filename='targets_and_families.csv',
-            subfolder='guidetopharma',
-        ),
-        mapper=targets_schema,
-        raw_parser=_iter_guidetopharma_csv,
-    ),
-    ligands=Dataset(
-        download=Download(
-            url='http://www.guidetopharmacology.org/DATA/ligands.csv',
-            filename='ligands.csv',
-            subfolder='guidetopharma',
-        ),
-        mapper=ligands_schema,
-        raw_parser=_iter_guidetopharma_csv,
-    ),
     interactions=Dataset(
-        download=Download(
-            url='http://www.guidetopharmacology.org/DATA/interactions.csv',
-            filename='interactions.csv',
-            subfolder='guidetopharma',
-        ),
+        download=_interactions_download,
         mapper=interactions_schema,
-        raw_parser=_iter_guidetopharma_csv,
+        raw_parser=_iter_guidetopharma_interactions,
     ),
 )

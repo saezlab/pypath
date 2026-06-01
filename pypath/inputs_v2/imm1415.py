@@ -32,7 +32,6 @@ from pypath.internals.cv_terms import (
 # =================================== SET-UP ===================================
 
 URL = 'http://bigg.ucsd.edu/static/models/iMM1415.json'
-MOUSE_TAXON_ID = '10090'
 
 config = ResourceConfig(
     id=ResourceCv.IMM1415,
@@ -99,7 +98,7 @@ f = FieldConfig(
 )
 
 schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(
             term=IdentifierNamespaceCv.BIGG_METABOLITE,
@@ -128,7 +127,6 @@ schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=f('slm')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=MOUSE_TAXON_ID),
         CV(
             term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION,
             value=f('compartment')

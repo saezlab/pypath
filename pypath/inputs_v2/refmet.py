@@ -71,7 +71,7 @@ CLASS_ENTITY = {
     'small_molecule': EntityTypeCv.CHEMICAL,
 }
 MOLECULE_SUBTYPE = {
-    'lipid': EntityTypeCv.LIPID,
+    'lipid': MoleculeSubtypeCv.LIPID,
     'small_molecule': MoleculeSubtypeCv.METABOLITE,
 }
 SUPERCLASS = {

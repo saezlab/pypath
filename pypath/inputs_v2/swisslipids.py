@@ -13,10 +13,13 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     MoleculeAnnotationsCv,
+    MoleculeSubtypeCv,
     ResourceCv,
 )
+from pypath.internals.silver_schema import EntityRef, OntologyRelation
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -36,6 +39,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='25943471',
     primary_category='lipids',
+    annotation_ontologies=(OntologyCv.SWISSLIPIDS,),
     description=(
         'SwissLipids is a curated resource providing a framework for the '
         'annotation of mass spectrometry data. It provides over 750,000 lipid '
@@ -83,16 +87,41 @@ lipids_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.SYNONYM, value=f('Abbreviation*')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=EntityTypeCv.LIPID),
+        CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.LIPID),
         CV(term=MoleculeAnnotationsCv.LIPID_HIERARCHY_LEVEL, value=f('Level')),
         CV(term=MoleculeAnnotationsCv.LIPID_MAIN_CLASS, value=f('Lipid class*')),
-        CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=f('Parent')),
         CV(term=MoleculeAnnotationsCv.LIPID_STRUCTURAL_COMPONENTS, value=f('Components*')),
         CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE, value=f('Charge (pH7.3)')),
         CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('Exact Mass (neutral form)')),
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('PMID', delimiter='|')),
     ),
+    ontology_relations=lambda row: _ontology_relations(row),
 )
+
+
+def _swisslipids_identifier(value: object) -> str | None:
+    identifier = str(value or '').strip()
+    if not identifier or identifier.lower() in {'none', 'nan'}:
+        return None
+    return identifier
+
+
+def _ontology_relations(row: dict) -> list[OntologyRelation]:
+    parent_id = _swisslipids_identifier(row.get('Parent'))
+    lipid_id = _swisslipids_identifier(row.get('Lipid ID'))
+    if not parent_id or parent_id == lipid_id:
+        return []
+    return [
+        OntologyRelation(
+            predicate='is_a',
+            object=EntityRef(
+                type=EntityTypeCv.CHEMICAL,
+                identifier_type=IdentifierNamespaceCv.SWISSLIPIDS,
+                identifier=parent_id,
+            ),
+            ontology_id='swisslipids',
+        ),
+    ]
 
 download = Download(
     url='https://swisslipids.org/api/file.php?cas=download_files&file=lipids.tsv',

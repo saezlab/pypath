@@ -8,11 +8,15 @@ from urllib.parse import quote
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
 from pypath.internals.cv_terms import (
+    BiologicalRoleCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
     InteractionMetadataCv,
     InterCellAnnotations,
     LicenseCV,
+    MoleculeAnnotationsCv,
+    ProteinFunctionalClassCv,
+    ReactionAnnotationsCv,
     ResourceCv,
     UpdateCategoryCV,
 )
@@ -168,7 +172,7 @@ def _pubchem_identifiers(value: object) -> list[Identifier]:
         elif token.startswith('SID:'):
             identifiers.append(
                 Identifier(
-                    type=IdentifierNamespaceCv.PUBCHEM,
+                    type=IdentifierNamespaceCv.PUBCHEM_SUBSTANCE,
                     value=token.removeprefix('SID:'),
                 )
             )
@@ -210,9 +214,9 @@ def _metabolite(row: dict[str, object]) -> Entity:
             _identifier(IdentifierNamespaceCv.MOLECULAR_FORMULA, row.get('Molecular Formula')),
         ),
         annotations=_annotations(
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('Kingdom')),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('Super Class')),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('Class')),
+            _annotation(MoleculeAnnotationsCv.COMPOUND_KINGDOM, row.get('Kingdom')),
+            _annotation(MoleculeAnnotationsCv.COMPOUND_SUPERCLASS, row.get('Super Class')),
+            _annotation(MoleculeAnnotationsCv.COMPOUND_CLASS, row.get('Class')),
         ),
     )
 
@@ -317,6 +321,21 @@ def _make_metabolite_protein_mapper(
     taxon_id = SPECIES[species]['taxon_id']
     protein_keys = SPECIES[species]
 
+    def protein_role() -> BiologicalRoleCv:
+        return (
+            BiologicalRoleCv.CONTROLLER
+            if role == 'transporter'
+            else BiologicalRoleCv.ENZYME
+        )
+
+    def metabolite_role(row: dict[str, object]) -> BiologicalRoleCv | None:
+        value = _clean(row.get('enzyme product/substrate')).lower()
+        if value == 'product':
+            return BiologicalRoleCv.PRODUCT
+        if value == 'substrate':
+            return BiologicalRoleCv.SUBSTRATE
+        return None
+
     def mapper(row: dict[str, object]) -> Entity:
         protein_uniprot = _row_value(row, protein_keys['uniprot'])
         metabolite_id = _row_value(row, 'HMDB_ID')
@@ -333,14 +352,15 @@ def _make_metabolite_protein_mapper(
             ),
             annotations=_annotations(
                 Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-                _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, role),
-                _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('REACTIONS')),
-                _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('enzyme product/substrate')),
+                _annotation(ReactionAnnotationsCv.XREF, row.get('REACTIONS')),
             ),
             membership=[
                 Membership(
                     member=_metabolite(row),
-                    annotations=[Annotation(term=InterCellAnnotations.LIGAND)],
+                    annotations=_annotations(
+                        Annotation(term=InterCellAnnotations.LIGAND),
+                        _flag(metabolite_role(row), metabolite_role(row) is not None),
+                    ),
                 ),
                 Membership(
                     member=_protein(
@@ -352,11 +372,19 @@ def _make_metabolite_protein_mapper(
                         annotations=[
                             item
                             for item in (
-                                _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('type')),
-                                _flag(InterCellAnnotations.RECEPTOR, role == 'transporter'),
+                                _annotation(
+                                    MoleculeAnnotationsCv.PROTEIN_FUNCTIONAL_CLASS,
+                                    ProteinFunctionalClassCv.TRANSPORTER
+                                    if role == 'transporter'
+                                    else row.get('type'),
+                                ),
                             )
                             if item is not None
                         ],
+                    ),
+                    annotations=_annotations(
+                        Annotation(term=protein_role()),
+                        _flag(InterCellAnnotations.RECEPTOR, role == 'transporter'),
                     ),
                 ),
             ],

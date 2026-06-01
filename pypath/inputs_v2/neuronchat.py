@@ -59,8 +59,8 @@ def interactions_schema(taxon_id: str) -> EntityBuilder:
             CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name')),
         ),
         annotations=AnnotationsBuilder(
-            CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('ligand_type')),
-            CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('interaction_type')),
+            CV(term=InteractionMetadataCv.LIGAND_TYPE, value=f('ligand_type')),
+            CV(term=InteractionMetadataCv.INTERACTION_TYPE, value=f('interaction_type')),
         ),
         membership=MembershipBuilder(
             Member(
@@ -74,6 +74,8 @@ def interactions_schema(taxon_id: str) -> EntityBuilder:
                             entity_type=EntityTypeCv.PROTEIN,
                             identifiers=IdentifiersBuilder(
                                 CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('lig_contributor')),
+                            ),
+                            entity_annotations=AnnotationsBuilder(
                                 CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
                             ),
                         )
@@ -94,6 +96,8 @@ def interactions_schema(taxon_id: str) -> EntityBuilder:
                             entity_type=EntityTypeCv.PROTEIN,
                             identifiers=IdentifiersBuilder(
                                 CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('receptor_subunit')),
+                            ),
+                            entity_annotations=AnnotationsBuilder(
                                 CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
                             ),
                         )

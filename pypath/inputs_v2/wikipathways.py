@@ -8,10 +8,12 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     InteractionMetadataCv,
+    InteractionTypeCv,
     LicenseCV,
-    OntologyAnnotationCv,
     OntologyCv,
     ParticipantMetadataCv,
+    PathwayAnnotationsCv,
+    PharmacologicalActionCv,
     ResourceCv,
     UpdateCategoryCV,
 )
@@ -64,6 +66,17 @@ f = FieldConfig(
     },
     map={
         'entity_type': lambda value: entity_type_map.get(value, EntityTypeCv.PHYSICAL_ENTITY),
+        'interaction_type': {
+            'Interaction': InteractionTypeCv.FUNCTIONAL_ASSOCIATION,
+            'DirectedInteraction': InteractionTypeCv.FUNCTIONAL_ASSOCIATION,
+            'Stimulation': PharmacologicalActionCv.ACTIVATION,
+            'Inhibition': PharmacologicalActionCv.INHIBITION,
+            'Conversion': InteractionTypeCv.ENZYMATIC_REACTION,
+            'Catalysis': InteractionTypeCv.ENZYMATIC_REACTION,
+            'Binding': PharmacologicalActionCv.BINDING,
+            'ComplexBinding': InteractionTypeCv.PHYSICAL_ASSOCIATION,
+            'TranscriptionTranslation': InteractionTypeCv.CAUSAL_REGULATORY_MECHANISM,
+        },
     },
 )
 
@@ -85,12 +98,12 @@ pathways_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.WIKIPATHWAYS, value=f('pathway_id')),
         CV(term=IdentifierNamespaceCv.WIKIPATHWAYS_VERSION, value=f('pathway_version_id')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('title')),
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('organism_name')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_ids', delimiter=';')),
-        CV(term=OntologyAnnotationCv.DEFINITION, value=f('description')),
+        CV(term=PathwayAnnotationsCv.DESCRIPTION, value=f('description')),
+        CV(term=PathwayAnnotationsCv.ORGANISM_NAME, value=f('organism_name')),
     ),
 )
 
@@ -136,7 +149,7 @@ interactions_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_local_id')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('interaction_types', delimiter=';')),
+        CV(term=f('interaction_types', delimiter=';', map='interaction_type')),
         CV(term=IdentifierNamespaceCv.WIKIPATHWAYS_VERSION, value=f('pathway_version_id')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
     ),

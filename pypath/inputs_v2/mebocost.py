@@ -11,6 +11,7 @@ from __future__ import annotations
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
+    InteractionMetadataCv,
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
@@ -84,7 +85,7 @@ def get_interactions_schema(taxon_id: str) -> EntityBuilder:
         ),
         annotations=AnnotationsBuilder(
             CV(term=IdentifierNamespaceCv.PUBMED, value=f('Evidence', extract='pubmed')),
-            CV(term=f('Evidence', extract='source'), value=f('Evidence')),
+            CV(term=InteractionMetadataCv.INTERACTION_XREF, value=f('Evidence', extract='source')),
             CV(term=CurationCv.COMMENT, value=f('Evidence', extract='comment')),
         ),
         membership=MembershipBuilder(

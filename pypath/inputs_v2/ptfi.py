@@ -238,12 +238,31 @@ foods_schema = EntityBuilder(
                 CV(term=MoleculeAnnotationsCv.COMPOUND_CLASS, value=f('member_category')),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_VALUE, value=f('member_value')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEAN, value=f('member_mean')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEDIAN, value=f('member_median')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MIN, value=f('member_min')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MAX, value=f('member_max')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_UNIT, value=f('member_units')),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_VALUE,
+                    value=f('member_value'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MEAN,
+                    value=f('member_mean'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MEDIAN,
+                    value=f('member_median'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MIN,
+                    value=f('member_min'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MAX,
+                    value=f('member_max'),
+                    unit=f('member_units'),
+                ),
                 CV(term=MoleculeAnnotationsCv.SAMPLE_COUNT, value=f('member_n_samples')),
             ),
         ),

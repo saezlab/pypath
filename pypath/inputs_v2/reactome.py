@@ -17,7 +17,8 @@ from pypath.internals.cv_terms import (
     InteractionMetadataCv,
     LicenseCV,
     MoleculeAnnotationsCv,
-    OntologyAnnotationCv,
+    PathwayAnnotationsCv,
+    ReactionAnnotationsCv,
     OntologyCv,
     ParticipantMetadataCv,
     ResourceCv,
@@ -242,7 +243,7 @@ reactions_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed')),
-        CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=f('ec_number')),
+        CV(term=ReactionAnnotationsCv.EC_NUMBER, value=f('ec_number')),
         CV(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=f('direction')),
     ),
     associations=_pathway_associations(
@@ -383,8 +384,8 @@ pathways_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
-        CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
-        CV(term=OntologyAnnotationCv.COMMENT, value=f('comments')),
+        CV(term=PathwayAnnotationsCv.DESCRIPTION, value=f('definition')),
+        CV(term=PathwayAnnotationsCv.COMMENT, value=f('comments')),
     ),
     associations=_cv_term_associations(f('go')),
     ontology_relations=_pathway_ontology_relations,

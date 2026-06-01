@@ -93,9 +93,9 @@ foods_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.FOODB, value=f('public_id')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
         CV(term=IdentifierNamespaceCv.SCIENTIFIC_NAME, value=f('name_scientific')),
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_taxonomy_id', extract='taxid')),
     ),
     annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_taxonomy_id', extract='taxid')),
         CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('description')),
         CV(term=MoleculeAnnotationsCv.FOOD_CLASS, value=f('food_group')),
         CV(term=MoleculeAnnotationsCv.FOOD_SUBCLASS, value=f('food_subgroup')),
@@ -120,10 +120,21 @@ foods_schema = EntityBuilder(
                 CV(term=MoleculeAnnotationsCv.COMPOUND_SUBCLASS, value=f('member_subklass')),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEAN, value=f('member_content')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MIN, value=f('member_min')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MAX, value=f('member_max')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_UNIT, value=f('member_unit')),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MEAN,
+                    value=f('member_content'),
+                    unit=f('member_unit'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MIN,
+                    value=f('member_min'),
+                    unit=f('member_unit'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MAX,
+                    value=f('member_max'),
+                    unit=f('member_unit'),
+                ),
                 CV(term=MoleculeAnnotationsCv.EXPERIMENTAL_METHOD, value=f('member_method')),
             ),
         ),

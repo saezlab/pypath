@@ -27,8 +27,6 @@ from pypath.internals.cv_terms import (
     UpdateCategoryCV,
     ResourceCv,
     MoleculeAnnotationsCv,
-    BiologicalRoleCv,
-    AssayAnnotationsCv,
 )
 
 # =================================== SET-UP ===================================
@@ -179,11 +177,11 @@ schema = EntityBuilder(
         CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('SLC_family')),
         CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('Transport type*')),
         CV(
-            term=BiologicalRoleCv.CONTROLLED,
+            term=MoleculeAnnotationsCv.TRANSPORT_SUBSTRATE,
             value=f('Substrates', delimiter=', ')
         ),
         CV(
-            term=AssayAnnotationsCv.TISSUE,
+            term=MoleculeAnnotationsCv.TISSUE_LOCATION,
             value=f('Tissue and cellular expression', delimiter=', ')
         ),
     ),

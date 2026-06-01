@@ -50,6 +50,7 @@ from pypath.internals.cv_terms import (
     MoleculeAnnotationsCv,
     MoleculeSubtypeCv,
     ParticipantMetadataCv,
+    ReactionAnnotationsCv,
     ResourceCv,
     UpdateCategoryCV,
 )
@@ -122,10 +123,10 @@ metabolites_schema = EntityBuilder(
         CV(term = IdentifierNamespaceCv.CHEBI, value = f('chebi', extract = 'chebi')),
         CV(term = IdentifierNamespaceCv.PUBCHEM_COMPOUND, value = f('pubchem_compound')),
         CV(term = IdentifierNamespaceCv.LIPIDMAPS, value = f('lipidmaps')),
+        CV(term = IdentifierNamespaceCv.MOLECULAR_FORMULA, value = f('formula')),
     ),
     annotations = AnnotationsBuilder(
         CV(term = MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value = MoleculeSubtypeCv.METABOLITE),
-        CV(term = IdentifierNamespaceCv.MOLECULAR_FORMULA, value = f('formula')),
         CV(term = MoleculeAnnotationsCv.MOLECULAR_CHARGE, value = f('charge')),
     ),
 )
@@ -142,7 +143,7 @@ reactions_schema = EntityBuilder(
     ),
     annotations = AnnotationsBuilder(
         CV(term = InteractionMetadataCv.CONVERSION_DIRECTION, value = f('direction')),
-        CV(term = MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value = f('subsystem')),
+        CV(term = ReactionAnnotationsCv.SUBSYSTEM, value = f('subsystem')),
     ),
     membership = MembershipBuilder(
         MembersFromList(
@@ -214,7 +215,7 @@ transport_reactions_schema = EntityBuilder(
     ),
     annotations = AnnotationsBuilder(
         CV(term = InteractionMetadataCv.CONVERSION_DIRECTION, value = f('direction')),
-        CV(term = MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value = f('subsystem')),
+        CV(term = ReactionAnnotationsCv.SUBSYSTEM, value = f('subsystem')),
     ),
     membership = MembershipBuilder(
         MembersFromList(
@@ -284,7 +285,7 @@ catalysis_schema = EntityBuilder(
         CV(term = IdentifierNamespaceCv.HUMAN_GEM_REACTION, value = f('reaction_id')),
     ),
     annotations = AnnotationsBuilder(
-        CV(term = MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value = f('subsystem')),
+        CV(term = ReactionAnnotationsCv.SUBSYSTEM, value = f('subsystem')),
     ),
     membership = MembershipBuilder(
         Member(

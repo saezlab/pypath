@@ -33,3 +33,4 @@ class OntologyCv(CvEnum):
     KEGG_PATHWAYS = ("OM:1250", "KEGG Pathway Ontology", "https://www.genome.jp/kegg/pathway.html")
     ENZYME_CLASSIFICATION = ("OM:1251", "Enzyme Classification", "https://www.brenda-enzymes.org/")
     CHEMONT = ("OM:1252", "ChemOnt", "http://classyfire.wishartlab.com/")
+    SWISSLIPIDS = ("OM:1253", "SwissLipids", "https://www.swisslipids.org/")

@@ -41,10 +41,7 @@ def association_to_entity(row: dict) -> Entity:
     member_type = EntityTypeCv.CHEMICAL if data_type == 'chemical' else EntityTypeCv.PROTEIN
     identifier_type = IdentifierNamespaceCv.CHEBI if data_type == 'chemical' else IdentifierNamespaceCv.ENTREZ
 
-    annotations = [
-        Annotation(term=IdentifierNamespaceCv.PFOCR, value=row.get('pfocr_id')),
-        Annotation(term=IdentifierNamespaceCv.NAME, value=row.get('caption')),
-    ]
+    annotations = []
     if row.get('taxonomy_id'):
         annotations.append(Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=row['taxonomy_id']))
     pmc_match = _PMC_RE.match(row.get('pfocr_id') or '')
@@ -53,7 +50,10 @@ def association_to_entity(row: dict) -> Entity:
 
     return Entity(
         type=EntityTypeCv.ASSOCIATION,
-        identifiers=[],
+        identifiers=[
+            Identifier(type=IdentifierNamespaceCv.PFOCR, value=row['pfocr_id']),
+            Identifier(type=IdentifierNamespaceCv.NAME, value=row.get('caption') or row['pfocr_id']),
+        ],
         annotations=annotations,
         membership=[
             Membership(

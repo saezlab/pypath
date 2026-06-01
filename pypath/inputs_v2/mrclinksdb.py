@@ -11,6 +11,7 @@ from __future__ import annotations
 import re
 
 from pypath.internals.cv_terms import (
+    BiologicalRoleCv,
     CurationCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -100,6 +101,12 @@ def _if_complex(field: str):
     return lambda row, _f=field: row.get(_f) if '_' in row.get('receptor_uniprot_id', '') else None
 
 
+def _iter_with_taxon(opener, *, taxon_id: str, **kwargs):
+    for row in iter_mrclinksdb_interactions(opener, **kwargs):
+        row['taxon_id'] = taxon_id
+        yield row
+
+
 # =============================================================================
 # Schema
 # =============================================================================
@@ -146,6 +153,9 @@ interactions_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.NAME,     value=f(_if_single('protein_name'), transform='primary_name')),
                     CV(term=IdentifierNamespaceCv.SYNONYM,  value=f(_if_single('protein_name'), transform='alt_names')),
                 ),
+                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
+                ),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=ParticipantMetadataCv.TARGET),
@@ -169,6 +179,9 @@ interactions_schema = EntityBuilder(
                                 value=f('receptor_gene_id',    delimiter='_')),
                             CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
                                value=f('receptor_symbol',     delimiter='_')),
+                        ),
+                        entity_annotations=AnnotationsBuilder(
+                            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
                         ),
                     ),
                 ),
@@ -202,6 +215,9 @@ human_transporters_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
                 ),
             ),
+            annotations=AnnotationsBuilder(
+                CV(term=BiologicalRoleCv.SUBSTRATE),
+            ),
         ),
         Member(
             entity=EntityBuilder(
@@ -213,9 +229,12 @@ human_transporters_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.NAME,              value=f('enzyme_name', transform='primary_name')),
                     CV(term=IdentifierNamespaceCv.SYNONYM,           value=f('enzyme_name', transform='alt_names')),
                 ),
+                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
+                ),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=ParticipantMetadataCv.TARGET),
+                CV(term=BiologicalRoleCv.CONTROLLER),
             ),
         ),
     ),
@@ -238,6 +257,9 @@ mouse_transporters_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
                 ),
             ),
+            annotations=AnnotationsBuilder(
+                CV(term=BiologicalRoleCv.SUBSTRATE),
+            ),
         ),
         Member(
             entity=EntityBuilder(
@@ -249,9 +271,12 @@ mouse_transporters_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.NAME,              value=f('enzyme_name', transform='primary_name')),
                     CV(term=IdentifierNamespaceCv.SYNONYM,           value=f('enzyme_name', transform='alt_names')),
                 ),
+                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
+                ),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=ParticipantMetadataCv.TARGET),
+                CV(term=BiologicalRoleCv.CONTROLLER),
             ),
         ),
     ),
@@ -272,7 +297,7 @@ resource = Resource(
             ext='txt',
         ),
         mapper=interactions_schema,
-        raw_parser=iter_mrclinksdb_interactions,
+        raw_parser=lambda opener, **kwargs: _iter_with_taxon(opener, taxon_id='9606', **kwargs),
     ),
     mouse_interactions=Dataset(
         download=Download(
@@ -282,7 +307,7 @@ resource = Resource(
             ext='txt',
         ),
         mapper=interactions_schema,
-        raw_parser=iter_mrclinksdb_interactions,
+        raw_parser=lambda opener, **kwargs: _iter_with_taxon(opener, taxon_id='10090', **kwargs),
     ),
     human_transporters=Dataset(
         download=Download(
@@ -292,7 +317,7 @@ resource = Resource(
             ext='txt',
         ),
         mapper=human_transporters_schema,
-        raw_parser=iter_mrclinksdb_interactions,
+        raw_parser=lambda opener, **kwargs: _iter_with_taxon(opener, taxon_id='9606', **kwargs),
     ),
     mouse_transporters=Dataset(
         download=Download(
@@ -302,6 +327,6 @@ resource = Resource(
             ext='txt',
         ),
         mapper=mouse_transporters_schema,
-        raw_parser=iter_mrclinksdb_interactions,
+        raw_parser=lambda opener, **kwargs: _iter_with_taxon(opener, taxon_id='10090', **kwargs),
     ),
 )

@@ -19,6 +19,7 @@ import functools
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers import tcdb as _parsers
 from pypath.internals.cv_terms import (
+    BiologicalRoleCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
@@ -83,6 +84,9 @@ _transport_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.UNIPROT, value=f('transporter_uniprot')),
                 ),
             ),
+            annotations=AnnotationsBuilder(
+                CV(term=BiologicalRoleCv.CONTROLLER),
+            ),
         ),
         Member(
             entity=EntityBuilder(
@@ -94,6 +98,9 @@ _transport_schema = EntityBuilder(
                     ),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('substrate_name')),
                 ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=BiologicalRoleCv.SUBSTRATE),
             ),
         ),
     ),

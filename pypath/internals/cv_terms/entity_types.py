@@ -62,6 +62,7 @@ class MoleculeSubtypeCv(CvEnum):
     PEPTIDE = ("OM:0024", "Peptide molecule")
     ANTIBODY = ("OM:0025", "Antibody or immunoglobulin")
     NUCLEIC_ACID = ("OM:0026", "Nucleic acid molecule")
+    LIPID = ("OM:0050", "Lipid molecule or lipid-like compound")
 
 
 class ProteinFunctionalClassCv(CvEnum):

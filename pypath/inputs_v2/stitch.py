@@ -149,9 +149,9 @@ interactions_schema = EntityBuilder(
                         value=f('chemical_id'),
                     ),
                 ),
-                annotations=AnnotationsBuilder(
-                    CV(term=f('chem_role', map='role_cv')),
-                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=f('chem_role', map='role_cv')),
             ),
         ),
         Member(
@@ -159,11 +159,13 @@ interactions_schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('protein_id')),
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
                 ),
                 annotations=AnnotationsBuilder(
-                    CV(term=f('prot_role', map='role_cv')),
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
                 ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=f('prot_role', map='role_cv')),
             ),
         ),
     ),

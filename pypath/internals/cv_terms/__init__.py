@@ -57,6 +57,8 @@ from .annotations import (
     ParticipantMetadataCv,
     LigandTypeCv,
     OntologyAnnotationCv,
+    PathwayAnnotationsCv,
+    ReactionAnnotationsCv,
     ResourceAnnotationCv,
     AssayTypeCv,
     AssayAnnotationsCv,

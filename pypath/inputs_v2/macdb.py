@@ -124,21 +124,38 @@ association_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_id')),
         CV(term=IdentifierNamespaceCv.PUBMED_CENTRAL, value=f('pmc_id')),
         CV(
-            term=MoleculeAnnotationsCv.CONCENTRATION_MEAN,
+            term=AssayAnnotationsCv.CASE_CONCENTRATION_MEAN,
             value=f('case_concentration')
         ),
         CV(
-            term=MoleculeAnnotationsCv.CONCENTRATION_MIN,
+            term=AssayAnnotationsCv.CASE_CONCENTRATION_MIN,
             value=f('case_concentration_low')
         ),
         CV(
-            term=MoleculeAnnotationsCv.CONCENTRATION_MAX,
+            term=AssayAnnotationsCv.CASE_CONCENTRATION_MAX,
             value=f('case_concentration_high')
         ),
         CV(
-            term=MoleculeAnnotationsCv.CONCENTRATION_SD,
+            term=AssayAnnotationsCv.CASE_CONCENTRATION_SD,
             value=f('case_confidence_interval')
         ),
+        CV(
+            term=AssayAnnotationsCv.CONTROL_CONCENTRATION_MEAN,
+            value=f('control_concentration')
+        ),
+        CV(
+            term=AssayAnnotationsCv.CONTROL_CONCENTRATION_MIN,
+            value=f('control_concentration_low')
+        ),
+        CV(
+            term=AssayAnnotationsCv.CONTROL_CONCENTRATION_MAX,
+            value=f('control_concentration_high')
+        ),
+        CV(
+            term=AssayAnnotationsCv.CONTROL_CONCENTRATION_SD,
+            value=f('control_confidence_interval')
+        ),
+        CV(term=AssayAnnotationsCv.DELTA_CONCENTRATION, value=f('Delta_concentration')),
         CV(
             term=AssayAnnotationsCv.CONTRAST_P_VAL,
             value=f('case_control_p-value')

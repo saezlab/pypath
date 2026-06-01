@@ -11,8 +11,11 @@ from pypath.share.downloads import download_and_open
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
+    InteractionParameterCv,
     InteractionMetadataCv,
     LicenseCV,
+    MoleculeAnnotationsCv,
+    PharmacologicalActionCv,
     ResourceCv,
     UpdateCategoryCV,
 )
@@ -131,6 +134,43 @@ def _interaction_id(row: dict[str, object]) -> str:
     return ':'.join(_clean(value) or '-' for value in fields)
 
 
+_ACTIVITY_TYPE_MAP = {
+    'IC50': InteractionParameterCv.IC50,
+    'EC50': InteractionParameterCv.EC50,
+    'KI': InteractionParameterCv.KI,
+    'KD': InteractionParameterCv.KD,
+}
+
+_ACTION_TYPE_MAP = {
+    'AGONIST': PharmacologicalActionCv.AGONIST,
+    'ANTAGONIST': PharmacologicalActionCv.ANTAGONIST,
+    'ACTIVATOR': PharmacologicalActionCv.ACTIVATION,
+    'INHIBITOR': PharmacologicalActionCv.INHIBITION,
+    'BLOCKER': PharmacologicalActionCv.INHIBITION,
+    'BINDER': PharmacologicalActionCv.BINDING,
+    'MODULATOR': PharmacologicalActionCv.MIXED,
+}
+
+
+def _activity_annotation(row: dict[str, object]) -> Annotation | None:
+    act_type = _clean(row.get('ACT_TYPE')).upper()
+    act_value = _clean(row.get('ACT_VALUE'))
+    act_unit = _clean(row.get('ACT_UNIT'))
+    if not act_value:
+        return None
+    term = _ACTIVITY_TYPE_MAP.get(act_type)
+    if term is not None:
+        return Annotation(term=term, value=act_value, units=act_unit or None)
+    activity = '='.join(item for item in (act_type, act_value) if item)
+    return _annotation(InteractionMetadataCv.INTERACTION_PARAMETER, activity, act_unit)
+
+
+def _action_annotation(row: dict[str, object]) -> Annotation | None:
+    action_type = _clean(row.get('ACTION_TYPE')).upper()
+    term = _ACTION_TYPE_MAP.get(action_type)
+    return Annotation(term=term) if term is not None else None
+
+
 def _taxon_id(row: dict[str, object]) -> str:
     return {
         'Homo sapiens': '9606',
@@ -179,8 +219,8 @@ def _protein(
         ),
         annotations=_annotations(
             _organism_annotation(row),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('TARGET_CLASS')),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('TDL')),
+            _annotation(MoleculeAnnotationsCv.TARGET_CLASS, row.get('TARGET_CLASS')),
+            _annotation(MoleculeAnnotationsCv.TARGET_DEVELOPMENT_LEVEL, row.get('TDL')),
         ),
     )
 
@@ -226,8 +266,8 @@ def _target_entity(row: dict[str, object]) -> Entity:
         ),
         annotations=_annotations(
             _organism_annotation(row),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('TARGET_CLASS')),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('TDL')),
+            _annotation(MoleculeAnnotationsCv.TARGET_CLASS, row.get('TARGET_CLASS')),
+            _annotation(MoleculeAnnotationsCv.TARGET_DEVELOPMENT_LEVEL, row.get('TDL')),
         ),
         membership=[
             Membership(
@@ -245,11 +285,6 @@ def _target_entity(row: dict[str, object]) -> Entity:
 
 def map_drugcentral_interaction(row: dict[str, object]) -> Entity:
     """Map a DrugCentral raw row to a drug-target interaction entity."""
-    act_type = _clean(row.get('ACT_TYPE'))
-    act_value = _clean(row.get('ACT_VALUE'))
-    act_unit = _clean(row.get('ACT_UNIT'))
-    activity = '='.join(item for item in (act_type, act_value) if item)
-
     return Entity(
         type=EntityTypeCv.INTERACTION,
         identifiers=_identifiers(
@@ -261,16 +296,16 @@ def map_drugcentral_interaction(row: dict[str, object]) -> Entity:
         ),
         annotations=_annotations(
             _organism_annotation(row),
-            _annotation(InteractionMetadataCv.INTERACTION_PARAMETER, activity, act_unit),
+            _activity_annotation(row),
             _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('ACT_COMMENT')),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('ACT_SOURCE')),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('RELATION')),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('MOA_SOURCE')),
+            _annotation(InteractionMetadataCv.ACTIVITY_SOURCE, row.get('ACT_SOURCE')),
+            _annotation(InteractionMetadataCv.RELATION, row.get('RELATION')),
+            _annotation(InteractionMetadataCv.ACTIVITY_SOURCE, row.get('MOA_SOURCE')),
             _annotation(InteractionMetadataCv.INTERACTION_XREF, row.get('ACT_SOURCE_URL')),
             _annotation(InteractionMetadataCv.INTERACTION_XREF, row.get('MOA_SOURCE_URL')),
-            _annotation(InteractionMetadataCv.CONTROL_TYPE, row.get('ACTION_TYPE')),
+            _action_annotation(row),
             _annotation(
-                InteractionMetadataCv.INTERACTION_ANNOTATION,
+                InteractionMetadataCv.MECHANISM_OF_ACTION,
                 'mechanism_of_action' if _clean(row.get('MOA')) == '1' else None,
             ),
         ),

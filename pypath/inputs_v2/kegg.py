@@ -86,9 +86,9 @@ try:
         IdentifierNamespaceCv,
         InteractionMetadataCv,
         LicenseCV,
-        MoleculeAnnotationsCv,
         OntologyCv,
         ParticipantMetadataCv,
+        ReactionAnnotationsCv,
         ResourceCv,
         UpdateCategoryCV,
     )
@@ -135,16 +135,16 @@ try:
         identifiers=IdentifiersBuilder(
             CV(term=IdentifierNamespaceCv.KEGG_REACTION, value=f('reaction_id')),
             CV(term=IdentifierNamespaceCv.NAME, value=f('reaction_name', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.RHEA_ID, value=f('rhea_ids', delimiter=';', extract='rhea')),
+            CV(term=IdentifierNamespaceCv.KEGG, value=f('ko_ids', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.KEGG, value=f('rclass_ids', delimiter=';')),
         ),
         annotations=AnnotationsBuilder(
             CV(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=f('conversion_direction')),
             CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('reaction_equation')),
-            CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('reaction_definition')),
-            CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=f('ec_numbers', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.RHEA_ID, value=f('rhea_ids', delimiter=';', extract='rhea')),
-            CV(term=IdentifierNamespaceCv.KEGG, value=f('ko_ids', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.KEGG, value=f('rclass_ids', delimiter=';')),
-            CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=f('pathway_names', delimiter=';')),
+            CV(term=ReactionAnnotationsCv.DEFINITION, value=f('reaction_definition')),
+            CV(term=ReactionAnnotationsCv.EC_NUMBER, value=f('ec_numbers', delimiter=';')),
+            CV(term=ReactionAnnotationsCv.PATHWAY, value=f('pathway_names', delimiter=';')),
         ),
         associations=AssociationsBuilder(
             AssociationBuilder(
@@ -160,7 +160,7 @@ try:
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('reactant_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME,          value=f('reactant_name',    delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.CHEBI,         value=f('reactant_chebi',   delimiter='||', extract='chebi', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM,       value=f('reactant_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
+                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('reactant_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=BiologicalRoleCv.REACTANT),
@@ -173,7 +173,7 @@ try:
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('product_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME,          value=f('product_name',    delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.CHEBI,         value=f('product_chebi',   delimiter='||', extract='chebi', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM,       value=f('product_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
+                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('product_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=BiologicalRoleCv.PRODUCT),
@@ -224,10 +224,10 @@ try:
                 ),
                 entity_annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-                    CV(term=IdentifierNamespaceCv.KEGG_REACTION, value=f('protein_member_reaction_ids', delimiter='||', preserve_indices=True)),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=BiologicalRoleCv.PATHWAY_COMPONENT),
+                    CV(term=IdentifierNamespaceCv.KEGG_REACTION, value=f('protein_member_reaction_ids', delimiter='||', preserve_indices=True)),
                 ),
             ),
             MembersFromList(

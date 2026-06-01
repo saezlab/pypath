@@ -117,7 +117,7 @@ f = FieldConfig(
 
 # Define the schema
 schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
         CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id', extract='chebi')),

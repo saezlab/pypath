@@ -128,8 +128,8 @@ ACTION_TYPE_MAP = {
     'PARTIAL AGONIST': PharmacologicalActionCv.PARTIAL_AGONIST,
     'INVERSE AGONIST': PharmacologicalActionCv.INVERSE_AGONIST,
     'POTENTIATOR': PharmacologicalActionCv.POTENTIATION,
-    'POSITIVE ALLosteric MODULATOR': PharmacologicalActionCv.POSITIVE,
-    'NEGATIVE ALLosteric MODULATOR': PharmacologicalActionCv.NEGATIVE,
+    'POSITIVE ALLOSTERIC MODULATOR': PharmacologicalActionCv.POSITIVE,
+    'NEGATIVE ALLOSTERIC MODULATOR': PharmacologicalActionCv.NEGATIVE,
     'BINDING AGENT': PharmacologicalActionCv.BINDING,
 }
 
@@ -237,9 +237,9 @@ targets_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('chembl_id')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('pref_name')),
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('tax_id')),
     ),
     annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('tax_id')),
         CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('organism')),
     ),
     membership=MembershipBuilder(
@@ -248,9 +248,9 @@ targets_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.UNIPROT, value=f('component_uniprot_accessions', delimiter=',', preserve_indices=True)),
                 CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('component_ensembl_accessions', delimiter=',', preserve_indices=True)),
-                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('tax_id')),
             ),
-            annotations=AnnotationsBuilder(
+            entity_annotations=AnnotationsBuilder(
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('tax_id')),
                 CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('component_descriptions', delimiter=',')),
             ),
         )
@@ -274,9 +274,11 @@ activities_schema = EntityBuilder(
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
                     CV(term=IdentifierNamespaceCv.NAME, value=f('target_pref_name')),
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('target_tax_id')),
                     CV(term=IdentifierNamespaceCv.UNIPROT, value=lambda row: _target_component_values(row, 'target_component_uniprot_accessions')),
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=lambda row: _target_component_values(row, 'target_component_ensembl_accessions')),
+                ),
+                annotations=AnnotationsBuilder(
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('target_tax_id')),
                 ),
             ),
         ),
@@ -289,11 +291,6 @@ activities_schema = EntityBuilder(
         CV(term=f('action_type', map='action_type')),
         CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('action_description')),
         CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('action_parent_type')),
-        CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('target_type')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('target_pref_name')),
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('target_tax_id')),
-        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('target_organism')),
         CV(term=IdentifierNamespaceCv.CHEMBL_ASSAY, value=f('assay_chembl_id')),
         CV(term=IdentifierNamespaceCv.CHEMBL_DOCUMENT, value=f('document_chembl_id')),
         CV(term=IdentifierNamespaceCv.CHEMBL_MECHANISM, value=f('mec_id')),

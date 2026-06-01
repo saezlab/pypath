@@ -18,13 +18,12 @@ import requests
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_sqlite
 from pypath.internals.cv_terms import (
-    AssayAnnotationsCv,
-    BiologicalRoleCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
     MoleculeAnnotationsCv,
     MoleculeSubtypeCv,
+    PathwayAnnotationsCv,
     ResourceCv,
     UpdateCategoryCV,
 )
@@ -148,7 +147,7 @@ MOLECULE_TYPE_TO_SUBTYPE = {
 }
 SOURCE_TO_MOLECULE_SUBTYPE = {
     'hmdb': MoleculeSubtypeCv.METABOLITE,
-    'lipidmaps': EntityTypeCv.LIPID,
+    'lipidmaps': MoleculeSubtypeCv.LIPID,
 }
 SOURCE_TO_TERM = {
     'hmdb': IdentifierNamespaceCv.HMDB,
@@ -286,7 +285,7 @@ source_schema = EntityBuilder(
             value=f('geneOrCompound', map='type_to_subtype'),
         ),
         CV(
-            term=AssayAnnotationsCv.ASSAY_CATEGORY,
+            term=MoleculeAnnotationsCv.SOURCE_STATUS,
             value=f('priorityHMDBStatus'),
         ),
     ),
@@ -368,7 +367,7 @@ pathway_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.RAMP_ID, value=f('pathwayRampId')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=BiologicalRoleCv.PATHWAY, value=f('pathwayName')),
+        CV(term=PathwayAnnotationsCv.DESCRIPTION, value=f('pathwayName')),
         CV(term=f('type', map='source_to_term'), value=f('sourceId')),
     ),
 )
