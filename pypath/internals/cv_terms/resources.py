@@ -37,7 +37,7 @@ class ResourceCv(CvEnum):
     CHEMBL = ("OM:1155", "ChEMBL", "https://www.ebi.ac.uk/chembl/")
     CELLPHONEDB = ("OM:1156", "CellPhoneDB", "https://www.cellphonedb.org/")
     WIKIPATHWAYS = ("OM:1157", "WikiPathways", "https://www.wikipathways.org/")
-    PFOCR = ("OM:1162", "PFOCR", "https://pfocr.wikipathways.org/")
+    PFOCR = ("OM:1167", "PFOCR", "https://pfocr.wikipathways.org/")
     NEURONCHAT = ("OM:1158", "NeuronChat", "https://github.com/Wei-BioMath/NeuronChat")
     STITCH = ("OM:1159", "STITCH", "https://stitch.embl.de/")
     MRCLINKSDB = ("OM:1160", "MRClinksDB", "https://www.cellknowledge.com.cn/mrclinkdb/")

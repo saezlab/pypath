@@ -31,6 +31,7 @@ Accession Ranges:
     OmniPath update categories: OM:0401-0499
     OmniPath curation: OM:0400-0499
     OmniPath licenses: OM:0501-0599
+    OmniPath ontology vocabularies: OM:1400-1499
 """
 
 from typing import Union

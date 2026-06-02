@@ -128,16 +128,16 @@ class ControlEffectCv(CvEnum):
     """Effect or mode of a control relation."""
 
     parent_cv_term = (
-        "OM:1240",
+        "OM:0890",
         "Control effect term",
         "Effect or mode of a controls relation.",
     )
 
-    CATALYSIS = ("OM:1241", "Controller catalyzes the controlled reaction")
-    ACTIVATION = ("OM:1242", "Controller activates the controlled process or entity")
-    INHIBITION = ("OM:1243", "Controller inhibits the controlled process or entity")
-    MODULATION = ("OM:1244", "Controller modulates the controlled process or entity")
-    UNKNOWN = ("OM:1245", "Control effect is unknown or unspecified")
+    CATALYSIS = ("OM:0891", "Controller catalyzes the controlled reaction")
+    ACTIVATION = ("OM:0892", "Controller activates the controlled process or entity")
+    INHIBITION = ("OM:0893", "Controller inhibits the controlled process or entity")
+    MODULATION = ("OM:0894", "Controller modulates the controlled process or entity")
+    UNKNOWN = ("OM:0895", "Control effect is unknown or unspecified")
 
 
 class CausalMechanismCv(CvEnum):
@@ -552,7 +552,7 @@ class ParticipantMetadataCv(CvEnum):
 class InterCellAnnotations(CvEnum):
     """Annotations for intercellular interactions and roles."""
 
-    parent_cv_term = ("OM:1230", "Intercellular annotation term", "Describes annotations specific to intercellular interactions and roles.")
+    parent_cv_term = ("OM:7776", "Intercellular annotation term", "Describes annotations specific to intercellular interactions and roles.")
 
     LIGAND = ("OM:7777", "Participant designated as a ligand")
     RECEPTOR = ("OM:7778", "Participant designated as a receptor")
