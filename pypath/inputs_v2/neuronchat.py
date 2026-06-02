@@ -11,20 +11,18 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
+    MoleculeAnnotationsCv,
+    MoleculeSubtypeCv,
     UpdateCategoryCV,
     ResourceCv,
     InteractionMetadataCv,
     ParticipantMetadataCv,
 )
-from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
-    CV,
-    EntityBuilder,
-    FieldConfig,
-    IdentifiersBuilder,
-    MembershipBuilder,
-    Member,
-    MembersFromList,
+from pypath.internals.silver_schema import (
+    Annotation,
+    Entity,
+    Identifier,
+    Membership,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.neuronchat import iter_neuronchat
@@ -45,70 +43,170 @@ config = ResourceConfig(
     ),
 )
 
-f = FieldConfig(
-    transform={
-        'extract_source': lambda x: f"{x}_source",
-        'extract_target': lambda x: f"{x}_target",
-    }
-)
+SMALL_MOLECULE_LIGANDS = {
+    '5HT': 'Serotonin',
+    'Ach': 'Acetylcholine',
+    'CO': 'CO',
+    'DA': 'Dopamine',
+    'Epi': 'Epinephrine',
+    'GABA': 'GABA',
+    'Glu': 'Glutamate',
+    'Gly': 'Glycine',
+    'NE': 'Noradrenaline',
+    'NO': 'NO',
+}
 
-def interactions_schema(taxon_id: str) -> EntityBuilder:
-    return EntityBuilder(
-        entity_type=EntityTypeCv.INTERACTION,
-        identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name')),
+
+def _clean(value: object) -> str:
+    return str(value or '').strip()
+
+
+def _list(value: object) -> list[str]:
+    if isinstance(value, list):
+        return [_clean(item) for item in value if _clean(item)]
+    text = _clean(value)
+    return [text] if text else []
+
+
+def _interaction_ligand_token(row: dict[str, object]) -> str:
+    return _clean(row.get('interaction_name')).split('_', 1)[0]
+
+
+def _ligand_name(row: dict[str, object]) -> str:
+    token = _interaction_ligand_token(row)
+    return SMALL_MOLECULE_LIGANDS.get(token, token)
+
+
+def _source_label(row: dict[str, object]) -> str:
+    return f'{_clean(row.get("interaction_name"))}_source'
+
+
+def _target_label(row: dict[str, object]) -> str:
+    return f'{_clean(row.get("interaction_name"))}_target'
+
+
+def _identifier(type_: object, value: object) -> Identifier | None:
+    value = _clean(value)
+    return Identifier(type=type_, value=value) if value else None
+
+
+def _annotation(term: object, value: object = None) -> Annotation | None:
+    if value is None:
+        return Annotation(term=term)
+    value = _clean(value)
+    return Annotation(term=term, value=value) if value else None
+
+
+def _identifiers(*items: Identifier | None) -> list[Identifier]:
+    out: list[Identifier] = []
+    seen: set[tuple[object, str]] = set()
+    for item in items:
+        if item is None:
+            continue
+        key = (item.type, item.value)
+        if key in seen:
+            continue
+        out.append(item)
+        seen.add(key)
+    return out
+
+
+def _annotations(*items: Annotation | None) -> list[Annotation] | None:
+    out: list[Annotation] = []
+    seen: set[tuple[object, object, object]] = set()
+    for item in items:
+        if item is None:
+            continue
+        key = (item.term, item.value, item.units)
+        if key in seen:
+            continue
+        out.append(item)
+        seen.add(key)
+    return out or None
+
+
+def _protein(name: object, taxon_id: str, *annotations: Annotation | None) -> Entity:
+    return Entity(
+        type=EntityTypeCv.PROTEIN,
+        identifiers=_identifiers(
+            _identifier(IdentifierNamespaceCv.GENE_NAME_PRIMARY, name),
         ),
-        annotations=AnnotationsBuilder(
-            CV(term=InteractionMetadataCv.LIGAND_TYPE, value=f('ligand_type')),
-            CV(term=InteractionMetadataCv.INTERACTION_TYPE, value=f('interaction_type')),
-        ),
-        membership=MembershipBuilder(
-            Member(
-                entity=EntityBuilder(
-                    entity_type=EntityTypeCv.COMPLEX,
-                    identifiers=IdentifiersBuilder(
-                        CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform="extract_source")),
-                    ),
-                    membership=MembershipBuilder(
-                        MembersFromList(
-                            entity_type=EntityTypeCv.PROTEIN,
-                            identifiers=IdentifiersBuilder(
-                                CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('lig_contributor')),
-                            ),
-                            entity_annotations=AnnotationsBuilder(
-                                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-                            ),
-                        )
-                    ),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=ParticipantMetadataCv.SOURCE),
-                ),
-            ),
-            Member(
-                entity=EntityBuilder(
-                    entity_type=EntityTypeCv.COMPLEX,
-                    identifiers=IdentifiersBuilder(
-                        CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name', transform="extract_target")),
-                    ),
-                    membership=MembershipBuilder(
-                        MembersFromList(
-                            entity_type=EntityTypeCv.PROTEIN,
-                            identifiers=IdentifiersBuilder(
-                                CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('receptor_subunit')),
-                            ),
-                            entity_annotations=AnnotationsBuilder(
-                                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-                            ),
-                        )
-                    ),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=ParticipantMetadataCv.TARGET),
-                ),
-            ),
+        annotations=_annotations(
+            Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+            *annotations,
         ),
     )
+
+
+def _source_entity(row: dict[str, object], taxon_id: str) -> Entity:
+    ligand_token = _interaction_ligand_token(row)
+    if ligand_token in SMALL_MOLECULE_LIGANDS:
+        return Entity(
+            type=EntityTypeCv.CHEMICAL,
+            identifiers=_identifiers(
+                _identifier(IdentifierNamespaceCv.NAME, _ligand_name(row)),
+                _identifier(IdentifierNamespaceCv.ABBREVIATED_NAME, ligand_token),
+            ),
+            annotations=_annotations(
+                Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+                Annotation(
+                    term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
+                    value=MoleculeSubtypeCv.METABOLITE,
+                ),
+                _annotation(MoleculeAnnotationsCv.SOURCE_STATUS, _source_label(row)),
+            ),
+        )
+
+    return _protein(
+        ligand_token,
+        taxon_id,
+        _annotation(MoleculeAnnotationsCv.SOURCE_STATUS, _source_label(row)),
+    )
+
+
+def _target_entity(row: dict[str, object], taxon_id: str) -> Entity:
+    subunits = _list(row.get('receptor_subunit'))
+    source_status = _annotation(MoleculeAnnotationsCv.SOURCE_STATUS, _target_label(row))
+    if len(subunits) == 1:
+        return _protein(subunits[0], taxon_id, source_status)
+
+    return Entity(
+        type=EntityTypeCv.COMPLEX,
+        identifiers=_identifiers(
+            _identifier(IdentifierNamespaceCv.NAME, _target_label(row)),
+        ),
+        annotations=_annotations(source_status),
+        membership=[
+            Membership(member=_protein(subunit, taxon_id))
+            for subunit in subunits
+        ] or None,
+    )
+
+
+def interactions_schema(taxon_id: str):
+    def mapper(row: dict[str, object]) -> Entity:
+        return Entity(
+            type=EntityTypeCv.INTERACTION,
+            identifiers=_identifiers(
+                _identifier(IdentifierNamespaceCv.NAME, row.get('interaction_name')),
+            ),
+            annotations=_annotations(
+                _annotation(InteractionMetadataCv.LIGAND_TYPE, row.get('ligand_type')),
+                _annotation(InteractionMetadataCv.INTERACTION_TYPE, row.get('interaction_type')),
+            ),
+            membership=[
+                Membership(
+                    member=_source_entity(row, taxon_id),
+                    annotations=[Annotation(term=ParticipantMetadataCv.SOURCE)],
+                ),
+                Membership(
+                    member=_target_entity(row, taxon_id),
+                    annotations=[Annotation(term=ParticipantMetadataCv.TARGET)],
+                ),
+            ],
+        )
+
+    return mapper
 
 
 resource = Resource(
@@ -119,7 +217,8 @@ resource = Resource(
             filename=f'neuronchat_interactions_human.rda',
             subfolder='neuronchat',
             default_mode='rb',
-        encoding=None, # avoid encoding in binary mode
+            ext='rda',
+            encoding=None, # avoid encoding in binary mode
         ),
         mapper=interactions_schema('9606'),
         raw_parser=iter_neuronchat,
@@ -130,7 +229,8 @@ resource = Resource(
             filename=f'neuronchat_interactions_mouse.rda',
             subfolder='neuronchat',
             default_mode='rb',
-        encoding=None, # avoid encoding in binary mode
+            ext='rda',
+            encoding=None, # avoid encoding in binary mode
         ),
         mapper=interactions_schema('10090'),
         raw_parser=iter_neuronchat,
