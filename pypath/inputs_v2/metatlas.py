@@ -200,6 +200,16 @@ reactions_schema = EntityBuilder(
                 CV(term = MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value = MoleculeSubtypeCv.METABOLITE),
             ),
         ),
+        MembersFromList(
+            entity_type = EntityTypeCv.PROTEIN,
+            identifiers = IdentifiersBuilder(
+                CV(term = IdentifierNamespaceCv.ENSEMBL, value = f('enzyme_ensembl')),
+                CV(term = IdentifierNamespaceCv.GENE_NAME_PRIMARY, value = f('enzyme_name', preserve_indices = True)),
+            ),
+            annotations = AnnotationsBuilder(
+                CV(term = BiologicalRoleCv.CATALYST),
+            ),
+        ),
     ),
 )
 
@@ -270,6 +280,16 @@ transport_reactions_schema = EntityBuilder(
             ),
             entity_annotations = AnnotationsBuilder(
                 CV(term = MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value = MoleculeSubtypeCv.METABOLITE),
+            ),
+        ),
+        MembersFromList(
+            entity_type = EntityTypeCv.PROTEIN,
+            identifiers = IdentifiersBuilder(
+                CV(term = IdentifierNamespaceCv.ENSEMBL, value = f('enzyme_ensembl')),
+                CV(term = IdentifierNamespaceCv.GENE_NAME_PRIMARY, value = f('enzyme_name', preserve_indices = True)),
+            ),
+            annotations = AnnotationsBuilder(
+                CV(term = BiologicalRoleCv.CATALYST),
             ),
         ),
     ),
@@ -356,11 +376,6 @@ resource = Resource(
         download = download,
         mapper = reactions_schema,
         raw_parser = lambda opener, **kwargs: _raw(opener, data_type = 'metabolic_reactions', **kwargs),
-    ),
-    catalysis = Dataset(
-        download = download,
-        mapper = catalysis_schema,
-        raw_parser = lambda opener, **kwargs: _raw(opener, data_type = 'catalysis', **kwargs),
     ),
     enzyme_complexes = Dataset(
         download = download,

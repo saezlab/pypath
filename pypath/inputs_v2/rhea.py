@@ -156,6 +156,15 @@ reactions_schema = EntityBuilder(
                 CV(term = f('participant_role', delimiter = '||', map = 'role')),
             ),
         ),
+        MembersFromList(
+            entity_type = EntityTypeCv.PROTEIN,
+            identifiers = IdentifiersBuilder(
+                CV(term = IdentifierNamespaceCv.UNIPROT, value = f('uniprot')),
+            ),
+            annotations = AnnotationsBuilder(
+                CV(term = BiologicalRoleCv.CATALYST),
+            ),
+        ),
     ),
 )
 
@@ -195,6 +204,15 @@ transport_reactions_schema = EntityBuilder(
                     term = ParticipantMetadataCv.MEMBRANE_SIDE,
                     value = f('participant_compartment', delimiter = '||'),
                 ),
+            ),
+        ),
+        MembersFromList(
+            entity_type = EntityTypeCv.PROTEIN,
+            identifiers = IdentifiersBuilder(
+                CV(term = IdentifierNamespaceCv.UNIPROT, value = f('uniprot')),
+            ),
+            annotations = AnnotationsBuilder(
+                CV(term = BiologicalRoleCv.CATALYST),
             ),
         ),
     ),
@@ -263,21 +281,33 @@ resource = Resource(
     reactions = Dataset(
         download = reactions_download,
         mapper = reactions_schema,
-        raw_parser = _raw,
+        raw_parser = lambda opener, force_refresh = False, **kwargs: _raw(
+            opener,
+            uniprot_opener = catalysis_download.open(force_refresh = force_refresh),
+            force_refresh = force_refresh,
+            **kwargs,
+        ),
     ),
     metabolic_reactions = Dataset(
         download = reactions_download,
         mapper = reactions_schema,
-        raw_parser = lambda opener, **kwargs: _raw(opener, data_type = 'metabolic_reactions', **kwargs),
+        raw_parser = lambda opener, force_refresh = False, **kwargs: _raw(
+            opener,
+            data_type = 'metabolic_reactions',
+            uniprot_opener = catalysis_download.open(force_refresh = force_refresh),
+            force_refresh = force_refresh,
+            **kwargs,
+        ),
     ),
     transport_reactions = Dataset(
         download = reactions_download,
         mapper = transport_reactions_schema,
-        raw_parser = lambda opener, **kwargs: _raw(opener, data_type = 'transport_reactions', **kwargs),
-    ),
-    catalysis = Dataset(
-        download = catalysis_download,
-        mapper = catalysis_schema,
-        raw_parser = iter_tsv,
+        raw_parser = lambda opener, force_refresh = False, **kwargs: _raw(
+            opener,
+            data_type = 'transport_reactions',
+            uniprot_opener = catalysis_download.open(force_refresh = force_refresh),
+            force_refresh = force_refresh,
+            **kwargs,
+        ),
     ),
 )

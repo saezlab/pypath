@@ -361,6 +361,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
         lb = r.get('lower_bound', 0)
         ub = r.get('upper_bound', 0)
         direction = 'REVERSIBLE' if lb < 0 < ub else 'LEFT-TO-RIGHT'
+        enzyme_entrez = _reaction_enzyme_entrez_ids(r)
         yield {
             'bigg_reaction_id': r['id'],
             'name': r.get('name'),
@@ -368,6 +369,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
             'direction': direction,
             'ec': _annotation_list(ann, 'ec-code'),
             'metanetx_reaction': _annotation_list(ann, 'metanetx.reaction'),
+            'enzyme_entrez': ';'.join(enzyme_entrez),
             'reactants': '||'.join(reactants),
             'reactant_name': '||'.join(reactant_name),
             'reactant_formula': '||'.join(reactant_formula),
@@ -385,6 +387,19 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
             'product_kegg_compound': '||'.join(product_kegg_compound),
             'product_metanetx': '||'.join(product_metanetx),
         }
+
+
+def _reaction_enzyme_entrez_ids(reaction: dict) -> list[str]:
+    enzymes: list[str] = []
+    seen: set[str] = set()
+    for subunit_list in _parse_gene_rule(reaction.get('gene_reaction_rule', '')):
+        for gene in subunit_list:
+            entrez = _strip_isoform(gene)
+            if not entrez or entrez == '0' or entrez in seen:
+                continue
+            seen.add(entrez)
+            enzymes.append(entrez)
+    return enzymes
 
 
 def _is_transport(record: dict) -> bool:

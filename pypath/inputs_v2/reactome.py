@@ -12,6 +12,7 @@ import re
 
 from pypath.internals.cv_terms import (
     BiologicalRoleCv,
+    ControlEffectCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
     InteractionMetadataCv,
@@ -67,6 +68,22 @@ role_map = {
     'controller': BiologicalRoleCv.CONTROLLER,
     'controlled': BiologicalRoleCv.CONTROLLED,
 }
+
+
+def _control_effect(row):
+    control_type = (row.get('control_type') or '').upper()
+    control_class = (row.get('control_class') or '').upper()
+    if 'CATALYSIS' in control_class or 'CATALYSIS' in control_type:
+        return ControlEffectCv.CATALYSIS
+    if 'ACTIV' in control_type or 'POSITIVE' in control_type:
+        return ControlEffectCv.ACTIVATION
+    if 'INHIB' in control_type or 'NEGATIVE' in control_type:
+        return ControlEffectCv.INHIBITION
+    if control_type or control_class:
+        return ControlEffectCv.MODULATION
+    return ControlEffectCv.UNKNOWN
+
+
 _TAXON_SCOPED_ENTITY_TYPES = {
     EntityTypeCv.PROTEIN,
     EntityTypeCv.GENE,
@@ -302,6 +319,7 @@ controls_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('control_type')),
+        CV(term=InteractionMetadataCv.CONTROL_EFFECT, value=f(_control_effect)),
         CV(term=f('causal_statement')),
     ),
     associations=_combined_associations(

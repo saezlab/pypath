@@ -274,6 +274,10 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
     """
 
     xrefs = _metabolite_xrefs()
+    gene_names = {
+        dict(g)['id']: dict(g).get('name')
+        for g in data.get('genes', [])
+    }
 
     for r in data.get('reactions', []):
 
@@ -309,6 +313,7 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
         lb = float(r['lower_bound'])
         ub = float(r['upper_bound'])
         direction = 'reversible' if lb < 0 < ub else 'left_to_right'
+        enzyme_ensembl = _reaction_enzyme_ensembl_ids(r)
 
         yield {
             'human_gem_reaction_id': r.get('id', ''),
@@ -316,11 +321,28 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
             'subsystem': subsystem,
             'direction': direction,
             'eccodes': eccodes,
+            'enzyme_ensembl': ';'.join(enzyme_ensembl),
+            'enzyme_name': ';'.join(
+                gene_names.get(ensembl_id) or ''
+                for ensembl_id in enzyme_ensembl
+            ),
             'reactants': '||'.join(reactants),
             'products': '||'.join(products),
             **_xref_fields(reactant_ids, xrefs, 'reactant'),
             **_xref_fields(product_ids, xrefs, 'product'),
         }
+
+
+def _reaction_enzyme_ensembl_ids(reaction: dict) -> list[str]:
+    enzymes: list[str] = []
+    seen: set[str] = set()
+    for subunit_list in _parse_gene_rule(reaction.get('gene_reaction_rule', '')):
+        for ensembl_id in subunit_list:
+            if not ensembl_id or ensembl_id in seen:
+                continue
+            seen.add(ensembl_id)
+            enzymes.append(ensembl_id)
+    return enzymes
 
 
 _TRANSPORT_SUBSYSTEM = 'Transport reactions'

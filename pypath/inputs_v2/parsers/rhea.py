@@ -25,6 +25,11 @@ _LIST_DELIMITER = '||'
 _EQ_SEPARATORS = (' <=> ', ' => ', ' <= ', ' = ')
 
 _GO_ID_RE = re.compile(r'GO:\d+')
+_UNIPROT_RE = re.compile(
+    r'\b[A-NR-Z][0-9][A-Z0-9]{3}[0-9](?:-\d+)?\b'
+    r'|\b[A-NR-Z][0-9][A-Z0-9]{3}[0-9][A-Z0-9]{4}[0-9](?:-\d+)?\b'
+)
+_RHEA_ID_RE = re.compile(r'(?:RHEA:)?(\d+)')
 
 _TRANSPORT_COMPARTMENT_RE = re.compile(r'\((in|out)\)$')
 _COEFFICIENT_RE = re.compile(r'^\d+ ')
@@ -59,6 +64,44 @@ def _count_equation_sides(equation: str) -> tuple[int, int]:
 def _split_semicolons(raw: str) -> list[str]:
 
     return [x.strip() for x in raw.split(';') if x.strip()]
+
+
+def _uniprot_ids(raw: str) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for match in _UNIPROT_RE.finditer(raw):
+        accession = match.group(0)
+        if accession in seen:
+            continue
+        seen.add(accession)
+        out.append(accession)
+    return out
+
+
+def _normalize_rhea_id(raw: str) -> str:
+    match = _RHEA_ID_RE.search(raw or '')
+    return f'RHEA:{match.group(1)}' if match else (raw or '').strip()
+
+
+def _uniprot_by_master_id(opener: Any | None) -> dict[str, list[str]]:
+    if opener is None:
+        return {}
+
+    mapping: dict[str, list[str]] = {}
+    seen: set[tuple[str, str]] = set()
+
+    for row in iter_tsv(opener):
+        rhea_id = _normalize_rhea_id(row.get('MASTER_ID') or '')
+        uniprot_id = (row.get('ID') or '').strip()
+        if not rhea_id or not uniprot_id:
+            continue
+        key = (rhea_id, uniprot_id)
+        if key in seen:
+            continue
+        seen.add(key)
+        mapping.setdefault(rhea_id, []).append(uniprot_id)
+
+    return mapping
 
 
 def _go_ids(raw: str) -> list[str]:
@@ -209,6 +252,7 @@ def _participant_fields(
 def _raw(
     opener: Any,
     data_type: str = 'reactions',
+    uniprot_opener: Any | None = None,
     **_kwargs: Any,
 ) -> Generator[dict, None, None]:
     """
@@ -237,6 +281,8 @@ def _raw(
         ``Cross-reference (Reactome)``, ``Cross-reference (M-CSA)``.
     """
 
+    uniprot_by_rhea_id = _uniprot_by_master_id(uniprot_opener)
+
     for row in iter_tsv(opener):
 
         rhea_id = (row.get('Reaction identifier') or '').strip()
@@ -258,6 +304,10 @@ def _raw(
         ec_raw = (row.get('EC number') or '').strip()
         go_raw = (row.get('Gene Ontology') or '').strip()
         pubmed = (row.get('PubMed') or '').strip()
+        uniprot = ';'.join(
+            uniprot_by_rhea_id.get(rhea_id)
+            or _uniprot_ids(row.get('UniProt') or '')
+        )
 
         ecocyc = (row.get('Cross-reference (EcoCyc)') or '').strip()
         metacyc = (row.get('Cross-reference (MetaCyc)') or '').strip()
@@ -276,6 +326,7 @@ def _raw(
             'equation': equation,
             'ec': ec_raw.removeprefix('EC:'),
             'pubmed': pubmed,
+            'uniprot': uniprot,
             'go': ';'.join(_go_ids(go_raw)),
             'ecocyc': ecocyc,
             'metacyc': metacyc,

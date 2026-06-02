@@ -124,6 +124,22 @@ class BiologicalEffectCv(CvEnum):
     DOWN_REGULATES_QUANTITY = "MI:2242"
 
 
+class ControlEffectCv(CvEnum):
+    """Effect or mode of a control relation."""
+
+    parent_cv_term = (
+        "OM:1240",
+        "Control effect term",
+        "Effect or mode of a controls relation.",
+    )
+
+    CATALYSIS = ("OM:1241", "Controller catalyzes the controlled reaction")
+    ACTIVATION = ("OM:1242", "Controller activates the controlled process or entity")
+    INHIBITION = ("OM:1243", "Controller inhibits the controlled process or entity")
+    MODULATION = ("OM:1244", "Controller modulates the controlled process or entity")
+    UNKNOWN = ("OM:1245", "Control effect is unknown or unspecified")
+
+
 class CausalMechanismCv(CvEnum):
     """Causal mechanism terms from PSI-MI.
 
@@ -514,6 +530,7 @@ class InteractionMetadataCv(CvEnum):
     LIGAND_TYPE = ("OM:1236", "Structured ligand type")
     INTERACTION_TYPE = ("OM:1237", "Structured interaction type")
     COFACTOR_EFFECT = ("OM:1238", "Effect of a cofactor on an interaction")
+    CONTROL_EFFECT = ("OM:1240", "Effect or mode of a controls relation")
 
 
 class ParticipantMetadataCv(CvEnum):

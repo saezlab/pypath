@@ -202,6 +202,18 @@ reactions_schema = EntityBuilder(
                    value=f('product_charge', delimiter='||', preserve_indices=True)),
             ),
         ),
+        MembersFromList(
+            entity_type=EntityTypeCv.PROTEIN,
+            identifiers=IdentifiersBuilder(
+                CV(term=IdentifierNamespaceCv.ENTREZ, value=f('enzyme_entrez')),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=BiologicalRoleCv.CATALYST),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
+            ),
+        ),
     ),
 )
 
@@ -281,6 +293,18 @@ transport_reactions_schema = EntityBuilder(
                 CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.METABOLITE),
                 CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE,
                    value=f('product_charge', delimiter='||', preserve_indices=True)),
+            ),
+        ),
+        MembersFromList(
+            entity_type=EntityTypeCv.PROTEIN,
+            identifiers=IdentifiersBuilder(
+                CV(term=IdentifierNamespaceCv.ENTREZ, value=f('enzyme_entrez')),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=BiologicalRoleCv.CATALYST),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
             ),
         ),
     ),
@@ -382,11 +406,6 @@ resource = Resource(
         download=download,
         mapper=reactions_schema,
         raw_parser=lambda opener, **kwargs: _raw(opener, data_type='metabolic_reactions', **kwargs),
-    ),
-    catalysis=Dataset(
-        download=download,
-        mapper=catalysis_schema,
-        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='catalysis', **kwargs),
     ),
     enzyme_complexes=Dataset(
         download=download,
