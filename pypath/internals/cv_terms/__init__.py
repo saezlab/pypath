@@ -37,7 +37,7 @@ Accession Ranges:
 from typing import Union
 
 from .core import CvEnum, cv_term_label_accession
-from .entity_types import EntityTypeCv, MoleculeSubtypeCv,ProteinFunctionalClassCv
+from .entity_types import EntityTypeCv, MoleculeSubtypeCv, MirnaSubtypeCv, ProteinFunctionalClassCv
 from .identifiers import IdentifierNamespaceCv
 from .annotations import (
     MembershipRoleCv,

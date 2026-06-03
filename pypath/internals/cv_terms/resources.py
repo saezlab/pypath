@@ -73,3 +73,6 @@ class ResourceCv(CvEnum):
     MACDB = ("OM:1191", "MACdb", "https://ngdc.cncb.ac.cn/macdb/")
     TCDB = ("OM:1192", "TCDB", "https://www.tcdb.org/")
     RHEA = ("OM:1193", "Rhea", "https://www.rhea-db.org/")
+
+    # Nucleic-acid / miRNA databases
+    MIRBASE = ("OM:1198", "miRBase", "https://www.mirbase.org/")
