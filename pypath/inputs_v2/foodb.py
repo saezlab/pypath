@@ -103,21 +103,17 @@ foods_schema = EntityBuilder(
     membership=MembershipBuilder(
         MembersFromList(
             entity_type=EntityTypeCv.CHEMICAL,
+            # Only the FOODB public_id linking key. The compound's full
+            # identifier set (incl. InChIKey, SMILES, ChEBI, KEGG), synonyms and
+            # class annotations are projected ONCE by the `compounds` dataset
+            # below; canonicalize merges this membership compound into that
+            # shared entity by FOODB id. Emitting any further identifier here
+            # would re-project it for each of the ~4M food↔compound content rows
+            # (the FooDB projection bottleneck) with no resolution benefit, since
+            # cross-resource merging (e.g. FooDB↔HMDB by InChIKey) already
+            # happens through the shared compound entity.
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.FOODB, value=f('member_compound_public_id')),
-                CV(term=IdentifierNamespaceCv.NAME, value=f('member_compound_name')),
-                CV(term=IdentifierNamespaceCv.CAS, value=f('member_cas', extract='cas')),
-                CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('member_inchikey')),
-                CV(term=IdentifierNamespaceCv.SMILES, value=f('member_smiles')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f('member_chebi', extract='chebi')),
-                CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('member_kegg')),
-                CV(term=IdentifierNamespaceCv.IUPAC_NAME, value=f('member_iupac')),
-                CV(term=IdentifierNamespaceCv.SYNONYM, value=f('member_synonyms')),
-            ),
-            entity_annotations=AnnotationsBuilder(
-                CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('member_mass')),
-                CV(term=MoleculeAnnotationsCv.COMPOUND_CLASS, value=f('member_klass')),
-                CV(term=MoleculeAnnotationsCv.COMPOUND_SUBCLASS, value=f('member_subklass')),
             ),
             annotations=AnnotationsBuilder(
                 CV(
@@ -143,11 +139,43 @@ foods_schema = EntityBuilder(
 
 
 # =============================================================================
+# Compound Schema — each unique FooDB compound projected ONCE (with synonyms)
+# =============================================================================
+
+compounds_schema = EntityBuilder(
+    entity_type=EntityTypeCv.CHEMICAL,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.FOODB, value=f('public_id')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+        CV(term=IdentifierNamespaceCv.CAS, value=f('cas_number', extract='cas')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('moldb_inchikey')),
+        CV(term=IdentifierNamespaceCv.SMILES, value=f('moldb_smiles')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi', extract='chebi')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg')),
+        CV(term=IdentifierNamespaceCv.IUPAC_NAME, value=f('moldb_iupac')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('moldb_mono_mass')),
+        CV(term=MoleculeAnnotationsCv.COMPOUND_CLASS, value=f('klass')),
+        CV(term=MoleculeAnnotationsCv.COMPOUND_SUBCLASS, value=f('subklass')),
+    ),
+)
+
+
+# =============================================================================
 # Resource definition
 # =============================================================================
 
 resource = Resource(
     config,
+    compounds=Dataset(
+        download=download_csv,
+        mapper=compounds_schema,
+        raw_parser=lambda opener, **kwargs: _raw(
+            opener, data_type='compounds', **kwargs
+        ),
+    ),
     foods=Dataset(
         download=download_csv,
         mapper=foods_schema,

@@ -356,6 +356,7 @@ def _raw(
     opener: object,
     force_refresh: bool = False,
     max_records: int | None = None,
+    data_type: str = 'foods',
     **_kwargs: object,
 ) -> Generator[dict[str, object], None, None]:
     """Parse FooDB CSV files from tar archive and produce flat rows.
@@ -363,12 +364,19 @@ def _raw(
     Args:
         opener: The opener from Download.open() containing the extracted tar archive files
         force_refresh: If True, ignore cached data and reparse from source
+        data_type: ``foods`` (foods + food↔compound content membership) or
+            ``compounds`` (each unique compound once, with its full identifier
+            set + synonyms). The compound entities are projected once via the
+            ``compounds`` dataset; the ``foods`` membership only links to them
+            (FOODB + InChIKey), so a compound's identifiers are not re-projected
+            for every food-content row it appears in.
     """
-    # 0. Check cache
-    cached_data = _load_cached_data(force_refresh=force_refresh)
-    if cached_data is not None:
-        yield from cached_data
-        return
+    # 0. Check cache (foods only; compounds is cheap to reparse)
+    if data_type == 'foods':
+        cached_data = _load_cached_data(force_refresh=force_refresh)
+        if cached_data is not None:
+            yield from cached_data
+            return
 
     # Validate opener
     opener_result = getattr(opener, 'result', None)
@@ -379,6 +387,29 @@ def _raw(
         raise ValueError(f'Expected dict of files from tar archive, got {type(opener_result)}')
 
     files = opener_result
+
+    if data_type == 'compounds':
+        compound_paths = {
+            name: _csv_path_from_archive(opener, files, name)
+            for name in (
+                'Compound.csv',
+                'CompoundSynonym.csv',
+                'CompoundExternalDescriptor.csv',
+            )
+        }
+        missing = [name for name, path in compound_paths.items() if path is None]
+        if missing:
+            raise ValueError(
+                f"FooDB required CSV(s) not found in archive: {', '.join(missing)}"
+            )
+        count = 0
+        for compound in _load_compound_lookup(compound_paths).values():
+            yield compound
+            count += 1
+            if max_records is not None and count >= max_records:
+                break
+        return
+
     paths = {
         name: _csv_path_from_archive(opener, files, name)
         for name in (
