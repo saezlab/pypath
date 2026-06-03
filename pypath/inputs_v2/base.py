@@ -87,6 +87,28 @@ class ResourceConfig:
     primary_category: str | None = None
     annotation_ontologies: tuple[OntologyCv, ...] = ()
     resource_kind: str = 'data_resource'
+    # 3-name model (Milestone M; see pypath.inputs_v2.resource_names):
+    #   slug  — all-lowercase canonical id/filter key, no `_`, no spaces
+    #   short — the resource's own spelling (display name), no `_`, no spaces
+    #   full  — the long name, spaces allowed, no `_`
+    # Left None here means "derive": slug from `name`, short = `name`, full from
+    # the curated audit registry. `_` is reserved for primary_secondary labels.
+    slug: str | None = None
+    short: str | None = None
+    full: str | None = None
+    synonyms: tuple[str, ...] = ()
+
+    def names(self) -> 'ResourceNames':
+        """Resolve this resource's (slug, short, full, synonyms)."""
+        from pypath.inputs_v2.resource_names import resolve_names
+
+        return resolve_names(
+            name=self.name,
+            slug=self.slug,
+            short=self.short,
+            full=self.full,
+            synonyms=self.synonyms,
+        )
 
     def metadata(self) -> Entity:
         annotations = [
