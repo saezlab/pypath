@@ -96,6 +96,12 @@ RESOURCE_NAMES: dict[str, ResourceNames] = {
         ResourceNames('metatlas', 'MetAtlas', 'Metabolic Atlas', ()),
         ResourceNames('foodb', 'FooDB', 'FooDB', ()),
         ResourceNames('refmet', 'RefMet', 'Reference list of Metabolite names', ()),
+        ResourceNames('psimi', 'PSI-MI', 'PSI-MI Controlled Vocabulary',
+                      ('psi_mi', 'psi-mi')),
+        ResourceNames('phenolexplorer', 'Phenol-Explorer',
+                      'Phenol-Explorer Database', ('phenol_explorer',)),
+        ResourceNames('omnipathontology', 'OmniPath', 'OmniPath Ontology',
+                      ('omnipath_ontology',)),
     )
 }
 
