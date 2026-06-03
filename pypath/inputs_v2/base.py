@@ -99,12 +99,23 @@ class ResourceConfig:
     synonyms: tuple[str, ...] = ()
 
     def names(self) -> 'ResourceNames':
-        """Resolve this resource's (slug, short, full, synonyms)."""
-        from pypath.inputs_v2.resource_names import resolve_names
+        """Resolve this resource's (slug, short, full, synonyms).
+
+        The lookup slug is the explicit ``slug`` or the canonical ``ResourceCv``
+        member name (``self.id``) — not the inconsistent ``name`` — so the
+        authoritative ``resources.json`` entry is found reliably.
+        """
+        from pypath.inputs_v2.resource_names import resolve_names, slugify
+
+        cv_slug = None
+        try:
+            cv_slug = slugify(self.id.name)
+        except Exception:
+            cv_slug = None
 
         return resolve_names(
             name=self.name,
-            slug=self.slug,
+            slug=self.slug or cv_slug,
             short=self.short,
             full=self.full,
             synonyms=self.synonyms,

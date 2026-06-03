@@ -9,22 +9,28 @@ Every resource carries three names:
 ``_`` is reserved for ``primary_secondary`` composite labels (e.g.
 ``PhosphoSite_SIGNOR``) and must not appear in any single resource's names.
 
-The curated registry below (:data:`RESOURCE_NAMES`) is the reviewed audit
-artifact (FR-049) — short = the resource's self-spelling, full reconciled from
-the resource documentation / the legacy ``pypath.resources.descriptions``
-(``label`` / ``full_name``). Resources not in the registry derive a slug from
-their ``name`` and fall back to ``name`` for short/full; the build-time validator
-flags any rule violation.
+Names are sourced from the **authoritative resource metadata**, not hand-curated:
+the resource registry (:func:`resource_registry`) is loaded from
+``pypath/resources/data/resources.json`` — the same file
+:class:`pypath.resources.controller.ResourceController` reads — where each entry
+is keyed by the resource's **self-spelled short name** and carries ``full_name``
+/ ``label`` / ``synonyms``. ``inputs_v2`` resources may additionally pin explicit
+``slug``/``short``/``full`` on their :class:`ResourceConfig`. Resources not found
+derive a slug from their ``name`` and fall back to it for short/full; the
+build-time validator flags any rule violation. (The legacy
+``pypath.resources.descriptions`` module is NOT used.)
 """
 
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass
+from functools import lru_cache
 
 __all__ = [
     'ResourceNames',
-    'RESOURCE_NAMES',
+    'resource_registry',
     'slugify',
     'validate_resource_name',
     'resolve_names',
@@ -61,49 +67,38 @@ def validate_resource_name(slug: str, short: str, full: str) -> list[str]:
     return errors
 
 
-# Curated audit registry (slug → names). The reviewed source of truth; extend as
-# the audit reconciles every resource. short = self-spelling; full = long name.
-RESOURCE_NAMES: dict[str, ResourceNames] = {
-    n.slug: n
-    for n in (
-        ResourceNames('ramp', 'RaMP', 'Relational Database for Metabolomic Pathways',
-                      ('RaMP-DB', 'rampdb')),
-        ResourceNames('hmdb', 'HMDB', 'Human Metabolome Database', ()),
-        ResourceNames('chebi', 'ChEBI', 'Chemical Entities of Biological Interest', ()),
-        ResourceNames('chembl', 'ChEMBL', 'ChEMBL', ()),
-        ResourceNames('lipidmaps', 'LipidMaps', 'LIPID Metabolites And Pathways Strategy',
-                      ('LIPID MAPS', 'lipid-maps')),
-        ResourceNames('swisslipids', 'SwissLipids', 'SwissLipids', ()),
-        ResourceNames('pubchem', 'PubChem', 'PubChem', ()),
-        ResourceNames('uniprot', 'UniProt', 'Universal Protein Resource', ()),
-        ResourceNames('signor', 'SIGNOR',
-                      'Signaling Network Open Resource', ()),
-        ResourceNames('intact', 'IntAct', 'IntAct Molecular Interaction Database', ()),
-        ResourceNames('reactome', 'Reactome', 'Reactome', ()),
-        ResourceNames('bindingdb', 'BindingDB', 'BindingDB', ()),
-        ResourceNames('cellphonedb', 'CellPhoneDB', 'CellPhoneDB', ()),
-        ResourceNames('wikipathways', 'WikiPathways', 'WikiPathways', ()),
-        ResourceNames('stitch', 'STITCH',
-                      'Search Tool for Interactions of Chemicals', ()),
-        ResourceNames('mrclinksdb', 'MRClinksDB', 'MRClinksDB', ('mrclinkdb',)),
-        ResourceNames('guidetopharma', 'GuideToPharmacology',
-                      'IUPHAR Guide to Pharmacology', ('guide2pharma', 'gtopdb', 'guidetopharmacology')),
-        ResourceNames('cellinker', 'Cellinker', 'Cellinker', ()),
-        ResourceNames('tcdb', 'TCDB', 'Transporter Classification Database', ()),
-        ResourceNames('recon3d', 'Recon3D', 'Recon3D', ()),
-        ResourceNames('kegg', 'KEGG', 'Kyoto Encyclopedia of Genes and Genomes', ()),
-        ResourceNames('ptfi', 'PTFI', 'Periodic Table of Food Initiative', ('ptfidiscover',)),
-        ResourceNames('metatlas', 'MetAtlas', 'Metabolic Atlas', ()),
-        ResourceNames('foodb', 'FooDB', 'FooDB', ()),
-        ResourceNames('refmet', 'RefMet', 'Reference list of Metabolite names', ()),
-        ResourceNames('psimi', 'PSI-MI', 'PSI-MI Controlled Vocabulary',
-                      ('psi_mi', 'psi-mi')),
-        ResourceNames('phenolexplorer', 'Phenol-Explorer',
-                      'Phenol-Explorer Database', ('phenol_explorer',)),
-        ResourceNames('omnipathontology', 'OmniPath', 'OmniPath Ontology',
-                      ('omnipath_ontology',)),
-    )
-}
+@lru_cache(maxsize=1)
+def _resources_json() -> dict:
+    """Load the authoritative resource metadata (same file the controller reads)."""
+    try:
+        from importlib import resources as importlib_resources
+
+        path = importlib_resources.files('pypath.resources.data') / 'resources.json'
+        with path.open('r', encoding='utf-8') as handle:
+            return json.load(handle)
+    except Exception:  # pragma: no cover - missing/unreadable metadata
+        return {}
+
+
+@lru_cache(maxsize=1)
+def resource_registry() -> dict[str, ResourceNames]:
+    """``slug → ResourceNames`` built from ``resources.json`` (authoritative).
+
+    The JSON key is the resource's self-spelled **short**; ``full_name`` (else
+    ``label``, else the key) is the **full** name; ``synonyms`` carry over.
+    """
+    registry: dict[str, ResourceNames] = {}
+    for key, entry in _resources_json().items():
+        slug = slugify(key)
+        if not slug or slug in registry:
+            continue
+        entry = entry if isinstance(entry, dict) else {}
+        full = entry.get('full_name') or entry.get('label') or key
+        synonyms = tuple(s for s in (entry.get('synonyms') or ()) if s)
+        registry[slug] = ResourceNames(
+            slug=slug, short=key, full=full, synonyms=synonyms
+        )
+    return registry
 
 
 def resolve_names(
@@ -114,19 +109,21 @@ def resolve_names(
     full: str | None = None,
     synonyms: tuple[str, ...] = (),
 ) -> ResourceNames:
-    """Resolve the 3 names: explicit fields → curated registry → derived from ``name``."""
-    derived_slug = slug or slugify(name)
-    curated = RESOURCE_NAMES.get(derived_slug)
-    resolved_slug = derived_slug
-    resolved_short = short or (curated.short if curated else name)
-    resolved_full = full or (curated.full if curated else name)
+    """Resolve the 3 names: explicit fields → ``resources.json`` registry → derived.
+
+    ``slug`` (when given) is the lookup key — pass the canonical slug (e.g. from a
+    ``ResourceCv`` member name) so an inconsistent ``name`` does not mislead the
+    lookup; otherwise the slug is derived from ``short``/``name``.
+    """
+    lookup_slug = slug or slugify(short or name)
+    entry = resource_registry().get(lookup_slug)
+    resolved_short = short or (entry.short if entry else (name or lookup_slug))
+    resolved_full = full or (entry.full if entry else resolved_short)
     merged_synonyms = tuple(
-        dict.fromkeys(
-            (*synonyms, *(curated.synonyms if curated else ()))
-        )
+        dict.fromkeys((*synonyms, *(entry.synonyms if entry else ())))
     )
     return ResourceNames(
-        slug=resolved_slug,
+        slug=lookup_slug,
         short=resolved_short,
         full=resolved_full,
         synonyms=merged_synonyms,
@@ -138,11 +135,13 @@ def build_filter_index(
 ) -> dict[str, str]:
     """Map every {slug, slugified short, slugified synonym} → canonical slug."""
     index: dict[str, str] = {}
-    for names in (resources if resources is not None else RESOURCE_NAMES.values()):
+    for names in (
+        resources if resources is not None else resource_registry().values()
+    ):
         index[names.slug] = names.slug
-        index[slugify(names.short)] = names.slug
+        index.setdefault(slugify(names.short), names.slug)
         for synonym in names.synonyms:
-            index[slugify(synonym)] = names.slug
+            index.setdefault(slugify(synonym), names.slug)
     return index
 
 
