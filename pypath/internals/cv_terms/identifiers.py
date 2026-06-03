@@ -45,6 +45,8 @@ class IdentifierNamespaceCv(CvEnum):
     MINT = ('OM:0107', 'Molecular INTeraction database identifier', 'https://mint.bio.uniroma2.it')
     FLYBASE = ('OM:0108', 'FlyBase gene database identifier', 'https://flybase.org')
     MIRBASE = ('OM:0109', 'miRBase microRNA database identifier', 'https://www.mirbase.org')
+    MIRBASE_PRECURSOR = ('OM:0127', 'miRBase precursor (pre-miRNA) accession, MI#', 'https://www.mirbase.org')
+    MIRBASE_MATURE = ('OM:0128', 'miRBase mature miRNA accession, MIMAT#', 'https://www.mirbase.org')
     RFAM = ('OM:0110', 'Rfam RNA families database identifier', 'https://rfam.org')
     RNACENTRAL = ('OM:0111', 'RNAcentral identifier', 'https://rnacentral.org')
     UNIPARC = ('OM:0112', 'UniParc (UniProt Archive) identifier', 'https://www.uniprot.org/help/uniparc')

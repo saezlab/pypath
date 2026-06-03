@@ -48,6 +48,7 @@ class EntityTypeCv(CvEnum):
     CELL_LINE = ("OM:0033", "A cell line or cell culture used in research.")
     TISSUE = ("OM:0034", "A tissue or organ from an organism")
     TRANSPORT = ("OM:0035", "Transport of a molecule across a membrane by a transporter protein")
+    MIRNA = ("OM:0038", "microRNA (precursor or mature; subtype in MirnaSubtypeCv)")
 
 
 class MoleculeSubtypeCv(CvEnum):
@@ -63,6 +64,19 @@ class MoleculeSubtypeCv(CvEnum):
     ANTIBODY = ("OM:0025", "Antibody or immunoglobulin")
     NUCLEIC_ACID = ("OM:0026", "Nucleic acid molecule")
     LIPID = ("OM:0050", "Lipid molecule or lipid-like compound")
+
+
+class MirnaSubtypeCv(CvEnum):
+    """microRNA maturation-stage subtypes (Milestone L).
+
+    pre-miRNA and mature miRNA are modelled as distinct entities (different
+    miRBase accessions: MI# vs MIMAT#) connected by maturation relations.
+    """
+
+    parent_cv_term = EntityTypeCv.MIRNA
+
+    PRECURSOR = ("OM:0039", "precursor microRNA (pre-miRNA; miRBase MI accession)")
+    MATURE = ("OM:0049", "mature microRNA (miRBase MIMAT accession)")
 
 
 class ProteinFunctionalClassCv(CvEnum):

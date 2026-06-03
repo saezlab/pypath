@@ -81,6 +81,8 @@ class InteractionTypeCv(CvEnum):
     # PSI-MI standard interaction types
     COLOCALIZATION = "MI:0403"
     FUNCTIONAL_ASSOCIATION = "MI:2286"
+    # OmniPath: pre-miRNA → mature miRNA processing (Milestone L)
+    MIRNA_MATURATION = ("OM:1257", "miRNA maturation (pre-miRNA to mature miRNA processing)")
     PHYSICAL_ASSOCIATION = "MI:0915"
     DIRECT_INTERACTION = "MI:0407"
     PHOSPHORYLATION_REACTION = "MI:0217"
