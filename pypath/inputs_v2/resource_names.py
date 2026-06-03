@@ -118,7 +118,9 @@ def resolve_names(
     lookup_slug = slug or slugify(short or name)
     entry = resource_registry().get(lookup_slug)
     resolved_short = short or (entry.short if entry else (name or lookup_slug))
-    resolved_full = full or (entry.full if entry else resolved_short)
+    # full falls back to the config `name` (for inputs_v2 resources that is the
+    # long name, e.g. hmdb name='Human Metabolome Database') before the short.
+    resolved_full = full or (entry.full if entry else (name or resolved_short))
     merged_synonyms = tuple(
         dict.fromkeys((*synonyms, *(entry.synonyms if entry else ())))
     )

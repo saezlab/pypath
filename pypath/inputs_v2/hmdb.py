@@ -37,6 +37,9 @@ from pypath.inputs_v2.parsers.hmdb import (
 config = ResourceConfig(
     id=ResourceCv.HMDB,
     name='Human Metabolome Database',
+    # 3-name model (Milestone M): self-spelled short pinned here since HMDB is
+    # not in the legacy resources.json; `full` falls back to `name`.
+    short='HMDB',
     url='https://hmdb.ca/',
     license=LicenseCV.CC_BY_NC_4_0,
     update_category=UpdateCategoryCV.REGULAR,
