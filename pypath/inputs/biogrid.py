@@ -26,6 +26,14 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 
 
+BIOGRID_REQ_HEADERS = [
+    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Accept: */*",
+    "Accept-Language: en-US,en;q=0.9",
+    "Referer: https://downloads.thebiogrid.org/",
+]
+
+
 def biogrid_interactions(
         organism: int = 9606,
         htp_limit: Optional[Number] = 1,
@@ -55,7 +63,13 @@ def biogrid_interactions(
     interactions = []
     refc = []
     url = urls.urls['biogrid']['mv']
-    c = curl.Curl(url, silent = False, large = True, slow = True)
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        slow = True,
+        req_headers = BIOGRID_REQ_HEADERS,
+    )
     f = next(iter(c.result.values()))
     nul = f.readline()
 
@@ -138,7 +152,13 @@ def biogrid_all_interactions(
         mv_dict[i.partner_a].append(i.partner_b)
 
     url = urls.urls['biogrid']['all']
-    c = curl.Curl(url, silent = False, large = True, slow = True)
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        slow = True,
+        req_headers = BIOGRID_REQ_HEADERS,
+    )
     f = next(iter(c.result.values()))
     nul = f.readline()
 
