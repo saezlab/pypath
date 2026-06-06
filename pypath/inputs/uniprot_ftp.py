@@ -119,25 +119,13 @@ def idmapping_stream(
         _log.warning('No FTP URL for taxid %s', ncbi_tax_id)
         return
 
-    path = None
+    try:
+        path = dm.download(urls[0], fallback_urls=urls[1:], connecttimeout=10)
+    except Exception as e:
+        _log.error('UniProt FTP download failed: %s', e)
+        return
 
-    for url in urls:
-        _log.info('Trying UniProt FTP: %s', url)
-
-        try:
-            path = dm.download(url, connecttimeout=10)
-
-            if path and os.path.getsize(path) > 0:
-                break
-
-            if path:
-                _log.warning('Empty file from %s, trying next mirror', url)
-                path = None
-
-        except Exception as e:
-            _log.warning('Failed %s: %s', url, e)
-
-    if not path:
+    if not path or os.path.getsize(path) == 0:
         _log.error('All UniProt FTP mirrors failed')
         return
 
@@ -227,18 +215,13 @@ def idmapping_full_stream(
     """
     urls = full_idmapping_urls()
 
-    path = None
-    for url in urls:
-        _log.info("Trying full idmapping: %s", url)
-        try:
-            path = dm.download(url, connecttimeout=10)
-            if path and os.path.getsize(path) > 1000:
-                break
-            path = None
-        except Exception as e:
-            _log.warning("Failed %s: %s", url, e)
+    try:
+        path = dm.download(urls[0], fallback_urls=urls[1:], connecttimeout=10)
+    except Exception as e:
+        _log.error("Full idmapping download failed: %s", e)
+        return
 
-    if not path:
+    if not path or os.path.getsize(path) <= 1000:
         _log.error("All mirrors failed for full idmapping.dat.gz")
         return
 
@@ -309,18 +292,14 @@ def idmapping_full_chunks(
     import subprocess
     import tempfile
 
-    path = None
-    for url in full_idmapping_urls():
-        _log.info("Downloading full idmapping: %s", url)
-        try:
-            candidate = dm.download(url, connecttimeout=10)
-            if candidate and os.path.getsize(candidate) > 1000:
-                path = candidate
-                break
-        except Exception as e:
-            _log.warning("Failed %s: %s", url, e)
+    urls = full_idmapping_urls()
+    try:
+        path = dm.download(urls[0], fallback_urls=urls[1:], connecttimeout=10)
+    except Exception as e:
+        _log.error("Full idmapping download failed: %s", e)
+        return []
 
-    if not path:
+    if not path or os.path.getsize(path) <= 1000:
         _log.error("All mirrors failed for full idmapping.dat.gz")
         return []
 
@@ -414,16 +393,22 @@ def parse_idmapping_chunk(
             yield row
 
 
-def stream_full_idmapping(block_size: int = 1 << 20):
+def stream_full_idmapping(block_size: int = 1 << 20, path: str | None = None):
     """Yield decompressed bytes blocks of the full idmapping.dat.
 
     Downloads the complete ``idmapping.dat.gz`` once via the dlmachine download
-    manager (cached) and streams its **decompressed** bytes in ``block_size``
-    chunks — suitable for piping straight into a Postgres ``COPY ... FROM STDIN``
-    (the file is already tab-separated ``ac<TAB>id_type_label<TAB>id_value``, the
-    default COPY text format). Decompression uses ``pigz``/``zcat`` when present
-    (fast), falling back to Python ``gzip`` (portable). Only the caller's host
-    needs a decompressor — nothing is required on the database server.
+    manager (cached, all mirrors tried as fallbacks under one cache entry) and
+    streams its **decompressed** bytes in ``block_size`` chunks — suitable for
+    piping straight into a Postgres ``COPY ... FROM STDIN`` (the file is already
+    tab-separated ``ac<TAB>id_type_label<TAB>id_value``, the default COPY text
+    format). Decompression uses ``pigz``/``zcat`` when present (fast), falling
+    back to Python ``gzip`` (portable). Only the caller's host needs a
+    decompressor — nothing is required on the database server.
+
+    Args:
+        block_size: Bytes per yielded block.
+        path: Stream this already-downloaded ``.gz`` directly, skipping the
+            download manager (e.g. a pre-staged file).
 
     Yields:
         ``bytes`` blocks of the decompressed file.
@@ -433,18 +418,17 @@ def stream_full_idmapping(block_size: int = 1 << 20):
     import shutil
     import subprocess
 
-    path = None
-    for url in full_idmapping_urls():
-        _log.info("Downloading full idmapping: %s", url)
-        try:
-            candidate = dm.download(url, connecttimeout=10)
-            if candidate and os.path.getsize(candidate) > 1000:
-                path = candidate
-                break
-        except Exception as e:
-            _log.warning("Failed %s: %s", url, e)
-
     if not path:
+        urls = full_idmapping_urls()
+        try:
+            path = dm.download(
+                urls[0], fallback_urls=urls[1:], connecttimeout=10,
+            )
+        except Exception as e:
+            _log.error("Full idmapping download failed: %s", e)
+            return
+
+    if not path or not os.path.exists(path) or os.path.getsize(path) <= 1000:
         _log.error("All mirrors failed for full idmapping.dat.gz")
         return
 
