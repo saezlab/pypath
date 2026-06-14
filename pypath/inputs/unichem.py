@@ -54,27 +54,30 @@ def unichem_info():
         ),
     )
 
+    import requests
+
     url = urls.urls['unichem']['sources']
-    c = curl.Curl(url, large = False, silent = False)
-    soup = bs4.BeautifulSoup(c.result, 'html.parser')
+
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()
+    
+
+    data = response.json()
+
+
     result = []
 
-    for table in soup.find_all('table'):
+    for item in data["sources"]:
 
-        if table.find('tr').text.strip().startswith('src_id'):
-
-            for row in table.find_all('tr')[2:]:
-
-                fields = row.find_all('td')
-
-                result.append(
-                    UnichemSource(
-                        *(
-                            field.text.strip()
-                            for field in fields
-                        )
-                    )
-                )
+        result.append(
+            UnichemSource(
+                str(item.get("sourceID", "")),
+                item.get("nameLabel", ""),
+                item.get("name", ""),
+                item.get("description", ""),
+                item.get("lastUpdated", ""),
+            )
+        )
 
     return result
 
