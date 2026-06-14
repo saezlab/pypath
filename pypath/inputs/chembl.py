@@ -204,7 +204,6 @@ def chembl_molecules() -> list[tuple]:
         if not page_dct:
 
             url = urls.urls['chembl']['url'] + urls.urls['chembl']['molecule']
-            c = curl.Curl(url, large=True, silent=False)
 
         elif page_dct['page_meta']['next']:
 
