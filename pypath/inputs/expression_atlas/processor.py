@@ -55,7 +55,18 @@ class BaselineExperiementDataProcessor:
             raise ValueError(f"No data found in the file: {file_path}")
 
         # drop columns with all NaN values except the specific column
-        columns_to_drop = [col for col in df.columns if col not in [f"Sample Characteristic Ontology Term[{self.matching_factor}]", f"Factor Value Ontology Term[{self.matching_factor}]"] and df[col].isna().all()]
+        protected_columns = [
+            "Gene ID",
+            "Gene Name",
+            f"Sample Characteristic Ontology Term[{self.matching_factor}]",
+            f"Factor Value Ontology Term[{self.matching_factor}]",
+        ]
+
+        columns_to_drop = [
+            col for col in df.columns
+            if col not in protected_columns
+               and df[col].isna().all()
+        ]
         df.drop(columns=columns_to_drop, inplace=True)
 
         # drop rows with all NaN values
@@ -73,6 +84,9 @@ class BaselineExperiementDataProcessor:
         if any([True if " and " in col else False for col in df.columns]):
             _log(f"Columns contain ' and ' in their names. Columns: {df.columns.to_list()}. File: {self.tpm_file_path}")
             df.drop(columns=[col for col in df.columns if " and " in col], inplace=True)
+
+
+        df.columns = df.columns.str.strip()
 
         assert all(df.columns[:2] == ["Gene ID", "Gene Name"]), "Gene ID and Gene Name columns not found"
         # drop rows if Gene ID is NaN
