@@ -56,7 +56,7 @@ class ExpressionAtlasExperimentDownloader:
             
             response = requests.get(url)
             if response.status_code == 200:
-                content_type = response.headers.get('Content-Type')
+                content_type = response.headers.get('Content-Type', '')
                 
                 # Handle ZIP file
                 if "zip" in content_type or fname.endswith(".zip"):
@@ -115,7 +115,7 @@ class ExpressionAtlasExperimentDownloader:
 
 class AsyncExpressionAtlasExperimentDownloader(ExpressionAtlasExperimentDownloader):
     def __init__(self) -> None:
-        self.cache_dir = cache.get_cachedir()
+        super().__init__()
     
     async def download_files(self, urls: list[str], experiment_names: list[str]) -> bool:
         """
@@ -165,30 +165,38 @@ class AsyncExpressionAtlasExperimentDownloader(ExpressionAtlasExperimentDownload
             - If the file is a TSV file, it will be saved using the `_save_tsv_file` method.
             - If the HTTP status code is not 200, it will print an error message.
         """
+        try:
+            async with session.head(url) as response:
+                d = response.headers.get('content-disposition')
+                fname = re.findall(r'filename="?([^"]+)"?', d)[0] if d else f"{experiment_name}.tsv"
+                fname = fname.strip('\"').strip()
+            
+            if cache:
+                self._handle_cache(fname)
+                if self.use_cache:
+                    return
 
-        async with session.head(url) as response:
-            d = response.headers.get('content-disposition')
-            fname = re.findall(r'filename="?([^"]+)"?', d)[0] if d else f"{experiment_name}.tsv"
-            fname = fname.strip('\"').strip()
-        
-        if cache:
-            self._handle_cache(fname)
-            if self.use_cache:
-                return
+            async with session.get(url) as response:
+                if response.status == 200:
+                    content_type = response.headers.get('Content-Type', '')
 
-        async with session.get(url) as response:
-            if response.status == 200:
-                content_type = response.headers.get('Content-Type')
-
-                # Handle ZIP file
-                if "zip" in content_type or fname.endswith(".zip"):
-                    content = await response.read()
-                    self._handle_zip_file(content, experiment_name)
-                # Handle TSV file
-                elif "text/tab-separated-values" in content_type or fname.endswith(".tsv"):
-                    content = await response.read()
-                    self._save_tsv_file(content, fname)
+                    # Handle ZIP file
+                    if "zip" in content_type or fname.endswith(".zip"):
+                        content = await response.read()
+                        self._handle_zip_file(content, experiment_name)
+                    # Handle TSV file
+                    elif "text/tab-separated-values" in content_type or fname.endswith(".tsv"):
+                        content = await response.read()
+                        self._save_tsv_file(content, fname)
+                    else:
+                        raise ValueError(f"Unsupported file type {fname}")
                 else:
-                    raise ValueError(f"Unsupported file type {fname}")
-            else:
-                self._log(f"Download failed, HTTP Status Code: {response.status}")
+                    self._log(f"Download failed, HTTP Status Code: {response.status}")
+
+        except Exception as e:
+
+            print(f"Async download error for {url}: {e}")
+
+            self._log(
+                f"Async download error for {url}: {e}"
+            )
