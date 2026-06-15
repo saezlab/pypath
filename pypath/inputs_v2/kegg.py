@@ -108,6 +108,9 @@ try:
     config = ResourceConfig(
         id=ResourceCv.KEGG_METABOLIC,
         name='KEGG Metabolic Reactions',
+        slug='kegg',
+        short='KEGG',
+        full='KEGG Metabolic Reactions',
         url='https://www.genome.jp/kegg/reaction/',
         license=LicenseCV.KEGG_ACADEMIC,
         update_category=UpdateCategoryCV.REGULAR,
