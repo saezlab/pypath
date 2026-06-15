@@ -52,10 +52,11 @@ config = ResourceConfig(
     id=ResourceCv.MIRBASE,
     name='miRBase',
     url='https://www.mirbase.org/',
-    license=LicenseCV.CC0_1_0,
+    license=LicenseCV.PUBLIC,
     update_category=UpdateCategoryCV.REGULAR,
     primary_category='mirna',
     short='miRBase',
+    pubmed='30423142',
     description=(
         'miRBase is the primary public repository and online resource for '
         'microRNA sequences and annotation. This inputs_v2 module emits '
