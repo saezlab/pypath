@@ -84,6 +84,11 @@ class LicenseCV(CvEnum):
         "KEGG license - free for academic use, commercial use requires a license",
         "https://www.kegg.jp/kegg/legal.html"
     )
+    PUBLIC = (
+        "OM:0515",
+        "Public domain - copyright waived in favor of the general public",
+        ""
+    )
     UNSPECIFIED = (
         "OM:0599",
         "License not specified or unclear"
