@@ -127,7 +127,9 @@ def hpo_diseases() -> dict[str, set[tuple]]:
 
         r = r.split('\t')
 
-        pmid = re.sub('^PMID:', '', r[4]) if r[4][:4] == 'PMID' else None
+        pmid_tokens = [re.sub('^PMID:', '', tok).strip() for tok in r[4].split(';')]
+        pmid_tokens = [t for t in pmid_tokens if t.isdigit()]
+        pmid = ';'.join(pmid_tokens) if pmid_tokens else None
 
         result[r[3]].add(
             HpoDisease(
