@@ -22,6 +22,7 @@ from __future__ import annotations
 from typing import Generator
 
 import collections
+import csv
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
@@ -64,20 +65,18 @@ def _sides_base(
     url = urls.urls[url_key]['url']
     c = curl.Curl(url, large = True, silent = False)
 
-    result = set()
     record = collections.namedtuple(record_name, fields)
 
     _ = next(c.result)
 
     for line in c.result:
 
-        line = line.strip().split(',')
+        parsed = next(csv.reader([line.strip()]))
 
-        if not line:
-
+        if not parsed:
             continue
 
         yield record(**{
-            f: line[i].strip(' "')
+            f: parsed[i].strip(' "')
             for f, i in zip(fields, indices)
         })
