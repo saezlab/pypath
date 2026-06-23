@@ -26,11 +26,17 @@ from pypath.resources.urls import urls
 from pypath.share import session
 from pypath.utils import taxonomy
 
-_log = session.Logger(name = 'trrust_input')._log
+_log = session.Logger(name = "trrust_input")._log
+
+
+TrrustInteraction = collections.namedtuple(
+    "TrrustInteraction",
+    ("source_genesymbol", "target_genesymbol", "effect", "references"),
+)
 
 
 def trrust_interactions(
-        organism: str | int = 'human',
+        organism: str | int = "human",
     ) -> list[TrrustInteraction]:
     """
     Gene regulatory interactions from the TRRUST v2 database.
@@ -43,50 +49,42 @@ def trrust_interactions(
             are available in TRRUST.
     """
 
-    organisms = {'human', 'mouse'}
+    organisms = {"human", "mouse"}
     _organism = taxonomy.ensure_common_name(organism, lower = True)
 
     if _organism not in organisms:
 
-        err = f'Only human and mouse are availble in TRRUST, not `{organism}`.'
+        err = f"Only human and mouse are availble in TRRUST, not `{organism}`."
         _log(err)
         raise ValueError(err)
 
-    class TrrustInteraction(
-            collections.namedtuple(
-            'TrrustInteractionBase',
-            ('source_genesymbol', 'target_genesymbol', 'effect', 'references'),
-        )
-    ):
-
-        def __new__(cls, line):
-
-            line = line.strip('\n ').split('\t')
-            refs = tuple(sorted(line[-1].split(';')))
-
-            return super().__new__(cls, *line[:-1], refs)
-
-
-    url = urls['trrust']['tsv_url'] % _organism
+    url = urls["trrust"]["tsv_url"] % _organism
 
     c = curl.Curl(
         url,
         silent = False,
         large = True,
-        encoding = 'utf-8',
-        default_mode = 'r',
+        encoding = "utf-8",
+        default_mode = "r",
     )
 
-    interactions = [TrrustInteraction(line) for line in c.result]
+    def _parse(line):
+
+        line = line.strip("\n ").split("\t")
+        refs = tuple(sorted(line[-1].split(";")))
+
+        return TrrustInteraction(*line[:-1], refs)
+
+    interactions = [_parse(line) for line in c.result]
 
     return interactions
 
 
 def trrust_human():
 
-    return trrust_interactions('human')
+    return trrust_interactions("human")
 
 
 def trrust_mouse():
 
-    return trrust_interactions('mouse')
+    return trrust_interactions("mouse")
