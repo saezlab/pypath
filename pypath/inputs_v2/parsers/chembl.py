@@ -4,9 +4,33 @@ ChEMBL-specific data parsers.
 
 from __future__ import annotations
 
+import os
+import sqlite3
 from typing import Any, Generator
 
-from pypath.inputs_v2.parsers.base import iter_sqlite
+from pypath.inputs_v2.parsers.base import (
+    iter_sqlite,
+    _extract_sqlite_from_opener,
+)
+
+# Optional structure/property columns projected from the 1:1 joins. ChEMBL
+# renames/drops columns between releases (e.g. v36 has no ``mw_monoisotopic``/
+# ``cx_logp``/``cx_logd``/``molecular_species``), so they are selected only when
+# present in the deployed schema and NULL-aliased otherwise (version-resilient).
+_CS_COLS = ('canonical_smiles', 'standard_inchi', 'standard_inchi_key')
+_CP_COLS = (
+    'full_mwt', 'full_molformula', 'mw_monoisotopic', 'alogp',
+    'cx_logp', 'cx_logd', 'molecular_species',
+)
+
+
+def _table_columns(sqlite_path: Any, table: str) -> set[str]:
+    """Return the column names of a table (empty set if it does not exist)."""
+    conn = sqlite3.connect(sqlite_path)
+    try:
+        return {r[1] for r in conn.execute(f'PRAGMA table_info({table})')}
+    finally:
+        conn.close()
 
 
 def molecules_parser(
@@ -16,6 +40,12 @@ def molecules_parser(
     """
     Parses ChEMBL molecules by joining dictionary, structures, and properties.
 
+    Resilient to ChEMBL schema differences across releases: optional structure
+    and property columns are selected only when present (NULL otherwise), and
+    ``synonyms`` aggregates the 1:many ``molecule_synonyms`` table via a
+    correlated subquery (joined on the unit separator -- chemical names contain
+    commas -- and split back to a list below) when that table exists.
+
     Args:
         opener: The opener object for handling database connections.
         **kwargs: Additional arguments passed to iter_sqlite (e.g., sqlite_path, db_rel_path).
@@ -23,24 +53,43 @@ def molecules_parser(
     Yields:
         Dictionary representing a joined molecule record.
     """
-    query = """
+    sqlite_path = kwargs.get('sqlite_path')
+    if sqlite_path and not os.path.exists(sqlite_path):
+        _extract_sqlite_from_opener(opener, sqlite_path, kwargs.get('db_rel_path'))
+
+    cs_have = _table_columns(sqlite_path, 'compound_structures')
+    cp_have = _table_columns(sqlite_path, 'compound_properties')
+    has_synonyms = bool(_table_columns(sqlite_path, 'molecule_synonyms'))
+
+    def _select(prefix: str, cols: tuple, have: set[str]) -> str:
+        return ',\n        '.join(
+            f'{prefix}.{c}' if c in have else f'NULL AS {c}' for c in cols
+        )
+
+    syn_select = (
+        ',\n        (SELECT GROUP_CONCAT(ms.synonyms, char(31))'
+        ' FROM molecule_synonyms ms WHERE ms.molregno = md.molregno) AS synonyms'
+        if has_synonyms else ''
+    )
+
+    query = f"""
     SELECT
         md.*,
-        cs.canonical_smiles,
-        cs.standard_inchi,
-        cs.standard_inchi_key,
-        cp.full_mwt,
-        cp.full_molformula,
-        cp.mw_monoisotopic,
-        cp.alogp,
-        cp.cx_logp,
-        cp.cx_logd,
-        cp.molecular_species
+        {_select('cs', _CS_COLS, cs_have)},
+        {_select('cp', _CP_COLS, cp_have)}{syn_select}
     FROM molecule_dictionary md
     LEFT JOIN compound_structures cs ON md.molregno = cs.molregno
     LEFT JOIN compound_properties cp ON md.molregno = cp.molregno
     """
-    yield from iter_sqlite(opener, query=query, **kwargs)
+
+    for row in iter_sqlite(opener, query=query, **kwargs):
+
+        syn = row.get('synonyms')
+
+        if syn:
+            row['synonyms'] = [s for s in str(syn).split('\x1f') if s]
+
+        yield row
 
 
 def assays_parser(

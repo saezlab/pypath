@@ -192,6 +192,7 @@ molecules_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.CHEMBL, value=f('chembl_id')),
         CV(term=IdentifierNamespaceCv.CHEMBL_INTERNAL_ID, value=f('molregno')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('pref_name')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms')),
         CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id', extract='chebi', transform='chebi')),
         CV(term=IdentifierNamespaceCv.SMILES, value=f('canonical_smiles')),
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('standard_inchi')),
