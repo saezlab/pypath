@@ -5257,7 +5257,6 @@ class Connectomedb2025(AnnotationBase):
             name = 'ConnectomeDB2025',
             input_method = 'connectomedb2025.connectomedb2025_annotations',
             ncbi_tax_id = 9606,
-            complexes = False,
         )
 
 
