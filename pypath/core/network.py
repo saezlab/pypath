@@ -3516,6 +3516,7 @@ class Network(session_mod.Logger):
     def load_transcription(
             self,
             collectri = True,
+            collectri2 = True,
             dorothea = True,
             original_resources = True,
             dorothea_levels = None,
@@ -3531,6 +3532,14 @@ class Network(session_mod.Logger):
         if collectri:
 
             self.load_collectri(
+                reread = reread,
+                redownload = redownload,
+                allow_loops = allow_loops,
+            )
+
+        if collectri2:
+
+            self.load_collectri2(
                 reread = reread,
                 redownload = redownload,
                 allow_loops = allow_loops,

@@ -99,7 +99,6 @@ class WebserviceTables(session_mod.Logger):
             (
                 'omnipath',
                 'tf_target',
-                'collectri2',
                 'mirna_mrna',
                 'tf_mirna',
                 'lncrna_mrna',
