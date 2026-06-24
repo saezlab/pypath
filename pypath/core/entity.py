@@ -461,6 +461,17 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
 
     def set_label(self):
 
+        if self.entity_type in self._smol_types:
+
+            #  Small-molecule labels are disabled for now: the name
+            #  sources are unavailable (RaMP API down, HMDB behind
+            #  Cloudflare). Use the identifier (e.g. PubChem CID) as the
+            #  label. TODO: restore preferred names once the RaMP/HMDB
+            #  downloads are fixed/migrated.
+            self.label = self.identifier
+
+            return
+
         self.label = mapping.label(
             name = self.identifier,
             id_type = self.id_type,
