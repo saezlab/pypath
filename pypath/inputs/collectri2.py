@@ -49,9 +49,9 @@ _log = session.Logger(name = 'collectri2_input')._log
 #   `present` flag column, `pmid` column, and source-specific `vars`
 _SOURCES = {
     'ExTRI2': {'present': 3, 'pmid': 4, 'vars': {'sign': 5, 'tf_type': 6}},
-    'HTRI': {'present': 7, 'pmid': 9, 'vars': {'technique': 8, 'confidence': 10}},
+    'HTRIdb': {'present': 7, 'pmid': 9, 'vars': {'technique': 8, 'confidence': 10}},
     'TRRUST': {'present': 11, 'pmid': 13, 'vars': {'regulation': 12}},
-    'TFactS': {
+    'TfactS': {
         'present': 14, 'pmid': 18,
         'vars': {'sign': 15, 'species': 16, 'source': 17, 'confidence': 19},
     },
@@ -69,7 +69,7 @@ _SOURCES = {
     },
     'GEREDB': {'present': 36, 'pmid': 38, 'vars': {'effect': 37}},
     'NTNUcuration': {'present': 39, 'pmid': 41, 'vars': {'sign': 40}},
-    'Pavlidis2021': {'present': 42, 'pmid': 43, 'vars': {'mor': 44}},
+    'Pavlidis': {'present': 42, 'pmid': 43, 'vars': {'mor': 44}},
     'DoRothEA-A': {'present': 45, 'pmid': 46, 'vars': {'directed': 47, 'effect': 48}},
 }
 
