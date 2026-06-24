@@ -4480,6 +4480,14 @@
       "alistair.forrest@gmail.com", "Alistair R. R. Forrest"
     ]
   },
+  "ConnectomeDB2025": {
+    "urls": {
+      "webpages": [
+        "https://connectomedb.org/"
+      ]
+    },
+    "license": "CC BY 4.0"
+  },
   "talklr": {
     "urls": {
       "webpages": [

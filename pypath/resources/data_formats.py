@@ -750,6 +750,26 @@ pathway = {
         header = False,
         data_model = 'ligand_receptor',
     ),
+    'connectomedb2025': input_formats.NetworkInput(
+        name = 'ConnectomeDB2025',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        input = 'connectomedb2025.connectomedb2025_interactions',
+        references = (2, ';'),
+        header = False,
+        extra_edge_attrs = {
+            'evidence': 3,
+            'interaction_id': 4,
+        },
+        data_model = 'ligand_receptor',
+    ),
     'talklr': input_formats.NetworkInput(
         name = 'talklr',
         separator = None,
@@ -3316,6 +3336,8 @@ ligand_receptor['cellchatdb'] = copy.deepcopy(pathway['cellchatdb'])
 ligand_receptor['cellchatdb'].must_have_references = False
 ligand_receptor['connectomedb'] = copy.deepcopy(pathway['connectomedb'])
 ligand_receptor['connectomedb'].must_have_references = False
+ligand_receptor['connectomedb2025'] = copy.deepcopy(pathway['connectomedb2025'])
+ligand_receptor['connectomedb2025'].must_have_references = False
 ligand_receptor['talklr'] = copy.deepcopy(pathway['talklr'])
 ligand_receptor['talklr'].must_have_references = False
 ligand_receptor['cellinker'] = copy.deepcopy(pathway['cellinker'])

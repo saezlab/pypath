@@ -1484,6 +1484,10 @@ urls = {
         'url': 'https://raw.githubusercontent.com/asrhou/NATMI/'
             'gh-pages/_data/lsps.csv',
     },
+    'connectomedb2025': {
+        'label': 'Human ligand-receptor interactions from ConnectomeDB2025',
+        'url': 'https://connectomedb.org/downloads/Current-Release/CSV/ConnectomeDB2025_human.csv',
+    },
     'talklr': {
         'label': 'Ligand-receptor interactions from other databases with '
             '187 literature references',
