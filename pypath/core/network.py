@@ -3492,6 +3492,27 @@ class Network(session_mod.Logger):
         return new
 
 
+    def load_collectri2(self, **kwargs):
+
+        self.load(network_resources.collectri2, **kwargs)
+
+
+    @classmethod
+    def collectri2(cls, ncbi_tax_id = 9606, **kwargs):
+        """
+        Initializes a new ``Network`` object with loading the transcriptional
+        regulation network from CollecTRI2.
+        """
+
+        make_df = kwargs.pop('make_df', False)
+
+        new = cls(ncbi_tax_id = ncbi_tax_id, **kwargs)
+
+        new.load_collectri2(make_df = make_df)
+
+        return new
+
+
     def load_transcription(
             self,
             collectri = True,

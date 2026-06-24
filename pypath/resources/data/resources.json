@@ -4813,6 +4813,26 @@
       "webpages": ["https://github.com/saezlab/CollecTRI"]
     }
   },
+  "CollecTRI2": {
+    "license": "Composite",
+    "components": [
+      "ExTRI",
+      "TFactS",
+      "HTRIdb",
+      "IntAct",
+      "GOA",
+      "TRRUST",
+      "SIGNOR",
+      "CytReg",
+      "GEREDB",
+      "Pavlidis",
+      "DoRothEA_A",
+      "NTNUcuration"
+    ],
+    "urls": {
+      "webpages": ["https://github.com/saezlab/CollecTRI"]
+    }
+  },
   "ExTRI": {
     "license": "CC BY 4.0"
   },

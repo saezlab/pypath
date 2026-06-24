@@ -2490,7 +2490,42 @@ transcription_collectri = {
 }
 
 # synonyms
+transcription_collectri2 = {
+    'collectri2': input_formats.NetworkInput(
+        name = 'CollecTRI2',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = True,
+        sign = (2, 1, -1),
+        ncbi_tax_id = 9606,
+        input = 'collectri2.collectri2_interactions',
+        interaction_type = 'transcriptional',
+        resource = (4, ';'),
+        references = (5, ';'),
+        header = False,
+        extra_edge_attrs = {
+            'tf_type': 3,
+            'auto_regulation': 6,
+            'evidence': 7,
+        },
+        extra_node_attrs_a = {
+            'tf_type': 3,
+        },
+        extra_node_attrs_b = {},
+        must_have_references = False,
+        allow_loops = True,
+        data_model = 'activity_flow',
+    ),
+}
+
+
 collectri = transcription_collectri
+collectri2 = transcription_collectri2
 
 # all transcriptional regulation resources
 transcription = {}

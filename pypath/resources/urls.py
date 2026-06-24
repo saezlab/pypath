@@ -1786,6 +1786,11 @@ urls = {
         'label': 'Comprehensive collection of transcriptional regulatory interactions',
         'url': 'https://rescued.omnipathdb.org/CollecTRI.csv',
     },
+    'collectri2': {
+        'label': 'CollecTRI2 transcriptional regulatory interactions',
+        'main': 'https://rescued.omnipathdb.org/CollecTRI2.tsv.gz',
+        'combined': 'https://rescued.omnipathdb.org/CollecTRI2-combined.tsv.gz',
+    },
     'ramp': {
         'label': 'RaMP metabolomic pathway and metabolite identifier database',
         'url': 'https://figshare.com/ndownloader/files/38534654',
