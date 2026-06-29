@@ -436,6 +436,16 @@ def uniprot_data(
         get['query'] = rev.strip(' AND ')
 
     c = curl.Curl(url, get = get, silent = False, large = True, compr = 'gz')
+
+    if c.result is None:
+        raise RuntimeError(
+            'Failed to retrieve UniProt data (empty response) for '
+            'fields=`%s`, organism=`%s`. This is typically a transient '
+            'network/server issue for large queries; retry or use cache.' % (
+                field_qs, organism,
+            )
+        )
+
     _ = next(c.result)
 
 
