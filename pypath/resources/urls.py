@@ -1664,7 +1664,7 @@ urls = {
             'A database of drug side-effects that were found, '
             'but are not listed on the official FDA label'
         ),
-        'url': 'https://www.tatonettilab.org/resources/nsides/OFFSIDES.csv.gz'
+        'url': 'https://tatonettilab-resources.s3.amazonaws.com/nsides/OFFSIDES.csv.gz'
     },
     'adrecs': {
         'label': (
