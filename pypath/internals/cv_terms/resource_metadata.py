@@ -20,10 +20,20 @@ class LicenseCV(CvEnum):
         "Creative Commons Attribution 4.0 International license",
         "https://creativecommons.org/licenses/by/4.0/"
     )
+    CC_BY_3_0 = (
+        "OM:0514",
+        "Creative Commons Attribution 3.0 International license",
+        "https://creativecommons.org/licenses/by/3.0/"
+    )
     CC0_1_0 = (
         "OM:0502",
         "Creative Commons Zero 1.0 Universal - public domain dedication",
         "https://creativecommons.org/publicdomain/zero/1.0/"
+    )
+    BSD_3 = (
+        "OM:0513",
+        "BSD 3-Clause License ",
+        "https://opensource.org/license/bsd-3-clause"
     )
     GPL_3_0 = (
         "OM:0503",
@@ -59,10 +69,25 @@ class LicenseCV(CvEnum):
         "OM:0505",
         "Free for academic use, restrictions may apply for commercial use"
     )
+    BIGG = (
+        "OM:0512",
+        "BiGG Models license - free for academic and non-profit use",
+        "http://bigg.ucsd.edu/license#license"
+    )
     HPO = (
         "OM:0506",
         "HPO License - free for academic and non-profit use",
         "https://hpo.jax.org/app/license"
+    )
+    KEGG_ACADEMIC = (
+        "OM:0508",
+        "KEGG license - free for academic use, commercial use requires a license",
+        "https://www.kegg.jp/kegg/legal.html"
+    )
+    PUBLIC = (
+        "OM:0515",
+        "Public domain - copyright waived in favor of the general public",
+        ""
     )
     UNSPECIFIED = (
         "OM:0599",
@@ -78,16 +103,16 @@ class UpdateCategoryCV(CvEnum):
 
     parent_cv_term = ("OM:0420", "Update frequency term", "Describes how frequently a data source is expected to be updated.")
 
-    # OmniPath update category terms (OM:0410-0419 range)
+    # OmniPath update category terms (OM:0421-0429 range)
     REGULAR = (
-        "OM:0410",
+        "OM:0421",
         "Regular scheduled updates (e.g., monthly, quarterly, annually)"
     )
     IRREGULAR = (
-        "OM:0411",
+        "OM:0422",
         "Irregular or occasional updates with no fixed schedule"
     )
     STATIC = (
-        "OM:0412",
+        "OM:0423",
         "Static resource with no planned future updates"
     )

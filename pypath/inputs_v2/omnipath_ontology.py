@@ -3,15 +3,13 @@
 from __future__ import annotations
 
 import inspect
-import re
-import urllib.request
+from collections.abc import Generator
+from typing import Any
 
 from pypath.internals import cv_terms
 from pypath.internals.cv_terms import CvEnum, LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.inputs_v2.base import ArtifactDataset, Resource, ResourceConfig
-
-
-PSI_MI_URL = 'https://raw.githubusercontent.com/HUPO-PSI/psi-mi-CV/master/psi-mi.obo'
+from pypath.internals.ontology_schema import OntologyTerm
+from pypath.inputs_v2.base import Dataset, Resource, ResourceConfig, ontology_entity_mapper
 
 
 config = ResourceConfig(
@@ -21,32 +19,13 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     primary_category='ontologies',
-    description='Combined PSI-MI and OmniPath controlled vocabulary ontology export.',
+    resource_kind='ontology',
+    description='OmniPath controlled vocabulary ontology export.',
 )
-
-
-def _fetch_psi_mi() -> str:
-    with urllib.request.urlopen(PSI_MI_URL) as response:
-        return response.read().decode('utf-8')
-
-
-
-def _fix_malformed_dates(content: str) -> str:
-    content = re.sub(r'^date: \d{2}:\d{2}:\d{4}.*\n', '', content, flags=re.MULTILINE)
-    content = re.sub(r'^creation_date:.*\n', '', content, flags=re.MULTILINE)
-    return content
-
 
 
 def _format_name(name: str) -> str:
     return name.lower().replace('_', ' ')
-
-
-
-def _escape_obo_string(value: str) -> str:
-    if not value:
-        return ''
-    return value.replace('\\', '\\\\').replace('"', '\\"')
 
 
 
@@ -94,33 +73,27 @@ def _extract_om_terms() -> list[dict]:
 
 
 
-def _format_om_terms(terms: list[dict]) -> str:
-    lines = []
-    for term in sorted(terms, key=lambda t: t['accession']):
-        lines.append('[Term]')
-        lines.append(f"id: {term['accession']}")
-        lines.append(f"name: {term['name']}")
-        if term['definition']:
-            lines.append(f'def: "{_escape_obo_string(term["definition"])}" []')
-        if term['is_a']:
-            lines.append(f"is_a: {term['is_a']}")
-        lines.append('')
-    return '\n'.join(lines)
+def _iter_om_terms(_opener=None, **_kwargs: Any) -> Generator[dict[str, Any], None, None]:
+    yield from _extract_om_terms()
 
 
+def _map_om_term(row: dict[str, Any]) -> OntologyTerm:
+    return OntologyTerm(
+        id=row['accession'],
+        name=row['name'],
+        definition=row.get('definition') or None,
+        is_a=[row['is_a']] if row.get('is_a') else None,
+    )
 
-def render_omnipath_obo(_opener=None, **_kwargs) -> str:
-    psi_mi = _fix_malformed_dates(_fetch_psi_mi())
-    om_obo = _format_om_terms(_extract_om_terms())
-    return psi_mi + '\n' + om_obo
+
+terms_schema = ontology_entity_mapper(_map_om_term, ontology_id='omnipath')
 
 
 resource = Resource(
     config,
-    ontology=ArtifactDataset(
-        renderer=render_omnipath_obo,
-        extension='obo',
-        file_stem='omnipath_mi',
-        kind='ontology',
+    terms=Dataset(
+        download=None,
+        mapper=terms_schema,
+        raw_parser=_iter_om_terms,
     ),
 )

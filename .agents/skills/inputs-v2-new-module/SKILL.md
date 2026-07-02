@@ -1,7 +1,7 @@
 ---
 name: inputs-v2-new-module
 description: Create a new pypath inputs_v2 module for an external database. Use for structured research, semantic mapping, CV review, implementation, and poetry-based smoke testing.
-compatibility: Requires the pypath repository with Poetry and the inputs_v2 framework.
+compatibility: Requires the pypath repository with uv and the inputs_v2 framework.
 ---
 
 # inputs-v2-new-module
@@ -14,7 +14,7 @@ Create a new `pypath.inputs_v2` module in a small number of explicit steps.
 - Prefer the upstream format with the best semantics and identifiers.
 - Design for the silver schema; avoid unsupported deep nesting.
 - Add new CV terms only when existing ones are not semantically correct.
-- Validate with `poetry run python -c ...` before finishing.
+- Validate with `uv run python -c ...` before finishing.
 
 ## Workflow
 
@@ -88,11 +88,11 @@ python -m py_compile pypath/inputs_v2/<resource>.py pypath/inputs_v2/parsers/<re
 ```
 
 ```bash
-poetry run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>.raw()))"
+uv run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>.raw()))"
 ```
 
 ```bash
-poetry run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>()))"
+uv run python -c "from pypath.inputs_v2.<resource> import resource; print(next(resource.<dataset>()))"
 ```
 
 Repeat for each dataset.
@@ -105,4 +105,4 @@ Repeat for each dataset.
 4. Validation commands run
 5. Open questions / next steps
 
-Always include the exact `poetry run python -c ...` commands for the new module.
+Always include the exact `uv run python -c ...` commands for the new module.

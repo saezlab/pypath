@@ -21,13 +21,17 @@ import collections
 
 __all__ = [
     'MrclinksdbRaw',
+    'MrclinksdbReceptorRaw',
     'MrclinksdbInteraction',
+    'MrclinksdbReceptorInteraction',
     'MrclinksdbMetaboliteCell',
+    'MrclinksdbTransporterRaw',
+    'MrclinksdbTransporterInteraction',
 ]
 
 
-MrclinksdbRaw = collections.namedtuple(
-    'MrclinksdbRaw',
+MrclinksdbReceptorRaw = collections.namedtuple(
+    'MrclinksdbReceptorRaw',
     [
         'mrid',
         'hmdb_id',
@@ -47,8 +51,8 @@ MrclinksdbRaw = collections.namedtuple(
     ]
 )
 
-MrclinksdbInteraction = collections.namedtuple(
-    'MrclinksdbInteraction',
+MrclinksdbReceptorInteraction = collections.namedtuple(
+    'MrclinksdbReceptorInteraction',
     [
         'mrid',
         'hmdb',
@@ -80,5 +84,38 @@ MrclinksdbMetaboliteCell = collections.namedtuple(
         'disease',
         'effect',
         'pmids',
+    ],
+)
+
+# Backward-compatible aliases for the renamed receptor records.
+MrclinksdbRaw = MrclinksdbReceptorRaw
+MrclinksdbInteraction = MrclinksdbReceptorInteraction
+
+
+MrclinksdbTransporterRaw = collections.namedtuple(
+    'MrclinksdbTransporterRaw',
+    [
+        'hmdb_id',
+        'metabolite_name',
+        'hmdbp_id',        # HMDB protein ID; empty string for mouse (column absent)
+        'enzyme_name',
+        'gene_id',
+        'gene_name',
+        'uniprot_id',
+        'type_',
+    ],
+)
+
+MrclinksdbTransporterInteraction = collections.namedtuple(
+    'MrclinksdbTransporterInteraction',
+    [
+        'hmdb',
+        'metabolite_name',
+        'hmdbp_id',
+        'enzyme_name',
+        'transporter_entrez',
+        'transporter_genesymbol',
+        'transporter_uniprot',
+        'transporter_location',
     ],
 )

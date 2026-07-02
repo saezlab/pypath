@@ -8,13 +8,18 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     InteractionMetadataCv,
+    InteractionTypeCv,
     LicenseCV,
-    MoleculeAnnotationsCv,
+    OntologyCv,
     ParticipantMetadataCv,
+    PathwayAnnotationsCv,
+    PharmacologicalActionCv,
     ResourceCv,
     UpdateCategoryCV,
 )
 from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -23,9 +28,7 @@ from pypath.internals.tabular_builder import (
     Member,
     MembershipBuilder,
 )
-from pypath.internals.ontology_builder import OntologyBuilder
-from pypath.internals.ontology_schema import OntologyDocument
-from pypath.inputs_v2.base import Dataset, Download, OntologyDataset, Resource, ResourceConfig
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.wikipathways import _raw, current_rdf_url
 
 
@@ -35,43 +38,73 @@ config = ResourceConfig(
     url='https://www.wikipathways.org/',
     license=LicenseCV.CC0_1_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='22073070',
+    pubmed='37941138',
     primary_category='pathways',
+    annotation_ontologies=(OntologyCv.WIKIPATHWAYS,),
     description=(
         'WikiPathways is a community-curated pathway database. '
         'This inputs_v2 module parses the current RDF pathway export and '
-        'emits directed interaction entities plus a standalone pathway ontology export.'
+        'emits pathway and directed interaction entities.'
     ),
 )
 
 
 entity_type_map = {value.value: value for value in EntityTypeCv}
+_TAXON_SCOPED_ENTITY_TYPES = {
+    EntityTypeCv.PROTEIN,
+    EntityTypeCv.GENE,
+    EntityTypeCv.RNA,
+    EntityTypeCv.DNA,
+}
 
 f = FieldConfig(
     extract={
         'ensembl_id': r'^(ENS[A-Z0-9]*\d+(?:\.\d+)?)$',
         'uniprot_id': r'^((?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?)$',
         'entrez_id': r'^(\d+)$',
+        'chebi': r'^(?:CHEBI:)?(\d+)$',
     },
     map={
         'entity_type': lambda value: entity_type_map.get(value, EntityTypeCv.PHYSICAL_ENTITY),
+        'interaction_type': {
+            'Interaction': InteractionTypeCv.FUNCTIONAL_ASSOCIATION,
+            'DirectedInteraction': InteractionTypeCv.FUNCTIONAL_ASSOCIATION,
+            'Stimulation': PharmacologicalActionCv.ACTIVATION,
+            'Inhibition': PharmacologicalActionCv.INHIBITION,
+            'Conversion': InteractionTypeCv.ENZYMATIC_REACTION,
+            'Catalysis': InteractionTypeCv.ENZYMATIC_REACTION,
+            'Binding': PharmacologicalActionCv.BINDING,
+            'ComplexBinding': InteractionTypeCv.PHYSICAL_ASSOCIATION,
+            'TranscriptionTranslation': InteractionTypeCv.CAUSAL_REGULATORY_MECHANISM,
+        },
     },
 )
 
 
-pathway_ontology_schema = OntologyBuilder(
-    id='id',
-    name='name',
-    definition='definition',
-    synonyms=f('synonyms', delimiter=';'),
-    comments=f('comments', delimiter=';'),
-    xrefs=f('xrefs', delimiter=';'),
-)
+def _member_taxon_id(prefix: str):
+    def _value(row):
+        entity_type = entity_type_map.get(
+            row.get(f'{prefix}_entity_type'),
+            EntityTypeCv.PHYSICAL_ENTITY,
+        )
+        return row.get('taxon_id') if entity_type in _TAXON_SCOPED_ENTITY_TYPES else None
 
-pathway_ontology_document = OntologyDocument(
-    ontology='wikipathways',
-    default_namespace='wikipathways',
-    remark='WikiPathways pathway ontology exported from the current RDF pathway archive via pypath.',
+    return _value
+
+
+pathways_schema = EntityBuilder(
+    entity_type=EntityTypeCv.PATHWAY,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.WIKIPATHWAYS, value=f('pathway_id')),
+        CV(term=IdentifierNamespaceCv.WIKIPATHWAYS_VERSION, value=f('pathway_version_id')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('title')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
+        CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_ids', delimiter=';')),
+        CV(term=PathwayAnnotationsCv.DESCRIPTION, value=f('description')),
+        CV(term=PathwayAnnotationsCv.ORGANISM_NAME, value=f('organism_name')),
+    ),
 )
 
 
@@ -81,11 +114,10 @@ def _member(prefix: str, role) -> Member:
             entity_type=f(f'{prefix}_entity_type', map='entity_type'),
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.NAME, value=f(f'{prefix}_label')),
-                CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f(f'{prefix}_uri')),
                 CV(term=IdentifierNamespaceCv.UNIPROT, value=f(f'{prefix}_uniprot', delimiter=';', extract='uniprot_id')),
                 CV(term=IdentifierNamespaceCv.ENTREZ, value=f(f'{prefix}_entrez', delimiter=';', extract='entrez_id')),
                 CV(term=IdentifierNamespaceCv.ENSEMBL, value=f(f'{prefix}_ensembl', delimiter=';', extract='ensembl_id')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f(f'{prefix}_chebi', delimiter=';')),
+                CV(term=IdentifierNamespaceCv.CHEBI, value=f(f'{prefix}_chebi', delimiter=';', extract='chebi')),
                 CV(term=IdentifierNamespaceCv.HMDB, value=f(f'{prefix}_hmdb', delimiter=';')),
                 CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f(f'{prefix}_kegg_compound', delimiter=';')),
                 CV(
@@ -95,9 +127,14 @@ def _member(prefix: str, role) -> Member:
                 CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f(f'{prefix}_hgnc', delimiter=';')),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-                CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession')),
-                CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_ontology_terms', delimiter=';')),
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=_member_taxon_id(prefix)),
+            ),
+            associations=AssociationsBuilder(
+                AssociationBuilder(
+                    object_entity_type=EntityTypeCv.PATHWAY,
+                    object_identifier_type=IdentifierNamespaceCv.WIKIPATHWAYS,
+                    object_identifier=f('pathway_term_accession'),
+                ),
             ),
         ),
         annotations=AnnotationsBuilder(
@@ -110,15 +147,18 @@ interactions_schema = EntityBuilder(
     entity_type=EntityTypeCv.INTERACTION,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_local_id')),
-        CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('interaction_uri')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('interaction_types', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.WIKIPATHWAYS, value=f('pathway_id')),
+        CV(term=f('interaction_types', delimiter=';', map='interaction_type')),
         CV(term=IdentifierNamespaceCv.WIKIPATHWAYS_VERSION, value=f('pathway_version_id')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_term_accession')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('pathway_ontology_terms', delimiter=';')),
+    ),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.PATHWAY,
+            object_identifier_type=IdentifierNamespaceCv.WIKIPATHWAYS,
+            object_identifier=f('pathway_id'),
+        ),
     ),
     membership=MembershipBuilder(
         _member('source', ParticipantMetadataCv.SOURCE),
@@ -139,13 +179,10 @@ download = Download(
 
 resource = Resource(
     config,
-    pathway_ontology=OntologyDataset(
+    pathways=Dataset(
         download=download,
-        mapper=pathway_ontology_schema,
-        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='pathway_terms', **kwargs),
-        document=pathway_ontology_document,
-        extension='obo',
-        file_stem='wikipathways',
+        mapper=pathways_schema,
+        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='pathways', **kwargs),
     ),
     interactions=Dataset(
         download=download,

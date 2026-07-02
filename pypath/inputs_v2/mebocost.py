@@ -11,6 +11,7 @@ from __future__ import annotations
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
+    InteractionMetadataCv,
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
@@ -33,9 +34,9 @@ config = ResourceConfig(
     id=ResourceCv.MEBOCOST,
     name='MEBOCOST DB',
     url='https://github.com/kaifuchenlab/MEBOCOST',
-    license=LicenseCV.GPL_3_0,
+    license=LicenseCV.BSD_3,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='36573906',
+    pubmed='40568942',
     primary_category='interactions',
     description=(
         'MEBOCOST DB is a curated resource of metabolite-sensor interactions '
@@ -57,7 +58,7 @@ f = FieldConfig(
     extract={
         'pubmed': r'^(\d+)$',
         'source': lambda v: evidence_source_map.get(v),
-        'comment': lambda v: v if v.startswith('http') 
+        'comment': lambda v: v if v.startswith('http')
         or (not v.isdigit() and v not in evidence_source_map) else None,
     },
     delimiter='; ',
@@ -77,21 +78,21 @@ def get_interactions_schema(taxon_id: str) -> EntityBuilder:
     return EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         # Generic MEBOCOST ID which is a number, but prefix with "MEBOCOST:" to avoid namespace collisions
-        # Not a Stable Identifier since it's not guaranteed to be stable across releases, 
+        # Not a Stable Identifier since it's not guaranteed to be stable across releases,
         # but still useful for tracing back to the source record
         identifiers=IdentifiersBuilder(
             CV(term=IdentifierNamespaceCv.MEBOCOST, value=f('ID')),
         ),
         annotations=AnnotationsBuilder(
             CV(term=IdentifierNamespaceCv.PUBMED, value=f('Evidence', extract='pubmed')),
-            CV(term=f('Evidence', extract='source'), value=f('Evidence')),
+            CV(term=InteractionMetadataCv.INTERACTION_XREF, value=f('Evidence', extract='source')),
             CV(term=CurationCv.COMMENT, value=f('Evidence', extract='comment')),
         ),
         membership=MembershipBuilder(
             # Member 1: Metabolite (Small Molecule)
             Member(
                 entity=EntityBuilder(
-                    entity_type=EntityTypeCv.SMALL_MOLECULE,
+                    entity_type=EntityTypeCv.CHEMICAL,
                     identifiers=IdentifiersBuilder(
                         CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID', extract=r'(HMDB\d+)')),
                         CV(term=IdentifierNamespaceCv.NAME, value=f('standard_metName')),

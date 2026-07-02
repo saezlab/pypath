@@ -30,7 +30,7 @@ import pandas as pd
 
 from pypath_common import _misc
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
+from pypath.share.downloads import dm
 import pypath.share.cache as cache
 from pypath.formats import sqlite as _sqlite
 from ._common import _log, _show_tables
@@ -78,17 +78,15 @@ def _latest_version() -> str:
 
     try:
 
-        url = urls.urls['ramp']['github_db']
+        import requests as _requests
 
-        c = curl.Curl(
-            url,
-            silent = True,
-            large = False,
-            cache = False,
-        )
+        url = urls.urls['ramp']['github_db']
+        resp = _requests.get(url, timeout=30)
+        resp.raise_for_status()
+        page_content = resp.text
 
         versions = sorted(
-            re.findall(r'RaMP_SQLite_v([\d.]+)\.sqlite\.gz', c.result),
+            re.findall(r'RaMP_SQLite_v([\d.]+)\.sqlite\.gz', page_content),
         )
 
         if versions:
@@ -130,22 +128,37 @@ def ramp_sqlite(
     version = version or _latest_version()
     url = urls.urls['ramp']['github_sqlite'] % version
 
-    def _ramp_download() -> curl.Curl:
-        return curl.Curl(
-            url,
-            large = True,
-            silent = False,
-            compr = 'gz',
-            slow = True,
-        )
+    import gzip
+    import requests
+    from pathlib import Path
 
-    result = _sqlite.download_sqlite(
-        download_callback = _ramp_download,
-        extractor = lambda c: c.gzfile,
-        database = 'RaMP',
-        version = version,
-        connect = connect,
-    )
+    sqlite_path = _sqlite.sqlite_cache_path('RaMP', version)
+
+    if not sqlite_path.exists():
+        gz_path = Path(str(sqlite_path) + '.gz')
+
+        if not gz_path.exists():
+            _log(f'Downloading RaMP SQLite from {url}')
+            gz_path.parent.mkdir(parents=True, exist_ok=True)
+            resp = requests.get(url, stream=True, timeout=600)
+            resp.raise_for_status()
+
+            with open(gz_path, 'wb') as fp:
+                for chunk in resp.iter_content(chunk_size=1024 ** 2):
+                    fp.write(chunk)
+
+        _log(f'Decompressing RaMP SQLite...')
+        with gzip.open(gz_path, 'rb') as gz_in:
+            with open(sqlite_path, 'wb') as out:
+                while chunk := gz_in.read(1024 ** 2):
+                    out.write(chunk)
+
+        _log(f'Decompressed RaMP SQLite to {sqlite_path}')
+
+    if connect:
+        result = sqlite3.connect(sqlite_path)
+    else:
+        result = sqlite_path
 
     if connect:
 

@@ -13,7 +13,11 @@ import json
 from pathlib import Path
 import sqlite3
 from typing import Any
-import os
+
+try:
+    import duckdb
+except ImportError:  # pragma: no cover - optional dependency
+    duckdb = None
 
 
 def _first_handle(opener) -> Any | None:
@@ -83,6 +87,42 @@ def iter_jsonl(opener, **_kwargs: Any) -> Generator[dict[str, Any], None, None]:
             yield json.loads(line)
 
 
+def iter_parquet(
+    opener=None,
+    path: Path | str | None = None,
+    query: str | None = None,
+    batch_size: int = 100_000,
+    **_kwargs: Any,
+) -> Generator[dict[str, Any], None, None]:
+    """Iterate over rows from a Parquet file or dataset using DuckDB."""
+    if duckdb is None:
+        raise ImportError("duckdb is required to iterate Parquet inputs.")
+
+    if path is None:
+        handle = _first_handle(opener)
+        path = getattr(handle, 'name', None)
+
+    if path is None:
+        return
+    path = Path(path)
+    parquet_path = str(path / '**' / '*.parquet') if path.is_dir() else str(path)
+
+    connection = duckdb.connect(':memory:')
+    try:
+        if query is None:
+            query = "SELECT * FROM read_parquet(?)"
+            cursor = connection.execute(query, [parquet_path])
+        else:
+            cursor = connection.execute(query, [parquet_path])
+
+        columns = [desc[0] for desc in cursor.description]
+        while rows := cursor.fetchmany(batch_size):
+            for row in rows:
+                yield dict(zip(columns, row))
+    finally:
+        connection.close()
+
+
 def iter_sqlite(
     opener,
     table_name: str | None = None,
@@ -108,7 +148,7 @@ def iter_sqlite(
         Dictionary representing a row from the table or query.
     """
 
-    if sqlite_path and not os.path.exists(sqlite_path):
+    if sqlite_path and not sqlite_path.exists():
 
         if not opener or not opener.result:
 

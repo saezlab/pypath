@@ -7,28 +7,28 @@ defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
-from collections.abc import Generator
 import csv
 import re
 
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.internals.cv_terms import (
+    CurationCv,
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
-    UpdateCategoryCV,
     ResourceCv,
+    UpdateCategoryCV,
 )
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
     Member,
-    MembershipBuilder,
     MembersFromList,
+    MembershipBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
 
 def _iter_semicolon(opener, **_kwargs: object):
@@ -46,7 +46,7 @@ def _iter_tsv(opener, **_kwargs: object):
 _IDENTIFIER_CV_MAPPING = {
     'chebi': IdentifierNamespaceCv.CHEBI,
     'complexportal': IdentifierNamespaceCv.COMPLEXPORTAL,
-    'pubchem': IdentifierNamespaceCv.PUBCHEM,
+    'pubchem': IdentifierNamespaceCv.PUBCHEM_COMPOUND,
     'signor': IdentifierNamespaceCv.SIGNOR,
     'uniprotkb': IdentifierNamespaceCv.UNIPROT,
 }
@@ -69,11 +69,17 @@ _TERM_MAPPING = {
 _INTERACTOR_TYPE_MAPPING = {
     'MI:0326': EntityTypeCv.PROTEIN,
     'MI:0314': EntityTypeCv.COMPLEX,
-    'MI:0328': EntityTypeCv.SMALL_MOLECULE,
+    'MI:0328': EntityTypeCv.CHEMICAL,
     'MI:2261': EntityTypeCv.PHENOTYPE,
     'MI:2260': EntityTypeCv.STIMULUS,
-    'MI:2258': EntityTypeCv.SMALL_MOLECULE,  # xenobiotic
+    'MI:2258': EntityTypeCv.CHEMICAL,  # xenobiotic
     'MI:1304': EntityTypeCv.PROTEIN_FAMILY,  # molecule set
+}
+_TAXON_SCOPED_ENTITY_TYPES = {
+    EntityTypeCv.PROTEIN,
+    EntityTypeCv.GENE,
+    EntityTypeCv.RNA,
+    EntityTypeCv.DNA,
 }
 
 # The SIGNOR complex and protein-family exports currently used here do not
@@ -116,17 +122,22 @@ def _normalize_signor_identifier(prefix: str, value: str) -> tuple[object | None
         return IdentifierNamespaceCv.RNACENTRAL, value
     if value.startswith('SIGNOR-'):
         return IdentifierNamespaceCv.SIGNOR, value
-    if value.startswith('CHEBI:'):
-        return IdentifierNamespaceCv.CHEBI, value
+    if lower_value.startswith('chebi:'):
+        match = re.fullmatch(r'CHEBI:(\d+)', value, flags=re.IGNORECASE)
+        return IdentifierNamespaceCv.CHEBI, match.group(1) if match else None
     if value.startswith('DB') and value[2:].isdigit():
         return IdentifierNamespaceCv.DRUGBANK, value
-    if value.startswith('PUBCHEM:'):
-        return IdentifierNamespaceCv.PUBCHEM, value.split(':', 1)[1]
+    if lower_value.startswith('pubchem:sid:'):
+        return IdentifierNamespaceCv.PUBCHEM_SUBSTANCE, value.rsplit(':', 1)[1]
+    if lower_value.startswith('pubchem:cid:'):
+        return IdentifierNamespaceCv.PUBCHEM_COMPOUND, value.rsplit(':', 1)[1]
+    if lower_value.startswith('pubchem:'):
+        return IdentifierNamespaceCv.PUBCHEM_COMPOUND, value.split(':', 1)[1]
     if prefix == 'pubchem' and value.upper().startswith('CID:'):
-        return IdentifierNamespaceCv.PUBCHEM, value.split(':', 1)[1]
+        return IdentifierNamespaceCv.PUBCHEM_COMPOUND, value.split(':', 1)[1]
     if prefix == 'pubchem' and value.upper().startswith('SID:'):
-        return None, None
-    if value.startswith('uniprotkb:'):
+        return IdentifierNamespaceCv.PUBCHEM_SUBSTANCE, value.split(':', 1)[1]
+    if lower_value.startswith('uniprotkb:'):
         return _normalize_signor_identifier('uniprotkb', value.split(':', 1)[1])
     if prefix == 'uniprotkb' and '-PRO_' in value:
         value = value.split('-PRO_', 1)[0]
@@ -183,7 +194,7 @@ def _infer_signor_interactor_type(row: dict[str, object], suffix: str) -> Entity
     lower_values = [value.lower() for value in values]
 
     if any(value.startswith('chebi:') or value.startswith('pubchem:') for value in lower_values):
-        return EntityTypeCv.SMALL_MOLECULE
+        return EntityTypeCv.CHEMICAL
     if any('signor-c' in value for value in lower_values):
         return EntityTypeCv.COMPLEX
     if any('signor-pf' in value or 'signor-fp' in value for value in lower_values):
@@ -200,6 +211,17 @@ def _infer_signor_interactor_type(row: dict[str, object], suffix: str) -> Entity
 
 def interactor_entity_type(suffix: str):
     return lambda row: _infer_signor_interactor_type(row, suffix)
+
+
+def interactor_tax_cv(suffix: str) -> CV:
+    return CV(
+        term=IdentifierNamespaceCv.NCBI_TAX_ID,
+        value=lambda row: (
+            next(iter(f(f'Taxid interactor {suffix}', extract='tax').extract(row)), None)
+            if _infer_signor_interactor_type(row, suffix) in _TAXON_SCOPED_ENTITY_TYPES
+            else None
+        ),
+    )
 
 
 def pubmed_annotation(column_name: str) -> CV:
@@ -222,7 +244,23 @@ def _split_signor_field(raw: object) -> list[str]:
     text = str(raw).strip()
     if not text or text == '-':
         return []
-    return [part.strip() for part in text.split('|') if part and part.strip() and part.strip() != '-']
+    parts: list[str] = []
+    current: list[str] = []
+    in_quotes = False
+    for char in text:
+        if char == '"':
+            in_quotes = not in_quotes
+        if char == '|' and not in_quotes:
+            part = ''.join(current).strip()
+            if part and part != '-':
+                parts.append(part)
+            current = []
+            continue
+        current.append(char)
+    part = ''.join(current).strip()
+    if part and part != '-':
+        parts.append(part)
+    return parts
 
 
 def _clean_signor_value(value: str) -> str | None:
@@ -342,7 +380,7 @@ phenotypes_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('PHENOTYPE NAME')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('PHENOTYPE DESCRIPTION')),
+        CV(term=CurationCv.COMMENT, value=f('PHENOTYPE DESCRIPTION')),
     ),
 )
 
@@ -353,7 +391,7 @@ stimuli_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('STIMULUS NAME')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('STIMULUS DESCRIPTION')),
+        CV(term=CurationCv.COMMENT, value=f('STIMULUS DESCRIPTION')),
     ),
 )
 
@@ -387,7 +425,7 @@ interactions_schema = EntityBuilder(
                     general_identifier_cv('\ufeff#ID(s) interactor A'),
                     general_identifier_cv('Alt. ID(s) interactor A'),
                 ),
-                annotations=AnnotationsBuilder(tax_cv('Taxid interactor A')),
+                annotations=AnnotationsBuilder(interactor_tax_cv('A')),
             ),
             annotations=AnnotationsBuilder(
                 mi_term_cv('Biological role(s) interactor A'),
@@ -405,7 +443,7 @@ interactions_schema = EntityBuilder(
                     general_identifier_cv('ID(s) interactor B'),
                     general_identifier_cv('Alt. ID(s) interactor B'),
                 ),
-                annotations=AnnotationsBuilder(tax_cv('Taxid interactor B')),
+                annotations=AnnotationsBuilder(interactor_tax_cv('B')),
             ),
             annotations=AnnotationsBuilder(
                 mi_term_cv('Biological role(s) interactor B'),

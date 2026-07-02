@@ -136,22 +136,22 @@ interactions_schema = EntityBuilder(
         CV(term=InteractionMetadataCv.CONFIDENCE_VALUE, value=f('combined_score')),
         CV(term=InteractionMetadataCv.STITCH_ACTION_SCORE, value=f('action_score')),
         CV(term=f('mode', map='mode_cv')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('stereospecific')),
+        CV(term=InteractionMetadataCv.STEREOSPECIFIC, value=f('stereospecific')),
         CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('action', map='action_cv')),
     ),
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(
                         term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
                         value=f('chemical_id'),
                     ),
                 ),
-                annotations=AnnotationsBuilder(
-                    CV(term=f('chem_role', map='role_cv')),
-                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=f('chem_role', map='role_cv')),
             ),
         ),
         Member(
@@ -159,11 +159,13 @@ interactions_schema = EntityBuilder(
                 entity_type=EntityTypeCv.PROTEIN,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('protein_id')),
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
                 ),
                 annotations=AnnotationsBuilder(
-                    CV(term=f('prot_role', map='role_cv')),
+                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
                 ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=f('prot_role', map='role_cv')),
             ),
         ),
     ),
@@ -200,11 +202,13 @@ def _stitch_download(ncbi_tax_id: int) -> StitchDownload:
             url=_LINKS_URL.format(taxid=ncbi_tax_id),
             filename=f'{ncbi_tax_id}.protein_chemical.links.detailed.v5.0.tsv.gz',
             subfolder='stitch',
+            ext='gz',
         ),
         actions=Download(
             url=_ACTIONS_URL.format(taxid=ncbi_tax_id),
             filename=f'{ncbi_tax_id}.actions.v5.0.tsv.gz',
             subfolder='stitch',
+            ext='gz',
         ),
     )
 

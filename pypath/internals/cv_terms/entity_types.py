@@ -31,8 +31,10 @@ class EntityTypeCv(CvEnum):
     # OmniPath high-level types
     PROTEIN_FAMILY = "OM:0010"
     LIPID = ("OM:0011", "Lipid molecule or lipid-like compound")
+    CHEMICAL = ("OM:0037", "Chemical entity or chemical class")
     CV_TERM = "OM:0012"
     INTERACTION = "OM:0013"
+    ASSOCIATION = ("OM:0036", "A non-mechanistic association between two entities supported by evidence.")
     PATHWAY = "OM:0014"
     REACTION = "OM:0015"
     PHYSICAL_ENTITY = "OM:0016"
@@ -45,12 +47,14 @@ class EntityTypeCv(CvEnum):
     ORGANISM = ("OM:0032", "A living organism, such as a species or strain.")
     CELL_LINE = ("OM:0033", "A cell line or cell culture used in research.")
     TISSUE = ("OM:0034", "A tissue or organ from an organism")
+    TRANSPORT = ("OM:0035", "Transport of a molecule across a membrane by a transporter protein")
+    MIRNA = ("OM:0038", "microRNA (precursor or mature; subtype in MirnaSubtypeCv)")
 
 
 class MoleculeSubtypeCv(CvEnum):
     """Chemical-nature-based molecule subtypes."""
 
-    parent_cv_term = EntityTypeCv.SMALL_MOLECULE
+    parent_cv_term = EntityTypeCv.CHEMICAL
 
     SYNTHETIC_ORGANIC = ("OM:0029", "Synthetic organic compound")
     NATURAL_PRODUCT = ("OM:0021", "Natural product")
@@ -59,6 +63,20 @@ class MoleculeSubtypeCv(CvEnum):
     PEPTIDE = ("OM:0024", "Peptide molecule")
     ANTIBODY = ("OM:0025", "Antibody or immunoglobulin")
     NUCLEIC_ACID = ("OM:0026", "Nucleic acid molecule")
+    LIPID = ("OM:0050", "Lipid molecule or lipid-like compound")
+
+
+class MirnaSubtypeCv(CvEnum):
+    """microRNA maturation-stage subtypes (Milestone L).
+
+    pre-miRNA and mature miRNA are modelled as distinct entities (different
+    miRBase accessions: MI# vs MIMAT#) connected by maturation relations.
+    """
+
+    parent_cv_term = EntityTypeCv.MIRNA
+
+    PRECURSOR = ("OM:0039", "precursor microRNA (pre-miRNA; miRBase MI accession)")
+    MATURE = ("OM:0049", "mature microRNA (miRBase MIMAT accession)")
 
 
 class ProteinFunctionalClassCv(CvEnum):

@@ -23,13 +23,14 @@ Shared DownloadManager instance for pypath.
 
 import os
 from pathlib import Path
+import threading
 from typing import Optional, List
 
 from dotenv import load_dotenv
 
 import pypath.share.settings as settings
-from download_manager import DownloadManager
-from cache_manager._open import Opener
+from dlmachine import DownloadManager
+from cachedir._open import Opener
 
 
 def _load_env_file() -> None:
@@ -59,8 +60,24 @@ def _resolve_data_dir() -> Path:
     return data_dir
 
 
+def get_data_dir() -> Path:
+    """Return the configured download storage directory for inputs_v2 raw files."""
+
+    return _resolve_data_dir()
+
+
 # Kept as module-level constant for compatibility with modules importing DATA_DIR
-DATA_DIR = _resolve_data_dir()
+DATA_DIR = get_data_dir()
+
+
+_thread_local = threading.local()
+
+
+class _DownloadManagerProxy:
+    """Thread-safe compatibility proxy for legacy `from ... import dm` imports."""
+
+    def __getattr__(self, name: str):
+        return getattr(get_download_manager(), name)
 
 
 def get_download_manager() -> DownloadManager:
@@ -70,11 +87,18 @@ def get_download_manager() -> DownloadManager:
     Returns:
         DownloadManager: Configured download manager instance.
     """
-    return DownloadManager(path=str(_resolve_data_dir()), config={'backend': 'requests'})
+    manager = getattr(_thread_local, 'download_manager', None)
+    if manager is None:
+        manager = DownloadManager(
+            path=str(_resolve_data_dir()),
+            config={'backend': 'requests'},
+        )
+        _thread_local.download_manager = manager
+    return manager
 
 
-# Singleton instance
-dm = get_download_manager()
+# Backwards-compatible proxy used by older modules which import `dm`.
+dm = _DownloadManagerProxy()
 
 
 def download_and_open(
@@ -129,6 +153,9 @@ def download_and_open(
     target_dir = data_dir / subfolder
     target_dir.mkdir(parents=True, exist_ok=True)
     file_path = target_dir / filename
+    if file_path.exists() and file_path.stat().st_size == 0:
+        file_path.unlink()
+    dm = get_download_manager()
     dm.download(url, dest=str(file_path), **download_kwargs)
 
     # Use Opener to handle extraction/opening

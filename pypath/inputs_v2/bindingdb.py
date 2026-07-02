@@ -31,18 +31,18 @@ from pypath.inputs_v2.parsers.bindingdb import _raw
 
 
 def _bindingdb_url(dataset: str = 'All', **_kwargs: object) -> str:
-    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{dataset}_202603_tsv.zip'
+    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{dataset}_202605_tsv.zip'
 
 
 def _bindingdb_filename(dataset: str = 'All', **_kwargs: object) -> str:
-    return f'BindingDB_{dataset}_202603_tsv.zip'
+    return f'BindingDB_{dataset}_202605_tsv.zip'
 
 
 config = ResourceConfig(
     id=ResourceCv.BINDINGDB,
     name='BindingDB',
     url='https://www.bindingdb.org/',
-    license=LicenseCV.CC_BY_4_0,
+    license=LicenseCV.CC_BY_3_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='26481362',
     primary_category='interactions',
@@ -60,7 +60,7 @@ f = FieldConfig(
         'chembl': r'^(CHEMBL\d+)$',
         'zinc': r'^(ZINC\d+)$',
         'cas': r'^(\d{2,7}-\d{2}-\d)$',
-        'chebi': r'^CHEBI[:\s]?(\d+)$',
+        'chebi': r'^(?:CHEBI[:\s]?)?(\d+)$',
         'pubchem_cid': r'^CID[:\s]?(\d+)$',
         'kegg': r'^(C\d{5})$',
         'tax': r'(\d+)',
@@ -80,6 +80,7 @@ interactions_schema = EntityBuilder(
         CV(term=InteractionParameterCv.KD, value=f('Kd (nM)'), unit=AffinityUnitCv.NANOMOLAR),
         CV(term=InteractionParameterCv.IC50, value=f('IC50 (nM)'), unit=AffinityUnitCv.NANOMOLAR),
         CV(term=InteractionParameterCv.EC50, value=f('EC50 (nM)'), unit=AffinityUnitCv.NANOMOLAR),
+        CV(term=InteractionParameterCv.PCHEMBL_VALUE, value=f('pchembl_value')),
         CV(term=InteractionParameterCv.KON, value=f('kon (M-1-s-1)'), unit=AffinityUnitCv.PER_MOLAR_PER_SECOND),
         CV(term=InteractionParameterCv.KOFF, value=f('koff (s-1)'), unit=AffinityUnitCv.PER_SECOND),
         CV(term=InteractionParameterCv.PH, value=f('pH')),
@@ -96,7 +97,7 @@ interactions_schema = EntityBuilder(
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.SMALL_MOLECULE,
+                entity_type=EntityTypeCv.CHEMICAL,
                 identifiers=IdentifiersBuilder(
                     CV(term=IdentifierNamespaceCv.BINDINGDB, value=f('BindingDB MonomerID')),
                     CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='chembl')),
@@ -110,7 +111,7 @@ interactions_schema = EntityBuilder(
                     CV(term=IdentifierNamespaceCv.SMILES, value=f('Ligand SMILES')),
                     CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PubChem CID')),
                     CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem SID')),
-                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('ChEBI ID of Ligand')),
+                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('ChEBI ID of Ligand', extract='chebi')),
                     CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('ChEMBL ID of Ligand', delimiter='::', extract='chembl')),
                     CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('DrugBank ID of Ligand')),
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('KEGG ID of Ligand')),

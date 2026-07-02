@@ -18,7 +18,7 @@ from pathlib import Path
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDF
 
-from pypath.internals.cv_terms import EntityTypeCv
+from pypath.internals.cv_terms import CausalStatementCv, EntityTypeCv
 from pypath.share.downloads import DATA_DIR
 
 
@@ -29,7 +29,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 5
+_CACHE_VERSION = 8
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
@@ -37,9 +37,9 @@ _MISSING_VALUE = "__MISSING__"
 
 # Mapping of BioPAX PhysicalEntity types to EntityTypeCv terms
 PHYSICAL_ENTITY_TYPE_MAP = {
-    'smallmolecule': EntityTypeCv.SMALL_MOLECULE,
+    'smallmolecule': EntityTypeCv.CHEMICAL,
     'protein': EntityTypeCv.PROTEIN,
-    'gene': EntityTypeCv.GENE,
+    'gene': EntityTypeCv.PROTEIN,
     'complex': EntityTypeCv.COMPLEX,
     'complexassembly': EntityTypeCv.COMPLEX,
     'dna': EntityTypeCv.DNA,
@@ -52,7 +52,7 @@ PHYSICAL_ENTITY_TYPE_MAP = {
 # Mapping of BioPAX EntityReference subtypes to EntityTypeCv terms
 ENTITY_REFERENCE_TYPE_MAP = {
     'proteinreference': EntityTypeCv.PROTEIN,
-    'smallmoleculereference': EntityTypeCv.SMALL_MOLECULE,
+    'smallmoleculereference': EntityTypeCv.CHEMICAL,
     'dnareference': EntityTypeCv.DNA,
     'rnareference': EntityTypeCv.RNA,
 }
@@ -90,6 +90,15 @@ def _load_cached_data(data_type: str, force_refresh: bool = False) -> list[dict]
         except Exception:
             pass
     return None
+
+
+def _prepared_cache_available(
+    *,
+    data_type: str,
+    force_refresh: bool = False,
+    **_kwargs: object,
+) -> bool:
+    return not force_refresh and _load_cached_data(data_type) is not None
 
 
 def _save_cached_data(data_type: str, data: list[dict]) -> None:
@@ -270,6 +279,20 @@ def _flatten_child_pathways(child_pathways: list[dict], prefix: str = 'child_pat
     return data
 
 
+def _flatten_parent_pathways(parent_pathways: list[dict], prefix: str = 'parent_pathway') -> dict[str, str]:
+    fields = ['display_name', 'reactome_stable_id', 'uri']
+    data: dict[str, str] = {}
+    for field in fields:
+        items = []
+        for parent_pathway in parent_pathways:
+            value = parent_pathway.get(field, '')
+            if value in (None, ''):
+                value = _MISSING_VALUE
+            items.append(str(value))
+        data[f'{prefix}_{field}'] = _join_list(items)
+    return data
+
+
 def _flatten_controller_members(members: list[dict], prefix: str = 'controller_member') -> dict[str, str]:
     data: dict[str, str] = {}
     for field in _CONTROLLER_MEMBER_FIELDS:
@@ -289,92 +312,6 @@ def _join_unique_values(values: list[str]) -> str:
         if value and value not in seen:
             seen.append(value)
     return ';'.join(seen)
-
-
-def _split_field(value: str, delimiter: str = _LIST_DELIMITER) -> list[str]:
-    if not value:
-        return []
-    return [item for item in value.split(delimiter) if item and item != _MISSING_VALUE]
-
-
-
-def _build_pathway_terms(pathway_records: list[dict]) -> list[dict]:
-    terms: dict[str, dict] = {}
-    parent_map: defaultdict[str, list[tuple[str, str]]] = defaultdict(list)
-
-    for record in pathway_records:
-        stable_id = record.get('reactome_stable_id', '').split(';')[0]
-        if not stable_id:
-            continue
-
-        term = terms.setdefault(
-            stable_id,
-            {
-                'id': stable_id,
-                'name': record.get('display_name', ''),
-                'definition': record.get('definition', ''),
-                'synonyms': [],
-                'comments': [],
-                'xrefs': [],
-                'parent_ids': [],
-                'parent_names': [],
-            },
-        )
-        term['synonyms'].extend([s for s in record.get('synonyms', '').split(';') if s])
-        term['comments'].extend([c for c in record.get('comments', '').split(';') if c])
-
-        reactome_id = record.get('reactome_id', '')
-        if reactome_id:
-            term['xrefs'].append(f'Reactome:{reactome_id}')
-        term['xrefs'].extend([g for g in record.get('go', '').split(';') if g])
-        taxon_id = record.get('ncbi_tax_id', '')
-        if taxon_id:
-            term['xrefs'].append(f'NCBITaxon:{taxon_id}')
-
-        child_ids = _split_field(record.get('child_pathway_reactome_stable_id', ''))
-        child_names = _split_field(record.get('child_pathway_display_name', ''))
-        for idx, child_id_field in enumerate(child_ids):
-            child_id = child_id_field.split(';')[0]
-            if not child_id:
-                continue
-            child_name = child_names[idx] if idx < len(child_names) else ''
-            parent_map[child_id].append((stable_id, record.get('display_name', '')))
-            terms.setdefault(
-                child_id,
-                {
-                    'id': child_id,
-                    'name': child_name,
-                    'definition': '',
-                    'synonyms': [],
-                    'comments': [],
-                    'xrefs': [],
-                    'parent_ids': [],
-                    'parent_names': [],
-                },
-            )
-
-    for term_id, parents in parent_map.items():
-        seen: set[tuple[str, str]] = set()
-        for parent_id, parent_name in parents:
-            key = (parent_id, parent_name)
-            if key in seen:
-                continue
-            seen.add(key)
-            terms[term_id]['parent_ids'].append(parent_id)
-            terms[term_id]['parent_names'].append(parent_name)
-
-    for term in terms.values():
-        term['synonyms'] = sorted(set(term['synonyms']))
-        term['comments'] = list(dict.fromkeys(term['comments']))
-        term['xrefs'] = list(dict.fromkeys(term['xrefs']))
-        term['synonyms'] = ';'.join(term['synonyms'])
-        term['comments'] = ';'.join(term['comments'])
-        term['xrefs'] = ';'.join(term['xrefs'])
-        term['parent_ids'] = ';'.join(term['parent_ids'])
-        term['parent_names'] = ';'.join(term['parent_names'])
-
-    return sorted(terms.values(), key=lambda t: t['id'])
-
 
 
 def _build_pathway_membership_index(g: Graph, xref_cache: dict[str, dict]) -> dict[str, list[dict[str, str]]]:
@@ -466,6 +403,50 @@ def _get_organism_tax_id(g: Graph, organism_uri: URIRef, xref_cache: dict, bp_ns
 # --------------------------------------------------------------------------- #
 # Index Builders
 # --------------------------------------------------------------------------- #
+
+def _build_degradation_index(
+    g: Graph,
+    xref_cache: dict,
+    entity_reference_index: dict,
+) -> dict[str, dict]:
+    """Build an index mapping Degradation reaction URIs to their reactant."""
+    index: dict[str, dict] = {}
+
+    for s, o in g.subject_objects(RDF.type):
+        if o != BP.Degradation:
+            continue
+
+        props = _get_entity_props(g, s)
+
+        stoich_map = {}
+        for stoich_node in props.get(BP.participantStoichiometry, []):
+            s_props = _get_entity_props(g, stoich_node)
+            pe = s_props.get(BP.physicalEntity)
+            coeff = s_props.get(BP.stoichiometricCoefficient)
+            if pe and coeff:
+                stoich_map[str(pe[0])] = str(coeff[0])
+
+        for mol in props.get(BP.left, []):
+            participant = _extract_participant_data(
+                g,
+                mol,
+                'reactant',
+                entity_reference_index,
+                xref_cache,
+                stoich_map,
+            )
+            if isinstance(participant, list):
+                participant = participant[0] if participant else {}
+            else:
+                participant.pop('members', None)
+                participant.pop('is_family', None)
+
+            if participant:
+                index[str(s)] = participant
+                break  # Only take the first reactant
+
+    return index
+
 
 def _load_entity_reference_index(g: Graph, xref_cache: dict[str, dict]) -> dict[str, dict]:
     """Build an index of EntityReference URIs to their full Entity data."""
@@ -724,6 +705,35 @@ def _extract_participant_data(
 # Data Iterators
 # --------------------------------------------------------------------------- #
 
+_NUCLEIC_ACID_TYPES = {str(EntityTypeCv.DNA), str(EntityTypeCv.RNA)}
+_PROTEIN_OR_RNA_TYPES = {str(EntityTypeCv.PROTEIN), str(EntityTypeCv.RNA)}
+
+
+def _is_transcription_or_translation(
+    reactants: list[dict],
+    products: list[dict],
+) -> bool:
+    """Skip reactions that represent DNA/RNA → RNA/Protein information flow."""
+    if not reactants or not products:
+        return False
+
+    reactant_types = {r.get('entity_type', '') for r in reactants if r.get('entity_type')}
+    product_types = {p.get('entity_type', '') for p in products if p.get('entity_type')}
+
+    if not reactant_types or not product_types:
+        return False
+
+    # All reactants must be DNA or RNA
+    if not reactant_types.issubset(_NUCLEIC_ACID_TYPES):
+        return False
+
+    # All products must be RNA or Protein
+    if not product_types.issubset(_PROTEIN_OR_RNA_TYPES):
+        return False
+
+    return True
+
+
 def _iterate_reactions(
     g: Graph,
     xref_cache: dict,
@@ -735,7 +745,6 @@ def _iterate_reactions(
     reaction_targets = {
         BP.BiochemicalReaction: EntityTypeCv.REACTION,
         BP.Degradation: EntityTypeCv.DEGRADATION,
-        BP.TemplateReaction: EntityTypeCv.REACTION,
     }
 
     count = 0
@@ -800,30 +809,12 @@ def _iterate_reactions(
                 participant.pop('is_family', None)
                 products.append(participant)
 
-        templates = []
-        if reaction_type_str == 'TemplateReaction':
-            for templ in props.get(BP.template, []):
-                t_props = _get_entity_props(g, templ)
-                t_names = _extract_names_from_props(t_props, BP)
-                t_xrefs = _extract_xrefs_from_props(t_props, xref_cache, BP)
-                templates.append({
-                    'role': 'template',
-                    'entity_type': '',
-                    'display_name': t_names.get('display_name', ''),
-                    'synonyms': '',
-                    'reactome_stable_id': ';'.join(t_xrefs.get('reactome_stable_id', [])),
-                    'uniprot': '',
-                    'chebi': '',
-                    'pubchem_compound': '',
-                    'kegg': '',
-                    'go': '',
-                    'ncbi_tax_id': '',
-                    'stoichiometry': '',
-                })
+        if _is_transcription_or_translation(reactants, products):
+            continue
 
         pathway_term_accession = _pathway_term_accessions(pathway_index, reaction_uri)
 
-        participants = reactants + products + templates
+        participants = reactants + products
         for participant in participants:
             participant['pathway_term_accession'] = pathway_term_accession
         participant_data = _flatten_participants(participants, prefix='participant')
@@ -845,12 +836,69 @@ def _iterate_reactions(
         count += 1
 
 
+def _pathway_info(
+    g: Graph,
+    pathway_uri: URIRef,
+    xref_cache: dict,
+) -> dict[str, str]:
+    props = _get_entity_props(g, pathway_uri)
+    names = _extract_names_from_props(props, BP)
+    xrefs = _extract_xrefs_from_props(props, xref_cache, BP)
+    return {
+        'display_name': names.get('display_name', ''),
+        'reactome_stable_id': ';'.join(xrefs.get('reactome_stable_id', [])),
+        'uri': str(pathway_uri),
+    }
+
+
+def _is_pathway_uri(g: Graph, uri: URIRef) -> bool:
+    props = _get_entity_props(g, uri)
+    types = {str(type_).split('#')[-1].lower() for type_ in props.get(RDF.type, [])}
+    return any('pathway' in type_ for type_ in types)
+
+
+def _build_pathway_parent_index(
+    g: Graph,
+    xref_cache: dict,
+) -> dict[str, list[dict[str, str]]]:
+    parent_index: defaultdict[str, list[dict[str, str]]] = defaultdict(list)
+    seen: defaultdict[str, set[str]] = defaultdict(set)
+
+    for parent_uri in g.subjects(RDF.type, BP.Pathway):
+        parent_info = _pathway_info(g, parent_uri, xref_cache)
+        parent_key = str(parent_uri)
+        props = _get_entity_props(g, parent_uri)
+
+        for child_uri in props.get(BP.pathwayComponent, []):
+            if not _is_pathway_uri(g, child_uri):
+                continue
+            child_key = str(child_uri)
+            if parent_key in seen[child_key]:
+                continue
+            seen[child_key].add(parent_key)
+            parent_index[child_key].append(parent_info)
+
+        for step_uri in props.get(BP.pathwayOrder, []):
+            step_props = _get_entity_props(g, step_uri)
+            for process_uri in step_props.get(BP.stepProcess, []):
+                if not _is_pathway_uri(g, process_uri):
+                    continue
+                child_key = str(process_uri)
+                if parent_key in seen[child_key]:
+                    continue
+                seen[child_key].add(parent_key)
+                parent_index[child_key].append(parent_info)
+
+    return parent_index
+
+
 def _iterate_pathways(
     g: Graph,
     xref_cache: dict,
     max_records: int | None = None,
 ) -> Generator[dict, None, None]:
 
+    parent_index = _build_pathway_parent_index(g, xref_cache)
     count = 0
     for s in g.subjects(RDF.type, BP.Pathway):
         if max_records is not None and count >= max_records:
@@ -938,6 +986,7 @@ def _iterate_pathways(
             'definition': ' '.join(descriptions),
             'comments': ';'.join(comments),
             **_flatten_child_pathways(child_pathways, prefix='child_pathway'),
+            **_flatten_parent_pathways(parent_index.get(str(s), []), prefix='parent_pathway'),
         }
         count += 1
 
@@ -961,12 +1010,35 @@ def _classify_group_controller_entity_type(
     return EntityTypeCv.PHYSICAL_ENTITY
 
 
+def _causal_statement_for_control(
+    control_type_val: str,
+    is_degradation: bool = False,
+) -> str | None:
+    """Map Reactome controlType to PSI-MI causal statement term."""
+    control_type_upper = control_type_val.upper()
+
+    if is_degradation:
+        if control_type_upper == 'ACTIVATION':
+            return str(CausalStatementCv.DOWN_REGULATES_QUANTITY_BY_DESTABLIZATION)
+        if control_type_upper == 'INHIBITION':
+            return str(CausalStatementCv.UP_REGULATES_QUANTITY_BY_STABILIZATION)
+        return str(CausalStatementCv.DOWN_REGULATES_QUANTITY_BY_DESTABLIZATION)
+
+    if control_type_upper == 'ACTIVATION':
+        return str(CausalStatementCv.UP_REGULATES_ACTIVITY)
+    if control_type_upper == 'INHIBITION':
+        return str(CausalStatementCv.DOWN_REGULATES_ACTIVITY)
+
+    return None
+
+
 def _iterate_controls(
     g: Graph,
     xref_cache: dict,
     entity_reference_index: dict,
     pathway_index: dict[str, list[dict[str, str]]],
     max_records: int | None = None,
+    degradation_index: dict[str, dict] | None = None,
 ) -> Generator[dict, None, None]:
 
     from pypath.internals.cv_terms import IdentifierNamespaceCv
@@ -975,6 +1047,8 @@ def _iterate_controls(
         BP.Catalysis: EntityTypeCv.CATALYSIS,
         BP.Control: EntityTypeCv.CONTROL,
     }
+
+    degradation_index = degradation_index or {}
 
     count = 0
     for s, o in g.subject_objects(RDF.type):
@@ -1153,37 +1227,105 @@ def _iterate_controls(
                 controller_info['go'] = ';'.join(all_go)
 
         controlled_info = {}
+        is_degradation_controlled = False
         controlled_list = props.get(BP.controlled, [])
         if controlled_list:
             cd_uri = controlled_list[0]
+            cd_uri_str = str(cd_uri)
             cd_props = _get_entity_props(g, cd_uri)
             cd_names = _extract_names_from_props(cd_props, BP)
             cd_xrefs = _extract_xrefs_from_props(cd_props, xref_cache, BP)
             cd_types = cd_props.get(RDF.type, [])
             cd_type_str = str(cd_types[0]).split('#')[-1] if cd_types else ''
             cd_type_str_lower = cd_type_str.lower()
-            if 'biochemicalreaction' in cd_type_str_lower:
+
+            if 'degradation' in cd_type_str_lower:
+                is_degradation_controlled = True
+                reactant = degradation_index.get(cd_uri_str)
+                if reactant:
+                    controlled_info = {
+                        'role': 'controlled',
+                        'display_name': reactant.get('display_name', ''),
+                        'entity_type': reactant.get('entity_type', ''),
+                        'reactome_stable_id': reactant.get('reactome_stable_id', ''),
+                        'uniprot': reactant.get('uniprot', ''),
+                        'chebi': reactant.get('chebi', ''),
+                        'synonyms': reactant.get('synonyms', ''),
+                        'pubchem_compound': reactant.get('pubchem_compound', ''),
+                        'kegg': reactant.get('kegg', ''),
+                        'go': reactant.get('go', ''),
+                        'ncbi_tax_id': reactant.get('ncbi_tax_id', ''),
+                        'stoichiometry': reactant.get('stoichiometry', ''),
+                        'pathway_term_accession': pathway_term_accession,
+                    }
+                else:
+                    # Fallback: use the reaction itself if reactant not found
+                    controlled_info = {
+                        'role': 'controlled',
+                        'display_name': cd_names.get('display_name', ''),
+                        'entity_type': EntityTypeCv.DEGRADATION.value,
+                        'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                        'uniprot': '',
+                        'chebi': '',
+                        'synonyms': '',
+                        'pubchem_compound': '',
+                        'kegg': '',
+                        'go': '',
+                        'ncbi_tax_id': '',
+                        'stoichiometry': '',
+                        'pathway_term_accession': pathway_term_accession,
+                    }
+            elif 'biochemicalreaction' in cd_type_str_lower:
                 controlled_entity_type = EntityTypeCv.REACTION
+                controlled_info = {
+                    'role': 'controlled',
+                    'display_name': cd_names.get('display_name', ''),
+                    'entity_type': controlled_entity_type.value,
+                    'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                    'uniprot': '',
+                    'chebi': '',
+                    'synonyms': '',
+                    'pubchem_compound': '',
+                    'kegg': '',
+                    'go': '',
+                    'ncbi_tax_id': '',
+                    'stoichiometry': '',
+                    'pathway_term_accession': pathway_term_accession,
+                }
             elif 'pathway' in cd_type_str_lower:
                 controlled_entity_type = EntityTypeCv.CV_TERM
+                controlled_info = {
+                    'role': 'controlled',
+                    'display_name': cd_names.get('display_name', ''),
+                    'entity_type': controlled_entity_type.value,
+                    'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                    'uniprot': '',
+                    'chebi': '',
+                    'synonyms': '',
+                    'pubchem_compound': '',
+                    'kegg': '',
+                    'go': '',
+                    'ncbi_tax_id': '',
+                    'stoichiometry': '',
+                    'pathway_term_accession': pathway_term_accession,
+                }
             else:
                 controlled_entity_type = EntityTypeCv.INTERACTION
-
-            controlled_info = {
-                'role': 'controlled',
-                'display_name': cd_names.get('display_name', ''),
-                'entity_type': controlled_entity_type.value,
-                'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
-                'uniprot': '',
-                'chebi': '',
-                'synonyms': '',
-                'pubchem_compound': '',
-                'kegg': '',
-                'go': '',
-                'ncbi_tax_id': '',
-                'stoichiometry': '',
-                'pathway_term_accession': pathway_term_accession,
-            }
+                controlled_info = {
+                    'role': 'controlled',
+                    'display_name': cd_names.get('display_name', ''),
+                    'entity_type': controlled_entity_type.value,
+                    'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                    'uniprot': '',
+                    'chebi': '',
+                    'synonyms': '',
+                    'pubchem_compound': '',
+                    'kegg': '',
+                    'go': '',
+                    'ncbi_tax_id': '',
+                    'stoichiometry': '',
+                    'pathway_term_accession': pathway_term_accession,
+                }
 
         control_display_name = names.get('display_name', '')
         if not control_display_name and controller_info.get('display_name'):
@@ -1198,6 +1340,10 @@ def _iterate_controls(
             'reactome_id': ';'.join(xrefs.get('reactome_id', [])),
             'go': ';'.join(xrefs.get('go', [])),
             'control_type': control_type_val,
+            'causal_statement': _causal_statement_for_control(
+                control_type_val,
+                is_degradation=is_degradation_controlled,
+            ) or '',
             'pathway_term_accession': pathway_term_accession,
             'controller_entity_type': controller_info.get('entity_type', ''),
             'controller_display_name': controller_info.get('display_name', ''),
@@ -1305,7 +1451,7 @@ def _ensure_all_caches_populated(
     force_refresh: bool = False,
 ) -> bool:
     """Ensure all data types are cached."""
-    data_types = ['reactions', 'pathways', 'pathway_terms', 'controls', 'control_groups']
+    data_types = ['reactions', 'pathways', 'controls', 'control_groups']
 
     if not force_refresh:
         all_cached = all(_load_cached_data(dt) is not None for dt in data_types)
@@ -1319,6 +1465,7 @@ def _ensure_all_caches_populated(
     xref_cache = _build_xref_cache(g, BP)
     ref_index = _load_entity_reference_index(g, xref_cache)
     pathway_index = _build_pathway_membership_index(g, xref_cache)
+    degradation_index = _build_degradation_index(g, xref_cache, ref_index)
 
     if _load_cached_data('reactions', force_refresh) is None:
         data = list(_iterate_reactions(g, xref_cache, ref_index, pathway_index, max_records=None))
@@ -1328,13 +1475,12 @@ def _ensure_all_caches_populated(
         data = list(_iterate_pathways(g, xref_cache, max_records=None))
         _save_cached_data('pathways', data)
 
-    if _load_cached_data('pathway_terms', force_refresh) is None:
-        pathway_records = _load_cached_data('pathways', force_refresh) or []
-        data = _build_pathway_terms(pathway_records)
-        _save_cached_data('pathway_terms', data)
-
     if _load_cached_data('controls', force_refresh) is None:
-        data = list(_iterate_controls(g, xref_cache, ref_index, pathway_index, max_records=None))
+        data = list(_iterate_controls(
+            g, xref_cache, ref_index, pathway_index,
+            max_records=None,
+            degradation_index=degradation_index,
+        ))
         _save_cached_data('controls', data)
 
     if _load_cached_data('control_groups', force_refresh) is None:
@@ -1372,3 +1518,6 @@ def _raw(
         if max_records is not None and i >= max_records:
             break
         yield record
+
+
+_raw.prepared_cache_available = _prepared_cache_available

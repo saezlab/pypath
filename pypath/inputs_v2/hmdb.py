@@ -12,10 +12,15 @@ from pypath.internals.cv_terms import (
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
+    AssayAnnotationsCv,
+    DiseaseAnnotationCv,
 )
 from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -23,17 +28,24 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.hmdb import _raw
+from pypath.inputs_v2.parsers.hmdb import (
+    _raw,
+    chemont_name_map,
+)
 
 
 config = ResourceConfig(
     id=ResourceCv.HMDB,
     name='Human Metabolome Database',
+    # 3-name model (Milestone M): self-spelled short pinned here since HMDB is
+    # not in the legacy resources.json; `full` falls back to `name`.
+    short='HMDB',
     url='https://hmdb.ca/',
-    license=LicenseCV.CC_BY_4_0,
+    license=LicenseCV.CC_BY_NC_4_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='37953221',
+    pubmed='34986597',
     primary_category='small_molecules',
+    annotation_ontologies=(OntologyCv.CHEMONT,),
     description=(
         'The Human Metabolome Database (HMDB) is a comprehensive database '
         'containing detailed information about small molecule metabolites '
@@ -50,13 +62,12 @@ f = FieldConfig(
         'kegg_compound': r'^([CDGcdg])(\d{4,5})$',
     },
     transform={
-        'chebi': lambda v: f'CHEBI:{v}' if v else None,
         'kegg_compound': lambda v: f'{v[0].upper()}{v[1].zfill(5)}' if v and len(v) == 2 else None,
     },
 )
 
 metabolites_schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.HMDB, value=f('accession')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
@@ -78,18 +89,51 @@ metabolites_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('description')),
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_ids', delimiter=';')),
+        CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('cellular_locations', delimiter=';')),
+        CV(term=AssayAnnotationsCv.TISSUE, value=f('tissue_locations', delimiter=';')),
+        CV(term=AssayAnnotationsCv.BIOSPECIMEN, value=f('biospecimen_locations', delimiter=';')),
+        CV(term=DiseaseAnnotationCv.NAME, value=f('diseases', delimiter=';')),
+    ),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.CV_TERM,
+            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_identifier=f('chemont_ids', delimiter=';'),
+        ),
     ),
 )
 
-download = Download(
-    url='https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
+download = Download(#'https://hmdb.ca/system/downloads/current/hmdb_metabolites.zip',
+    url='https://rescued.omnipathdb.org/hmdb_metabolites.zip',
     filename='hmdb_metabolites.zip',
     subfolder='hmdb',
     large=True,
-    ext='zip',
+    ext='.zip',
     default_mode='rb',
 )
 
+chemont_download = Download(
+    url=(
+        'http://classyfire.wishartlab.com/system/downloads/1_0/'
+        'chemont/ChemOnt_2_1.obo.zip'
+    ),
+    filename='ChemOnt_2_1.obo.zip',
+    subfolder='chemont',
+    large=True,
+    ext='zip',
+    needed=['ChemOnt_2_1.obo'],
+)
+
+def _raw_with_ontology_maps(opener, force_refresh: bool = False, **kwargs):
+    chemont_map = chemont_name_map(
+        chemont_download.open(force_refresh=force_refresh),
+    )
+    yield from _raw(
+        opener,
+        force_refresh=force_refresh,
+        chemont_name_map=chemont_map,
+        **kwargs,
+    )
 
 def _id_translation_row(row: dict) -> dict | None:
     hmdb_id = row.get('accession')
@@ -109,7 +153,7 @@ resource = Resource(
     metabolites=Dataset(
         download=download,
         mapper=metabolites_schema,
-        raw_parser=_raw,
+        raw_parser=_raw_with_ontology_maps,
     ),
     id_translation=Dataset(
         download=download,

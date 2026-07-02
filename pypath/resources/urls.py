@@ -1484,6 +1484,10 @@ urls = {
         'url': 'https://raw.githubusercontent.com/asrhou/NATMI/'
             'gh-pages/_data/lsps.csv',
     },
+    'connectomedb2025': {
+        'label': 'Human ligand-receptor interactions from ConnectomeDB2025',
+        'url': 'https://connectomedb.org/downloads/Current-Release/CSV/ConnectomeDB2025_human.csv',
+    },
     'talklr': {
         'label': 'Ligand-receptor interactions from other databases with '
             '187 literature references',
@@ -1786,6 +1790,11 @@ urls = {
         'label': 'Comprehensive collection of transcriptional regulatory interactions',
         'url': 'https://rescued.omnipathdb.org/CollecTRI.csv',
     },
+    'collectri2': {
+        'label': 'CollecTRI2 transcriptional regulatory interactions',
+        'main': 'https://rescued.omnipathdb.org/CollecTRI2.tsv.gz',
+        'combined': 'https://rescued.omnipathdb.org/CollecTRI2-combined.tsv.gz',
+    },
     'ramp': {
         'label': 'RaMP metabolomic pathway and metabolite identifier database',
         'url': 'https://figshare.com/ndownloader/files/38534654',
@@ -1838,7 +1847,7 @@ urls = {
     'bindingdb': {
         'label': 'A database of protein-ligand interactions',
         'url':
-        'https://bindingdb.org/rwd/bind/downloads/BindingDB_%s_202506_tsv.zip',
+        'https://bindingdb.org/rwd/bind/downloads/BindingDB_%s_202605_tsv.zip',
         'mapping': 'https://bindingdb.org/rwd/bind/BindingDB_%s.txt',
     },
     'hint': {
@@ -1860,6 +1869,10 @@ urls = {
             'https://www.cellknowledge.com.cn/mrclinkdb/download/'
             r'Metabolite-cell%20interaction.txt'
         ),
+        'transporter': (
+            'https://www.cellknowledge.com.cn/mrclinkdb/download/'
+            r'%s%%20transporter%%20protein.txt'
+        ),
     },
     'recon3d': {
         'label': 'Recon3D human genome-scale metabolic model',
@@ -1867,6 +1880,16 @@ urls = {
         'vmh_mat': (
             'https://www.vmh.life/files/reconstructions/Recon3D/'
             '3.01/Recon3DModel_301.mat'
+        ),
+    },
+    'imm1415': {
+        'label': 'iMM1415 mouse genome-scale metabolic model',
+        'bigg_json': 'http://bigg.ucsd.edu/static/models/iMM1415.json',
+    },
+    'bigg': {
+        'label': 'BiGG Models universal metabolite cross-references',
+        'metabolites_tsv': (
+            'http://bigg.ucsd.edu/static/namespace/bigg_models_metabolites.txt'
         ),
     },
     'metanetx': {

@@ -35,6 +35,7 @@ class BiologicalRoleCv(CvEnum):
     # PSI-MI standard biological roles
     ENZYME = "MI:0501"
     SUBSTRATE = "MI:0502"
+    CATALYST = "MI:0501"  # alias for ENZYME (catalytic role in a reaction)
     INHIBITOR = "MI:0586"
     STIMULATOR = "MI:0840"
     ALLOSTERIC_EFFECTOR = "MI:1160"
@@ -48,6 +49,8 @@ class BiologicalRoleCv(CvEnum):
     CONTROLLER = ("OM:0313", "Entity that controls or regulates a process")
     CONTROLLED = ("OM:0314", "Process or entity being controlled or regulated")
     PATHWAY_COMPONENT = ("OM:0315", "Component entity within a pathway")
+    PATHWAY = ("OM:0316", "Molecular pathway name")
+    COFACTOR = ("OM:0317", "Non-protein cofactor participating in an enzymatic reaction")
 
 
 class ExperimentalRoleCv(CvEnum):
@@ -78,6 +81,8 @@ class InteractionTypeCv(CvEnum):
     # PSI-MI standard interaction types
     COLOCALIZATION = "MI:0403"
     FUNCTIONAL_ASSOCIATION = "MI:2286"
+    # OmniPath: pre-miRNA → mature miRNA processing (Milestone L)
+    MIRNA_MATURATION = ("OM:1257", "miRNA maturation (pre-miRNA to mature miRNA processing)")
     PHYSICAL_ASSOCIATION = "MI:0915"
     DIRECT_INTERACTION = "MI:0407"
     PHOSPHORYLATION_REACTION = "MI:0217"
@@ -119,6 +124,22 @@ class BiologicalEffectCv(CvEnum):
     DOWN_REGULATES_ACTIVITY = "MI:2241"
     UP_REGULATES_QUANTITY = "MI:2237"
     DOWN_REGULATES_QUANTITY = "MI:2242"
+
+
+class ControlEffectCv(CvEnum):
+    """Effect or mode of a control relation."""
+
+    parent_cv_term = (
+        "OM:0890",
+        "Control effect term",
+        "Effect or mode of a controls relation.",
+    )
+
+    CATALYSIS = ("OM:0891", "Controller catalyzes the controlled reaction")
+    ACTIVATION = ("OM:0892", "Controller activates the controlled process or entity")
+    INHIBITION = ("OM:0893", "Controller inhibits the controlled process or entity")
+    MODULATION = ("OM:0894", "Controller modulates the controlled process or entity")
+    UNKNOWN = ("OM:0895", "Control effect is unknown or unspecified")
 
 
 class CausalMechanismCv(CvEnum):
@@ -247,6 +268,10 @@ class CurationCv(CvEnum):
     TITLE = ("OM:0412", "Title of the publication")
     ABSTRACT = ("OM:0413", "Abstract or summary text")
     DOC_TYPE = ("OM:0414", "Type of publication (e.g. journal article, patent, book chapter)")
+    AUTHORS = ("OM:0415", "List of the publication author(s)")
+    PAGES = ("OM:0416", "Journal pages of the publication")
+    VOLUME = ("OM:0417", "Journal volume of the publication")
+    ISSUE = ("OM:0418", "Journal issue of the publication")
 
 class MoleculeAnnotationsCv(CvEnum):
     """Controlled vocabulary for molecule annotation types.
@@ -276,6 +301,9 @@ class MoleculeAnnotationsCv(CvEnum):
     CX_LOGP = ("OM:0633", "LogP value calculated at specific pH")
     CX_LOGD = ("OM:0634", "LogD value calculated at specific pH")
     MOLECULAR_SPECIES = ("OM:0635", "Molecular species (e.g. ACID, BASE, NEUTRAL)")
+    MOLECULE_SUBTYPE = ("OM:0636", "Specific molecule subtype such as lipid, metabolite, peptide, or antibody")
+    PROTEIN_FUNCTIONAL_CLASS = ("OM:0637", "Specific protein functional class such as enzyme, GPCR, or transporter")
+    MIRNA_SUBTYPE = ("OM:0695", "miRNA maturation-stage subtype (precursor pre-miRNA or mature miRNA)")
 
     # Lipid classification terms (OM:0614-0622 range)
     LIPID_CATEGORY = ("OM:0614", "Lipid category classification (e.g., Fatty Acyls, Glycerolipids)")
@@ -311,6 +339,9 @@ class MoleculeAnnotationsCv(CvEnum):
     COMPOUND_SUBCLASS = ("OM:0663", "Compound classification subclass (e.g., Anthocyanins, Flavanols)")
     BOTANICAL_FAMILY = ("OM:0664", "Botanical family of a food source")
     AGLYCONE = ("OM:0666", "Aglycone (non-sugar) component of a glycoside compound")
+    COMPOUND_KINGDOM = ("OM:0667", "Compound kingdom classification (ClassyFire taxonomy top level, e.g. Organic compounds)")
+    COMPOUND_SUPERCLASS = ("OM:0668", "Compound superclass classification (ClassyFire taxonomy second level, e.g. Lipids and lipid-like molecules)")
+    CHEMONT_CLASSIFICATION = ("OM:0669", "ChemOnt classification term accessions")
 
     # Concentration and measurement statistics (OM:0680-0699 range)
     CONCENTRATION_VALUE = ("OM:0679", "Concentration value")
@@ -323,6 +354,12 @@ class MoleculeAnnotationsCv(CvEnum):
     DATA_POINT_COUNT = ("OM:0686", "Total number of data points (N)")
     EXPERIMENTAL_METHOD = ("OM:0687", "Experimental method group used for measurement")
     CONCENTRATION_MEDIAN = ("OM:0688", "Median concentration value")
+    TARGET_CLASS = ("OM:0689", "Target class or target-family label")
+    TARGET_DEVELOPMENT_LEVEL = ("OM:0690", "Target development level")
+    TISSUE_LOCATION = ("OM:0691", "Tissue or anatomical location associated with a molecule")
+    BIOSPECIMEN_LOCATION = ("OM:0692", "Biospecimen location associated with a molecule")
+    TRANSPORT_SUBSTRATE = ("OM:0693", "Substrate transported by a transporter")
+    SOURCE_STATUS = ("OM:0694", "Resource-specific molecule source/status label")
 
 
 class AssayTypeCv(CvEnum):
@@ -349,6 +386,30 @@ class AssayAnnotationsCv(CvEnum):
     TISSUE = ("OM:0764", "Tissue or organ source for the assay")
     CELL_TYPE = ("OM:0765", "Cell type used in the assay")
     DESCRIPTION = ("OM:0766", "Textual description of the assay protocol and objectives")
+    CONCLUSION = ("OM:0778", "Textual description of the assay conculsions")
+    BIOSPECIMEN = ("OM:0779", "Biospecimen used as sample")
+    CASE_CONCENTRATION_MEAN = ("OM:0780", "Mean concentration value in case samples")
+    CASE_CONCENTRATION_MIN = ("OM:0781", "Minimum concentration value in case samples")
+    CASE_CONCENTRATION_MAX = ("OM:0782", "Maximum concentration value in case samples")
+    CASE_CONCENTRATION_SD = ("OM:0783", "Standard deviation or confidence interval of concentration in case samples")
+    CONTROL_CONCENTRATION_MEAN = ("OM:0784", "Mean concentration value in control samples")
+    CONTROL_CONCENTRATION_MIN = ("OM:0785", "Minimum concentration value in control samples")
+    CONTROL_CONCENTRATION_MAX = ("OM:0786", "Maximum concentration value in control samples")
+    CONTROL_CONCENTRATION_SD = ("OM:0787", "Standard deviation or confidence interval of concentration in control samples")
+    DELTA_CONCENTRATION = ("OM:0788", "Case-control concentration difference")
+    # Contrast
+
+    CONTRAST_P_VAL = ("OM:0767", "P-value associated to a contrast between case-control")
+    CONTRAST_LOGFC = ("OM:0768", "log2(FC) associated to a contrast between case-control")
+    CASE_AGE = ("OM:0769", "Patient/case age")
+    CASE_SEX = ("OM:0770", "Patient/case sex")
+    CASE_SAMPLE_COUNT = ("OM:0773", "Number of patient/case samples")
+    CASE_DESCRIPTION = ("OM:0775", "Description of case/patient samples")
+    CONTROL_AGE = ("OM:0771", "Control age")
+    CONTROL_SEX = ("OM:0772", "Control sex")
+    CONTROL_SAMPLE_COUNT = ("OM:0774", "Number of control samples")
+    CONTROL_DESCRIPTION = ("OM:0776", "Description of control samples")
+
 
 
 class InteractionParameterCv(CvEnum):
@@ -363,10 +424,14 @@ class InteractionParameterCv(CvEnum):
 
     # Binding affinity measurements (equilibrium constants)
     KI = "MI:0643"  # Equilibrium constant for dissociation of an inhibitor. Unit Molar.
+    KM = "MI:0644" # Michaelis-Menten constant: concentration of substrate at which the reaction rate is equal to half the maximal rate
     KD = "MI:0646"  # The equilibrium dissociation constant. Unit Molar.
     IC50 = "MI:0641"  # Molar concentration producing 50% of maximum inhibitory response. Unit Molar.
     EC50 = "MI:0642"  # Molar concentration producing 50% of maximum response for agonist. Unit Molar.
     PCHEMBL_VALUE = ("OM:0708", "Negative logarithm of molar IC50/EC50/Ki/Kd/Km value (-log10(molar value))")
+    AFFINITY_HIGH = ("OM:0709", "High affinity measurement value")
+    AFFINITY_LOW = ("OM:0710", "Low affinity measurement value")
+    AFFINITY_MEDIAN = ("OM:0711", "Median affinity measurement value")
 
     # Rate constants
     KON = "MI:0834"  # Association rate constant or rate of complex formation. Unit M-1 s-1
@@ -455,6 +520,20 @@ class InteractionMetadataCv(CvEnum):
     CONVERSION_DIRECTION = ("OM:1211", "Direction of a biochemical conversion (e.g., LEFT_TO_RIGHT, RIGHT_TO_LEFT, REVERSIBLE)")
     CONTROL_TYPE = ("OM:1212", "Type of regulatory control (e.g., ACTIVATION, INHIBITION)")
     STITCH_ACTION_SCORE = ("OM:1213", "STITCH action-specific confidence score for the stated interaction mode or action type")
+    STEREOSPECIFIC = ("OM:1214", "Indicates whether the chemical interaction is stereospecific")
+    NEUROTRANSMITTER_INTERACTION = ("OM:1215", "Interaction annotated as neurotransmitter related")
+    INTERACTION_DIRECTNESS = ("OM:1216", "Indicates whether an interaction is directly supported or inferred")
+    ACTIVITY_SOURCE = ("OM:1217", "Source of interaction activity evidence")
+    RELATION = ("OM:1218", "Relation operator or qualifier for an interaction measurement")
+    MECHANISM_OF_ACTION = ("OM:1219", "Mechanism-of-action statement or flag")
+    ACTION_DESCRIPTION = ("OM:1232", "Textual description of an action")
+    ACTION_PARENT_TYPE = ("OM:1233", "Parent class of an action type")
+    SELECTIVITY_COMMENT = ("OM:1234", "Comment about target or ligand selectivity")
+    BINDING_SITE_COMMENT = ("OM:1235", "Comment about the binding site")
+    LIGAND_TYPE = ("OM:1236", "Structured ligand type")
+    INTERACTION_TYPE = ("OM:1237", "Structured interaction type")
+    COFACTOR_EFFECT = ("OM:1238", "Effect of a cofactor on an interaction")
+    CONTROL_EFFECT = ("OM:1240", "Effect or mode of a controls relation")
 
 
 class ParticipantMetadataCv(CvEnum):
@@ -471,6 +550,19 @@ class ParticipantMetadataCv(CvEnum):
     STEP_ORDER = ("OM:1227", "Order or position of a step within a pathway or process")
     SOURCE = ("OM:1228", "Participant designated as the source of a directed interaction")
     TARGET = ("OM:1229", "Participant designated as the target of a directed interaction")
+    MEMBRANE_SIDE = ("OM:1231", "Membrane side of a transport reaction participant (in/out)")
+
+class InterCellAnnotations(CvEnum):
+    """Annotations for intercellular interactions and roles."""
+
+    parent_cv_term = ("OM:7776", "Intercellular annotation term", "Describes annotations specific to intercellular interactions and roles.")
+
+    LIGAND = ("OM:7777", "Participant designated as a ligand")
+    RECEPTOR = ("OM:7778", "Participant designated as a receptor")
+    MEMBRANE = ("OM:7779", "Membrane-associated subcellular location")
+    CYTOPLASM = ("OM:7780", "Cytoplasmic subcellular location")
+    SECRETED = ("OM:7781", "Secreted subcellular location")
+
 
 
 class OntologyAnnotationCv(CvEnum):
@@ -484,8 +576,31 @@ class OntologyAnnotationCv(CvEnum):
 
     # Core ontology metadata (OM:0800-0899 range)
     DEFINITION = ("OM:0801", "Textual definition of an ontology term")
+    ONTOLOGY_ID = ("OM:0803", "Ontology identifier or OBO document ID")
     COMMENT = ("OM:0805", "Additional comment or note about an ontology term")
     IS_OBSOLETE = ("OM:0806", "Indicates whether the term is obsolete")
+
+
+class PathwayAnnotationsCv(CvEnum):
+    """Annotations specific to pathway entities."""
+
+    parent_cv_term = ("OM:0860", "Pathway annotation term", "Describes metadata for pathway entities.")
+
+    DESCRIPTION = ("OM:0861", "Textual description of a pathway")
+    COMMENT = ("OM:0862", "Additional comment or note about a pathway")
+    ORGANISM_NAME = ("OM:0863", "Organism name for a pathway")
+
+
+class ReactionAnnotationsCv(CvEnum):
+    """Annotations specific to reaction, transport, and catalysis entities."""
+
+    parent_cv_term = ("OM:0870", "Reaction annotation term", "Describes metadata for reaction and transport entities.")
+
+    EC_NUMBER = ("OM:0871", "Enzyme Commission number for a reaction")
+    DEFINITION = ("OM:0872", "Textual definition or equation of a reaction")
+    SUBSYSTEM = ("OM:0873", "Metabolic subsystem or pathway grouping")
+    PATHWAY = ("OM:0874", "Pathway grouping for a reaction")
+    XREF = ("OM:0875", "Cross-reference attached to a reaction")
 
 
 class ResourceAnnotationCv(CvEnum):
@@ -502,3 +617,20 @@ class ResourceAnnotationCv(CvEnum):
     UPDATE_CATEGORY = ("OM:0852", "Update frequency category (value from UpdateCategoryCV)")
     URL = ("OM:0853", "Resource homepage or API URL")
     DESCRIPTION = ("OM:0854", "Textual description of the resource")
+
+
+class DiseaseAnnotationCv(CvEnum):
+    """Disease-related annotation terms.
+
+    Describes metadata for diseases, stages, subtypes, etc.
+    """
+
+    parent_cv_term = ("OM:1250", "Disease annotation term", "Describes metadata for diseases.")
+
+    # Disease metadata (OM:1250-1300 range)
+    NAME = ("OM:1251", "Disease name")
+    TYPE = ("OM:1252", "Disease type/category")
+    SUBTYPE = ("OM:1253", "Disease subtype/subcategory")
+    STAGE = ("OM:1254", "Disease stage")
+    RELATIONSHIP = ("OM:1255", "Disease association relationship predicate")
+    SOURCE = ("OM:1256", "Disease association source or evidence reference")

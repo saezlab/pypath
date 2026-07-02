@@ -37,9 +37,9 @@ config = ResourceConfig(
     id=ResourceCv.PHENOL_EXPLORER,
     name='Phenol-Explorer',
     url='http://phenol-explorer.eu/',
-    license=LicenseCV.CC_BY_NC_4_0,  # TODO: Verify license
+    license=LicenseCV.ACADEMIC_FREE,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='20428313',  # Original Phenol-Explorer publication
+    pubmed='24103452',  # Latest Phenol-Explorer publication
     primary_category='foods',
     description=(
         'Phenol-Explorer is the first comprehensive database on polyphenol '
@@ -91,7 +91,13 @@ download_composition = Download(
 # Field configuration
 # =============================================================================
 
-f = FieldConfig(delimiter=MEMBER_DELIMITER, preserve_indices=True)
+f = FieldConfig(
+    delimiter=MEMBER_DELIMITER,
+    preserve_indices=True,
+    extract={
+        'chebi': r'^(?:CHEBI:)?(\d+)$',
+    },
+)
 
 
 # =============================================================================
@@ -112,11 +118,11 @@ foods_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.SMALL_MOLECULE,
+            entity_type=EntityTypeCv.CHEMICAL,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.PHENOL_EXPLORER, value=f('member_compound_id')),
                 CV(term=IdentifierNamespaceCv.NAME, value=f('member_compound_name')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f('member_chebi')),
+                CV(term=IdentifierNamespaceCv.CHEBI, value=f('member_chebi', extract='chebi')),
                 CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('member_pubchem')),
                 CV(term=IdentifierNamespaceCv.CAS, value=f('member_cas')),
                 CV(term=IdentifierNamespaceCv.SMILES, value=f('member_smiles')),
@@ -130,11 +136,26 @@ foods_schema = EntityBuilder(
                 CV(term=MoleculeAnnotationsCv.AGLYCONE, value=f('member_aglycones')),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEAN, value=f('member_mean')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MIN, value=f('member_min')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MAX, value=f('member_max')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_SD, value=f('member_sd')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_UNIT, value=f('member_units')),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MEAN,
+                    value=f('member_mean'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MIN,
+                    value=f('member_min'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MAX,
+                    value=f('member_max'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_SD,
+                    value=f('member_sd'),
+                    unit=f('member_units'),
+                ),
                 CV(term=MoleculeAnnotationsCv.SAMPLE_COUNT, value=f('member_n')),
                 CV(term=MoleculeAnnotationsCv.DATA_POINT_COUNT, value=f('member_N')),
                 CV(term=MoleculeAnnotationsCv.EXPERIMENTAL_METHOD, value=f('member_experimental_method')),

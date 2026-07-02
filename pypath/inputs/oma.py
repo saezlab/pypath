@@ -23,12 +23,11 @@ from typing import Literal
 import collections
 import itertools
 
+import requests
 import pandas as pd
 
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
 import pypath.share.common as common
-import pypath.inputs.common as inputs_common
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.mapping as mapping
 
@@ -105,14 +104,18 @@ def oma_orthologs(
     while True:
 
         page_url = f'{url}{organism_a}/{organism_b}/?page={page}&per_page=1000'
-        c = curl.Curl(page_url, silent = False)
+        resp = requests.get(page_url, timeout=60)
 
-        if not c.result: break
+        if not resp.ok:
+            break
 
-        c.get_headers()
-        n_pages = float(c.resp_headers_dict.get('x-total-count', 1e8)) / 100
+        data = resp.json()
+
+        if not data:
+            break
+
+        n_pages = float(resp.headers.get('x-total-count', 1e8)) / 100
         page += 1
-        data = inputs_common.json_read(c.result)
 
         for rec in data:
 

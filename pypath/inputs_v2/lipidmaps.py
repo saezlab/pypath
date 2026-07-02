@@ -12,6 +12,7 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
+    MoleculeSubtypeCv,
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
@@ -53,13 +54,12 @@ f = FieldConfig(
         'hmdb': r'^(HMDB\d{5,8})$',
     },
     transform={
-        'chebi': lambda v: f'CHEBI:{v}' if v else None,
         'hmdb': lambda v: v.upper() if v else None,
     },
 )
 
 lipids_schema = EntityBuilder(
-    entity_type=EntityTypeCv.LIPID,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.LIPIDMAPS, value=f('LM_ID')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('COMMON_NAME')),
@@ -69,7 +69,7 @@ lipids_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('INCHI_KEY')),
         CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('INCHI')),
         CV(term=IdentifierNamespaceCv.SMILES, value=f('SMILES')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('FORMULA')),
+        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('FORMULA')),
         CV(
             term=IdentifierNamespaceCv.CHEBI,
             value=f('CHEBI_ID', extract='chebi'),
@@ -79,6 +79,7 @@ lipids_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.SWISSLIPIDS, value=f('SWISSLIPIDS_ID')),
     ),
     annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE, value=MoleculeSubtypeCv.LIPID),
         CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('EXACT_MASS')),
         CV(term=MoleculeAnnotationsCv.LIPID_CATEGORY, value=f('CATEGORY')),
         CV(term=MoleculeAnnotationsCv.LIPID_MAIN_CLASS, value=f('MAIN_CLASS')),

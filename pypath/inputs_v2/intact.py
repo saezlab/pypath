@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import csv
+import re
 
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -16,6 +17,7 @@ from pypath.internals.cv_terms import (
     InteractionMetadataCv,
     ParticipantMetadataCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
@@ -38,7 +40,8 @@ _IDENTIFIER_CV_MAPPING = {
     'chebi': IdentifierNamespaceCv.CHEBI,
     'chembl': IdentifierNamespaceCv.CHEMBL,
     'chembl compound': IdentifierNamespaceCv.CHEMBL_COMPOUND,
-    'ddbj/embl/genbank': IdentifierNamespaceCv.REFSEQ,
+    'chembl internal id': IdentifierNamespaceCv.CHEMBL_INTERNAL_ID,
+    'ddbj/embl/genbank': IdentifierNamespaceCv.GENBANK_IDENTIFIER,
     'dip': IdentifierNamespaceCv.DIP,
     'ensembl': IdentifierNamespaceCv.ENSEMBL,
     'ensemblgenomes': IdentifierNamespaceCv.ENSEMBL_GENOMES,
@@ -62,6 +65,21 @@ _IDENTIFIER_CV_MAPPING = {
     'uniprotkb': IdentifierNamespaceCv.UNIPROT,
 }
 
+_INTERACTOR_TYPE_MAPPING = {
+    'MI:0326': EntityTypeCv.PROTEIN,
+    'MI:0314': EntityTypeCv.COMPLEX,
+    'MI:0328': EntityTypeCv.CHEMICAL,
+    'MI:0320': EntityTypeCv.RNA,
+    'MI:0250': EntityTypeCv.GENE,
+    'MI:0681': EntityTypeCv.DNA,
+    'MI:0318': EntityTypeCv.NUCLEIC_ACID,
+    'MI:0317': EntityTypeCv.MACROMOLECULE,
+}
+
+_ENSEMBL_RE = re.compile(r'^ENS[A-Z0-9]*\d+(?:\.\d+)?$')
+_REFSEQ_RE = re.compile(r'^[A-Z]{2}_[0-9]+(?:\.\d+)?$')
+
+
 f = FieldConfig(
     extract={
         'prefix_lower': [r'^([^:]+):', str.lower],
@@ -84,7 +102,7 @@ f = FieldConfig(
 def _normalize_identifier_prefix(prefix: str, value: str) -> str | None:
     prefix = prefix.lower()
     value = value.strip().strip('"')
-    if prefix == 'intact' and value.startswith('MINT-'):
+    if value.startswith('MINT-') and prefix in {'intact', 'psi-mi'}:
         return 'mint'
     if prefix == 'intact' and not (value.startswith('EBI-') or value.startswith('IM-')):
         return None
@@ -111,6 +129,21 @@ def _parse_identifier_pairs(raw: object) -> list[tuple[object, str]]:
             continue
         if prefix == 'uniprotkb' and '-PRO_' in value:
             value = value.split('-PRO_', 1)[0]
+        if prefix == 'chebi':
+            match = re.fullmatch(r'(?:CHEBI:)?(\d+)', value, flags=re.IGNORECASE)
+            value = match.group(1) if match else None
+        if prefix == 'chembl' and value.upper().startswith('CHEMBL'):
+            value = f'CHEMBL{value[len("CHEMBL"): ]}'
+        if prefix == 'chembl compound' and value.isdigit():
+            prefix = 'chembl internal id'
+        if prefix == 'refseq' and not _REFSEQ_RE.fullmatch(value):
+            prefix = 'genbank identifier'
+        if prefix == 'entrezgene/locuslink' and not value.isdigit():
+            prefix = 'genbank identifier'
+        if prefix == 'ensembl' and not _ENSEMBL_RE.fullmatch(value):
+            prefix = 'genbank identifier'
+        if prefix in {'genbank_nucl_gi', 'genbank_protein_gi'} and not value.isdigit():
+            prefix = 'genbank identifier'
         mapped = _IDENTIFIER_CV_MAPPING.get(prefix)
         if mapped is not None and value and value != '-':
             pairs.append((mapped, value))
@@ -123,6 +156,18 @@ def parsed_identifier_terms(column_name: str):
 
 def parsed_identifier_values(column_name: str):
     return lambda row: [value for _, value in _parse_identifier_pairs(row.get(column_name))]
+
+
+def _interactor_entity_type(suffix: str):
+    column = f'Type(s) interactor {suffix}'
+
+    def _value(row: dict[str, object]) -> EntityTypeCv:
+        match = re.search(r'(MI:\d+)', str(row.get(column) or ''))
+        if match:
+            return _INTERACTOR_TYPE_MAPPING.get(match.group(1), EntityTypeCv.PHYSICAL_ENTITY)
+        return EntityTypeCv.PHYSICAL_ENTITY
+
+    return _value
 
 
 def _intact_raw(opener, organism: int = 9606, **_kwargs: object):
@@ -142,7 +187,8 @@ config = ResourceConfig(
     url='https://www.ebi.ac.uk/intact/',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='37953288',
+    pubmed='34761267',
+    annotation_ontologies=(OntologyCv.PSI_MI,),
     primary_category='interactions',
     description=(
         'IntAct provides a freely available, open source database system '
@@ -176,21 +222,18 @@ interactions_schema = EntityBuilder(
     membership=MembershipBuilder(
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
+                entity_type=_interactor_entity_type('A'),
                 identifiers=IdentifiersBuilder(
                     CV(term=parsed_identifier_terms('#ID(s) interactor A'), value=parsed_identifier_values('#ID(s) interactor A')),
                     CV(term=parsed_identifier_terms('Alt. ID(s) interactor A'), value=parsed_identifier_values('Alt. ID(s) interactor A')),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor A', extract='tax')),
-                    CV(term=ParticipantMetadataCv.ALIAS, value=f('Alias(es) interactor A')),
-                    CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Annotation(s) interactor A')),
                 ),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=f('Biological role(s) interactor A', extract='mi')),
                 CV(term=f('Experimental role(s) interactor A', extract='mi')),
-                CV(term=f('Type(s) interactor A', extract='mi')),
                 CV(term=ParticipantMetadataCv.PARTICIPANT_FEATURE, value=f('Feature(s) interactor A')),
                 CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('Stoichiometry(s) interactor A')),
                 CV(term=f('Identification method participant A', extract='mi')),
@@ -198,21 +241,18 @@ interactions_schema = EntityBuilder(
         ),
         Member(
             entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
+                entity_type=_interactor_entity_type('B'),
                 identifiers=IdentifiersBuilder(
                     CV(term=parsed_identifier_terms('ID(s) interactor B'), value=parsed_identifier_values('ID(s) interactor B')),
                     CV(term=parsed_identifier_terms('Alt. ID(s) interactor B'), value=parsed_identifier_values('Alt. ID(s) interactor B')),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor B', extract='tax')),
-                    CV(term=ParticipantMetadataCv.ALIAS, value=f('Alias(es) interactor B')),
-                    CV(term=ParticipantMetadataCv.PARTICIPANT_ANNOTATION, value=f('Annotation(s) interactor B')),
                 ),
             ),
             annotations=AnnotationsBuilder(
                 CV(term=f('Biological role(s) interactor B', extract='mi')),
                 CV(term=f('Experimental role(s) interactor B', extract='mi')),
-                CV(term=f('Type(s) interactor B', extract='mi')),
                 CV(term=ParticipantMetadataCv.PARTICIPANT_FEATURE, value=f('Feature(s) interactor B')),
                 CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('Stoichiometry(s) interactor B')),
                 CV(term=f('Identification method participant B', extract='mi')),

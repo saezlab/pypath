@@ -20,91 +20,112 @@
 from __future__ import annotations
 
 import json
-import os
 import urllib.parse
-from typing import Iterable
+from typing import Iterable, Iterator, NamedTuple
 
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
-import pypath.share.cache as cache
-import pypath.share.lookup as lookup
 import pypath.share.session as session
+from pypath.share.downloads import dm, download_and_open
 
 _logger = session.Logger(name = 'pubchem_input')
 _log = _logger._log
 
 
-def pubchem_mapping(target, source = 'cid'):
+class PubchemMapping(NamedTuple):
+    """A single ``CID -> value`` row from a PubChem Compound ``Extras`` table."""
+
+    cid: str
+    value: str
+
+
+# Our id-type name -> (PubChem ``Extras`` file token, value column index).
+# The source is always the Compound CID (column 0). The combined
+# ``CID-InChI-Key`` table carries the InChI (column 1) and the standard
+# InChIKey (column 2) side by side, so both map to the same file.
+_PUBCHEM_COMPOUND_TARGETS: dict[str, tuple[str, int]] = {
+    'inchikey': ('InChI-Key', 2),
+    'inchi': ('InChI-Key', 1),
+    'smiles': ('SMILES', 1),
+    'iupac': ('IUPAC-Name', 1),
+    'synonym': ('Synonym-unfiltered', 1),
+    'parent-cid': ('Parent', 1),
+    'component-cid': ('Component', 1),
+    'preferred-cid': ('Preferred', 1),
+}
+
+
+def pubchem_mapping(
+        target: str,
+        source: str = 'cid',
+    ) -> Iterator[PubchemMapping]:
     """
-    Identifier translation data from PubChem.
+    Stream identifier/structure translation data from PubChem.
+
+    Yields ``(cid, value)`` rows from the PubChem FTP "Extras" tables
+    (``Compound/Extras/CID-<TYPE>.gz``) -- e.g. CID -> standard InChIKey,
+    InChI or canonical SMILES. The table is fetched and cached via the
+    shared dlmachine download manager, then read line by line (no in-memory
+    table and no SQLite side-cache), so a consumer can ``itertools.islice``
+    for a capped subset.
 
     Args
-        target (str): The target ID type, either as it is used in the file
-            names in the PubChem FTP service or as simpler, all lowercase
-            strings used in this module. Possible values are parent-cid,
-            component-cid, inchi, iupac, preferred-cid, sid, smiles,
-            synonym.
-        source (str): The source ID type. Either sid or cid.
+        target (str): The target ID/structure type. One of the keys of
+            ``_PUBCHEM_COMPOUND_TARGETS`` (``inchikey``, ``inchi``, ``smiles``,
+            ``iupac``, ``synonym``, ``parent-cid``, ``component-cid``,
+            ``preferred-cid``) or a raw PubChem ``Extras`` file token.
+        source (str): The source ID type. Only the PubChem Compound CID
+            (``cid``) is supported.
 
-    Returns
-        (dict): A dict of sets with the source identifiers as keys and sets
-            of target identifiers as values.
+    Yields
+        PubchemMapping: ``(cid, value)`` named tuples.
     """
 
-    id_types = {
-        'parent-cid': 'Parent',
-        'component-cid': 'Component',
-        'inchi': 'InChi',
-        'iupac': 'IUPAC',
-        'preferred-cid': 'Preferred',
-        'pubchem-sid': 'SID',
-        'sid': 'SID',
-        'smiles': 'SMILES',
-        'synonym': 'Synonym-unfiltered',
-        'cid': 'CID',
-        'pubchem-cid': 'CID',
-    }
-
-    _target = id_types.get(target, target)
-    _source = id_types.get(source, source)
-
-    if _source not in {'CID', 'SID'}:
+    if source not in {'cid', 'pubchem-cid'}:
 
         msg = (
-            'The source identifier type must be either CID or SID, '
-            'not `%s`.' % source
+            'Only the PubChem Compound (CID) source is supported, not `%s`.'
+            % source
         )
         _log(msg)
         raise ValueError(msg)
 
-    ftp_dir = (
-        {
-            'SID': 'Substance',
-            'CID': 'Compound',
-        }[_source]
+    file_token, value_col = _PUBCHEM_COMPOUND_TARGETS.get(target, (target, 1))
+
+    url = urls.urls['pubchem']['ftp'] % ('Compound', 'CID', file_token)
+    opener = download_and_open(
+        url,
+        filename = 'CID-%s.gz' % file_token,
+        subfolder = 'pubchem',
+        large = True,
+        ext = 'gz',
     )
 
-    url = urls.urls['pubchem']['ftp'] % (ftp_dir, _source, _target)
-    c = curl.Curl(url, large = True, silent = False)
+    for line in opener.result:
 
-    db_path = os.path.join(
-        cache.get_cachedir(),
-        'pubchem_%s_%s.sqlite' % (_source, _target)
-    )
+        if isinstance(line, bytes):
+            line = line.decode('utf-8', errors = 'replace')
 
-    with lookup.ManyToMany(db_path) as result:
+        fields = line.rstrip('\n').split('\t')
 
-        result.populate(fileobj = c._gzfile_mode_r)
+        if len(fields) <= value_col:
+            continue
+
+        cid = fields[0].strip()
+        value = fields[value_col].strip()
+
+        if cid and value:
+
+            yield PubchemMapping(cid = cid, value = value)
 
 
 def pubchem_name_cids(name: str) -> set[str]:
     """
     PubChem CIDs for a compound name via the PUG REST API.
 
-    Each name–URL is cached on disk by pypath's curl infrastructure, so
-    repeated calls across sessions incur no HTTP requests.  Unknown names
-    (PubChem 404) and network errors return an empty set; the 404 response
-    is also cached so the lookup is not retried on every run.
+    Each name–URL response is fetched and cached on disk by the shared
+    dlmachine download manager, so repeated calls across sessions incur no
+    HTTP requests.  Unknown names (PubChem 404) and network errors return an
+    empty set.
 
     Args:
         name: Compound name or synonym (e.g. ``'ATP'``, ``'NAD+'``).
@@ -115,18 +136,23 @@ def pubchem_name_cids(name: str) -> set[str]:
     """
 
     url = urls.urls['pubchem']['name_cids'] % urllib.parse.quote(name)
-    c = curl.Curl(url, silent = True, large = False)
 
-    if not c.result:
+    try:
+        path = dm.download(url)
+    except Exception:
+        return set()
+
+    if not path:
         return set()
 
     try:
-        data = json.loads(c.result)
-    except (json.JSONDecodeError, TypeError):
+        with open(path, encoding = 'utf-8') as fh:
+            data = json.load(fh)
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
         return set()
 
     # PubChem returns {"Fault": {...}} with HTTP 4xx for unknown names.
-    if 'Fault' in data:
+    if not isinstance(data, dict) or 'Fault' in data:
         return set()
 
     return {

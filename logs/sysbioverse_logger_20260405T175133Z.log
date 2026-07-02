@@ -1,0 +1,18 @@
+[2026-04-05 19:51:33] [DEBUG] [pkg_infra.session        ] ▸ Using app logger: default
+[2026-04-05 19:51:33] [DEBUG] [pkg_infra.session        ] ▸ Session time initialized: utc=2026-04-05 17:51:33.947313+00:00, local=2026-04-05 19:51:33.947315+02:00, timezone=CEST
+[2026-04-05 19:51:33] [DEBUG] [pkg_infra.session        ] ▸ Location lookup skipped
+[2026-04-05 19:51:33] [INFO ] [pkg_infra.session        ] ▸ Creating new session...
+[2026-04-05 19:51:33] [INFO ] [pkg_infra.session        ] ▸ Session has been created
+[2026-04-05 19:51:33] [WARNING] [dlmachine._metadata      ] ▸ No local pyproject metadata found, trying installed metadata
+[2026-04-05 19:51:33] [DEBUG] [pkg_infra.session        ] ▸ get_session called with workspace=., include_location=False, config_path=None
+[2026-04-05 19:51:33] [INFO ] [pkg_infra.session        ] ▸ Initialization of a session:
+[2026-04-05 19:51:33] [INFO ] [pkg_infra.session        ] ▸ Reusing existing session
+[2026-04-05 19:51:33] [INFO ] [pkg_infra.session        ] ▸   hostname: beauty
+  username: omnipath
+  workspace: /home/omnipath/dev/pypath
+  id: 84a6f3e4-5a02-4486-aef1-cc79f01d2cef
+  started_at_utc: 2026-04-05 17:51:33.947313+00:00
+  started_at_local: 2026-04-05 19:51:33.947315+02:00
+  timezone: CEST
+  location: None
+[2026-04-05 19:51:33] [DEBUG] [pkg_infra.data           ] ▸ Loading built-in data `main.yaml` from module `cachedir`; path: `/home/omnipath/dev/pypath/.venv/lib/python3.13/site-packages/cachedir/_data/main.yaml`.

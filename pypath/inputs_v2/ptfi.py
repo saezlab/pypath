@@ -39,7 +39,7 @@ from pypath.internals.tabular_builder import (
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.ptfi import _raw, MEMBER_DELIMITER
-from pypath.share.downloads import DATA_DIR
+from pypath.share.downloads import get_data_dir
 
 
 config = ResourceConfig(
@@ -104,19 +104,16 @@ def download_ptfi_data(
     Download PTFI specimen data from the API.
 
     Args:
-        output_dir: Directory to save JSON files (default: DATA_DIR/ptfi)
+        output_dir: Directory to save JSON files (default: get_data_dir()/ptfi)
         specimen_ids: Optional list of specimen ID numbers (uses built-in list if None)
         force_refresh: If True, re-download existing files
 
     Returns:
         Path to directory containing downloaded JSON files
     """
-    # Set up output directory
-    if output_dir is None:
-        output_dir = DATA_DIR / 'ptfi'
-    else:
-        output_dir = Path(output_dir)
-
+    # Set up output directory using the same configured data directory as the
+    # standard Download/download_and_open path used by the other inputs_v2 modules.
+    output_dir = Path(output_dir) if output_dir is not None else get_data_dir() / 'ptfi'
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Use built-in specimen IDs if none provided
@@ -184,13 +181,22 @@ def download_ptfi_data(
     return output_dir
 
 
-# Custom download handler
-download_json = Download(
-    url='https://ptfidiscover.markerlab.com/',  # Base URL for reference
-    filename='ptfi_data',
-    subfolder='ptfi',
-    large=True,
-)
+class PTFIDownload:
+    """Download/open hook for PTFI's per-specimen JSON cache directory."""
+
+    def open(self, *, force_refresh: bool = False, **_kwargs):
+        allow_download = (
+            str(os.environ.get('PTFI_ALLOW_DOWNLOAD', '0')).strip().lower()
+            in {'1', 'true', 'yes'}
+        )
+        return download_ptfi_data(
+            force_refresh=force_refresh,
+            allow_download=allow_download,
+        )
+
+
+# Custom download handler; behaves like Download.open() but returns a directory.
+download_json = PTFIDownload()
 
 
 # =============================================================================
@@ -222,7 +228,7 @@ foods_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.SMALL_MOLECULE,
+            entity_type=EntityTypeCv.CHEMICAL,
             identifiers=IdentifiersBuilder(
                 CV(term=IdentifierNamespaceCv.PTFI, value=f('member_ptfi_id')),
                 CV(term=IdentifierNamespaceCv.NAME, value=f('member_name')),
@@ -232,12 +238,31 @@ foods_schema = EntityBuilder(
                 CV(term=MoleculeAnnotationsCv.COMPOUND_CLASS, value=f('member_category')),
             ),
             annotations=AnnotationsBuilder(
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_VALUE, value=f('member_value')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEAN, value=f('member_mean')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MEDIAN, value=f('member_median')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MIN, value=f('member_min')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_MAX, value=f('member_max')),
-                CV(term=MoleculeAnnotationsCv.CONCENTRATION_UNIT, value=f('member_units')),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_VALUE,
+                    value=f('member_value'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MEAN,
+                    value=f('member_mean'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MEDIAN,
+                    value=f('member_median'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MIN,
+                    value=f('member_min'),
+                    unit=f('member_units'),
+                ),
+                CV(
+                    term=MoleculeAnnotationsCv.CONCENTRATION_MAX,
+                    value=f('member_max'),
+                    unit=f('member_units'),
+                ),
                 CV(term=MoleculeAnnotationsCv.SAMPLE_COUNT, value=f('member_n_samples')),
             ),
         ),
@@ -249,25 +274,19 @@ foods_schema = EntityBuilder(
 # Resource definition
 # =============================================================================
 
-def _download_and_parse(opener=None, **kwargs):
+def _download_and_parse(data_dir=None, **kwargs):
     """
-    Parse PTFI data, using cache by default and downloading only on demand.
+    Parse PTFI data from the directory returned by ``download_json.open()``.
 
     Args:
-        opener: Unused (PTFI uses per-specimen API files)
+        data_dir: Directory containing per-specimen PTFI JSON files.
         **kwargs: Additional arguments passed to _raw parser
     """
-    allow_download = (
-        str(os.environ.get('PTFI_ALLOW_DOWNLOAD', '0')).strip().lower()
-        in {'1', 'true', 'yes'}
-    )
+    if data_dir is None:
+        data_dir = download_json.open(
+            force_refresh=bool(kwargs.get('force_refresh', False)),
+        )
 
-    data_dir = download_ptfi_data(
-        force_refresh=bool(kwargs.get('force_refresh', False)),
-        allow_download=allow_download,
-    )
-
-    # Parse cached/downloaded data
     yield from _raw(data_dir=str(data_dir), **kwargs)
 
 

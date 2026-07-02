@@ -24,12 +24,13 @@ from future.utils import iteritems
 import re
 import os
 import json
+import hashlib
 import collections
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath_common.data as _data
-import pypath.share.curl as curl
+from pypath.share.downloads import dm, DATA_DIR
 import pypath.share.settings as settings
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
@@ -136,26 +137,34 @@ def biomart_query(
     xml_query = rewsp.sub('', xml_query)
 
     biomart_url = urls.urls['ensembl']['biomart_url'] % xml_query
-    c = curl.Curl(
-        biomart_url,
-        req_headers = [settings.get('user_agent')],
-        large = True,
-        silent = False,
+    # Use base URL + query dict; explicit dest works around cachedir SQL escaping issue
+    _base_url = urls.urls['ensembl']['biomart_url'].split('?')[0]
+    _url_hash = hashlib.md5(biomart_url.encode()).hexdigest()[:16]
+    _dest = os.path.join(str(DATA_DIR), 'biomart_%s' % _url_hash)
+    path = dm.download(
+        _base_url,
+        dest = _dest,
+        query = {'query': xml_query},
+        headers = {'User-Agent': settings.get('user_agent')},
     )
     success = False
 
-    for line in c.result:
+    if path:
 
-        _line = line.strip('\n\r').split('\t')
+        with open(path) as f:
 
-        if _line[0] == '[success]':
+            for line in f:
 
-            success = True
-            continue
+                _line = line.strip('\n\r').split('\t')
 
-        if line.strip() and len(_line) == len(record._fields):
+                if _line[0] == '[success]':
 
-            yield record(*_line)
+                    success = True
+                    continue
+
+                if line.strip() and len(_line) == len(record._fields):
+
+                    yield record(*_line)
 
     if not success:
 
@@ -237,8 +246,10 @@ def biomart_microarray_types(organism: int | str = 9606):
     organism = taxonomy.ensure_ensembl_name(organism)
 
     url = urls.urls['ensembl']['arraytypes'] % organism
-    c = curl.Curl(url, req_headers = [settings.get('user_agent')])
-    result = json.loads(c.result)
+    path = dm.download(url, headers = {'User-Agent': settings.get('user_agent')})
+
+    with open(path) as f:
+        result = json.load(f)
 
     _ = [
         r.update(

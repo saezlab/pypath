@@ -25,7 +25,7 @@ import collections
 import json
 
 import pypath.resources.urls as urls
-import pypath.share.curl as curl
+from pypath.share.downloads import dm
 import pypath.share.common as common
 import pypath.share.session as session
 
@@ -55,8 +55,10 @@ def unichem_info():
     )
 
     url = urls.urls['unichem']['sources']
-    c = curl.Curl(url, large = False, silent = False)
-    response = json.loads(c.result)
+    path = dm.download(url)
+
+    with open(path) as f:
+        response = json.load(f)
 
     result = [
         UnichemSource(
@@ -164,39 +166,35 @@ def _unichem_mapping(id_type_a, id_type_b):
     id_type_b = get_src_id(id_type_b)
 
     url = urls.urls['unichem']['mapping'] % (id_type_a, id_type_a, id_type_b)
-    
-    # Use subprocess to download with curl and gunzip like we did successfully before
-    import subprocess
-    import tempfile
-    import os
-    
-    try:
-        # Download and decompress the file using external tools
-        cmd = f'curl -s "{url}" | gunzip'
-        process = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=300)
-        
-        if process.returncode != 0:
-            _log(f'Failed to download UniChem mapping from {url}')
-            return {}
-            
-        lines = process.stdout.strip().split('\n')
-        if not lines or not lines[0]:
-            return {}
-            
-        result = collections.defaultdict(set)
-        # Skip header line
-        for line in lines[1:]:
-            if line.strip():
-                parts = line.strip().split('\t')
-                if len(parts) >= 2:
-                    src_id, tgt_id = parts[0], parts[1]
-                    result[src_id].add(tgt_id)
-                    
-        return dict(result)
-        
-    except (subprocess.TimeoutExpired, subprocess.SubprocessError, OSError) as e:
-        _log(f'UniChem download failed: {e}')
+
+    import gzip
+
+    path = dm.download(url)
+
+    if path is None:
+        _log(f'Failed to download UniChem mapping from {url}')
         return {}
+
+    try:
+        with gzip.open(path, 'rt') as f:
+            lines = f.read().strip().split('\n')
+    except Exception:
+        with open(path) as f:
+            lines = f.read().strip().split('\n')
+
+    if not lines or not lines[0]:
+        return {}
+
+    result = collections.defaultdict(set)
+    # Skip header line
+    for line in lines[1:]:
+        if line.strip():
+            parts = line.strip().split('\t')
+            if len(parts) >= 2:
+                src_id, tgt_id = parts[0], parts[1]
+                result[src_id].add(tgt_id)
+
+    return dict(result)
 
 
 def info(source):

@@ -19,8 +19,11 @@
 
 from collections.abc import Generator
 import collections
-import itertools
 import csv
+import gzip
+import itertools
+import logging
+import time
 from pypath.share import curl
 from pypath.resources import urls
 from pypath.inputs import uniprot
@@ -28,6 +31,43 @@ import pandas as pd
 __all__ = ['tcdb_substrate']
 
 from pypath.utils import reflists
+
+_log = logging.getLogger(__name__)
+
+
+def _fetch_locations_chunk(
+    accessions: list,
+    max_retries: int = 5,
+    initial_delay: float = 5.0,
+) -> dict:
+    """Fetch UniProt subcellular locations for one chunk with retry.
+
+    Retries on ``gzip.BadGzipFile`` (HTTP 502 returns an HTML page) and
+    any other transient error.  Returns an empty dict if all retries are
+    exhausted so the caller can proceed without location data.
+    """
+    for attempt in range(max_retries):
+        try:
+            return uniprot.uniprot_locations(
+                accession=accessions,
+                organism=None,
+                reviewed=None,
+            )
+        except (gzip.BadGzipFile, OSError, Exception) as exc:
+            if attempt < max_retries - 1:
+                delay = initial_delay * (2 ** attempt)
+                _log.warning(
+                    'UniProt location query failed (attempt %d/%d): %s — '
+                    'retrying in %.0fs',
+                    attempt + 1, max_retries, exc, delay,
+                )
+                time.sleep(delay)
+            else:
+                _log.error(
+                    'UniProt location query failed after %d retries: %s',
+                    max_retries, exc,
+                )
+                raise
 
 TcdbSubstrate = collections.namedtuple(
     'TcdbSubstrate',
@@ -64,11 +104,7 @@ def tcdb_substrate() -> Generator[TcdbSubstrate, None, None]:
     for i in range(0, len(all_uniprots), chunk_size):
 
         uniprot_locations.update(
-            uniprot.uniprot_locations(
-                accession=all_uniprots[i : i + chunk_size],
-                organism=None,
-                reviewed=None,
-            )
+            _fetch_locations_chunk(all_uniprots[i : i + chunk_size])
         )
 
     for line in tc_to_substrate:

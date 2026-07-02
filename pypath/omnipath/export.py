@@ -793,6 +793,7 @@ class Export(session.Logger):
             'mirnatarget',
             'dorothea',
             'collectri',
+            'collectri2',
             'tf_target',
             'lncrna_mrna',
             'tf_mirna',

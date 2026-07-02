@@ -47,7 +47,7 @@ if _dm_path not in sys.path:
 if _cm_path not in sys.path:
     sys.path.insert(0, _cm_path)
 
-from download_manager import DownloadManager
+from dlmachine import DownloadManager
 
 import pypath.share.session as session
 import pypath.share.settings as settings

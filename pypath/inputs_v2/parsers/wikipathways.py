@@ -5,7 +5,6 @@ WikiPathways RDF parser.
 from __future__ import annotations
 
 import re
-import urllib.request
 from collections.abc import Generator, Iterable
 from typing import Any
 
@@ -13,6 +12,7 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import DC, DCTERMS, FOAF, OWL, RDF, RDFS
 
 from pypath.internals.cv_terms import EntityTypeCv
+from pypath.share.downloads import download_and_open
 
 
 WP = Namespace('http://vocabularies.wikipathways.org/wp#')
@@ -21,6 +21,8 @@ CITO = Namespace('http://purl.org/spar/cito/')
 
 _CURRENT_RDF_URL = 'https://data.wikipathways.org/current/rdf/'
 _RDF_FILENAME_RE = re.compile(r'href="(wikipathways-\d+-rdf-wp\.zip)"')
+_CURRENT_RDF_INDEX_FILENAME = 'current-rdf-index.html'
+_CURRENT_RDF_HTML: str | None = None
 _WP_ID_RE = re.compile(r'(WP\d+(?:_r\d+)?)')
 _NCBI_TAXON_RE = re.compile(r'NCBITaxon_(\d+)$')
 _PUBMED_RE = re.compile(r'(\d+)$')
@@ -65,13 +67,40 @@ _INTERACTION_TYPES = {
 }
 
 
-def current_rdf_url(**_kwargs: Any) -> str:
+def _current_rdf_html(force_refresh: bool = False) -> str:
+    """
+    Download the current WikiPathways RDF index through the shared manager.
+    """
+
+    global _CURRENT_RDF_HTML
+
+    if _CURRENT_RDF_HTML is not None and not force_refresh:
+        return _CURRENT_RDF_HTML
+
+    opener = download_and_open(
+        url=_CURRENT_RDF_URL,
+        filename=_CURRENT_RDF_INDEX_FILENAME,
+        subfolder='wikipathways',
+        large=False,
+        encoding='utf-8',
+        default_mode='r',
+        force_download=force_refresh,
+    )
+
+    try:
+        _CURRENT_RDF_HTML = opener.result
+    finally:
+        opener.close()
+
+    return _CURRENT_RDF_HTML
+
+
+def current_rdf_url(force_refresh: bool = False, **_kwargs: Any) -> str:
     """
     Resolve the current WikiPathways RDF pathway zip URL.
     """
 
-    with urllib.request.urlopen(_CURRENT_RDF_URL, timeout=30) as response:
-        html = response.read().decode('utf-8', 'ignore')
+    html = _current_rdf_html(force_refresh=force_refresh)
 
     match = _RDF_FILENAME_RE.search(html)
 
@@ -102,7 +131,6 @@ def _load_records(opener, force_refresh: bool = False) -> dict[str, list[dict[st
 
     records = {
         'pathways': [],
-        'pathway_terms': [],
         'interactions': [],
     }
 
@@ -126,7 +154,6 @@ def _load_records(opener, force_refresh: bool = False) -> dict[str, list[dict[st
             continue
 
         records['pathways'].append(pathway)
-        records['pathway_terms'].append(_extract_pathway_term_record(pathway))
         records['interactions'].extend(_extract_interaction_records(graph, pathway))
 
     _DATA_CACHE.clear()
@@ -156,30 +183,10 @@ def _extract_pathway_record(graph: Graph) -> dict[str, str] | None:
         'taxon_id': _extract_taxon_id(_first_uri(graph, pathway_uri, WP.organism)),
         'pubmed_ids': _join_unique(_pubmed_ids(graph, pathway_uri)),
         'ontology_terms': _join_unique(_ontology_terms(graph, pathway_uri)),
+        'pathway_ontology_terms': _join_unique(
+            _pathway_ontology_terms(graph, pathway_uri)
+        ),
     }
-
-
-def _extract_pathway_term_record(pathway: dict[str, str]) -> dict[str, str]:
-    xrefs = []
-    if pathway.get('pathway_id'):
-        xrefs.append(f"WikiPathways:{pathway['pathway_id']}")
-    if pathway.get('pathway_version_id'):
-        xrefs.append(f"WikiPathwaysVersion:{pathway['pathway_version_id']}")
-    if pathway.get('taxon_id'):
-        xrefs.append(f"NCBITaxon:{pathway['taxon_id']}")
-    for pubmed_id in pathway.get('pubmed_ids', '').split(';'):
-        if pubmed_id:
-            xrefs.append(f"PMID:{pubmed_id}")
-
-    return {
-        'id': pathway.get('pathway_id', ''),
-        'name': pathway.get('title', ''),
-        'definition': pathway.get('description', ''),
-        'synonyms': pathway.get('pathway_version_id', ''),
-        'comments': '',
-        'xrefs': _join_unique(xrefs),
-    }
-
 
 
 def _extract_interaction_records(
@@ -188,6 +195,7 @@ def _extract_interaction_records(
     ) -> list[dict[str, str]]:
 
     result = []
+    seen_records = set()
 
     for interaction_uri in sorted(set(graph.subjects(RDF.type, WP.Interaction)), key=str):
 
@@ -197,33 +205,45 @@ def _extract_interaction_records(
         if not source_uri or not target_uri:
             continue
 
-        source = _extract_entity_record(graph, source_uri)
-        target = _extract_entity_record(graph, target_uri)
+        sources = _terminal_entity_records(graph, source_uri)
+        targets = _terminal_entity_records(graph, target_uri)
 
-        if (
-            source['entity_type'] == EntityTypeCv.PATHWAY.value
-            or target['entity_type'] == EntityTypeCv.PATHWAY.value
-        ):
+        if not sources or not targets:
             continue
 
         interaction_types = _interaction_types(graph, interaction_uri)
         interaction_uri_str = str(interaction_uri)
 
-        result.append(
-            {
-                'interaction_uri': interaction_uri_str,
-                'interaction_local_id': _interaction_local_id(interaction_uri_str),
-                'interaction_types': _join_unique(interaction_types),
-                'pathway_id': pathway['pathway_id'],
-                'pathway_version_id': pathway['pathway_version_id'],
-                'pathway_term_accession': pathway['pathway_id'],
-                'pathway_ontology_terms': pathway['ontology_terms'],
-                'organism_name': pathway['organism_name'],
-                'taxon_id': pathway['taxon_id'],
-                **_prefix_record('source', source),
-                **_prefix_record('target', target),
-            }
-        )
+        for source in sources:
+            for target in targets:
+
+                if (
+                    source['uri'] == target['uri']
+                    or source['entity_type'] == EntityTypeCv.PATHWAY.value
+                    or target['entity_type'] == EntityTypeCv.PATHWAY.value
+                ):
+                    continue
+
+                record_key = (interaction_uri_str, source['uri'], target['uri'])
+                if record_key in seen_records:
+                    continue
+                seen_records.add(record_key)
+
+                result.append(
+                    {
+                        'interaction_uri': interaction_uri_str,
+                        'interaction_local_id': _interaction_local_id(interaction_uri_str),
+                        'interaction_types': _join_unique(interaction_types),
+                        'pathway_id': pathway['pathway_id'],
+                        'pathway_version_id': pathway['pathway_version_id'],
+                        'pathway_term_accession': pathway['pathway_id'],
+                        'pathway_ontology_terms': pathway['ontology_terms'],
+                        'organism_name': pathway['organism_name'],
+                        'taxon_id': pathway['taxon_id'],
+                        **_prefix_record('source', source),
+                        **_prefix_record('target', target),
+                    }
+                )
 
     return result
 
@@ -272,6 +292,66 @@ def _extract_entity_record(graph: Graph, entity_uri: str) -> dict[str, str]:
     }
 
 
+def _terminal_entity_records(
+        graph: Graph,
+        entity_uri: str,
+        visited: set[str] | None = None,
+    ) -> list[dict[str, str]]:
+    """
+    Resolve WikiPathways interaction references to biological participants.
+
+    WikiPathways RDF may use another ``wp:Interaction`` node as the source or
+    target of an interaction (line segments chained through anchors in GPML).
+    Those nodes are graphical/relational constructs, not biological entities, so
+    we recursively expand them to their terminal non-interaction endpoints.
+    """
+
+    visited = visited or set()
+
+    if entity_uri in visited:
+        return []
+
+    visited.add(entity_uri)
+
+    if not _is_interaction_node(graph, entity_uri):
+        return [_extract_entity_record(graph, entity_uri)]
+
+    subject = URIRef(entity_uri)
+    records = []
+
+    for predicate in (WP.source, WP.target):
+        nested_uri = _first_uri(graph, subject, predicate)
+        if nested_uri:
+            records.extend(_terminal_entity_records(graph, nested_uri, visited.copy()))
+
+    return _unique_entity_records(records)
+
+
+def _unique_entity_records(records: Iterable[dict[str, str]]) -> list[dict[str, str]]:
+
+    result = []
+    seen = set()
+
+    for record in records:
+        uri = record.get('uri')
+        if uri and uri not in seen:
+            seen.add(uri)
+            result.append(record)
+
+    return result
+
+
+def _is_interaction_node(graph: Graph, entity_uri: str) -> bool:
+
+    subject = URIRef(entity_uri)
+    rdf_types = {
+        _local_name(obj)
+        for obj in graph.objects(subject, RDF.type)
+    }
+
+    return bool(rdf_types & _INTERACTION_TYPES)
+
+
 def _interaction_types(graph: Graph, interaction_uri: URIRef) -> list[str]:
     return [
         rdf_type
@@ -288,11 +368,8 @@ def _entity_type(rdf_types: set[str]) -> EntityTypeCv:
     if 'Complex' in rdf_types:
         return EntityTypeCv.COMPLEX
 
-    if rdf_types & _INTERACTION_TYPES:
-        return EntityTypeCv.INTERACTION
-
     if 'Metabolite' in rdf_types:
-        return EntityTypeCv.SMALL_MOLECULE
+        return EntityTypeCv.CHEMICAL
 
     if rdf_types & {'Protein', 'GeneProduct'}:
         return EntityTypeCv.PROTEIN
@@ -321,6 +398,17 @@ def _ontology_terms(graph: Graph, pathway_uri: URIRef) -> list[str]:
         )
 
     return [value for value in values if value]
+
+
+def _pathway_ontology_terms(graph: Graph, pathway_uri: URIRef) -> list[str]:
+    return [
+        value
+        for value in (
+            _ontology_term_from_uri(str(obj))
+            for obj in graph.objects(pathway_uri, WP.pathwayOntologyTag)
+        )
+        if value
+    ]
 
 
 def _pubmed_ids(graph: Graph, pathway_uri: URIRef) -> list[str]:

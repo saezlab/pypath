@@ -23,6 +23,8 @@ inputs_v2/
 │   ├── reactome.py       # Reactome BioPAX parser
 │   └── bindingdb.py      # BindingDB parser
 ├── bindingdb.py          # BindingDB interactions & compounds
+├── cellinker.py          # Cellinker ligand-receptor & metabolite-protein data
+├── drugcentral.py        # DrugCentral drug-target interactions
 ├── guidetopharma.py      # Guide to Pharmacology
 ├── hmdb.py               # Human Metabolome Database
 ├── intact.py             # IntAct interactions
@@ -115,7 +117,7 @@ f = FieldConfig(
 
 # Define the schema
 schema = EntityBuilder(
-    entity_type=EntityTypeCv.SMALL_MOLECULE,
+    entity_type=EntityTypeCv.CHEMICAL,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
         CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id', extract='chebi')),
@@ -142,7 +144,6 @@ dataset = Dataset(
 
 # Optional special kinds:
 # Dataset(..., kind='id_translation')  # excluded from regular silver parquet output
-# OntologyDataset(...)                 # ontology export, not silver parquet
 ```
 
 A resource may also expose a narrow tabular dataset for a specific downstream use case.
@@ -184,6 +185,16 @@ metadata = resource.metadata()
 ## Creating a New Input Module
 
 Follow these steps to add a new data source:
+
+## Newly Migrated Inputs
+
+The following legacy inputs have been migrated into `inputs_v2` with known
+download entry points and module-level `resource` definitions.
+
+| Resource | Download entry point | `inputs_v2` datasets | Legacy module |
+| --- | --- | --- | --- |
+| Cellinker | https://www.cellknowledge.com.cn/cellinker/Download.html | Human and mouse protein ligand-receptor, metabolite receptor, enzyme, and transporter datasets | `pypath.inputs.cellinker` |
+| DrugCentral | https://unmtid-dbs.net/download/DrugCentral/2021_09_01/drug.target.interaction.tsv.gz | Drug-target interaction dataset | `pypath.inputs.drugcentral` |
 
 ### Step 1: Define ResourceConfig
 

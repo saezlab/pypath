@@ -1,26 +1,33 @@
-[build-system]
-requires = ["poetry_core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+# ===================================
+# =======        BUILD       ========
+# ===================================
 
-[tool.poetry]
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+# ===================================
+# =======       PROJECT      ========
+# ===================================
+
+[project]
 name = "pypath-omnipath"
 version = "0.16.31"
 description = "Molecular signaling prior knowledge processing"
-license = "GPL-3.0-only"
+license = "GPL-3.0-or-later"
+readme = "README.rst"
+requires-python = ">=3.10"
 authors = [
-    "Denes Turei <turei.denes@gmail.com>",
-    "Nicolàs Palacio",
-    "Sebastian Lobentanzer",
-    "Olga Ivanova",
-    "Melih Darcan",
-    "Erva Ulusoy",
-    "Tennur Kilic",
-    "Omer Kaan Vural",
-    "Ahmet Rifaioglu",
-    "Charles Tapley Hoyt"
-]
-packages = [
-    { include = "pypath" }
+    {name = "Denes Turei", email = "turei.denes@gmail.com"},
+    {name = "Nicolas Palacio"},
+    {name = "Sebastian Lobentanzer"},
+    {name = "Olga Ivanova"},
+    {name = "Melih Darcan"},
+    {name = "Erva Ulusoy"},
+    {name = "Tennur Kilic"},
+    {name = "Omer Kaan Vural"},
+    {name = "Ahmet Rifaioglu"},
+    {name = "Charles Tapley Hoyt"},
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -33,105 +40,189 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Scientific/Engineering :: Information Analysis",
-    "Topic :: Scientific/Engineering :: Mathematics"
+    "Topic :: Scientific/Engineering :: Mathematics",
 ]
-repository = "https://github.com/saezlab/pypath"
-homepage = "https://omnipathdb.org/"
-readme = "README.rst"
 keywords = [
     "systems biology",
     "molecular biology",
     "omics",
     "network",
-    "signaling"
+    "signaling",
+]
+dependencies = [
+    "beautifulsoup4",
+    "cachedir>=0.1.2",
+    "certifi>=2023.7.22",
+    "cffi>=1.17.0",
+    "cryptography>=41.0.4",
+    "dill",
+    "dlmachine>=0.0.2",
+    "future",
+    "glom",
+    "lxml",
+    "numpy",
+    "openpyxl",
+    "pandas",
+    "pkg-infra>=0.1.1",
+    "pypath-common>=0.2.6",
+    "psutil",
+    "pyarrow",
+    "pyreadr",
+    "pysftp>=0.2.9",
+    "python-dotenv",
+    "PyYAML",
+    "rdata",
+    "rdflib>=7.6.0",
+    "requests",
+    "scipy>=1.9.0",
+    "sqlparse",
+    "tabulate",
+    "timeloop",
+    "toml",
+    "tornado>=3.6.6",
+    "tqdm",
+    "typing_extensions",
+    "xlrd",
 ]
 
-[tool.poetry.urls]
-"Bug Tracker" = "https://github.com/saezlab/pypath/issues"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-beautifulsoup4 = "*"
-dill = "*"
-future = "*"
-glom = "*"
-lxml = "*"
-matplotlib = "*"
-numpy = "*"
-openpyxl = "*"
-pandas = "*"
-psutil = "*"
-pyarrow = "*"
-pycurl = "*"
-pypath-common = ">=0.2.6"
-pyreadr = "*"
-PyYAML = "*"
-rdata = "*"
-requests = "*"
-scipy = ">=1.9.0"
-sqlparse = "*"
-tabulate = "*"
-timeloop = "*"
-toml = "*"
-tqdm = "*"
-xlrd = "*"
-# pybel = { version = "*", optional = true, extras = [] }
-# bio2bel = { version = "*", optional = true, extras = [] }
-# click = { version = "*", optional = true }
-python-igraph = { version = "*", optional = true }
-sparqlwrapper = { version = "*", optional = true }
-openbabel = { version = "*", optional = true }
-rdkit = { version = "*", optional = true }
-"epam.indigo" = { version = "*", optional = true }
-pysftp = "^0.2.9"
-typing_extensions = "*"
-tornado = ">=3.6.6"
-cryptography = ">=41.0.4"
-certifi = ">=2023.7.22"
-cffi = "^1.17.0"
-download-manager = {git = "https://github.com/saezlab/download-manager.git", branch = "main"}
-cachemanager = {git = "https://github.com/saezlab/cache-manager.git", rev = "main"}
-rdflib = "^7.6.0"
-python-dotenv = "*"
-
-[tool.poetry.extras]
-# bel = [
-#     "pybel",
-#     "bio2bel",
-#     "click",
-# ]
-graph = [
-    "python-igraph",
-]
-pathophenodb = [
-    "rdflib",
-    "sparqlwrapper",
-]
-metabo = [
-    "epam.indigo",
-    "openbabel",
-    "rdkit",
+[project.optional-dependencies]
+curl = ["pycurl>=7.45.3"]
+vis = ["matplotlib"]
+graph = ["python-igraph"]
+metabo = ["openbabel", "rdkit", "epam.indigo"]
+dev = ["pre-commit", "bump2version"]
+tests = ["pytest>=6.0", "pytest-cov", "coverage>=6.0", "ruff"]
+docs = [
+    "mkdocs>=1.6,<2",
+    "mkdocs-material>=9.6",
+    "pymdown-extensions>=10.15",
+    "mkdocstrings[python]>=0.29",
 ]
 
-[poetry.group.dev.dependencies]
-bump2version = "*"
-sphinx = ">=5.0.0"
-insipid-sphinx-theme = ">=0.3.6"
-sphinx-last-updated-by-git = ">=0.3"
-sphinx-autodoc-typehints = ">=1.18.0"
-sphinxcontrib-fulltoc = ">=1.2.0"
-sphinx_copybutton = "*"
-jupyterlab = "*"
-notebook = "6.4.12"
-pydata-sphinx-theme = "*"
-sphinx_remove_toctrees = "*"
-jupyter-contrib-nbextensions = { git = "https://github.com/deeenes/jupyter_contrib_nbextensions.git", branch = "master" }
-nbsphinx = { git = "https://github.com/deeenes/nbsphinx.git", branch = "timings" }
-jupyter-server = ">=2.7.2"
-traitlets = "5.9.0"
+[project.urls]
+Documentation = "https://pypath.omnipathdb.org"
+Homepage = "https://omnipathdb.org"
+Repository = "https://github.com/saezlab/pypath"
+Issues = "https://github.com/saezlab/pypath/issues"
 
-[tool.poetry.scripts]
+[project.scripts]
 bio2bel_omnipath = "pypath.omnipath.bel:main"
 
-[tool.poetry.plugins."bio2bel"]
+[project.entry-points."bio2bel"]
 omnipath = "pypath.omnipath.bel"
+
+# ===================================
+# =======        TOOL        ========
+# ===================================
+
+[tool.hatch.build.targets.wheel]
+packages = ["pypath"]
+
+# ---- Coverage
+[tool.coverage.run]
+source = ["pypath"]
+omit = ["**/test_*.py"]
+
+# ---- Pytest
+[tool.pytest.ini_options]
+testpaths = ["test"]
+xfail_strict = true
+addopts = [
+    "--import-mode=importlib",
+]
+filterwarnings = []
+
+# ---- Ruff
+[tool.ruff]
+exclude = [
+    "sandbox",
+    "tests",
+    "tests/**",
+    "*/tests/**",
+    "**/test_*.py",
+]
+extend-include = ["*.ipynb"]
+line-length = 80
+target-version = "py310"
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+exclude = [
+    "docs/_build",
+    "tests",
+    "tests/**",
+    "*/tests/**",
+    "**/test_*.py",
+]
+ignore = [
+    "COM812",
+    "ISC001",
+    "B008",
+    "B024",
+    "D100",
+    "D104",
+    "D105",
+    "D107",
+    "D200",
+    "D202",
+    "D203",
+    "D213",
+    "D400",
+    "D401",
+    "E251",
+    "E303",
+    "E501",
+    "E731",
+    "E741",
+    "UP017",
+]
+select = [
+    "B",
+    "BLE",
+    "C4",
+    "D",
+    "E",
+    "F",
+    "I",
+    "RUF100",
+    "TID",
+    "UP",
+    "W",
+    "Q",
+    "S307",
+    "ANN",
+]
+unfixable = ["UP"]
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+
+[tool.ruff.lint.isort]
+case-sensitive = false
+combine-as-imports = true
+force-sort-within-sections = true
+force-wrap-aliases = true
+known-first-party = ["pypath"]
+known-third-party = ["numpy", "pandas"]
+length-sort = false
+no-lines-before = ["local-folder"]
+order-by-type = true
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = ["D104", "F401"]
+"docs/*" = ["I"]
+"docs/src/conf.py" = ["D100"]
+"tests/*" = ["D"]
+"tests/conftest.py" = ["D101", "D102", "D103", "E402"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

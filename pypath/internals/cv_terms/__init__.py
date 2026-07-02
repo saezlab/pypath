@@ -31,21 +31,23 @@ Accession Ranges:
     OmniPath update categories: OM:0401-0499
     OmniPath curation: OM:0400-0499
     OmniPath licenses: OM:0501-0599
+    OmniPath ontology vocabularies: OM:1400-1499
 """
 
 from typing import Union
 
-from .core import CvEnum
-from .entity_types import EntityTypeCv, MoleculeSubtypeCv,ProteinFunctionalClassCv
+from .core import CvEnum, cv_term_label_accession
+from .entity_types import EntityTypeCv, MoleculeSubtypeCv, MirnaSubtypeCv, ProteinFunctionalClassCv
 from .identifiers import IdentifierNamespaceCv
 from .annotations import (
     MembershipRoleCv,
     BiologicalRoleCv,
     ExperimentalRoleCv,
     InteractionTypeCv,
-    DetectionMethodCv,
-    BiologicalEffectCv,
-    CausalMechanismCv,
+	DetectionMethodCv,
+	BiologicalEffectCv,
+	ControlEffectCv,
+	CausalMechanismCv,
     PharmacologicalActionCv,
     CausalStatementCv,
     ComplexExpansionCv,
@@ -57,9 +59,14 @@ from .annotations import (
     ParticipantMetadataCv,
     LigandTypeCv,
     OntologyAnnotationCv,
+    PathwayAnnotationsCv,
+    ReactionAnnotationsCv,
     ResourceAnnotationCv,
     AssayTypeCv,
     AssayAnnotationsCv,
+    DiseaseAnnotationCv,
+    InterCellAnnotations
 )
 from .resource_metadata import LicenseCV, UpdateCategoryCV
 from .resources import ResourceCv
+from .ontologies import OntologyCv

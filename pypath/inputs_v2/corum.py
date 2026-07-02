@@ -12,10 +12,13 @@ from pypath.internals.cv_terms import (
     IdentifierNamespaceCv,
     MoleculeAnnotationsCv,
     LicenseCV,
+    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
 from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -36,6 +39,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='30357367',
     primary_category='complexes',
+    annotation_ontologies=(OntologyCv.GENE_ONTOLOGY,),
     description=(
         'CORUM is a manually curated repository of experimentally characterized '
         'protein complexes from mammalian organisms. Each complex includes '
@@ -70,7 +74,13 @@ complexes_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('PubMed ID', delimiter=';')),
         CV(term=MoleculeAnnotationsCv.FUNCAT, value=f('FunCat description', delimiter=';')),
-        CV(term=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=f('GO ID', delimiter=';')),
+    ),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=EntityTypeCv.CV_TERM,
+            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_identifier=f('GO ID', delimiter=';'),
+        ),
     ),
     membership=MembershipBuilder(
         MembersFromList(
