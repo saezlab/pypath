@@ -1009,6 +1009,11 @@ urls = {
             'current/homologene.data',
         'url_rescued': 'https://rescued.omnipathdb.org/homologene.data',
     },
+    'gene2ensembl': {
+        'label': 'NCBI Gene: authoritative Entrez<->Ensembl gene/protein map, '
+            'all organisms',
+        'url': 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2ensembl.gz',
+    },
     'mirbase' : {
         'label': 'miRBase: miRNA main reference database',
         'aliases_old': 'ftp://mirbase.org/pub/mirbase/CURRENT/aliases.txt.gz',
