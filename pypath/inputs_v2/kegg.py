@@ -6,7 +6,6 @@ from collections.abc import Iterable
 import json
 import logging
 import time
-import urllib.request
 
 _log = logging.getLogger(__name__)
 
@@ -336,6 +335,27 @@ def _completed_kegg_entries(path) -> int:
     return count
 
 
+def _fetch_kegg_rest(url: str) -> str:
+    """Fetch a KEGG REST URL through the shared download manager.
+
+    The batched REST ``get`` fetches below accumulate many small responses into
+    one combined cache file, so they read into memory (``dest=False`` → buffer)
+    rather than one-file-per-URL. Routing them through the download manager —
+    like every other download in this module — means they share its backend,
+    retries and, crucially, its central CA-bundle handling (dlmachine defaults
+    to ``certifi``). The former raw ``urllib.request`` path used OpenSSL's
+    default trust store, which is empty on managed Python installs (e.g. the
+    uv-managed interpreter the build runs on) and failed cert verification with
+    ``CERTIFICATE_VERIFY_FAILED`` even though the KEGG certificate is valid.
+    """
+    from pypath.share.downloads import get_download_manager
+
+    buffer = get_download_manager().download(url, dest=False)
+    if buffer is None:
+        raise RuntimeError(f'KEGG REST download returned no data: {url}')
+    return buffer.getvalue().decode('utf-8')
+
+
 def _fetch_reaction_details(
     reaction_ids: list[str],
     dest: str,
@@ -370,12 +390,7 @@ def _fetch_reaction_details(
         for start in range(completed, expected, _KEGG_BATCH_SIZE):
             batch = reaction_ids[start:start + _KEGG_BATCH_SIZE]
             url = f"{_KEGG_REST}/get/{'+'.join(batch)}"
-            request = urllib.request.Request(
-                url,
-                headers={'User-Agent': 'pypath-kegg/1.0'},
-            )
-            with urllib.request.urlopen(request, timeout=60) as response:
-                out.write(response.read().decode('utf-8'))
+            out.write(_fetch_kegg_rest(url))
             if delay:
                 time.sleep(delay)
             if (start + len(batch)) % 500 == 0 or start + len(batch) >= expected:
@@ -426,13 +441,8 @@ def _fetch_pathway_kgml(
         if not force_refresh and file_path.exists() and file_path.stat().st_size > 0:
             continue
         url = f'{_KEGG_REST}/get/{pathway_id}/kgml'
-        request = urllib.request.Request(
-            url,
-            headers={'User-Agent': 'pypath-kegg/1.0'},
-        )
         try:
-            with urllib.request.urlopen(request, timeout=60) as response:
-                file_path.write_text(response.read().decode('utf-8'), encoding='utf-8')
+            file_path.write_text(_fetch_kegg_rest(url), encoding='utf-8')
         except Exception as exc:  # pragma: no cover - network/API defensive path
             _log.warning('[KEGG] failed to fetch KGML for %s: %s', pathway_id, exc)
         if delay:
@@ -493,12 +503,7 @@ def _fetch_pathway_map_details(
         for start in range(completed, expected, _KEGG_BATCH_SIZE):
             batch = map_ids[start:start + _KEGG_BATCH_SIZE]
             url = f"{_KEGG_REST}/get/{'+'.join(batch)}"
-            request = urllib.request.Request(
-                url,
-                headers={'User-Agent': 'pypath-kegg/1.0'},
-            )
-            with urllib.request.urlopen(request, timeout=60) as response:
-                out.write(response.read().decode('utf-8'))
+            out.write(_fetch_kegg_rest(url))
             if delay:
                 time.sleep(delay)
             if (start + len(batch)) % 100 == 0 or start + len(batch) >= expected:
