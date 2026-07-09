@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+import contextlib
+import fcntl
 import json
 import logging
+import os
 import time
-import urllib.request
 
 _log = logging.getLogger(__name__)
 
@@ -336,6 +338,51 @@ def _completed_kegg_entries(path) -> int:
     return count
 
 
+def _fetch_kegg_rest(url: str) -> str:
+    """Fetch a KEGG REST URL through the shared download manager.
+
+    The batched REST ``get`` fetches below accumulate many small responses into
+    one combined cache file, so they read into memory (``dest=False`` → buffer)
+    rather than one-file-per-URL. Routing them through the download manager —
+    like every other download in this module — means they share its backend,
+    retries and, crucially, its central CA-bundle handling (dlmachine defaults
+    to ``certifi``). The former raw ``urllib.request`` path used OpenSSL's
+    default trust store, which is empty on managed Python installs (e.g. the
+    uv-managed interpreter the build runs on) and failed cert verification with
+    ``CERTIFICATE_VERIFY_FAILED`` even though the KEGG certificate is valid.
+    """
+    from pypath.share.downloads import get_download_manager
+
+    buffer = get_download_manager().download(url, dest=False)
+    if buffer is None:
+        raise RuntimeError(f'KEGG REST download returned no data: {url}')
+    return buffer.getvalue().decode('utf-8')
+
+
+@contextlib.contextmanager
+def _shared_cache_lock(dest: str):
+    """Serialize concurrent fetches of a shared KEGG flat-file cache.
+
+    The reaction (``kegg_get_reaction.txt``) and reference-pathway-map
+    (``kegg_get_pathway_maps.txt``) caches under ``kegg_shared/`` are shared by
+    the ``reactions`` and ``pathways`` datasets, which the build stages
+    concurrently (one worker per dataset). Both accumulate into ``<dest>.tmp``
+    and then ``.replace(dest)``; without a lock the first ``replace`` pulls the
+    tmp out from under the other worker, which then counts 0 entries and raises
+    ``Incomplete KEGG cache``. An advisory ``flock`` on a sidecar lockfile makes
+    the later workers wait, then fall through to the ``completed == expected``
+    early-return (the cache is complete by the time they acquire the lock).
+    """
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    lock_path = f'{dest}.lock'
+    with open(lock_path, 'w') as lock_file:
+        fcntl.flock(lock_file, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock_file, fcntl.LOCK_UN)
+
+
 def _fetch_reaction_details(
     reaction_ids: list[str],
     dest: str,
@@ -348,49 +395,47 @@ def _fetch_reaction_details(
     tmp_path = dest_path.with_suffix(dest_path.suffix + '.tmp')
     expected = len(reaction_ids)
 
-    completed = _completed_kegg_entries(dest_path)
-    if completed == expected:
-        return
-    if completed and not tmp_path.exists():
-        dest_path.replace(tmp_path)
-    completed = _completed_kegg_entries(tmp_path)
-    if completed > expected:
-        tmp_path.unlink(missing_ok=True)
-        completed = 0
+    # Serialize across concurrent dataset workers (reactions + pathways both
+    # populate this shared file); losers wait then hit the early-return below.
+    with _shared_cache_lock(dest):
+        completed = _completed_kegg_entries(dest_path)
+        if completed == expected:
+            return
+        if completed and not tmp_path.exists():
+            dest_path.replace(tmp_path)
+        completed = _completed_kegg_entries(tmp_path)
+        if completed > expected:
+            tmp_path.unlink(missing_ok=True)
+            completed = 0
 
-    # Resume only at a batch boundary so a killed process cannot leave a
-    # partial batch that shifts subsequent reaction IDs.
-    if completed % _KEGG_BATCH_SIZE:
-        tmp_path.unlink(missing_ok=True)
-        completed = 0
-    mode = 'a' if completed else 'w'
-    _log.info('[KEGG] fetching reaction entries %d/%d', completed, expected)
+        # Resume only at a batch boundary so a killed process cannot leave a
+        # partial batch that shifts subsequent reaction IDs.
+        if completed % _KEGG_BATCH_SIZE:
+            tmp_path.unlink(missing_ok=True)
+            completed = 0
+        mode = 'a' if completed else 'w'
+        _log.info('[KEGG] fetching reaction entries %d/%d', completed, expected)
 
-    with open(tmp_path, mode, encoding='utf-8') as out:
-        for start in range(completed, expected, _KEGG_BATCH_SIZE):
-            batch = reaction_ids[start:start + _KEGG_BATCH_SIZE]
-            url = f"{_KEGG_REST}/get/{'+'.join(batch)}"
-            request = urllib.request.Request(
-                url,
-                headers={'User-Agent': 'pypath-kegg/1.0'},
+        with open(tmp_path, mode, encoding='utf-8') as out:
+            for start in range(completed, expected, _KEGG_BATCH_SIZE):
+                batch = reaction_ids[start:start + _KEGG_BATCH_SIZE]
+                url = f"{_KEGG_REST}/get/{'+'.join(batch)}"
+                out.write(_fetch_kegg_rest(url))
+                if delay:
+                    time.sleep(delay)
+                if (start + len(batch)) % 500 == 0 or start + len(batch) >= expected:
+                    _log.info(
+                        '[KEGG] fetched reaction entries %d/%d',
+                        start + len(batch),
+                        expected,
+                    )
+
+        if _completed_kegg_entries(tmp_path) != expected:
+            raise RuntimeError(
+                f'Incomplete KEGG reaction cache: '
+                f'{_completed_kegg_entries(tmp_path)}/{expected} entries'
             )
-            with urllib.request.urlopen(request, timeout=60) as response:
-                out.write(response.read().decode('utf-8'))
-            if delay:
-                time.sleep(delay)
-            if (start + len(batch)) % 500 == 0 or start + len(batch) >= expected:
-                _log.info(
-                    '[KEGG] fetched reaction entries %d/%d',
-                    start + len(batch),
-                    expected,
-                )
-
-    if _completed_kegg_entries(tmp_path) != expected:
-        raise RuntimeError(
-            f'Incomplete KEGG reaction cache: '
-            f'{_completed_kegg_entries(tmp_path)}/{expected} entries'
-        )
-    tmp_path.replace(dest_path)
+        tmp_path.replace(dest_path)
 
 
 def _pathway_ids(list_pathway_handle) -> list[str]:
@@ -426,13 +471,8 @@ def _fetch_pathway_kgml(
         if not force_refresh and file_path.exists() and file_path.stat().st_size > 0:
             continue
         url = f'{_KEGG_REST}/get/{pathway_id}/kgml'
-        request = urllib.request.Request(
-            url,
-            headers={'User-Agent': 'pypath-kegg/1.0'},
-        )
         try:
-            with urllib.request.urlopen(request, timeout=60) as response:
-                file_path.write_text(response.read().decode('utf-8'), encoding='utf-8')
+            file_path.write_text(_fetch_kegg_rest(url), encoding='utf-8')
         except Exception as exc:  # pragma: no cover - network/API defensive path
             _log.warning('[KEGG] failed to fetch KGML for %s: %s', pathway_id, exc)
         if delay:
@@ -476,44 +516,42 @@ def _fetch_pathway_map_details(
     tmp_path = dest_path.with_suffix(dest_path.suffix + '.tmp')
     expected = len(map_ids)
 
-    completed = _completed_kegg_entries(dest_path)
-    if completed == expected:
-        return
-    if completed and not tmp_path.exists():
-        dest_path.replace(tmp_path)
-    completed = _completed_kegg_entries(tmp_path)
-    if completed > expected or completed % _KEGG_BATCH_SIZE:
-        tmp_path.unlink(missing_ok=True)
-        completed = 0
+    # Serialize across concurrent dataset workers sharing this file (see
+    # _fetch_reaction_details); losers wait then hit the early-return below.
+    with _shared_cache_lock(dest):
+        completed = _completed_kegg_entries(dest_path)
+        if completed == expected:
+            return
+        if completed and not tmp_path.exists():
+            dest_path.replace(tmp_path)
+        completed = _completed_kegg_entries(tmp_path)
+        if completed > expected or completed % _KEGG_BATCH_SIZE:
+            tmp_path.unlink(missing_ok=True)
+            completed = 0
 
-    mode = 'a' if completed else 'w'
-    _log.info('[KEGG] fetching pathway map entries %d/%d', completed, expected)
+        mode = 'a' if completed else 'w'
+        _log.info('[KEGG] fetching pathway map entries %d/%d', completed, expected)
 
-    with open(tmp_path, mode, encoding='utf-8') as out:
-        for start in range(completed, expected, _KEGG_BATCH_SIZE):
-            batch = map_ids[start:start + _KEGG_BATCH_SIZE]
-            url = f"{_KEGG_REST}/get/{'+'.join(batch)}"
-            request = urllib.request.Request(
-                url,
-                headers={'User-Agent': 'pypath-kegg/1.0'},
+        with open(tmp_path, mode, encoding='utf-8') as out:
+            for start in range(completed, expected, _KEGG_BATCH_SIZE):
+                batch = map_ids[start:start + _KEGG_BATCH_SIZE]
+                url = f"{_KEGG_REST}/get/{'+'.join(batch)}"
+                out.write(_fetch_kegg_rest(url))
+                if delay:
+                    time.sleep(delay)
+                if (start + len(batch)) % 100 == 0 or start + len(batch) >= expected:
+                    _log.info(
+                        '[KEGG] fetched pathway map entries %d/%d',
+                        start + len(batch),
+                        expected,
+                    )
+
+        if _completed_kegg_entries(tmp_path) != expected:
+            raise RuntimeError(
+                f'Incomplete KEGG pathway map cache: '
+                f'{_completed_kegg_entries(tmp_path)}/{expected} entries'
             )
-            with urllib.request.urlopen(request, timeout=60) as response:
-                out.write(response.read().decode('utf-8'))
-            if delay:
-                time.sleep(delay)
-            if (start + len(batch)) % 100 == 0 or start + len(batch) >= expected:
-                _log.info(
-                    '[KEGG] fetched pathway map entries %d/%d',
-                    start + len(batch),
-                    expected,
-                )
-
-    if _completed_kegg_entries(tmp_path) != expected:
-        raise RuntimeError(
-            f'Incomplete KEGG pathway map cache: '
-            f'{_completed_kegg_entries(tmp_path)}/{expected} entries'
-        )
-    tmp_path.replace(dest_path)
+        tmp_path.replace(dest_path)
 
 
 def _download_kegg_pathway_ontology_files(

@@ -1009,6 +1009,11 @@ urls = {
             'current/homologene.data',
         'url_rescued': 'https://rescued.omnipathdb.org/homologene.data',
     },
+    'gene2ensembl': {
+        'label': 'NCBI Gene: authoritative Entrez<->Ensembl gene/protein map, '
+            'all organisms',
+        'url': 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2ensembl.gz',
+    },
     'mirbase' : {
         'label': 'miRBase: miRNA main reference database',
         'aliases_old': 'ftp://mirbase.org/pub/mirbase/CURRENT/aliases.txt.gz',
@@ -1484,6 +1489,10 @@ urls = {
         'url': 'https://raw.githubusercontent.com/asrhou/NATMI/'
             'gh-pages/_data/lsps.csv',
     },
+    'connectomedb2025': {
+        'label': 'Human ligand-receptor interactions from ConnectomeDB2025',
+        'url': 'https://connectomedb.org/downloads/Current-Release/CSV/ConnectomeDB2025_human.csv',
+    },
     'talklr': {
         'label': 'Ligand-receptor interactions from other databases with '
             '187 literature references',
@@ -1786,6 +1795,11 @@ urls = {
         'label': 'Comprehensive collection of transcriptional regulatory interactions',
         'url': 'https://rescued.omnipathdb.org/CollecTRI.csv',
     },
+    'collectri2': {
+        'label': 'CollecTRI2 transcriptional regulatory interactions',
+        'main': 'https://rescued.omnipathdb.org/CollecTRI2.tsv.gz',
+        'combined': 'https://rescued.omnipathdb.org/CollecTRI2-combined.tsv.gz',
+    },
     'ramp': {
         'label': 'RaMP metabolomic pathway and metabolite identifier database',
         'url': 'https://figshare.com/ndownloader/files/38534654',
@@ -1805,8 +1819,7 @@ urls = {
     },
     'hmdb': {
         'label': 'Human Metabolome Database',
-        'metabolites': 'https://hmdb.ca/system/downloads/'
-            'current/hmdb_metabolites.zip',
+        'metabolites': 'https://rescued.omnipathdb.org/hmdb_metabolites.zip',
         'proteins': 'https://hmdb.ca/system/downloads/'
             'current/hmdb_proteins.zip',
         'svg': 'https://hmdb.ca/structures/%s/image.svg',

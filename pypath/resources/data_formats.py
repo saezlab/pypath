@@ -750,6 +750,26 @@ pathway = {
         header = False,
         data_model = 'ligand_receptor',
     ),
+    'connectomedb2025': input_formats.NetworkInput(
+        name = 'ConnectomeDB2025',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        input = 'connectomedb2025.connectomedb2025_interactions',
+        references = (2, ';'),
+        header = False,
+        extra_edge_attrs = {
+            'evidence': 3,
+            'interaction_id': 4,
+        },
+        data_model = 'ligand_receptor',
+    ),
     'talklr': input_formats.NetworkInput(
         name = 'talklr',
         separator = None,
@@ -2490,7 +2510,42 @@ transcription_collectri = {
 }
 
 # synonyms
+transcription_collectri2 = {
+    'collectri2': input_formats.NetworkInput(
+        name = 'CollecTRI2',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = True,
+        sign = (2, 1, -1),
+        ncbi_tax_id = 9606,
+        input = 'collectri2.collectri2_interactions',
+        interaction_type = 'transcriptional',
+        resource = (4, ';'),
+        references = (5, ';'),
+        header = False,
+        extra_edge_attrs = {
+            'tf_type': 3,
+            'auto_regulation': 6,
+            'evidence': 7,
+        },
+        extra_node_attrs_a = {
+            'tf_type': 3,
+        },
+        extra_node_attrs_b = {},
+        must_have_references = False,
+        allow_loops = True,
+        data_model = 'activity_flow',
+    ),
+}
+
+
 collectri = transcription_collectri
+collectri2 = transcription_collectri2
 
 # all transcriptional regulation resources
 transcription = {}
@@ -3281,6 +3336,8 @@ ligand_receptor['cellchatdb'] = copy.deepcopy(pathway['cellchatdb'])
 ligand_receptor['cellchatdb'].must_have_references = False
 ligand_receptor['connectomedb'] = copy.deepcopy(pathway['connectomedb'])
 ligand_receptor['connectomedb'].must_have_references = False
+ligand_receptor['connectomedb2025'] = copy.deepcopy(pathway['connectomedb2025'])
+ligand_receptor['connectomedb2025'].must_have_references = False
 ligand_receptor['talklr'] = copy.deepcopy(pathway['talklr'])
 ligand_receptor['talklr'].must_have_references = False
 ligand_receptor['cellinker'] = copy.deepcopy(pathway['cellinker'])

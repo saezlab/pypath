@@ -93,7 +93,7 @@ def ramp_mapping(
     df = pd.read_sql_query(query, con)
     con.close()
 
-    if not curies:
+    if not curies and not df.empty:
 
         df[df.columns] = df[df.columns].apply(
             lambda y: [x.split(':', maxsplit = 1)[-1] for x in y],

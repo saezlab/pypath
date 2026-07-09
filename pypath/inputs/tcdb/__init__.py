@@ -36,7 +36,9 @@ def tcdb_families():
 
     c = curl.Curl(url, large = False, silent = False)
 
-    lines = bs4.BeautifulSoup(c.result, features = 'lxml').find('p').text
+    _soup = bs4.BeautifulSoup(c.result, features = 'lxml')
+    _p = _soup.find('p')
+    lines = _p.text if _p is not None else _soup.get_text()
 
     return dict(
         (
@@ -92,7 +94,7 @@ def tcdb_annotations(organism = 9606):
     classes = tcdb_classes()
     result = collections.defaultdict(set)
 
-    for ac, (tc, family) in iteritems(classes):
+    for ac, (tc, family) in classes.items():
 
         uniprots = mapping.map_name(
             ac,

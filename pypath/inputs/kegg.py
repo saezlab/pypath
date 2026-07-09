@@ -830,3 +830,35 @@ def kegg_compound_chebi() -> dict[str, str]:
         for kid, chebis in raw.items()
         if chebis
     }
+
+
+def kegg_compound_names() -> dict[str, list[str]]:
+    """
+    Build a KEGG Compound ID → names mapping via the KEGG REST API.
+
+    Calls ``/list/compound`` once to retrieve the complete compound list
+    (~19,000 entries) and caches it via pypath's standard curl cache.  Each
+    KEGG ``/list`` row carries a semicolon-separated list of names (the first
+    is the primary name).
+
+    Returns:
+        Dict mapping KEGG Compound IDs (e.g. ``'C00001'``) to the list of
+        names KEGG records for the compound (e.g. ``['H2O', 'Water']``).
+    """
+
+    from pypath.inputs.kegg_api import _kegg_list
+
+    result: dict[str, list[str]] = {}
+
+    for row in _kegg_list('compound'):
+
+        if len(row) < 2:
+            continue
+
+        kid = row[0].split(':')[1] if ':' in row[0] else row[0]
+        names = [n.strip() for n in row[1].split(';') if n.strip()]
+
+        if names:
+            result[kid] = names
+
+    return result
