@@ -7,6 +7,8 @@ Entity records using the declarative schema pattern.
 
 from __future__ import annotations
 
+import pandas as pd
+
 from pypath.inputs_v2.base import (
     ResourceConfig,
     Download,
@@ -60,6 +62,10 @@ download = Download(
     ext='xlsx',
     default_mode='rb',
 )
+
+def parser(opener):
+
+    pd.read_excel(opener.path)
 
 # =================================== SCHEMA ===================================
 
