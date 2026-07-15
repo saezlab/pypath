@@ -490,7 +490,7 @@ class UniprotQuery:
 
         field = cls._SYNONYMS.get(field, field)
 
-        if field == 'organism_id':
+        if field == 'organism_id' and val is not None:
 
             result = str(taxonomy.ensure_ncbi_tax_id(val) or val)
 
