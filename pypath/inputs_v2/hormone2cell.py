@@ -36,7 +36,15 @@ from pypath.internals.cv_terms import (
 
 # =================================== SET-UP ===================================
 
-URL = 'https://hormonecellatlas.org.uk/accounts/downloads/file/table-s2b/'
+URL = 'https://www.science.org/doi/suppl/10.1126/science.aeb2672/suppl_file/science.aeb2672_tables_s1_to_s11.zip'
+
+files_skiprows = {
+    'table-s2b': 3,
+    'table-s2c': 2,
+    'table-s2d': 2,
+    'table-s2e': 3,
+    'table-s2f': 2,
+}
 
 config = ResourceConfig(
     id=ResourceCv.HORMONE2CELL,
@@ -53,19 +61,19 @@ config = ResourceConfig(
     ),
 )
 
-
 download = Download(
     url=URL,
-    filename='hormone2cell.xlsx',
+    filename='science.aeb2672_tables_s1_to_s11.zip',
     subfolder='hormone2cell',
     large=True,
-    ext='xlsx',
+    ext='zip',
     default_mode='rb',
 )
+# Fix download, cell/tissue info in table 3 and on?
 
-def parser(opener):
+def parser(opener, skiprows):
 
-    df = pd.read_excel(opener.path, skiprows=3)
+    df = pd.read_excel(opener.path, skiprows=skiprows)
 
     yield from df.to_dict(orient='records')
 
@@ -77,7 +85,7 @@ f = FieldConfig(
     transform={},
 )
 
-schema = EntityBuilder(
+schema_2B = EntityBuilder(
     #entity_type=EntityTypeCv.
 )
 
@@ -94,6 +102,7 @@ schema = EntityBuilder(
 
 # ================================= REFERENCE ==================================
 # S1B
+#
 # Tissue	        System	        Classical endocrine cell type	Neuroendocrine cell type	Lineage	    Tissue level broad-grained cell type (celltype_level1)	    Tissue level fine-grained cell type (celltype_level2)	    Tissue level Cell Type Broad 1	    Tissue level Cell Type Broad 2	    Tissue level Cell Type Broad 3	    Celltype_count
 # Fallopian Tube	Reproductive	not	                            not	                        epithelial  epithelial_cell_nonciliated                             	epithelial_cell_nonciliated_1	                            epithelial	                        epithelial_cell_nonciliated	        epithelial_cell_nonciliated	        7477
 # Fallopian Tube	Reproductive	not	                            not	                        immune      t_cell                              	                    t_cell_cd4	                                                T_cell	                            T_cell	                            CD4_T_cell	                        5782
@@ -102,7 +111,18 @@ schema = EntityBuilder(
 # Fallopian Tube	Reproductive	not	                            not	                        mesenchymal myofibroblast                               	            myofibroblast_3	                                            myofibroblast	                    myofibroblast	                    myofibroblast	                    4863
 # Fallopian Tube	Reproductive	not	                            not	                        epithelial  epithelial_cell_nonciliated                             	epithelial_cell_nonciliated_2	                            epithelial	                        epithelial_cell_nonciliated     	epithelial_cell_nonciliated	        7786
 
+# S2B
+#               X                   Y
+# hormone_ID	hormone_ID_unique 	hormone_short	hormone_figures	hormone_display	    hormone_other	            Tier	include	exclude	classical	regulatory	gut_pancreatic hormones	neuropeptides	prostaglandins	reprodutive	cardiovascular	other	ref_hormone	                                ref_receptor
+# entry_001	    hormone_001	        acth	        ACTH	        ACTH	            Adrenocorticotropic hormone	1	    1	    NA	    1	        1	        NA	                    1	            NA	            NA	        NA	            NA	    https://pubmed.ncbi.nlm.nih.gov/30156493/	https://pubmed.ncbi.nlm.nih.gov/26793988/ https://pubmed.ncbi.nlm.nih.gov/28220105/
+# entry_002	    hormone_002	        activin_a	    Activin A	    Activin A	 	                                2	    1	    NA	    NA	        NA	        NA	                    NA	            NA	            1	        NA	            NA	    https://pubmed.ncbi.nlm.nih.gov/27328872/   https://pubmed.ncbi.nlm.nih.gov/3012369/ https://pubmed.ncbi.nlm.nih.gov/30540228/	https://pubmed.ncbi.nlm.nih.gov/1646080/ https://pubmed.ncbi.nlm.nih.gov/15196700/ https://pubmed.ncbi.nlm.nih.gov/19273500/ https://pubmed.ncbi.nlm.nih.gov/26884470/
+# entry_003	    hormone_003	        activin_ab	    Activin AB	    Activin AB	 	                                2	    1	    NA	    NA	        NA	        NA	                    NA	            NA	            NA	        NA	            1	    https://pubmed.ncbi.nlm.nih.gov/3086749/    https://pubmed.ncbi.nlm.nih.gov/27328872/	https://pubmed.ncbi.nlm.nih.gov/15196700/ https://pubmed.ncbi.nlm.nih.gov/26884470/
+# entry_004	    hormone_004	        activin_b	    Activin B	    Activin B	 	                                2	    1	    NA	    NA	        NA	        NA	                    NA	            NA	            NA	        NA	            1	    https://pubmed.ncbi.nlm.nih.gov/1644823/    https://pubmed.ncbi.nlm.nih.gov/27328872/	https://pubmed.ncbi.nlm.nih.gov/15196700/ https://pubmed.ncbi.nlm.nih.gov/26884470/
+# entry_005	    hormone_005	        activin_e	    Activin E	    Activin E	 	                                3	    1	    NA	    NA	        NA	        NA	                    NA	            NA	            NA	        NA	            NA	    https://pubmed.ncbi.nlm.nih.gov/8941337/    https://pubmed.ncbi.nlm.nih.gov/38533769/	https://pubmed.ncbi.nlm.nih.gov/38533769/
+
+
 # S2C
+# Z                      X*
 # gene	    category	ID	        status_in_h2c
 # POMC	    hormone	    hormone_1	h2c_included
 # INHBA 	hormone	    hormone_2	h2c_included
@@ -111,6 +131,7 @@ schema = EntityBuilder(
 # C1QTNF12	hormone	    hormone_5	h2c_included
 
 # S2D
+# Y
 # hormone_short	hpc_include1	hpc_include2	hpc_include3	hpc_include4	hpc_include5	hpc_include6	hpc_include7	hpc_include8	hpc_exclude1	hpc_exclude2	receptor_known	hormone_type_broad	hormone_type_fine
 # adm2	        ADM2										                                                                                                                    yes	            peptide_protein 	peptide
 # adrenaline	TH	            DBH	            PNMT	        SLC18A1							                                                                                yes	            amine_derived   	amine_derived
@@ -124,6 +145,7 @@ schema = EntityBuilder(
 # androgens	    STAR	        CYP11A1	        FDX1	        FDXR	        CYP17A1	        CYB5A			                                CYP19A1	        CYP21A2	        yes	            steroid 	        steroid
 
 # S2E
+# Y
 # hormone_short	    receptorgene1	    receptorgene2	    gene1_name	                gene2_name	                receptor_type_broad	    receptor_status
 # acth      	    MC2R		                            melanocortin 2 receptor		                            gpcr                	established
 # activin_a     	ACVR2A	            ACVR1B	            Activin A receptor_type2A	Activin A receptor_type1B	enzyme_linked	        established
@@ -140,6 +162,7 @@ schema = EntityBuilder(
 # activin_e     	ACVR2B	            ACVR1C	            Activin A receptor_type2B	Activin A receptor_type1C	enzyme_linked	        established
 
 # S2F
+# Z
 # gene_id	gene_name	                                                uniprot_id	h2c_present	type	            analysis_cat	reaction	                                        RHEA	    other genes	    other_name
 # CYP11A1	Cholesterol side-chain cleavage enzyme, mitochondrial	    P05108	    1	        enzyme_synthesis	synthesis	    Pregnenolone_from_cholesterol	                    Rhea:35739	FDX1, FDXR	    P450scc
 # CYP11B1	Cytochrome P450 11B1, mitochondrial	                        P15538	    1	        enzyme_synthesis	synthesis	    Corticosterone_from_11deoxycorticosterone	        Rhea:46104
