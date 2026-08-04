@@ -16,7 +16,7 @@ from pypath.inputs_v2.base import (
     Dataset,
     ontology_entity_mapper,
 )
-from pypath.inputs_v2.parsers import brenda as _parsers
+from pypath.inputs_v2.parsers.base import iter_tsv, _first_handle
 from pypath.internals.tabular_builder import (
     AssociationBuilder,
     AssociationsBuilder,
@@ -46,7 +46,7 @@ config = ResourceConfig(
     license=LicenseCV.UNSPECIFIED,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='33554247',
-    primary_category='intercell',
+    primary_category='interactions',
     description=(
         'PMIDB provides both interactions and non-interactions between protein '
         'and metabolite, which not only reduces the experimental cost for '
@@ -67,7 +67,27 @@ download = {
     for f in files
 }
 
-#def parser(opener, skiprows):
+def parser(opener, header=None, sep='\t'):
+
+    if header is not None and iter(header):
+
+        entries = [line.strip().split(sep) for line in _first_handle(opener)]
+
+        if x := len(entries[0]) - len(header):
+
+            raise KeyError(
+                'Length of header is %s than the number of entries'
+                % ('smaller' if x > 0 else 'larger')
+            )
+
+        yield from [
+            {k: v for k, v in zip(header, line)}
+            for line in entries
+        ]
+
+    else:
+
+        return iter_tsv(opener)
 
 # =================================== SCHEMA ===================================
 
