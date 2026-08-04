@@ -1,0 +1,95 @@
+"""
+Parse PMI-DB data and emit Entity records.
+
+This module converts protein-metabolite interaction information from PMI-DB into
+Entity records using the declarative schema pattern.
+"""
+
+from __future__ import annotations
+
+import pandas as pd
+
+from pypath.inputs_v2.base import (
+    ResourceConfig,
+    Download,
+    Resource,
+    Dataset,
+    ontology_entity_mapper,
+)
+from pypath.inputs_v2.parsers import brenda as _parsers
+from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
+    CV,
+    EntityBuilder,
+    FieldConfig,
+    IdentifiersBuilder,
+)
+from pypath.internals.cv_terms import (
+    EntityTypeCv,
+    IdentifierNamespaceCv,
+    LicenseCV,
+    OntologyCv,
+    UpdateCategoryCV,
+    ResourceCv,
+)
+
+# =================================== SET-UP ===================================
+
+BASE_URL = 'http://easybioai.com/PMIDB/static/%s.txt'
+files = ['interaction', 'protein_infor', 'metabolites_infor']
+
+config = ResourceConfig(
+    id=ResourceCv.PMIDB,
+    name='PMI-DB',
+    url='http://easybioai.com/PMIDB/',
+    license=LicenseCV.UNSPECIFIED,
+    update_category=UpdateCategoryCV.IRREGULAR,
+    pubmed='33554247',
+    primary_category='intercell',
+    description=(
+        'PMIDB provides both interactions and non-interactions between protein '
+        'and metabolite, which not only reduces the experimental cost for '
+        'biological experimenters, but also facilitates the construction of '
+        'more accurate algorithms for researchers using machine learning.'
+    ),
+)
+
+download = {
+    f: Download(
+        url=BASE_URL % f,
+        filename=f'{f}.txt',
+        subfolder='PMIDB',
+        large=True,
+        ext='.txt',
+        default_mode='r',
+    )
+    for f in files
+}
+
+#def parser(opener, skiprows):
+
+# =================================== SCHEMA ===================================
+
+f = FieldConfig(
+    extract={},
+    map={},
+    transform={},
+)
+
+schema = EntityBuilder(
+    #entity_type=EntityTypeCv.
+)
+
+# ================================= RESOURCE ===================================
+
+#resource = Resource(
+#    config=config,
+#    data=Dataset(
+#        download=download,
+#        mapper=schema,
+#        raw_parser=parser,
+#    ),
+#)
+
+# ================================= REFERENCE ==================================
