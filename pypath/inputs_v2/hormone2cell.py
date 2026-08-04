@@ -36,7 +36,7 @@ from pypath.internals.cv_terms import (
 
 # =================================== SET-UP ===================================
 
-URL = 'https://www.science.org/doi/suppl/10.1126/science.aeb2672/suppl_file/science.aeb2672_tables_s1_to_s11.zip'
+URL = 'https://www.science.org/doi/suppl/10.1126/science.aeb2672/suppl_file/science_aeb2672_tables_s1_to_s11.zip'
 
 files_skiprows = {
     'table-s2b': 3,
@@ -51,7 +51,7 @@ config = ResourceConfig(
     name='Hormone2Cell',
     url='https://hormonecellatlas.org.uk/',
     license=LicenseCV.UNSPECIFIED,
-    update_category=UpdateCategoryCV.REGULAR,
+    update_category=UpdateCategoryCV.STATIC,
     pubmed='42207862',
     primary_category='intercell',
     description=(
@@ -66,8 +66,9 @@ download = Download(
     filename='science.aeb2672_tables_s1_to_s11.zip',
     subfolder='hormone2cell',
     large=True,
-    ext='zip',
+    ext='.zip',
     default_mode='rb',
+    needed=['science.aeb2672_tables_s1_to_s6.xlsx']
 )
 # Fix download, cell/tissue info in table 3 and on?
 
