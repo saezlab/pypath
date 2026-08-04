@@ -21,6 +21,8 @@ from pypath.internals.tabular_builder import (
     AssociationBuilder,
     AssociationsBuilder,
     CV,
+    Member,
+    MembershipBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
@@ -97,8 +99,32 @@ f = FieldConfig(
     transform={},
 )
 
-schema = EntityBuilder(
-    #entity_type=EntityTypeCv.
+schema_interaction = EntityBuilder(
+    entity_type=EntityTypeCv.INTERACTION,
+    membership=MembershipBuilder(
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.PROTEIN,
+                identifiers=IdentifiersBuilder(
+                    CV(
+                        term=IdentifierNamespaceCv.UNIPROT,
+                        value=f('Uniprot_KB_id')
+                    ),
+                ),
+            )
+        ),
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.CHEMICAL,
+                identifiers=IdentifiersBuilder(
+                    CV(
+                        term=IdentifierNamespaceCv.KEGG_COMPOUND,
+                        value=f('KEGG')
+                    ),
+                ),
+            )
+        ),
+    )
 )
 
 # ================================= RESOURCE ===================================
