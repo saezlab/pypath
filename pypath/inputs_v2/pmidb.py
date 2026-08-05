@@ -195,7 +195,7 @@ schema_metabolite_info = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=AssayAnnotationsCv.SMILES, value=f('formula'))
+        CV(term=IdentifierNamespaceCv.SMILES, value=f('formula'))
     ),
 )
 
