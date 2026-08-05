@@ -6,15 +6,13 @@ Entity records using the declarative schema pattern.
 """
 
 from __future__ import annotations
-
-import pandas as pd
+from functools import partial
 
 from pypath.inputs_v2.base import (
     ResourceConfig,
     Download,
     Resource,
     Dataset,
-    ontology_entity_mapper,
 )
 from pypath.inputs_v2.parsers.base import iter_tsv, _first_handle
 from pypath.internals.tabular_builder import (
@@ -44,7 +42,7 @@ BASE_URL = 'http://easybioai.com/PMIDB/static/%s.txt'
 files_header = {
     'interaction': None, # Already present
     'protein_infor': ['UniProt', 'gene', 'GO', 'link'],
-    'metabolites_infor': ['kegg', 'hmdb', 'name', 'link', 'formula'],
+    'metabolite_info': ['kegg', 'hmdb', 'name', 'link', 'formula'],
 }
 
 config = ResourceConfig(
@@ -77,6 +75,10 @@ download = {
 }
 
 def parser(opener, header=None, sep='\t'):
+    '''
+    Parses plain text file (TSV by default) to return an iterable of records.
+    Accepts custom header for tables without one.
+    '''
 
     if header is not None and iter(header):
 
@@ -173,7 +175,7 @@ schema_protein_infor = EntityBuilder(
         ),
 
     ),
-    associations=AssociationBuilder(
+    associations=AssociationsBuilder(
         AssociationBuilder(
             object_entity_type=EntityTypeCv.CV_TERM,
             object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
@@ -182,7 +184,7 @@ schema_protein_infor = EntityBuilder(
     ),
 )
 
-schema_metabolite_infor = EntityBuilder(
+schema_metabolite_info = EntityBuilder(
     entity_type=EntityTypeCv.SMALL_MOLECULE,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.KEGG, value=f('kegg')),
@@ -199,18 +201,31 @@ schema_metabolite_infor = EntityBuilder(
 
 # ================================= RESOURCE ===================================
 
-#resource = Resource(
-#    config=config,
-#    data=Dataset(
-#        download=download,
-#        mapper=schema,
-#        raw_parser=parser,
-#    ),
-#)
+resource = Resource(
+    config=config,
+    **{
+        k: Dataset(
+            download=download[k],
+            mapper=locals().get(f'schema_{k}'),
+            raw_parser=partial(parser, header=v),
+        )
+        for k, v in files_header.items()
+    }
+)
 
 # ================================= REFERENCE ==================================
 
 # interaction.txt
 # KEGG  	Uniprot_KB_id	interaction	probe	mean	literature	    Technology	Sample source	    MS Quality control method	Candidate selection cutoff
 # C00002	P00350	        TRUE	    NA	    NA	    PMID:29307493	LiP-SMap	Escherichia coli	DDA and DIA	                FC>2,Q<0.01
-# We discarded those with interaction = FALSE, also not using columns: mean, MS Quality control method and Candidate selection cutoff
+# XXX: We discarded those with interaction = FALSE, also not using columns: mean, MS Quality control method and Candidate selection cutoff
+
+# metabolite_info.txt
+# kegg      hmdb        name                        link                                            formula
+# C00002	HMDB00538	Adenosine 5'-triphosphate	https://www.genome.jp/dbget-bin/www_bget?C00002	NC1=NC=NC2=C1N=CN2[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O
+# XXX: File has no header, added custom one, column link is skipped
+
+# protein_infor.txt
+# UniProt   gene    GO  link
+# P00350	gnd	    NA	https://www.uniprot.org/uniprot/P00350
+# XXX: File has no header, added custom one, column link is skipped
