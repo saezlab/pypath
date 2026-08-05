@@ -552,6 +552,7 @@ class ParticipantMetadataCv(CvEnum):
     TARGET = ("OM:1229", "Participant designated as the target of a directed interaction")
     MEMBRANE_SIDE = ("OM:1231", "Membrane side of a transport reaction participant (in/out)")
 
+
 class InterCellAnnotations(CvEnum):
     """Annotations for intercellular interactions and roles."""
 
@@ -562,7 +563,6 @@ class InterCellAnnotations(CvEnum):
     MEMBRANE = ("OM:7779", "Membrane-associated subcellular location")
     CYTOPLASM = ("OM:7780", "Cytoplasmic subcellular location")
     SECRETED = ("OM:7781", "Secreted subcellular location")
-
 
 
 class OntologyAnnotationCv(CvEnum):
