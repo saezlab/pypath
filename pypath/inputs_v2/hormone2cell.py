@@ -20,6 +20,7 @@ from pypath.inputs_v2.parsers import brenda as _parsers
 from pypath.internals.tabular_builder import (
     AssociationBuilder,
     AssociationsBuilder,
+    AnnotationsBuilder,
     CV,
     EntityBuilder,
     FieldConfig,
@@ -28,6 +29,8 @@ from pypath.internals.tabular_builder import (
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
+    InteractionMetadataCv,
+    ParticipantMetadataCv,
     LicenseCV,
     OntologyCv,
     UpdateCategoryCV,
@@ -38,15 +41,18 @@ from pypath.internals.cv_terms import (
 
 URL = 'https://rescued.omnipathdb.org/hormone2cell_s1_to_s6.xlsx'
 
-files_skiprows = {
-    'Table S2B': 3,
-    'Table S2C': 2,
-    'Table S2D': 2,
-    'Table S2E': 3,
-    'Table S2F': 2,
-    'Table S3A': 2,
-    'Table S3B': 3,
-    'Table S3C': 2,
+files_skiprows_filter = {
+    'Table S2B': {
+        'skiprows': 3,
+        'filter': {'hormone_ID_unique': 'group_name', 'include': 'NA'}
+    },
+    'Table S2C': {'skiprows': 2, 'filter': {}},
+    'Table S2D': {'skiprows': 2, 'filter': {}},
+    'Table S2E': {'skiprows': 3, 'filter': {}},
+    'Table S2F': {'skiprows': 2, 'filter': {}},
+    'Table S3A': {'skiprows': 2, 'filter': {}},
+    'Table S3B': {'skiprows': 3, 'filter': {}},
+    'Table S3C': {'skiprows': 2, 'filter': {}},
 }
 
 config = ResourceConfig(
@@ -73,22 +79,53 @@ download = Download(
     default_mode='r',
 )
 
-def parser(opener, sheet, skiprows):
+def parser(opener, sheet, skiprows=0, filter={}):
 
     df = pd.read_excel(opener.path, sheet_name=sheet, skiprows=skiprows)
+
+    # Skipping rows according to filter if any
+    if filter and isinstance(filter, dict):
+
+        for k, v in filter.items():
+
+            df.query(f'{k} != "{v}"', inplace=True)
 
     yield from df.to_dict(orient='records')
 
 # =================================== SCHEMA ===================================
 
 f = FieldConfig(
-    extract={},
+    extract={
+        'pmid': r'/(\d+)/?$'
+    },
     map={},
     transform={},
 )
 
 schema_2B = EntityBuilder(
-    #entity_type=EntityTypeCv.
+    entity_type=EntityTypeCv.HORMONE,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.H2C_ID, value=f('hormone_short')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('hormone_display')),
+        CV(
+            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
+            value=f('hormone_figures')
+        ),
+        CV(
+            term=IdentifierNamespaceCv.SYNONYM,
+            value=f('hormone_other', delimiter=', ')
+        ),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(
+            term=ParticipantMetadataCv.PARTICIPANT_XREF,
+            value=f('ref_hormone', delimiter='\n', extract='pmid')
+        ),
+        CV(
+            term=InteractionMetadataCv.INTERACTION_XREF,
+            value=f('ref_receptor', delimiter='\n', extract='pmid')
+        )
+    ),
 )
 
 # ================================= RESOURCE ===================================
@@ -103,16 +140,6 @@ schema_2B = EntityBuilder(
 #)
 
 # ================================= REFERENCE ==================================
-# S1B
-#
-# Tissue	        System	        Classical endocrine cell type	Neuroendocrine cell type	Lineage	    Tissue level broad-grained cell type (celltype_level1)	    Tissue level fine-grained cell type (celltype_level2)	    Tissue level Cell Type Broad 1	    Tissue level Cell Type Broad 2	    Tissue level Cell Type Broad 3	    Celltype_count
-# Fallopian Tube	Reproductive	not	                            not	                        epithelial  epithelial_cell_nonciliated                             	epithelial_cell_nonciliated_1	                            epithelial	                        epithelial_cell_nonciliated	        epithelial_cell_nonciliated	        7477
-# Fallopian Tube	Reproductive	not	                            not	                        immune      t_cell                              	                    t_cell_cd4	                                                T_cell	                            T_cell	                            CD4_T_cell	                        5782
-# Fallopian Tube	Reproductive	not	                            not	                        mesenchymal smooth_muscle_cell                              	        smooth_muscle_cell	                                        smooth_muscle_cell              	smooth_muscle_cell	                smooth_muscle_cell	                6438
-# Fallopian Tube	Reproductive	not	                            not	                        epithelial  epithelial_cell_ciliated                                	epithelial_cell_ciliated	                                epithelial	                        epithelial_cell_ciliated	        epithelial_cell_ciliated	        4574
-# Fallopian Tube	Reproductive	not	                            not	                        mesenchymal myofibroblast                               	            myofibroblast_3	                                            myofibroblast	                    myofibroblast	                    myofibroblast	                    4863
-# Fallopian Tube	Reproductive	not	                            not	                        epithelial  epithelial_cell_nonciliated                             	epithelial_cell_nonciliated_2	                            epithelial	                        epithelial_cell_nonciliated     	epithelial_cell_nonciliated	        7786
-
 # S2B
 #               X                   Y
 # hormone_ID	hormone_ID_unique 	hormone_short	hormone_figures	hormone_display	    hormone_other	            Tier	include	exclude	classical	regulatory	gut_pancreatic hormones	neuropeptides	prostaglandins	reprodutive	cardiovascular	other	ref_hormone	                                ref_receptor
@@ -124,7 +151,7 @@ schema_2B = EntityBuilder(
 
 
 # S2C
-# Z                      X*
+# Z                      X* (not corresponding to above?)
 # gene	    category	ID	        status_in_h2c
 # POMC	    hormone	    hormone_1	h2c_included
 # INHBA 	hormone	    hormone_2	h2c_included
@@ -177,5 +204,33 @@ schema_2B = EntityBuilder(
 # CYP17A1	Steroid 17-alpha-hydroxylase/17,20 lyase	                P05093	    1	        enzyme_synthesis	synthesis	    Androstenedione_from_17alpha-hydroxyprogesterone	Rhea:14753	CYB5A
 # CYP17A1	Steroid 17-alpha-hydroxylase/17,20 lyase	                enzyme	    1	        enzyme_synthesis	synthesis	    17alpha-hydroxyprogesterone_from_progesterone	    Rhea:46308
 
+# S3A
+# Y
+# Hormone_short	Tier	Tissue	                        Tissue level fine-grained cell type (celltype_level2)	Source Assay	Strength	        Cell count from scRNA-seq	Cell count from snRNA-seq
+# cart	        N	    Stomach	                        enteroendocrine_cell	                                cell_only	    1.6101311	        162	                        0
+# cart	        N	    Pituitary	                    gonadotroph	                                            cell_only	    0.636176012788019	1055	                    936
+# cart	        N	    Cerebral Cortex	                neuron_excitatory_L2negative3_CUX2_[...]	            cell_only	    0.213208141785439	14662	                    146995
+# glp2	        2	    Pancreas	                    gamma_cell	                                            cell_only	    5.23447505055456	118	                        797
+# glp2	        2	    Large Intestine	                enteroendocrine_cell	                                cell_only	    4.133497	        396	                        0
+
+# S3B
+# Y
+# Hormone_short	Tier	Tissue	    Tissue level broad-grained cell type (celltype_level1)	Strength_max	    Celltype_Expressing_Count	Celltype_Count
+# activin_a	    2	    Adipose	    dendritic_cell	                                        0.287404055017379	1	                        3
+# activin_a	    2	    Adipose	    macrophage	                                            0.416829472890448	1	                        4
+# activin_a	    2	    Adipose	    mast_cell	                                            0.558139440494919	1	                        1
+# activin_a	    2	    Adipose	    monocyte	                                            0.900293639976023	2	                        3
+# activin_a	    2	    Adipose	    vascular_smooth_muscle_cell	                            0.265987057185408	1	                        1
+# activin_b	    2	    Adipose	    adipocyte	                                            0.126652316578524	3	                        8
+# activin_b	    2	    Adipose	    endothelial_cell	                                    1.06644160266406	2	                        2
+
+# S3C
+# Y
+# Hormone_short	Tier	Tissue	        Anatomical-region–resolved tissue level fine-grained cell type (celltype_level2)	Strength	        Source Assay
+# somatostatin	2	    CerebralCortex	neuron_inhibitory_SST_NPY_____FRO	                                                1.24817403520624	cell_only
+# somatostatin	2	    CerebralCortex	neuron_inhibitory_SST_ADAMTSL1_____PCx	                                            1.11211415255699	cell_only
+# somatostatin	2	    CerebralCortex	neuron_inhibitory_SST_HTR2C_____PCx	                                                1.06945688030573	cell_only
+# somatostatin	2	    CerebralCortex	neuron_inhibitory_SST_HS3ST5_____PCx	                                            1.0405526595268	    cell_only
+# somatostatin	2	    CerebralCortex	neuron_inhibitory_SST_ADAMTSL1_____TCx	                                            1.02391851305284	cell_only
 
 # interactions + cell type
