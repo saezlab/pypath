@@ -86,6 +86,7 @@ class IdentifierNamespaceCv(CvEnum):
     DOID = ('OM:0136', 'Human Disease Ontology identifier')
     REFMET = ('OM:0137', 'RefMet identifier')
     SEED_COMPOUND = ('OM:0138', 'ModelSEED compound identifier', 'https://modelseed.org/')
+    H2C_ID = ('OM:0139', 'Hormone2Cell internal identifier', 'https://hormonecellatlas.org.uk/')
 
     # Gene and protein names (OM:0200-0209 range)
     GENE_NAME_PRIMARY = ('OM:0200', 'Primary gene name or symbol')
