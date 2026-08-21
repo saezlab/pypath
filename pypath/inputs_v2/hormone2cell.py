@@ -41,12 +41,15 @@ from pypath.internals.cv_terms import (
 
 URL = 'https://rescued.omnipathdb.org/hormone2cell_s1_to_s6.xlsx'
 
-files_skiprows_filter = {
+sheet_skiprows_filter = {
     'Table S2B': {
         'skiprows': 3,
         'filter': {'hormone_ID_unique': 'group_name', 'include': 'NA'}
     },
-    'Table S2C': {'skiprows': 2, 'filter': {}},
+    'Table S2C': {
+        'skiprows': 2,
+        'filter': {'status_in_h2c': 'low_confidence_excluded'}
+    },
     'Table S2D': {'skiprows': 2, 'filter': {}},
     'Table S2E': {'skiprows': 3, 'filter': {}},
     'Table S2F': {'skiprows': 2, 'filter': {}},
@@ -98,11 +101,16 @@ f = FieldConfig(
     extract={
         'pmid': r'/(\d+)/?$'
     },
-    map={},
+    map={
+        'cat_to_entity': {
+            'hormone': EntityTypeCv.HORMONE,
+            'receptor': EntityTypeCv.RECEPTOR
+        }
+    },
     transform={},
 )
 
-schema_2B = EntityBuilder(
+schema_S2B = EntityBuilder(
     entity_type=EntityTypeCv.HORMONE,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.H2C_ID, value=f('hormone_short')),
@@ -127,6 +135,14 @@ schema_2B = EntityBuilder(
         )
     ),
 )
+
+schema_S2C = EntityBuilder(
+    entity_type=f('category', map='cat_to_entity'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('gene'))
+    ),
+)
+
 
 # ================================= RESOURCE ===================================
 
