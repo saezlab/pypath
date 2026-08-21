@@ -50,6 +50,7 @@ class EntityTypeCv(CvEnum):
     TRANSPORT = ("OM:0035", "Transport of a molecule across a membrane by a transporter protein")
     MIRNA = ("OM:0038", "microRNA (precursor or mature; subtype in MirnaSubtypeCv)")
     HORMONE = ("OM:0051", "Signaling molecule whose target is far from its production site")
+    RECEPTOR = ("OM:0052", "Generic receptor (unspecified type)")
 
 
 class MoleculeSubtypeCv(CvEnum):
