@@ -49,6 +49,7 @@ class EntityTypeCv(CvEnum):
     TISSUE = ("OM:0034", "A tissue or organ from an organism")
     TRANSPORT = ("OM:0035", "Transport of a molecule across a membrane by a transporter protein")
     MIRNA = ("OM:0038", "microRNA (precursor or mature; subtype in MirnaSubtypeCv)")
+    HORMONE = ("OM:0051", "Signaling molecule whose target is far from its production site")
 
 
 class MoleculeSubtypeCv(CvEnum):
