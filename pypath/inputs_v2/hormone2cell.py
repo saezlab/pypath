@@ -36,14 +36,17 @@ from pypath.internals.cv_terms import (
 
 # =================================== SET-UP ===================================
 
-URL = 'https://www.science.org/doi/suppl/10.1126/science.aeb2672/suppl_file/science_aeb2672_tables_s1_to_s11.zip'
+URL = 'https://rescued.omnipathdb.org/hormone2cell_s1_to_s6.xlsx'
 
 files_skiprows = {
-    'table-s2b': 3,
-    'table-s2c': 2,
-    'table-s2d': 2,
-    'table-s2e': 3,
-    'table-s2f': 2,
+    'Table S2B': 3,
+    'Table S2C': 2,
+    'Table S2D': 2,
+    'Table S2E': 3,
+    'Table S2F': 2,
+    'Table S3A': 2,
+    'Table S3B': 3,
+    'Table S3C': 2,
 }
 
 config = ResourceConfig(
