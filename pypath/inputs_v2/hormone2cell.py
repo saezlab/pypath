@@ -66,18 +66,16 @@ config = ResourceConfig(
 
 download = Download(
     url=URL,
-    filename='science.aeb2672_tables_s1_to_s11.zip',
+    filename='hormone2cell_s1_to_s6.xlsx',
     subfolder='hormone2cell',
     large=True,
-    ext='.zip',
-    default_mode='rb',
-    needed=['science.aeb2672_tables_s1_to_s6.xlsx']
+    ext='.xlsx',
+    default_mode='r',
 )
-# Fix download, cell/tissue info in table 3 and on?
 
-def parser(opener, skiprows):
+def parser(opener, sheet, skiprows):
 
-    df = pd.read_excel(opener.path, skiprows=skiprows)
+    df = pd.read_excel(opener.path, sheet_name=sheet, skiprows=skiprows)
 
     yield from df.to_dict(orient='records')
 
