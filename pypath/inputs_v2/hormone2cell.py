@@ -6,6 +6,7 @@ Entity records using the declarative schema pattern.
 """
 
 from __future__ import annotations
+import re
 
 import pandas as pd
 
@@ -50,8 +51,14 @@ sheet_skiprows_filter = {
         'skiprows': 2,
         'filter': {'status_in_h2c': 'low_confidence_excluded'}
     },
-    'Table S2D': {'skiprows': 2, 'filter': {}},
-    'Table S2E': {'skiprows': 3, 'filter': {}},
+    #'Table S2D': {'skiprows': 2, 'filter': {}},
+    'Table S2E': {
+        'skiprows': 3,
+        'filter': {
+            'hormone_short': re.compile(r'.*_all'),
+            'receptor_known': 'no'
+        }
+    },
     'Table S2F': {'skiprows': 2, 'filter': {}},
     'Table S3A': {'skiprows': 2, 'filter': {}},
     'Table S3B': {'skiprows': 3, 'filter': {}},
@@ -82,16 +89,25 @@ download = Download(
     default_mode='r',
 )
 
-def parser(opener, sheet, skiprows=0, filter={}):
+def parser(opener, sheet, skiprows=0, filters={}):
 
     df = pd.read_excel(opener.path, sheet_name=sheet, skiprows=skiprows)
 
     # Skipping rows according to filter if any
-    if filter and isinstance(filter, dict):
+    if filters and isinstance(filters, dict):
 
-        for k, v in filter.items():
+        for k, vals in filters.items():
 
-            df.query(f'{k} != "{v}"', inplace=True)
+            # Process regex-based filter
+            if isinstance(vals, re.Pattern):
+
+                vals = [v for v in df[k].values if vals.match(v)]
+
+            vals = [vals] if not isinstance(vals, list) else vals
+
+            for v in vals:
+
+                df.query(f'{k} != "{v}"', inplace=True)
 
     yield from df.to_dict(orient='records')
 
@@ -143,6 +159,9 @@ schema_S2C = EntityBuilder(
     ),
 )
 
+schema_S2E = EntityBuilder(
+    entity_type=EntityTypeCv.HORMONE
+)
 
 # ================================= RESOURCE ===================================
 
