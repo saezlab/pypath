@@ -29,6 +29,7 @@ from pypath.internals.tabular_builder import (
 )
 from pypath.internals.cv_terms import (
     EntityTypeCv,
+    MoleculeSubtypeCv,
     IdentifierNamespaceCv,
     InteractionMetadataCv,
     ParticipantMetadataCv,
@@ -51,14 +52,14 @@ sheet_skiprows_filter = {
         'skiprows': 2,
         'filter': {'status_in_h2c': 'low_confidence_excluded'}
     },
-    #'Table S2D': {'skiprows': 2, 'filter': {}},
-    'Table S2E': {
-        'skiprows': 3,
+    'Table S2D': {
+        'skiprows': 2,
         'filter': {
-            'hormone_short': re.compile(r'.*_all'),
-            'receptor_known': 'no'
+                'hormone_short': re.compile(r'.*_all'),
+                'receptor_known': 'no'
         }
     },
+    'Table S2E': {'skiprows': 3, 'filter': {}},
     'Table S2F': {'skiprows': 2, 'filter': {}},
     'Table S3A': {'skiprows': 2, 'filter': {}},
     'Table S3B': {'skiprows': 3, 'filter': {}},
@@ -121,7 +122,23 @@ f = FieldConfig(
         'cat_to_entity': {
             'hormone': EntityTypeCv.HORMONE,
             'receptor': EntityTypeCv.RECEPTOR
-        }
+        },
+        'hormone_type_to_entity': {
+            'amine_derived': EntityTypeCv.REACTION,
+            'peptide': EntityTypeCv.REACTION,
+            'prostaglandin': EntityTypeCv.REACTION,
+            'protein_monomer': EntityTypeCv.PROTEIN,
+            'protein_multimer': EntityTypeCv.COMPLEX,
+            'steroid': EntityTypeCv.REACTION,
+        },
+        'hormone_type_to_molecule': {
+            'amine_derived': EntityTypeCv.SMALL_MOLECULE,
+            'peptide': MoleculeSubtypeCv.PEPTIDE,
+            'prostaglandin': MoleculeSubtypeCv.LIPID,
+            'protein_monomer': EntityTypeCv.PROTEIN,
+            'protein_multimer': EntityTypeCv.COMPLEX,
+            'steroid': EntityTypeCv.SMALL_MOLECULE,
+        },
     },
     transform={},
 )
@@ -159,8 +176,21 @@ schema_S2C = EntityBuilder(
     ),
 )
 
-schema_S2E = EntityBuilder(
-    entity_type=EntityTypeCv.HORMONE
+# NOTE: Not sure how to parse this one further...
+#       The values in the columns named r"hpc_include\d" have different meaning
+#       depending on the type of hormone.
+#       See map['hormone_type_to_entity'] above for reference:
+#       - amine_derived: Enzyme(s) synthesizing the amine-derived hormone
+#       - peptide: Enzyme(s) + protein whose cleavage generates the peptides
+#       - prostaglandin: Enzyme(s) synthesizing the prostaglandin hormone
+#       - protein_monomer: The protein gene
+#       - protein_multimer: The genes for the protein monomers of the complex
+#       - steroid: Enzyme(s) synthesizing the steroid hormone
+schema_S2D = EntityBuilder(
+    entity_type=f('hormone_type_fine', map='hormone_type_to_molecule'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.H2C_ID, value=f('hormone_short')),
+    ),
 )
 
 # ================================= RESOURCE ===================================
