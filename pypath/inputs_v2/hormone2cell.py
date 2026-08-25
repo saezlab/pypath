@@ -21,6 +21,9 @@ from pypath.inputs_v2.parsers import brenda as _parsers
 from pypath.internals.tabular_builder import (
     AssociationBuilder,
     AssociationsBuilder,
+    MembershipBuilder,
+    MembersFromList,
+    Member,
     AnnotationsBuilder,
     CV,
     EntityBuilder,
@@ -29,11 +32,13 @@ from pypath.internals.tabular_builder import (
 )
 from pypath.internals.cv_terms import (
     EntityTypeCv,
+    InterCellAnnotations,
     MoleculeSubtypeCv,
     IdentifierNamespaceCv,
     InteractionMetadataCv,
     ParticipantMetadataCv,
     LicenseCV,
+    ProteinFunctionalClassCv,
     OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
@@ -59,7 +64,17 @@ sheet_skiprows_filter = {
                 'receptor_known': 'no'
         }
     },
-    'Table S2E': {'skiprows': 3, 'filter': {}},
+    'Table S2E': {
+        'skiprows': 3,
+        'filter': {
+            'receptor_status': [
+                'low_confidence',
+                'other_target',
+                'receptor_unknown',
+                'prohormone'
+            ],
+        }
+    },
     'Table S2F': {'skiprows': 2, 'filter': {}},
     'Table S3A': {'skiprows': 2, 'filter': {}},
     'Table S3B': {'skiprows': 3, 'filter': {}},
@@ -139,6 +154,13 @@ f = FieldConfig(
             'protein_multimer': EntityTypeCv.COMPLEX,
             'steroid': EntityTypeCv.SMALL_MOLECULE,
         },
+        'receptor_type': {
+            'enzyme_linked': ProteinFunctionalClassCv.CATALYTIC_RECEPTOR,
+            'gpcr': ProteinFunctionalClassCv.GPCR,
+            'nhr': ProteinFunctionalClassCv.NUCLEAR_HORMONE_RECEPTOR,
+            'other': ProteinFunctionalClassCv.OTHER_PROTEIN,
+            'other ': ProteinFunctionalClassCv.OTHER_PROTEIN,
+        },
     },
     transform={},
 )
@@ -191,6 +213,64 @@ schema_S2D = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.H2C_ID, value=f('hormone_short')),
     ),
+)
+
+schema_S2E = EntityBuilder(
+    entity_type=EntityTypeCv.INTERACTION,
+    membership=MembershipBuilder(
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.HORMONE,
+                identifiers=IdentifiersBuilder(
+                    CV(
+                        term=IdentifierNamespaceCv.H2C_ID,
+                        value=f('hormone_short')
+                    )
+                )
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=InterCellAnnotations.LIGAND),
+            ),
+        ),
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.RECEPTOR,
+                identifiers=IdentifiersBuilder(
+                    CV(
+                        term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
+                        value=f('receptorgene1')
+                    ),
+                    CV(
+                        term=IdentifierNamespaceCv.NAME,
+                        value=f('gene1_name')
+                    )
+                )
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=InterCellAnnotations.RECEPTOR),
+                CV(term=f('receptor_type_broad', map='receptor_type'))
+            ),
+        ),
+        Member(
+            entity=EntityBuilder(
+                entity_type=EntityTypeCv.RECEPTOR,
+                identifiers=IdentifiersBuilder(
+                    CV(
+                        term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
+                        value=f('receptorgene2')
+                    ),
+                    CV(
+                        term=IdentifierNamespaceCv.NAME,
+                        value=f('gene2_name')
+                    )
+                )
+            ),
+            annotations=AnnotationsBuilder(
+                CV(term=InterCellAnnotations.RECEPTOR),
+                CV(term=f('receptor_type_broad', map='receptor_type'))
+            ),
+        ),
+    )
 )
 
 # ================================= RESOURCE ===================================
