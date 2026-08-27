@@ -51,7 +51,7 @@ URL = 'https://rescued.omnipathdb.org/hormone2cell_s1_to_s6.xlsx'
 # NOTE: Some tables need to be processed separately in the parser as they have
 #       different schemas depending in the type of entity. Therefore we define
 #       the format [tablename]-[columnname]:[value]
-SPLITTABLE = re.compile(r'(^Table S\d\D)(?:-(.*):(.*$))?')
+SPLITTABLE = re.compile(r'^Table (S\d\D)(?:-(.*):(.*$))?')
 
 sheet_skiprows_filter = {
     'Table S2B': {
@@ -119,9 +119,13 @@ download = Download(
 
 def parser(opener, key, skiprows=0, filters={}):
 
-    sheet, column, value = SPLITTABLE.findall(key)[0]
+    table, column, value = SPLITTABLE.findall(key)[0]
 
-    df = pd.read_excel(opener.path, sheet_name=sheet, skiprows=skiprows)
+    df = pd.read_excel(
+        opener.path,
+        sheet_name=f'Table {table}',
+        skiprows=skiprows
+    )
 
     # Processing subtables if any
     if column and value:
