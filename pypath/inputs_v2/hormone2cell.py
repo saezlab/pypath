@@ -48,6 +48,11 @@ from pypath.internals.cv_terms import (
 
 URL = 'https://rescued.omnipathdb.org/hormone2cell_s1_to_s6.xlsx'
 
+# NOTE: Some tables need to be processed separately in the parser as they have
+#       different schemas depending in the type of entity. Therefore we define
+#       the format [tablename]-[columnname]:[value]
+SPLITTABLE = re.compile(r'(^Table S\d\D)(?:-(.*):(.*$))?')
+
 sheet_skiprows_filter = {
     'Table S2B': {
         'skiprows': 3,
@@ -56,13 +61,6 @@ sheet_skiprows_filter = {
     'Table S2C': {
         'skiprows': 2,
         'filter': {'status_in_h2c': 'low_confidence_excluded'}
-    },
-    'Table S2D': {
-        'skiprows': 2,
-        'filter': {
-                'hormone_short': re.compile(r'.*_all'),
-                'receptor_known': 'no'
-        }
     },
     'Table S2E': {
         'skiprows': 3,
@@ -80,6 +78,20 @@ sheet_skiprows_filter = {
     'Table S3B': {'skiprows': 3, 'filter': {}},
     'Table S3C': {'skiprows': 2, 'filter': {}},
 }
+# Adding Table S2D and its subtables according to hormone type
+sheet_skiprows_filter.update({
+    f'Table S2D-hormone_type_fine:{k}': {
+        'skiprows': 2,
+        'filter': {'hormone_short': re.compile(r'.*_all')}
+    } for k in [
+        'peptide',
+        'amine_derived',
+        'prostaglandin',
+        'protein_monomer',
+        'protein_multimer',
+        'steroid'
+    ]
+})
 
 config = ResourceConfig(
     id=ResourceCv.HORMONE2CELL,
@@ -105,11 +117,18 @@ download = Download(
     default_mode='r',
 )
 
-def parser(opener, sheet, skiprows=0, filters={}):
+def parser(opener, key, skiprows=0, filters={}):
+
+    sheet, column, value = SPLITTABLE.findall(key)[0]
 
     df = pd.read_excel(opener.path, sheet_name=sheet, skiprows=skiprows)
 
-    # Skipping rows according to filter if any
+    # Processing subtables if any
+    if column and value:
+
+        df.query(f'{column} == "{value}"', inplace=True)
+
+    # Skipping rows according to filter(s) if any
     if filters and isinstance(filters, dict):
 
         for k, vals in filters.items():
@@ -165,6 +184,13 @@ f = FieldConfig(
     transform={},
 )
 
+# NOTE: One of the major challenges for integrating this resource is mapping the
+#       hormones to existing entities. For instance, protein-based ones are
+#       fine since can map to UniProt but other molecules are not
+#       cross-referenced to other resources identifiers or molecular formula,
+#       structure, etc... We just have their name which won't be 100% mappable
+#       Any other ideas apart from doing it manually and hard-coded, feel free
+#       to suggest or implement
 schema_S2B = EntityBuilder(
     entity_type=EntityTypeCv.HORMONE,
     identifiers=IdentifiersBuilder(
@@ -212,6 +238,9 @@ schema_S2D = EntityBuilder(
     entity_type=f('hormone_type_fine', map='hormone_type_to_molecule'),
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.H2C_ID, value=f('hormone_short')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=EntityTypeCv.HORMONE)
     ),
 )
 
@@ -273,6 +302,9 @@ schema_S2E = EntityBuilder(
     )
 )
 
+schema_S2F = EntityBuilder(
+    entity_type=
+)
 # ================================= RESOURCE ===================================
 
 #resource = Resource(
@@ -377,5 +409,3 @@ schema_S2E = EntityBuilder(
 # somatostatin	2	    CerebralCortex	neuron_inhibitory_SST_HTR2C_____PCx	                                                1.06945688030573	cell_only
 # somatostatin	2	    CerebralCortex	neuron_inhibitory_SST_HS3ST5_____PCx	                                            1.0405526595268	    cell_only
 # somatostatin	2	    CerebralCortex	neuron_inhibitory_SST_ADAMTSL1_____TCx	                                            1.02391851305284	cell_only
-
-# interactions + cell type
