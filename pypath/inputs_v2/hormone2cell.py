@@ -200,6 +200,14 @@ f = FieldConfig(
             'protein_multimer': EntityTypeCv.COMPLEX,
             'steroid': EntityTypeCv.REACTION,
         },
+        'hormone_type_to_molecule': {
+            'amine_derived': EntityTypeCv.SMALL_MOLECULE,
+            'peptide': MoleculeSubtypeCv.PEPTIDE,
+            'prostaglandin': MoleculeSubtypeCv.LIPID,
+            'protein_monomer': EntityTypeCv.PROTEIN,
+            'protein_multimer': EntityTypeCv.COMPLEX,
+            'steroid': EntityTypeCv.SMALL_MOLECULE,
+        },
         'receptor_type': {
             'enzyme_linked': ProteinFunctionalClassCv.CATALYTIC_RECEPTOR,
             'gpcr': ProteinFunctionalClassCv.GPCR,
@@ -261,99 +269,13 @@ schema_S2C = EntityBuilder(
 #       - protein_monomer: The protein gene
 #       - protein_multimer: The genes for the protein monomers of the complex
 #       - steroid: Enzyme(s) synthesizing the steroid hormone
-schema_S2D_amine_derived = EntityBuilder(
-    entity_type=EntityTypeCv.REACTION,
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=MoleculeSubtypeCv.PEPTIDE,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.H2C_ID,
-                        value=f('hormone_short')
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.PRODUCT),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
-                        value=f('hpc_include1')
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.REACTANT),
-            ),
-        ),
-        MembersFromList(
-            entity=EntityBuilder(
-                entity_type=ProteinFunctionalClassCv.ENZYME,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
-                        value=f('hpc_include_rest', delimiter=',')
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.ENZYME),
-            ),
-        ),
+schema_S2D = EntityBuilder(
+    entity_type=f('hormone_type_fine', map='hormone_type_to_molecule'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.H2C_ID, value=f('hormone_short')),
     ),
-)
-
-schema_S2D_peptide = EntityBuilder(
-    entity_type=EntityTypeCv.REACTION,
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=MoleculeSubtypeCv.PEPTIDE,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.H2C_ID,
-                        value=f('hormone_short')
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.PRODUCT),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
-                        value=f('hpc_include1')
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.REACTANT),
-            ),
-        ),
-        MembersFromList(
-            entity=EntityBuilder(
-                entity_type=ProteinFunctionalClassCv.ENZYME,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
-                        value=f('hpc_include_rest', delimiter=',')
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.ENZYME),
-            ),
-        ),
+    annotations=AnnotationsBuilder(
+        CV(term=EntityTypeCv.HORMONE)
     ),
 )
 
