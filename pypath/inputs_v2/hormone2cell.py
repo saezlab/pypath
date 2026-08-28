@@ -254,7 +254,10 @@ schema_S2B = EntityBuilder(
 schema_S2D = EntityBuilder(
     entity_type=f('hormone_type_fine', map='hormone_type_to_molecule'),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.H2C_ID, value=f('hormone_short')),
+        CV(
+            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
+            value=f('hormone_short')
+        ),
     ),
     annotations=AnnotationsBuilder(
         CV(term=EntityTypeCv.HORMONE)
@@ -269,7 +272,7 @@ schema_S2E = EntityBuilder(
                 entity_type=EntityTypeCv.HORMONE,
                 identifiers=IdentifiersBuilder(
                     CV(
-                        term=IdentifierNamespaceCv.H2C_ID,
+                        term=IdentifierNamespaceCv.ABBREVIATED_NAME,
                         value=f('hormone_short')
                     )
                 )
