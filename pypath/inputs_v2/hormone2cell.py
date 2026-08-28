@@ -59,10 +59,6 @@ sheet_skiprows_filter = {
         'skiprows': 3,
         'filter': {'hormone_ID_unique': 'group_name', 'include': 'NA'}
     },
-    'Table S2C': {
-        'skiprows': 2,
-        'filter': {'status_in_h2c': 'low_confidence_excluded'}
-    },
     'Table S2D': {
         'skiprows': 2,
         'filter': {
@@ -178,10 +174,6 @@ f = FieldConfig(
         'pmid': r'/(\d+)/?$'
     },
     map={
-        'cat_to_entity': {
-            'hormone': EntityTypeCv.HORMONE,
-            'receptor': EntityTypeCv.RECEPTOR
-        },
         'hormone_type_to_entity': {
             'amine_derived': EntityTypeCv.REACTION,
             'peptide': EntityTypeCv.REACTION,
@@ -239,13 +231,6 @@ schema_S2B = EntityBuilder(
             term=InteractionMetadataCv.INTERACTION_XREF,
             value=f('ref_receptor', delimiter='\n', extract='pmid')
         )
-    ),
-)
-
-schema_S2C = EntityBuilder(
-    entity_type=f('category', map='cat_to_entity'),
-    identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('gene'))
     ),
 )
 
@@ -325,6 +310,10 @@ schema_S2E = EntityBuilder(
             ),
         ),
     )
+)
+
+schema_S3A = EntityBuilder(
+    entity_type=
 )
 
 # ================================= RESOURCE ===================================
