@@ -63,6 +63,13 @@ sheet_skiprows_filter = {
         'skiprows': 2,
         'filter': {'status_in_h2c': 'low_confidence_excluded'}
     },
+    'Table S2D': {
+        'skiprows': 2,
+        'filter': {
+                'hormone_short': re.compile(r'.*_all'),
+                'receptor_known': 'no'
+        }
+    },
     'Table S2E': {
         'skiprows': 3,
         'filter': {
@@ -74,27 +81,10 @@ sheet_skiprows_filter = {
             ],
         }
     },
-    'Table S2F': {'skiprows': 2, 'filter': {}},
     'Table S3A': {'skiprows': 2, 'filter': {}},
     'Table S3B': {'skiprows': 3, 'filter': {}},
     'Table S3C': {'skiprows': 2, 'filter': {}},
 }
-# Adding Table S2D and its subtables according to hormone type
-sheet_skiprows_filter.update({
-    f'Table S2D-hormone_type_fine:{k}': {
-        'skiprows': 2,
-        'filter': {'hormone_short': re.compile(r'.*_all')},
-        'merge': {'hpc_include_rest': [f'hpc_include{i}' for i in range(2, 9)]}
-    } for k in [
-        'peptide',
-        'amine_derived',
-        'prostaglandin',
-        'protein_monomer',
-        'protein_multimer',
-        'steroid'
-    ]
-})
-
 
 config = ResourceConfig(
     id=ResourceCv.HORMONE2CELL,
@@ -337,9 +327,6 @@ schema_S2E = EntityBuilder(
     )
 )
 
-schema_S2F = EntityBuilder(
-    entity_type=
-)
 # ================================= RESOURCE ===================================
 
 #resource = Resource(
