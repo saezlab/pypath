@@ -7,6 +7,7 @@ Entity records using the declarative schema pattern.
 
 from __future__ import annotations
 import re
+from functools import partial
 
 import pandas as pd
 
@@ -51,7 +52,7 @@ from pypath.internals.cv_terms import (
 
 URL = 'https://rescued.omnipathdb.org/hormone2cell_s1_to_s6.xlsx'
 
-SPLITTABLE = re.compile(r'^Table (S\d\D)(?:-(.*):(.*$))?')
+SPLITTABLE = re.compile(r'^(S\d\D)(?:-(.*):(.*$))?')
 GROUP_OR_PROHORMONE = re.compile(r'(?:.*_all$)|(?:^pro_)')
 
 # NOTE: Some tables need to be processed separately in the parser as they have
@@ -59,18 +60,18 @@ GROUP_OR_PROHORMONE = re.compile(r'(?:.*_all$)|(?:^pro_)')
 #       the format [tablename]-[columnname]:[value]
 #       See parser() for more info on how these parameters below are used
 sheet_skiprows_filter = {
-    'Table S2B': {
+    'S2B': {
         'skiprows': 3,
         'filter': {'hormone_ID_unique': 'group_name', 'include': 'NA'}
     },
-    'Table S2D': {
+    'S2D': {
         'skiprows': 2,
         'filter': {
                 'hormone_short': GROUP_OR_PROHORMONE,
                 'receptor_known': 'no'
         }
     },
-    'Table S2E': {
+    'S2E': {
         'skiprows': 3,
         'filter': {
             'receptor_status': [
@@ -81,12 +82,18 @@ sheet_skiprows_filter = {
             ],
         }
     },
-    'Table S3A': {
+    'S3A': {
         'skiprows': 2,
         'filter': {'Hormone_short': GROUP_OR_PROHORMONE}
     },
-    'Table S3B': {'skiprows': 3, 'filter': {}},
-    'Table S3C': {'skiprows': 2, 'filter': {}},
+    'S3B': {
+        'skiprows': 3,
+        'filter': {'Hormone_short': GROUP_OR_PROHORMONE}
+    },
+    'S3C': {
+        'skiprows': 2,
+        'filter': {'Hormone_short': GROUP_OR_PROHORMONE}
+    },
 }
 
 config = ResourceConfig(
@@ -113,7 +120,7 @@ download = Download(
     default_mode='r',
 )
 
-def parser(opener, key, skiprows=0, filters={}, merge={}, sep=','):
+def parser(opener, key='', skiprows=0, filters={}, merge={}, sep=','):
     '''
     Parses a given table and returns dict of entries for the schema to process
 
@@ -323,19 +330,61 @@ schema_S2E = EntityBuilder(
 )
 
 schema_S3A = EntityBuilder(
-    entity_type=
+    entity_type=EntityTypeCv.HORMONE,
+    identifiers=IdentifiersBuilder(
+        CV(
+            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
+            value=f('Hormone_short')
+        ),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.TISSUE_LOCATION, value=f('Tissue')),
+        CV(
+            term=AssayAnnotationsCv.CELL_TYPE,
+            value=f('Tissue level fine-grained cell type (celltype_level2)')
+        ),
+    )
+)
+
+schema_S3B = EntityBuilder(
+    entity_type=EntityTypeCv.HORMONE,
+    identifiers=IdentifiersBuilder(
+        CV(
+            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
+            value=f('Hormone_short')
+        ),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.TISSUE_LOCATION, value=f('Tissue')),
+        CV(
+            term=AssayAnnotationsCv.CELL_TYPE,
+            value=f('Tissue level broad-grained cell type (celltype_level1)')
+        ),
+    )
+)
+
+schema_S3C = EntityBuilder(
+    entity_type=EntityTypeCv.HORMONE,
+    identifiers=IdentifiersBuilder(
+        CV(
+            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
+            value=f('Hormone_short')
+        ),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.TISSUE_LOCATION, value=f('Tissue')),
+    )
 )
 
 # ================================= RESOURCE ===================================
 
-#resource = Resource(
-#    config=config,
-#    data=Dataset(
-#        download=download,
-#        mapper=schema,
-#        raw_parser=parser,
-#    ),
-#)
+resource = Resource(config=config, **{
+    k: Dataset(
+        download=download,
+        mapper=locals().get(f'schema_{k}'),
+        raw_parser=partial(parser, key=k, **v)
+    ) for k, v in sheet_skiprows_filter.items()
+})
 
 # ================================= REFERENCE ==================================
 # S2B
