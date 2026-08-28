@@ -33,6 +33,8 @@ from pypath.internals.tabular_builder import (
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     InterCellAnnotations,
+    MoleculeAnnotationsCv,
+    AssayAnnotationsCv,
     BiologicalRoleCv,
     MoleculeSubtypeCv,
     IdentifierNamespaceCv,
@@ -50,6 +52,8 @@ from pypath.internals.cv_terms import (
 URL = 'https://rescued.omnipathdb.org/hormone2cell_s1_to_s6.xlsx'
 
 SPLITTABLE = re.compile(r'^Table (S\d\D)(?:-(.*):(.*$))?')
+GROUP_OR_PROHORMONE = re.compile(r'(?:.*_all$)|(?:^pro_)')
+
 # NOTE: Some tables need to be processed separately in the parser as they have
 #       different schemas depending in the type of entity. Therefore we define
 #       the format [tablename]-[columnname]:[value]
@@ -62,7 +66,7 @@ sheet_skiprows_filter = {
     'Table S2D': {
         'skiprows': 2,
         'filter': {
-                'hormone_short': re.compile(r'.*_all'),
+                'hormone_short': GROUP_OR_PROHORMONE,
                 'receptor_known': 'no'
         }
     },
@@ -77,7 +81,10 @@ sheet_skiprows_filter = {
             ],
         }
     },
-    'Table S3A': {'skiprows': 2, 'filter': {}},
+    'Table S3A': {
+        'skiprows': 2,
+        'filter': {'Hormone_short': GROUP_OR_PROHORMONE}
+    },
     'Table S3B': {'skiprows': 3, 'filter': {}},
     'Table S3C': {'skiprows': 2, 'filter': {}},
 }
@@ -337,16 +344,6 @@ schema_S3A = EntityBuilder(
 # entry_004	    hormone_004	        activin_b	    Activin B	    Activin B	 	                                2	    1	    NA	    NA	        NA	        NA	                    NA	            NA	            NA	        NA	            1	    https://pubmed.ncbi.nlm.nih.gov/1644823/    https://pubmed.ncbi.nlm.nih.gov/27328872/	https://pubmed.ncbi.nlm.nih.gov/15196700/ https://pubmed.ncbi.nlm.nih.gov/26884470/
 # entry_005	    hormone_005	        activin_e	    Activin E	    Activin E	 	                                3	    1	    NA	    NA	        NA	        NA	                    NA	            NA	            NA	        NA	            NA	    https://pubmed.ncbi.nlm.nih.gov/8941337/    https://pubmed.ncbi.nlm.nih.gov/38533769/	https://pubmed.ncbi.nlm.nih.gov/38533769/
 
-
-# S2C
-# Z                      X* (not corresponding to above?)
-# gene	    category	ID	        status_in_h2c
-# POMC	    hormone	    hormone_1	h2c_included
-# INHBA 	hormone	    hormone_2	h2c_included
-# INHBB	    hormone	    hormone_3	h2c_included
-# INHBE 	hormone	    hormone_4	h2c_included
-# C1QTNF12	hormone	    hormone_5	h2c_included
-
 # S2D
 # Y
 # hormone_short	hpc_include1	hpc_include2	hpc_include3	hpc_include4	hpc_include5	hpc_include6	hpc_include7	hpc_include8	hpc_exclude1	hpc_exclude2	receptor_known	hormone_type_broad	hormone_type_fine
@@ -377,20 +374,6 @@ schema_S3A = EntityBuilder(
 # activin_b     	ACVR2B	            ACVR1C	            Activin A receptor_type2B	Activin A receptor_type1C	enzyme_linked	        established
 # activin_e     	ACVR2A	            ACVR1C	            Activin A receptor_type2A	Activin A receptor_type1C	enzyme_linked	        established
 # activin_e     	ACVR2B	            ACVR1C	            Activin A receptor_type2B	Activin A receptor_type1C	enzyme_linked	        established
-
-# S2F
-# Z
-# gene_id	gene_name	                                                uniprot_id	h2c_present	type	            analysis_cat	reaction	                                        RHEA	    other genes	    other_name
-# CYP11A1	Cholesterol side-chain cleavage enzyme, mitochondrial	    P05108	    1	        enzyme_synthesis	synthesis	    Pregnenolone_from_cholesterol	                    Rhea:35739	FDX1, FDXR	    P450scc
-# CYP11B1	Cytochrome P450 11B1, mitochondrial	                        P15538	    1	        enzyme_synthesis	synthesis	    Corticosterone_from_11deoxycorticosterone	        Rhea:46104
-# CYP11B1	Cytochrome P450 11B1, mitochondrial                 	    P15538	    1	        enzyme_synthesis	synthesis	    Cortisol_from_11deoxycortisol	                    Rhea:46100
-# CYP11B2	Cytochrome P450 11B2, mitochondrial (aldosterone synthase)	P19099	    1	        enzyme_synthesis	synthesis	    Aldosterone_from_18-hydroxycorticosterone	        Rhea:50792
-# CYP11B2	Cytochrome P450 11B2, mitochondrial (aldosterone synthase)	P19099	    1	        enzyme_synthesis	synthesis	    Corticosterone_from_11deoxycorticosterone	        Rhea:46104
-# CYP11B2	Cytochrome P450 11B2, mitochondrial (aldosterone synthase)	P19099	    1	        enzyme_synthesis	synthesis	    Cortisol_from_11deoxycortisol	                    Rhea:46100
-# CYP11B2	Cytochrome P450 11B2, mitochondrial (aldosterone synthase)	P19099	    1	        enzyme_synthesis	synthesis	    18-hydroxycorticosterone_from_hydroxycorticosterone	Rhea:11872
-# CYP17A1	Steroid 17-alpha-hydroxylase/17,20 lyase	                enzyme	    1	        enzyme_synthesis	synthesis	    17alpha-hydroxyprogesterone_from_progesterone	    Rhea:50236
-# CYP17A1	Steroid 17-alpha-hydroxylase/17,20 lyase	                P05093	    1	        enzyme_synthesis	synthesis	    Androstenedione_from_17alpha-hydroxyprogesterone	Rhea:14753	CYB5A
-# CYP17A1	Steroid 17-alpha-hydroxylase/17,20 lyase	                enzyme	    1	        enzyme_synthesis	synthesis	    17alpha-hydroxyprogesterone_from_progesterone	    Rhea:46308
 
 # S3A
 # Y
