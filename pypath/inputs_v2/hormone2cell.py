@@ -52,13 +52,8 @@ from pypath.internals.cv_terms import (
 
 URL = 'https://rescued.omnipathdb.org/hormone2cell_s1_to_s6.xlsx'
 
-SPLITTABLE = re.compile(r'^(S\d\D)(?:-(.*):(.*$))?')
 GROUP_OR_PROHORMONE = re.compile(r'(?:.*_all$)|(?:^pro_)')
 
-# NOTE: Some tables need to be processed separately in the parser as they have
-#       different schemas depending in the type of entity. Therefore we define
-#       the format [tablename]-[columnname]:[value]
-#       See parser() for more info on how these parameters below are used
 sheet_skiprows_filter = {
     'S2B': {
         'skiprows': 3,
@@ -120,40 +115,26 @@ download = Download(
     default_mode='r',
 )
 
-def parser(opener, key='', skiprows=0, filters={}, merge={}, sep=','):
+def parser(opener, key='', skiprows=0, filters={}):
     '''
     Parses a given table and returns dict of entries for the schema to process
 
     * Arguments:
         - *opener* [Opener]: The file opener instance
-        - *key* [str]: Name of the spreadsheet to process. May include a column
-          and value to subset the table like "[tablename]-[columnname]:[value]"
-          This will generate a subtable where only the rows whose values are
-          [value] in the given [columnname] are returned
+        - *key* [str]: Number of the spreadsheet to process, i.e. "Table [key]".
         - *skiprows* [int]: Number of rows to skip at the start of the
           spreadsheet (the table caption/empty rows)
         - *filters* [dict]: Key value pairs indicating the column (key) and
           values to filter **out** (value) from the table. Values can be passed
           as string (single value to filter out), list of strings or regex
           pattern (for multiple values)
-        - *merge* [dict]: Key value pairs indicating the name of the resulting
-          merged column (key) and list of columns to merge (value). The
-          resulting merged values are the result of joining them by `sep`
-        - *sep* [str]: Separator to join the merged columns, defaults to ","
     '''
-
-    table, column, value = SPLITTABLE.findall(key)[0]
 
     df = pd.read_excel(
         opener.path,
-        sheet_name=f'Table {table}',
+        sheet_name=f'Table {key}',
         skiprows=skiprows
     )
-
-    # Subsetting into subtable if any
-    if column and value:
-
-        df.query(f'{column} == "{value}"', inplace=True)
 
     # Skipping rows according to filter(s) if any
     if filters and isinstance(filters, dict):
@@ -170,14 +151,6 @@ def parser(opener, key='', skiprows=0, filters={}, merge={}, sep=','):
             for v in vals:
 
                 df.query(f'{k} != "{v}"', inplace=True)
-
-    # Merging columns if any
-    if merge and isinstance(merge, dict):
-
-        for newcol, cols in merge.items():
-
-            df[newcol] = df[cols].agg(sep.join, axis=1)
-            df.drop(cols, axis=1, inplace=True)
 
     yield from df.to_dict(orient='records')
 
