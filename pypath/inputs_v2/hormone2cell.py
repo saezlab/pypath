@@ -53,41 +53,105 @@ from pypath.internals.cv_terms import (
 URL = 'https://rescued.omnipathdb.org/hormone2cell_s1_to_s6.xlsx'
 
 GROUP_OR_PROHORMONE = re.compile(r'(?:.*_all$)|(?:^pro_)')
-
-sheet_skiprows_filter = {
+# AGG_STR joins all unique values by comma and removes starting/trailing commas
+AGG_STR = lambda x: ','.join({str(i) for i in x if i and pd.notna(i)}).strip(',')
+TABLES_HORMONES = ['S2B', 'S2D', 'S2E', 'S3A', 'S3B', 'S3C']
+TABLES_RECEPTORS = ['S6A', 'S6B', 'S6C']
+PARAMS = {
     'S2B': {
         'skiprows': 3,
-        'filter': {'hormone_ID_unique': 'group_name', 'include': 'NA'}
+        'filters': {
+            'hormone_ID_unique': ['group_name', 'prohormone'],
+            'include': 'NA'
+        },
+        'pk': 'hormone_short',
+        'usecols': [
+            'hormone_figures',
+            'hormone_display',
+            'hormone_other',
+            'ref_hormone',
+            'ref_receptor'
+        ],
     },
+
+# NOTE: Not sure how to parse Table S2D further...
+#       The values in the columns named r"hpc_include\d" have different meaning
+#       depending on the type of hormone.
+#       See map['hormone_type_to_entity'] above for reference:
+#       - amine_derived: Enzyme(s) synthesizing the amine-derived hormone
+#       - peptide: Enzyme(s) + protein whose cleavage generates the peptides
+#       - prostaglandin: Enzyme(s) synthesizing the prostaglandin hormone
+#       - protein_monomer: The protein gene
+#       - protein_multimer: The genes for the protein monomers of the complex
+#       - steroid: Enzyme(s) synthesizing the steroid hormone
+
     'S2D': {
         'skiprows': 2,
-        'filter': {
+        'filters': {
                 'hormone_short': GROUP_OR_PROHORMONE,
                 'receptor_known': 'no'
-        }
+        },
+        'pk': 'hormone_short',
+        'usecols': ['hormone_type_fine'],
     },
-    'S2E': {
+    'S2E': { # Do not aggregate this table contains individual interactions
         'skiprows': 3,
-        'filter': {
+        'filters': {
             'receptor_status': [
                 'low_confidence',
                 'other_target',
                 'receptor_unknown',
                 'prohormone'
             ],
-        }
+        },
     },
     'S3A': {
         'skiprows': 2,
-        'filter': {'Hormone_short': GROUP_OR_PROHORMONE}
+        'filters': {'Hormone_short': GROUP_OR_PROHORMONE},
+        'pk': 'Hormone_short',
+        'usecols': [
+            'Tissue',
+            'Tissue level fine-grained cell type (celltype_level2)'
+        ],
     },
     'S3B': {
         'skiprows': 3,
-        'filter': {'Hormone_short': GROUP_OR_PROHORMONE}
+        'filters': {'Hormone_short': GROUP_OR_PROHORMONE},
+        'pk': 'Hormone_short',
+        'usecols': [
+            'Tissue',
+            'Tissue level broad-grained cell type (celltype_level1)'
+        ],
     },
-    'S3C': {
+    'S3C': { # Similar to A/B but specific for brain
         'skiprows': 2,
-        'filter': {'Hormone_short': GROUP_OR_PROHORMONE}
+        'filters': {'Hormone_short': GROUP_OR_PROHORMONE},
+        'pk': 'Hormone_short',
+        'usecols': ['Tissue'],
+    },
+    'S6A': {
+        'skiprows': 2,
+        'filters': {'Hormone_short': GROUP_OR_PROHORMONE},
+        'pk': 'Hormone_short',
+        'usecols': [
+            'Tissue',
+            'Tissue level fine-grained cell type (celltype_level2)'
+        ],
+    },
+    'S6B': {
+        'skiprows': 3,
+        'filters': {'Hormone_short': GROUP_OR_PROHORMONE},
+        'pk': 'Hormone_short',
+        'usecols': [
+            'Tissue',
+            'Tissue level broad-grained cell type (celltype_level1)'
+        ],
+    },
+    'S6C': { # Similar to A/B but specific for brain
+        'skiprows': 3,
+        'filters': {'Hormone_short': GROUP_OR_PROHORMONE},
+        'pk': 'Hormone_short',
+        'usecols': ['Tissue'],
     },
 }
 
@@ -115,9 +179,21 @@ download = Download(
     default_mode='r',
 )
 
-def parser(opener, key='', skiprows=0, filters={}):
+def _process_table(
+        opener,
+        key='',
+        skiprows=0,
+        filters={},
+        pk='hormone_short',
+        usecols=[]
+    ):
     '''
-    Parses a given table and returns dict of entries for the schema to process
+    Processes a given table and returns an aggregated DataFrame merging rows
+    with the same given `pk` (primary key) and values of the other given columns
+    merged as defined in `AGG_STR` function. If no `usecols` are provided,
+    returns the DataFrame without aggregation (still applies filters if any).
+
+    Applies lowercase to all column names a the end (eases process downstream).
 
     * Arguments:
         - *opener* [Opener]: The file opener instance
@@ -128,6 +204,11 @@ def parser(opener, key='', skiprows=0, filters={}):
           values to filter **out** (value) from the table. Values can be passed
           as string (single value to filter out), list of strings or regex
           pattern (for multiple values)
+        - *pk* [str]: Primary key to merge rows based on. This is, the column
+          name defining the keys with same value that will be merged into a
+          single row.
+        - *usecols* [list]: List of columns to merge their values based on their
+          `pk` using the AGG_STR function.
     '''
 
     df = pd.read_excel(
@@ -150,9 +231,76 @@ def parser(opener, key='', skiprows=0, filters={}):
 
             for v in vals:
 
-                df.query(f'{k} != "{v}"', inplace=True)
+                df = df.loc[df[k] != v]
 
-    yield from df.to_dict(orient='records')
+    if usecols:
+
+        df = df.groupby(pk).aggregate({k: AGG_STR for k in usecols})
+        df.reset_index(inplace=True)
+
+    df.columns = [c.lower() for c in df.columns]
+
+    return df
+
+
+def _merge_cols(df, newcol, cols):
+
+    df[newcol] = df[cols].agg(AGG_STR, axis=1)
+    df.drop(cols, axis=1, inplace=True)
+
+    return df
+
+
+def _merge_tables(tables):
+
+    result = tables[0]
+
+    for t in tables[1:]:
+
+        commoncols = set(result.columns).intersection(t.columns)
+        commoncols.remove('hormone_short')
+
+        result = result.merge(t, how='outer', on='hormone_short')
+
+        # Merging common columns if any
+        for c in commoncols:
+
+            result = _merge_cols(result, c, [f'{c}_x', f'{c}_y'])
+
+    return result
+
+
+def parser(opener):
+
+    tables = {k: _process_table(opener, k, **v) for k, v in PARAMS.items()}
+    hormones = _merge_tables([tables[i] for i in TABLES_HORMONES])
+    hormones = _merge_cols(
+        hormones,
+        'cell_types',
+        [
+            'tissue level fine-grained cell type (celltype_level2)',
+            'tissue level broad-grained cell type (celltype_level1)'
+        ]
+    )
+    receptors = _merge_tables([tables[i] for i in TABLES_RECEPTORS])
+    receptors = _merge_cols(
+        receptors,
+        'cell_types',
+        [
+            'tissue level fine-grained cell type (celltype_level2)',
+            'tissue level broad-grained cell type (celltype_level1)'
+        ]
+    )
+
+    result = hormones.merge(
+        receptors,
+        how='outer',
+        on='hormone_short',
+        suffixes=('', '_receptor')
+    )
+
+    yield from result.to_dict(orient='records')
+
 
 # =================================== SCHEMA ===================================
 
@@ -161,14 +309,6 @@ f = FieldConfig(
         'pmid': r'/(\d+)/?$'
     },
     map={
-        'hormone_type_to_entity': {
-            'amine_derived': EntityTypeCv.REACTION,
-            'peptide': EntityTypeCv.REACTION,
-            'prostaglandin': EntityTypeCv.REACTION,
-            'protein_monomer': EntityTypeCv.PROTEIN,
-            'protein_multimer': EntityTypeCv.COMPLEX,
-            'steroid': EntityTypeCv.REACTION,
-        },
         'hormone_type_to_molecule': {
             'amine_derived': EntityTypeCv.SMALL_MOLECULE,
             'peptide': MoleculeSubtypeCv.PEPTIDE,
@@ -195,56 +335,8 @@ f = FieldConfig(
 #       structure, etc... We just have their name which won't be 100% mappable
 #       Any other ideas apart from doing it manually and hard-coded, feel free
 #       to suggest or implement
-schema_S2B = EntityBuilder(
-    entity_type=EntityTypeCv.HORMONE,
-    identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.H2C_ID, value=f('hormone_short')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('hormone_display')),
-        CV(
-            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
-            value=f('hormone_figures')
-        ),
-        CV(
-            term=IdentifierNamespaceCv.SYNONYM,
-            value=f('hormone_other', delimiter=', ')
-        ),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(
-            term=ParticipantMetadataCv.PARTICIPANT_XREF,
-            value=f('ref_hormone', delimiter='\n', extract='pmid')
-        ),
-        CV(
-            term=InteractionMetadataCv.INTERACTION_XREF,
-            value=f('ref_receptor', delimiter='\n', extract='pmid')
-        )
-    ),
-)
 
-# NOTE: Not sure how to parse this one further...
-#       The values in the columns named r"hpc_include\d" have different meaning
-#       depending on the type of hormone.
-#       See map['hormone_type_to_entity'] above for reference:
-#       - amine_derived: Enzyme(s) synthesizing the amine-derived hormone
-#       - peptide: Enzyme(s) + protein whose cleavage generates the peptides
-#       - prostaglandin: Enzyme(s) synthesizing the prostaglandin hormone
-#       - protein_monomer: The protein gene
-#       - protein_multimer: The genes for the protein monomers of the complex
-#       - steroid: Enzyme(s) synthesizing the steroid hormone
-schema_S2D = EntityBuilder(
-    entity_type=f('hormone_type_fine', map='hormone_type_to_molecule'),
-    identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
-            value=f('hormone_short')
-        ),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=EntityTypeCv.HORMONE)
-    ),
-)
-
-schema_S2E = EntityBuilder(
+schema = EntityBuilder(
     entity_type=EntityTypeCv.INTERACTION,
     membership=MembershipBuilder(
         Member(
@@ -254,11 +346,30 @@ schema_S2E = EntityBuilder(
                     CV(
                         term=IdentifierNamespaceCv.ABBREVIATED_NAME,
                         value=f('hormone_short')
-                    )
+                    ),
+                    CV(
+                        term=IdentifierNamespaceCv.NAME,
+                        value=f('hormone_display')
+                    ),
+                    CV(
+                        term=IdentifierNamespaceCv.ABBREVIATED_NAME,
+                        value=f('hormone_figures')
+                    ),
+                    CV(
+                        term=IdentifierNamespaceCv.SYNONYM,
+                        value=f('hormone_other', delimiter=', ')
+                    ),
                 )
             ),
             annotations=AnnotationsBuilder(
                 CV(term=InterCellAnnotations.LIGAND),
+                CV(
+                    term=ParticipantMetadataCv.PARTICIPANT_XREF,
+                    value=f('ref_hormone', delimiter='\n', extract='pmid')
+                ),
+                CV(term=f('hormone_type_fine', map='hormone_type_to_molecule')),
+                CV(term=AssayAnnotationsCv.TISSUE, value=f('tissue')),
+                CV(term=AssayAnnotationsCv.CELL_TYPE, value=f('cell_type')),
             ),
         ),
         Member(
@@ -276,8 +387,18 @@ schema_S2E = EntityBuilder(
                 )
             ),
             annotations=AnnotationsBuilder(
+                CV(term=EntityTypeCv.PROTEIN),
                 CV(term=InterCellAnnotations.RECEPTOR),
-                CV(term=f('receptor_type_broad', map='receptor_type'))
+                CV(term=f('receptor_type_broad', map='receptor_type')),
+                CV(
+                    term=InteractionMetadataCv.PARTICIPANT_XREF,
+                    value=f('ref_receptor', delimiter='\n', extract='pmid')
+                ),
+                CV(term=AssayAnnotationsCv.TISSUE, value=f('tissue_receptor')),
+                CV(
+                    term=AssayAnnotationsCv.CELL_TYPE,
+                    value=f('cell_type_receptor')
+                ),
             ),
         ),
         Member(
@@ -295,69 +416,33 @@ schema_S2E = EntityBuilder(
                 )
             ),
             annotations=AnnotationsBuilder(
+                CV(term=EntityTypeCv.PROTEIN),
                 CV(term=InterCellAnnotations.RECEPTOR),
-                CV(term=f('receptor_type_broad', map='receptor_type'))
+                CV(term=f('receptor_type_broad', map='receptor_type')),
+                CV(
+                    term=InteractionMetadataCv.PARTICIPANT_XREF,
+                    value=f('ref_receptor', delimiter='\n', extract='pmid')
+                ),
+                CV(term=AssayAnnotationsCv.TISSUE, value=f('tissue_receptor')),
+                CV(
+                    term=AssayAnnotationsCv.CELL_TYPE,
+                    value=f('cell_type_receptor')
+                ),
             ),
         ),
     )
 )
 
-schema_S3A = EntityBuilder(
-    entity_type=EntityTypeCv.HORMONE,
-    identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
-            value=f('Hormone_short')
-        ),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.TISSUE_LOCATION, value=f('Tissue')),
-        CV(
-            term=AssayAnnotationsCv.CELL_TYPE,
-            value=f('Tissue level fine-grained cell type (celltype_level2)')
-        ),
-    )
-)
-
-schema_S3B = EntityBuilder(
-    entity_type=EntityTypeCv.HORMONE,
-    identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
-            value=f('Hormone_short')
-        ),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.TISSUE_LOCATION, value=f('Tissue')),
-        CV(
-            term=AssayAnnotationsCv.CELL_TYPE,
-            value=f('Tissue level broad-grained cell type (celltype_level1)')
-        ),
-    )
-)
-
-schema_S3C = EntityBuilder(
-    entity_type=EntityTypeCv.HORMONE,
-    identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.ABBREVIATED_NAME,
-            value=f('Hormone_short')
-        ),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.TISSUE_LOCATION, value=f('Tissue')),
-    )
-)
-
 # ================================= RESOURCE ===================================
 
-resource = Resource(config=config, **{
-    k: Dataset(
+resource = Resource(
+    config=config,
+    hormone2cell=Dataset(
         download=download,
-        mapper=locals().get(f'schema_{k}'),
-        raw_parser=partial(parser, key=k, **v)
-    ) for k, v in sheet_skiprows_filter.items()
-})
+        mapper=schema,
+        raw_parser=parser
+    )
+)
 
 # ================================= REFERENCE ==================================
 # S2B
