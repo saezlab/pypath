@@ -23,7 +23,9 @@ __all__ = [
     'EntityRef',
     'OntologyRelation',
     'Entity',
+    'Relation',
     'ENTITY_SCHEMA',
+    'RELATION_SCHEMA',
 ]
 
 class Identifier(NamedTuple):
@@ -115,7 +117,7 @@ class OntologyRelation(NamedTuple):
 class Entity(NamedTuple):
     """ Entity record matching entities schema."""
 
-    type: EntityTypeCv # e.g. EntityTypeCv.INTERACTION, EntityTypeCv.CV_TERM
+    type: EntityTypeCv | str # e.g. EntityTypeCv.INTERACTION, EntityTypeCv.CV_TERM
     identifiers: List[Identifier]  # e.g. IdentifierNamespaceCv.NAME and .SYNONYM)
     annotations: List[Annotation] | None = None
 
@@ -193,6 +195,65 @@ class Entity(NamedTuple):
         if self.ontology_relations:
             lines.append(f"{prefix}└─ ontology_relations: ({len(self.ontology_relations)})")
 
+        return "\n".join(lines)
+
+
+class Relation(NamedTuple):
+    """Relation record representing a directed edge/interaction between entities."""
+
+    subject: EntityRef | Entity
+    predicate: str
+    object: EntityRef | Entity
+    category: str | None = None
+    interaction_class: str | None = None
+    identifiers: List[Identifier] | None = None
+    annotations: List[Annotation] | None = None
+
+    def __repr__(self) -> str:
+        """Compact representation of relation."""
+        sub_str = repr(self.subject)
+        obj_str = repr(self.object)
+        pred_str = cv_term_label_accession(self.predicate) if hasattr(self.predicate, 'value') else str(self.predicate)
+        extra = []
+        if self.category:
+            extra.append(f"category={self.category}")
+        if self.interaction_class:
+            extra.append(f"interaction_class={self.interaction_class}")
+        if self.identifiers:
+            extra.append(f"identifiers={self.identifiers!r}")
+        if self.annotations:
+            extra.append(f"annotations={self.annotations!r}")
+        extra_str = f" ({', '.join(extra)})" if extra else ""
+        return f"Relation({sub_str} -[{pred_str}]-> {obj_str}{extra_str})"
+
+    def __str__(self) -> str:
+        return repr(self)
+
+    def pretty(self, indent: int = 0) -> str:
+        """Tree-like representation with indentation."""
+        prefix = "  " * indent
+        pred_str = cv_term_label_accession(self.predicate) if hasattr(self.predicate, 'value') else str(self.predicate)
+        lines = [f"{prefix}Relation: {pred_str}"]
+        lines.append(f"{prefix}├─ subject:")
+        sub_lines = (self.subject.pretty(0) if hasattr(self.subject, 'pretty') else repr(self.subject)).split("\n")
+        for line in sub_lines:
+            lines.append(f"{prefix}│  {line}")
+        lines.append(f"{prefix}├─ object:")
+        obj_lines = (self.object.pretty(0) if hasattr(self.object, 'pretty') else repr(self.object)).split("\n")
+        for line in obj_lines:
+            lines.append(f"{prefix}│  {line}")
+        if self.category:
+            lines.append(f"{prefix}├─ category: {self.category}")
+        if self.interaction_class:
+            lines.append(f"{prefix}├─ interaction_class: {self.interaction_class}")
+        if self.identifiers:
+            lines.append(f"{prefix}├─ identifiers: ({len(self.identifiers)})")
+            for id_ in self.identifiers:
+                lines.append(f"{prefix}│  ├─ {id_!r}")
+        if self.annotations:
+            lines.append(f"{prefix}└─ annotations: ({len(self.annotations)})")
+            for ann in self.annotations:
+                lines.append(f"{prefix}   └─ {ann!r}")
         return "\n".join(lines)
 
 #### PyArrow Schemas (needed for parquet files) ####
@@ -273,3 +334,17 @@ ENTITY_FIELDS = [
 ]
 
 ENTITY_SCHEMA = pa.schema(ENTITY_FIELDS)
+
+# Full relation schema
+RELATION_FIELDS = [
+    pa.field('subject', pa.struct(NESTED_ENTITY_FIELDS), nullable=False),
+    pa.field('predicate', pa.string(), nullable=False),
+    pa.field('object', pa.struct(NESTED_ENTITY_FIELDS), nullable=False),
+    pa.field('category', pa.string()),
+    pa.field('interaction_class', pa.string()),
+    pa.field('identifiers', pa.list_(pa.struct(IDENTIFIER_FIELDS))),
+    pa.field('annotations', pa.list_(pa.struct(ANNOTATION_FIELDS))),
+]
+
+RELATION_SCHEMA = pa.schema(RELATION_FIELDS)
+

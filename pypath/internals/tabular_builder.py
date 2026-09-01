@@ -23,6 +23,7 @@ from pypath.internals.silver_schema import (
     Identifier as SilverIdentifier,
     Membership as SilverMembership,
     OntologyRelation as SilverOntologyRelation,
+    Relation as SilverRelation,
 )
 from pypath.internals.cv_terms import (
     EntityTypeCv,
@@ -1318,6 +1319,117 @@ class EntityBuilder:
         }
 
 
+class RelationBuilder:
+    """Declarative spec that produces `Relation` records from rows."""
+
+    def __init__(
+        self,
+        *,
+        subject: EntityBuilder | Callable[[Any], SilverEntity | SilverEntityRef | None],
+        predicate: str | Column | Callable[[Any], str | None],
+        object: EntityBuilder | Callable[[Any], SilverEntity | SilverEntityRef | None],
+        category: str | Column | Callable[[Any], str | None] | None = None,
+        interaction_class: str | Column | Callable[[Any], str | None] | None = None,
+        identifiers: IdentifiersBuilder | None = None,
+        annotations: AnnotationsBuilder | None = None,
+    ) -> None:
+        self.subject = subject
+        self.predicate = predicate
+        self.object = object
+        self.category = category
+        self.interaction_class = interaction_class
+        self.identifiers = identifiers
+        self.annotations = annotations
+
+    def __call__(self, row: Any) -> SilverRelation | None:
+        return self.build(row)
+
+    def build(self, row: Any) -> SilverRelation | None:
+        cache = ColumnCache()
+
+        # Build subject entity
+        if isinstance(self.subject, EntityBuilder):
+            subject_entity = self.subject.build(row)
+        elif callable(self.subject):
+            try:
+                subject_entity = self.subject(row)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("Relation subject callable failed: %s", exc)
+                return None
+        else:
+            subject_entity = self.subject
+
+        if subject_entity is None:
+            return None
+
+        # Build object entity
+        if isinstance(self.object, EntityBuilder):
+            object_entity = self.object.build(row)
+        elif callable(self.object):
+            try:
+                object_entity = self.object(row)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("Relation object callable failed: %s", exc)
+                return None
+        else:
+            object_entity = self.object
+
+        if object_entity is None:
+            return None
+
+        # Resolve predicate
+        if isinstance(self.predicate, Column):
+            pred_vals = cache.values(self.predicate, row)
+            predicate_val = str(pred_vals[0]) if pred_vals else 'interacts_with'
+        elif callable(self.predicate):
+            try:
+                predicate_val = str(self.predicate(row) or 'interacts_with')
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.debug("Relation predicate callable failed: %s", exc)
+                predicate_val = 'interacts_with'
+        else:
+            predicate_val = str(self.predicate)
+
+        # Resolve optional category
+        category_val = None
+        if isinstance(self.category, Column):
+            cat_vals = cache.values(self.category, row)
+            category_val = str(cat_vals[0]) if cat_vals else None
+        elif callable(self.category):
+            try:
+                category_val = self.category(row)
+            except Exception:  # pragma: no cover
+                pass
+        elif self.category is not None:
+            category_val = str(self.category)
+
+        # Resolve optional interaction_class
+        class_val = None
+        if isinstance(self.interaction_class, Column):
+            cls_vals = cache.values(self.interaction_class, row)
+            class_val = str(cls_vals[0]) if cls_vals else None
+        elif callable(self.interaction_class):
+            try:
+                class_val = self.interaction_class(row)
+            except Exception:  # pragma: no cover
+                pass
+        elif self.interaction_class is not None:
+            class_val = str(self.interaction_class)
+
+        identifiers = self.identifiers.build(row, cache) if self.identifiers else None
+        annotations = self.annotations.build(row, cache) if self.annotations else None
+
+        return SilverRelation(
+            subject=subject_entity,
+            predicate=predicate_val,
+            object=object_entity,
+            category=category_val,
+            interaction_class=class_val,
+            identifiers=identifiers if identifiers else None,
+            annotations=annotations if annotations else None,
+        )
+
+
 __all__ = [
     "AssociationBuilder",
     "AssociationsBuilder",
@@ -1331,4 +1443,5 @@ __all__ = [
     "Member",
     "MembershipBuilder",
     "MembersFromList",
+    "RelationBuilder",
 ]

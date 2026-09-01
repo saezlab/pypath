@@ -28,6 +28,7 @@ from pypath.internals.tabular_builder import (
     Member,
     MembersFromList,
     MembershipBuilder,
+    RelationBuilder,
 )
 
 
@@ -395,8 +396,58 @@ stimuli_schema = EntityBuilder(
     ),
 )
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+def signor_predicate(row: dict[str, object]) -> str:
+    raw_causal = str(row.get('Causal statement') or '').strip()
+    if raw_causal and raw_causal != '-':
+        mi_match = re.search(_MI_REGEX, raw_causal)
+        if mi_match:
+            return mi_match.group(1)
+    raw_type = str(row.get('Interaction type(s)') or '').strip()
+    if raw_type and raw_type != '-':
+        mi_match = re.search(_MI_REGEX, raw_type)
+        if mi_match:
+            return mi_match.group(1)
+    return 'interacts_with'
+
+
+interactor_a_builder = EntityBuilder(
+    entity_type=interactor_entity_type('A'),
+    identifiers=IdentifiersBuilder(
+        general_identifier_cv('\ufeff#ID(s) interactor A'),
+        general_identifier_cv('Alt. ID(s) interactor A'),
+        interactor_tax_cv('A'),
+    ),
+    annotations=AnnotationsBuilder(
+        mi_term_cv('Biological role(s) interactor A'),
+        mi_term_cv('Experimental role(s) interactor A'),
+        CV(
+            term=parsed_annotation_terms('Feature(s) interactor A'),
+            value=parsed_annotation_values('Feature(s) interactor A'),
+        ),
+    ),
+)
+
+interactor_b_builder = EntityBuilder(
+    entity_type=interactor_entity_type('B'),
+    identifiers=IdentifiersBuilder(
+        general_identifier_cv('ID(s) interactor B'),
+        general_identifier_cv('Alt. ID(s) interactor B'),
+        interactor_tax_cv('B'),
+    ),
+    annotations=AnnotationsBuilder(
+        mi_term_cv('Biological role(s) interactor B'),
+        mi_term_cv('Experimental role(s) interactor B'),
+        CV(
+            term=parsed_annotation_terms('Feature(s) interactor B'),
+            value=parsed_annotation_values('Feature(s) interactor B'),
+        ),
+    ),
+)
+
+interactions_schema = RelationBuilder(
+    subject=interactor_a_builder,
+    predicate=signor_predicate,
+    object=interactor_b_builder,
     identifiers=IdentifiersBuilder(
         interaction_identifier_cv(),
     ),
@@ -414,44 +465,6 @@ interactions_schema = EntityBuilder(
             value=parsed_annotation_values(
                 'Interaction annotation(s)',
                 default_term='signor:interaction_annotation',
-            ),
-        ),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=interactor_entity_type('A'),
-                identifiers=IdentifiersBuilder(
-                    general_identifier_cv('\ufeff#ID(s) interactor A'),
-                    general_identifier_cv('Alt. ID(s) interactor A'),
-                ),
-                annotations=AnnotationsBuilder(interactor_tax_cv('A')),
-            ),
-            annotations=AnnotationsBuilder(
-                mi_term_cv('Biological role(s) interactor A'),
-                mi_term_cv('Experimental role(s) interactor A'),
-                CV(
-                    term=parsed_annotation_terms('Feature(s) interactor A'),
-                    value=parsed_annotation_values('Feature(s) interactor A'),
-                ),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=interactor_entity_type('B'),
-                identifiers=IdentifiersBuilder(
-                    general_identifier_cv('ID(s) interactor B'),
-                    general_identifier_cv('Alt. ID(s) interactor B'),
-                ),
-                annotations=AnnotationsBuilder(interactor_tax_cv('B')),
-            ),
-            annotations=AnnotationsBuilder(
-                mi_term_cv('Biological role(s) interactor B'),
-                mi_term_cv('Experimental role(s) interactor B'),
-                CV(
-                    term=parsed_annotation_terms('Feature(s) interactor B'),
-                    value=parsed_annotation_values('Feature(s) interactor B'),
-                ),
             ),
         ),
     ),
