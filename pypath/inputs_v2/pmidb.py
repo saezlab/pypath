@@ -64,7 +64,7 @@ config = ResourceConfig(
 
 download = {
     f: Download(
-        url=BASE_URL % f,
+        url=BASE_URL % ('metabolites_infor' if f == 'metabolite_info' else f),
         filename=f'{f}.txt',
         subfolder='PMIDB',
         large=True,
@@ -74,7 +74,7 @@ download = {
     for f in files_header.keys()
 }
 
-def parser(opener, header=None, sep='\t'):
+def parser(opener, header = None, sep = '\t', **_kwargs):
     '''
     Parses plain text file (TSV by default) to return an iterable of records.
     Accepts custom header for tables without one.
