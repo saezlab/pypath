@@ -8,9 +8,9 @@ Metabolite Database into Entity records using the declarative schema pattern.
 from __future__ import annotations
 import re
 from functools import partial
+import xml.etree.ElementTree as ET
 
 import pandas as pd
-import lxml.etree as etree
 
 from pypath.inputs_v2.base import (
     ResourceConfig,
@@ -50,7 +50,7 @@ from pypath.internals.cv_terms import (
 
 # =================================== SET-UP ===================================
 
-URL = 'https://www.serummetabolome.ca/downloads/%s'
+URL = 'https://www.serummetabolome.ca/system/downloads/current/%s'
 
 config = ResourceConfig(
     id=ResourceCv.HSM,
@@ -69,18 +69,34 @@ config = ResourceConfig(
 )
 
 download_metabolites = Download(
-    url=URL,
-    filename='',
-    subfolder='',
+    url=URL % 'serum_metabolites.zip',
+    filename='serum_metabolites.zip',
+    subfolder='serum_metabolome',
     large=True,
-    ext='',
-    default_mode='r',
+    ext='.zip',
+    default_mode='rb',
+    needed=['serum_metabolites.xml']
 )
+
+
+def _get(element, tag, xmlns='{http://www.hmdb.ca}'):
+
+    child = element.find(f'{xmlns}{tag}')
+
+    return '' if not child else child.text
 
 
 def parser(opener):
 
-    return
+    tree = ET.parse(opener.result['serum_metabolites.xml'])
+    root = tree.getroot()
+
+    yield from [
+        {i: _get(elem, i) for i in [
+            ''
+        ]}
+        for elem in root
+    ]
 
 
 # =================================== SCHEMA ===================================
