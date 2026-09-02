@@ -7,7 +7,6 @@ Entity records using the declarative schema pattern.
 
 from __future__ import annotations
 import re
-from functools import partial
 
 import pandas as pd
 
@@ -16,14 +15,9 @@ from pypath.inputs_v2.base import (
     Download,
     Resource,
     Dataset,
-    ontology_entity_mapper,
 )
-from pypath.inputs_v2.parsers import brenda as _parsers
 from pypath.internals.tabular_builder import (
-    AssociationBuilder,
-    AssociationsBuilder,
     MembershipBuilder,
-    MembersFromList,
     Member,
     AnnotationsBuilder,
     CV,
@@ -34,16 +28,13 @@ from pypath.internals.tabular_builder import (
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     InterCellAnnotations,
-    MoleculeAnnotationsCv,
     AssayAnnotationsCv,
-    BiologicalRoleCv,
     MoleculeSubtypeCv,
     IdentifierNamespaceCv,
     InteractionMetadataCv,
     ParticipantMetadataCv,
     LicenseCV,
     ProteinFunctionalClassCv,
-    OntologyCv,
     UpdateCategoryCV,
     ResourceCv,
 )
