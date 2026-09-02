@@ -65,6 +65,7 @@ class ResourceCv(CvEnum):
     KEGG_METABOLIC = ("OM:1195", "KEGG Metabolic Reactions", "https://www.genome.jp/kegg/reaction/")
     REFMET = ("OM:1196", "RefMet metabolite entries", "https://www.metabolomicsworkbench.org/databases/refmet/")
     IMM1415 = ("OM:1197", "BiGG Model iMM1415", "http://bigg.ucsd.edu/models/iMM1415")
+    HSM = ("OM:1199", "Human Serum Metabolome", "https://www.serummetabolome.ca/")
 
     # Pharmacological databases (OM:1180-1199 range)
     GUIDETOPHARMA = ("OM:1180", "Guide to Pharmacology", "https://www.guidetopharmacology.org")
