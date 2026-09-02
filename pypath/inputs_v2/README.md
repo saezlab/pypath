@@ -383,36 +383,25 @@ schema = EntityBuilder(
 )
 ```
 
-### Interactions with Participants
+### Interactions (Relations)
 
 ```python
-schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
-    identifiers=IdentifiersBuilder(...),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('protein_a')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.SOURCE),  # Role annotation
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('protein_b')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.TARGET),
-            ),
+schema = RelationBuilder(
+    subject=EntityBuilder(
+        entity_type=EntityTypeCv.PROTEIN,
+        identifiers=IdentifiersBuilder(
+            CV(term=IdentifierNamespaceCv.UNIPROT, value=f('protein_a')),
         ),
     ),
+    predicate='interacts_with',  # or callable / Column mapping
+    object=EntityBuilder(
+        entity_type=EntityTypeCv.PROTEIN,
+        identifiers=IdentifiersBuilder(
+            CV(term=IdentifierNamespaceCv.UNIPROT, value=f('protein_b')),
+        ),
+    ),
+    identifiers=IdentifiersBuilder(...),
+    annotations=AnnotationsBuilder(...),
 )
 ```
 

@@ -25,6 +25,7 @@ from pypath.internals.silver_schema import (
     Entity,
     Identifier,
     Membership,
+    Relation,
 )
 
 BASE_URL = 'https://www.cellknowledge.com.cn/cellinker/download/'
@@ -230,12 +231,28 @@ def _cellinker_id(row: dict[str, object], fallback_parts: tuple[object, ...]) ->
 
 def _make_protein_interaction_mapper(
     species: str,
-) -> Callable[[dict[str, object]], Entity]:
+) -> Callable[[dict[str, object]], Relation]:
     taxon_id = SPECIES[species]['taxon_id']
 
-    def mapper(row: dict[str, object]) -> Entity:
-        return Entity(
-            type=EntityTypeCv.INTERACTION,
+    def mapper(row: dict[str, object]) -> Relation:
+        ligand = _protein(
+            uniprot=row.get('Ligand_Uniprot'),
+            gene_id=row.get('Ligand_geneid'),
+            gene_name=row.get('ligand_symbol'),
+            taxon_id=taxon_id,
+            annotations=[Annotation(term=InterCellAnnotations.LIGAND)],
+        )
+        receptor = _protein(
+            uniprot=row.get('Receptor_Uniprot'),
+            gene_id=row.get('Receptor_geneid'),
+            gene_name=row.get('Receptor_symbol'),
+            taxon_id=taxon_id,
+            annotations=[Annotation(term=InterCellAnnotations.RECEPTOR)],
+        )
+        return Relation(
+            subject=ligand,
+            predicate='interacts_with',
+            object=receptor,
             identifiers=_identifiers(
                 _identifier(IdentifierNamespaceCv.CELLINKER, row.get('LRID')),
                 _identifier(
@@ -248,26 +265,6 @@ def _make_protein_interaction_mapper(
                 *_pubmed_annotations(row.get('PMID')),
                 *_database_annotations(row.get('Database')),
             ),
-            membership=[
-                Membership(
-                    member=_protein(
-                        uniprot=row.get('Ligand_Uniprot'),
-                        gene_id=row.get('Ligand_geneid'),
-                        gene_name=row.get('ligand_symbol'),
-                        taxon_id=taxon_id,
-                    ),
-                    annotations=[Annotation(term=InterCellAnnotations.LIGAND)],
-                ),
-                Membership(
-                    member=_protein(
-                        uniprot=row.get('Receptor_Uniprot'),
-                        gene_id=row.get('Receptor_geneid'),
-                        gene_name=row.get('Receptor_symbol'),
-                        taxon_id=taxon_id,
-                    ),
-                    annotations=[Annotation(term=InterCellAnnotations.RECEPTOR)],
-                ),
-            ],
         )
 
     return mapper
@@ -275,12 +272,23 @@ def _make_protein_interaction_mapper(
 
 def _make_metabolite_interaction_mapper(
     species: str,
-) -> Callable[[dict[str, object]], Entity]:
+) -> Callable[[dict[str, object]], Relation]:
     taxon_id = SPECIES[species]['taxon_id']
 
-    def mapper(row: dict[str, object]) -> Entity:
-        return Entity(
-            type=EntityTypeCv.INTERACTION,
+    def mapper(row: dict[str, object]) -> Relation:
+        metabolite = _metabolite(row)
+        receptor = _protein(
+            uniprot=_row_value(row, 'Receptor uniprot_ id', 'Receptor_uniprot_ id'),
+            gene_id=_row_value(row, 'Receptor_gene ID', 'Receptor_geneID'),
+            gene_name=row.get('Receptor_symbol'),
+            name=row.get('protein name'),
+            taxon_id=taxon_id,
+            annotations=[Annotation(term=InterCellAnnotations.RECEPTOR)],
+        )
+        return Relation(
+            subject=metabolite,
+            predicate='interacts_with',
+            object=receptor,
             identifiers=_identifiers(
                 _identifier(IdentifierNamespaceCv.CELLINKER, row.get('MRID')),
                 _identifier(
@@ -293,22 +301,6 @@ def _make_metabolite_interaction_mapper(
                 *_pubmed_annotations(row.get('PMID')),
                 *_database_annotations(_row_value(row, 'Other.DB', 'Database')),
             ),
-            membership=[
-                Membership(
-                    member=_metabolite(row),
-                    annotations=[Annotation(term=InterCellAnnotations.LIGAND)],
-                ),
-                Membership(
-                    member=_protein(
-                        uniprot=_row_value(row, 'Receptor uniprot_ id', 'Receptor_uniprot_ id'),
-                        gene_id=_row_value(row, 'Receptor_gene ID', 'Receptor_geneID'),
-                        gene_name=row.get('Receptor_symbol'),
-                        name=row.get('protein name'),
-                        taxon_id=taxon_id,
-                    ),
-                    annotations=[Annotation(term=InterCellAnnotations.RECEPTOR)],
-                ),
-            ],
         )
 
     return mapper
@@ -317,31 +309,39 @@ def _make_metabolite_interaction_mapper(
 def _make_metabolite_protein_mapper(
     species: str,
     role: str,
-) -> Callable[[dict[str, object]], Entity]:
+) -> Callable[[dict[str, object]], Relation]:
     taxon_id = SPECIES[species]['taxon_id']
     protein_keys = SPECIES[species]
 
-    def protein_role() -> BiologicalRoleCv:
-        return (
-            BiologicalRoleCv.CONTROLLER
-            if role == 'transporter'
-            else BiologicalRoleCv.ENZYME
-        )
-
-    def metabolite_role(row: dict[str, object]) -> BiologicalRoleCv | None:
-        value = _clean(row.get('enzyme product/substrate')).lower()
-        if value == 'product':
-            return BiologicalRoleCv.PRODUCT
-        if value == 'substrate':
-            return BiologicalRoleCv.SUBSTRATE
-        return None
-
-    def mapper(row: dict[str, object]) -> Entity:
+    def mapper(row: dict[str, object]) -> Relation:
         protein_uniprot = _row_value(row, protein_keys['uniprot'])
         metabolite_id = _row_value(row, 'HMDB_ID')
         cellinker_id = _cellinker_id(row, (role, metabolite_id, protein_uniprot))
-        return Entity(
-            type=EntityTypeCv.INTERACTION,
+        metabolite = _metabolite(row)
+        protein = _protein(
+            uniprot=protein_uniprot,
+            gene_id=_row_value(row, protein_keys['gene_id']),
+            gene_name=_row_value(row, protein_keys['gene_name']),
+            name=row.get('ENZYME_NAME'),
+            taxon_id=taxon_id,
+            annotations=[
+                item
+                for item in (
+                    _annotation(
+                        MoleculeAnnotationsCv.PROTEIN_FUNCTIONAL_CLASS,
+                        ProteinFunctionalClassCv.TRANSPORTER
+                        if role == 'transporter'
+                        else row.get('type'),
+                    ),
+                )
+                if item is not None
+            ],
+        )
+        predicate = role or 'interacts_with'
+        return Relation(
+            subject=metabolite,
+            predicate=predicate,
+            object=protein,
             identifiers=_identifiers(
                 _identifier(IdentifierNamespaceCv.CELLINKER, cellinker_id),
                 _identifier(
@@ -354,40 +354,6 @@ def _make_metabolite_protein_mapper(
                 Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
                 _annotation(ReactionAnnotationsCv.XREF, row.get('REACTIONS')),
             ),
-            membership=[
-                Membership(
-                    member=_metabolite(row),
-                    annotations=_annotations(
-                        Annotation(term=InterCellAnnotations.LIGAND),
-                        _flag(metabolite_role(row), metabolite_role(row) is not None),
-                    ),
-                ),
-                Membership(
-                    member=_protein(
-                        uniprot=protein_uniprot,
-                        gene_id=_row_value(row, protein_keys['gene_id']),
-                        gene_name=_row_value(row, protein_keys['gene_name']),
-                        name=row.get('ENZYME_NAME'),
-                        taxon_id=taxon_id,
-                        annotations=[
-                            item
-                            for item in (
-                                _annotation(
-                                    MoleculeAnnotationsCv.PROTEIN_FUNCTIONAL_CLASS,
-                                    ProteinFunctionalClassCv.TRANSPORTER
-                                    if role == 'transporter'
-                                    else row.get('type'),
-                                ),
-                            )
-                            if item is not None
-                        ],
-                    ),
-                    annotations=_annotations(
-                        Annotation(term=protein_role()),
-                        _flag(InterCellAnnotations.RECEPTOR, role == 'transporter'),
-                    ),
-                ),
-            ],
         )
 
     return mapper

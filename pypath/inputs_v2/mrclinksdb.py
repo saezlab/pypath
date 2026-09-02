@@ -30,6 +30,7 @@ from pypath.internals.tabular_builder import (
     Member,
     MembershipBuilder,
     MembersFromList,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.mrclinksdb import iter_mrclinksdb_interactions
@@ -111,85 +112,82 @@ def _iter_with_taxon(opener, *, taxon_id: str, **kwargs):
 # Schema
 # =============================================================================
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+metabolite_builder = EntityBuilder(
+    entity_type=EntityTypeCv.CHEMICAL,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
+           value=f('pubchem_cid_sid', transform='pubchem_cid')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
+        CV(term=IdentifierNamespaceCv.SMILES, value=f('canonical_smiles')),
+        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('molecular_formula')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=MoleculeAnnotationsCv.COMPOUND_KINGDOM, value=f('kingdom')),
+        CV(term=MoleculeAnnotationsCv.COMPOUND_SUPERCLASS, value=f('super_class')),
+        CV(term=MoleculeAnnotationsCv.COMPOUND_CLASS, value=f('class')),
+        CV(term=ParticipantMetadataCv.SOURCE),
+    ),
+)
+
+single_receptor_builder = EntityBuilder(
+    entity_type=EntityTypeCv.PROTEIN,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.UNIPROT,  value=f(_if_single('receptor_uniprot_id'))),
+        CV(term=IdentifierNamespaceCv.ENTREZ,   value=f(_if_single('receptor_gene_id'))),
+        CV(term=IdentifierNamespaceCv.NAME,     value=f(_if_single('protein_name'), transform='primary_name')),
+        CV(term=IdentifierNamespaceCv.SYNONYM,  value=f(_if_single('protein_name'), transform='alt_names')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
+        CV(term=ParticipantMetadataCv.TARGET),
+    ),
+)
+
+complex_receptor_builder = EntityBuilder(
+    entity_type=EntityTypeCv.COMPLEX,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.NAME,    value=f(_if_complex('protein_name'), transform='primary_name')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f(_if_complex('protein_name'), transform='alt_names')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=ParticipantMetadataCv.TARGET),
+    ),
+    membership=MembershipBuilder(
+        MembersFromList(
+            entity_type=EntityTypeCv.PROTEIN,
+            identifiers=IdentifiersBuilder(
+                CV(term=IdentifierNamespaceCv.UNIPROT,
+                    value=f('receptor_uniprot_id', delimiter='_')),
+                CV(term=IdentifierNamespaceCv.ENTREZ,
+                    value=f('receptor_gene_id',    delimiter='_')),
+                CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
+                   value=f('receptor_symbol',     delimiter='_')),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
+            ),
+        ),
+    ),
+)
+
+
+def _mrclinksdb_receptor_builder(row: dict[str, object]) -> object | None:
+    if '_' in str(row.get('receptor_uniprot_id') or ''):
+        return complex_receptor_builder.build(row)
+    return single_receptor_builder.build(row)
+
+
+interactions_schema = RelationBuilder(
+    subject=metabolite_builder,
+    predicate='interacts_with',
+    object=_mrclinksdb_receptor_builder,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.MRCLINKSDB, value=f('mrid')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f('pmid', delimiter=';')),
         CV(term=CurationCv.COMMENT, value=f('other_db', delimiter=';')),
-    ),
-    membership=MembershipBuilder(
-        # Metabolite (small molecule)
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-                       value=f('pubchem_cid_sid', transform='pubchem_cid')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
-                    CV(term=IdentifierNamespaceCv.SMILES, value=f('canonical_smiles')),
-                    CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('molecular_formula')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=MoleculeAnnotationsCv.COMPOUND_KINGDOM, value=f('kingdom')),
-                    CV(term=MoleculeAnnotationsCv.COMPOUND_SUPERCLASS, value=f('super_class')),
-                    CV(term=MoleculeAnnotationsCv.COMPOUND_CLASS, value=f('class')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=ParticipantMetadataCv.SOURCE),
-            ),
-        ),
-        # Single-protein receptor
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT,  value=f(_if_single('receptor_uniprot_id'))),
-                    CV(term=IdentifierNamespaceCv.ENTREZ,   value=f(_if_single('receptor_gene_id'))),
-                    CV(term=IdentifierNamespaceCv.NAME,     value=f(_if_single('protein_name'), transform='primary_name')),
-                    CV(term=IdentifierNamespaceCv.SYNONYM,  value=f(_if_single('protein_name'), transform='alt_names')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=ParticipantMetadataCv.TARGET),
-            ),
-        ),
-        # Heteromeric complex receptor
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.COMPLEX,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.NAME,    value=f(_if_complex('protein_name'), transform='primary_name')),
-                    CV(term=IdentifierNamespaceCv.SYNONYM, value=f(_if_complex('protein_name'), transform='alt_names')),
-                ),
-                membership=MembershipBuilder(
-                    MembersFromList(
-                        entity_type=EntityTypeCv.PROTEIN,
-                        identifiers=IdentifiersBuilder(
-                            CV(term=IdentifierNamespaceCv.UNIPROT,
-                                value=f('receptor_uniprot_id', delimiter='_')),
-                            CV(term=IdentifierNamespaceCv.ENTREZ,
-                                value=f('receptor_gene_id',    delimiter='_')),
-                            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
-                               value=f('receptor_symbol',     delimiter='_')),
-                        ),
-                        entity_annotations=AnnotationsBuilder(
-                            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-                        ),
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=ParticipantMetadataCv.TARGET),
-            ),
-        ),
     ),
 )
 

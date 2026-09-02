@@ -24,6 +24,7 @@ from pypath.internals.silver_schema import (
     Entity,
     Identifier,
     Membership,
+    Relation,
 )
 
 DRUGCENTRAL_STRUCTURES_URL = (
@@ -283,10 +284,13 @@ def _target_entity(row: dict[str, object]) -> Entity:
     )
 
 
-def map_drugcentral_interaction(row: dict[str, object]) -> Entity:
-    """Map a DrugCentral raw row to a drug-target interaction entity."""
-    return Entity(
-        type=EntityTypeCv.INTERACTION,
+def map_drugcentral_interaction(row: dict[str, object]) -> Relation:
+    """Map a DrugCentral raw row to a drug-target interaction relation."""
+    action = _clean(row.get('ACTION_TYPE')) or 'interacts_with'
+    return Relation(
+        subject=_small_molecule(row),
+        predicate=action,
+        object=_target_entity(row),
         identifiers=_identifiers(
             _identifier(IdentifierNamespaceCv.DRUGCENTRAL, _interaction_id(row)),
             _identifier(
@@ -309,10 +313,6 @@ def map_drugcentral_interaction(row: dict[str, object]) -> Entity:
                 'mechanism_of_action' if _clean(row.get('MOA')) == '1' else None,
             ),
         ),
-        membership=[
-            Membership(member=_small_molecule(row)),
-            Membership(member=_target_entity(row)),
-        ],
     )
 
 

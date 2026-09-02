@@ -23,6 +23,7 @@ from pypath.internals.silver_schema import (
     Entity,
     Identifier,
     Membership,
+    Relation,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.neuronchat import iter_neuronchat
@@ -184,9 +185,12 @@ def _target_entity(row: dict[str, object], taxon_id: str) -> Entity:
 
 
 def interactions_schema(taxon_id: str):
-    def mapper(row: dict[str, object]) -> Entity:
-        return Entity(
-            type=EntityTypeCv.INTERACTION,
+    def mapper(row: dict[str, object]) -> Relation:
+        interaction_type = _clean(row.get('interaction_type')) or 'interacts_with'
+        return Relation(
+            subject=_source_entity(row, taxon_id),
+            predicate=interaction_type,
+            object=_target_entity(row, taxon_id),
             identifiers=_identifiers(
                 _identifier(IdentifierNamespaceCv.NAME, row.get('interaction_name')),
             ),
@@ -194,16 +198,6 @@ def interactions_schema(taxon_id: str):
                 _annotation(InteractionMetadataCv.LIGAND_TYPE, row.get('ligand_type')),
                 _annotation(InteractionMetadataCv.INTERACTION_TYPE, row.get('interaction_type')),
             ),
-            membership=[
-                Membership(
-                    member=_source_entity(row, taxon_id),
-                    annotations=[Annotation(term=ParticipantMetadataCv.SOURCE)],
-                ),
-                Membership(
-                    member=_target_entity(row, taxon_id),
-                    annotations=[Annotation(term=ParticipantMetadataCv.TARGET)],
-                ),
-            ],
         )
 
     return mapper

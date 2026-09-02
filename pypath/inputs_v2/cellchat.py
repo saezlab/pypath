@@ -20,7 +20,7 @@ from pypath.internals.cv_terms import (
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
+from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership, Relation
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.cellchat import (
     iter_cellchat_cofactors,
@@ -252,13 +252,15 @@ def _target_role_term(row: dict[str, Any]) -> InterCellAnnotations | None:
     return None
 
 
-def map_cellchat_interaction(row: dict[str, Any]) -> Entity:
+def map_cellchat_interaction(row: dict[str, Any]) -> Relation:
     taxon_id = _first(row.get('taxon_id'))
     evidence = _first(row.get('evidence'))
 
     annotations = _annotations(
         Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-        _neurotransmitter_annotation(row.get('is_neurotransmitter')),
+        _annotation(InteractionMetadataCv.ANNOTATION, _first(row.get('annotation'))),
+        _annotation(InteractionMetadataCv.PATHWAY_NAME, _first(row.get('pathway_name'))),
+        _annotation(InteractionMetadataCv.EVIDENCE, evidence),
         *_pubmed_annotations(evidence),
         *_pmc_annotations(evidence),
     )
@@ -284,8 +286,10 @@ def map_cellchat_interaction(row: dict[str, Any]) -> Entity:
         ),
     )
 
-    return Entity(
-        type=EntityTypeCv.INTERACTION,
+    return Relation(
+        subject=ligand,
+        predicate='interacts_with',
+        object=receptor,
         identifiers=[
             Identifier(
                 type=IdentifierNamespaceCv.CELLCHAT,
@@ -297,27 +301,13 @@ def map_cellchat_interaction(row: dict[str, Any]) -> Entity:
             ),
         ],
         annotations=annotations,
-        membership=[
-            Membership(
-                member=ligand,
-                annotations=[
-                    Annotation(term=InterCellAnnotations.LIGAND),
-                ],
-            ),
-            Membership(
-                member=receptor,
-                annotations=[
-                    Annotation(term=InterCellAnnotations.RECEPTOR),
-                ],
-            ),
-        ],
     )
 
 
-def map_cellchat_cofactor_interaction(row: dict[str, Any]) -> Entity:
+def map_cellchat_cofactor_interaction(row: dict[str, Any]) -> Relation:
     taxon_id = _first(row.get('taxon_id'))
     evidence = _first(row.get('evidence'))
-    effect = _first(row.get('effect'))
+    effect = _first(row.get('effect')) or 'interacts_with'
     cofactor_gene = _first(row.get('cofactor_gene'))
 
     annotations = _annotations(
@@ -342,8 +332,10 @@ def map_cellchat_cofactor_interaction(row: dict[str, Any]) -> Entity:
         ),
     )
 
-    return Entity(
-        type=EntityTypeCv.INTERACTION,
+    return Relation(
+        subject=cofactor,
+        predicate=effect,
+        object=target,
         identifiers=[
             Identifier(
                 type=IdentifierNamespaceCv.CELLCHAT,
@@ -359,19 +351,6 @@ def map_cellchat_cofactor_interaction(row: dict[str, Any]) -> Entity:
             ),
         ],
         annotations=annotations,
-        membership=[
-            Membership(
-                member=cofactor,
-            ),
-            Membership(
-                member=target,
-                annotations=(
-                    [Annotation(term=role_term)]
-                    if (role_term := _target_role_term(row)) is not None
-                    else None
-                ),
-            ),
-        ],
     )
 
 

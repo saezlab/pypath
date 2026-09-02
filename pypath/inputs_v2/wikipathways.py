@@ -25,8 +25,7 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.wikipathways import _raw, current_rdf_url
@@ -108,43 +107,53 @@ pathways_schema = EntityBuilder(
 )
 
 
-def _member(prefix: str, role) -> Member:
-    return Member(
-        entity=EntityBuilder(
-            entity_type=f(f'{prefix}_entity_type', map='entity_type'),
-            identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.NAME, value=f(f'{prefix}_label')),
-                CV(term=IdentifierNamespaceCv.UNIPROT, value=f(f'{prefix}_uniprot', delimiter=';', extract='uniprot_id')),
-                CV(term=IdentifierNamespaceCv.ENTREZ, value=f(f'{prefix}_entrez', delimiter=';', extract='entrez_id')),
-                CV(term=IdentifierNamespaceCv.ENSEMBL, value=f(f'{prefix}_ensembl', delimiter=';', extract='ensembl_id')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f(f'{prefix}_chebi', delimiter=';', extract='chebi')),
-                CV(term=IdentifierNamespaceCv.HMDB, value=f(f'{prefix}_hmdb', delimiter=';')),
-                CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f(f'{prefix}_kegg_compound', delimiter=';')),
-                CV(
-                    term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-                    value=f(f'{prefix}_pubchem_compound', delimiter=';'),
-                ),
-                CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f(f'{prefix}_hgnc', delimiter=';')),
+def _participant_builder(prefix: str, role) -> EntityBuilder:
+    return EntityBuilder(
+        entity_type=f(f'{prefix}_entity_type', map='entity_type'),
+        identifiers=IdentifiersBuilder(
+            CV(term=IdentifierNamespaceCv.NAME, value=f(f'{prefix}_label')),
+            CV(term=IdentifierNamespaceCv.UNIPROT, value=f(f'{prefix}_uniprot', delimiter=';', extract='uniprot_id')),
+            CV(term=IdentifierNamespaceCv.ENTREZ, value=f(f'{prefix}_entrez', delimiter=';', extract='entrez_id')),
+            CV(term=IdentifierNamespaceCv.ENSEMBL, value=f(f'{prefix}_ensembl', delimiter=';', extract='ensembl_id')),
+            CV(term=IdentifierNamespaceCv.CHEBI, value=f(f'{prefix}_chebi', delimiter=';', extract='chebi')),
+            CV(term=IdentifierNamespaceCv.HMDB, value=f(f'{prefix}_hmdb', delimiter=';')),
+            CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f(f'{prefix}_kegg_compound', delimiter=';')),
+            CV(
+                term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
+                value=f(f'{prefix}_pubchem_compound', delimiter=';'),
             ),
-            annotations=AnnotationsBuilder(
-                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=_member_taxon_id(prefix)),
-            ),
-            associations=AssociationsBuilder(
-                AssociationBuilder(
-                    object_entity_type=EntityTypeCv.PATHWAY,
-                    object_identifier_type=IdentifierNamespaceCv.WIKIPATHWAYS,
-                    object_identifier=f('pathway_term_accession'),
-                ),
-            ),
+            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f(f'{prefix}_hgnc', delimiter=';')),
         ),
         annotations=AnnotationsBuilder(
+            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=_member_taxon_id(prefix)),
             CV(term=role),
+        ),
+        associations=AssociationsBuilder(
+            AssociationBuilder(
+                object_entity_type=EntityTypeCv.PATHWAY,
+                object_identifier_type=IdentifierNamespaceCv.WIKIPATHWAYS,
+                object_identifier=f('pathway_term_accession'),
+            ),
         ),
     )
 
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+def wikipathways_predicate(row: dict[str, object]) -> str:
+    types = row.get('interaction_types')
+    if types:
+        if isinstance(types, str):
+            first = types.split(';')[0].strip()
+            if first:
+                return first
+        elif isinstance(types, (list, tuple)) and types:
+            return str(types[0])
+    return 'interacts_with'
+
+
+interactions_schema = RelationBuilder(
+    subject=_participant_builder('source', ParticipantMetadataCv.SOURCE),
+    predicate=wikipathways_predicate,
+    object=_participant_builder('target', ParticipantMetadataCv.TARGET),
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_local_id')),
     ),
@@ -152,17 +161,6 @@ interactions_schema = EntityBuilder(
         CV(term=f('interaction_types', delimiter=';', map='interaction_type')),
         CV(term=IdentifierNamespaceCv.WIKIPATHWAYS_VERSION, value=f('pathway_version_id')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-    ),
-    associations=AssociationsBuilder(
-        AssociationBuilder(
-            object_entity_type=EntityTypeCv.PATHWAY,
-            object_identifier_type=IdentifierNamespaceCv.WIKIPATHWAYS,
-            object_identifier=f('pathway_id'),
-        ),
-    ),
-    membership=MembershipBuilder(
-        _member('source', ParticipantMetadataCv.SOURCE),
-        _member('target', ParticipantMetadataCv.TARGET),
     ),
 )
 

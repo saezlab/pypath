@@ -23,8 +23,7 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.bindingdb import _raw
@@ -70,8 +69,47 @@ f = FieldConfig(
 
 tax_value = f('Target Source Organism According to Curator or DataSource', extract='tax')
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+chemical_builder = EntityBuilder(
+    entity_type=EntityTypeCv.CHEMICAL,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.BINDINGDB, value=f('BindingDB MonomerID')),
+        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='chembl')),
+        CV(term=IdentifierNamespaceCv.ZINC, value=f('BindingDB Ligand Name', delimiter='::', extract='zinc')),
+        CV(term=IdentifierNamespaceCv.CAS, value=f('BindingDB Ligand Name', delimiter='::', extract='cas')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('BindingDB Ligand Name', delimiter='::', extract='chebi')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='pubchem_cid')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='kegg')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('Ligand InChI Key')),
+        CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('Ligand InChI')),
+        CV(term=IdentifierNamespaceCv.SMILES, value=f('Ligand SMILES')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PubChem CID')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem SID')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('ChEBI ID of Ligand', extract='chebi')),
+        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('ChEMBL ID of Ligand', delimiter='::', extract='chembl')),
+        CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('DrugBank ID of Ligand')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('KEGG ID of Ligand')),
+        CV(term=IdentifierNamespaceCv.ZINC, value=f('ZINC ID of Ligand')),
+    ),
+)
+
+target_builder = EntityBuilder(
+    entity_type=EntityTypeCv.PROTEIN,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.NAME, value=f('Target Name')),
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt (SwissProt) Primary ID of Target Chain 1', delimiter=' ', extract='uniprot')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (SwissProt) Recommended Name of Target Chain 1')),
+        CV(term=IdentifierNamespaceCv.UNIPROT_TREMBL, value=f('UniProt (TrEMBL) Primary ID of Target Chain 1', delimiter=' ', extract='uniprot')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (TrEMBL) Submitted Name of Target Chain 1')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=tax_value),
+    ),
+)
+
+interactions_schema = RelationBuilder(
+    subject=chemical_builder,
+    predicate='interacts_with',
+    object=target_builder,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.BINDINGDB, value=f('BindingDB Reactant_set_id')),
     ),
@@ -93,47 +131,6 @@ interactions_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.DOI, value=f('Article DOI')),
         CV(term=IdentifierNamespaceCv.PATENT_NUMBER, value=f('Patent Number')),
         CV(term=CurationCv.COMMENT, value=f('Curation/DataSource')),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.BINDINGDB, value=f('BindingDB MonomerID')),
-                    CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='chembl')),
-                    CV(term=IdentifierNamespaceCv.ZINC, value=f('BindingDB Ligand Name', delimiter='::', extract='zinc')),
-                    CV(term=IdentifierNamespaceCv.CAS, value=f('BindingDB Ligand Name', delimiter='::', extract='cas')),
-                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('BindingDB Ligand Name', delimiter='::', extract='chebi')),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='pubchem_cid')),
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='kegg')),
-                    CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('Ligand InChI Key')),
-                    CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('Ligand InChI')),
-                    CV(term=IdentifierNamespaceCv.SMILES, value=f('Ligand SMILES')),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PubChem CID')),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem SID')),
-                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('ChEBI ID of Ligand', extract='chebi')),
-                    CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('ChEMBL ID of Ligand', delimiter='::', extract='chembl')),
-                    CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('DrugBank ID of Ligand')),
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('KEGG ID of Ligand')),
-                    CV(term=IdentifierNamespaceCv.ZINC, value=f('ZINC ID of Ligand')),
-                ),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('Target Name')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt (SwissProt) Primary ID of Target Chain 1', delimiter=' ', extract='uniprot')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (SwissProt) Recommended Name of Target Chain 1')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT_TREMBL, value=f('UniProt (TrEMBL) Primary ID of Target Chain 1', delimiter=' ', extract='uniprot')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (TrEMBL) Submitted Name of Target Chain 1')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=tax_value),
-                ),
-            ),
-        ),
     ),
 )
 

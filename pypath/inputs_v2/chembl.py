@@ -45,6 +45,7 @@ from pypath.internals.tabular_builder import (
     Member,
     MembershipBuilder,
     MembersFromList,
+    RelationBuilder,
 )
 
 
@@ -257,32 +258,40 @@ targets_schema = EntityBuilder(
     ),
 )
 
-activities_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('molecule_chembl_id')),
-                ),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=f('target_type', map='target_type', default=EntityTypeCv.PHYSICAL_ENTITY),
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('target_pref_name')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=lambda row: _target_component_values(row, 'target_component_uniprot_accessions')),
-                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=lambda row: _target_component_values(row, 'target_component_ensembl_accessions')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('target_tax_id')),
-                ),
-            ),
-        ),
+def chembl_predicate(row: dict[str, object]) -> str:
+    action = str(row.get('action_type') or '').strip()
+    if action:
+        return action
+    standard = str(row.get('standard_type') or '').strip()
+    if standard:
+        return standard
+    return 'interacts_with'
+
+
+molecule_builder = EntityBuilder(
+    entity_type=EntityTypeCv.CHEMICAL,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('molecule_chembl_id')),
     ),
+)
+
+target_builder = EntityBuilder(
+    entity_type=f('target_type', map='target_type', default=EntityTypeCv.PHYSICAL_ENTITY),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
+        CV(term=IdentifierNamespaceCv.NAME, value=f('target_pref_name')),
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=lambda row: _target_component_values(row, 'target_component_uniprot_accessions')),
+        CV(term=IdentifierNamespaceCv.ENSEMBL, value=lambda row: _target_component_values(row, 'target_component_ensembl_accessions')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('target_tax_id')),
+    ),
+)
+
+activities_schema = RelationBuilder(
+    subject=molecule_builder,
+    predicate=chembl_predicate,
+    object=target_builder,
     annotations=AnnotationsBuilder(
         CV(term=f('standard_type', map='standard_type'), value=f('standard_value')),
         CV(term=InteractionParameterCv.PCHEMBL_VALUE, value=f('pchembl_value')),

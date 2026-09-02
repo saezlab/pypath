@@ -28,8 +28,7 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
@@ -200,8 +199,51 @@ config = ResourceConfig(
     ),
 )
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+def intact_predicate(row: dict[str, object]) -> str:
+    raw_type = str(row.get('Interaction type(s)') or '').strip()
+    if raw_type and raw_type != '-':
+        mi_match = re.search(r'(MI:\d+)', raw_type)
+        if mi_match:
+            return mi_match.group(1)
+    return 'interacts_with'
+
+
+interactor_a_builder = EntityBuilder(
+    entity_type=_interactor_entity_type('A'),
+    identifiers=IdentifiersBuilder(
+        CV(term=parsed_identifier_terms('#ID(s) interactor A'), value=parsed_identifier_values('#ID(s) interactor A')),
+        CV(term=parsed_identifier_terms('Alt. ID(s) interactor A'), value=parsed_identifier_values('Alt. ID(s) interactor A')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor A', extract='tax')),
+        CV(term=f('Biological role(s) interactor A', extract='mi')),
+        CV(term=f('Experimental role(s) interactor A', extract='mi')),
+        CV(term=ParticipantMetadataCv.PARTICIPANT_FEATURE, value=f('Feature(s) interactor A')),
+        CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('Stoichiometry(s) interactor A')),
+        CV(term=f('Identification method participant A', extract='mi')),
+    ),
+)
+
+interactor_b_builder = EntityBuilder(
+    entity_type=_interactor_entity_type('B'),
+    identifiers=IdentifiersBuilder(
+        CV(term=parsed_identifier_terms('ID(s) interactor B'), value=parsed_identifier_values('ID(s) interactor B')),
+        CV(term=parsed_identifier_terms('Alt. ID(s) interactor B'), value=parsed_identifier_values('Alt. ID(s) interactor B')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor B', extract='tax')),
+        CV(term=f('Biological role(s) interactor B', extract='mi')),
+        CV(term=f('Experimental role(s) interactor B', extract='mi')),
+        CV(term=ParticipantMetadataCv.PARTICIPANT_FEATURE, value=f('Feature(s) interactor B')),
+        CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('Stoichiometry(s) interactor B')),
+        CV(term=f('Identification method participant B', extract='mi')),
+    ),
+)
+
+interactions_schema = RelationBuilder(
+    subject=interactor_a_builder,
+    predicate=intact_predicate,
+    object=interactor_b_builder,
     identifiers=IdentifiersBuilder(
         CV(
             term=IdentifierNamespaceCv.INTACT,
@@ -218,46 +260,6 @@ interactions_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Host organism(s)', extract='tax')),
         CV(term=InteractionMetadataCv.INTERACTION_PARAMETER, value=f('Interaction parameter(s)')),
         CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('Interaction annotation(s)')),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=_interactor_entity_type('A'),
-                identifiers=IdentifiersBuilder(
-                    CV(term=parsed_identifier_terms('#ID(s) interactor A'), value=parsed_identifier_values('#ID(s) interactor A')),
-                    CV(term=parsed_identifier_terms('Alt. ID(s) interactor A'), value=parsed_identifier_values('Alt. ID(s) interactor A')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor A', extract='tax')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=f('Biological role(s) interactor A', extract='mi')),
-                CV(term=f('Experimental role(s) interactor A', extract='mi')),
-                CV(term=ParticipantMetadataCv.PARTICIPANT_FEATURE, value=f('Feature(s) interactor A')),
-                CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('Stoichiometry(s) interactor A')),
-                CV(term=f('Identification method participant A', extract='mi')),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=_interactor_entity_type('B'),
-                identifiers=IdentifiersBuilder(
-                    CV(term=parsed_identifier_terms('ID(s) interactor B'), value=parsed_identifier_values('ID(s) interactor B')),
-                    CV(term=parsed_identifier_terms('Alt. ID(s) interactor B'), value=parsed_identifier_values('Alt. ID(s) interactor B')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Taxid interactor B', extract='tax')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=f('Biological role(s) interactor B', extract='mi')),
-                CV(term=f('Experimental role(s) interactor B', extract='mi')),
-                CV(term=ParticipantMetadataCv.PARTICIPANT_FEATURE, value=f('Feature(s) interactor B')),
-                CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('Stoichiometry(s) interactor B')),
-                CV(term=f('Identification method participant B', extract='mi')),
-            ),
-        ),
     ),
 )
 

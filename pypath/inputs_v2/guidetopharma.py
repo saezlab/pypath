@@ -31,8 +31,7 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
@@ -461,21 +460,19 @@ ligands_schema = EntityBuilder(
 )
 
 
-class _MappedEntityBuilder:
-    def __init__(
-        self,
-        builder: EntityBuilder,
-        row_getter: Callable[[Mapping[str, object]], Mapping[str, object]],
-    ) -> None:
-        self.builder = builder
-        self.row_getter = row_getter
+class _GuidetopharmaLigandMemberBuilder:
+    def __call__(self, row: Mapping[str, object]) -> object | None:
+        return self.build(row)
 
     def build(self, row: Mapping[str, object]) -> object | None:
-        member_row = self.row_getter(row)
-        return self.builder.build(member_row) if member_row else None
+        member_row = _ligand_row(row)
+        return ligands_schema.build(member_row) if member_row else None
 
 
 class _GuidetopharmaTargetMemberBuilder:
+    def __call__(self, row: Mapping[str, object]) -> object | None:
+        return self.build(row)
+
     def build(self, row: Mapping[str, object]) -> object | None:
         if row.get('Target ID'):
             return targets_schema.build(_interaction_target_row(row))
@@ -484,10 +481,19 @@ class _GuidetopharmaTargetMemberBuilder:
         return None
 
 
+def guidetopharma_predicate(row: Mapping[str, object]) -> str:
+    action = str(row.get('Action') or '').strip()
+    if action:
+        return action
+    return 'interacts_with'
+
+
 affinity_units_source = f('Affinity Units', map='affinity_units')
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+interactions_schema = RelationBuilder(
+    subject=_GuidetopharmaLigandMemberBuilder(),
+    predicate=guidetopharma_predicate,
+    object=_GuidetopharmaTargetMemberBuilder(),
     identifiers=IdentifiersBuilder(
         CV(
             term=IdentifierNamespaceCv.NAME,
@@ -520,17 +526,6 @@ interactions_schema = EntityBuilder(
         CV(
             term=IdentifierNamespaceCv.NCBI_TAX_ID,
             value=f('Target Species', map='species_taxid'),
-        ),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=_MappedEntityBuilder(ligands_schema, _ligand_row),
-            annotations=AnnotationsBuilder(
-                CV(term=MoleculeAnnotationsCv.ENDOGENOUS, value=f('Endogenous')),
-            ),
-        ),
-        Member(
-            entity=_GuidetopharmaTargetMemberBuilder(),
         ),
     ),
 )

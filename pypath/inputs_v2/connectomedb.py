@@ -24,8 +24,7 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_csv
@@ -153,9 +152,38 @@ f = FieldConfig(
 # Interactions Schema
 # -----------------------------------------------------------------------------
 
+ligand_builder = EntityBuilder(
+    entity_type=EntityTypeCv.PROTEIN,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Ligand Symbols', extract='primary_gene')),
+        CV(term=IdentifierNamespaceCv.HGNC, value=f('Ligand Species ID', extract='hgnc_id')),
+        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ligand ENSEMBL ID')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
+        CV(term=lambda row: _location_terms(row.get('Ligand Location'))),
+        CV(term=InterCellAnnotations.LIGAND),
+    ),
+)
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+receptor_builder = EntityBuilder(
+    entity_type=EntityTypeCv.PROTEIN,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Receptor Symbols', extract='primary_gene')),
+        CV(term=IdentifierNamespaceCv.HGNC, value=f('Receptor Species ID', extract='hgnc_id')),
+        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Receptor ENSEMBL ID')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
+        CV(term=lambda row: _location_terms(row.get('Receptor Location'))),
+        CV(term=InterCellAnnotations.RECEPTOR),
+    ),
+)
+
+interactions_schema = RelationBuilder(
+    subject=ligand_builder,
+    predicate='interacts_with',
+    object=receptor_builder,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.CDB, value=f('Interaction ID', extract='cdb')),
         CV(term=IdentifierNamespaceCv.NAME, value=f('LR Pair')),
@@ -163,44 +191,6 @@ interactions_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=InteractionMetadataCv.INTERACTION_DIRECTNESS, value=f('Evidence')),
         CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Ligand Symbols', extract='primary_gene')),
-                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Ligand Species ID', extract='hgnc_id')),
-                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ligand ENSEMBL ID')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
-                    CV(term=lambda row: _location_terms(row.get('Ligand Location'))),
-                    CV(term=InterCellAnnotations.LIGAND),
-                )
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=InterCellAnnotations.LIGAND),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Receptor Symbols', extract='primary_gene')),
-                    CV(term=IdentifierNamespaceCv.HGNC, value=f('Receptor Species ID', extract='hgnc_id')),
-                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Receptor ENSEMBL ID')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
-                    CV(term=lambda row: _location_terms(row.get('Receptor Location'))),
-                    CV(term=InterCellAnnotations.RECEPTOR),
-                )
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=InterCellAnnotations.RECEPTOR),
-            ),
-        ),
     ),
 )
 

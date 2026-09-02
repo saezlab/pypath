@@ -15,7 +15,7 @@ from pypath.internals.cv_terms import (
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
+from pypath.internals.silver_schema import Annotation, Entity, Identifier, Relation
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.nichenet import iter_lr_network
 
@@ -75,42 +75,30 @@ def _protein(
     )
 
 
-def map_nichenet_interaction(row: dict[str, Any]) -> Entity:
+def map_nichenet_interaction(row: dict[str, Any]) -> Relation:
     ligand = str(row.get('ligand') or '').strip()
     receptor = str(row.get('receptor') or '').strip()
     taxon_id = str(row.get('taxon_id') or '').strip()
     name = f'{ligand} - {receptor}'
 
-    return Entity(
-        type=EntityTypeCv.INTERACTION,
+    return Relation(
+        subject=_protein(
+            ligand,
+            taxon_id,
+            [Annotation(term=InterCellAnnotations.LIGAND)],
+        ),
+        predicate='interacts_with',
+        object=_protein(
+            receptor,
+            taxon_id,
+            [Annotation(term=InterCellAnnotations.RECEPTOR)],
+        ),
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.NICHENET, value=name),
             Identifier(type=IdentifierNamespaceCv.NAME, value=name),
         ],
         annotations=[
             Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-        ],
-        membership=[
-            Membership(
-                member=_protein(
-                    ligand,
-                    taxon_id,
-                    [Annotation(term=InterCellAnnotations.LIGAND)],
-                ),
-                annotations=[
-                    Annotation(term=InterCellAnnotations.LIGAND),
-                ],
-            ),
-            Membership(
-                member=_protein(
-                    receptor,
-                    taxon_id,
-                    [Annotation(term=InterCellAnnotations.RECEPTOR)],
-                ),
-                annotations=[
-                    Annotation(term=InterCellAnnotations.RECEPTOR),
-                ],
-            ),
         ],
     )
 

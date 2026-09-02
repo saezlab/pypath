@@ -28,8 +28,7 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.stitch import iter_stitch_interactions
@@ -127,8 +126,44 @@ f = FieldConfig(
     },
 )
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+def stitch_predicate(row: dict[str, object]) -> str:
+    mode = str(row.get('mode') or '').strip()
+    if mode and mode != 'undirected':
+        return mode
+    action = str(row.get('action') or '').strip()
+    if action and action != 'undirected':
+        return action
+    return 'interacts_with'
+
+
+chemical_builder = EntityBuilder(
+    entity_type=EntityTypeCv.CHEMICAL,
+    identifiers=IdentifiersBuilder(
+        CV(
+            term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
+            value=f('chemical_id'),
+        ),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=f('chem_role', map='role_cv')),
+    ),
+)
+
+protein_builder = EntityBuilder(
+    entity_type=EntityTypeCv.PROTEIN,
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('protein_id')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
+        CV(term=f('prot_role', map='role_cv')),
+    ),
+)
+
+interactions_schema = RelationBuilder(
+    subject=chemical_builder,
+    predicate=stitch_predicate,
+    object=protein_builder,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name')),
     ),
@@ -138,36 +173,6 @@ interactions_schema = EntityBuilder(
         CV(term=f('mode', map='mode_cv')),
         CV(term=InteractionMetadataCv.STEREOSPECIFIC, value=f('stereospecific')),
         CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('action', map='action_cv')),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-                        value=f('chemical_id'),
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=f('chem_role', map='role_cv')),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('protein_id')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=f('prot_role', map='role_cv')),
-            ),
-        ),
     ),
 )
 

@@ -37,6 +37,7 @@ from pypath.internals.tabular_builder import (
     Member,
     MembersFromList,
     MembershipBuilder,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.reactome import _raw
@@ -310,8 +311,72 @@ reactions_schema = EntityBuilder(
 )
 
 
-controls_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+def reactome_predicate(row: dict[str, object]) -> str:
+    control_type = str(row.get('control_type') or '').strip()
+    if control_type:
+        return control_type
+    causal = str(row.get('causal_statement') or '').strip()
+    if causal:
+        return causal
+    return 'controls'
+
+
+controller_builder = EntityBuilder(
+    entity_type=f('controller_entity_type', map='entity_type'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.NAME, value=f('controller_display_name', map='missing')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controller_synonyms', map='split')),
+        CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controller_reactome_stable_id', map='split')),
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controller_uniprot', map='split')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split_chebi')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_pubchem_compound', map='split')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_kegg', map='split')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(
+            term=IdentifierNamespaceCv.NCBI_TAX_ID,
+            value=_entity_taxon_id('controller_entity_type', 'controller_ncbi_tax_id'),
+        ),
+        CV(term=BiologicalRoleCv.CONTROLLER),
+    ),
+    associations=_combined_associations(
+        _pathway_association(
+            f('controller_pathway_term_accession', map='split')
+        ),
+        _cv_term_association(f('controller_go', map='split')),
+    ),
+)
+
+controlled_builder = EntityBuilder(
+    entity_type=f('controlled_entity_type', map='entity_type'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.NAME, value=f('controlled_display_name', map='missing')),
+        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controlled_synonyms', map='split')),
+        CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controlled_reactome_stable_id', map='split')),
+        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controlled_uniprot', map='split')),
+        CV(term=IdentifierNamespaceCv.CHEBI, value=f('controlled_chebi', map='split_chebi')),
+        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controlled_pubchem_compound', map='split')),
+        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controlled_kegg', map='split')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(
+            term=IdentifierNamespaceCv.NCBI_TAX_ID,
+            value=_entity_taxon_id('controlled_entity_type', 'controlled_ncbi_tax_id'),
+        ),
+        CV(term=BiologicalRoleCv.CONTROLLED),
+    ),
+    associations=_combined_associations(
+        _pathway_association(
+            f('controlled_pathway_term_accession', map='split')
+        ),
+        _cv_term_association(f('controlled_go', map='split')),
+    ),
+)
+
+controls_schema = RelationBuilder(
+    subject=controller_builder,
+    predicate=reactome_predicate,
+    object=controlled_builder,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('display_name')),
         CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('reactome_stable_id')),
@@ -327,66 +392,6 @@ controls_schema = EntityBuilder(
             f('pathway_term_accession', map='split')
         ),
         _cv_term_association(f('go')),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=f('controller_entity_type', map='entity_type'),
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('controller_display_name', map='missing')),
-                    CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controller_synonyms', map='split')),
-                    CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controller_reactome_stable_id', map='split')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controller_uniprot', map='split')),
-                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('controller_chebi', map='split_chebi')),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controller_pubchem_compound', map='split')),
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controller_kegg', map='split')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.NCBI_TAX_ID,
-                        value=_entity_taxon_id('controller_entity_type', 'controller_ncbi_tax_id'),
-                    ),
-                ),
-                associations=_combined_associations(
-                    _pathway_association(
-                        f('controller_pathway_term_accession', map='split')
-                    ),
-                    _cv_term_association(f('controller_go', map='split')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.CONTROLLER),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=f('controlled_entity_type', map='entity_type'),
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('controlled_display_name', map='missing')),
-                    CV(term=IdentifierNamespaceCv.SYNONYM, value=f('controlled_synonyms', map='split')),
-                    CV(term=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=f('controlled_reactome_stable_id', map='split')),
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('controlled_uniprot', map='split')),
-                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('controlled_chebi', map='split_chebi')),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('controlled_pubchem_compound', map='split')),
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('controlled_kegg', map='split')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.NCBI_TAX_ID,
-                        value=_entity_taxon_id('controlled_entity_type', 'controlled_ncbi_tax_id'),
-                    ),
-                ),
-                associations=_combined_associations(
-                    _pathway_association(
-                        f('controlled_pathway_term_accession', map='split')
-                    ),
-                    _cv_term_association(f('controlled_go', map='split')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.CONTROLLED),
-            ),
-        ),
     ),
 )
 

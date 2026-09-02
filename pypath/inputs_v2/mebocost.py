@@ -23,8 +23,7 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
@@ -65,7 +64,7 @@ f = FieldConfig(
 )
 
 
-def get_interactions_schema(taxon_id: str) -> EntityBuilder:
+def get_interactions_schema(taxon_id: str) -> RelationBuilder:
     """
     Generate the interaction schema for a specific taxon.
 
@@ -73,13 +72,30 @@ def get_interactions_schema(taxon_id: str) -> EntityBuilder:
         taxon_id: NCBI taxonomy ID.
 
     Returns:
-        EntityBuilder for MEBOCOST interactions.
+        RelationBuilder for MEBOCOST interactions.
     """
-    return EntityBuilder(
-        entity_type=EntityTypeCv.INTERACTION,
-        # Generic MEBOCOST ID which is a number, but prefix with "MEBOCOST:" to avoid namespace collisions
-        # Not a Stable Identifier since it's not guaranteed to be stable across releases,
-        # but still useful for tracing back to the source record
+    metabolite_builder = EntityBuilder(
+        entity_type=EntityTypeCv.CHEMICAL,
+        identifiers=IdentifiersBuilder(
+            CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID', extract=r'(HMDB\d+)')),
+            CV(term=IdentifierNamespaceCv.NAME, value=f('standard_metName')),
+            CV(term=IdentifierNamespaceCv.SYNONYM, value=f('metName', delimiter='; ')),
+        ),
+    )
+    sensor_builder = EntityBuilder(
+        entity_type=EntityTypeCv.PROTEIN,
+        identifiers=IdentifiersBuilder(
+            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Gene_name')),
+            CV(term=IdentifierNamespaceCv.NAME, value=f('Protein_name')),
+        ),
+        annotations=AnnotationsBuilder(
+            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+        ),
+    )
+    return RelationBuilder(
+        subject=metabolite_builder,
+        predicate='interacts_with',
+        object=sensor_builder,
         identifiers=IdentifiersBuilder(
             CV(term=IdentifierNamespaceCv.MEBOCOST, value=f('ID')),
         ),
@@ -87,32 +103,6 @@ def get_interactions_schema(taxon_id: str) -> EntityBuilder:
             CV(term=IdentifierNamespaceCv.PUBMED, value=f('Evidence', extract='pubmed')),
             CV(term=InteractionMetadataCv.INTERACTION_XREF, value=f('Evidence', extract='source')),
             CV(term=CurationCv.COMMENT, value=f('Evidence', extract='comment')),
-        ),
-        membership=MembershipBuilder(
-            # Member 1: Metabolite (Small Molecule)
-            Member(
-                entity=EntityBuilder(
-                    entity_type=EntityTypeCv.CHEMICAL,
-                    identifiers=IdentifiersBuilder(
-                        CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID', extract=r'(HMDB\d+)')),
-                        CV(term=IdentifierNamespaceCv.NAME, value=f('standard_metName')),
-                        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('metName', delimiter='; ')),
-                    ),
-                ),
-            ),
-            # Member 2: Sensor (Protein)
-            Member(
-                entity=EntityBuilder(
-                    entity_type=EntityTypeCv.PROTEIN,
-                    identifiers=IdentifiersBuilder(
-                        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Gene_name')),
-                        CV(term=IdentifierNamespaceCv.NAME, value=f('Protein_name')),
-                    ),
-                    annotations=AnnotationsBuilder(
-                        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-                    ),
-                ),
-            ),
         ),
     )
 

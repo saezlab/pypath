@@ -15,7 +15,7 @@ from pypath.internals.cv_terms import (
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
+from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership, Relation
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_csv
 
@@ -131,7 +131,7 @@ def _interaction_name(ligands: list[str], receptors: list[str]) -> str:
     return f'{"+".join(ligands)} - {"+".join(receptors)}'
 
 
-def map_icellnet_interaction(row: dict[str, Any]) -> Entity | None:
+def map_icellnet_interaction(row: dict[str, Any]) -> Relation | None:
     ligands = _components(row, 'Ligand', 4)
     receptors = _components(row, 'Receptor', 5)
     if not ligands or not receptors:
@@ -146,35 +146,23 @@ def map_icellnet_interaction(row: dict[str, Any]) -> Entity | None:
         ],
     )
 
-    return Entity(
-        type=EntityTypeCv.INTERACTION,
+    return Relation(
+        subject=_participant(
+            '+'.join(ligands),
+            ligands,
+            [Annotation(term=InterCellAnnotations.LIGAND)],
+        ),
+        predicate='interacts_with',
+        object=_participant(
+            '+'.join(receptors),
+            receptors,
+            [Annotation(term=InterCellAnnotations.RECEPTOR)],
+        ),
         identifiers=[
             Identifier(type=IdentifierNamespaceCv.ICELLNET, value=name),
             Identifier(type=IdentifierNamespaceCv.NAME, value=name),
         ],
         annotations=annotations,
-        membership=[
-            Membership(
-                member=_participant(
-                    '+'.join(ligands),
-                    ligands,
-                    [Annotation(term=InterCellAnnotations.LIGAND)],
-                ),
-                annotations=[
-                    Annotation(term=InterCellAnnotations.LIGAND),
-                ],
-            ),
-            Membership(
-                member=_participant(
-                    '+'.join(receptors),
-                    receptors,
-                    [Annotation(term=InterCellAnnotations.RECEPTOR)],
-                ),
-                annotations=[
-                    Annotation(term=InterCellAnnotations.RECEPTOR),
-                ],
-            ),
-        ],
     )
 
 

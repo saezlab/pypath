@@ -34,6 +34,7 @@ from pypath.internals.tabular_builder import (
     Member,
     MembershipBuilder,
     MembersFromList,
+    RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_csv
@@ -214,68 +215,60 @@ f = FieldConfig(
 # Interactions Schema
 # -----------------------------------------------------------------------------
 
-interactions_schema = EntityBuilder(
-    entity_type=EntityTypeCv.INTERACTION,
+partner_a_builder = EntityBuilder(
+    entity_type=_get_partner_type('partner_a'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.UNIPROT,
+           value=f('partner_a', extract='uniprot_acc')),
+        CV(term=IdentifierNamespaceCv.NAME,
+           value=f('partner_a', extract='partner_name')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
+        CV(term=lambda row: _directional_role(row, 'partner_a')),
+        CV(
+            term=f('partner_a', extract='synthetic_metabolite_subtype_term'),
+            value=MoleculeSubtypeCv.METABOLITE,
+        ),
+        CV(
+            term=MoleculeAnnotationsCv.SOURCE_STATUS,
+            value=f('partner_a', extract='synthetic_metabolite_label'),
+        ),
+    ),
+)
+
+partner_b_builder = EntityBuilder(
+    entity_type=_get_partner_type('partner_b'),
+    identifiers=IdentifiersBuilder(
+        CV(term=IdentifierNamespaceCv.UNIPROT,
+           value=f('partner_b', extract='uniprot_acc')),
+        CV(term=IdentifierNamespaceCv.NAME, 
+           value=f('partner_b', extract='partner_name')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
+        CV(term=lambda row: _directional_role(row, 'partner_b')),
+        CV(
+            term=f('partner_b', extract='synthetic_metabolite_subtype_term'),
+            value=MoleculeSubtypeCv.METABOLITE,
+        ),
+        CV(
+            term=MoleculeAnnotationsCv.SOURCE_STATUS,
+            value=f('partner_b', extract='synthetic_metabolite_label'),
+        ),
+    ),
+)
+
+interactions_schema = RelationBuilder(
+    subject=partner_a_builder,
+    predicate='interacts_with',
+    object=partner_b_builder,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.NAME, value=f('interactors')),
     ),
     annotations=AnnotationsBuilder(
         CV(term=IdentifierNamespaceCv.PUBMED, value=f(_source_split, extract='pmid')),
         CV(term=IdentifierNamespaceCv.PUBMED_CENTRAL, value=f(_source_split, extract='pmc')),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=_get_partner_type('partner_a'),
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT,
-                       value=f('partner_a', extract='uniprot_acc')),
-                    CV(term=IdentifierNamespaceCv.NAME,
-                       value=f('partner_a', extract='partner_name')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
-                    CV(term=lambda row: _directional_role(row, 'partner_a')),
-                    CV(
-                        term=f('partner_a', extract='synthetic_metabolite_subtype_term'),
-                        value=MoleculeSubtypeCv.METABOLITE,
-                    ),
-                    CV(
-                        term=MoleculeAnnotationsCv.SOURCE_STATUS,
-                        value=f('partner_a', extract='synthetic_metabolite_label'),
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=lambda row: _directional_role(row, 'partner_a')),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=_get_partner_type('partner_b'),
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT,
-                       value=f('partner_b', extract='uniprot_acc')),
-                    CV(term=IdentifierNamespaceCv.NAME, 
-                       value=f('partner_b', extract='partner_name')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
-                    CV(term=lambda row: _directional_role(row, 'partner_b')),
-                    CV(
-                        term=f('partner_b', extract='synthetic_metabolite_subtype_term'),
-                        value=MoleculeSubtypeCv.METABOLITE,
-                    ),
-                    CV(
-                        term=MoleculeAnnotationsCv.SOURCE_STATUS,
-                        value=f('partner_b', extract='synthetic_metabolite_label'),
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=lambda row: _directional_role(row, 'partner_b')),
-            ),
-        ),
     ),
 )
 
