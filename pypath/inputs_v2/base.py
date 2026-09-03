@@ -97,6 +97,12 @@ class ResourceConfig:
     short: str | None = None
     full: str | None = None
     synonyms: tuple[str, ...] = ()
+    # The identifier namespaces this resource is the minting authority for —
+    # not every namespace its schema tags data as. A resource can carry a
+    # cross-reference to a namespace it does not mint (KEGG cites PubChem
+    # identifiers). ChEBI is the one that mints `chebi`. Empty for a pure
+    # consumer, which is the default and the common case.
+    mints: tuple[IdentifierNamespaceCv, ...] = ()
 
     def names(self) -> 'ResourceNames':
         """Resolve this resource's (slug, short, full, synonyms).

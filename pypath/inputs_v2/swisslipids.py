@@ -40,6 +40,7 @@ config = ResourceConfig(
     pubmed='25943471',
     primary_category='lipids',
     annotation_ontologies=(OntologyCv.SWISSLIPIDS,),
+    mints=(IdentifierNamespaceCv.SWISSLIPIDS,),
     description=(
         'SwissLipids is a curated resource providing a framework for the '
         'annotation of mass spectrometry data. It provides over 750,000 lipid '

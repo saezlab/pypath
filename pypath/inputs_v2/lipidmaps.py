@@ -36,6 +36,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37855672',
     primary_category='lipids',
+    mints=(IdentifierNamespaceCv.LIPIDMAPS,),
     description=(
         'The LIPID MAPS Structure Database (LMSD) is a comprehensive database '
         'of lipid structures, annotations, and cross-references. It contains '

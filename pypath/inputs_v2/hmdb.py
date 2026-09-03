@@ -46,6 +46,7 @@ config = ResourceConfig(
     pubmed='34986597',
     primary_category='small_molecules',
     annotation_ontologies=(OntologyCv.CHEMONT,),
+    mints=(IdentifierNamespaceCv.HMDB,),
     description=(
         'The Human Metabolome Database (HMDB) is a comprehensive database '
         'containing detailed information about small molecule metabolites '

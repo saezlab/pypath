@@ -124,6 +124,16 @@ try:
             'compound participants parsed from reaction equations and enriched '
             'with EC, Rhea, KO, RCLASS, ChEBI, and PubChem identifiers.'
         ),
+        # KEGG mints its own compound and reaction accessions. It cites
+        # PubChem identifiers via `conv/pubchem` but does not mint them.
+        # That endpoint returns PubChem substance IDs, not compound IDs, so
+        # `pubchem_compound` deliberately stays off this list. The schema
+        # below still tags the cross-reference as PUBCHEM_COMPOUND. A
+        # separate fix corrects that extraction, not this declaration.
+        mints=(
+            IdentifierNamespaceCv.KEGG_COMPOUND,
+            IdentifierNamespaceCv.KEGG_REACTION,
+        ),
     )
 
     f = FieldConfig(
