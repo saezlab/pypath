@@ -68,7 +68,7 @@ config = ResourceConfig(
     ),
 )
 
-download_metabolites = Download(
+download = Download(
     url=URL % 'serum_metabolites.zip',
     filename='serum_metabolites.zip',
     subfolder='serum_metabolome',
@@ -83,7 +83,7 @@ def _get(element, tag, xmlns='{http://www.hmdb.ca}'):
 
     child = element.find(f'{xmlns}{tag}')
 
-    return '' if not child else child.text
+    return '' if child is None else child.text.strip()
 
 
 def parser(opener):
@@ -93,7 +93,7 @@ def parser(opener):
 
     yield from [
         {i: _get(elem, i) for i in [
-            ''
+            '' # Fields - see reference below
         ]}
         for elem in root
     ]
@@ -121,3 +121,52 @@ f = FieldConfig(
 #)
 
 # ================================= REFERENCE ==================================
+
+# All fields in entries of serum_metabolites.xml
+
+# abnormal_concentrations
+# accession
+# average_molecular_weight
+# bigg_id
+# biocyc_id
+# biological_properties
+# cas_registry_number
+# chebi_id
+# chemical_formula
+# chemspider_id
+# creation_date
+# description
+# diseases
+# drugbank_id
+# experimental_properties
+# fbonto_id
+# foodb_id
+# general_references
+# inchi
+# inchikey
+# iupac_name
+# kegg_id
+# knapsack_id
+# metlin_id
+# monisotopic_molecular_weight
+# name
+# normal_concentrations
+# ontology
+# pdb_id
+# phenol_explorer_compound_id
+# predicted_properties
+# protein_associations
+# pubchem_compound_id
+# secondary_accessions
+# smiles
+# spectra
+# state
+# status
+# synonyms
+# synthesis_reference
+# taxonomy
+# traditional_iupac
+# update_date
+# version
+# vmh_id
+# wikipedia_id
