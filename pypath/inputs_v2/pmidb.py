@@ -42,7 +42,7 @@ BASE_URL = 'http://easybioai.com/PMIDB/static/%s.txt'
 files_header = {
     'interaction': None, # Already present
     'protein_infor': ['UniProt', 'gene', 'GO', 'link'],
-    'metabolite_info': ['kegg', 'hmdb', 'name', 'link', 'formula'],
+    'metabolites_infor': ['kegg', 'hmdb', 'name', 'link', 'formula'],
 }
 
 config = ResourceConfig(
@@ -64,7 +64,7 @@ config = ResourceConfig(
 
 download = {
     f: Download(
-        url=BASE_URL % ('metabolites_infor' if f == 'metabolite_info' else f),
+        url=BASE_URL % f,
         filename=f'{f}.txt',
         subfolder='PMIDB',
         large=True,
@@ -184,7 +184,7 @@ schema_protein_infor = EntityBuilder(
     ),
 )
 
-schema_metabolite_info = EntityBuilder(
+schema_metabolites_infor = EntityBuilder(
     entity_type=EntityTypeCv.SMALL_MOLECULE,
     identifiers=IdentifiersBuilder(
         CV(term=IdentifierNamespaceCv.KEGG, value=f('kegg')),
@@ -220,7 +220,7 @@ resource = Resource(
 # C00002	P00350	        TRUE	    NA	    NA	    PMID:29307493	LiP-SMap	Escherichia coli	DDA and DIA	                FC>2,Q<0.01
 # XXX: We discarded those with interaction = FALSE, also not using columns: mean, MS Quality control method and Candidate selection cutoff
 
-# metabolite_info.txt
+# metabolites_infor.txt
 # kegg      hmdb        name                        link                                            formula
 # C00002	HMDB00538	Adenosine 5'-triphosphate	https://www.genome.jp/dbget-bin/www_bget?C00002	NC1=NC=NC2=C1N=CN2[C@@H]1O[C@H](COP(O)(=O)OP(O)(=O)OP(O)(O)=O)[C@@H](O)[C@H]1O
 # XXX: File has no header, added custom one, column link is skipped
