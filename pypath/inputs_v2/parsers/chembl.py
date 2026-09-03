@@ -5,6 +5,7 @@ ChEMBL-specific data parsers.
 from __future__ import annotations
 
 import os
+import tempfile
 from pathlib import Path
 import shutil
 from typing import Any, Generator
@@ -21,8 +22,9 @@ from pypath.inputs_v2.parsers.base import (
 )
 
 CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE = int(
-    os.environ.get('OMNIPATH_CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE', '50000')
+    os.environ.get('OMNIPATH_CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE', '20000')
 )
+CHEMBL_DUCKDB_MEMORY = os.environ.get('OMNIPATH_CHEMBL_DUCKDB_MEMORY', '1500MB')
 
 CHEMBL_PARQUET_CACHE_VERSION = 6
 CHEMBL_ACTIVITY_MIN_PCHEMBL = 5.0
@@ -340,6 +342,37 @@ PARQUET_QUERIES: dict[str, str] = {
 }
 
 
+def _configure_chembl_duckdb(con: duckdb.DuckDBPyConnection) -> None:
+    tmp = os.environ.get('TMPDIR') or tempfile.gettempdir()
+    Path(tmp).mkdir(parents=True, exist_ok=True)
+    escaped_tmp = str(tmp).replace("'", "''")
+    con.execute(f"SET memory_limit = '{CHEMBL_DUCKDB_MEMORY}'")
+    con.execute('SET threads = 1')
+    con.execute('SET preserve_insertion_order = false')
+    con.execute(f"SET temp_directory = '{escaped_tmp}'")
+
+
+def _activities_parquet_query(start: int | None = None, stop: int | None = None) -> str:
+    """Restrict `activities` before joins so DuckDB does not materialize 24M rows."""
+    query = PARQUET_QUERIES['activities']
+    filters = [f'pchembl_value > {CHEMBL_ACTIVITY_MIN_PCHEMBL}']
+    if start is not None and stop is not None:
+        filters.append(f'activity_id >= {int(start)}')
+        filters.append(f'activity_id < {int(stop)}')
+    where = ' AND '.join(filters)
+    query = query.replace(
+        'FROM activities act',
+        f'FROM (SELECT * FROM activities WHERE {where}) act',
+        1,
+    )
+    query = query.replace(
+        f'WHERE act.pchembl_value > {CHEMBL_ACTIVITY_MIN_PCHEMBL}',
+        'WHERE TRUE',
+        1,
+    )
+    return query
+
+
 def _chembl_cache_paths(
     sqlite_path: Path | None,
     duckdb_path: Path | None = None,
@@ -410,6 +443,7 @@ def _ensure_parquet_dataset(dataset: str, duckdb_path: Path, parquet_dir: Path) 
     parquet_dir.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(duckdb_path), read_only=True)
     try:
+        _configure_chembl_duckdb(con)
         escaped_path = str(tmp_path).replace("'", "''")
         con.execute(
             f"COPY ({PARQUET_QUERIES[dataset]}) TO '{escaped_path}' "
@@ -441,56 +475,53 @@ def _ensure_activities_parquet_dataset(duckdb_path: Path, parquet_path: Path) ->
     tmp_path.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(duckdb_path), read_only=True)
     try:
+        _configure_chembl_duckdb(con)
         min_id, max_id = con.execute(
             'SELECT min(activity_id), max(activity_id) FROM activities'
         ).fetchone()
-        if min_id is None or max_id is None:
-            _copy_activities_chunk(con, tmp_path / 'part-00000.parquet', None, None)
-        else:
-            chunk_size = max(1, CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE)
-            start = int(min_id)
-            max_id = int(max_id)
-            part = 0
-            while start <= max_id:
-                stop = min(start + chunk_size, max_id + 1)
+    finally:
+        con.close()
+    if min_id is None or max_id is None:
+        _copy_activities_chunk(duckdb_path, tmp_path / 'part-00000.parquet', None, None)
+    else:
+        chunk_size = max(1, CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE)
+        start = int(min_id)
+        max_id = int(max_id)
+        part = 0
+        while start <= max_id:
+            stop = min(start + chunk_size, max_id + 1)
+            part_path = tmp_path / f'part-{part:05d}.parquet'
+            if not (part_path.exists() and part_path.stat().st_size > 0):
                 print(
                     'Creating ChEMBL activities Parquet part '
                     f'{part:,}: activity_id [{start:,}, {stop:,})',
                     flush=True,
                 )
-                _copy_activities_chunk(
-                    con,
-                    tmp_path / f'part-{part:05d}.parquet',
-                    start,
-                    stop,
-                )
-                start = stop
-                part += 1
-    finally:
-        con.close()
+                _copy_activities_chunk(duckdb_path, part_path, start, stop)
+            start = stop
+            part += 1
 
     tmp_path.replace(parquet_path)
     return parquet_path
 
 
 def _copy_activities_chunk(
-    con: duckdb.DuckDBPyConnection,
+    duckdb_path: Path,
     output_path: Path,
     start: int | None,
     stop: int | None,
 ) -> None:
     escaped_path = str(output_path).replace("'", "''")
-    query = PARQUET_QUERIES['activities']
-    if start is not None and stop is not None:
-        query = (
-            f'{query}\n'
-            f'          AND act.activity_id >= {start}\n'
-            f'          AND act.activity_id < {stop}'
+    query = _activities_parquet_query(start, stop)
+    con = duckdb.connect(str(duckdb_path), read_only=True)
+    try:
+        _configure_chembl_duckdb(con)
+        con.execute(
+            f"COPY ({query}) TO '{escaped_path}' "
+            "(FORMAT PARQUET, COMPRESSION ZSTD)"
         )
-    con.execute(
-        f"COPY ({query}) TO '{escaped_path}' "
-        "(FORMAT PARQUET, COMPRESSION ZSTD)"
-    )
+    finally:
+        con.close()
 
 
 def _limit_query(query: str, max_records: int | None) -> str:
