@@ -28,7 +28,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 10
+_CACHE_VERSION = 11  # Includes participant physical-entity identity and state.
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
