@@ -250,9 +250,15 @@ def chembl_predicate(row):
     action = str(row.get('action_type') or '').strip().upper()
     if action in ACTION_DIRECTION:
         return slots.affects
-    if action == 'BINDING AGENT':
-        return slots.physically_interacts_with
-    return slots.associated_with
+    return slots.interacts_with
+
+
+def _binding_mechanism(row):
+    if chembl_predicate(row) == slots.affects:
+        return None
+    return 'binding' if (str(row.get('action_type') or '').strip().upper() == 'BINDING AGENT'
+                         or str(row.get('assay_type') or '').strip().upper() == 'B'
+                         or str(row.get('standard_type') or '').strip().upper() in {'KI', 'KD'}) else None
 
 
 molecule_builder = EntityBuilder(
@@ -300,6 +306,7 @@ activities_schema = RelationBuilder(
     predicate=chembl_predicate,
     object=target_builder,
     annotations=AnnotationsBuilder(
+        CV(term=slots.causal_mechanism_qualifier, value=_binding_mechanism),
         CV(term=slots.source_record_urls, value=f('assay_chembl_id', transform=lambda v: f'https://www.ebi.ac.uk/chembl/explore/assay/{v}')),
         CV(term=slots.source_record_urls, value=f('document_chembl_id', transform=lambda v: f'https://www.ebi.ac.uk/chembl/explore/document/{v}')),
         CV(
@@ -346,7 +353,7 @@ activities_schema = RelationBuilder(
         ),
         CV(
             term=lambda row: AFFINITY_TERMS.get(
-                str(row.get('standard_type') or '').upper()
+                str(row.get('standard_type') or '').strip().upper()
             ),
             value=lambda row: _measurement(
                 row.get('standard_value'),

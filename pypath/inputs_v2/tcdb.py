@@ -17,6 +17,7 @@ from __future__ import annotations
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 
 import functools
 
@@ -76,7 +77,7 @@ _transport_schema = RelationBuilder(
             CV(term=Namespace.UNIPROT, value=f('transporter_uniprot'))
         ),
     ),
-    predicate=slots.interacts_with,
+    predicate=slots.affects,
     object=EntityBuilder(
         entity_type=model.ChemicalEntity,
         identifiers=IdentifiersBuilder(
@@ -86,6 +87,7 @@ _transport_schema = RelationBuilder(
         annotations=AnnotationsBuilder(),
     ),
     annotations=AnnotationsBuilder(
+        *(CV(term=term, value=value) for term, value in TRANSPORT_QUALIFIERS),
         CV(
             term=slots.has_topic,
             value=f('tcid', transform=lambda v: 'TC:' + str(v)),

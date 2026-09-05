@@ -209,7 +209,7 @@ def test_unknown_actions_do_not_become_effects_and_measurements_are_not_descript
         'standard_units': 'nM',
     }
     ex = project('chembl', 'activities_schema', row)
-    assert ex.relations[-1].predicate == 'associated_with'
+    assert ex.relations[-1].predicate == 'interacts_with'
     assert not any(
         a['term'] in {'object_direction_qualifier', 'description'}
         for a in ex.relations[-1].annotations
@@ -416,7 +416,7 @@ def test_source_defined_assay_quantities_remain_numeric(module, row, expected):
         if a['term'] == 'has_quantitative_value'
     }
     assert actual == expected
-    assert ex.relations[-1].predicate == 'associated_with'
+    assert ex.relations[-1].predicate == 'interacts_with'
 
 
 def test_human_gem_parser_and_mapper_preserve_flux_bounds(monkeypatch):

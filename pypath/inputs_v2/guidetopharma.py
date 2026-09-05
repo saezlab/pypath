@@ -564,7 +564,7 @@ def guidetopharma_predicate(row: Mapping[str, object]):
     ):
         return slots.affects
     if action == 'Binding':
-        return slots.directly_physically_interacts_with
+        return slots.interacts_with
     return slots.interacts_with
 
 

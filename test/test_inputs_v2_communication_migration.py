@@ -235,7 +235,7 @@ def test_guidetopharma_id_domains_and_unknown_action():
     )
     assert (
         slot_name(mod.guidetopharma_predicate({'Action': 'Binding'}))
-        == 'directly_physically_interacts_with'
+        == 'interacts_with'
     )
 
 
@@ -251,13 +251,13 @@ def test_mrclinksdb_never_promotes_pubchem_substance_to_compound():
         assert ids == (['123'] if 'CID:123' in value else [])
 
 
-def test_transporter_is_association_not_fabricated_transport_event():
+def test_transporter_is_qualified_effect_not_fabricated_transport_event():
     _, out = extract(
         'mrclinksdb',
         'human_transporters',
         {'hmdb_id': 'HMDB0000012', 'uniprot_id': 'P00533', 'taxon_id': '9606'},
     )
-    assert [r.predicate for r in out.relations] == ['associated_with']
+    assert [r.predicate for r in out.relations] == ['affects']
     assert {e.entity_type for e in out.entities.values()} == {
         'protein',
         'chemical_entity',

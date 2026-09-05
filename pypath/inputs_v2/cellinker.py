@@ -8,6 +8,7 @@ from pypath.inputs_v2.parsers.base import iter_tsv
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import Protein, ChemicalEntity, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 from omnipath_core.silver_schema import format_term
 from pypath.internals.silver_schema import (
     Annotation,
@@ -303,11 +304,11 @@ def _make_metabolite_protein_mapper(
         )
         if protein is None or not metabolite.identifiers:
             return None
-        predicate = slots.associated_with
+        predicate = slots.affects if role == 'transporter' else slots.associated_with
         return Relation(
-            subject=metabolite,
+            subject=protein if role == 'transporter' else metabolite,
             predicate=predicate,
-            object=protein,
+            object=metabolite if role == 'transporter' else protein,
             identifiers=_identifiers(
                 _identifier(
                     Namespace.CELLINKER, _row_value(row, 'LRID', 'MRID')
@@ -318,7 +319,9 @@ def _make_metabolite_protein_mapper(
                 ),
             ),
             annotations=_annotations(
-                Annotation(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}')
+                Annotation(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}'),
+                Annotation(term=slots.original_predicate, value=role),
+                *[Annotation(term=term, value=value) for term, value in TRANSPORT_QUALIFIERS if role == 'transporter'],
             ),
         )
 

@@ -16,6 +16,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -237,7 +238,8 @@ def _transporter_schema(species: str) -> RelationBuilder:
                 )
             ),
         ),
-        predicate=slots.associated_with,
+        predicate=slots.affects,
+        annotations=AnnotationsBuilder(*(CV(term=term, value=value) for term, value in TRANSPORT_QUALIFIERS)),
         object=EntityBuilder(
             entity_type=ChemicalEntity,
             identifiers=IdentifiersBuilder(

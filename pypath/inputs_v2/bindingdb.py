@@ -185,9 +185,10 @@ def _target(row):
 
 interactions_schema = RelationBuilder(
     subject=chemical_builder,
-    predicate=slots.associated_with,
+    predicate=slots.interacts_with,
     object=_target,
     annotations=AnnotationsBuilder(
+        CV(term=slots.causal_mechanism_qualifier, value='binding'),
         CV(term=slots.original_object, value=f('Target Name')),
         CV(
             term=slots.has_quantitative_value,

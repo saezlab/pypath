@@ -78,4 +78,4 @@ def test_unspecified_diagram_edges_do_not_claim_interaction():
     from pypath.inputs_v2.wikipathways import wikipathways_predicate
     from omnipath_core.biolink import predicate
     assert predicate(wikipathways_predicate({'interaction_types': ['Conversion']})) == 'related_to'
-    assert predicate(wikipathways_predicate({'interaction_types': ['Binding']})) == 'physically_interacts_with'
+    assert predicate(wikipathways_predicate({'interaction_types': ['Binding']})) == 'interacts_with'

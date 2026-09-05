@@ -208,7 +208,7 @@ def wikipathways_predicate(row):
     if values & {'Stimulation', 'Inhibition', 'TranscriptionTranslation'}:
         return slots.affects
     if values & {'Binding', 'ComplexBinding'}:
-        return slots.physically_interacts_with
+        return slots.interacts_with
     # Conversion and catalysis diagram edges need a reaction node to be more specific.
     return slots.related_to
 
@@ -222,6 +222,7 @@ interactions_schema = RelationBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=slots.object_direction_qualifier, value=_interaction_direction),
+        CV(term=slots.causal_mechanism_qualifier, value=lambda row: 'binding' if _interaction_types(row) & {'Binding', 'ComplexBinding'} else None),
         CV(term=slots.original_predicate, value=lambda row: sorted(_interaction_types(row))),
         CV(term=slots.has_topic, value=f('pathway_version_id')),
         CV(

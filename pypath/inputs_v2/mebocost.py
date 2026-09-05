@@ -14,6 +14,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -52,6 +53,10 @@ f = FieldConfig(
 )
 
 
+def _is_transporter(row):
+    return 'transporter' in {v.strip().lower() for v in str(row.get('Annotation') or '').split(';')}
+
+
 def get_interactions_schema(taxon_id: str) -> RelationBuilder:
     """
     Generate the interaction schema for a specific taxon.
@@ -82,13 +87,15 @@ def get_interactions_schema(taxon_id: str) -> RelationBuilder:
         ),
     )
     return RelationBuilder(
-        subject=metabolite_builder,
-        predicate=slots.interacts_with,
-        object=sensor_builder,
+        subject=lambda row: (sensor_builder if _is_transporter(row) else metabolite_builder).build(row),
+        predicate=lambda row: slots.affects if _is_transporter(row) else slots.interacts_with,
+        object=lambda row: (metabolite_builder if _is_transporter(row) else sensor_builder).build(row),
         identifiers=IdentifiersBuilder(
             CV(term=Namespace.MEBOCOST, value=f('ID'))
         ),
         annotations=AnnotationsBuilder(
+            CV(term=slots.original_predicate, value=f('Annotation')),
+            *(CV(term=term, value=lambda row, value=value: value if _is_transporter(row) else None) for term, value in TRANSPORT_QUALIFIERS),
             CV(
                 term=slots.publications,
                 value=f(

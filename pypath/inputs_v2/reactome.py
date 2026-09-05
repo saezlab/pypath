@@ -379,7 +379,7 @@ def reactome_predicate(row):
     return (
         slots.catalyzes
         if row.get('control_class') == 'Catalysis'
-        else slots.regulates
+        else slots.affects
     )
 
 

@@ -99,7 +99,7 @@ def stitch_predicate(row):
     if stitch_direction(row) is not None:
         return slots.affects
     if row.get('mode') == 'binding':
-        return slots.physically_interacts_with
+        return slots.interacts_with
     return slots.associated_with
 
 
@@ -143,6 +143,7 @@ interactions_schema = RelationBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=slots.object_direction_qualifier, value=stitch_direction),
+        CV(term=slots.causal_mechanism_qualifier, value=lambda row: 'binding' if row.get('mode') == 'binding' else None),
         CV(
             term=slots.has_confidence_score,
             value=f(

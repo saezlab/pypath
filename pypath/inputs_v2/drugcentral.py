@@ -145,7 +145,7 @@ def _predicate(row):
     if action in ACTION_DIRECTION:
         return slots.affects
     if action == 'BINDER':
-        return slots.physically_interacts_with
+        return slots.interacts_with
     return slots.associated_with
 
 
@@ -154,6 +154,7 @@ interactions_schema = RelationBuilder(
     predicate=_predicate,
     object=_target_entity,
     annotations=AnnotationsBuilder(
+        CV(term=slots.causal_mechanism_qualifier, value=lambda row: 'binding' if _clean(row.get('ACTION_TYPE')).upper() == 'BINDER' else None),
         CV(
             term=slots.object_direction_qualifier,
             value=lambda row: ACTION_DIRECTION.get(
