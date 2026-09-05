@@ -3,20 +3,17 @@
 from __future__ import annotations
 
 import csv
-import math
-import re
 
 from biolink_model.datamodel.model import (
     ChemicalEntity,
     DirectionQualifierEnum,
     NamedThing,
     Protein,
-    QuantityValue,
     slots,
 )
-from omnipath_core.measurements import Measurement
 from omnipath_core.naming import Namespace
 
+from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
@@ -34,38 +31,6 @@ from pypath.internals.tabular_builder import (
     RelationBuilder,
 )
 from pypath.share.downloads import download_and_open
-
-
-def _measurement(value, unit=None, source_field=None, comparator=None):
-    """Keep numeric source observations, units and comparison bounds together."""
-    if value is None:
-        return None
-    match = re.fullmatch(
-        '\\s*(<=|>=|<|>|=|~)?\\s*([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?)\\s*',
-        str(value),
-    )
-    if match is None:
-        return None
-    original_comparator = comparator or match.group(1)
-    if original_comparator not in {None, '<', '>', '=', '<=', '>=', '~', '≈'}:
-        return None
-    relation = {'<': 'less_than', '>': 'greater_than', '=': 'equal_to'}.get(
-        original_comparator
-    )
-    number = float(match.group(2))
-    if not math.isfinite(number):
-        return None
-    quantity = QuantityValue(
-        has_numeric_value=number,
-        has_unit=unit or None,
-        has_binary_relation=relation,
-    )
-    return Measurement(
-        quantity=quantity,
-        source_field=source_field,
-        comparator=original_comparator,
-    )
-
 
 DRUGCENTRAL_STRUCTURES_URL = 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/structures.smiles.tsv'
 config = ResourceConfig(
@@ -101,7 +66,8 @@ def _clean(value):
 
 
 def _values(value):
-    return [v.strip() for v in _clean(value).split('|') if v.strip()]
+    # These lists are positionally aligned; dropping blanks changes identity.
+    return [v.strip() for v in _clean(value).split('|')]
 
 
 def _taxon(row):
@@ -165,7 +131,7 @@ def _target_entity(row):
                 type=Namespace.NAME, value=_clean(row.get('TARGET_NAME'))
             )
         ],
-        annotations=[],
+        annotations=protein_builder.annotations.build(row),
         membership=[
             Membership(member=p, predicate=slots.has_member) for p in proteins
         ],
@@ -204,6 +170,10 @@ interactions_schema = RelationBuilder(
             ),
         ),
         CV(term=slots.description, value=f('ACT_COMMENT')),
+        CV(term=slots.supporting_data_source, value=f('ACT_SOURCE')),
+        CV(term=slots.supporting_data_source, value=f('MOA_SOURCE')),
+        CV(term=slots.source_record_urls, value=f('ACT_SOURCE_URL')),
+        CV(term=slots.source_record_urls, value=f('MOA_SOURCE_URL')),
     ),
     identifiers=IdentifiersBuilder(),
 )

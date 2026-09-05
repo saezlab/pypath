@@ -152,22 +152,24 @@ complex_receptor_builder = EntityBuilder(
             value=f(_if_complex('protein_name'), transform='alt_names'),
         ),
     ),
-    annotations=AnnotationsBuilder(),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.in_taxon, value=f('taxon_id', transform=lambda v: f'NCBITaxon:{v}')),
+    ),
     membership=MembershipBuilder(
         MembersFromList(
             entity_type=Protein,
             identifiers=IdentifiersBuilder(
                 CV(
                     term=Namespace.UNIPROT,
-                    value=f('receptor_uniprot_id', delimiter='_'),
+                    value=f('receptor_uniprot_id', delimiter='_', preserve_indices=True),
                 ),
                 CV(
                     term=Namespace.ENTREZ,
-                    value=f('receptor_gene_id', delimiter='_'),
+                    value=f('receptor_gene_id', delimiter='_', preserve_indices=True),
                 ),
                 CV(
                     term=Namespace.GENESYMBOL,
-                    value=f('receptor_symbol', delimiter='_'),
+                    value=f('receptor_symbol', delimiter='_', preserve_indices=True),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(

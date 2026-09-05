@@ -36,8 +36,8 @@ def test_entity_identifiers_and_attributes(builder, cls, id, name_field):
     assert entity.type == entity_type(cls)
     assert entity.identifiers[0].type == Namespace.SIGNOR
     assert entity.identifiers[0].value == id
-    assert all(i.type != 'name' for i in entity.identifiers)
-    assert any(a.term == 'name' and a.value == 'example' for a in entity.annotations)
+    assert any(i.type == Namespace.NAME and i.value == 'example' for i in entity.identifiers)
+    assert all(a.term not in {'name', 'synonym'} for a in (entity.annotations or []))
 
 
 @pytest.mark.parametrize('code,direction,aspect', [
@@ -100,3 +100,12 @@ def test_legacy_types_are_not_adapted():
     for invalid in [EntityTypeCv.PROTEIN, 'nonsense', 42]:
         with pytest.raises(ValueError):
             EntityBuilder(entity_type=invalid)
+
+
+def test_complex_chemical_members_are_not_proteins_or_taxon_scoped():
+    entity = complexes_schema({'SIGNOR ID': 'SIGNOR-C246', 'LIST OF ENTITIES': 'CHEBI:17283,P20338,SIGNOR-C352'})
+    members = [m.member for m in entity.membership]
+    assert [m.type for m in members] == ['chemical_entity', 'protein', 'macromolecular_complex']
+    assert members[0].identifiers[0].value == '17283'
+    assert not members[0].annotations
+    assert members[1].annotations[0].value == 'NCBITaxon:9606'

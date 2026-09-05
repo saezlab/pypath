@@ -9,20 +9,17 @@ with the links file (confidence sub-scores) and filters by combined_score.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import math
-import re
 from typing import Any
 
 from biolink_model.datamodel.model import (
     ChemicalEntity,
     DirectionQualifierEnum,
     Protein,
-    QuantityValue,
     slots,
 )
-from omnipath_core.measurements import Measurement
 from omnipath_core.naming import Namespace
 
+from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.stitch import iter_stitch_interactions
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
@@ -34,38 +31,6 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
     RelationBuilder,
 )
-
-
-def _measurement(value, unit=None, source_field=None, comparator=None):
-    """Keep numeric source observations, units and comparison bounds together."""
-    if value is None:
-        return None
-    match = re.fullmatch(
-        '\\s*(<=|>=|<|>|=|~)?\\s*([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?)\\s*',
-        str(value),
-    )
-    if match is None:
-        return None
-    original_comparator = comparator or match.group(1)
-    if original_comparator not in {None, '<', '>', '=', '<=', '>=', '~', '≈'}:
-        return None
-    relation = {'<': 'less_than', '>': 'greater_than', '=': 'equal_to'}.get(
-        original_comparator
-    )
-    number = float(match.group(2))
-    if not math.isfinite(number):
-        return None
-    quantity = QuantityValue(
-        has_numeric_value=number,
-        has_unit=unit or None,
-        has_binary_relation=relation,
-    )
-    return Measurement(
-        quantity=quantity,
-        source_field=source_field,
-        comparator=original_comparator,
-    )
-
 
 config = ResourceConfig(
     id=ResourceCv.STITCH,

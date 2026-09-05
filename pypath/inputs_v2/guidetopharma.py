@@ -6,35 +6,37 @@ into Entity records using the schema defined in pypath.internals.silver_schema.
 """
 
 from __future__ import annotations
+
 from collections.abc import Mapping
 import csv
 import re
-from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+
 from biolink_model.datamodel.model import (
-    Protein,
-    MacromolecularComplex,
+    CausalMechanismQualifierEnum,
     ChemicalEntity,
+    DirectionQualifierEnum,
     Gene,
-    RNAProduct,
+    MacromolecularComplex,
+    NamedThing,
     NucleicAcidEntity,
     Polypeptide,
-    NamedThing,
+    Protein,
+    RNAProduct,
     slots,
-    DirectionQualifierEnum,
-    CausalMechanismQualifierEnum,
-    QuantityValue,
 )
 from omnipath_core.naming import Namespace
-from omnipath_core.measurements import Measurement
+
+from pypath.inputs_v2._measurements import measurement
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
     RelationBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
 ligand_chemical_type_mapping = {
     'Synthetic organic': 'synthetic organic',
@@ -248,6 +250,18 @@ def _guidetopharma_ligand_taxon_id(row):
 def _guidetopharma_target_entity_type(row):
     if row.get('_entity_type') is not None:
         return row['_entity_type']
+    if _split_pipe_values(row.get('Subunit id')):
+        return MacromolecularComplex
+    if any(
+        len(_split_pipe_values(row.get(field))) > 1
+        for field in (
+            'Human SwissProt',
+            'Human Ensembl Gene',
+            'Human Entrez Gene',
+            'HGNC id',
+        )
+    ):
+        return NamedThing
     if any(
         (
             _split_pipe_values(row.get(field))
@@ -261,8 +275,6 @@ def _guidetopharma_target_entity_type(row):
         )
     ):
         return Protein
-    if _split_pipe_values(row.get('Subunit id')):
-        return MacromolecularComplex
     return NamedThing
 
 
@@ -291,9 +303,32 @@ _interactions_download = Download(
     filename='interactions.csv',
     subfolder='guidetopharma',
 )
+
+
+class _TargetIdentifiersBuilder(IdentifiersBuilder):
+    """Component accessions are not aliases of a source target group."""
+
+    def build(self, row, cache=None):
+        identifiers = super().build(row, cache)
+        if _guidetopharma_target_entity_type(row) != Protein:
+            # Component membership needs a join on source Subunit id. Until that
+            # is available, retain the group without asserting false identity.
+            identifiers = [
+                identifier
+                for identifier in identifiers
+                if identifier.type
+                in {
+                    Namespace.GUIDETOPHARMA_TARGET,
+                    Namespace.NAME,
+                    Namespace.SYNONYM,
+                }
+            ]
+        return identifiers
+
+
 targets_schema = EntityBuilder(
     entity_type=_guidetopharma_target_entity_type,
-    identifiers=IdentifiersBuilder(
+    identifiers=_TargetIdentifiersBuilder(
         CV(term=Namespace.GUIDETOPHARMA_TARGET, value=f('Target id')),
         CV(term=Namespace.UNIPROT, value=f('Human SwissProt', delimiter='|')),
         CV(term=Namespace.ENSG, value=f('Human Ensembl Gene', delimiter='|')),
@@ -473,39 +508,38 @@ _AFFINITY_SLOT = {
 
 def _affinity_measurements(row):
     measure = str(row.get('Affinity Units') or '').strip()
-    out = []
-    for field in ('Affinity High', 'Affinity Low', 'Affinity Median'):
-        raw = str(row.get(field) or '').strip()
-        if not raw or raw == '-':
-            continue
-        out.append(
-            Measurement(
-                quantity=QuantityValue(has_numeric_value=float(raw)),
+    return [
+        value
+        for field in ('Affinity High', 'Affinity Low', 'Affinity Median')
+        if (
+            value := measurement(
+                row.get(field),
                 source_field=f'{measure or "unspecified measure"} {field}',
             )
         )
-    return out
+        is not None
+    ]
 
 
 def _original_affinity_measurements(row):
     measure = str(row.get('Original Affinity Units') or '').strip()
-    comparator = (
-        str(row.get('Original Affinity Relation') or '').strip() or None
-    )
     return [
-        Measurement(
-            quantity=QuantityValue(
-                has_numeric_value=float(row[field]), has_unit='nM'
-            ),
-            source_field=f'{measure or "unspecified measure"} {field}',
-            comparator=comparator,
-        )
+        value
         for field in (
             'Original Affinity High nm',
             'Original Affinity Low nm',
             'Original Affinity Median nm',
         )
-        if str(row.get(field) or '').strip() not in ('', '-')
+        if (
+            value := measurement(
+                row.get(field),
+                # These source columns explicitly express concentrations in nM.
+                unit='nM',
+                source_field=f'{measure or "unspecified measure"} {field}',
+                comparator=row.get('Original Affinity Relation'),
+            )
+        )
+        is not None
     ]
 
 

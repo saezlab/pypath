@@ -26,7 +26,7 @@ CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE = int(
 )
 CHEMBL_DUCKDB_MEMORY = os.environ.get('OMNIPATH_CHEMBL_DUCKDB_MEMORY', '1500MB')
 
-CHEMBL_PARQUET_CACHE_VERSION = 6
+CHEMBL_PARQUET_CACHE_VERSION = 7
 CHEMBL_ACTIVITY_MIN_PCHEMBL = 5.0
 
 
@@ -90,7 +90,7 @@ DUCKDB_TABLES: dict[str, str] = {
     'activities': """
         SELECT
             activity_id, assay_id, molregno, doc_id, standard_type,
-            standard_relation, standard_value, pchembl_value,
+            standard_relation, standard_value, standard_units, pchembl_value,
             data_validity_comment, action_type
         FROM s.activities
     """,
@@ -293,6 +293,7 @@ PARQUET_QUERIES: dict[str, str] = {
             act.standard_type,
             act.standard_relation,
             act.standard_value,
+            act.standard_units,
             act.pchembl_value,
             act.data_validity_comment,
             act.action_type,
@@ -757,6 +758,7 @@ SQLITE_QUERIES: dict[str, str] = {
             act.standard_type,
             act.standard_relation,
             act.standard_value,
+            act.standard_units,
             act.pchembl_value,
             act.data_validity_comment,
             act.action_type,

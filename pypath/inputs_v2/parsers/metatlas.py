@@ -208,7 +208,7 @@ def _strip_compartment(met_id: str, compartment: str) -> str:
     """
 
     if compartment and met_id.endswith(compartment):
-        return met_id[:-1]
+        return met_id[:-len(compartment)]
 
     return met_id
 
@@ -279,6 +279,11 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
         for g in data.get('genes', [])
     }
 
+    metabolite_context = {
+        _as_dict(m)['id']: _as_dict(m).get('compartment', '')
+        for m in data.get('metabolites', [])
+    }
+
     for r in data.get('reactions', []):
 
         r = _as_dict(r)
@@ -301,7 +306,8 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
 
         for met_id, stoich in mets.items():
 
-            base_id, compartment = met_id[:-1], met_id[-1]
+            compartment = metabolite_context.get(met_id, '')
+            base_id = _strip_compartment(met_id, compartment)
 
             if stoich < 0:
                 reactants.append(f'{base_id}:{compartment}:{abs(stoich)}')
@@ -320,6 +326,9 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
             'name': r.get('name'),
             'subsystem': subsystem,
             'direction': direction,
+            'gene_reaction_rule': r.get('gene_reaction_rule', ''),
+            'gene_rule_clauses': _parse_gene_rule(r.get('gene_reaction_rule', '')),
+            'compartments': data.get('compartments', {}),
             'lower_bound': r.get('lower_bound'),
             'upper_bound': r.get('upper_bound'),
             'flux_units': r.get('flux_units'),

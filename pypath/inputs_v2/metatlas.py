@@ -7,10 +7,12 @@ rules are associations, not independent catalysis claims for every listed gene.
 
 from __future__ import annotations
 
+import hashlib
+import json
+
 import math
 
 from biolink_model.datamodel.model import (
-    BiologicalProcess,
     ChemicalEntity,
     Gene,
     MacromolecularComplex,
@@ -25,7 +27,7 @@ from omnipath_core.naming import Namespace
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.metatlas import _raw
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from pypath.internals.silver_schema import Entity, Identifier, Membership
+from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
@@ -35,6 +37,42 @@ from pypath.internals.tabular_builder import (
     MembersFromList,
     MembershipBuilder,
 )
+
+
+
+def _gene_rule_group(genes: list[str]) -> Entity:
+    """Source-scoped logical AND clause, without a physical assembly claim."""
+    genes = sorted(set(genes))
+    digest = hashlib.sha256(json.dumps(genes, separators=(',', ':')).encode()).hexdigest()
+    return Entity(
+        type=NamedThing,
+        identifiers=[Identifier(type='human_gem.gpr_and', value=digest)],
+        membership=[
+            Membership(
+                member=Entity(
+                    type=Gene,
+                    identifiers=[Identifier(type=Namespace.ENSG, value=gene)],
+                    annotations=[Annotation(term=slots.in_taxon, value='NCBITaxon:9606')],
+                ),
+                predicate=slots.has_member,
+            )
+            for gene in genes
+        ],
+    )
+
+
+class _ReactionMembership(MembershipBuilder):
+    """Attach alternative GPR clauses, retaining required genes within each."""
+
+    def build(self, row, cache):
+        members = super().build(row, cache)
+        for genes in row.get('gene_rule_clauses', []):
+            if not genes:
+                continue
+            group = _gene_rule_group(genes)
+            member = group.membership[0].member if len(genes) == 1 else group
+            members.append(Membership(member=member, predicate=slots.associated_with))
+        return members
 
 
 def _flux_bound(row, field):
@@ -131,7 +169,7 @@ reactions_schema = EntityBuilder(
             ),
         ),
     ),
-    membership=MembershipBuilder(
+    membership=_ReactionMembership(
         MembersFromList(
             entity_type=ChemicalEntity,
             identifiers=IdentifiersBuilder(
@@ -226,22 +264,10 @@ reactions_schema = EntityBuilder(
             ),
             predicate=slots.has_output,
         ),
-        MembersFromList(
-            entity_type=Gene,
-            identifiers=IdentifiersBuilder(
-                CV(term=Namespace.ENSG, value=f('enzyme_ensembl')),
-                CV(
-                    term=Namespace.GENESYMBOL,
-                    value=f('enzyme_name', preserve_indices=True),
-                ),
-            ),
-            annotations=AnnotationsBuilder(),
-            predicate=slots.associated_with,
-        ),
     ),
 )
 transport_reactions_schema = EntityBuilder(
-    entity_type=BiologicalProcess,
+    entity_type=MolecularActivity,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.HUMAN_GEM_REACTION, value=f('human_gem_reaction_id')),
         CV(term=Namespace.NAME, value=f('name')),
@@ -263,7 +289,7 @@ transport_reactions_schema = EntityBuilder(
             ),
         ),
     ),
-    membership=MembershipBuilder(
+    membership=_ReactionMembership(
         MembersFromList(
             entity_type=ChemicalEntity,
             identifiers=IdentifiersBuilder(
@@ -358,41 +384,16 @@ transport_reactions_schema = EntityBuilder(
             ),
             predicate=slots.has_output,
         ),
-        MembersFromList(
-            entity_type=Gene,
-            identifiers=IdentifiersBuilder(
-                CV(term=Namespace.ENSG, value=f('enzyme_ensembl')),
-                CV(
-                    term=Namespace.GENESYMBOL,
-                    value=f('enzyme_name', preserve_indices=True),
-                ),
-            ),
-            annotations=AnnotationsBuilder(),
-            predicate=slots.associated_with,
-        ),
     ),
 )
 
 
-def enzyme_complexes_schema(row):
-    """An AND clause groups required genes without asserting a physical assembly."""
-    members = [
-        Entity(
-            type=Gene, identifiers=[Identifier(type=Namespace.ENSG, value=gene)]
-        )
-        for gene in str(row.get('complex_subunits') or '').split('||')
-        if gene
-    ]
-    if not members:
-        return None
-    return Entity(
-        type=NamedThing,
-        identifiers=[],
-        membership=[
-            Membership(member=member, predicate=slots.has_member)
-            for member in members
-        ],
-    )
+def enzyme_complexes_schema(row: dict) -> Entity | None:
+    """Retain a source model AND group with a deterministic internal ID."""
+    genes = [gene for gene in str(row.get('complex_subunits') or '').split('||') if gene]
+    return _gene_rule_group(genes) if genes else None
+
+
 
 
 resource = Resource(

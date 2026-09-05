@@ -8,7 +8,6 @@ into Entity records using the schema defined in pypath.internals.silver_schema.
 from __future__ import annotations
 
 from functools import partial
-import math
 from pathlib import Path
 import re
 
@@ -19,7 +18,7 @@ from biolink_model.datamodel.model import (
     ChemicalEntity,
     DirectionQualifierEnum,
     Gene,
-    GeneFamily,
+    ProteinFamily,
     MacromolecularComplex,
     MolecularActivity,
     MolecularEntity,
@@ -27,13 +26,12 @@ from biolink_model.datamodel.model import (
     NucleicAcidEntity,
     OrganismTaxon,
     Protein,
-    QuantityValue,
     RNAProduct,
     slots,
 )
-from omnipath_core.measurements import Measurement
 from omnipath_core.naming import Namespace
 
+from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.chembl import (
     activities_parser,
@@ -52,37 +50,6 @@ from pypath.internals.tabular_builder import (
     RelationBuilder,
 )
 from pypath.share import cache
-
-
-def _measurement(value, unit=None, source_field=None, comparator=None):
-    """Keep numeric source observations, units and comparison bounds together."""
-    if value is None:
-        return None
-    match = re.fullmatch(
-        '\\s*(<=|>=|<|>|=|~)?\\s*([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?)\\s*',
-        str(value),
-    )
-    if match is None:
-        return None
-    original_comparator = comparator or match.group(1)
-    if original_comparator not in {None, '<', '>', '=', '<=', '>=', '~', '≈'}:
-        return None
-    relation = {'<': 'less_than', '>': 'greater_than', '=': 'equal_to'}.get(
-        original_comparator
-    )
-    number = float(match.group(2))
-    if not math.isfinite(number):
-        return None
-    quantity = QuantityValue(
-        has_numeric_value=number,
-        has_unit=unit or None,
-        has_binary_relation=relation,
-    )
-    return Measurement(
-        quantity=quantity,
-        source_field=source_field,
-        comparator=original_comparator,
-    )
 
 
 VERSION = 36
@@ -133,7 +100,7 @@ MOLECULE_TYPE_TO_ENTITY_TYPE = {
 TARGET_TYPE_MAP = {
     'SINGLE PROTEIN': Protein,
     'PROTEIN COMPLEX': MacromolecularComplex,
-    'PROTEIN FAMILY': GeneFamily,
+    'PROTEIN FAMILY': ProteinFamily,
     'PROTEIN-PROTEIN INTERACTION': MolecularActivity,
     'SELECTIVITY GROUP': NamedThing,
     'NUCLEIC-ACID': NucleicAcidEntity,
@@ -333,6 +300,8 @@ activities_schema = RelationBuilder(
     predicate=chembl_predicate,
     object=target_builder,
     annotations=AnnotationsBuilder(
+        CV(term=slots.source_record_urls, value=f('assay_chembl_id', transform=lambda v: f'https://www.ebi.ac.uk/chembl/explore/assay/{v}')),
+        CV(term=slots.source_record_urls, value=f('document_chembl_id', transform=lambda v: f'https://www.ebi.ac.uk/chembl/explore/document/{v}')),
         CV(
             term=slots.has_quantitative_value,
             value=f(
@@ -388,7 +357,10 @@ activities_schema = RelationBuilder(
         ),
         CV(term=slots.chembl_confidence_score, value=f('confidence_score')),
     ),
-    identifiers=IdentifiersBuilder(),
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.CHEMBL_ACTIVITY, value=f('activity_id')),
+        CV(term=Namespace.CHEMBL_MECHANISM, value=f('mec_id')),
+    ),
 )
 resource = Resource(
     config=config,

@@ -26,7 +26,6 @@ from pypath.internals.tabular_builder import (
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
     MembersFromList,
     MembershipBuilder,
     RelationBuilder,
@@ -292,6 +291,55 @@ config = ResourceConfig(
     ),
 )
 
+def _group_member_type(value):
+    if re.fullmatch(r'CHEBI:\d+', value):
+        return model.ChemicalEntity
+    if re.fullmatch(r'SIGNOR-C\d+', value):
+        return model.MacromolecularComplex
+    if re.fullmatch(r'SIGNOR-(?:PF|FP)\d+', value):
+        return model.ProteinFamily
+    if f('LIST OF ENTITIES', extract='uniprot_member').extract(
+        {'LIST OF ENTITIES': value}
+    ):
+        return model.Protein
+    return model.NamedThing if value.startswith('SIGNOR-') else None
+
+
+def _group_members():
+    return MembershipBuilder(
+        MembersFromList(
+            entity_type=f(
+                'LIST OF ENTITIES', delimiter=',',
+                transform=_group_member_type, preserve_indices=True,
+            ),
+            identifiers=IdentifiersBuilder(
+                CV(term=Namespace.UNIPROT, value=f(
+                    'LIST OF ENTITIES', delimiter=',',
+                    extract='uniprot_member', preserve_indices=True,
+                )),
+                CV(term=Namespace.SIGNOR, value=f(
+                    'LIST OF ENTITIES', delimiter=',',
+                    extract='signor_member', preserve_indices=True,
+                )),
+                CV(term=Namespace.CHEBI, value=f(
+                    'LIST OF ENTITIES', delimiter=',',
+                    extract=r'^CHEBI:(\d+)$', preserve_indices=True,
+                )),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(term=slots.in_taxon,
+                   value=f(
+                       'LIST OF ENTITIES', delimiter=',', preserve_indices=True,
+                       transform=lambda value: (
+                           None if _group_member_type(value) == model.ChemicalEntity
+                           else f'NCBITaxon:{SIGNOR_DEFAULT_TAX_ID}'
+                       ),
+                   )),
+            ),
+        ),
+    )
+
+
 complexes_schema = EntityBuilder(
     entity_type=model.MacromolecularComplex,
     identifiers=IdentifiersBuilder(
@@ -299,35 +347,7 @@ complexes_schema = EntityBuilder(
         CV(term=Namespace.NAME, value=f('COMPLEX NAME')),
     ),
     annotations=AnnotationsBuilder(),
-    membership=MembershipBuilder(
-        MembersFromList(
-            entity_type=model.Protein,
-            identifiers=IdentifiersBuilder(
-                CV(
-                    term=Namespace.UNIPROT,
-                    value=f(
-                        'LIST OF ENTITIES',
-                        delimiter=',',
-                        extract='uniprot_member',
-                    ),
-                ),
-                CV(
-                    term=Namespace.SIGNOR,
-                    value=f(
-                        'LIST OF ENTITIES',
-                        delimiter=',',
-                        extract='signor_member',
-                    ),
-                ),
-            ),
-            entity_annotations=AnnotationsBuilder(
-                CV(
-                    term=slots.in_taxon,
-                    value=f'NCBITaxon:{SIGNOR_DEFAULT_TAX_ID}',
-                ),
-            ),
-        )
-    ),
+    membership=_group_members(),
 )
 
 protein_families_schema = EntityBuilder(
@@ -337,35 +357,7 @@ protein_families_schema = EntityBuilder(
         CV(term=Namespace.NAME, value=f('PROT. FAMILY NAME')),
     ),
     annotations=AnnotationsBuilder(),
-    membership=MembershipBuilder(
-        MembersFromList(
-            entity_type=model.Protein,
-            identifiers=IdentifiersBuilder(
-                CV(
-                    term=Namespace.UNIPROT,
-                    value=f(
-                        'LIST OF ENTITIES',
-                        delimiter=',',
-                        extract='uniprot_member',
-                    ),
-                ),
-                CV(
-                    term=Namespace.SIGNOR,
-                    value=f(
-                        'LIST OF ENTITIES',
-                        delimiter=',',
-                        extract='signor_member',
-                    ),
-                ),
-            ),
-            entity_annotations=AnnotationsBuilder(
-                CV(
-                    term=slots.in_taxon,
-                    value=f'NCBITaxon:{SIGNOR_DEFAULT_TAX_ID}',
-                ),
-            ),
-        )
-    ),
+    membership=_group_members(),
 )
 
 phenotypes_schema = EntityBuilder(

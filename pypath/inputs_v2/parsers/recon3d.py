@@ -220,39 +220,54 @@ def _reaction_member_fields(
 
 
 def _parse_gene_rule(rule: str) -> list[list[str]]:
-    """Parse a Boolean gene reaction rule into structured enzyme groups.
+    """Parse AND/OR rules into deterministic alternatives of required genes.
 
-    Recon3D gene reaction rules use Boolean logic where ``or`` separates
-    alternative isoenzymes and ``and`` joins the subunits of a multi-protein
-    complex.  Parentheses are removed before splitting.  Word-boundary
-    matching is used for ``or``/``and`` to avoid false splits on gene IDs
-    containing those substrings.
-
-    Recon3D-internal isoform suffixes of the form ``_AT1``, ``_AT2``, etc.
-    are stripped so that gene identifiers match standard Entrez IDs.
-
-    Args:
-        rule: The raw gene reaction rule string from the BiGG JSON, e.g.
-            ``'2645_AT1 or (3098_AT1 and 3099_AT2)'``.  An empty string or
-            ``'nan'`` is treated as no association.
-
-    Returns:
-        A list of enzyme groups.  Each group is a list of Entrez gene ID
-        strings: a single-element list represents a monomeric enzyme, and a
-        multi-element list represents a protein complex (AND group).
-        Returns an empty list if the rule is absent or empty.
+    Parentheses and AND precedence are respected. Malformed expressions raise
+    rather than silently asserting an incorrect gene association. Isoform labels
+    are preserved in the raw rule and projected to their source gene IDs here.
     """
-    if not rule or not rule.strip() or rule.strip() == '0':
+    if not rule or rule.strip().lower() in ('', '0', 'nan'):
         return []
-    rule = re.sub(r'[()]', '', rule).strip()
-    result = []
-    for or_part in re.split(r'\bor\b', rule, flags=re.IGNORECASE):
-        subunits = [g.strip() for g in re.split(r'\band\b', or_part, flags=re.IGNORECASE)]
-        cleaned = [_strip_isoform(g) for g in subunits if g]
-        cleaned = [g for g in cleaned if g]
-        if cleaned:
-            result.append(cleaned)
-    return result
+    tokens = re.findall(r'\(|\)|[^\s()]+', rule)
+    position = 0
+
+    def atom():
+        nonlocal position
+        if position >= len(tokens):
+            raise ValueError(f'Incomplete gene rule: {rule!r}')
+        token = tokens[position]
+        position += 1
+        if token == '(':
+            clauses = disjunction()
+            if position >= len(tokens) or tokens[position] != ')':
+                raise ValueError(f'Unbalanced gene rule: {rule!r}')
+            position += 1
+            return clauses
+        if token.lower() in ('and', 'or') or token == ')':
+            raise ValueError(f'Unexpected gene-rule token: {token!r}')
+        return [frozenset([_strip_isoform(token)])]
+
+    def conjunction():
+        nonlocal position
+        clauses = atom()
+        while position < len(tokens) and tokens[position].lower() == 'and':
+            position += 1
+            right = atom()
+            clauses = list({left | other for left in clauses for other in right})
+        return clauses
+
+    def disjunction():
+        nonlocal position
+        clauses = conjunction()
+        while position < len(tokens) and tokens[position].lower() == 'or':
+            position += 1
+            clauses.extend(conjunction())
+        return clauses
+
+    clauses = disjunction()
+    if position != len(tokens):
+        raise ValueError(f'Unexpected trailing gene-rule tokens: {rule!r}')
+    return [list(clause) for clause in sorted({tuple(sorted(c)) for c in clauses})]
 
 
 def _parse_metabolites(data: dict) -> Generator[dict, None, None]:
@@ -367,6 +382,11 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
             'name': r.get('name'),
             'subsystem': r.get('subsystem'),
             'direction': direction,
+            'lower_bound': lb,
+            'upper_bound': ub,
+            'gene_reaction_rule': r.get('gene_reaction_rule', ''),
+            'gene_rule_clauses': _parse_gene_rule(r.get('gene_reaction_rule', '')),
+            'compartments': data.get('compartments', {}),
             'ec': _annotation_list(ann, 'ec-code'),
             'metanetx_reaction': _annotation_list(ann, 'metanetx.reaction'),
             'enzyme_entrez': ';'.join(enzyme_entrez),

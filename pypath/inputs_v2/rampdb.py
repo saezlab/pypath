@@ -175,6 +175,7 @@ chem_props_schema = EntityBuilder(
         CV(term='chemrof:monoisotopic_mass', value=f('monoisotop_mass')),
     ),
 )
+
 analytehaspathway_schema = RelationBuilder(
     subject=EntityBuilder(
         entity_type=f('rampId', map='id_to_entity', extract='rampID'),
@@ -191,12 +192,26 @@ analytehaspathway_schema = RelationBuilder(
     ),
     identifiers=IdentifiersBuilder(),
 )
+
+
+def _pathway_xref(row):
+    value = str(row.get('sourceId') or '').strip()
+    source = str(row.get('type') or '').lower()
+    if not value:
+        return None
+    if value.startswith('SMP') and value[3:].isdigit():
+        return 'SMPDB:' + value
+    prefix = {'wiki': 'WikiPathways', 'reactome': 'Reactome', 'kegg': 'KEGG.PATHWAY'}.get(source)
+    return f'{prefix}:{value}' if prefix else None
+
+
 pathway_schema = EntityBuilder(
     entity_type=Pathway,
     identifiers=IdentifiersBuilder(
-        CV(term=Namespace.RAMP, value=f('pathwayRampId'))
+        CV(term=Namespace.RAMP, value=f('pathwayRampId')),
+        CV(term=Namespace.NAME, value=f('pathwayName')),
     ),
-    annotations=AnnotationsBuilder(),
+    annotations=AnnotationsBuilder(CV(term=slots.xref, value=_pathway_xref)),
 )
 schemas = {
     'analyte': analyte_schema,

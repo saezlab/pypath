@@ -28,7 +28,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 9
+_CACHE_VERSION = 10
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
@@ -1246,7 +1246,7 @@ def _iterate_controls(
                     'pathway_term_accession': pathway_term_accession,
                 }
             elif cd_type_str_lower == 'pathway':
-                controlled_entity_type = 'cv_term'
+                controlled_entity_type = 'pathway'
                 controlled_info = {
                     'role': 'controlled',
                     'display_name': cd_names.get('display_name', ''),

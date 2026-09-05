@@ -462,7 +462,10 @@ controls_schema = RelationBuilder(
         CV(term=Namespace.REACTOME_ID, value=f('reactome_id')),
         CV(term=Namespace.NAME, value=f('display_name')),
     ),
-    annotations=AnnotationsBuilder(),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.object_direction_qualifier, value=_control_effect),
+        CV(term=slots.publications, value=f('pubmed', transform=lambda v: 'PMID:' + str(v).removeprefix('PMID:'))),
+    ),
 )
 pathways_schema = EntityBuilder(
     entity_type=model.Pathway,

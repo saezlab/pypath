@@ -226,7 +226,9 @@ protein_complexes_schema = EntityBuilder(
             ),
         )
     ),
-    annotations=AnnotationsBuilder(),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.in_taxon, value=f'NCBITaxon:{HUMAN_TAXON_ID}'),
+    ),
 )
 
 

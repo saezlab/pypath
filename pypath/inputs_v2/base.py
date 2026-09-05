@@ -238,6 +238,19 @@ class Dataset:
             yield self.mapper(record)
 
 
+def _ontology_identifier_namespace(identifier, default):
+    """Keep imported CURIE namespaces; a document can contain foreign terms."""
+    prefix, separator, _ = str(identifier).partition(':')
+    if not separator:
+        return default
+    return {
+        'GO': Namespace.GO, 'HP': Namespace.HPO, 'MONDO': Namespace.MONDO,
+        'CHEMONTID': Namespace.CHEMONT, 'MI': Namespace.MI,
+        'EC': Namespace.EC, 'OM': Namespace.OM,
+        'UniProtKB-KW': Namespace.UNIPROT_KEYWORD,
+    }.get(prefix, prefix.lower())
+
+
 def ontology_term_to_entity(
     term: OntologyTerm,
     *,
@@ -254,7 +267,7 @@ def ontology_term_to_entity(
     if not term.id or term.is_obsolete:
         return None
     identifiers = [
-        Identifier(type=identifier_type, value=value)
+        Identifier(type=_ontology_identifier_namespace(value, identifier_type), value=value)
         for value in dict.fromkeys([term.id, *(term.alt_ids or [])])
         if value
     ]
@@ -293,7 +306,7 @@ def ontology_term_to_entity(
         relations.append(
             OntologyRelation(
                 predicate=predicate,
-                object=EntityRef(entity_type, identifier_type, target),
+                object=EntityRef(entity_type, _ontology_identifier_namespace(target, identifier_type), target),
                 ontology_id=ontology_id,
             )
         )
