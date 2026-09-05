@@ -568,6 +568,10 @@ def _iter_chembl_prepared(
     max_records = kwargs.get('max_records')
     if max_records is not None:
         max_records = int(max_records)
+        if max_records > 0:
+            # A sample query must not trigger preparation of the entire source.
+            # SQLite already supports the same projections with a SQL LIMIT.
+            use_parquet_cache = False
 
     if use_parquet_cache and sqlite_path is not None:
         try:

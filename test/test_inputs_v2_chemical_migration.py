@@ -565,3 +565,18 @@ def test_chembl_staging_cache_requires_measurement_units(tmp_path):
     with duckdb.connect(str(path)) as con:
         con.execute('ALTER TABLE activities ADD COLUMN standard_units VARCHAR')
     assert _duckdb_cache_compatible(path)
+
+
+def test_chembl_sample_does_not_materialize_full_prepared_cache(monkeypatch):
+    from pypath.inputs_v2.parsers import chembl
+    calls = []
+    def full_cache(*args, **kwargs):
+        raise AssertionError('Sample attempted complete cache preparation')
+    def sqlite_rows(opener, **kwargs):
+        calls.append(kwargs['query'])
+        yield {'standard_value': 0.5, 'standard_units': 'nM'}
+    monkeypatch.setattr(chembl, '_ensure_duckdb_cache', full_cache)
+    monkeypatch.setattr(chembl, 'iter_sqlite', sqlite_rows)
+    rows = list(chembl._iter_chembl_prepared('activities', None, sqlite_path='source.db', max_records=10))
+    assert rows == [{'standard_value': 0.5, 'standard_units': 'nM'}]
+    assert calls[0].endswith('LIMIT 10')
