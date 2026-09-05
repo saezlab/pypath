@@ -400,11 +400,22 @@ def _ensure_sqlite(opener: Any, sqlite_path: Path | None, db_rel_path: str | Non
         _extract_sqlite_from_opener(opener, sqlite_path, db_rel_path)
 
 
+def _duckdb_cache_compatible(duckdb_path: Path) -> bool:
+    if not duckdb_path.exists() or duckdb is None:
+        return False
+    try:
+        with duckdb.connect(str(duckdb_path), read_only=True) as con:
+            con.execute('SELECT standard_units FROM activities LIMIT 0')
+        return True
+    except duckdb.Error:
+        return False
+
+
 def _ensure_duckdb_cache(sqlite_path: Path, duckdb_path: Path) -> None:
-    if duckdb_path.exists():
-        return
     if duckdb is None:
         raise ImportError("duckdb is required to create the ChEMBL cache.")
+    if _duckdb_cache_compatible(duckdb_path):
+        return
 
     tmp_path = duckdb_path.with_suffix(f'{duckdb_path.suffix}.tmp')
     if tmp_path.exists():
@@ -414,6 +425,7 @@ def _ensure_duckdb_cache(sqlite_path: Path, duckdb_path: Path) -> None:
     duckdb_path.parent.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(tmp_path))
     try:
+        _configure_chembl_duckdb(con)
         con.execute('LOAD sqlite')
         con.execute(f"ATTACH '{sqlite_path}' AS s (TYPE sqlite, READ_ONLY)")
         for table_name, select_sql in DUCKDB_TABLES.items():
@@ -544,7 +556,7 @@ def _prepared_cache_available(
 
 
 def _iter_chembl_prepared(
-    dataset: str,
+    prepared_dataset: str,
     opener: Any,
     **kwargs: Any,
 ) -> Generator[dict[str, Any], None, None]:
@@ -568,7 +580,7 @@ def _iter_chembl_prepared(
             _ensure_sqlite(opener, sqlite_path, db_rel_path)
             _ensure_duckdb_cache(sqlite_path, duckdb_path)
             parquet_path = _ensure_parquet_dataset(
-                dataset,
+                prepared_dataset,
                 duckdb_path,
                 parquet_dir,
             )
@@ -582,11 +594,11 @@ def _iter_chembl_prepared(
             return
         except Exception as error:
             print(
-                f"ChEMBL DuckDB/Parquet cache unavailable for {dataset}; "
+                f"ChEMBL DuckDB/Parquet cache unavailable for {prepared_dataset}; "
                 f"falling back to SQLite. Reason: {error}"
             )
 
-    query = _limit_query(SQLITE_QUERIES[dataset], max_records)
+    query = _limit_query(SQLITE_QUERIES[prepared_dataset], max_records)
     yield from iter_sqlite(opener, query=query, **kwargs)
 
 

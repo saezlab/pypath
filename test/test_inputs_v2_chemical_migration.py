@@ -541,3 +541,27 @@ def test_complex_name_does_not_become_an_unidentified_chain_name():
         ('name', 'Whole complex')
     ]
     assert len(target.membership) == 1
+
+
+def test_chembl_parser_accepts_pipeline_dataset_context(monkeypatch):
+    from pypath.inputs_v2.parsers import chembl
+    queries = []
+    def rows(opener, *, query, **kwargs):
+        queries.append(query)
+        yield {'chembl_id': 'CHEMBL1'}
+    monkeypatch.setattr(chembl, 'iter_sqlite', rows)
+    assert list(chembl.molecules_parser(None, dataset='molecules', use_parquet_cache=False, max_records=10)) == [{'chembl_id': 'CHEMBL1'}]
+    assert queries[0].endswith('LIMIT 10')
+
+
+def test_chembl_staging_cache_requires_measurement_units(tmp_path):
+    import duckdb
+    from pypath.inputs_v2.parsers.chembl import _duckdb_cache_compatible
+    path = tmp_path / 'chembl.duckdb'
+    assert not _duckdb_cache_compatible(path)
+    with duckdb.connect(str(path)) as con:
+        con.execute('CREATE TABLE activities (standard_value DOUBLE)')
+    assert not _duckdb_cache_compatible(path)
+    with duckdb.connect(str(path)) as con:
+        con.execute('ALTER TABLE activities ADD COLUMN standard_units VARCHAR')
+    assert _duckdb_cache_compatible(path)

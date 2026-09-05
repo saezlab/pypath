@@ -210,3 +210,10 @@ def test_guidetopharma_group_accessions_do_not_alias_components(
         Namespace.NAME,
     }
     assert any(a.value == 'NCBITaxon:9606' for a in entity.annotations)
+
+
+def test_bindingdb_download_does_not_use_logical_dataset_as_archive_name():
+    from pypath.inputs_v2.bindingdb import _bindingdb_url, _bindingdb_filename
+    assert _bindingdb_filename(dataset='interactions') == 'BindingDB_All_202605_tsv.zip'
+    assert _bindingdb_url(dataset='interactions').endswith('/BindingDB_All_202605_tsv.zip')
+    assert _bindingdb_filename(bindingdb_subset='Articles', dataset='interactions') == 'BindingDB_Articles_202605_tsv.zip'

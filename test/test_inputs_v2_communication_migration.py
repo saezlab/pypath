@@ -464,3 +464,15 @@ def test_direct_cellchat_constructor_keeps_gene_id_before_source_name():
     assert all(
         slot_name(a.term) not in {'name', 'synonym'} for a in record.annotations
     )
+
+
+def test_tabular_download_error_page_is_not_a_successful_empty_resource():
+    from io import StringIO
+    from types import SimpleNamespace
+    import pytest
+    from pypath.inputs_v2.parsers.base import iter_tsv
+    opener = SimpleNamespace(result=StringIO('<html>\n<head><title>404 Not Found</title></head>\n</html>'))
+    with pytest.raises(ValueError, match='HTML document'):
+        list(iter_tsv(opener))
+    valid = SimpleNamespace(result=StringIO('LRID\tLigand_geneid\nLRH1\t1\n'))
+    assert list(iter_tsv(valid)) == [{'LRID': 'LRH1', 'Ligand_geneid': '1'}]

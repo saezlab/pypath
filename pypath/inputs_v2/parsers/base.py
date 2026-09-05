@@ -43,7 +43,11 @@ def _raw(opener, delimiter: str = ',', **_kwargs: Any) -> Generator[dict[str, An
     handle = _first_handle(opener)
     if not handle:
         return
-    yield from csv.DictReader(handle, delimiter=delimiter)
+    reader = csv.DictReader(handle, delimiter=delimiter)
+    header = ' '.join(reader.fieldnames or []).lstrip('\ufeff ').lower()
+    if header.startswith(('<!doctype html', '<html', '<head', '<body')):
+        raise ValueError('Expected delimited source records, received an HTML document')
+    yield from reader
 
 
 def iter_csv(opener, delimiter: str = ',', **_kwargs: Any) -> Generator[dict[str, Any], None, None]:

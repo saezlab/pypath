@@ -34,12 +34,12 @@ from pypath.internals.tabular_builder import (
 )
 
 
-def _bindingdb_url(dataset: str = 'All', **_kwargs: object) -> str:
-    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{dataset}_202605_tsv.zip'
+def _bindingdb_url(bindingdb_subset: str = 'All', **_kwargs: object) -> str:
+    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{bindingdb_subset}_202605_tsv.zip'
 
 
-def _bindingdb_filename(dataset: str = 'All', **_kwargs: object) -> str:
-    return f'BindingDB_{dataset}_202605_tsv.zip'
+def _bindingdb_filename(bindingdb_subset: str = 'All', **_kwargs: object) -> str:
+    return f'BindingDB_{bindingdb_subset}_202605_tsv.zip'
 
 
 config = ResourceConfig(
