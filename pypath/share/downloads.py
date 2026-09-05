@@ -80,6 +80,24 @@ class _DownloadManagerProxy:
         return getattr(get_download_manager(), name)
 
 
+class _PypathDownloadManager(DownloadManager):
+    """Finite connect/read waits for shared downloads, including legacy callers."""
+
+    def download(self, url, *args, **kwargs):
+        # Requests interprets timeout as socket inactivity, not total transfer
+        # duration: a large download can continue while it is making progress.
+        for key, env, default in (
+            ('connecttimeout', 'PYPATH_CONNECT_TIMEOUT', 30),
+            ('timeout', 'PYPATH_READ_TIMEOUT', 120),
+        ):
+            value = float(os.environ.get(env, default))
+            if not 0 < value < float('inf'):
+                raise ValueError(f'{env} must be a finite positive number')
+            kwargs.setdefault(key, value)
+        kwargs.setdefault('retries', 1)
+        return super().download(url, *args, **kwargs)
+
+
 def get_download_manager() -> DownloadManager:
     """
     Get the shared DownloadManager instance configured with pypath's data folder.
@@ -89,7 +107,7 @@ def get_download_manager() -> DownloadManager:
     """
     manager = getattr(_thread_local, 'download_manager', None)
     if manager is None:
-        manager = DownloadManager(
+        manager = _PypathDownloadManager(
             path=str(_resolve_data_dir()),
             config={'backend': 'requests'},
         )
