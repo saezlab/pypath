@@ -136,7 +136,7 @@ target_builder = EntityBuilder(
                 extract='uniprot',
             ),
         ),
-        CV(term=Namespace.NAME, value=f('Target Name')),
+        CV(term=Namespace.NAME, value=lambda row: row.get('Target Name') if not (row.get('UniProt (SwissProt) Primary ID of Target Chain 1') or row.get('UniProt (TrEMBL) Primary ID of Target Chain 1')) else None),
         CV(
             term=Namespace.NAME,
             value=f('UniProt (SwissProt) Recommended Name of Target Chain 1'),
@@ -188,6 +188,7 @@ interactions_schema = RelationBuilder(
     predicate=slots.associated_with,
     object=_target,
     annotations=AnnotationsBuilder(
+        CV(term=slots.original_object, value=f('Target Name')),
         CV(
             term=slots.has_quantitative_value,
             value=f(

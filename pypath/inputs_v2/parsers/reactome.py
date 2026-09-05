@@ -217,6 +217,7 @@ def _extract_names_from_props(props: dict, bp_ns: Namespace) -> dict[str, str | 
 
 
 _PARTICIPANT_FIELDS = [
+    'source_physical_entity', 'compartment', 'modification',
     'role',
     'entity_type',
     'display_name',
@@ -519,7 +520,29 @@ def _load_entity_reference_index(g: Graph, xref_cache: dict[str, dict]) -> dict[
 # Data Extraction
 # --------------------------------------------------------------------------- #
 
-def _extract_participant_data(
+def _extract_participant_data(g, molecule_uri, role, entity_reference_index, xref_cache, stoich_map):
+    """Preserve physical-state context independently of the reference identity."""
+    result = _extract_participant_core(g, molecule_uri, role, entity_reference_index, xref_cache, stoich_map)
+    props = _get_entity_props(g, molecule_uri)
+    compartments = []
+    for location in props.get(BP.cellularLocation, []):
+        terms = list(g.objects(location, BP['term']))
+        compartments.extend(str(term) for term in terms)
+    features = []
+    for feature in props.get(BP.feature, []):
+        labels = [str(term) for vocabulary in g.objects(feature, BP.modificationType)
+                  for term in g.objects(vocabulary, BP['term'])]
+        positions = [str(position) for location in g.objects(feature, BP.featureLocation)
+                     for position in g.objects(location, BP.sequencePosition)]
+        features.append('; '.join([*labels, *[f'position {p}' for p in positions]]) or str(feature))
+    for participant in result if isinstance(result, list) else [result]:
+        participant['source_physical_entity'] = str(molecule_uri)
+        participant['compartment'] = '; '.join(compartments)
+        participant['modification'] = '; '.join(features)
+    return result
+
+
+def _extract_participant_core(
     g: Graph,
     molecule_uri: URIRef,
     role: str,

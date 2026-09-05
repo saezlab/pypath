@@ -211,7 +211,8 @@ reactions_schema = EntityBuilder(
                         map='stoich_val',
                         preserve_indices=True,
                     ),
-                )
+                ),
+                CV(term='biopax:cellularLocation', value=f('reactants', delimiter='||', map='stoich_comp', preserve_indices=True))
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(
@@ -295,7 +296,8 @@ reactions_schema = EntityBuilder(
                         map='stoich_val',
                         preserve_indices=True,
                     ),
-                )
+                ),
+                CV(term='biopax:cellularLocation', value=f('products', delimiter='||', map='stoich_comp', preserve_indices=True))
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(
@@ -399,7 +401,8 @@ transport_reactions_schema = EntityBuilder(
                         map='stoich_val',
                         preserve_indices=True,
                     ),
-                )
+                ),
+                CV(term='biopax:cellularLocation', value=f('reactants', delimiter='||', map='stoich_comp', preserve_indices=True))
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(
@@ -483,7 +486,8 @@ transport_reactions_schema = EntityBuilder(
                         map='stoich_val',
                         preserve_indices=True,
                     ),
-                )
+                ),
+                CV(term='biopax:cellularLocation', value=f('products', delimiter='||', map='stoich_comp', preserve_indices=True))
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(

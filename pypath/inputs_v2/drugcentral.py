@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 
 from biolink_model.datamodel.model import (
     ChemicalEntity,
@@ -127,6 +128,7 @@ def _target_entity(row):
     return Entity(
         type=NamedThing,
         identifiers=[
+            Identifier(type='drugcentral.target_group', value=hashlib.sha256('|'.join(sorted(accessions)).encode()).hexdigest()),
             Identifier(
                 type=Namespace.NAME, value=_clean(row.get('TARGET_NAME'))
             )

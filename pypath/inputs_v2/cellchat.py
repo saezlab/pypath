@@ -142,7 +142,7 @@ def _protein_group_entity(
             type=Protein,
             identifiers=[
                 Identifier(type=Namespace.GENESYMBOL, value=genes[0]),
-                Identifier(type=Namespace.NAME, value=name),
+                Identifier(type=Namespace.NAME, value=genes[0]),
             ],
             annotations=annotations,
         )
@@ -235,6 +235,8 @@ def map_cellchat_cofactor_interaction(row: dict[str, Any]) -> Relation:
         annotations=[
             *(annotations or []),
             Annotation(term=slots.object_direction_qualifier, value=direction),
+            Annotation(term=slots.original_subject, value=_first(row.get("cofactor_group")) or cofactor_gene),
+            Annotation(term=slots.original_predicate, value=_first(row.get("cofactor_role")) or effect),
         ],
     )
 

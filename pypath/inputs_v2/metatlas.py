@@ -213,6 +213,10 @@ reactions_schema = EntityBuilder(
                 CV(
                     term=slots.stoichiometry,
                     value=f('reactants', delimiter='||', map='stoich_val'),
+                ),
+                CV(
+                    term='biopax:cellularLocation',
+                    value=f('reactants', delimiter='||', map='stoich_comp'),
                 )
             ),
             predicate=slots.has_input,
@@ -260,6 +264,10 @@ reactions_schema = EntityBuilder(
                 CV(
                     term=slots.stoichiometry,
                     value=f('products', delimiter='||', map='stoich_val'),
+                ),
+                CV(
+                    term='biopax:cellularLocation',
+                    value=f('products', delimiter='||', map='stoich_comp'),
                 )
             ),
             predicate=slots.has_output,
@@ -333,6 +341,10 @@ transport_reactions_schema = EntityBuilder(
                 CV(
                     term=slots.stoichiometry,
                     value=f('reactants', delimiter='||', map='stoich_val'),
+                ),
+                CV(
+                    term='biopax:cellularLocation',
+                    value=f('reactants', delimiter='||', map='stoich_comp'),
                 )
             ),
             predicate=slots.has_input,
@@ -380,6 +392,10 @@ transport_reactions_schema = EntityBuilder(
                 CV(
                     term=slots.stoichiometry,
                     value=f('products', delimiter='||', map='stoich_val'),
+                ),
+                CV(
+                    term='biopax:cellularLocation',
+                    value=f('products', delimiter='||', map='stoich_comp'),
                 )
             ),
             predicate=slots.has_output,

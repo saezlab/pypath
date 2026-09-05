@@ -142,7 +142,7 @@ reactions_schema = EntityBuilder(
             value=f(
                 'kegg',
                 transform=lambda v: 'KEGG.REACTION:'
-                + str(v).removeprefix('KEGG.REACTION:'),
+                + str(v).removeprefix('KEGG.REACTION:').removeprefix('KEGG:'),
             ),
         ),
     ),
@@ -228,7 +228,7 @@ transport_reactions_schema = EntityBuilder(
             value=f(
                 'kegg',
                 transform=lambda v: 'KEGG.REACTION:'
-                + str(v).removeprefix('KEGG.REACTION:'),
+                + str(v).removeprefix('KEGG.REACTION:').removeprefix('KEGG:'),
             ),
         ),
     ),

@@ -521,9 +521,8 @@ def test_nested_and_direct_names_use_identifier_namespaces():
     group = _target_entity(
         {'ACCESSION': 'P00533|P04637', 'TARGET_NAME': 'Target group'}
     )
-    assert [(i.type, i.value) for i in group.identifiers] == [
-        ('name', 'Target group')
-    ]
+    assert group.identifiers[0].type == 'drugcentral.target_group'
+    assert (group.identifiers[1].type, group.identifiers[1].value) == ('name', 'Target group')
     assert len(group.membership) == 2
 
 

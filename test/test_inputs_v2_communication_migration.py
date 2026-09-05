@@ -452,14 +452,14 @@ def test_names_and_synonyms_are_supplemental_identifiers():
     assert not record.annotations
 
 
-def test_direct_cellchat_constructor_keeps_gene_id_before_source_name():
+def test_direct_cellchat_single_protein_uses_gene_name_not_group_role():
     mod = import_module('pypath.inputs_v2.cellchat')
     record = mod._protein_group_entity(
         name='Source label', genes=['TGFB1'], taxon_id='9606'
     )
     assert record.identifiers == [
         (Namespace.GENESYMBOL, 'TGFB1'),
-        (Namespace.NAME, 'Source label'),
+        (Namespace.NAME, 'TGFB1'),
     ]
     assert all(
         slot_name(a.term) not in {'name', 'synonym'} for a in record.annotations

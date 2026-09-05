@@ -210,7 +210,7 @@ def wikipathways_predicate(row):
     if values & {'Binding', 'ComplexBinding'}:
         return slots.physically_interacts_with
     # Conversion and catalysis diagram edges need a reaction node to be more specific.
-    return slots.interacts_with
+    return slots.related_to
 
 
 interactions_schema = RelationBuilder(
@@ -222,6 +222,7 @@ interactions_schema = RelationBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=slots.object_direction_qualifier, value=_interaction_direction),
+        CV(term=slots.original_predicate, value=lambda row: sorted(_interaction_types(row))),
         CV(term=slots.has_topic, value=f('pathway_version_id')),
         CV(
             term=slots.in_taxon,

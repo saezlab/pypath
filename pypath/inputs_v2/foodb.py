@@ -65,6 +65,14 @@ f = FieldConfig(
         'chebi': '^(?:CHEBI:)?(\\d+)$',
     },
 )
+def _member_measurements(row, field):
+    """Keep list-column positions aligned, including missing and zero values."""
+    values = f(field).extract(row)
+    units = f('member_unit').extract(row)
+    return [_measurement(value, units[i] if i < len(units) else None, field)
+            for i, value in enumerate(values)]
+
+
 foods_schema = EntityBuilder(
     entity_type=Food,
     identifiers=IdentifiersBuilder(
@@ -88,69 +96,22 @@ foods_schema = EntityBuilder(
         MembersFromList(
             entity_type=ChemicalEntity,
             identifiers=IdentifiersBuilder(
-                CV(term=Namespace.FOODB, value=f('member_compound_public_id'))
+                CV(term=Namespace.FOODB, value=f('member_compound_public_id')),
+                CV(term=Namespace.NAME, value=f('member_compound_name')),
+                CV(term=Namespace.INCHIKEY, value=f('member_inchikey')),
+                CV(term=Namespace.SMILES, value=f('member_smiles')),
+                CV(term=Namespace.CHEBI, value=f('member_chebi', extract='chebi')),
+                CV(term=Namespace.CAS, value=f('member_cas', extract='cas')),
+                CV(term=Namespace.KEGG, value=f('member_kegg'))
             ),
             annotations=AnnotationsBuilder(
-                CV(
-                    term='PATO:0000033',
-                    value=lambda row: [
-                        _measurement(
-                            v,
-                            units[i] if i < len(units) else None,
-                            'member_content',
-                        )
-                        for units in [
-                            str(row.get('member_unit') or '').split(
-                                MEMBER_DELIMITER
-                            )
-                        ]
-                        for i, v in enumerate(
-                            str(row.get('member_content') or '').split(
-                                MEMBER_DELIMITER
-                            )
-                        )
-                    ],
-                ),
-                CV(
-                    term='PATO:0000033',
-                    value=lambda row: [
-                        _measurement(
-                            v,
-                            units[i] if i < len(units) else None,
-                            'member_min',
-                        )
-                        for units in [
-                            str(row.get('member_unit') or '').split(
-                                MEMBER_DELIMITER
-                            )
-                        ]
-                        for i, v in enumerate(
-                            str(row.get('member_min') or '').split(
-                                MEMBER_DELIMITER
-                            )
-                        )
-                    ],
-                ),
-                CV(
-                    term='PATO:0000033',
-                    value=lambda row: [
-                        _measurement(
-                            v,
-                            units[i] if i < len(units) else None,
-                            'member_max',
-                        )
-                        for units in [
-                            str(row.get('member_unit') or '').split(
-                                MEMBER_DELIMITER
-                            )
-                        ]
-                        for i, v in enumerate(
-                            str(row.get('member_max') or '').split(
-                                MEMBER_DELIMITER
-                            )
-                        )
-                    ],
-                ),
+                CV(term='PATO:0000033', value=lambda row: _member_measurements(row, 'member_content')),
+                CV(term='PATO:0000033', value=lambda row: _member_measurements(row, 'member_min')),
+                CV(term='PATO:0000033', value=lambda row: _member_measurements(row, 'member_max')),
+                CV(term=slots.publications, value=f('member_citation')),
+                CV(term=slots.supporting_study_method_description, value=f('member_method')),
+                CV(term=slots.supporting_study_method_description, value=f('member_food_part', transform=lambda v: f'Food part: {v}' if v else None)),
+                CV(term=slots.supporting_study_method_description, value=f('member_preparation', transform=lambda v: f'Preparation: {v}' if v else None)),
             ),
             predicate=slots.has_part,
         )
