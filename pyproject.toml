@@ -16,7 +16,7 @@ version = "0.16.31"
 description = "Molecular signaling prior knowledge processing"
 license = "GPL-3.0-or-later"
 readme = "README.rst"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
     {name = "Denes Turei", email = "turei.denes@gmail.com"},
     {name = "Nicolas Palacio"},
@@ -51,6 +51,8 @@ keywords = [
 ]
 dependencies = [
     "beautifulsoup4",
+    "biolink-model==4.4.4",
+    "omnipath-core>=0.1.0",
     "cachedir>=0.1.2",
     "certifi>=2023.7.22",
     "cffi>=1.17.0",
@@ -226,3 +228,6 @@ section-order = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.uv.sources]
+omnipath-core = { path = "../../full_parquet/packages/omnipath_core", editable = true }

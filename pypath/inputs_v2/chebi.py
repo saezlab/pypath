@@ -5,6 +5,9 @@ from __future__ import annotations
 from collections.abc import Iterable
 import re
 
+from biolink_model.datamodel.model import ChemicalEntity, slots
+from omnipath_core.naming import Namespace
+
 from pypath.inputs_v2.base import (
     Dataset,
     Download,
@@ -13,11 +16,7 @@ from pypath.inputs_v2.base import (
 )
 from pypath.inputs_v2.parsers.chebi import _raw
 from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
     LicenseCV,
-    MoleculeAnnotationsCv,
-    OntologyAnnotationCv,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
@@ -56,11 +55,11 @@ f = FieldConfig(
 
 
 molecules_schema = EntityBuilder(
-    entity_type=EntityTypeCv.CHEMICAL,
+    entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id', extract='chebi')),
+        CV(term=Namespace.CHEBI, value=f('chebi_id', extract='chebi')),
         CV(
-            term=IdentifierNamespaceCv.CHEBI,
+            term=Namespace.CHEBI,
             value=lambda row: [
                 value
                 for value in (
@@ -70,23 +69,25 @@ molecules_schema = EntityBuilder(
                 if value
             ],
         ),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=lambda row: row.get('synonyms', [])),
-        CV(term=IdentifierNamespaceCv.SMILES, value=f('smiles')),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('inchi')),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('inchikey')),
-        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('formula')),
-        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=lambda row: row.get('kegg_compound', [])),
-        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=lambda row: row.get('pubchem_compound', [])),
-        CV(term=IdentifierNamespaceCv.HMDB, value=lambda row: row.get('hmdb', [])),
-        CV(term=IdentifierNamespaceCv.LIPIDMAPS, value=lambda row: row.get('lipidmaps', [])),
-        CV(term=IdentifierNamespaceCv.CAS, value=lambda row: row.get('cas', [])),
+        CV(term=Namespace.SMILES, value=f('smiles')),
+        CV(term=Namespace.INCHI, value=f('inchi')),
+        CV(term=Namespace.INCHIKEY, value=f('inchikey')),
+        CV(term=Namespace.KEGG, value=lambda row: row.get('kegg_compound', [])),
+        CV(term=Namespace.PUBCHEM, value=lambda row: row.get('pubchem_compound', [])),
+        CV(term=Namespace.HMDB, value=lambda row: row.get('hmdb', [])),
+        CV(term=Namespace.LIPIDMAPS, value=lambda row: row.get('lipidmaps', [])),
+        CV(term=Namespace.CAS, value=lambda row: row.get('cas', [])),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=OntologyAnnotationCv.DEFINITION, value=f('definition')),
-        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('mass')),
-        CV(term=MoleculeAnnotationsCv.MW_MONOISOTOPIC, value=f('monoisotopic_mass')),
-        CV(term=MoleculeAnnotationsCv.MOLECULAR_CHARGE, value=f('charge')),
+        CV(term=slots.name, value=f('name')),
+        CV(term=slots.synonym, value=lambda row: row.get('synonyms', [])),
+        CV(term=slots.has_chemical_formula, value=f('formula')),
+        CV(term=slots.description, value=f('definition')),
+        CV(term='chemrof:mass', value=f('mass')),
+        CV(term='chemrof:monoisotopic_mass', value=f('monoisotopic_mass')),
+        CV(term='chemrof:charge', value=f('charge')),
+        CV(term=lambda row: [r['type'] for r in row.get('relationships', []) if r['type'] != 'BFO:0000051'],
+           value=lambda row: [r['target'] for r in row.get('relationships', []) if r['type'] != 'BFO:0000051']),
     ),
     ontology_relations=lambda row: _ontology_relations(row),
 )
@@ -110,10 +111,10 @@ def _ontology_relations(row: dict) -> list[OntologyRelation]:
         seen.add(key)
         relations.append(
             OntologyRelation(
-                predicate='is_a',
+                predicate=slots.subclass_of,
                 object=EntityRef(
-                    type=EntityTypeCv.CHEMICAL,
-                    identifier_type=IdentifierNamespaceCv.CHEBI,
+                    type=ChemicalEntity,
+                    identifier_type=Namespace.CHEBI,
                     identifier=parent_id,
                 ),
                 ontology_id='chebi',
@@ -122,7 +123,7 @@ def _ontology_relations(row: dict) -> list[OntologyRelation]:
     for relationship in row.get('relationships') or []:
         predicate = relationship.get('type')
         target_id = _chebi_identifier(relationship.get('target'))
-        if not predicate or not target_id:
+        if predicate != 'BFO:0000051' or not target_id:
             continue
         key = (predicate, target_id)
         if key in seen:
@@ -130,10 +131,10 @@ def _ontology_relations(row: dict) -> list[OntologyRelation]:
         seen.add(key)
         relations.append(
             OntologyRelation(
-                predicate=predicate,
+                predicate=slots.has_part,
                 object=EntityRef(
-                    type=EntityTypeCv.CHEMICAL,
-                    identifier_type=IdentifierNamespaceCv.CHEBI,
+                    type=ChemicalEntity,
+                    identifier_type=Namespace.CHEBI,
                     identifier=target_id,
                 ),
                 ontology_id='chebi',
@@ -163,7 +164,7 @@ def _id_translation_rows(row: dict) -> Iterable[dict]:
         seen.add(key_value)
         yield {
             'source': 'chebi',
-            'key_type': 'MI:0474:Chebi',
+            'key_type': Namespace.CHEBI,
             'key_value': key_value,
             'standard_inchi': standard_inchi,
         }

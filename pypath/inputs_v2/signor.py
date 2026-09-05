@@ -10,11 +10,12 @@ from __future__ import annotations
 import csv
 import re
 
+from biolink_model.datamodel import model
+from biolink_model.datamodel.model import slots
+from omnipath_core.naming import Namespace
+
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.internals.cv_terms import (
-    CurationCv,
-    EntityTypeCv,
-    IdentifierNamespaceCv,
     LicenseCV,
     ResourceCv,
     UpdateCategoryCV,
@@ -45,11 +46,12 @@ def _iter_tsv(opener, **_kwargs: object):
 
 
 _IDENTIFIER_CV_MAPPING = {
-    'chebi': IdentifierNamespaceCv.CHEBI,
-    'complexportal': IdentifierNamespaceCv.COMPLEXPORTAL,
-    'pubchem': IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-    'signor': IdentifierNamespaceCv.SIGNOR,
-    'uniprotkb': IdentifierNamespaceCv.UNIPROT,
+    'chebi': Namespace.CHEBI,
+    'complexportal': Namespace.COMPLEXPORTAL,
+    'pubchem': Namespace.PUBCHEM,
+    'signor': Namespace.SIGNOR,
+    'uniprotkb': Namespace.UNIPROT,
+    'uniprot': Namespace.UNIPROT,
 }
 
 _PREFIX_REGEX = r'^([^:]+):'
@@ -63,26 +65,19 @@ _PUBMED_REGEX = r'(?i)pubmed:(\d+)'
 _MI_REGEX = r'(MI:\d+)'
 
 _TERM_MAPPING = {
-    'signor': IdentifierNamespaceCv.SIGNOR,
-    'signor-interaction': IdentifierNamespaceCv.SIGNOR,
+    'signor': Namespace.SIGNOR,
+    'signor-interaction': Namespace.SIGNOR,
 }
 
 _INTERACTOR_TYPE_MAPPING = {
-    'MI:0326': EntityTypeCv.PROTEIN,
-    'MI:0314': EntityTypeCv.COMPLEX,
-    'MI:0328': EntityTypeCv.CHEMICAL,
-    'MI:2261': EntityTypeCv.PHENOTYPE,
-    'MI:2260': EntityTypeCv.STIMULUS,
-    'MI:2258': EntityTypeCv.CHEMICAL,  # xenobiotic
-    'MI:1304': EntityTypeCv.PROTEIN_FAMILY,  # molecule set
+    'MI:0326': model.Protein,
+    'MI:0314': model.MacromolecularComplex,
+    'MI:0328': model.ChemicalEntity,
+    'MI:2261': model.PhenotypicFeature,
+    'MI:2260': model.ExposureEvent,
+    'MI:2258': model.ChemicalEntity,  # xenobiotic does not imply molecular size
+    'MI:1304': model.ProteinFamily,  # molecule set
 }
-_TAXON_SCOPED_ENTITY_TYPES = {
-    EntityTypeCv.PROTEIN,
-    EntityTypeCv.GENE,
-    EntityTypeCv.RNA,
-    EntityTypeCv.DNA,
-}
-
 # The SIGNOR complex and protein-family exports currently used here do not
 # expose an organism column. The downloaded tables contain human UniProt
 # accessions, so we tax-scope these member proteins to human.
@@ -120,32 +115,32 @@ def _normalize_signor_identifier(prefix: str, value: str) -> tuple[object | None
     lower_value = value.lower()
 
     if value.startswith('URS'):
-        return IdentifierNamespaceCv.RNACENTRAL, value
+        return Namespace.RNACENTRAL, value
     if value.startswith('SIGNOR-'):
-        return IdentifierNamespaceCv.SIGNOR, value
+        return Namespace.SIGNOR, value
     if lower_value.startswith('chebi:'):
         match = re.fullmatch(r'CHEBI:(\d+)', value, flags=re.IGNORECASE)
-        return IdentifierNamespaceCv.CHEBI, match.group(1) if match else None
+        return Namespace.CHEBI, match.group(1) if match else None
     if value.startswith('DB') and value[2:].isdigit():
-        return IdentifierNamespaceCv.DRUGBANK, value
+        return Namespace.DRUGBANK, value
     if lower_value.startswith('pubchem:sid:'):
-        return IdentifierNamespaceCv.PUBCHEM_SUBSTANCE, value.rsplit(':', 1)[1]
+        return Namespace.PUBCHEM_SUBSTANCE, value.rsplit(':', 1)[1]
     if lower_value.startswith('pubchem:cid:'):
-        return IdentifierNamespaceCv.PUBCHEM_COMPOUND, value.rsplit(':', 1)[1]
+        return Namespace.PUBCHEM, value.rsplit(':', 1)[1]
     if lower_value.startswith('pubchem:'):
-        return IdentifierNamespaceCv.PUBCHEM_COMPOUND, value.split(':', 1)[1]
+        return Namespace.PUBCHEM, value.split(':', 1)[1]
     if prefix == 'pubchem' and value.upper().startswith('CID:'):
-        return IdentifierNamespaceCv.PUBCHEM_COMPOUND, value.split(':', 1)[1]
+        return Namespace.PUBCHEM, value.split(':', 1)[1]
     if prefix == 'pubchem' and value.upper().startswith('SID:'):
-        return IdentifierNamespaceCv.PUBCHEM_SUBSTANCE, value.split(':', 1)[1]
+        return Namespace.PUBCHEM_SUBSTANCE, value.split(':', 1)[1]
     if lower_value.startswith('uniprotkb:'):
         return _normalize_signor_identifier('uniprotkb', value.split(':', 1)[1])
     if prefix == 'uniprotkb' and '-PRO_' in value:
         value = value.split('-PRO_', 1)[0]
     if prefix == 'uniprotkb' and value.startswith('SIGNOR-'):
-        return IdentifierNamespaceCv.SIGNOR, value
+        return Namespace.SIGNOR, value
     if prefix == 'uniprotkb' and value.startswith('URS'):
-        return IdentifierNamespaceCv.RNACENTRAL, value
+        return Namespace.RNACENTRAL, value
 
     return _IDENTIFIER_CV_MAPPING.get(prefix), value or None
 
@@ -169,45 +164,36 @@ def general_identifier_cv(column_name: str) -> CV:
     )
 
 
-def mi_term_cv(column_name: str) -> CV:
-    return CV(term=f(column_name, extract='mi'))
+def _infer_signor_interactor_type(row: dict[str, object], suffix: str) -> type[model.NamedThing]:
+    """Read the source type; repair only documented missing-type cases.
 
-
-def _infer_signor_interactor_type(row: dict[str, object], suffix: str) -> EntityTypeCv:
+    The cached export has 533 untyped endpoints: RNAcentral identifiers mislabeled
+    UniProt, SIGNOR FP families, DrugBank entities and a few small molecules.
+    See docs/biolink-boundaries.md for the evidence and modeling decisions.
+    """
     raw_type = str(row.get(f'Type(s) interactor {suffix}') or '').strip()
     if raw_type and raw_type != '-':
-        mi_match = re.search(_MI_REGEX, raw_type)
-        if mi_match:
-            mapped = _INTERACTOR_TYPE_MAPPING.get(mi_match.group(1))
-            if mapped is not None:
-                return mapped
+        match = re.search(_MI_REGEX, raw_type)
+        if match and match.group(1) in _INTERACTOR_TYPE_MAPPING:
+            return _INTERACTOR_TYPE_MAPPING[match.group(1)]
+        raise ValueError(f'Unknown SIGNOR interactor type: {raw_type!r}')
 
-    id_fields = [
-        f'\ufeff#ID(s) interactor {suffix}' if suffix == 'A' else f'ID(s) interactor {suffix}',
-        f'Alt. ID(s) interactor {suffix}',
-        f'Alias(es) interactor {suffix}',
-    ]
-    values: list[str] = []
-    for field in id_fields:
-        raw = row.get(field)
-        values.extend(_split_signor_field(raw))
-
-    lower_values = [value.lower() for value in values]
-
-    if any(value.startswith('chebi:') or value.startswith('pubchem:') for value in lower_values):
-        return EntityTypeCv.CHEMICAL
-    if any('signor-c' in value for value in lower_values):
-        return EntityTypeCv.COMPLEX
-    if any('signor-pf' in value or 'signor-fp' in value for value in lower_values):
-        return EntityTypeCv.PROTEIN_FAMILY
-    if any('mir' in value or 'urs' in value for value in lower_values):
-        return EntityTypeCv.RNA
-    if any(value.startswith('uniprotkb:') for value in lower_values):
-        return EntityTypeCv.PROTEIN
-    if any(value.startswith('signor:') for value in lower_values):
-        return EntityTypeCv.PHYSICAL_ENTITY
-
-    return EntityTypeCv.PHYSICAL_ENTITY
+    primary = next((row.get(key) for key in (
+        f'\ufeff#ID(s) interactor {suffix}', f'#ID(s) interactor {suffix}',
+        f'ID(s) interactor {suffix}',
+    ) if row.get(key)), None)
+    pairs = _parse_signor_identifier_pairs(primary)
+    types = set()
+    for namespace, identifier in pairs:
+        if namespace == Namespace.RNACENTRAL:
+            types.add(model.RNAProduct)
+        elif namespace in (Namespace.DRUGBANK, Namespace.CHEBI, Namespace.PUBCHEM):
+            types.add(model.ChemicalEntity)
+        elif namespace == Namespace.SIGNOR and re.fullmatch(r'SIGNOR-(?:PF|FP)\d+', identifier):
+            types.add(model.ProteinFamily)
+    if len(types) == 1:
+        return types.pop()
+    raise ValueError(f'SIGNOR endpoint {suffix} has no supported type: {primary!r}')
 
 
 def interactor_entity_type(suffix: str):
@@ -216,26 +202,19 @@ def interactor_entity_type(suffix: str):
 
 def interactor_tax_cv(suffix: str) -> CV:
     return CV(
-        term=IdentifierNamespaceCv.NCBI_TAX_ID,
-        value=lambda row: (
-            next(iter(f(f'Taxid interactor {suffix}', extract='tax').extract(row)), None)
-            if _infer_signor_interactor_type(row, suffix) in _TAXON_SCOPED_ENTITY_TYPES
-            else None
-        ),
+        term=slots.in_taxon,
+        value=lambda row: [
+            f'NCBITaxon:{taxon}'
+            for taxon in f(f'Taxid interactor {suffix}', extract='tax').extract(row)
+            if str(taxon).isdigit() and int(taxon) > 0
+        ],
     )
 
 
 def pubmed_annotation(column_name: str) -> CV:
     return CV(
-        term=IdentifierNamespaceCv.PUBMED,
-        value=f(column_name, extract='pubmed'),
-    )
-
-
-def tax_cv(column_name: str) -> CV:
-    return CV(
-        term=IdentifierNamespaceCv.NCBI_TAX_ID,
-        value=f(column_name, extract='tax'),
+        term=slots.publications,
+        value=lambda row: [f'PMID:{pmid}' for pmid in f(column_name, extract='pubmed').extract(row)],
     )
 
 
@@ -264,45 +243,6 @@ def _split_signor_field(raw: object) -> list[str]:
     return parts
 
 
-def _clean_signor_value(value: str) -> str | None:
-    cleaned = value.strip().strip('"').strip()
-    return cleaned or None
-
-
-def _parse_term_value_annotations(
-    raw: object,
-    *,
-    default_term: str | None = None,
-) -> list[tuple[str, str | None]]:
-    annotations: list[tuple[str, str | None]] = []
-    for item in _split_signor_field(raw):
-        if ':' in item:
-            term, value = item.split(':', 1)
-            parsed_term = _clean_signor_value(term)
-            parsed_value = _clean_signor_value(value)
-            if parsed_term:
-                annotations.append((parsed_term, parsed_value))
-        elif default_term:
-            parsed_value = _clean_signor_value(item)
-            if parsed_value:
-                annotations.append((default_term, parsed_value))
-    return annotations
-
-
-def parsed_annotation_terms(column_name: str, *, default_term: str | None = None):
-    return lambda row: [
-        term
-        for term, _ in _parse_term_value_annotations(row.get(column_name), default_term=default_term)
-    ]
-
-
-def parsed_annotation_values(column_name: str, *, default_term: str | None = None):
-    return lambda row: [
-        value
-        for _, value in _parse_term_value_annotations(row.get(column_name), default_term=default_term)
-    ]
-
-
 config = ResourceConfig(
     id=ResourceCv.SIGNOR,
     name='SIGNOR',
@@ -322,151 +262,142 @@ config = ResourceConfig(
 )
 
 complexes_schema = EntityBuilder(
-    entity_type=EntityTypeCv.COMPLEX,
+    entity_type=model.MacromolecularComplex,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR ID')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('COMPLEX NAME')),
+        CV(term=Namespace.SIGNOR, value=f('SIGNOR ID')),
     ),
+    annotations=AnnotationsBuilder(CV(term=slots.name, value=f('COMPLEX NAME'))),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.PROTEIN,
+            entity_type=model.Protein,
             identifiers=IdentifiersBuilder(
                 CV(
-                    term=IdentifierNamespaceCv.UNIPROT,
+                    term=Namespace.UNIPROT,
                     value=f('LIST OF ENTITIES', delimiter=',', extract='uniprot_member'),
                 ),
                 CV(
-                    term=IdentifierNamespaceCv.SIGNOR,
+                    term=Namespace.SIGNOR,
                     value=f('LIST OF ENTITIES', delimiter=',', extract='signor_member'),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=SIGNOR_DEFAULT_TAX_ID),
+                CV(term=slots.in_taxon, value=f'NCBITaxon:{SIGNOR_DEFAULT_TAX_ID}'),
             ),
         )
     ),
 )
 
 protein_families_schema = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN_FAMILY,
+    entity_type=model.ProteinFamily,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR ID')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('PROT. FAMILY NAME')),
+        CV(term=Namespace.SIGNOR, value=f('SIGNOR ID')),
     ),
-    annotations=AnnotationsBuilder(),
+    annotations=AnnotationsBuilder(CV(term=slots.name, value=f('PROT. FAMILY NAME'))),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.PROTEIN,
+            entity_type=model.Protein,
             identifiers=IdentifiersBuilder(
                 CV(
-                    term=IdentifierNamespaceCv.UNIPROT,
+                    term=Namespace.UNIPROT,
                     value=f('LIST OF ENTITIES', delimiter=',', extract='uniprot_member'),
                 ),
                 CV(
-                    term=IdentifierNamespaceCv.SIGNOR,
+                    term=Namespace.SIGNOR,
                     value=f('LIST OF ENTITIES', delimiter=',', extract='signor_member'),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=SIGNOR_DEFAULT_TAX_ID),
+                CV(term=slots.in_taxon, value=f'NCBITaxon:{SIGNOR_DEFAULT_TAX_ID}'),
             ),
         )
     ),
 )
 
 phenotypes_schema = EntityBuilder(
-    entity_type=EntityTypeCv.PHENOTYPE,
+    entity_type=model.PhenotypicFeature,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR ID')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('PHENOTYPE NAME')),
+        CV(term=Namespace.SIGNOR, value=f('SIGNOR ID')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=CurationCv.COMMENT, value=f('PHENOTYPE DESCRIPTION')),
+        CV(term=slots.name, value=f('PHENOTYPE NAME')),
+        CV(term=slots.description, value=f('PHENOTYPE DESCRIPTION')),
     ),
 )
 
 stimuli_schema = EntityBuilder(
-    entity_type=EntityTypeCv.STIMULUS,
+    entity_type=model.ExposureEvent,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.SIGNOR, value=f('SIGNOR ID')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('STIMULUS NAME')),
+        CV(term=Namespace.SIGNOR, value=f('SIGNOR ID')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=CurationCv.COMMENT, value=f('STIMULUS DESCRIPTION')),
+        CV(term=slots.name, value=f('STIMULUS NAME')),
+        CV(term=slots.description, value=f('STIMULUS DESCRIPTION')),
     ),
 )
 
-def signor_predicate(row: dict[str, object]) -> str:
-    raw_causal = str(row.get('Causal statement') or '').strip()
-    if raw_causal and raw_causal != '-':
-        mi_match = re.search(_MI_REGEX, raw_causal)
-        if mi_match:
-            return mi_match.group(1)
-    raw_type = str(row.get('Interaction type(s)') or '').strip()
-    if raw_type and raw_type != '-':
-        mi_match = re.search(_MI_REGEX, raw_type)
-        if mi_match:
-            return mi_match.group(1)
-    return 'interacts_with'
+# Source ontology crosswalk, not a new vocabulary. The source's causal
+# accessions encode direction and aspect; all targets are native Biolink enums.
+_DIRECTION = model.DirectionQualifierEnum
+_ASPECT = model.GeneOrGeneProductOrChemicalEntityAspectEnum
+_CAUSAL_QUALIFIERS = {
+    'MI:2235': (_DIRECTION.increased, None),
+    'MI:2236': (_DIRECTION.increased, _ASPECT.activity),
+    'MI:2237': (_DIRECTION.increased, _ASPECT.abundance),
+    'MI:2238': (_DIRECTION.increased, _ASPECT.expression),
+    'MI:2239': (_DIRECTION.increased, _ASPECT.stability),
+    'MI:2240': (_DIRECTION.decreased, None),
+    'MI:2241': (_DIRECTION.decreased, _ASPECT.activity),
+    'MI:2242': (_DIRECTION.decreased, _ASPECT.abundance),
+    'MI:2243': (_DIRECTION.decreased, _ASPECT.stability),
+    'MI:2244': (_DIRECTION.decreased, _ASPECT.expression),
+}
 
 
-interactor_a_builder = EntityBuilder(
-    entity_type=interactor_entity_type('A'),
-    identifiers=IdentifiersBuilder(
-        general_identifier_cv('\ufeff#ID(s) interactor A'),
-        general_identifier_cv('Alt. ID(s) interactor A'),
-        interactor_tax_cv('A'),
-    ),
-    annotations=AnnotationsBuilder(
-        mi_term_cv('Biological role(s) interactor A'),
-        mi_term_cv('Experimental role(s) interactor A'),
-        CV(
-            term=parsed_annotation_terms('Feature(s) interactor A'),
-            value=parsed_annotation_values('Feature(s) interactor A'),
+def _causal_accession(row):
+    raw = str(row.get('Causal statement') or '')
+    match = re.search(_MI_REGEX, raw)
+    if not match or match.group(1) not in _CAUSAL_QUALIFIERS:
+        raise ValueError(f'Unsupported SIGNOR causal statement: {raw!r}')
+    return match.group(1)
+
+
+def signor_predicate(row):
+    _causal_accession(row)
+    # SIGNOR includes exogenous chemical effects: do not assert evolved regulation
+    # for every record. Direction/aspect refine this model-native affects edge.
+    return slots.affects
+
+
+def _participant_builder(suffix):
+    return EntityBuilder(
+        entity_type=interactor_entity_type(suffix),
+        identifiers=IdentifiersBuilder(
+            general_identifier_cv('\ufeff#ID(s) interactor A' if suffix == 'A' else 'ID(s) interactor B'),
+            general_identifier_cv(f'Alt. ID(s) interactor {suffix}'),
         ),
-    ),
-)
-
-interactor_b_builder = EntityBuilder(
-    entity_type=interactor_entity_type('B'),
-    identifiers=IdentifiersBuilder(
-        general_identifier_cv('ID(s) interactor B'),
-        general_identifier_cv('Alt. ID(s) interactor B'),
-        interactor_tax_cv('B'),
-    ),
-    annotations=AnnotationsBuilder(
-        mi_term_cv('Biological role(s) interactor B'),
-        mi_term_cv('Experimental role(s) interactor B'),
-        CV(
-            term=parsed_annotation_terms('Feature(s) interactor B'),
-            value=parsed_annotation_values('Feature(s) interactor B'),
+        annotations=AnnotationsBuilder(
+            interactor_tax_cv(suffix),
+            CV(term=slots.description, value=f(f'Feature(s) interactor {suffix}')),
         ),
-    ),
-)
+    )
 
+
+interactor_a_builder = _participant_builder('A')
+interactor_b_builder = _participant_builder('B')
 interactions_schema = RelationBuilder(
     subject=interactor_a_builder,
     predicate=signor_predicate,
     object=interactor_b_builder,
-    identifiers=IdentifiersBuilder(
-        interaction_identifier_cv(),
-    ),
+    identifiers=IdentifiersBuilder(interaction_identifier_cv()),
     annotations=AnnotationsBuilder(
-        mi_term_cv('Interaction type(s)'),
-        mi_term_cv('Interaction detection method(s)'),
-        mi_term_cv('Causal statement'),
-        mi_term_cv('Causal Regulatory Mechanism'),
+        # The source causal accession remains in raw evidence, not a mapping-only Biolink slot.
+        CV(term=slots.object_direction_qualifier,
+           value=lambda row: _CAUSAL_QUALIFIERS[_causal_accession(row)][0]),
+        CV(term=slots.object_aspect_qualifier,
+           value=lambda row: _CAUSAL_QUALIFIERS[_causal_accession(row)][1]),
+        CV(term=slots.has_evidence_of_type, value=f('Interaction detection method(s)', extract='mi')),
         pubmed_annotation('Publication Identifier(s)'),
-        CV(
-            term=parsed_annotation_terms(
-                'Interaction annotation(s)',
-                default_term='signor:interaction_annotation',
-            ),
-            value=parsed_annotation_values(
-                'Interaction annotation(s)',
-                default_term='signor:interaction_annotation',
-            ),
-        ),
+        CV(term=slots.description, value=f('Interaction annotation(s)')),
     ),
 )
 

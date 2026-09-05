@@ -85,3 +85,17 @@ def test_om_accession_format():
             error_lines.append(f"  {cls_name}.{member_name}: '{accession}' (expected OM:XXXX)")
 
         pytest.fail("\n".join(error_lines))
+
+
+def test_signor_identifier_is_not_entrez():
+    """SIGNOR entity ids (SIGNOR-C/PH/ST) live in their own namespace.
+
+    OM:0007 is the SIGNOR identifier accession; Entrez is MI:0477. These must
+    stay distinct so complexes, phenotypes and stimuli keep namespace ``signor``.
+    """
+    from pypath.internals.cv_terms import IdentifierNamespaceCv
+
+    assert IdentifierNamespaceCv.SIGNOR.value == 'OM:0007'
+    assert IdentifierNamespaceCv.ENTREZ.value == 'MI:0477'
+    assert IdentifierNamespaceCv.SIGNOR.value != IdentifierNamespaceCv.ENTREZ.value
+    assert IdentifierNamespaceCv.SIGNOR.name == 'SIGNOR'

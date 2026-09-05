@@ -10,20 +10,20 @@ from __future__ import annotations
 from collections.abc import Iterable
 import re
 
+from biolink_model.datamodel.model import OntologyClass, Protein, slots
+from omnipath_core.naming import Namespace
+
+from pypath.internals.silver_schema import EntityRef, OntologyRelation
 from pypath.inputs_v2.base import (
     Dataset,
     Download,
     Resource,
     ResourceConfig,
-    ontology_entity_mapper,
 )
 from pypath.inputs_v2.parsers.base import _first_handle, iter_tsv
-from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
+from pypath.inputs_v2.parsers.obo import iter_obo
 from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
     LicenseCV,
-    MoleculeAnnotationsCv,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
@@ -85,13 +85,15 @@ f = FieldConfig()
 _UNIPROT_KEYWORDS_ONTOLOGY_ID = 'uniprot_keywords'
 
 PROTEIN_REFERENCE_KEY_TYPES: tuple[str, ...] = (
-    'MI:1097:Uniprot',
-    'OM:0221:Uniprot Entry Name',
-    'OM:0200:Gene Name Primary',
-    'OM:0201:Gene Name Synonym',
-    'MI:0477:Entrez',
-    'MI:0476:Ensembl',
-    'MI:1095:HGNC',
+    Namespace.UNIPROT,
+    Namespace.UNIPROT_ENTRY,
+    Namespace.GENESYMBOL,
+    Namespace.GENESYMBOL_SYN,
+    Namespace.ENTREZ,
+    Namespace.ENST,
+    Namespace.ENSP,
+    Namespace.ENSG,
+    Namespace.HGNC,
 )
 
 _GN_NAME_RE = re.compile(r'(?:^|; )Name=([^;{]+)')
@@ -203,11 +205,15 @@ def _parse_dr_parts(line: str) -> list[str]:
     return [part for part in parts[1:] if part and part != '-']
 
 
-def _parse_ensembl_dr_line(line: str) -> list[str]:
-    identifiers: set[str] = set()
+def _parse_ensembl_dr_line(line: str) -> list[tuple[Namespace, str]]:
+    identifiers: set[tuple[Namespace, str]] = set()
 
-    for part in _parse_dr_parts(line):
-        identifiers.update(_versioned_and_unversioned(part))
+    parts = [part.strip() for part in line[5:].rstrip('.').split(';')[1:4]]
+    for namespace, part in zip((Namespace.ENST, Namespace.ENSP, Namespace.ENSG), parts):
+        if not part or part == '-':
+            continue
+        identifier = part.split(' [', 1)[0]
+        identifiers.update((namespace, value) for value in _versioned_and_unversioned(identifier))
 
     return sorted(identifiers)
 
@@ -253,7 +259,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
 
         rows = [
             {
-                'key_type': 'MI:1097:Uniprot',
+                'key_type': Namespace.UNIPROT,
                 'key_value': primary_uniprot,
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
@@ -262,7 +268,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
 
         if entry_name:
             rows.append({
-                'key_type': 'OM:0221:Uniprot Entry Name',
+                'key_type': Namespace.UNIPROT_ENTRY,
                 'key_value': str(entry_name),
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
@@ -270,7 +276,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
 
         if rec.get('gene_primary'):
             rows.append({
-                'key_type': 'OM:0200:Gene Name Primary',
+                'key_type': Namespace.GENESYMBOL,
                 'key_value': rec.get('gene_primary'),
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
@@ -278,7 +284,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
 
         rows.extend(
             {
-                'key_type': 'OM:0201:Gene Name Synonym',
+                'key_type': Namespace.GENESYMBOL_SYN,
                 'key_value': synonym,
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
@@ -287,7 +293,7 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
         )
         rows.extend(
             {
-                'key_type': 'MI:0477:Entrez',
+                'key_type': Namespace.ENTREZ,
                 'key_value': entrez,
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
@@ -296,16 +302,16 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
         )
         rows.extend(
             {
-                'key_type': 'MI:0476:Ensembl',
+                'key_type': namespace,
                 'key_value': ensembl,
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
             }
-            for ensembl in rec.get('ensembl', [])
+            for namespace, ensembl in rec.get('ensembl', [])
         )
         rows.extend(
             {
-                'key_type': 'MI:1095:HGNC',
+                'key_type': Namespace.HGNC,
                 'key_value': hgnc,
                 'taxonomy_id': taxonomy_id,
                 'primary_uniprot': primary_uniprot,
@@ -346,47 +352,82 @@ def _secondary_to_primary_raw(_opener, max_records: int | None = None, **_kwargs
                 break
 
 
+# Source narrative headings are retained verbatim; none imply graph predicates.
+_PROTEIN_DESCRIPTION_FIELDS = (
+    'Length', 'Mass', 'Function [CC]', 'Subcellular location [CC]', 'Post-translational modification',
+    'Involvement in disease', 'Pathway', 'Activity regulation', 'Mutagenesis',
+    'Transmembrane', 'Protein families',
+)
+
+
+def _protein_descriptions(row):
+    return [f'{field}: {row[field]}' for field in _PROTEIN_DESCRIPTION_FIELDS if row.get(field)]
+
+
 proteins_schema = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
+    entity_type=Protein,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Entry')),
+        CV(term=Namespace.UNIPROT, value=f('Entry')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.SEQUENCE_LENGTH, value=f('Length')),
-        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('Mass')),
-        CV(term=MoleculeAnnotationsCv.FUNCTION, value=f('Function [CC]')),
-        CV(term=MoleculeAnnotationsCv.SUBCELLULAR_LOCATION, value=f('Subcellular location [CC]')),
-        CV(term=MoleculeAnnotationsCv.POST_TRANSLATIONAL_MODIFICATION, value=f('Post-translational modification')),
-        CV(term=MoleculeAnnotationsCv.DISEASE_INVOLVEMENT, value=f('Involvement in disease')),
-        CV(term=MoleculeAnnotationsCv.PATHWAY_PARTICIPATION, value=f('Pathway')),
-        CV(term=MoleculeAnnotationsCv.ACTIVITY_REGULATION, value=f('Activity regulation')),
-        CV(term=MoleculeAnnotationsCv.MUTAGENESIS, value=f('Mutagenesis')),
-        CV(term=MoleculeAnnotationsCv.TRANSMEMBRANE_REGION, value=f('Transmembrane')),
-        CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('Protein families', delimiter=',')),
-        CV(term=MoleculeAnnotationsCv.EC_NUMBER, value=f('EC number', delimiter=';')),
-        CV(term=MoleculeAnnotationsCv.AMINO_ACID_SEQUENCE, value=f('Sequence')),
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Organism (ID)')),
-        CV(term=IdentifierNamespaceCv.PUBMED, value=f('PubMed ID', delimiter=';')),
+        CV(term=slots.has_biological_sequence, value=f('Sequence')),
+        CV(term=slots.description, value=_protein_descriptions),
+        CV(term=slots.in_taxon, value=lambda row: (
+            f"NCBITaxon:{row['Organism (ID)']}" if row.get('Organism (ID)') else None
+        )),
+        CV(term=slots.publications, value=lambda row: [
+            f'PMID:{value}' for value in _split_semicolon_field(row.get('PubMed ID'))
+        ]),
+        CV(term=slots.has_topic, value=lambda row: [
+            f'EC:{value}' for value in _split_semicolon_field(row.get('EC number'))
+        ]),
     ),
     associations=AssociationsBuilder(
         AssociationBuilder(
-            object_entity_type=EntityTypeCv.CV_TERM,
-            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            predicate=slots.associated_with,
+            object_entity_type=OntologyClass,
+            object_identifier_type=Namespace.GO,
             object_identifier=f('Gene Ontology IDs', delimiter=';'),
         ),
         AssociationBuilder(
-            object_entity_type=EntityTypeCv.CV_TERM,
-            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            predicate=slots.associated_with,
+            object_entity_type=OntologyClass,
+            object_identifier_type=Namespace.UNIPROT_KEYWORD,
             object_identifier=f('Keyword ID', delimiter=';'),
         ),
     ),
 )
 
 
-keyword_terms_schema = ontology_entity_mapper(
-    obo_record_to_term,
-    ontology_id=_UNIPROT_KEYWORDS_ONTOLOGY_ID,
+_keyword_builder = EntityBuilder(
+    entity_type=OntologyClass,
+    identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT_KEYWORD, value=f('id'))),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.name, value=f('name')),
+        CV(term=slots.description, value=f('definition')),
+        CV(term=slots.synonym, value=lambda row: row.get('synonyms', [])),
+        CV(term=slots.xref, value=lambda row: [x.split()[0] for x in row.get('xrefs', [])]),
+        CV(term=slots.has_topic, value=lambda row: [
+            f"UniProtKB-KW:{rel['target']}" for rel in row.get('relationships', [])
+            if rel['type'] == 'category'
+        ]),
+    ),
+    ontology_relations=lambda row: [
+        OntologyRelation(
+            predicate=slots.subclass_of,
+            object=EntityRef(OntologyClass, Namespace.UNIPROT_KEYWORD, parent),
+            ontology_id=_UNIPROT_KEYWORDS_ONTOLOGY_ID,
+        ) for parent in row.get('is_a', [])
+    ],
 )
+
+
+def keyword_terms_schema(row):
+    """Represent source vocabulary concepts uniformly as ontology classes."""
+    if row.get('is_obsolete') or not row.get('id'):
+        return None
+    return _keyword_builder(row)
+
 
 resource = Resource(
     config,

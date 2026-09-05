@@ -350,11 +350,7 @@ def _build_records(terms: dict[str, dict[str, Any]]) -> dict[str, list[dict[str,
                     for parent in term.get('is_a', [])
                     if parent in molecule_term_ids
                 ],
-                'relationships': [
-                    relationship
-                    for relationship in term.get('relationships', [])
-                    if relationship.get('target') in molecule_term_ids
-                ],
+                'relationships': term.get('relationships', []),
                 'smiles': properties.get('smiles', ''),
                 'inchi': properties.get('inchi', ''),
                 'inchikey': properties.get('inchikey', ''),

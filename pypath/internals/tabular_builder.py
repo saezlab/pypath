@@ -24,63 +24,34 @@ from pypath.internals.silver_schema import (
     Membership as SilverMembership,
     OntologyRelation as SilverOntologyRelation,
     Relation as SilverRelation,
+    format_term,
 )
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    CvEnum,
-)
+from omnipath_core.naming import normalize_namespace
+from omnipath_core.biolink import predicate as biolink_predicate, annotation_value, annotation_term
+from omnipath_core.biolink import entity_type as biolink_entity_type
+from biolink_model.datamodel import model
 
 logger = logging.getLogger(__name__)
 
-_NON_CANONICAL_ENTITY_TYPES = {
-    EntityTypeCv.GENE,
-    EntityTypeCv.LIPID,
-}
 
-_CANONICAL_ENTITY_TYPES = tuple(
-    entity_type
-    for entity_type in EntityTypeCv
-    if entity_type not in _NON_CANONICAL_ENTITY_TYPES
-)
-
-_ENTITY_TYPE_BY_TEXT = {
-    text: entity_type
-    for entity_type in EntityTypeCv
-    for text in (
-        entity_type.value,
-        entity_type.label_accession,
-        entity_type.label,
-        entity_type.label.lower(),
-        entity_type.label.replace(' ', '_').lower(),
-        entity_type.name.lower(),
-    )
-}
+def _clean_annotation_term(term: Any) -> str:
+    return annotation_term(term)
 
 
-def _canonical_entity_type(value: Any) -> EntityTypeCv | None:
-    if isinstance(value, EntityTypeCv):
-        entity_type = value
-    elif isinstance(value, str):
-        text = value.strip()
-        entity_type = _ENTITY_TYPE_BY_TEXT.get(text)
-    else:
-        return None
+def _canonical_entity_type(value: Any) -> str:
+    return biolink_entity_type(value)
 
-    if entity_type is EntityTypeCv.SMALL_MOLECULE:
-        entity_type = EntityTypeCv.CHEMICAL
 
-    if entity_type not in _CANONICAL_ENTITY_TYPES:
-        return None
-    return entity_type
+def _canonical_predicate(value: Any) -> str:
+    return biolink_predicate(value)
 
 
 def _validate_static_entity_type(value: Any) -> None:
-    if isinstance(value, Column) or callable(value):
+    if isinstance(value, Column) or (callable(value) and not isinstance(value, type)):
         return
     if _canonical_entity_type(value) is None:
         raise ValueError(
-            'EntityBuilder entity_type must be a canonical EntityTypeCv value; '
-            f'got {value!r}. Put more specific classes in annotations.'
+            f'EntityBuilder entity_type must not be None; got {value!r}.'
         )
 
 
@@ -335,11 +306,7 @@ class _CallableSource:
         self.func = func
 
     def extract(self, row: Any, cache: ColumnCache | None = None) -> list[Any]:  # noqa: ARG002
-        try:
-            result = self.func(row)
-        except Exception as exc:  # pragma: no cover - defensive
-            logger.debug("Callable source failed: %s", exc)
-            return []
+        result = self.func(row)
 
         if result is None:
             return []
@@ -463,7 +430,7 @@ class CV:
             return spec
 
         # Callable row -> value(s)
-        if callable(spec):
+        if callable(spec) and not isinstance(spec, type):
             return _CallableSource(spec)
 
         # Fallback: constant
@@ -473,7 +440,7 @@ class CV:
 def _normalize_source(spec: Any) -> Any:
     if isinstance(spec, (Column, _ConstantSource, _CallableSource)):
         return spec
-    if callable(spec):
+    if callable(spec) and not isinstance(spec, type):
         return _CallableSource(spec)
     return _ConstantSource(spec)
 
@@ -506,9 +473,11 @@ class _BaseCvBuilder:
                     # Identifiers ignore unit and require a non-empty value
                     if value is None or value == "":
                         continue
-                    results.append(SilverIdentifier(type=term, value=value))
+                    clean_term = normalize_namespace(term) or str(term)
+                    results.append(SilverIdentifier(type=clean_term, value=str(value)))
                 else:
-                    results.append(SilverAnnotation(term=term, value=value, units=unit))
+                    clean_term = _clean_annotation_term(term)
+                    results.append(SilverAnnotation(term=clean_term, value=annotation_value(term, value), units=str(unit) if unit is not None else None))
 
         return results
 
@@ -549,7 +518,7 @@ class _BaseCvBuilder:
                 if key in seen:
                     continue
                 seen.add(key)
-                results.append(SilverAnnotation(term=term, value=None, units=None))
+                results.append(SilverAnnotation(term=annotation_term(term), value=None, units=None))
                 continue
 
             value = self._pick_index(value_vals, index) if value_vals is not None else None
@@ -571,9 +540,11 @@ class _BaseCvBuilder:
                 if self.silver_cls is SilverIdentifier:
                     if value_item is None or value_item == "":
                         continue
-                    results.append(SilverIdentifier(type=term, value=value_item))
+                    clean_term = normalize_namespace(term) or str(term)
+                    results.append(SilverIdentifier(type=clean_term, value=str(value_item)))
                 else:
-                    results.append(SilverAnnotation(term=term, value=value_item, units=unit_item))
+                    clean_term = _clean_annotation_term(term)
+                    results.append(SilverAnnotation(term=clean_term, value=annotation_value(term, value_item), units=str(unit_item) if unit_item is not None else None))
 
         return results
 
@@ -661,11 +632,7 @@ class _BaseCvBuilder:
 
     @staticmethod
     def _safe_extract(source: Any, row: Any, cache: ColumnCache) -> list[Any]:
-        try:
-            return cache.values(source, row)
-        except Exception as exc:  # pragma: no cover - defensive
-            logger.debug("Source extraction failed: %s", exc)
-            return []
+        return cache.values(source, row)
 
     @staticmethod
     def _pick_index(values: list[Any] | None, index: int) -> Any | None:
@@ -795,7 +762,7 @@ class MembersFromList:
     def __init__(
         self,
         *,
-        entity_type: EntityTypeCv | Column | Callable[[Any], Any],
+        entity_type: type[model.NamedThing] | Column | Callable[[Any], Any],
         identifiers: IdentifiersBuilder,
         annotations: AnnotationsBuilder | None = None,
         associations: "AssociationsBuilder" | None = None,
@@ -882,10 +849,12 @@ class MembersFromList:
         row: Any,
         cache: ColumnCache,
         index: int,
-    ) -> EntityTypeCv | None:
+    ) -> str:
         if isinstance(self.entity_type, Column):
             values = cache.values(self.entity_type, row)
             value = _BaseCvBuilder._pick_index(values, index)
+        elif isinstance(self.entity_type, type):
+            value = self.entity_type
         elif callable(self.entity_type):
             try:
                 value = self.entity_type(row)
@@ -1030,10 +999,10 @@ class OntologyRelationBuilder:
             seen.add(key)
             relations.append(
                 SilverOntologyRelation(
-                    predicate=str(predicate),
+                    predicate=_canonical_predicate(predicate),
                     object=SilverEntityRef(
-                        type=object_entity_type,
-                        identifier_type=object_identifier_type,
+                        type=_canonical_entity_type(object_entity_type),
+                        identifier_type=normalize_namespace(object_identifier_type) or str(object_identifier_type),
                         identifier=str(object_identifier),
                     ),
                     ontology_id=str(ontology_id) if ontology_id else None,
@@ -1154,10 +1123,10 @@ class AssociationBuilder:
             seen.add(key)
             associations.append(
                 SilverAssociation(
-                    predicate=str(predicate) if predicate else None,
+                    predicate=_canonical_predicate(predicate) if predicate else None,
                     object=SilverEntityRef(
-                        type=object_entity_type,
-                        identifier_type=object_identifier_type,
+                        type=_canonical_entity_type(object_entity_type),
+                        identifier_type=normalize_namespace(object_identifier_type) or str(object_identifier_type),
                         identifier=str(object_identifier_item),
                     ),
                 )
@@ -1227,7 +1196,7 @@ class EntityBuilder:
     def __init__(
         self,
         *,
-        entity_type: EntityTypeCv | Column | Callable[[Any], EntityTypeCv],
+        entity_type: type[model.NamedThing] | Column | Callable[[Any], type[model.NamedThing]],
         identifiers: IdentifiersBuilder | None = None,
         annotations: AnnotationsBuilder | None = None,
         associations: AssociationsBuilder | None = None,
@@ -1260,12 +1229,10 @@ class EntityBuilder:
                 # If extraction failed, we cannot build this entity
                 logger.debug("Entity type extraction failed for row")
                 return None
+        elif isinstance(self.entity_type, type):
+            resolved_type = self.entity_type
         elif callable(self.entity_type):
-            try:
-                resolved_type = self.entity_type(row)
-            except Exception as exc:  # pragma: no cover - defensive
-                logger.debug("Entity type callable failed: %s", exc)
-                return None
+            resolved_type = self.entity_type(row)
 
         resolved_type = _canonical_entity_type(resolved_type)
         if resolved_type is None:
@@ -1273,7 +1240,7 @@ class EntityBuilder:
             return None
 
         identifiers = self.identifiers.build(row, cache) if self.identifiers else []
-        if not identifiers and not self._allows_empty_identifiers(resolved_type):
+        if not identifiers:
             return None
 
         annotations = self.annotations.build(row, cache) if self.annotations else None
@@ -1307,16 +1274,6 @@ class EntityBuilder:
             logger.debug("Ontology relations callable failed: %s", exc)
             return []
 
-    def _allows_empty_identifiers(self, entity_type: Any) -> bool:
-        return entity_type in {
-            EntityTypeCv.ASSOCIATION,
-            EntityTypeCv.INTERACTION,
-            EntityTypeCv.REACTION,
-            EntityTypeCv.CATALYSIS,
-            EntityTypeCv.CONTROL,
-            EntityTypeCv.DEGRADATION,
-            EntityTypeCv.TRANSPORT,
-        }
 
 
 class RelationBuilder:
@@ -1377,18 +1334,14 @@ class RelationBuilder:
         if object_entity is None:
             return None
 
-        # Resolve predicate
+        # Invalid or missing predicates are source modeling errors, never fallback edges.
         if isinstance(self.predicate, Column):
             pred_vals = cache.values(self.predicate, row)
-            predicate_val = str(pred_vals[0]) if pred_vals else 'interacts_with'
+            predicate_val = _canonical_predicate(pred_vals[0] if pred_vals else None)
         elif callable(self.predicate):
-            try:
-                predicate_val = str(self.predicate(row) or 'interacts_with')
-            except Exception as exc:  # pragma: no cover - defensive
-                logger.debug("Relation predicate callable failed: %s", exc)
-                predicate_val = 'interacts_with'
+            predicate_val = _canonical_predicate(self.predicate(row))
         else:
-            predicate_val = str(self.predicate)
+            predicate_val = _canonical_predicate(self.predicate)
 
         # Resolve optional category
         category_val = None

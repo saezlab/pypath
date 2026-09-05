@@ -2,6 +2,8 @@
 
 This module provides a declarative framework for downloading, parsing, and normalizing biological data from external resources into a unified `Entity` schema.
 
+Read [Biolink modeling conventions](BIOLINK_MODELING.md) before changing an input module.
+
 ## Overview
 
 The `inputs_v2` system replaces the legacy input modules with a composable, declarative approach. Each data source is defined as a **Resource** containing one or more **Datasets**, which combine:
@@ -103,7 +105,8 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.internals.cv_terms import EntityTypeCv, IdentifierNamespaceCv
+from biolink_model.datamodel.model import ChemicalEntity, slots
+from omnipath_core.naming import Namespace
 
 # Create a field configuration (reusable across multiple CVs)
 f = FieldConfig(
@@ -117,14 +120,14 @@ f = FieldConfig(
 
 # Define the schema
 schema = EntityBuilder(
-    entity_type=EntityTypeCv.CHEMICAL,
+    entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
-        CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id', extract='chebi')),
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter=';')),
+        CV(term=Namespace.CHEBI, value=f('chebi_id', extract='chebi')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('description')),
+        CV(term=slots.name, value=f('name')),
+        CV(term=slots.synonym, value=f('synonyms', delimiter=';')),
+        CV(term=slots.description, value=f('description')),
     ),
 )
 ```
@@ -152,8 +155,8 @@ For example, some small-molecule resources export an `id_translation` dataset wi
 ```python
 {
     'source': 'chebi',
-    'key_type': 'MI:0474:Chebi',
-    'key_value': 'CHEBI:15377',
+    'key_type': Namespace.CHEBI,
+    'key_value': '15377',
     'standard_inchi': 'InChI=...'
 }
 ```
@@ -210,9 +213,10 @@ declarative schema pattern.
 
 from __future__ import annotations
 
+from biolink_model.datamodel.model import Protein, MacromolecularComplex, slots
+from omnipath_core.naming import Namespace
+
 from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
     LicenseCV,
     UpdateCategoryCV,
     ResourceCv,
@@ -252,13 +256,12 @@ f = FieldConfig(
 )
 
 schema = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,  # Or other entity type
+    entity_type=Protein,  # Or other entity type
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('uniprot_id')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
+        CV(term=Namespace.UNIPROT, value=f('uniprot_id')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('organism_id')),
+        CV(term=slots.in_taxon, value=lambda row: f"NCBITaxon:{row['organism_id']}"),
     ),
 )
 ```
@@ -336,9 +339,9 @@ f('column_name', transform='func_name')    # Apply named transform
 `CV` specifies a controlled vocabulary field:
 
 ```python
-CV(term=IdentifierNamespaceCv.UNIPROT, value=f('accession'))
+CV(term=Namespace.UNIPROT, value=f('accession'))
 CV(term=f('type_column', map='type_mapping'))  # Dynamic term
-CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_ids', delimiter=';'))
+CV(term=slots.publications, value=lambda row: [f'PMID:{v}' for v in row['pubmed_ids'].split(';')])
 ```
 
 ## Advanced Patterns
@@ -369,13 +372,13 @@ from pypath.internals.tabular_builder import (
 )
 
 schema = EntityBuilder(
-    entity_type=EntityTypeCv.COMPLEX,
+    entity_type=MacromolecularComplex,
     identifiers=IdentifiersBuilder(...),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.PROTEIN,
+            entity_type=Protein,
             identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.UNIPROT,
+                CV(term=Namespace.UNIPROT,
                    value=f('members', delimiter=',')),
             ),
         )
@@ -388,16 +391,16 @@ schema = EntityBuilder(
 ```python
 schema = RelationBuilder(
     subject=EntityBuilder(
-        entity_type=EntityTypeCv.PROTEIN,
+        entity_type=Protein,
         identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.UNIPROT, value=f('protein_a')),
+            CV(term=Namespace.UNIPROT, value=f('protein_a')),
         ),
     ),
-    predicate='interacts_with',  # or callable / Column mapping
+    predicate=slots.interacts_with,  # or callable / Column mapping
     object=EntityBuilder(
-        entity_type=EntityTypeCv.PROTEIN,
+        entity_type=Protein,
         identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.UNIPROT, value=f('protein_b')),
+            CV(term=Namespace.UNIPROT, value=f('protein_b')),
         ),
     ),
     identifiers=IdentifiersBuilder(...),
@@ -407,7 +410,7 @@ schema = RelationBuilder(
 
 ## Best Practices
 
-1. **Use CV terms**: Always use `IdentifierNamespaceCv`, `EntityTypeCv`, and other CV enums from `cv_terms.py` rather than raw strings.
+1. **Use Biolink primitives**: Follow [the modeling conventions](BIOLINK_MODELING.md). Use native classes and slots, Biolink enum values, and `Namespace` for identifiers.
 
 2. **Document parsers**: Include docstrings explaining the expected input format and output fields.
 
