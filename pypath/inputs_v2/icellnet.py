@@ -3,22 +3,25 @@ Parse ICELLNET v2 data and emit Entity records.
 """
 
 from __future__ import annotations
-
 import re
 from typing import Any
-
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    InterCellAnnotations,
-    LicenseCV,
-    ResourceCv,
-    UpdateCategoryCV,
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from biolink_model.datamodel.model import (
+    Protein,
+    MacromolecularComplex,
+    slots,
 )
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership, Relation
+from omnipath_core.naming import Namespace
+from omnipath_core.silver_schema import format_term
+from pypath.internals.silver_schema import (
+    Annotation,
+    Entity,
+    Identifier,
+    Membership,
+    Relation,
+)
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_csv
-
 
 config = ResourceConfig(
     id=ResourceCv.ICELLNET,
@@ -28,24 +31,16 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='38490248',
     primary_category='interactions',
-    description=(
-        'ICELLNET is a transcriptomic framework with an expert-curated '
-        'human ligand-receptor interaction database accounting for '
-        'multi-subunit ligands and receptors.'
-    ),
+    description='ICELLNET is a transcriptomic framework with an expert-curated human ligand-receptor interaction database accounting for multi-subunit ligands and receptors.',
 )
-
-
 download = Download(
     url='https://raw.githubusercontent.com/soumelis-lab/ICELLNET/master/data/ICELLNETdb.csv',
     filename='icellnetdb.csv',
     subfolder='icellnet',
     encoding='utf-8-sig',
 )
-
-
-_pmid_re = re.compile(r'\d+')
-_spreadsheet_currency_gene_re = re.compile(r'^(\d+),00[\s\xa0]+(DKK)$')
+_pmid_re = re.compile('\\d+')
+_spreadsheet_currency_gene_re = re.compile('^(\\d+),00[\\s\\xa0]+(DKK)$')
 
 
 def _clean(value: Any) -> str:
@@ -77,50 +72,41 @@ def _annotations(*items: Annotation | None) -> list[Annotation] | None:
     for item in items:
         if item is None:
             continue
-        key = (item.term, item.value, item.units)
+        key = (format_term(item.term), format_term(item.value), item.units)
         if key not in seen:
             out.append(item)
             seen.add(key)
     return out or None
 
 
-def _protein(
-    gene: str,
-    annotations: list[Annotation] | None = None,
-) -> Entity:
+def _protein(gene: str, annotations: list[Annotation] | None = None) -> Entity:
     return Entity(
-        type=EntityTypeCv.PROTEIN,
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=gene),
-        ],
+        type=Protein,
+        identifiers=[Identifier(type=Namespace.GENESYMBOL, value=gene)],
         annotations=[
-            Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
+            Annotation(term=slots.in_taxon, value=f'NCBITaxon:{"9606"}'),
             *(annotations or []),
         ],
     )
 
 
 def _participant(
-    name: str,
-    genes: list[str],
-    annotations: list[Annotation] | None = None,
+    name: str, genes: list[str], annotations: list[Annotation] | None = None
 ) -> Entity:
     if len(genes) == 1:
         return Entity(
-            type=EntityTypeCv.PROTEIN,
-            identifiers=[
-                Identifier(type=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=genes[0]),
-            ],
+            type=Protein,
+            identifiers=[Identifier(type=Namespace.GENESYMBOL, value=genes[0])],
             annotations=[
-                Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
+                Annotation(term=slots.in_taxon, value=f'NCBITaxon:{"9606"}'),
                 *(annotations or []),
             ],
         )
     return Entity(
-        type=EntityTypeCv.COMPLEX,
-        identifiers=[Identifier(type=IdentifierNamespaceCv.NAME, value=name)],
+        type=MacromolecularComplex,
+        identifiers=[Identifier(type=Namespace.NAME, value=name)],
         annotations=[
-            Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
+            Annotation(term=slots.in_taxon, value=f'NCBITaxon:{"9606"}'),
             *(annotations or []),
         ],
         membership=[Membership(member=_protein(gene)) for gene in genes],
@@ -137,32 +123,19 @@ def map_icellnet_interaction(row: dict[str, Any]) -> Relation | None:
     if not ligands or not receptors:
         return None
     name = _interaction_name(ligands, receptors)
-
     annotations = _annotations(
-        Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
+        Annotation(term=slots.in_taxon, value=f'NCBITaxon:{"9606"}'),
         *[
-            Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid)
+            Annotation(term=slots.publications, value=f'PMID:{pmid}')
             for pmid in _pubmeds(row.get('Reference'))
         ],
     )
-
     return Relation(
-        subject=_participant(
-            '+'.join(ligands),
-            ligands,
-            [Annotation(term=InterCellAnnotations.LIGAND)],
-        ),
-        predicate='interacts_with',
-        object=_participant(
-            '+'.join(receptors),
-            receptors,
-            [Annotation(term=InterCellAnnotations.RECEPTOR)],
-        ),
-        identifiers=[
-            Identifier(type=IdentifierNamespaceCv.ICELLNET, value=name),
-            Identifier(type=IdentifierNamespaceCv.NAME, value=name),
-        ],
-        annotations=annotations,
+        subject=_participant('+'.join(ligands), ligands, []),
+        predicate=slots.interacts_with,
+        object=_participant('+'.join(receptors), receptors, []),
+        identifiers=[Identifier(type=Namespace.NAME, value=name)],
+        annotations=[*(annotations or [])],
     )
 
 
@@ -183,11 +156,7 @@ def iter_icellnet_complex_rows(opener, **kwargs: Any):
             if key in seen:
                 continue
             seen.add(key)
-            yield {
-                'name': '+'.join(genes),
-                'genes': genes,
-                'taxon_id': '9606',
-            }
+            yield {'name': '+'.join(genes), 'genes': genes, 'taxon_id': '9606'}
 
 
 def map_icellnet_complex(row: dict[str, Any]) -> Entity:

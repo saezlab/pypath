@@ -65,6 +65,7 @@ dependencies = [
     "numpy",
     "openpyxl",
     "pandas",
+    "polars",
     "pkg-infra>=0.1.1",
     "pypath-common>=0.2.6",
     "psutil",

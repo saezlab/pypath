@@ -1,11 +1,14 @@
-"""
-Parse BRENDA data and emit Entity records.
+"""BRENDA protein enzyme-class annotations and EC classification hierarchy.
 
-This module converts enzyme and ligand information from BRENDA into Entity
-records using the declarative schema pattern.
+Identifiers use UniProt and EC; classification is an association with an explicit
+source concept, not an invented catalytic reaction.
 """
 
 from __future__ import annotations
+
+from biolink_model.datamodel import model
+from biolink_model.datamodel.model import slots
+from omnipath_core.naming import Namespace
 
 from pypath.inputs_v2.base import (
     ResourceConfig,
@@ -17,6 +20,7 @@ from pypath.inputs_v2.base import (
 from pypath.inputs_v2.parsers import brenda as _parsers
 from pypath.internals.tabular_builder import (
     AssociationBuilder,
+    AnnotationsBuilder,
     AssociationsBuilder,
     CV,
     EntityBuilder,
@@ -24,8 +28,6 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
 )
 from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
     LicenseCV,
     OntologyCv,
     UpdateCategoryCV,
@@ -63,7 +65,7 @@ download = Download(
     download_kwargs={
         'post': True,
         'query': {'dlfile': 'dl-textfile', 'accept-license': '1'},
-    }
+    },
 )
 
 # =================================== SCHEMA ===================================
@@ -77,19 +79,31 @@ f = FieldConfig(
 enzyme_ontology_schema = ontology_entity_mapper(
     _parsers.term_record_to_term,
     ontology_id=_ENZYME_CLASSIFICATION_ONTOLOGY_ID,
+    identifier_type=Namespace.EC,
 )
 
 schema = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
+    entity_type=model.Protein,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt')),
+        CV(term=Namespace.UNIPROT, value=f('UniProt'))
+    ),
+    annotations=AnnotationsBuilder(
+        CV(
+            term=slots.publications,
+            value=f(
+                'Refs',
+                transform=lambda v: 'PMID:' + str(v).removeprefix('PMID:')
+                if str(v).removeprefix('PMID:').isdigit()
+                else None,
+            ),
+        )
     ),
     associations=AssociationsBuilder(
         AssociationBuilder(
-            object_entity_type=EntityTypeCv.CV_TERM,
-            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_entity_type=model.OntologyClass,
+            object_identifier_type=Namespace.EC,
             object_identifier=f(_parsers.ec_term_id),
-        ),
+        )
     ),
 )
 
@@ -115,7 +129,7 @@ resource = Resource(
 )
 
 # ================================= REFERENCE ==================================
-#{ Example entry
+# { Example entry
 # X   'EC': '1.1.1.1', # Enzyme classification
 # X   'UniProt': set(), # UniProt IDs as set
 #    '#': '6', # Internal BRENDA identifier, not used
@@ -160,4 +174,4 @@ resource = Resource(
 #        '1625 {ethanol}',
 #        '255 {ethanol}'
 #    }
-#}
+# }

@@ -11,7 +11,6 @@ from typing import Any
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import DC, DCTERMS, FOAF, OWL, RDF, RDFS
 
-from pypath.internals.cv_terms import EntityTypeCv
 from pypath.share.downloads import download_and_open
 
 
@@ -219,8 +218,8 @@ def _extract_interaction_records(
 
                 if (
                     source['uri'] == target['uri']
-                    or source['entity_type'] == EntityTypeCv.PATHWAY.value
-                    or target['entity_type'] == EntityTypeCv.PATHWAY.value
+                    or source['entity_type'] == 'pathway'
+                    or target['entity_type'] == 'pathway'
                 ):
                     continue
 
@@ -278,7 +277,7 @@ def _extract_entity_record(graph: Graph, entity_uri: str) -> dict[str, str]:
 
     return {
         'uri': entity_uri,
-        'entity_type': _entity_type(rdf_types).value,
+        'entity_type': _entity_type(rdf_types),
         'label': _first_literal(graph, subject, RDFS.label),
         'uniprot': _join_unique(xrefs['uniprot']),
         'entrez': _join_unique(xrefs['entrez']),
@@ -363,27 +362,27 @@ def _interaction_types(graph: Graph, interaction_uri: URIRef) -> list[str]:
     ]
 
 
-def _entity_type(rdf_types: set[str]) -> EntityTypeCv:
+def _entity_type(rdf_types: set[str]) -> str:
 
     if 'Complex' in rdf_types:
-        return EntityTypeCv.COMPLEX
+        return 'complex'
 
     if 'Metabolite' in rdf_types:
-        return EntityTypeCv.CHEMICAL
+        return 'chemical'
 
     if rdf_types & {'Protein', 'GeneProduct'}:
-        return EntityTypeCv.PROTEIN
+        return 'protein'
 
     if 'Rna' in rdf_types:
-        return EntityTypeCv.RNA
+        return 'rna'
 
     if 'Dna' in rdf_types:
-        return EntityTypeCv.DNA
+        return 'dna'
 
     if 'Pathway' in rdf_types:
-        return EntityTypeCv.PATHWAY
+        return 'pathway'
 
-    return EntityTypeCv.PHYSICAL_ENTITY
+    return 'physical_entity'
 
 
 def _ontology_terms(graph: Graph, pathway_uri: URIRef) -> list[str]:

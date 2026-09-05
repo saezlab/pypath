@@ -320,6 +320,9 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
             'name': r.get('name'),
             'subsystem': subsystem,
             'direction': direction,
+            'lower_bound': r.get('lower_bound'),
+            'upper_bound': r.get('upper_bound'),
+            'flux_units': r.get('flux_units'),
             'eccodes': eccodes,
             'enzyme_ensembl': ';'.join(enzyme_ensembl),
             'enzyme_name': ';'.join(

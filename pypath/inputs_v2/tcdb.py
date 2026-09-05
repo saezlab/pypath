@@ -14,27 +14,22 @@ Two datasets are provided:
 
 from __future__ import annotations
 
+from biolink_model.datamodel import model
+from biolink_model.datamodel.model import slots
+from omnipath_core.naming import Namespace
+
 import functools
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers import tcdb as _parsers
-from pypath.internals.cv_terms import (
-    BiologicalRoleCv,
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    MoleculeAnnotationsCv,
-    ResourceCv,
-    UpdateCategoryCV,
-)
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
+    RelationBuilder,
 )
 
 
@@ -61,60 +56,55 @@ f = FieldConfig(
 )
 
 _transporters_schema = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
+    entity_type=model.Protein,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('uniprot')),
-        CV(term=IdentifierNamespaceCv.TCDB, value=f('tcid')),
+        CV(term=Namespace.UNIPROT, value=f('uniprot'))
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('family_name')),
+        CV(
+            term=slots.has_topic,
+            value=f('tcid', transform=lambda v: 'TC:' + str(v)),
+        )
     ),
 )
 
-_transport_schema = EntityBuilder(
-    entity_type=EntityTypeCv.TRANSPORT,
-    identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.TCDB, value=f('tcid')),
+# TC numbers classify proteins; they do not identify a transport event.
+_transport_schema = RelationBuilder(
+    subject=EntityBuilder(
+        entity_type=model.Protein,
+        identifiers=IdentifiersBuilder(
+            CV(term=Namespace.UNIPROT, value=f('transporter_uniprot'))
+        ),
     ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('transporter_uniprot')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.CONTROLLER),
-            ),
+    predicate=slots.interacts_with,
+    object=EntityBuilder(
+        entity_type=model.ChemicalEntity,
+        identifiers=IdentifiersBuilder(
+            CV(term=Namespace.CHEBI, value=f('substrate_id', extract='chebi')),
+            CV(term=Namespace.NAME, value=f('substrate_name')),
         ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.CHEBI,
-                        value=f('substrate_id', extract='chebi'),
-                    ),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('substrate_name')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.SUBSTRATE),
-            ),
-        ),
+        annotations=AnnotationsBuilder(),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(
+            term=slots.has_topic,
+            value=f('tcid', transform=lambda v: 'TC:' + str(v)),
+        )
     ),
 )
+
 
 resource = Resource(
     config,
     transporters=Dataset(
-        download=(_acc2tc := Download(
-            url='http://www.tcdb.org/cgi-bin/projectv/public/acc2tcid.py',
-            filename='tcdb_acc2tc.tsv',
-            subfolder='tcdb',
-            ext='tsv',
-        )),
+        download=(
+            _acc2tc := Download(
+                url='http://www.tcdb.org/cgi-bin/projectv/public/acc2tcid.py',
+                filename='tcdb_acc2tc.tsv',
+                subfolder='tcdb',
+                ext='tsv',
+            )
+        ),
         mapper=_transporters_schema,
         raw_parser=functools.partial(
             _parsers.transporters,

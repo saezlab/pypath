@@ -7,10 +7,11 @@ declarative schema pattern defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
+from biolink_model.datamodel import model
+from biolink_model.datamodel.model import slots
+from omnipath_core.naming import Namespace
+
 from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    MoleculeAnnotationsCv,
     LicenseCV,
     OntologyCv,
     UpdateCategoryCV,
@@ -66,36 +67,57 @@ f = FieldConfig(
 )
 
 complexes_schema = EntityBuilder(
-    entity_type=EntityTypeCv.COMPLEX,
+    entity_type=model.MacromolecularComplex,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.CORUM, value=f('ComplexID')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('ComplexName')),
+        CV(term=Namespace.CORUM, value=f('ComplexID')),
+        CV(term=Namespace.NAME, value=f('ComplexName')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.PUBMED, value=f('PubMed ID', delimiter=';')),
-        CV(term=MoleculeAnnotationsCv.FUNCAT, value=f('FunCat description', delimiter=';')),
+        CV(
+            term=slots.publications,
+            value=f(
+                'PubMed ID',
+                delimiter=';',
+                transform=lambda v: 'PMID:' + str(v).removeprefix('PMID:')
+                if str(v).removeprefix('PMID:').isdigit()
+                and int(str(v).removeprefix('PMID:')) > 0
+                else None,
+            ),
+        )
     ),
     associations=AssociationsBuilder(
         AssociationBuilder(
-            object_entity_type=EntityTypeCv.CV_TERM,
-            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            object_entity_type=model.OntologyClass,
+            object_identifier_type=Namespace.GO,
             object_identifier=f('GO ID', delimiter=';'),
-        ),
+        )
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.PROTEIN,
+            entity_type=model.Protein,
             identifiers=IdentifiersBuilder(
                 CV(
-                    term=IdentifierNamespaceCv.UNIPROT,
-                    value=f('subunits(UniProt IDs)', delimiter=';', extract='uniprot'),
-                ),
+                    term=Namespace.UNIPROT,
+                    value=f(
+                        'subunits(UniProt IDs)',
+                        delimiter=';',
+                        extract='uniprot',
+                    ),
+                )
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(
-                    term=IdentifierNamespaceCv.NCBI_TAX_ID,
-                    value=f('Organism', map='organism_taxid'),
-                ),
+                    term=slots.in_taxon,
+                    value=f(
+                        'Organism',
+                        map='organism_taxid',
+                        transform=lambda v: 'NCBITaxon:'
+                        + str(v).removeprefix('NCBITaxon:')
+                        if str(v).removeprefix('NCBITaxon:').isdigit()
+                        and int(str(v).removeprefix('NCBITaxon:')) > 0
+                        else None,
+                    ),
+                )
             ),
         )
     ),

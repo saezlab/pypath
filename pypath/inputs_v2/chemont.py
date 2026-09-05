@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from omnipath_core.naming import Namespace
+
 from pypath.internals.cv_terms import (
     LicenseCV,
     OntologyCv,
@@ -35,7 +37,7 @@ config = ResourceConfig(
 )
 
 
-terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='chemont')
+terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='chemont', identifier_type=Namespace.CHEMONT)
 
 
 resource = Resource(

@@ -1,6 +1,12 @@
-"""Export the OmniPath ontology as an OBO artifact."""
+"""Expose the historical OmniPath vocabulary as ontology concepts.
+
+These archived accessions document legacy data; active biological inputs use
+native Biolink terms. Exporting them does not authorize new OmniPath terms.
+"""
 
 from __future__ import annotations
+
+from omnipath_core.naming import Namespace
 
 import inspect
 from collections.abc import Generator
@@ -49,7 +55,7 @@ def _extract_om_terms() -> list[dict]:
                         'accession': parent_accession,
                         'name': _format_name(parent_name) if parent_name else parent_accession,
                         'definition': parent_def,
-                        'is_a': 'MI:0000',
+                        'is_a': None,
                     }
             elif isinstance(parent_term, str):
                 parent_accession = parent_term
@@ -62,7 +68,7 @@ def _extract_om_terms() -> list[dict]:
                 'accession': accession,
                 'name': _format_name(member.name),
                 'definition': getattr(member, 'definition', None) or '',
-                'is_a': parent_accession if parent_accession else 'MI:0000',
+                'is_a': parent_accession,
             }
 
     for parent_acc, parent_data in parent_terms.items():
@@ -86,7 +92,7 @@ def _map_om_term(row: dict[str, Any]) -> OntologyTerm:
     )
 
 
-terms_schema = ontology_entity_mapper(_map_om_term, ontology_id='omnipath')
+terms_schema = ontology_entity_mapper(_map_om_term, ontology_id='omnipath', identifier_type=Namespace.OM)
 
 
 resource = Resource(

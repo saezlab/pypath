@@ -36,9 +36,9 @@ def parse_compound_name(name: str) -> dict[str, str]:
         result['ptfi_id'] = ptfi_match.group()
 
     # Extract chemical formula
-    formula_match = re.search(r'^([A-Z][a-z]?\d*)+', name)
+    formula_match = re.match(r'^((?:[A-Z][a-z]?\d*)+)-\d+\s+\(PTF\d+\)$', name)
     if formula_match:
-        result['formula'] = formula_match.group()
+        result['formula'] = formula_match.group(1)
 
     return result
 
@@ -67,7 +67,7 @@ def flatten_compounds(compounds: list, parent_category: str = None) -> Generator
 
             compound_data = {
                 'name': name,
-                'ptfi_id': parsed.get('ptfi_id', ''),
+                'ptfi_id': parsed.get('ptfi_id') or analyte.get('id') or compound.get('id', ''),
                 'formula': parsed.get('formula', ''),
                 'category': parent_category or compound.get('parent', ''),
                 'value': str(compound.get('value', '')),

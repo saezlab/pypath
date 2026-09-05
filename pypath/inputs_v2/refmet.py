@@ -5,34 +5,23 @@ This module converts metabolites reference nomenclature into Entity
 records using the declarative schema pattern.
 """
 
+from biolink_model.datamodel.model import ChemicalEntity, slots
+from omnipath_core.naming import Namespace
+
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_csv
-from pypath.inputs_v2.base import (
-    ResourceConfig,
-    Download,
-    Resource,
-    Dataset,
-)
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    ResourceCv,
-    MoleculeAnnotationsCv,
-    MoleculeSubtypeCv,
+
+BASE_URL = (
+    'https://www.metabolomicsworkbench.org/databases/refmet/refmet_download.php'
 )
-
-# =================================== SET-UP ===================================
-
-BASE_URL = 'https://www.metabolomicsworkbench.org/databases/refmet/refmet_download.php'
-
 config = ResourceConfig(
     id=ResourceCv.REFMET,
     name='RefMet',
@@ -41,122 +30,44 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.STATIC,
     pubmed='33199890',
     primary_category='metabolism',
-    description=(
-        'The main objective of RefMet is to provide a standardized reference '
-        'nomenclature for both discrete metabolite structures and metabolite '
-        'species identified by spectroscopic techniques in metabolomics '
-        'experiments'
-    ),
+    description='The main objective of RefMet is to provide a standardized reference nomenclature for both discrete metabolite structures and metabolite species identified by spectroscopic techniques in metabolomics experiments',
 )
-
-# ================================== DOWNLOAD ==================================
-
 download = Download(
-        url=BASE_URL,
-        filename='refmet.csv',
-        subfolder='refmet',
-        large=True,
-        ext='.csv',
-        default_mode='r',
+    url=BASE_URL,
+    filename='refmet.csv',
+    subfolder='refmet',
+    large=True,
+    ext='.csv',
+    default_mode='r',
 )
-
-# =================================== SCHEMA ===================================
-
-def is_lipid(x):
-
-    return 'lipid' if 'lipid' in x.lower() else 'small_molecule'
-
-CLASS_ENTITY = {
-    'lipid': EntityTypeCv.CHEMICAL,
-    'small_molecule': EntityTypeCv.CHEMICAL,
-}
-MOLECULE_SUBTYPE = {
-    'lipid': MoleculeSubtypeCv.LIPID,
-    'small_molecule': MoleculeSubtypeCv.METABOLITE,
-}
-SUPERCLASS = {
-    'lipid': MoleculeAnnotationsCv.LIPID_CATEGORY,
-    'small_molecule': MoleculeAnnotationsCv.COMPOUND_SUPERCLASS,
-}
-CLASS={
-    'lipid': MoleculeAnnotationsCv.LIPID_MAIN_CLASS,
-    'small_molecule': MoleculeAnnotationsCv.COMPOUND_CLASS,
-}
-SUBCLASS = {
-    'lipid': MoleculeAnnotationsCv.LIPID_SUB_CLASS,
-    'small_molecule': MoleculeAnnotationsCv.COMPOUND_SUBCLASS,
-}
-
-f = FieldConfig(
-    extract={},
-    map={
-        'class_to_entity': CLASS_ENTITY,
-        'class_to_subtype': MOLECULE_SUBTYPE,
-        'super_class': SUPERCLASS,
-        'class': CLASS,
-        'sub_class': SUBCLASS,
-    },
-    transform={
-        'is_lipid': lambda x: is_lipid(x),
-    },
-)
-
+f = FieldConfig(extract={'chebi': '^(?:CHEBI:)?(\\d+)$'})
 schema = EntityBuilder(
-    entity_type=f('super_class', map='class_to_entity', transform='is_lipid'),
+    entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.REFMET, value=f('refmet_id')),
-        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('formula')),
-        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_id')),
-        CV(term=IdentifierNamespaceCv.CHEBI, value=f('chebi_id')),
-        CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
-        CV(term=IdentifierNamespaceCv.LIPIDMAPS, value=f('lipidmaps_id')),
-        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_id')),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('inchi_key')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('refmet_name')),
+        CV(term=Namespace.REFMET, value=f('refmet_id')),
+        CV(term=Namespace.PUBCHEM, value=f('pubchem_cid')),
+        CV(term=Namespace.CHEBI, value=f('chebi_id', extract='chebi')),
+        CV(term=Namespace.HMDB, value=f('hmdb_id')),
+        CV(term=Namespace.LIPIDMAPS, value=f('lipidmaps_id')),
+        CV(term=Namespace.KEGG, value=f('kegg_id')),
+        CV(term=Namespace.INCHIKEY, value=f('inchi_key')),
+        CV(term=Namespace.NAME, value=f('refmet_name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(
-            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
-            value=f('super_class', transform='is_lipid', map='class_to_subtype'),
-        ),
-        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('exactmass')),
-        CV(
-            term=f('super_class', transform='is_lipid', map='super_class'),
-            value=f('super_class')
-        ),
-        CV(
-            term=f('super_class', transform='is_lipid', map='class'),
-            value=f('main_class')
-        ),
-        CV(
-            term=f('super_class', transform='is_lipid', map='sub_class'),
-            value=f('sub_class')
-        ),
+        CV(term=slots.has_chemical_formula, value=f('formula')),
+        CV(term='chemrof:monoisotopic_mass', value=f('exactmass')),
     ),
 )
 
-# ================================= RESOURCE ===================================
+
+def _raw(opener, **kwargs):
+    for row in iter_csv(opener, **kwargs):
+        yield {
+            key.strip(): value for key, value in row.items() if key is not None
+        }
+
 
 resource = Resource(
     config=config,
-    metabolites=Dataset(
-        download=download,
-        mapper=schema,
-        raw_parser=iter_csv,
-    )
+    metabolites=Dataset(download=download, mapper=schema, raw_parser=_raw),
 )
-
-# ================================= REFERENCE ==================================
-# refmet_id     RM0202329
-# refmet_name   7,11-Dimethyl-3-methylene-1,6E,10-dodecatriene
-# super_class   Fatty Acyls
-# main_class    Hydrocarbons
-# sub_class     Hydrocarbons
-# formula       C15H24
-# exactmass     204.1878
-# pubchem_cid   5281517
-# chebi_id      10418
-# hmdb_id       HMDB0062763
-# lipidmaps_id  LMFA11000040
-# kegg_id       C09666
-# inchi_key     JSNRRGGBADWTMC-NTCAYCPXSA-N

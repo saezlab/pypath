@@ -15,12 +15,13 @@ from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
     LicenseCV,
-    OntologyAnnotationCv,
     OntologyCv,
     ResourceAnnotationCv,
     ResourceCv,
     UpdateCategoryCV,
 )
+from biolink_model.datamodel.model import OntologyClass, slots
+from omnipath_core.naming import Namespace
 from pypath.internals.ontology_schema import OntologyTerm
 from pypath.internals.silver_schema import (
     Annotation,
@@ -123,20 +124,34 @@ class ResourceConfig:
 
     def metadata(self) -> Entity:
         annotations = [
-            Annotation(term=ResourceAnnotationCv.LICENSE, value=str(self.license)),
-            Annotation(term=ResourceAnnotationCv.UPDATE_CATEGORY, value=str(self.update_category)),
+            Annotation(
+                term=ResourceAnnotationCv.LICENSE, value=str(self.license)
+            ),
+            Annotation(
+                term=ResourceAnnotationCv.UPDATE_CATEGORY,
+                value=str(self.update_category),
+            ),
         ]
         if self.pubmed:
-            annotations.append(Annotation(term=IdentifierNamespaceCv.PUBMED, value=self.pubmed))
-        annotations.extend([
-            Annotation(term=ResourceAnnotationCv.URL, value=self.url),
-            Annotation(term=ResourceAnnotationCv.DESCRIPTION, value=self.description),
-        ])
+            annotations.append(
+                Annotation(term=IdentifierNamespaceCv.PUBMED, value=self.pubmed)
+            )
+        annotations.extend(
+            [
+                Annotation(term=ResourceAnnotationCv.URL, value=self.url),
+                Annotation(
+                    term=ResourceAnnotationCv.DESCRIPTION,
+                    value=self.description,
+                ),
+            ]
+        )
 
         return Entity(
             type=EntityTypeCv.CV_TERM,
             identifiers=[
-                Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=self.id),
+                Identifier(
+                    type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=self.id
+                ),
                 Identifier(type=IdentifierNamespaceCv.NAME, value=self.name),
             ],
             annotations=annotations,
@@ -158,7 +173,9 @@ class Download:
     def open(self, *, force_refresh: bool = False, **kwargs: Any):
         download_kwargs = dict(self.download_kwargs or {})
         url = _resolve(self.url, force_refresh=force_refresh, **kwargs)
-        filename = _resolve(self.filename, force_refresh=force_refresh, **kwargs)
+        filename = _resolve(
+            self.filename, force_refresh=force_refresh, **kwargs
+        )
         return download_and_open(
             url=url,
             filename=filename,
@@ -210,9 +227,13 @@ class Dataset:
             if self.download
             else None
         )
-        yield from self._raw_parser(opener, force_refresh=force_refresh, **kwargs)
+        yield from self._raw_parser(
+            opener, force_refresh=force_refresh, **kwargs
+        )
 
-    def __call__(self, force_refresh: bool = False, **kwargs: Any) -> Generator[Entity, None, None]:
+    def __call__(
+        self, force_refresh: bool = False, **kwargs: Any
+    ) -> Generator[Entity, None, None]:
         for record in self.raw(force_refresh=force_refresh, **kwargs):
             yield self.mapper(record)
 
@@ -221,78 +242,72 @@ def ontology_term_to_entity(
     term: OntologyTerm,
     *,
     ontology_id: str,
-    entity_type: EntityTypeCv | str = EntityTypeCv.CV_TERM,
-    identifier_type: IdentifierNamespaceCv | str = (
-        IdentifierNamespaceCv.CV_TERM_ACCESSION
-    ),
-) -> Entity:
-    """Convert a structured ontology term into a first-class CV-term entity."""
-    identifiers = [Identifier(type=identifier_type, value=term.id)]
+    identifier_type: Namespace,
+    entity_type: Any = OntologyClass,
+    relationship_predicates: dict[str, Any] | None = None,
+) -> Entity | None:
+    """Serialize ontology structure using the resource's explicit semantic choices.
 
-    for alt_id in term.alt_ids or []:
-        if alt_id and alt_id != term.id:
-            identifiers.append(Identifier(type=identifier_type, value=alt_id))
-
-    if term.name:
-        identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=term.name))
-
-    for synonym in term.synonyms or []:
-        if synonym and synonym != term.name:
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=synonym))
-
-    annotations: list[Annotation] = [
-        Annotation(term=OntologyAnnotationCv.ONTOLOGY_ID, value=ontology_id),
+    Only OBO is_a and source-approved relationship mappings become edges.
+    Unmapped published CURIE predicates remain attributes; other fields stay raw.
+    """
+    if not term.id or term.is_obsolete:
+        return None
+    identifiers = [
+        Identifier(type=identifier_type, value=value)
+        for value in dict.fromkeys([term.id, *(term.alt_ids or [])])
+        if value
     ]
-    if term.definition:
-        annotations.append(Annotation(term=OntologyAnnotationCv.DEFINITION, value=term.definition))
-    for comment in term.comments or []:
-        if comment:
-            annotations.append(Annotation(term=OntologyAnnotationCv.COMMENT, value=comment))
-    if term.is_obsolete is not None:
-        annotations.append(Annotation(term=OntologyAnnotationCv.IS_OBSOLETE, value=str(bool(term.is_obsolete)).lower()))
-
-    ontology_relations: list[OntologyRelation] = []
-    seen_relations: set[tuple[str, str]] = set()
-
-    for parent in term.is_a or []:
-        if parent and ('is_a', parent) not in seen_relations:
-            seen_relations.add(('is_a', parent))
-            ontology_relations.append(
-                OntologyRelation(
-                    predicate='is_a',
-                    object=EntityRef(
-                        type=entity_type,
-                        identifier_type=identifier_type,
-                        identifier=parent,
-                    ),
-                    ontology_id=ontology_id,
-                )
-            )
-
-    for relationship in term.relationships or []:
-        if not relationship.type or not relationship.target:
+    identifiers.extend(
+        Identifier(type=Namespace.NAME, value=value)
+        for value in [term.name]
+        if value
+    )
+    identifiers.extend(
+        Identifier(type=Namespace.SYNONYM, value=value)
+        for value in term.synonyms or []
+        if value
+    )
+    annotations = []
+    for slot, values in (
+        (slots.description, [term.definition, *(term.comments or [])]),
+        (slots.xref, [value.split()[0] for value in term.xrefs or [] if value]),
+    ):
+        annotations.extend(
+            Annotation(term=slot, value=value) for value in values if value
+        )
+    relations = []
+    seen = set()
+    for predicate, target in [
+        *((slots.subclass_of, parent) for parent in term.is_a or []),
+        *(
+            (relationship_predicates.get(rel.type), rel.target)
+            for rel in term.relationships or []
+            if relationship_predicates and rel.type in relationship_predicates
+        ),
+    ]:
+        key = (str(predicate), target)
+        if not target or key in seen:
             continue
-        key = (relationship.type, relationship.target)
-        if key in seen_relations:
-            continue
-        seen_relations.add(key)
-        ontology_relations.append(
+        seen.add(key)
+        relations.append(
             OntologyRelation(
-                predicate=relationship.type,
-                object=EntityRef(
-                    type=entity_type,
-                    identifier_type=identifier_type,
-                    identifier=relationship.target,
-                ),
+                predicate=predicate,
+                object=EntityRef(entity_type, identifier_type, target),
                 ontology_id=ontology_id,
             )
         )
-
+    for rel in term.relationships or []:
+        if (
+            not relationship_predicates
+            or rel.type not in relationship_predicates
+        ) and ':' in rel.type:
+            annotations.append(Annotation(term=rel.type, value=rel.target))
     return Entity(
         type=entity_type,
         identifiers=identifiers,
         annotations=annotations or None,
-        ontology_relations=ontology_relations or None,
+        ontology_relations=relations or None,
     )
 
 
@@ -300,22 +315,24 @@ def ontology_entity_mapper(
     term_mapper: Callable[[dict[str, Any]], OntologyTerm | None],
     *,
     ontology_id: str,
-    entity_type: EntityTypeCv | str = EntityTypeCv.CV_TERM,
-    identifier_type: IdentifierNamespaceCv | str = (
-        IdentifierNamespaceCv.CV_TERM_ACCESSION
-    ),
+    identifier_type: Namespace,
+    entity_type: Any = OntologyClass,
+    relationship_predicates: dict[str, Any] | None = None,
 ) -> Callable[[dict[str, Any]], Entity | None]:
-    """Wrap an ontology-term mapper so a regular Dataset emits term entities."""
+    """Bind source-owned ontology modeling choices to a parsed term mapper."""
 
     def mapper(row: dict[str, Any]) -> Entity | None:
         term = term_mapper(row)
-        if term is None:
-            return None
-        return ontology_term_to_entity(
-            term,
-            ontology_id=ontology_id,
-            entity_type=entity_type,
-            identifier_type=identifier_type,
+        return (
+            None
+            if term is None
+            else ontology_term_to_entity(
+                term,
+                ontology_id=ontology_id,
+                identifier_type=identifier_type,
+                entity_type=entity_type,
+                relationship_predicates=relationship_predicates,
+            )
         )
 
     return mapper
@@ -340,7 +357,11 @@ class ArtifactDataset:
         self.kind = kind
 
     def render(self, force_refresh: bool = False, **kwargs: Any) -> str:
-        opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
+        opener = (
+            self.download.open(force_refresh=force_refresh, **kwargs)
+            if self.download
+            else None
+        )
         return self.renderer(opener, force_refresh=force_refresh, **kwargs)
 
 
@@ -382,14 +403,20 @@ def read_opener_text(opener, **_kwargs: Any) -> str:
         return ''
     if hasattr(handle, 'read'):
         content = handle.read()
-        return content.decode('utf-8') if isinstance(content, bytes) else str(content)
+        return (
+            content.decode('utf-8')
+            if isinstance(content, bytes)
+            else str(content)
+        )
     return ''.join(
         chunk.decode('utf-8') if isinstance(chunk, bytes) else str(chunk)
         for chunk in handle
     )
 
 
-def iter_csv(opener, delimiter: str = ',', **_kwargs: Any) -> Generator[dict[str, Any], None, None]:
+def iter_csv(
+    opener, delimiter: str = ',', **_kwargs: Any
+) -> Generator[dict[str, Any], None, None]:
     handle = _first_handle(opener)
     if not handle:
         return

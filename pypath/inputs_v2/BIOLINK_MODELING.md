@@ -2,7 +2,7 @@
 
 Use the installed, pinned `biolink-model` package (currently 4.4.4) as the biological
 schema. `signor.py`, `chebi.py`, and `uniprot.py` are the rewritten examples.
-Rewrite remaining inputs individually; do not add a migration adapter.
+Inputs are modeled individually; do not add a migration adapter.
 
 ## Boundaries
 
@@ -36,16 +36,24 @@ Rewrite remaining inputs individually; do not add a migration adapter.
 3. Use predicate plus qualifiers when the source supports them. SIGNOR uses `affects`
    with `DirectionQualifierEnum` and, where specified, `GeneOrGeneProductOrChemicalEntityAspectEnum`.
    Omit an unspecified qualifier; never invent a default aspect or direction.
-4. Use slots for attributes: `name`, `synonym`, `description`, `in_taxon`,
+4. Source names, synonyms and abbreviations belong in `IdentifiersBuilder`, using
+   `Namespace.NAME` and `Namespace.SYNONYM`. This is the application convention
+   requested for inputs_v2; keep real accession namespaces ahead of name aliases.
+   Do not duplicate these values in name/synonym annotations. Display labels are
+   selected from name identifiers.
+   Use slots for attributes: `description`, `in_taxon`,
    `publications`, `has_biological_sequence`, `has_chemical_formula`, etc.
    Narrative descriptions remain text; they are not entity identifiers or inferred edges.
 5. Use `Namespace` for identifier namespaces. It is an application identifier registry,
    not an extension of Biolink's biological types. Add a member only for an actual
    identifier system. Translation datasets use the same members as graph inputs.
-6. If no faithful Biolink representation exists, first adapt the representation
-   (for example, preserve a narrative as `description`). Otherwise retain a published
-   external ontology attribute CURIE with its original value and document it below.
-   Do not mint an OmniPath term merely because an upstream label looks convenient.
+6. Use `description` only for source prose, such as definitions and comments.
+   Structured measurements, roles, categories and flags need an appropriate native
+   slot or a reviewed published external ontology attribute CURIE. If neither fits,
+   first consider a Biolink quantitative attribute with units and source-field
+   context (see README); otherwise preserve them in parsed evidence payloads and document that they are not exposed
+   as serving annotations. Do not turn them into labeled description strings or mint
+   an OmniPath term merely because an upstream label looks convenient.
 
 Examples:
 
@@ -80,7 +88,7 @@ namespace aliases. The `CV` helper name does not require a legacy CV enum.
 | UniProt GO / keyword links | `associated_with` to `OntologyClass` concepts | Explicit non-causal annotations. All source vocabulary concepts share the ontology class entity type for browsing. This deliberately uses Biolink’s mixin as a primary type. The slim TSV lacks GO branch metadata; more specific biological relationships would require an ontology join and structured source annotations. |
 | UniProt keyword hierarchy | `subclass_of` between keyword concepts | Preserves source `is_a`. Keyword category tagging is `has_topic`, not a biological hierarchy assertion. Keyword identifiers use `Namespace.UNIPROT_KEYWORD`. |
 | UniProt EC references | `has_topic` with EC CURIE | A classification annotation; do not invent a catalytic reaction from the EC accession. |
-| UniProt narrative fields, length and mass | `description` values retaining source field headings | Avoid turning disease/localization prose into edges. Length is residue count and mass is the source's predicted sequence mass in Da. UniProt RDF places these properties on a Sequence node, so do not misapply them directly to Protein. A structured sequence/attribute representation can replace these descriptions if numeric queries are required. Sequence itself uses `has_biological_sequence`. |
+| UniProt narrative fields | `description` values retaining source field headings | Disease/localization/function prose remains prose. Numeric length/mass and protein-family classification stay in parsed payloads until a structured sequence/attribute model is provided; UniProt RDF places length/mass on Sequence rather than Protein. Sequence uses `has_biological_sequence`. |
 | Source configuration | Existing resource/license/update enums | Operational metadata still uses `ResourceConfig`'s existing contract. These enums must not leak into biological records. Retire the package only after remaining inputs and configuration contracts are rewritten. |
 | Serving `sign`, `is_directed` | Existing derived projections | Qualifier annotations already carry the authoritative aspect and effect direction. Sign projects effect direction; directedness concerns predicate symmetry. Removing the stored projections requires an explicit edge schema update and consumer changes. Do not interpret effect direction as endpoint orientation. |
 

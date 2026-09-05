@@ -80,8 +80,7 @@ def _id_token(value: Any) -> str:
 
 def _row_dict(row: Any) -> dict[str, Any]:
     return {
-        str(key).replace('.', '_'): _clean(value)
-        for key, value in row.items()
+        str(key).replace('.', '_'): _clean(value) for key, value in row.items()
     }
 
 
@@ -117,12 +116,17 @@ def _cofactor_members(cofactors: Any, name: str) -> list[str]:
     ]
 
 
-def _participant_genes(db: dict[str, Any], row: dict[str, Any], role: str) -> list[str]:
+def _participant_genes(
+    db: dict[str, Any], row: dict[str, Any], role: str, known_symbols: set[str]
+) -> list[str]:
     name = row.get(role) or ''
     complex_genes = _complex_members(db.get('complex'), name)
     if complex_genes:
         return complex_genes
-    return _split_symbols(row.get(f'{role}_symbol'))
+    symbols = _split_symbols(row.get(f'{role}_symbol'))
+    # Exact lookup in CellChat's geneInfo table; no gene names are inferred
+    # from a complex label or from capitalization.
+    return symbols or ([name] if name in known_symbols else [])
 
 
 def _iter_interaction_rows(
@@ -133,15 +137,26 @@ def _iter_interaction_rows(
     if interactions is None:
         return
 
+    gene_info = db.get('geneInfo')
+    known_symbols = (
+        set(gene_info['Symbol'].dropna().astype(str))
+        if gene_info is not None and 'Symbol' in gene_info
+        else set()
+    )
+
     for _, raw_row in interactions.iterrows():
         row = _row_dict(raw_row)
         row.update(
             {
                 'taxon_id': str(taxon_id),
                 'ligand_name': row.get('ligand', ''),
-                'ligand_genes': _participant_genes(db, row, 'ligand'),
+                'ligand_genes': _participant_genes(
+                    db, row, 'ligand', known_symbols
+                ),
                 'receptor_name': row.get('receptor', ''),
-                'receptor_genes': _participant_genes(db, row, 'receptor'),
+                'receptor_genes': _participant_genes(
+                    db, row, 'receptor', known_symbols
+                ),
             }
         )
         yield row
@@ -172,8 +187,18 @@ def iter_cellchat_cofactor_interactions(
         for column, role, effect, target_role in (
             ('agonist', 'agonist', 'stimulation', 'ligand'),
             ('antagonist', 'antagonist', 'inhibition', 'ligand'),
-            ('co_A_receptor', 'co-activating receptor', 'stimulation', 'receptor'),
-            ('co_I_receptor', 'co-inhibitory receptor', 'inhibition', 'receptor'),
+            (
+                'co_A_receptor',
+                'co-activating receptor',
+                'stimulation',
+                'receptor',
+            ),
+            (
+                'co_I_receptor',
+                'co-inhibitory receptor',
+                'inhibition',
+                'receptor',
+            ),
         ):
             cofactor_name = row.get(column, '')
             cofactor_genes = _cofactor_members(cofactors, cofactor_name)
@@ -194,8 +219,12 @@ def iter_cellchat_cofactor_interactions(
                     'target_family': row.get(f'{target_role}_family', ''),
                     'target_location': row.get(f'{target_role}_location', ''),
                     'target_keyword': row.get(f'{target_role}_keyword', ''),
-                    'target_secreted_type': row.get(f'{target_role}_secreted_type', ''),
-                    'target_transmembrane': row.get(f'{target_role}_transmembrane', ''),
+                    'target_secreted_type': row.get(
+                        f'{target_role}_secreted_type', ''
+                    ),
+                    'target_transmembrane': row.get(
+                        f'{target_role}_transmembrane', ''
+                    ),
                     'cofactor_interaction_name': (
                         f'{_id_token(cofactor_gene)}_{effect}_{_id_token(target_name)}_'
                         f'{_id_token(row.get("interaction_name", ""))}'

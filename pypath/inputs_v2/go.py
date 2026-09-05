@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from biolink_model.datamodel.model import slots
+from omnipath_core.naming import Namespace
+
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.inputs_v2.base import (
     Dataset,
@@ -29,6 +32,12 @@ _GENE_ONTOLOGY_ID = 'gene_ontology'
 terms_schema = ontology_entity_mapper(
     obo_record_to_term,
     ontology_id=_GENE_ONTOLOGY_ID,
+    identifier_type=Namespace.GO,
+    # GO explicitly uses these BFO/symbolic predicates for mereology.
+    relationship_predicates={
+        'part_of': slots.part_of, 'BFO:0000050': slots.part_of,
+        'has_part': slots.has_part, 'BFO:0000051': slots.has_part,
+    },
 )
 
 

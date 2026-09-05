@@ -7,26 +7,66 @@ the schema defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    InteractionParameterCv,
-    AffinityUnitCv,
-    CurationCv,
-    ResourceCv,
+import math
+import re
+
+from biolink_model.datamodel.model import (
+    ChemicalEntity,
+    MacromolecularComplex,
+    Protein,
+    QuantityValue,
+    slots,
+)
+from omnipath_core.measurements import Measurement
+from omnipath_core.naming import Namespace
+
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2.parsers.bindingdb import _raw
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from pypath.internals.silver_schema import (
+    Entity,
+    Identifier,
+    Membership,
 )
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
     RelationBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.bindingdb import _raw
+
+
+def _measurement(value, unit=None, source_field=None, comparator=None):
+    """Keep numeric source observations, units and comparison bounds together."""
+    if value is None:
+        return None
+    match = re.fullmatch(
+        '\\s*(<=|>=|<|>|=|~)?\\s*([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?)\\s*',
+        str(value),
+    )
+    if match is None:
+        return None
+    original_comparator = comparator or match.group(1)
+    if original_comparator not in {None, '<', '>', '=', '<=', '>=', '~', '≈'}:
+        return None
+    relation = {'<': 'less_than', '>': 'greater_than', '=': 'equal_to'}.get(
+        original_comparator
+    )
+    number = float(match.group(2))
+    if not math.isfinite(number):
+        return None
+    quantity = QuantityValue(
+        has_numeric_value=number,
+        has_unit=unit or None,
+        has_binary_relation=relation,
+    )
+    return Measurement(
+        quantity=quantity,
+        source_field=source_field,
+        comparator=original_comparator,
+    )
 
 
 def _bindingdb_url(dataset: str = 'All', **_kwargs: object) -> str:
@@ -45,95 +85,223 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='26481362',
     primary_category='interactions',
-    description=(
-        'BindingDB is a public, web-accessible database of measured binding '
-        'affinities, focusing chiefly on the interactions of proteins considered '
-        'to be drug-targets with small, drug-like molecules. It contains binding '
-        'data for over 2 million protein-ligand complexes with experimental '
-        'measurements including Ki, Kd, IC50, and EC50 values.'
-    ),
+    description='BindingDB is a public, web-accessible database of measured binding affinities, focusing chiefly on the interactions of proteins considered to be drug-targets with small, drug-like molecules. It contains binding data for over 2 million protein-ligand complexes with experimental measurements including Ki, Kd, IC50, and EC50 values.',
 )
-
 f = FieldConfig(
     extract={
-        'chembl': r'^(CHEMBL\d+)$',
-        'zinc': r'^(ZINC\d+)$',
-        'cas': r'^(\d{2,7}-\d{2}-\d)$',
-        'chebi': r'^(?:CHEBI[:\s]?)?(\d+)$',
-        'pubchem_cid': r'^CID[:\s]?(\d+)$',
-        'kegg': r'^(C\d{5})$',
-        'tax': r'(\d+)',
-        'uniprot': r'^([A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2}|[OPQ][0-9][A-Z0-9]{3}[0-9])$',
-    },
+        'chembl': '^(CHEMBL\\d+)$',
+        'zinc': '^(ZINC\\d+)$',
+        'cas': '^(\\d{2,7}-\\d{2}-\\d)$',
+        'chebi': '^(?:CHEBI[:\\s]?)?(\\d+)$',
+        'pubchem_cid': '^CID[:\\s]?(\\d+)$',
+        'kegg': '^(C\\d{5})$',
+        'tax': '(\\d+)',
+        'uniprot': '^([A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2}|[OPQ][0-9][A-Z0-9]{3}[0-9])$',
+    }
 )
-
-tax_value = f('Target Source Organism According to Curator or DataSource', extract='tax')
-
+tax_value = lambda row: {
+    'Homo sapiens': 'NCBITaxon:9606',
+    'Mus musculus': 'NCBITaxon:10090',
+    'Rattus norvegicus': 'NCBITaxon:10116',
+}.get(row.get('Target Source Organism According to Curator or DataSource'))
 chemical_builder = EntityBuilder(
-    entity_type=EntityTypeCv.CHEMICAL,
+    entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.BINDINGDB, value=f('BindingDB MonomerID')),
-        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='chembl')),
-        CV(term=IdentifierNamespaceCv.ZINC, value=f('BindingDB Ligand Name', delimiter='::', extract='zinc')),
-        CV(term=IdentifierNamespaceCv.CAS, value=f('BindingDB Ligand Name', delimiter='::', extract='cas')),
-        CV(term=IdentifierNamespaceCv.CHEBI, value=f('BindingDB Ligand Name', delimiter='::', extract='chebi')),
-        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='pubchem_cid')),
-        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('BindingDB Ligand Name', delimiter='::', extract='kegg')),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('Ligand InChI Key')),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('Ligand InChI')),
-        CV(term=IdentifierNamespaceCv.SMILES, value=f('Ligand SMILES')),
-        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PubChem CID')),
-        CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem SID')),
-        CV(term=IdentifierNamespaceCv.CHEBI, value=f('ChEBI ID of Ligand', extract='chebi')),
-        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('ChEMBL ID of Ligand', delimiter='::', extract='chembl')),
-        CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('DrugBank ID of Ligand')),
-        CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('KEGG ID of Ligand')),
-        CV(term=IdentifierNamespaceCv.ZINC, value=f('ZINC ID of Ligand')),
+        CV(term=Namespace.BINDINGDB, value=f('BindingDB MonomerID')),
+        CV(
+            term=Namespace.CHEMBL,
+            value=f('BindingDB Ligand Name', delimiter='::', extract='chembl'),
+        ),
+        CV(
+            term=Namespace.ZINC,
+            value=f('BindingDB Ligand Name', delimiter='::', extract='zinc'),
+        ),
+        CV(
+            term=Namespace.CAS,
+            value=f('BindingDB Ligand Name', delimiter='::', extract='cas'),
+        ),
+        CV(
+            term=Namespace.PUBCHEM,
+            value=f(
+                'BindingDB Ligand Name', delimiter='::', extract='pubchem_cid'
+            ),
+        ),
+        CV(
+            term=Namespace.KEGG,
+            value=f('BindingDB Ligand Name', delimiter='::', extract='kegg'),
+        ),
+        CV(term=Namespace.INCHIKEY, value=f('Ligand InChI Key')),
+        CV(term=Namespace.INCHI, value=f('Ligand InChI')),
+        CV(term=Namespace.SMILES, value=f('Ligand SMILES')),
+        CV(term=Namespace.PUBCHEM, value=f('PubChem CID')),
+        CV(term=Namespace.PUBCHEM_SUBSTANCE, value=f('PubChem SID')),
+        CV(
+            term=Namespace.CHEBI, value=f('ChEBI ID of Ligand', extract='chebi')
+        ),
+        CV(
+            term=Namespace.CHEMBL,
+            value=f('ChEMBL ID of Ligand', delimiter='::', extract='chembl'),
+        ),
+        CV(term=Namespace.DRUGBANK, value=f('DrugBank ID of Ligand')),
+        CV(term=Namespace.KEGG, value=f('KEGG ID of Ligand')),
+        CV(term=Namespace.ZINC, value=f('ZINC ID of Ligand')),
+        CV(
+            term=Namespace.SYNONYM,
+            value=f('BindingDB Ligand Name', delimiter='::'),
+        ),
     ),
+    annotations=AnnotationsBuilder(),
+)
+target_builder = EntityBuilder(
+    entity_type=Protein,
+    identifiers=IdentifiersBuilder(
+        CV(
+            term=Namespace.UNIPROT,
+            value=f(
+                'UniProt (SwissProt) Primary ID of Target Chain 1',
+                delimiter=' ',
+                extract='uniprot',
+            ),
+        ),
+        CV(
+            term=Namespace.UNIPROT_TREMBL,
+            value=f(
+                'UniProt (TrEMBL) Primary ID of Target Chain 1',
+                delimiter=' ',
+                extract='uniprot',
+            ),
+        ),
+        CV(term=Namespace.NAME, value=f('Target Name')),
+        CV(
+            term=Namespace.NAME,
+            value=f('UniProt (SwissProt) Recommended Name of Target Chain 1'),
+        ),
+        CV(
+            term=Namespace.NAME,
+            value=f('UniProt (TrEMBL) Submitted Name of Target Chain 1'),
+        ),
+    ),
+    annotations=AnnotationsBuilder(CV(term=slots.in_taxon, value=tax_value)),
 )
 
-target_builder = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
-    identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.NAME, value=f('Target Name')),
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('UniProt (SwissProt) Primary ID of Target Chain 1', delimiter=' ', extract='uniprot')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (SwissProt) Recommended Name of Target Chain 1')),
-        CV(term=IdentifierNamespaceCv.UNIPROT_TREMBL, value=f('UniProt (TrEMBL) Primary ID of Target Chain 1', delimiter=' ', extract='uniprot')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('UniProt (TrEMBL) Submitted Name of Target Chain 1')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=tax_value),
-    ),
-)
+
+def _target(row):
+    count = int(
+        row.get(
+            'Number of Protein Chains in Target (>1 implies a multichain complex)'
+        )
+        or 1
+    )
+    if count <= 1:
+        return target_builder.build(row)
+    members = []
+    for index in range(1, count + 1):
+        chain = dict(row)
+        # The whole target name identifies the complex, not an unnamed chain.
+        chain['Target Name'] = None
+        for stem in (
+            'UniProt (SwissProt) Primary ID of Target Chain ',
+            'UniProt (TrEMBL) Primary ID of Target Chain ',
+            'UniProt (SwissProt) Recommended Name of Target Chain ',
+            'UniProt (TrEMBL) Submitted Name of Target Chain ',
+        ):
+            chain[stem + '1'] = row.get(stem + str(index))
+        if (protein := target_builder.build(chain)) is not None:
+            members.append(Membership(member=protein, predicate=slots.has_part))
+    return Entity(
+        type=MacromolecularComplex,
+        identifiers=[
+            Identifier(type=Namespace.NAME, value=row.get('Target Name'))
+        ],
+        membership=members,
+        annotations=[],
+    )
+
 
 interactions_schema = RelationBuilder(
     subject=chemical_builder,
-    predicate='interacts_with',
-    object=target_builder,
-    identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.BINDINGDB, value=f('BindingDB Reactant_set_id')),
-    ),
+    predicate=slots.associated_with,
+    object=_target,
     annotations=AnnotationsBuilder(
-        CV(term=InteractionParameterCv.KI, value=f('Ki (nM)'), unit=AffinityUnitCv.NANOMOLAR),
-        CV(term=InteractionParameterCv.KD, value=f('Kd (nM)'), unit=AffinityUnitCv.NANOMOLAR),
-        CV(term=InteractionParameterCv.IC50, value=f('IC50 (nM)'), unit=AffinityUnitCv.NANOMOLAR),
-        CV(term=InteractionParameterCv.EC50, value=f('EC50 (nM)'), unit=AffinityUnitCv.NANOMOLAR),
-        CV(term=InteractionParameterCv.PCHEMBL_VALUE, value=f('pchembl_value')),
-        CV(term=InteractionParameterCv.KON, value=f('kon (M-1-s-1)'), unit=AffinityUnitCv.PER_MOLAR_PER_SECOND),
-        CV(term=InteractionParameterCv.KOFF, value=f('koff (s-1)'), unit=AffinityUnitCv.PER_SECOND),
-        CV(term=InteractionParameterCv.PH, value=f('pH')),
         CV(
-            term=InteractionParameterCv.TEMPERATURE_CELSIUS,
-            value=f('Temp (C)'),
-            unit=AffinityUnitCv.DEGREE_CELSIUS,
+            term=slots.has_quantitative_value,
+            value=f(
+                'pchembl_value',
+                transform=lambda v: _measurement(
+                    v, source_field='pchembl_value'
+                ),
+            ),
         ),
-        CV(term=IdentifierNamespaceCv.PUBMED, value=f('PMID')),
-        CV(term=IdentifierNamespaceCv.DOI, value=f('Article DOI')),
-        CV(term=IdentifierNamespaceCv.PATENT_NUMBER, value=f('Patent Number')),
-        CV(term=CurationCv.COMMENT, value=f('Curation/DataSource')),
+        CV(
+            term=slots.has_quantitative_value,
+            value=f(
+                'pH', transform=lambda v: _measurement(v, source_field='pH')
+            ),
+        ),
+        CV(
+            term=slots.has_quantitative_value,
+            value=f(
+                'Temp (C)',
+                transform=lambda v: _measurement(v, 'Cel', 'Temp (C)'),
+            ),
+        ),
+        CV(
+            term=slots.publications,
+            value=f(
+                'PMID',
+                transform=lambda v: 'PMID:' + str(v).removeprefix('PMID:'),
+            ),
+        ),
+        CV(
+            term=slots.publications,
+            value=f(
+                'Article DOI',
+                transform=lambda v: 'doi:' + str(v).removeprefix('doi:'),
+            ),
+        ),
+        CV(
+            term='BAO:0000192',
+            value=f(
+                'Ki (nM)', transform=lambda v: _measurement(v, 'nM', 'Ki (nM)')
+            ),
+        ),
+        CV(
+            term='BAO:0000034',
+            value=f(
+                'Kd (nM)', transform=lambda v: _measurement(v, 'nM', 'Kd (nM)')
+            ),
+        ),
+        CV(
+            term='BAO:0000190',
+            value=f(
+                'IC50 (nM)',
+                transform=lambda v: _measurement(v, 'nM', 'IC50 (nM)'),
+            ),
+        ),
+        CV(
+            term='BAO:0000188',
+            value=f(
+                'EC50 (nM)',
+                transform=lambda v: _measurement(v, 'nM', 'EC50 (nM)'),
+            ),
+        ),
+        CV(
+            term='BAO:0000480',
+            value=f(
+                'kon (M-1-s-1)',
+                transform=lambda v: _measurement(v, '/M/s', 'kon (M-1-s-1)'),
+            ),
+        ),
+        CV(
+            term='BAO:0000479',
+            value=f(
+                'koff (s-1)',
+                transform=lambda v: _measurement(v, '/s', 'koff (s-1)'),
+            ),
+        ),
     ),
+    identifiers=IdentifiersBuilder(),
 )
-
 resource = Resource(
     config,
     interactions=Dataset(

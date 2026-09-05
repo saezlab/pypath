@@ -30,6 +30,7 @@ BINDINGDB_MIN_PCHEMBL = 5.0
 # pypath.inputs_v2.bindingdb.interactions_schema.
 _BINDINGDB_COLUMNS = [
     'BindingDB Reactant_set_id',
+    'Number of Protein Chains in Target (>1 implies a multichain complex)',
     'Ki (nM)',
     'Kd (nM)',
     'IC50 (nM)',
@@ -61,6 +62,20 @@ _BINDINGDB_COLUMNS = [
     'UniProt (TrEMBL) Primary ID of Target Chain 1',
     'UniProt (TrEMBL) Submitted Name of Target Chain 1',
 ]
+
+
+# Preserve explicitly reported multichain targets instead of assigning their
+# measurements to chain 1 alone.
+_BINDINGDB_COLUMNS.extend(
+    stem + str(index)
+    for index in range(2, 51)
+    for stem in (
+        'UniProt (SwissProt) Primary ID of Target Chain ',
+        'UniProt (TrEMBL) Primary ID of Target Chain ',
+        'UniProt (SwissProt) Recommended Name of Target Chain ',
+        'UniProt (TrEMBL) Submitted Name of Target Chain ',
+    )
+)
 
 def _normalize_row(row: dict[str, str | None]) -> dict[str, str]:
     normalized = {key: '' if value is None else str(value) for key, value in row.items()}

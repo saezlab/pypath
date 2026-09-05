@@ -6,18 +6,15 @@ declarative schema pattern.
 """
 
 from __future__ import annotations
-
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    MoleculeAnnotationsCv,
-    MoleculeSubtypeCv,
-    UpdateCategoryCV,
-    ResourceCv,
-    InteractionMetadataCv,
-    ParticipantMetadataCv,
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from biolink_model.datamodel.model import (
+    Protein,
+    MacromolecularComplex,
+    ChemicalEntity,
+    slots,
 )
+from omnipath_core.naming import Namespace
+from omnipath_core.silver_schema import format_term
 from pypath.internals.silver_schema import (
     Annotation,
     Entity,
@@ -34,16 +31,10 @@ config = ResourceConfig(
     url='https://github.com/Wei-BioMath/NeuronChat',
     license=LicenseCV.GPL_3_0,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='36854676', # Zhao et al. 2023 DOI: 10.1038/s41467-023-36800-w
+    pubmed='36854676',
     primary_category='interactions',
-    description=(
-        'NeuronChat is a manually curated resource of neural-specific '
-        'intercellular molecular interactions, designed for inferring '
-        'neuron-neuron communication from single-cell and spatial '
-        'transcriptomics data.'
-    ),
+    description='NeuronChat is a manually curated resource of neural-specific intercellular molecular interactions, designed for inferring neuron-neuron communication from single-cell and spatial transcriptomics data.',
 )
-
 SMALL_MOLECULE_LIGANDS = {
     '5HT': 'Serotonin',
     'Ach': 'Acetylcholine',
@@ -71,19 +62,6 @@ def _list(value: object) -> list[str]:
 
 def _interaction_ligand_token(row: dict[str, object]) -> str:
     return _clean(row.get('interaction_name')).split('_', 1)[0]
-
-
-def _ligand_name(row: dict[str, object]) -> str:
-    token = _interaction_ligand_token(row)
-    return SMALL_MOLECULE_LIGANDS.get(token, token)
-
-
-def _source_label(row: dict[str, object]) -> str:
-    return f'{_clean(row.get("interaction_name"))}_source'
-
-
-def _target_label(row: dict[str, object]) -> str:
-    return f'{_clean(row.get("interaction_name"))}_target'
 
 
 def _identifier(type_: object, value: object) -> Identifier | None:
@@ -118,7 +96,7 @@ def _annotations(*items: Annotation | None) -> list[Annotation] | None:
     for item in items:
         if item is None:
             continue
-        key = (item.term, item.value, item.units)
+        key = (format_term(item.term), format_term(item.value), item.units)
         if key in seen:
             continue
         out.append(item)
@@ -126,14 +104,14 @@ def _annotations(*items: Annotation | None) -> list[Annotation] | None:
     return out or None
 
 
-def _protein(name: object, taxon_id: str, *annotations: Annotation | None) -> Entity:
+def _protein(
+    name: object, taxon_id: str, *annotations: Annotation | None
+) -> Entity:
     return Entity(
-        type=EntityTypeCv.PROTEIN,
-        identifiers=_identifiers(
-            _identifier(IdentifierNamespaceCv.GENE_NAME_PRIMARY, name),
-        ),
+        type=Protein,
+        identifiers=_identifiers(_identifier(Namespace.GENESYMBOL, name)),
         annotations=_annotations(
-            Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+            Annotation(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}'),
             *annotations,
         ),
     )
@@ -142,62 +120,54 @@ def _protein(name: object, taxon_id: str, *annotations: Annotation | None) -> En
 def _source_entity(row: dict[str, object], taxon_id: str) -> Entity:
     ligand_token = _interaction_ligand_token(row)
     if ligand_token in SMALL_MOLECULE_LIGANDS:
+        name = SMALL_MOLECULE_LIGANDS[ligand_token]
         return Entity(
-            type=EntityTypeCv.CHEMICAL,
-            identifiers=_identifiers(
-                _identifier(IdentifierNamespaceCv.NAME, _ligand_name(row)),
-                _identifier(IdentifierNamespaceCv.ABBREVIATED_NAME, ligand_token),
-            ),
-            annotations=_annotations(
-                Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-                Annotation(
-                    term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
-                    value=MoleculeSubtypeCv.METABOLITE,
-                ),
-                _annotation(MoleculeAnnotationsCv.SOURCE_STATUS, _source_label(row)),
-            ),
+            type=ChemicalEntity,
+            identifiers=[
+                Identifier(type=Namespace.NAME, value=name),
+                Identifier(type=Namespace.SYNONYM, value=ligand_token),
+            ],
+            annotations=[],
         )
-
-    return _protein(
-        ligand_token,
-        taxon_id,
-        _annotation(MoleculeAnnotationsCv.SOURCE_STATUS, _source_label(row)),
-    )
+    return _protein(ligand_token, taxon_id)
 
 
-def _target_entity(row: dict[str, object], taxon_id: str) -> Entity:
+def _target_entity(row: dict[str, object], taxon_id: str) -> Entity | None:
     subunits = _list(row.get('receptor_subunit'))
-    source_status = _annotation(MoleculeAnnotationsCv.SOURCE_STATUS, _target_label(row))
+    if not subunits:
+        return None
     if len(subunits) == 1:
-        return _protein(subunits[0], taxon_id, source_status)
-
+        return _protein(subunits[0], taxon_id)
+    name = '+'.join(subunits)
     return Entity(
-        type=EntityTypeCv.COMPLEX,
-        identifiers=_identifiers(
-            _identifier(IdentifierNamespaceCv.NAME, _target_label(row)),
-        ),
-        annotations=_annotations(source_status),
+        type=MacromolecularComplex,
+        identifiers=[Identifier(type=Namespace.NAME, value=name)],
+        annotations=[
+            Annotation(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}')
+        ],
         membership=[
             Membership(member=_protein(subunit, taxon_id))
             for subunit in subunits
-        ] or None,
+        ],
     )
 
 
 def interactions_schema(taxon_id: str):
-    def mapper(row: dict[str, object]) -> Relation:
-        interaction_type = _clean(row.get('interaction_type')) or 'interacts_with'
+    def mapper(row: dict[str, object]) -> Relation | None:
+        target = _target_entity(row, taxon_id)
+        if target is None or not _interaction_ligand_token(row):
+            return None
         return Relation(
             subject=_source_entity(row, taxon_id),
-            predicate=interaction_type,
-            object=_target_entity(row, taxon_id),
-            identifiers=_identifiers(
-                _identifier(IdentifierNamespaceCv.NAME, row.get('interaction_name')),
-            ),
-            annotations=_annotations(
-                _annotation(InteractionMetadataCv.LIGAND_TYPE, row.get('ligand_type')),
-                _annotation(InteractionMetadataCv.INTERACTION_TYPE, row.get('interaction_type')),
-            ),
+            predicate=slots.interacts_with,
+            object=target,
+            annotations=[*[]],
+            identifiers=[
+                Identifier(
+                    type=Namespace.NAME,
+                    value=_clean(row.get('interaction_name')),
+                )
+            ],
         )
 
     return mapper
@@ -207,24 +177,24 @@ resource = Resource(
     config,
     human_interactions=Dataset(
         download=Download(
-            url=f'https://github.com/Wei-BioMath/NeuronChat/raw/main/data/interactionDB_human.rda',
-            filename=f'neuronchat_interactions_human.rda',
+            url='https://github.com/Wei-BioMath/NeuronChat/raw/main/data/interactionDB_human.rda',
+            filename='neuronchat_interactions_human.rda',
             subfolder='neuronchat',
             default_mode='rb',
             ext='rda',
-            encoding=None, # avoid encoding in binary mode
+            encoding=None,
         ),
         mapper=interactions_schema('9606'),
         raw_parser=iter_neuronchat,
     ),
     mouse_interactions=Dataset(
         download=Download(
-            url=f'https://github.com/Wei-BioMath/NeuronChat/raw/main/data/interactionDB_mouse.rda',
-            filename=f'neuronchat_interactions_mouse.rda',
+            url='https://github.com/Wei-BioMath/NeuronChat/raw/main/data/interactionDB_mouse.rda',
+            filename='neuronchat_interactions_mouse.rda',
             subfolder='neuronchat',
             default_mode='rb',
             ext='rda',
-            encoding=None, # avoid encoding in binary mode
+            encoding=None,
         ),
         mapper=interactions_schema('10090'),
         raw_parser=iter_neuronchat,

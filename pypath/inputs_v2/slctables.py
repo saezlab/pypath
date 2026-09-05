@@ -1,3 +1,7 @@
+from biolink_model.datamodel import model
+from biolink_model.datamodel.model import slots
+from omnipath_core.naming import Namespace
+
 """
 Parse SLC tables data and emit Entity records.
 
@@ -20,14 +24,7 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    ResourceCv,
-    MoleculeAnnotationsCv,
-)
+from pypath.internals.cv_terms import LicenseCV, UpdateCategoryCV, ResourceCv
 
 # =================================== SET-UP ===================================
 
@@ -55,7 +52,7 @@ config = ResourceConfig(
 
 
 def chunk_this(L, n):
-    '''
+    """
     For a given list *L*, returns another list of *n*-sized chunks from
     it (in the same order).
 
@@ -75,14 +72,13 @@ def chunk_this(L, n):
         [[0, 1], [2, 3], [4, 5]]
         >>> chunk_this(L, 4)
         [[0, 1, 2, 3], [4, 5]]
-    '''
+    """
     L = list(L)
 
-    return [L[i:i + n] for i in range(0, len(L), n)]
+    return [L[i : i + n] for i in range(0, len(L), n)]
 
 
 def parser(opener, **_kwargs):
-
     # Obtaining plain text from Opener instance as single string
     txt = ''.join(opener.result)
 
@@ -102,8 +98,7 @@ def parser(opener, **_kwargs):
 
     for slc, table in zip(fams, raw_tables):
         cells = [
-            t.text
-            for t in table.find_all('td', attrs={'class': 'tbl_cell'})
+            t.text for t in table.find_all('td', attrs={'class': 'tbl_cell'})
         ]
         for chunk in chunk_this(cells, len(headers) - 1):
             if len(chunk) != len(headers) - 1:
@@ -153,37 +148,15 @@ f = FieldConfig(
 )
 
 schema = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
+    entity_type=model.Protein,
     identifiers=IdentifiersBuilder(
-        CV(
-            term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
-            value=_primary_slc_gene_names,
-        ),
-        CV(
-            term=IdentifierNamespaceCv.GENE_NAME_SYNONYM,
-            value=_slc_gene_synonyms,
-        ),
-        CV(
-            term=IdentifierNamespaceCv.NAME,
-            value=f('Protein name', delimiter=', ')
-        ),
-        CV(
-            term=IdentifierNamespaceCv.SYNONYM,
-            value=f('Aliases', delimiter=', ')
-        ),
+        CV(term=Namespace.GENESYMBOL, value=_primary_slc_gene_names),
+        CV(term=Namespace.GENESYMBOL_SYN, value=_slc_gene_synonyms),
+        CV(term=Namespace.NAME, value=f('Protein name', delimiter=', ')),
+        CV(term=Namespace.SYNONYM, value=f('Aliases', delimiter=', ')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=HUMAN_TAXON_ID),
-        CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('SLC_family')),
-        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('Transport type*')),
-        CV(
-            term=MoleculeAnnotationsCv.TRANSPORT_SUBSTRATE,
-            value=f('Substrates', delimiter=', ')
-        ),
-        CV(
-            term=MoleculeAnnotationsCv.TISSUE_LOCATION,
-            value=f('Tissue and cellular expression', delimiter=', ')
-        ),
+        CV(term=slots.in_taxon, value='NCBITaxon:9606')
     ),
 )
 
@@ -195,7 +168,7 @@ resource = Resource(
         download=download,
         mapper=schema,
         raw_parser=parser,
-    )
+    ),
 )
 
 # ================================= REFERENCE ==================================

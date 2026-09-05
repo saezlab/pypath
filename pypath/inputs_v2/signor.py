@@ -104,12 +104,16 @@ f = FieldConfig(
 
 def interaction_identifier_cv() -> CV:
     return CV(
-        term=f('Interaction identifier(s)', extract='prefix_lower', map='term_cv'),
+        term=f(
+            'Interaction identifier(s)', extract='prefix_lower', map='term_cv'
+        ),
         value=f('Interaction identifier(s)', extract='interaction_value'),
     )
 
 
-def _normalize_signor_identifier(prefix: str, value: str) -> tuple[object | None, str | None]:
+def _normalize_signor_identifier(
+    prefix: str, value: str
+) -> tuple[object | None, str | None]:
     prefix = prefix.lower()
     value = value.strip().strip('"')
     lower_value = value.lower()
@@ -146,25 +150,30 @@ def _normalize_signor_identifier(prefix: str, value: str) -> tuple[object | None
 
 
 def _parse_signor_identifier_pairs(raw: object) -> list[tuple[object, str]]:
+    return list(_identifier_pairs_from_text('' if raw is None else str(raw)))
+
+
+def _identifier_pairs_from_text(text: str) -> tuple[tuple[object, str], ...]:
     pairs: list[tuple[object, str]] = []
-    for item in _split_signor_field(raw):
+    for item in _split_signor_field(text):
         if ':' not in item:
             continue
         prefix, value = item.split(':', 1)
         mapped, normalized_value = _normalize_signor_identifier(prefix, value)
         if mapped is not None and normalized_value:
             pairs.append((mapped, normalized_value))
-    return pairs
+    return tuple(pairs)
 
 
 def general_identifier_cv(column_name: str) -> CV:
-    return CV(
-        term=lambda row: [term for term, _ in _parse_signor_identifier_pairs(row.get(column_name))],
-        value=lambda row: [value for _, value in _parse_signor_identifier_pairs(row.get(column_name))],
+    return CV.from_pairs(
+        f(column_name, transform=_identifier_pairs_from_text),
     )
 
 
-def _infer_signor_interactor_type(row: dict[str, object], suffix: str) -> type[model.NamedThing]:
+def _infer_signor_interactor_type(
+    row: dict[str, object], suffix: str
+) -> type[model.NamedThing]:
     """Read the source type; repair only documented missing-type cases.
 
     The cached export has 533 untyped endpoints: RNAcentral identifiers mislabeled
@@ -178,22 +187,38 @@ def _infer_signor_interactor_type(row: dict[str, object], suffix: str) -> type[m
             return _INTERACTOR_TYPE_MAPPING[match.group(1)]
         raise ValueError(f'Unknown SIGNOR interactor type: {raw_type!r}')
 
-    primary = next((row.get(key) for key in (
-        f'\ufeff#ID(s) interactor {suffix}', f'#ID(s) interactor {suffix}',
-        f'ID(s) interactor {suffix}',
-    ) if row.get(key)), None)
+    primary = next(
+        (
+            row.get(key)
+            for key in (
+                f'\ufeff#ID(s) interactor {suffix}',
+                f'#ID(s) interactor {suffix}',
+                f'ID(s) interactor {suffix}',
+            )
+            if row.get(key)
+        ),
+        None,
+    )
     pairs = _parse_signor_identifier_pairs(primary)
     types = set()
     for namespace, identifier in pairs:
         if namespace == Namespace.RNACENTRAL:
             types.add(model.RNAProduct)
-        elif namespace in (Namespace.DRUGBANK, Namespace.CHEBI, Namespace.PUBCHEM):
+        elif namespace in (
+            Namespace.DRUGBANK,
+            Namespace.CHEBI,
+            Namespace.PUBCHEM,
+        ):
             types.add(model.ChemicalEntity)
-        elif namespace == Namespace.SIGNOR and re.fullmatch(r'SIGNOR-(?:PF|FP)\d+', identifier):
+        elif namespace == Namespace.SIGNOR and re.fullmatch(
+            r'SIGNOR-(?:PF|FP)\d+', identifier
+        ):
             types.add(model.ProteinFamily)
     if len(types) == 1:
         return types.pop()
-    raise ValueError(f'SIGNOR endpoint {suffix} has no supported type: {primary!r}')
+    raise ValueError(
+        f'SIGNOR endpoint {suffix} has no supported type: {primary!r}'
+    )
 
 
 def interactor_entity_type(suffix: str):
@@ -203,18 +228,24 @@ def interactor_entity_type(suffix: str):
 def interactor_tax_cv(suffix: str) -> CV:
     return CV(
         term=slots.in_taxon,
-        value=lambda row: [
-            f'NCBITaxon:{taxon}'
-            for taxon in f(f'Taxid interactor {suffix}', extract='tax').extract(row)
-            if str(taxon).isdigit() and int(taxon) > 0
-        ],
+        value=f(
+            f'Taxid interactor {suffix}',
+            extract='tax',
+            transform=lambda taxon: (
+                f'NCBITaxon:{taxon}'
+                if str(taxon).isdigit() and int(taxon) > 0
+                else None
+            ),
+        ),
     )
 
 
 def pubmed_annotation(column_name: str) -> CV:
     return CV(
         term=slots.publications,
-        value=lambda row: [f'PMID:{pmid}' for pmid in f(column_name, extract='pubmed').extract(row)],
+        value=f(
+            column_name, extract='pubmed', transform=lambda pmid: f'PMID:{pmid}'
+        ),
     )
 
 
@@ -265,23 +296,35 @@ complexes_schema = EntityBuilder(
     entity_type=model.MacromolecularComplex,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.SIGNOR, value=f('SIGNOR ID')),
+        CV(term=Namespace.NAME, value=f('COMPLEX NAME')),
     ),
-    annotations=AnnotationsBuilder(CV(term=slots.name, value=f('COMPLEX NAME'))),
+    annotations=AnnotationsBuilder(),
     membership=MembershipBuilder(
         MembersFromList(
             entity_type=model.Protein,
             identifiers=IdentifiersBuilder(
                 CV(
                     term=Namespace.UNIPROT,
-                    value=f('LIST OF ENTITIES', delimiter=',', extract='uniprot_member'),
+                    value=f(
+                        'LIST OF ENTITIES',
+                        delimiter=',',
+                        extract='uniprot_member',
+                    ),
                 ),
                 CV(
                     term=Namespace.SIGNOR,
-                    value=f('LIST OF ENTITIES', delimiter=',', extract='signor_member'),
+                    value=f(
+                        'LIST OF ENTITIES',
+                        delimiter=',',
+                        extract='signor_member',
+                    ),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(term=slots.in_taxon, value=f'NCBITaxon:{SIGNOR_DEFAULT_TAX_ID}'),
+                CV(
+                    term=slots.in_taxon,
+                    value=f'NCBITaxon:{SIGNOR_DEFAULT_TAX_ID}',
+                ),
             ),
         )
     ),
@@ -291,23 +334,35 @@ protein_families_schema = EntityBuilder(
     entity_type=model.ProteinFamily,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.SIGNOR, value=f('SIGNOR ID')),
+        CV(term=Namespace.NAME, value=f('PROT. FAMILY NAME')),
     ),
-    annotations=AnnotationsBuilder(CV(term=slots.name, value=f('PROT. FAMILY NAME'))),
+    annotations=AnnotationsBuilder(),
     membership=MembershipBuilder(
         MembersFromList(
             entity_type=model.Protein,
             identifiers=IdentifiersBuilder(
                 CV(
                     term=Namespace.UNIPROT,
-                    value=f('LIST OF ENTITIES', delimiter=',', extract='uniprot_member'),
+                    value=f(
+                        'LIST OF ENTITIES',
+                        delimiter=',',
+                        extract='uniprot_member',
+                    ),
                 ),
                 CV(
                     term=Namespace.SIGNOR,
-                    value=f('LIST OF ENTITIES', delimiter=',', extract='signor_member'),
+                    value=f(
+                        'LIST OF ENTITIES',
+                        delimiter=',',
+                        extract='signor_member',
+                    ),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(term=slots.in_taxon, value=f'NCBITaxon:{SIGNOR_DEFAULT_TAX_ID}'),
+                CV(
+                    term=slots.in_taxon,
+                    value=f'NCBITaxon:{SIGNOR_DEFAULT_TAX_ID}',
+                ),
             ),
         )
     ),
@@ -317,9 +372,9 @@ phenotypes_schema = EntityBuilder(
     entity_type=model.PhenotypicFeature,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.SIGNOR, value=f('SIGNOR ID')),
+        CV(term=Namespace.NAME, value=f('PHENOTYPE NAME')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.name, value=f('PHENOTYPE NAME')),
         CV(term=slots.description, value=f('PHENOTYPE DESCRIPTION')),
     ),
 )
@@ -328,9 +383,9 @@ stimuli_schema = EntityBuilder(
     entity_type=model.ExposureEvent,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.SIGNOR, value=f('SIGNOR ID')),
+        CV(term=Namespace.NAME, value=f('STIMULUS NAME')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.name, value=f('STIMULUS NAME')),
         CV(term=slots.description, value=f('STIMULUS DESCRIPTION')),
     ),
 )
@@ -372,12 +427,19 @@ def _participant_builder(suffix):
     return EntityBuilder(
         entity_type=interactor_entity_type(suffix),
         identifiers=IdentifiersBuilder(
-            general_identifier_cv('\ufeff#ID(s) interactor A' if suffix == 'A' else 'ID(s) interactor B'),
+            general_identifier_cv(
+                '\ufeff#ID(s) interactor A'
+                if suffix == 'A'
+                else 'ID(s) interactor B'
+            ),
             general_identifier_cv(f'Alt. ID(s) interactor {suffix}'),
         ),
         annotations=AnnotationsBuilder(
             interactor_tax_cv(suffix),
-            CV(term=slots.description, value=f(f'Feature(s) interactor {suffix}')),
+            CV(
+                term=slots.description,
+                value=f(f'Feature(s) interactor {suffix}'),
+            ),
         ),
     )
 
@@ -391,11 +453,18 @@ interactions_schema = RelationBuilder(
     identifiers=IdentifiersBuilder(interaction_identifier_cv()),
     annotations=AnnotationsBuilder(
         # The source causal accession remains in raw evidence, not a mapping-only Biolink slot.
-        CV(term=slots.object_direction_qualifier,
-           value=lambda row: _CAUSAL_QUALIFIERS[_causal_accession(row)][0]),
-        CV(term=slots.object_aspect_qualifier,
-           value=lambda row: _CAUSAL_QUALIFIERS[_causal_accession(row)][1]),
-        CV(term=slots.has_evidence_of_type, value=f('Interaction detection method(s)', extract='mi')),
+        CV(
+            term=slots.object_direction_qualifier,
+            value=lambda row: _CAUSAL_QUALIFIERS[_causal_accession(row)][0],
+        ),
+        CV(
+            term=slots.object_aspect_qualifier,
+            value=lambda row: _CAUSAL_QUALIFIERS[_causal_accession(row)][1],
+        ),
+        CV(
+            term=slots.has_evidence_of_type,
+            value=f('Interaction detection method(s)', extract='mi'),
+        ),
         pubmed_annotation('Publication Identifier(s)'),
         CV(term=slots.description, value=f('Interaction annotation(s)')),
     ),
@@ -408,7 +477,10 @@ resource = Resource(
             url='https://signor.uniroma2.it/download_complexes.php',
             filename='signor_complexes.txt',
             subfolder='signor',
-            download_kwargs={'query': {'submit': 'Download complex data'}, 'post': True},
+            download_kwargs={
+                'query': {'submit': 'Download complex data'},
+                'post': True,
+            },
         ),
         mapper=complexes_schema,
         raw_parser=_iter_semicolon,
@@ -418,7 +490,10 @@ resource = Resource(
             url='https://signor.uniroma2.it/download_complexes.php',
             filename='signor_protein_families.txt',
             subfolder='signor',
-            download_kwargs={'query': {'submit': 'Download protein family data'}, 'post': True},
+            download_kwargs={
+                'query': {'submit': 'Download protein family data'},
+                'post': True,
+            },
         ),
         mapper=protein_families_schema,
         raw_parser=_iter_semicolon,
@@ -428,7 +503,10 @@ resource = Resource(
             url='https://signor.uniroma2.it/download_complexes.php',
             filename='signor_phenotypes.txt',
             subfolder='signor',
-            download_kwargs={'query': {'submit': 'Download phenotype data'}, 'post': True},
+            download_kwargs={
+                'query': {'submit': 'Download phenotype data'},
+                'post': True,
+            },
         ),
         mapper=phenotypes_schema,
         raw_parser=_iter_semicolon,
@@ -438,7 +516,10 @@ resource = Resource(
             url='https://signor.uniroma2.it/download_complexes.php',
             filename='signor_stimuli.txt',
             subfolder='signor',
-            download_kwargs={'query': {'submit': 'Download stimulus data'}, 'post': True},
+            download_kwargs={
+                'query': {'submit': 'Download stimulus data'},
+                'post': True,
+            },
         ),
         mapper=stimuli_schema,
         raw_parser=_iter_semicolon,
@@ -448,7 +529,10 @@ resource = Resource(
             url='https://signor.uniroma2.it/download_entity.php',
             filename='signor_all_causalTab.txt',
             subfolder='signor',
-            download_kwargs={'query': {'format': 'causalTab', 'submit': 'Download'}, 'post': True},
+            download_kwargs={
+                'query': {'format': 'causalTab', 'submit': 'Download'},
+                'post': True,
+            },
         ),
         mapper=interactions_schema,
         raw_parser=_iter_tsv,

@@ -18,7 +18,6 @@ from pathlib import Path
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDF
 
-from pypath.internals.cv_terms import CausalStatementCv, EntityTypeCv
 from pypath.share.downloads import DATA_DIR
 
 
@@ -29,32 +28,32 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 8
+_CACHE_VERSION = 9
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
 _MISSING_VALUE = "__MISSING__"
 
-# Mapping of BioPAX PhysicalEntity types to EntityTypeCv terms
+# Mapping of BioPAX PhysicalEntity types to str terms
 PHYSICAL_ENTITY_TYPE_MAP = {
-    'smallmolecule': EntityTypeCv.CHEMICAL,
-    'protein': EntityTypeCv.PROTEIN,
-    'gene': EntityTypeCv.PROTEIN,
-    'complex': EntityTypeCv.COMPLEX,
-    'complexassembly': EntityTypeCv.COMPLEX,
-    'dna': EntityTypeCv.DNA,
-    'dnaregion': EntityTypeCv.DNA,
-    'rna': EntityTypeCv.RNA,
-    'rnaregion': EntityTypeCv.RNA,
-    'physicalentity': EntityTypeCv.PHYSICAL_ENTITY,
+    'smallmolecule': 'chemical',
+    'protein': 'protein',
+    'gene': 'protein',
+    'complex': 'complex',
+    'complexassembly': 'complex',
+    'dna': 'dna',
+    'dnaregion': 'dna',
+    'rna': 'rna',
+    'rnaregion': 'rna',
+    'physicalentity': 'physical_entity',
 }
 
-# Mapping of BioPAX EntityReference subtypes to EntityTypeCv terms
+# Mapping of BioPAX EntityReference subtypes to str terms
 ENTITY_REFERENCE_TYPE_MAP = {
-    'proteinreference': EntityTypeCv.PROTEIN,
-    'smallmoleculereference': EntityTypeCv.CHEMICAL,
-    'dnareference': EntityTypeCv.DNA,
-    'rnareference': EntityTypeCv.RNA,
+    'proteinreference': 'protein',
+    'smallmoleculereference': 'chemical',
+    'dnareference': 'dna',
+    'rnareference': 'rna',
 }
 
 # EntityReference types to process
@@ -451,7 +450,6 @@ def _build_degradation_index(
 def _load_entity_reference_index(g: Graph, xref_cache: dict[str, dict]) -> dict[str, dict]:
     """Build an index of EntityReference URIs to their full Entity data."""
     from pypath.internals.silver_schema import Entity, Identifier, Annotation
-    from pypath.internals.cv_terms import IdentifierNamespaceCv
 
     reference_index = {}
 
@@ -462,7 +460,7 @@ def _load_entity_reference_index(g: Graph, xref_cache: dict[str, dict]) -> dict[
         props = _get_entity_props(g, s)
 
         type_str = str(o).split('#')[-1].lower()
-        entity_type = ENTITY_REFERENCE_TYPE_MAP.get(type_str, EntityTypeCv.PHYSICAL_ENTITY)
+        entity_type = ENTITY_REFERENCE_TYPE_MAP.get(type_str, 'physical_entity')
 
         names = _extract_names_from_props(props, BP)
         xrefs = _extract_xrefs_from_props(props, xref_cache, BP)
@@ -474,32 +472,32 @@ def _load_entity_reference_index(g: Graph, xref_cache: dict[str, dict]) -> dict[
 
         identifiers = []
         if names.get('display_name'):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.NAME, value=names['display_name']))
+            identifiers.append(Identifier(type='name', value=names['display_name']))
         if names.get('standard_name'):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=names['standard_name']))
+            identifiers.append(Identifier(type='synonym', value=names['standard_name']))
         for synonym in names.get('synonyms', []):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.SYNONYM, value=synonym))
+            identifiers.append(Identifier(type='synonym', value=synonym))
 
         for reactome_id in xrefs.get('reactome_stable_id', []):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_STABLE_ID, value=reactome_id))
+            identifiers.append(Identifier(type='reactome', value=reactome_id))
         for reactome_id in xrefs.get('reactome_id', []):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.REACTOME_ID, value=reactome_id))
+            identifiers.append(Identifier(type='reactome_id', value=reactome_id))
         for uniprot_id in xrefs.get('uniprot', []):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.UNIPROT, value=uniprot_id))
+            identifiers.append(Identifier(type='uniprot', value=uniprot_id))
         for chebi_id in xrefs.get('chebi', []):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.CHEBI, value=chebi_id))
+            identifiers.append(Identifier(type='chebi', value=chebi_id))
         for pubchem_id in xrefs.get('pubchem_compound', []):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=pubchem_id))
+            identifiers.append(Identifier(type='pubchem', value=pubchem_id))
         for kegg_id in xrefs.get('kegg', []):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.KEGG_COMPOUND, value=kegg_id))
+            identifiers.append(Identifier(type='kegg', value=kegg_id))
         for go_id in xrefs.get('go', []):
-            identifiers.append(Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=go_id))
+            identifiers.append(Identifier(type='go', value=go_id))
 
         annotations = []
         for pubmed_id in xrefs.get('pubmed', []):
-            annotations.append(Annotation(term=IdentifierNamespaceCv.PUBMED, value=pubmed_id))
+            annotations.append(Annotation(term='publications', value=pubmed_id))
         if ncbi_tax_id:
-            annotations.append(Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=ncbi_tax_id))
+            annotations.append(Annotation(term='in_taxon', value=ncbi_tax_id))
 
         entity = Entity(
             type=entity_type,
@@ -530,7 +528,6 @@ def _extract_participant_data(
     stoich_map: dict[str, str]
 ) -> dict | list[dict]:
     """Extract data for a single participant molecule."""
-    from pypath.internals.cv_terms import IdentifierNamespaceCv
 
     props = _get_entity_props(g, molecule_uri)
     names = _extract_names_from_props(props, BP)
@@ -538,7 +535,7 @@ def _extract_participant_data(
 
     type_uris = props.get(RDF.type, [])
     entity_type_str = str(type_uris[0]).split('#')[-1].lower() if type_uris else 'physicalentity'
-    entity_type = PHYSICAL_ENTITY_TYPE_MAP.get(entity_type_str, EntityTypeCv.PHYSICAL_ENTITY)
+    entity_type = PHYSICAL_ENTITY_TYPE_MAP.get(entity_type_str, 'physical_entity')
 
     refs = props.get(BP.entityReference, [])
     members = props.get(BP.memberPhysicalEntity, [])
@@ -571,21 +568,21 @@ def _extract_participant_data(
             all_go = []
 
             for identifier in ref_entity.identifiers or []:
-                if identifier.type == IdentifierNamespaceCv.SYNONYM:
+                if identifier.type == 'synonym':
                     all_synonyms.append(identifier.value)
-                elif identifier.type == IdentifierNamespaceCv.UNIPROT and identifier.value not in existing_uniprot:
+                elif identifier.type == 'uniprot' and identifier.value not in existing_uniprot:
                     existing_uniprot.add(identifier.value)
-                elif identifier.type == IdentifierNamespaceCv.CHEBI and identifier.value not in existing_chebi:
+                elif identifier.type == 'chebi' and identifier.value not in existing_chebi:
                     existing_chebi.add(identifier.value)
-                elif identifier.type == IdentifierNamespaceCv.PUBCHEM_COMPOUND:
+                elif identifier.type == 'pubchem':
                     all_pubchem.append(identifier.value)
-                elif identifier.type == IdentifierNamespaceCv.KEGG_COMPOUND:
+                elif identifier.type == 'kegg':
                     all_kegg.append(identifier.value)
-                elif identifier.type == IdentifierNamespaceCv.CV_TERM_ACCESSION:
+                elif identifier.type == 'go':
                     all_go.append(identifier.value)
 
             for annotation in ref_entity.annotations or []:
-                if annotation.term == IdentifierNamespaceCv.NCBI_TAX_ID and annotation.value:
+                if annotation.term == 'in_taxon' and annotation.value:
                     participant['ncbi_tax_id'] = annotation.value
 
             participant['uniprot'] = ';'.join(sorted(existing_uniprot - {''}))
@@ -598,8 +595,8 @@ def _extract_participant_data(
         return participant
 
     elif members:
-        if entity_type == EntityTypeCv.PROTEIN:
-            family_type = EntityTypeCv.PROTEIN_FAMILY
+        if entity_type == 'protein':
+            family_type = 'protein_family'
         else:
             family_type = entity_type
 
@@ -655,21 +652,21 @@ def _extract_participant_data(
                     all_go = []
 
                     for identifier in ref_entity.identifiers or []:
-                        if identifier.type == IdentifierNamespaceCv.SYNONYM:
+                        if identifier.type == 'synonym':
                             all_synonyms.append(identifier.value)
-                        elif identifier.type == IdentifierNamespaceCv.UNIPROT and identifier.value not in existing_uniprot:
+                        elif identifier.type == 'uniprot' and identifier.value not in existing_uniprot:
                             existing_uniprot.add(identifier.value)
-                        elif identifier.type == IdentifierNamespaceCv.CHEBI and identifier.value not in existing_chebi:
+                        elif identifier.type == 'chebi' and identifier.value not in existing_chebi:
                             existing_chebi.add(identifier.value)
-                        elif identifier.type == IdentifierNamespaceCv.PUBCHEM_COMPOUND:
+                        elif identifier.type == 'pubchem':
                             all_pubchem.append(identifier.value)
-                        elif identifier.type == IdentifierNamespaceCv.KEGG_COMPOUND:
+                        elif identifier.type == 'kegg':
                             all_kegg.append(identifier.value)
-                        elif identifier.type == IdentifierNamespaceCv.CV_TERM_ACCESSION:
+                        elif identifier.type == 'go':
                             all_go.append(identifier.value)
 
                     for annotation in ref_entity.annotations or []:
-                        if annotation.term == IdentifierNamespaceCv.NCBI_TAX_ID and annotation.value:
+                        if annotation.term == 'in_taxon' and annotation.value:
                             member_data['ncbi_tax_id'] = annotation.value
 
                     member_data['uniprot'] = ';'.join(sorted(existing_uniprot - {''}))
@@ -705,8 +702,8 @@ def _extract_participant_data(
 # Data Iterators
 # --------------------------------------------------------------------------- #
 
-_NUCLEIC_ACID_TYPES = {str(EntityTypeCv.DNA), str(EntityTypeCv.RNA)}
-_PROTEIN_OR_RNA_TYPES = {str(EntityTypeCv.PROTEIN), str(EntityTypeCv.RNA)}
+_NUCLEIC_ACID_TYPES = {str('dna'), str('rna')}
+_PROTEIN_OR_RNA_TYPES = {str('protein'), str('rna')}
 
 
 def _is_transcription_or_translation(
@@ -743,8 +740,8 @@ def _iterate_reactions(
 ) -> Generator[dict, None, None]:
 
     reaction_targets = {
-        BP.BiochemicalReaction: EntityTypeCv.REACTION,
-        BP.Degradation: EntityTypeCv.DEGRADATION,
+        BP.BiochemicalReaction: 'reaction',
+        BP.Degradation: 'degradation',
     }
 
     count = 0
@@ -822,7 +819,7 @@ def _iterate_reactions(
         yield {
             'uri': str(reaction_uri),
             'reaction_type': reaction_type_str,
-            'entity_type': entity_type_cv.value,
+            'entity_type': entity_type_cv,
             'display_name': names.get('display_name', ''),
             'synonyms': ';'.join(names.get('synonyms', [])),
             'reactome_stable_id': ';'.join(xrefs.get('reactome_stable_id', [])),
@@ -992,9 +989,9 @@ def _iterate_pathways(
 
 
 def _classify_group_controller_entity_type(
-    controller_type: EntityTypeCv,
-    member_types: list[EntityTypeCv],
-) -> EntityTypeCv:
+    controller_type: str,
+    member_types: list[str],
+) -> str:
     """Classify a Reactome controller assembled from memberPhysicalEntity.
 
     We only keep COMPLEX when the BioPAX controller itself is complex-like.
@@ -1004,32 +1001,15 @@ def _classify_group_controller_entity_type(
     """
     member_type_set = set(member_types)
 
-    if controller_type == EntityTypeCv.COMPLEX or EntityTypeCv.COMPLEX in member_type_set:
-        return EntityTypeCv.COMPLEX
+    if controller_type == 'complex' or 'complex' in member_type_set:
+        return 'complex'
 
-    return EntityTypeCv.PHYSICAL_ENTITY
+    return 'physical_entity'
 
 
-def _causal_statement_for_control(
-    control_type_val: str,
-    is_degradation: bool = False,
-) -> str | None:
-    """Map Reactome controlType to PSI-MI causal statement term."""
-    control_type_upper = control_type_val.upper()
-
-    if is_degradation:
-        if control_type_upper == 'ACTIVATION':
-            return str(CausalStatementCv.DOWN_REGULATES_QUANTITY_BY_DESTABLIZATION)
-        if control_type_upper == 'INHIBITION':
-            return str(CausalStatementCv.UP_REGULATES_QUANTITY_BY_STABILIZATION)
-        return str(CausalStatementCv.DOWN_REGULATES_QUANTITY_BY_DESTABLIZATION)
-
-    if control_type_upper == 'ACTIVATION':
-        return str(CausalStatementCv.UP_REGULATES_ACTIVITY)
-    if control_type_upper == 'INHIBITION':
-        return str(CausalStatementCv.DOWN_REGULATES_ACTIVITY)
-
-    return None
+def _causal_statement_for_control(control_type_val: str, is_degradation: bool = False) -> str | None:
+    """Preserve source control type; the resource module chooses biological semantics."""
+    return control_type_val or None
 
 
 def _iterate_controls(
@@ -1041,11 +1021,10 @@ def _iterate_controls(
     degradation_index: dict[str, dict] | None = None,
 ) -> Generator[dict, None, None]:
 
-    from pypath.internals.cv_terms import IdentifierNamespaceCv
 
     control_targets = {
-        BP.Catalysis: EntityTypeCv.CATALYSIS,
-        BP.Control: EntityTypeCv.CONTROL,
+        BP.Catalysis: 'catalysis',
+        BP.Control: 'control',
     }
 
     degradation_index = degradation_index or {}
@@ -1079,12 +1058,12 @@ def _iterate_controls(
 
             c_types = c_props.get(RDF.type, [])
             c_type_str = str(c_types[0]).split('#')[-1].lower() if c_types else 'physicalentity'
-            controller_entity_type = PHYSICAL_ENTITY_TYPE_MAP.get(c_type_str, EntityTypeCv.PHYSICAL_ENTITY)
+            controller_entity_type = PHYSICAL_ENTITY_TYPE_MAP.get(c_type_str, 'physical_entity')
 
             controller_info = {
                 'role': 'controller',
                 'display_name': c_names.get('display_name', ''),
-                'entity_type': controller_entity_type.value,
+                'entity_type': controller_entity_type,
                 'reactome_stable_id': ';'.join(c_xrefs.get('reactome_stable_id', [])),
                 'uniprot': ';'.join(c_xrefs.get('uniprot', [])),
                 'chebi': '',
@@ -1098,7 +1077,7 @@ def _iterate_controls(
             }
 
             controller_refs_to_merge: list[str] = []
-            controller_member_types: list[EntityTypeCv] = []
+            controller_member_types: list[str] = []
             has_member_physical_entities = False
 
             c_refs = c_props.get(BP.entityReference, [])
@@ -1115,11 +1094,11 @@ def _iterate_controls(
 
                     member_types = member_props.get(RDF.type, [])
                     member_type_str = str(member_types[0]).split('#')[-1].lower() if member_types else 'physicalentity'
-                    member_entity_type = PHYSICAL_ENTITY_TYPE_MAP.get(member_type_str, EntityTypeCv.PHYSICAL_ENTITY)
+                    member_entity_type = PHYSICAL_ENTITY_TYPE_MAP.get(member_type_str, 'physical_entity')
                     controller_member_types.append(member_entity_type)
 
                     member_data = {
-                        'entity_type': member_entity_type.value,
+                        'entity_type': member_entity_type,
                         'display_name': member_names.get('display_name', ''),
                         'reactome_stable_id': ';'.join(member_xrefs.get('reactome_stable_id', [])),
                         'uniprot': ';'.join(member_xrefs.get('uniprot', [])),
@@ -1147,21 +1126,21 @@ def _iterate_controls(
                             all_go = []
 
                             for identifier in ref_entity.identifiers or []:
-                                if identifier.type == IdentifierNamespaceCv.SYNONYM:
+                                if identifier.type == 'synonym':
                                     all_synonyms.append(identifier.value)
-                                elif identifier.type == IdentifierNamespaceCv.UNIPROT:
+                                elif identifier.type == 'uniprot':
                                     existing_uniprot.add(identifier.value)
-                                elif identifier.type == IdentifierNamespaceCv.CHEBI:
+                                elif identifier.type == 'chebi':
                                     existing_chebi.add(identifier.value)
-                                elif identifier.type == IdentifierNamespaceCv.PUBCHEM_COMPOUND:
+                                elif identifier.type == 'pubchem':
                                     all_pubchem.append(identifier.value)
-                                elif identifier.type == IdentifierNamespaceCv.KEGG_COMPOUND:
+                                elif identifier.type == 'kegg':
                                     all_kegg.append(identifier.value)
-                                elif identifier.type == IdentifierNamespaceCv.CV_TERM_ACCESSION:
+                                elif identifier.type == 'go':
                                     all_go.append(identifier.value)
 
                             for annotation in ref_entity.annotations or []:
-                                if annotation.term == IdentifierNamespaceCv.NCBI_TAX_ID and annotation.value:
+                                if annotation.term == 'in_taxon' and annotation.value:
                                     member_data['ncbi_tax_id'] = annotation.value
 
                             member_data['uniprot'] = ';'.join(sorted(existing_uniprot - {''}))
@@ -1187,21 +1166,21 @@ def _iterate_controls(
                         ref_entity = ref_entry['entity']
 
                         for identifier in ref_entity.identifiers or []:
-                            if identifier.type == IdentifierNamespaceCv.SYNONYM:
+                            if identifier.type == 'synonym':
                                 all_synonyms.append(identifier.value)
-                            elif identifier.type == IdentifierNamespaceCv.UNIPROT:
+                            elif identifier.type == 'uniprot':
                                 existing_uniprot.add(identifier.value)
-                            elif identifier.type == IdentifierNamespaceCv.CHEBI:
+                            elif identifier.type == 'chebi':
                                 existing_chebi.add(identifier.value)
-                            elif identifier.type == IdentifierNamespaceCv.PUBCHEM_COMPOUND:
+                            elif identifier.type == 'pubchem':
                                 all_pubchem.append(identifier.value)
-                            elif identifier.type == IdentifierNamespaceCv.KEGG_COMPOUND:
+                            elif identifier.type == 'kegg':
                                 all_kegg.append(identifier.value)
-                            elif identifier.type == IdentifierNamespaceCv.CV_TERM_ACCESSION:
+                            elif identifier.type == 'go':
                                 all_go.append(identifier.value)
 
                         for annotation in ref_entity.annotations or []:
-                            if annotation.term == IdentifierNamespaceCv.NCBI_TAX_ID and annotation.value:
+                            if annotation.term == 'in_taxon' and annotation.value:
                                 controller_info['ncbi_tax_id'] = annotation.value
 
                 if has_member_physical_entities:
@@ -1209,9 +1188,9 @@ def _iterate_controls(
                         controller_entity_type,
                         controller_member_types,
                     )
-                    controller_info['entity_type'] = controller_entity_type.value
+                    controller_info['entity_type'] = controller_entity_type
 
-                    if controller_entity_type in {EntityTypeCv.PROTEIN_FAMILY, EntityTypeCv.PHYSICAL_ENTITY, EntityTypeCv.COMPLEX}:
+                    if controller_entity_type in {'protein_family', 'physical_entity', 'complex'}:
                         controller_info['uniprot'] = ''
                         controller_info['chebi'] = ''
                     else:
@@ -1239,48 +1218,22 @@ def _iterate_controls(
             cd_type_str = str(cd_types[0]).split('#')[-1] if cd_types else ''
             cd_type_str_lower = cd_type_str.lower()
 
-            if 'degradation' in cd_type_str_lower:
+            if cd_type_str_lower == 'degradation':
+                # Preserve the controlled process, not an inferred effect on its substrate.
                 is_degradation_controlled = True
-                reactant = degradation_index.get(cd_uri_str)
-                if reactant:
-                    controlled_info = {
-                        'role': 'controlled',
-                        'display_name': reactant.get('display_name', ''),
-                        'entity_type': reactant.get('entity_type', ''),
-                        'reactome_stable_id': reactant.get('reactome_stable_id', ''),
-                        'uniprot': reactant.get('uniprot', ''),
-                        'chebi': reactant.get('chebi', ''),
-                        'synonyms': reactant.get('synonyms', ''),
-                        'pubchem_compound': reactant.get('pubchem_compound', ''),
-                        'kegg': reactant.get('kegg', ''),
-                        'go': reactant.get('go', ''),
-                        'ncbi_tax_id': reactant.get('ncbi_tax_id', ''),
-                        'stoichiometry': reactant.get('stoichiometry', ''),
-                        'pathway_term_accession': pathway_term_accession,
-                    }
-                else:
-                    # Fallback: use the reaction itself if reactant not found
-                    controlled_info = {
-                        'role': 'controlled',
-                        'display_name': cd_names.get('display_name', ''),
-                        'entity_type': EntityTypeCv.DEGRADATION.value,
-                        'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
-                        'uniprot': '',
-                        'chebi': '',
-                        'synonyms': '',
-                        'pubchem_compound': '',
-                        'kegg': '',
-                        'go': '',
-                        'ncbi_tax_id': '',
-                        'stoichiometry': '',
-                        'pathway_term_accession': pathway_term_accession,
-                    }
-            elif 'biochemicalreaction' in cd_type_str_lower:
-                controlled_entity_type = EntityTypeCv.REACTION
                 controlled_info = {
                     'role': 'controlled',
                     'display_name': cd_names.get('display_name', ''),
-                    'entity_type': controlled_entity_type.value,
+                    'entity_type': 'degradation',
+                    'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                    'pathway_term_accession': pathway_term_accession,
+                }
+            elif cd_type_str_lower == 'biochemicalreaction':
+                controlled_entity_type = 'reaction'
+                controlled_info = {
+                    'role': 'controlled',
+                    'display_name': cd_names.get('display_name', ''),
+                    'entity_type': controlled_entity_type,
                     'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
                     'uniprot': '',
                     'chebi': '',
@@ -1292,12 +1245,12 @@ def _iterate_controls(
                     'stoichiometry': '',
                     'pathway_term_accession': pathway_term_accession,
                 }
-            elif 'pathway' in cd_type_str_lower:
-                controlled_entity_type = EntityTypeCv.CV_TERM
+            elif cd_type_str_lower == 'pathway':
+                controlled_entity_type = 'cv_term'
                 controlled_info = {
                     'role': 'controlled',
                     'display_name': cd_names.get('display_name', ''),
-                    'entity_type': controlled_entity_type.value,
+                    'entity_type': controlled_entity_type,
                     'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
                     'uniprot': '',
                     'chebi': '',
@@ -1310,11 +1263,11 @@ def _iterate_controls(
                     'pathway_term_accession': pathway_term_accession,
                 }
             else:
-                controlled_entity_type = EntityTypeCv.INTERACTION
+                controlled_entity_type = 'interaction'
                 controlled_info = {
                     'role': 'controlled',
                     'display_name': cd_names.get('display_name', ''),
-                    'entity_type': controlled_entity_type.value,
+                    'entity_type': controlled_entity_type,
                     'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
                     'uniprot': '',
                     'chebi': '',
@@ -1334,7 +1287,7 @@ def _iterate_controls(
         yield {
             'uri': str(s),
             'control_class': control_type_cls,
-            'entity_type': entity_type_cv.value,
+            'entity_type': entity_type_cv,
             'display_name': control_display_name,
             'reactome_stable_id': ';'.join(xrefs.get('reactome_stable_id', [])),
             'reactome_id': ';'.join(xrefs.get('reactome_id', [])),

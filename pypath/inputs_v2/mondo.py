@@ -1,26 +1,31 @@
 """MONDO ontology and gene-disease associations from ``mondo.obo``.
 
 The ontology dataset exports MONDO terms and hierarchy as OBO. The annotations
- dataset emits association entities linking MONDO disease terms to HGNC gene
+ dataset emits explicit broad relations linking MONDO disease terms to HGNC gene
 entities for MONDO relationships whose target is an HGNC gene identifier.
 """
 
 from __future__ import annotations
+
+from biolink_model.datamodel.model import Gene, OntologyClass, slots
+from omnipath_core.naming import Namespace
 
 import re
 from collections.abc import Generator, Iterable
 from typing import Any
 
 from pypath.internals.cv_terms import (
-    DiseaseAnnotationCv,
-    EntityTypeCv,
-    IdentifierNamespaceCv,
     LicenseCV,
     OntologyCv,
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
+from pypath.internals.silver_schema import (
+    Annotation,
+    Entity,
+    Identifier,
+    Relation,
+)
 from pypath.inputs_v2.base import (
     Dataset,
     Download,
@@ -41,16 +46,20 @@ _MONDO_DOWNLOAD = Download(
 # Gene-disease relation predicates observed in MONDO OBO records with HGNC
 # targets. ``RO:0004001`` is gain-of-function germline mutation; ``RO:0004004``
 # is somatic mutation. The symbolic predicates are used verbatim in MONDO.
-GENE_DISEASE_RELATIONS = frozenset({
-    'has_material_basis_in_germline_mutation_in',
-    'disease_has_basis_in_dysfunction_of',
-    'disease_has_basis_in_disruption_of',
-    'disease_causes_dysfunction_of',
-    'RO:0004001',
-    'RO:0004004',
-})
+GENE_DISEASE_RELATIONS = frozenset(
+    {
+        'has_material_basis_in_germline_mutation_in',
+        'disease_has_basis_in_dysfunction_of',
+        'disease_has_basis_in_disruption_of',
+        'disease_causes_dysfunction_of',
+        'RO:0004001',
+        'RO:0004004',
+    }
+)
 
-_HGNC_TARGET_RE = re.compile(r'^(?:https?://identifiers\.org/hgnc/|HGNC:)(\d+)$', re.I)
+_HGNC_TARGET_RE = re.compile(
+    r'^(?:https?://identifiers\.org/hgnc/|HGNC:)(\d+)$', re.I
+)
 _SOURCE_RE = re.compile(r'\bsource="([^"]+)"')
 
 
@@ -91,84 +100,90 @@ def iter_gene_disease_associations(
     current: dict[str, Any] | None = None
     seen: set[tuple[str, str, str]] = set()
 
-    for raw_line in text.splitlines():
+    stanza: list[str] = []
+    for raw_line in [*text.splitlines(), '[End]']:
         line = raw_line.strip()
-
-        if line == '[Term]':
-            current = {'id': '', 'name': ''}
-            continue
         if line.startswith('['):
-            current = None
-            continue
-        if current is None or not line:
-            continue
+            if current is not None and not any(
+                value == 'is_obsolete: true' for value in stanza
+            ):
+                for value in stanza:
+                    tag, _, relation_text = value.partition(':')
+                    if tag != 'relationship' and not (
+                        include_logical_definitions and tag == 'intersection_of'
+                    ):
+                        continue
+                    association = _parse_gene_relation(
+                        relation_text.strip(), allowed_relations
+                    )
+                    if not association or not current.get('id'):
+                        continue
+                    key = (
+                        current['id'],
+                        association['hgnc_id'],
+                        association['relation'],
+                    )
+                    if key not in seen:
+                        seen.add(key)
+                        yield {
+                            'mondo_id': current['id'],
+                            'mondo_name': current.get('name') or current['id'],
+                            **association,
+                        }
+            current = {'id': '', 'name': ''} if line == '[Term]' else None
+            stanza = []
+        elif current is not None and line:
+            stanza.append(line)
+            tag, _, value = line.partition(':')
+            if tag in ('id', 'name') and not current[tag]:
+                current[tag] = value.strip()
 
-        tag, sep, value = line.partition(':')
-        if not sep:
-            continue
-        tag = tag.strip()
-        value = value.strip()
 
-        if tag == 'id' and not current['id']:
-            current['id'] = value
-        elif tag == 'name' and not current['name']:
-            current['name'] = value
-        elif tag == 'relationship' or (include_logical_definitions and tag == 'intersection_of'):
-            association = _parse_gene_relation(value, allowed_relations)
-            if not association or not current.get('id'):
-                continue
-
-            key = (current['id'], association['hgnc_id'], association['relation'])
-            if key in seen:
-                continue
-            seen.add(key)
-
-            yield {
-                'mondo_id': current['id'],
-                'mondo_name': current.get('name') or current['id'],
-                **association,
-            }
-
-
-def gene_disease_association_to_entity(row: dict[str, Any]) -> Entity:
-    """Map a MONDO-HGNC association to an association entity."""
-    gene_identifiers = [
-        Identifier(type=IdentifierNamespaceCv.HGNC, value=row['hgnc_id']),
-    ]
+def gene_disease_association_to_entity(row: dict[str, Any]) -> Relation | None:
+    """Preserve explicit MONDO gene links without inventing a causal crosswalk."""
+    if row.get('relation') not in GENE_DISEASE_RELATIONS or not row.get(
+        'hgnc_id'
+    ):
+        return None
+    gene_identifiers = [Identifier(type=Namespace.HGNC, value=row['hgnc_id'])]
     if row.get('gene_symbol'):
         gene_identifiers.append(
-            Identifier(type=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=row['gene_symbol'])
+            Identifier(type=Namespace.GENESYMBOL, value=row['gene_symbol'])
         )
-
-    annotations = [Annotation(term=DiseaseAnnotationCv.RELATIONSHIP, value=row['relation'])]
-    for source in row.get('sources') or []:
-        annotations.append(Annotation(term=DiseaseAnnotationCv.SOURCE, value=source))
-
-    return Entity(
-        type=EntityTypeCv.ASSOCIATION,
-        identifiers=[],
+    # Preserve published source predicates as external attributes; symbolic
+    # predicates and provenance strings remain in the parsed evidence payload.
+    annotations = (
+        [Annotation(term=row['relation'], value=f'HGNC:{row["hgnc_id"]}')]
+        if row['relation'].startswith('RO:')
+        else []
+    )
+    return Relation(
+        subject=Entity(
+            type=OntologyClass,
+            identifiers=[
+                Identifier(type=Namespace.MONDO, value=row['mondo_id']),
+                *(
+                    [Identifier(type=Namespace.NAME, value=row['mondo_name'])]
+                    if row.get('mondo_name')
+                    else []
+                ),
+            ],
+        ),
+        predicate=slots.associated_with,
+        object=Entity(
+            type=Gene,
+            identifiers=gene_identifiers,
+            annotations=[
+                Annotation(term=slots.in_taxon, value='NCBITaxon:9606')
+            ],
+        ),
         annotations=annotations,
-        membership=[
-            Membership(
-                member=Entity(
-                    type=EntityTypeCv.CV_TERM,
-                    identifiers=[
-                        Identifier(type=IdentifierNamespaceCv.CV_TERM_ACCESSION, value=row['mondo_id']),
-                    ],
-                ),
-            ),
-            Membership(
-                member=Entity(
-                    type=EntityTypeCv.PROTEIN,
-                    identifiers=gene_identifiers,
-                    annotations=[Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606')],
-                ),
-            ),
-        ],
     )
 
 
-def _parse_gene_relation(value: str, allowed_relations: set[str]) -> dict[str, Any] | None:
+def _parse_gene_relation(
+    value: str, allowed_relations: set[str]
+) -> dict[str, Any] | None:
     base, _, target_name = value.partition(' ! ')
     parts = base.strip().split(None, 2)
     if len(parts) < 2:
@@ -194,13 +209,21 @@ def _parse_gene_relation(value: str, allowed_relations: set[str]) -> dict[str, A
 def _read_text(opener) -> str:
     handle = None
     if opener and getattr(opener, 'result', None):
-        handle = next(iter(opener.result.values()), None) if isinstance(opener.result, dict) else opener.result
+        handle = (
+            next(iter(opener.result.values()), None)
+            if isinstance(opener.result, dict)
+            else opener.result
+        )
     if handle is None:
         return ''
     if hasattr(handle, 'seek'):
         handle.seek(0)
     content = handle.read() if hasattr(handle, 'read') else ''.join(handle)
-    return content.decode('utf-8', 'ignore') if isinstance(content, bytes) else str(content)
+    return (
+        content.decode('utf-8', 'ignore')
+        if isinstance(content, bytes)
+        else str(content)
+    )
 
 
 def _dedupe(values: Iterable[str]) -> list[str]:
@@ -213,7 +236,9 @@ def _dedupe(values: Iterable[str]) -> list[str]:
     return out
 
 
-terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='mondo')
+terms_schema = ontology_entity_mapper(
+    obo_record_to_term, ontology_id='mondo', identifier_type=Namespace.MONDO
+)
 
 
 resource = Resource(

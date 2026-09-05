@@ -1,11 +1,16 @@
-"""
-Parse MACdb data and emit Entity records.
+"""MACdb chemical–trait associations with study evidence.
 
-This module converts annotations of metabolites-cancer associations into Entity
-records using the declarative schema pattern.
+Traits retain source IDs; the EFO crosswalk is a topic, not asserted equivalence.
+Contrast p-values are typed. Study conclusions and conditions are narrative;
+scalar assay values retain source-field context as typed quantities; ambiguous
+intervals and nonnumeric assay fields stay in the original evidence payload.
 """
 
 from functools import partial
+import math
+import re
+
+from omnipath_core.measurements import Measurement
 
 from pypath.inputs_v2.parsers.base import iter_tsv
 from pypath.inputs_v2.parsers.macdb import iter_associations
@@ -14,34 +19,19 @@ from pypath.inputs_v2.base import (
     Download,
     Resource,
     Dataset,
-    ontology_entity_mapper,
 )
+from biolink_model.datamodel import model
+from biolink_model.datamodel.model import slots
+from omnipath_core.naming import Namespace
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
+    RelationBuilder,
 )
-from pypath.internals.ontology_builder import (
-    OntologyBuilder,
-    RelationshipBuilder
-)
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    InteractionTypeCv,
-    OntologyCv,
-    DiseaseAnnotationCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    ResourceCv,
-    MoleculeSubtypeCv,
-    MoleculeAnnotationsCv,
-    AssayAnnotationsCv,
-)
+from pypath.internals.cv_terms import LicenseCV, UpdateCategoryCV, ResourceCv
 
 # =================================== SET-UP ===================================
 
@@ -53,7 +43,7 @@ config = ResourceConfig(
     name='MACdb',
     url='https://ngdc.cncb.ac.cn/macdb/',
     license=LicenseCV.ACADEMIC_FREE,
-    update_category=UpdateCategoryCV.IRREGULAR, # Static?
+    update_category=UpdateCategoryCV.IRREGULAR,  # Static?
     pubmed='37027007',
     primary_category='metabolism',
     description=(
@@ -69,151 +59,125 @@ config = ResourceConfig(
 download = dict()
 
 for t in TABLES:
-
     download[t] = Download(
-            url=BASE_URL % t,
-            filename=f'downloads.{t}.txt',
-            subfolder='macdb',
-            large=True,
-            ext='.txt',
-            default_mode='r',
-        )
+        url=BASE_URL % t,
+        filename=f'downloads.{t}.txt',
+        subfolder='macdb',
+        large=True,
+        ext='.txt',
+        default_mode='r',
+    )
 
 # =================================== SCHEMA ===================================
 
 f = FieldConfig(
     extract={
         'metacID': r'^(METAC_\d+)$',
-        'year':  r'^(\d{4})',
+        'year': r'^(\d{4})',
     },
     map={},
     transform={},
 )
 
-trait_schema = OntologyBuilder(
-    id='Trait_Ontology_ID',
-    name='Trait_Ontology',
-    relationships=[
-        RelationshipBuilder(
-            type='part_of',
-            target=f('Trait_Type'),
-        ),
-        RelationshipBuilder(
-            type='is_a',
-            target=f('EFO_ID'),
-            target_name=f('EFO_Ontology'),
-        ),
-    ]
-)
-
-
-trait_terms_schema = ontology_entity_mapper(
-    trait_schema,
-    ontology_id='macdb_traits',
-)
-
-
-association_schema = EntityBuilder(
-    entity_type=EntityTypeCv.ASSOCIATION,
-    annotations=AnnotationsBuilder(
-        CV(term=InteractionTypeCv.PHENOTYPE_RESULT),
-        CV(
-            term=IdentifierNamespaceCv.METAC,
-            value=f('Cohort_id', extract='metacID')
-        ),
-        CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_id')),
-        CV(term=IdentifierNamespaceCv.PUBMED_CENTRAL, value=f('pmc_id')),
-        CV(
-            term=AssayAnnotationsCv.CASE_CONCENTRATION_MEAN,
-            value=f('case_concentration')
-        ),
-        CV(
-            term=AssayAnnotationsCv.CASE_CONCENTRATION_MIN,
-            value=f('case_concentration_low')
-        ),
-        CV(
-            term=AssayAnnotationsCv.CASE_CONCENTRATION_MAX,
-            value=f('case_concentration_high')
-        ),
-        CV(
-            term=AssayAnnotationsCv.CASE_CONCENTRATION_SD,
-            value=f('case_confidence_interval')
-        ),
-        CV(
-            term=AssayAnnotationsCv.CONTROL_CONCENTRATION_MEAN,
-            value=f('control_concentration')
-        ),
-        CV(
-            term=AssayAnnotationsCv.CONTROL_CONCENTRATION_MIN,
-            value=f('control_concentration_low')
-        ),
-        CV(
-            term=AssayAnnotationsCv.CONTROL_CONCENTRATION_MAX,
-            value=f('control_concentration_high')
-        ),
-        CV(
-            term=AssayAnnotationsCv.CONTROL_CONCENTRATION_SD,
-            value=f('control_confidence_interval')
-        ),
-        CV(term=AssayAnnotationsCv.DELTA_CONCENTRATION, value=f('Delta_concentration')),
-        CV(
-            term=AssayAnnotationsCv.CONTRAST_P_VAL,
-            value=f('case_control_p-value')
-        ),
-        CV(
-            term=AssayAnnotationsCv.CONTRAST_LOGFC,
-            value=f('log2FC')
-        ),
-        CV(term=DiseaseAnnotationCv.TYPE, value=f('study_Cancer_type')),
-        CV(term=DiseaseAnnotationCv.SUBTYPE, value=f('study_Cancer_subtype')),
-        CV(term=AssayAnnotationsCv.CASE_DESCRIPTION, value=f('study_Case_name')),
-        CV(term=AssayAnnotationsCv.CASE_AGE, value=f('study_Case_age_group')),
-        CV(term=AssayAnnotationsCv.CASE_SEX, value=f('study_Case_sex')),
-        CV(term=AssayAnnotationsCv.CASE_SAMPLE_COUNT, value=f('study_Case_size')),
-        CV(
-            term=AssayAnnotationsCv.CONTROL_DESCRIPTION,
-            value=f('study_Control_name')
-        ),
-        CV(term=AssayAnnotationsCv.CONTROL_AGE, value=f('study_Control_age_group')),
-        CV(term=AssayAnnotationsCv.CONTROL_SEX, value=f('study_Control_sex')),
-        CV(
-            term=AssayAnnotationsCv.CONTROL_SAMPLE_COUNT,
-            value=f('study_Control_size')
-        ),
-        CV(term=AssayAnnotationsCv.DESCRIPTION, value=f('study_Condition')),
-        CV(term=AssayAnnotationsCv.CONCLUSION, value=f('study_Conclusion')),
-        CV(term=MoleculeAnnotationsCv.EXPERIMENTAL_METHOD, value=f('study_Platform')),
-        CV(term=AssayAnnotationsCv.TISSUE, value=f('study_Tissue')),
+# MACdb trait IDs are source concepts. The EFO crosswalk is preserved as a topic,
+# not identity or subclass, because that stronger assertion is not given by the table.
+trait_terms_schema = EntityBuilder(
+    entity_type=model.OntologyClass,
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.MACDB_TRAIT, value=f('Trait_Ontology_ID')),
+        CV(term=Namespace.NAME, value=f('Trait_Ontology')),
     ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.CV_TERM,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.CV_TERM_ACCESSION,
-                        value=f('trait_id'),
-                    ),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('trait_name')),
-                ),
+    annotations=AnnotationsBuilder(CV(term=slots.has_topic, value=f('EFO_ID'))),
+)
+
+
+_QUANTITATIVE_FIELDS = (
+    'case_concentration',
+    'case_concentration_low',
+    'case_concentration_high',
+    'case_confidence_interval',
+    'control_concentration',
+    'control_concentration_low',
+    'control_concentration_high',
+    'control_confidence_interval',
+    'Delta_concentration',
+    'log2FC',
+    'study_Case_size',
+    'study_Control_size',
+)
+_MEASUREMENT_RE = re.compile(
+    r'^\s*(<=|>=|[<>=~≈])?\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)\s*$'
+)
+
+
+def _measurement(row, field):
+    raw = row.get(field)
+    match = _MEASUREMENT_RE.fullmatch(str(raw)) if raw is not None else None
+    if not match or not math.isfinite(float(match[2])):
+        return None
+    comparator = match[1]
+    relation = {'<': 'less_than', '>': 'greater_than', '=': 'equal_to'}.get(
+        comparator
+    )
+    return Measurement(
+        model.QuantityValue(
+            has_numeric_value=float(match[2]), has_binary_relation=relation
+        ),
+        source_field=field,
+        comparator=comparator,
+    )
+
+
+association_schema = RelationBuilder(
+    subject=EntityBuilder(
+        entity_type=model.ChemicalEntity,
+        identifiers=IdentifiersBuilder(
+            CV(
+                term=Namespace.PUBCHEM,
+                value=f('pubchem_CID', extract='^(\\d+)$'),
+            ),
+            CV(term=Namespace.NAME, value=f('original_metabolite_name')),
+        ),
+        annotations=AnnotationsBuilder(),
+    ),
+    predicate=slots.associated_with,
+    object=EntityBuilder(
+        entity_type=model.OntologyClass,
+        identifiers=IdentifiersBuilder(
+            CV(term=Namespace.MACDB_TRAIT, value=f('trait_id')),
+            CV(term=Namespace.NAME, value=f('trait_name')),
+        ),
+        annotations=AnnotationsBuilder(),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.description, value=f('study_Conclusion')),
+        CV(term=slots.description, value=f('study_Condition')),
+        CV(
+            term=slots.p_value,
+            value=lambda row: _measurement(row, 'case_control_p-value'),
+        ),
+        CV(
+            term=slots.has_quantitative_value,
+            value=lambda row: [
+                v
+                for field in _QUANTITATIVE_FIELDS
+                if (v := _measurement(row, field)) is not None
+            ],
+        ),
+        CV(
+            term=slots.publications,
+            value=f(
+                'pubmed_id',
+                extract='^(\\d+)$',
+                transform=lambda v: 'PMID:' + str(v),
             ),
         ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(
-                        term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-                        value=f('pubchem_CID')
-                    ),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('original_metabolite_name')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(
-                        term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
-                        value=MoleculeSubtypeCv.METABOLITE,
-                    ),
-                ),
+        CV(
+            term=slots.publications,
+            value=f(
+                'pmc_id',
+                extract='^(?:PMC)?(\\d+)$',
+                transform=lambda v: 'PMC:' + str(v),
             ),
         ),
     ),

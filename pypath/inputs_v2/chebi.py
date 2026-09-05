@@ -73,21 +73,36 @@ molecules_schema = EntityBuilder(
         CV(term=Namespace.INCHI, value=f('inchi')),
         CV(term=Namespace.INCHIKEY, value=f('inchikey')),
         CV(term=Namespace.KEGG, value=lambda row: row.get('kegg_compound', [])),
-        CV(term=Namespace.PUBCHEM, value=lambda row: row.get('pubchem_compound', [])),
+        CV(
+            term=Namespace.PUBCHEM,
+            value=lambda row: row.get('pubchem_compound', []),
+        ),
         CV(term=Namespace.HMDB, value=lambda row: row.get('hmdb', [])),
-        CV(term=Namespace.LIPIDMAPS, value=lambda row: row.get('lipidmaps', [])),
+        CV(
+            term=Namespace.LIPIDMAPS, value=lambda row: row.get('lipidmaps', [])
+        ),
         CV(term=Namespace.CAS, value=lambda row: row.get('cas', [])),
+        CV(term=Namespace.NAME, value=f('name')),
+        CV(term=Namespace.SYNONYM, value=lambda row: row.get('synonyms', [])),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.name, value=f('name')),
-        CV(term=slots.synonym, value=lambda row: row.get('synonyms', [])),
         CV(term=slots.has_chemical_formula, value=f('formula')),
         CV(term=slots.description, value=f('definition')),
         CV(term='chemrof:mass', value=f('mass')),
         CV(term='chemrof:monoisotopic_mass', value=f('monoisotopic_mass')),
         CV(term='chemrof:charge', value=f('charge')),
-        CV(term=lambda row: [r['type'] for r in row.get('relationships', []) if r['type'] != 'BFO:0000051'],
-           value=lambda row: [r['target'] for r in row.get('relationships', []) if r['type'] != 'BFO:0000051']),
+        CV(
+            term=lambda row: [
+                r['type']
+                for r in row.get('relationships', [])
+                if r['type'] != 'BFO:0000051'
+            ],
+            value=lambda row: [
+                r['target']
+                for r in row.get('relationships', [])
+                if r['type'] != 'BFO:0000051'
+            ],
+        ),
     ),
     ontology_relations=lambda row: _ontology_relations(row),
 )
@@ -184,7 +199,9 @@ resource = Resource(
     molecules=Dataset(
         download=download,
         mapper=molecules_schema,
-        raw_parser=lambda opener, **kwargs: _raw(opener, data_type='molecules', **kwargs),
+        raw_parser=lambda opener, **kwargs: _raw(
+            opener, data_type='molecules', **kwargs
+        ),
     ),
     id_translation=Dataset(
         download=download,

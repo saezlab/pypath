@@ -6,18 +6,13 @@ records using the declarative schema pattern.
 """
 
 from __future__ import annotations
-
 import re
-
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    InteractionMetadataCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    ResourceCv,
-    InterCellAnnotations,
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from biolink_model.datamodel.model import (
+    Protein,
+    slots,
 )
+from omnipath_core.naming import Namespace
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -29,11 +24,6 @@ from pypath.internals.tabular_builder import (
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_csv
 
-
-# =============================================================================
-# Resource Configuration
-# =============================================================================
-
 config = ResourceConfig(
     id=ResourceCv.CONNECTOMEDB,
     name='ConnectomeDB2025',
@@ -42,36 +32,15 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='41171146',
     primary_category='interactions',
-    description=(
-        'ConnectomeDB is a comprehensive and ongoing project that provides a'
-        'high-quality manually curated database of interacting ligand-receptor'
-        'pairs for use in cell-cell communication analysis. First released in'
-        '2015 (Ramilowski, et al.), and subsequently updated in 2020 (Hou, et al.)'
-        'and 2025 (Liu, Maezono et al.), it aims to enhance the understanding of'
-        'cell-cell communication in humans and other mammals, supporting biological'
-        'and medical research.'
-    ),
+    description='ConnectomeDB is a comprehensive and ongoing project that provides ahigh-quality manually curated database of interacting ligand-receptorpairs for use in cell-cell communication analysis. First released in2015 (Ramilowski, et al.), and subsequently updated in 2020 (Hou, et al.)and 2025 (Liu, Maezono et al.), it aims to enhance the understanding ofcell-cell communication in humans and other mammals, supporting biologicaland medical research.',
 )
-
-
-# =============================================================================
-# Download Configurations
-# =============================================================================
-
 BASE_URL = 'https://connectomedb.org/downloads/Current-Release/CSV/'
-
 download_interactions = Download(
     url=BASE_URL + 'all_species.csv',
     filename='connectomedb_all_species_interactions.csv',
     subfolder='connectomedb2025',
 )
-
-
-# =============================================================================
-# Processing Helpers
-# =============================================================================
-
-_symbols_pat = re.compile(r"^([^,(]+)(?:\s*\((.+)\))?")
+_symbols_pat = re.compile('^([^,(]+)(?:\\s*\\((.+)\\))?')
 
 
 def _extract_primary_gene(token: str):
@@ -81,7 +50,9 @@ def _extract_primary_gene(token: str):
 
 def _extract_gene_alias(token: str):
     match = _symbols_pat.search(token or '')
-    return match.group(2).replace(", ", ";") if match and match.group(2) else None
+    return (
+        match.group(2).replace(', ', ';') if match and match.group(2) else None
+    )
 
 
 _species_taxon = {
@@ -103,10 +74,13 @@ _species_taxon = {
 
 
 def _species_to_taxon(species: str) -> str | None:
-    return _species_taxon.get((species or '').strip().lower())
+    taxon = _species_taxon.get((species or '').strip().lower())
+    return f'NCBITaxon:{taxon}' if taxon else None
 
-_cdb_pat = re.compile(r"^CDB\d{2}:(\d+)", re.IGNORECASE)
-_hgnc_pat = re.compile(r"^HGNC:(\d+)$", re.IGNORECASE)
+
+_cdb_pat = re.compile('^CDB\\d{2}:(\\d+)', re.IGNORECASE)
+_hgnc_pat = re.compile('^HGNC:(\\d+)$', re.IGNORECASE)
+
 
 def _extract_cdb(val: str) -> str | None:
     return val if _cdb_pat.match(val) else None
@@ -117,25 +91,6 @@ def _extract_hgnc_id(val: str) -> str | None:
     return match.group(1) if match else None
 
 
-def _location_terms(location: str | None) -> list[InterCellAnnotations]:
-    """Map ConnectomeDB location labels to UniProt keyword CV terms."""
-    location_lower = (location or '').lower()
-    terms: list[InterCellAnnotations] = []
-
-    if 'secreted' in location_lower:
-        terms.append(InterCellAnnotations.SECRETED)
-    if 'membrane' in location_lower:
-        terms.append(InterCellAnnotations.MEMBRANE)
-    if 'cytoplasm' in location_lower:
-        terms.append(InterCellAnnotations.CYTOPLASM)
-
-    return terms
-
-
-# =============================================================================
-# Field and Schema Definitions
-# =============================================================================
-
 f = FieldConfig(
     extract={
         'primary_gene': _extract_primary_gene,
@@ -143,61 +98,53 @@ f = FieldConfig(
         'cdb': _extract_cdb,
         'hgnc_id': _extract_hgnc_id,
     },
-    map={
-        'species_taxon': _species_to_taxon,
-    },
+    map={'species_taxon': _species_to_taxon},
 )
-
-# -----------------------------------------------------------------------------
-# Interactions Schema
-# -----------------------------------------------------------------------------
-
 ligand_builder = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
+    entity_type=Protein,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Ligand Symbols', extract='primary_gene')),
-        CV(term=IdentifierNamespaceCv.HGNC, value=f('Ligand Species ID', extract='hgnc_id')),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ligand ENSEMBL ID')),
+        CV(
+            term=Namespace.GENESYMBOL,
+            value=f('Ligand Symbols', extract='primary_gene'),
+        ),
+        CV(
+            term=Namespace.HGNC, value=f('Ligand Species ID', extract='hgnc_id')
+        ),
+        CV(term=Namespace.ENSG, value=f('Ligand ENSEMBL ID')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
-        CV(term=lambda row: _location_terms(row.get('Ligand Location'))),
-        CV(term=InterCellAnnotations.LIGAND),
+        CV(term=slots.in_taxon, value=f('Species', map='species_taxon'))
     ),
 )
-
 receptor_builder = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
+    entity_type=Protein,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Receptor Symbols', extract='primary_gene')),
-        CV(term=IdentifierNamespaceCv.HGNC, value=f('Receptor Species ID', extract='hgnc_id')),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Receptor ENSEMBL ID')),
+        CV(
+            term=Namespace.GENESYMBOL,
+            value=f('Receptor Symbols', extract='primary_gene'),
+        ),
+        CV(
+            term=Namespace.HGNC,
+            value=f('Receptor Species ID', extract='hgnc_id'),
+        ),
+        CV(term=Namespace.ENSG, value=f('Receptor ENSEMBL ID')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
-        CV(term=lambda row: _location_terms(row.get('Receptor Location'))),
-        CV(term=InterCellAnnotations.RECEPTOR),
+        CV(term=slots.in_taxon, value=f('Species', map='species_taxon'))
     ),
 )
-
 interactions_schema = RelationBuilder(
     subject=ligand_builder,
-    predicate='interacts_with',
+    predicate=slots.interacts_with,
     object=receptor_builder,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.CDB, value=f('Interaction ID', extract='cdb')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('LR Pair')),
+        CV(term=Namespace.CDB, value=f('Interaction ID', extract='cdb')),
+        CV(term=Namespace.NAME, value=f('LR Pair')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=InteractionMetadataCv.INTERACTION_DIRECTNESS, value=f('Evidence')),
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('Species', map='species_taxon')),
+        CV(term=slots.in_taxon, value=f('Species', map='species_taxon'))
     ),
 )
-
-# =============================================================================
-# Resource Definition
-# =============================================================================
-
 resource = Resource(
     config,
     interactions=Dataset(

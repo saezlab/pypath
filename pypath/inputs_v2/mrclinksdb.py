@@ -7,38 +7,27 @@ and supporting literature references.
 """
 
 from __future__ import annotations
-
 import re
-
-from pypath.internals.cv_terms import (
-    BiologicalRoleCv,
-    CurationCv,
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    MoleculeAnnotationsCv,
-    ParticipantMetadataCv,
-    ResourceCv,
-    UpdateCategoryCV,
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from biolink_model.datamodel.model import (
+    Protein,
+    MacromolecularComplex,
+    ChemicalEntity,
+    slots,
 )
+from omnipath_core.naming import Namespace
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
     MembershipBuilder,
     MembersFromList,
     RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.mrclinksdb import iter_mrclinksdb_interactions
-
-
-# =============================================================================
-# Resource Configuration
-# =============================================================================
 
 config = ResourceConfig(
     id=ResourceCv.MRCLINKSDB,
@@ -48,29 +37,23 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.IRREGULAR,
     primary_category='interactions',
     pubmed='38978014',
-    description=(
-        'MRClinksDB is a curated database of metabolite–receptor interactions, '
-        'covering ligand-receptor pairs with compound classification based on '
-        'the ClassyFire taxonomy, receptor UniProt identifiers, and PubMed '
-        'literature support.'
-    ),
+    description='MRClinksDB is a curated database of metabolite–receptor interactions, covering ligand-receptor pairs with compound classification based on the ClassyFire taxonomy, receptor UniProt identifiers, and PubMed literature support.',
 )
-
-
-# =============================================================================
-# Field Config
-# =============================================================================
-
 f = FieldConfig(
     transform={
-        # PubChem field is "CID:12345;SID:67890" — extract just the numeric CID
-        'pubchem_cid': lambda v: v.split(';')[0].split(':')[-1].strip(),
-        # Protein name fields use UniProt format: "Primary name (Alt 1) (Alt 2) ..."
-        # Extract the primary name (everything before the first parenthesis)
+        'pubchem_cid': lambda v: [
+            token.strip()[4:]
+            for token in v.split(';')
+            if re.fullmatch('CID:\\d+', token.strip())
+        ],
+        'pubchem_sid': lambda v: [
+            token.strip()[4:]
+            for token in v.split(';')
+            if re.fullmatch(r'SID:\d+', token.strip())
+        ],
         'primary_name': lambda v: v.split('(')[0].strip(),
-        # Extract all parenthesised alternative names as a list
-        'alt_names': lambda v: re.findall(r'\(([^)]+)\)', v),
-    },
+        'alt_names': lambda v: re.findall('\\(([^)]+)\\)', v),
+    }
 )
 
 
@@ -85,7 +68,11 @@ def _if_single(field: str):
     The returned callable can be passed directly to ``f()`` alongside any
     transform, e.g. ``f(_if_single('protein_name'), transform='primary_name')``.
     """
-    return lambda row, _f=field: row.get(_f) if '_' not in row.get('receptor_uniprot_id', '') else None
+    return (
+        lambda row, _f=field: row.get(_f)
+        if '_' not in str(row.get('receptor_uniprot_id') or '')
+        else None
+    )
 
 
 def _if_complex(field: str):
@@ -99,7 +86,11 @@ def _if_complex(field: str):
     The returned callable can be passed directly to ``f()`` alongside any
     transform, e.g. ``f(_if_complex('protein_name'), transform='primary_name')``.
     """
-    return lambda row, _f=field: row.get(_f) if '_' in row.get('receptor_uniprot_id', '') else None
+    return (
+        lambda row, _f=field: row.get(_f)
+        if '_' in str(row.get('receptor_uniprot_id') or '')
+        else None
+    )
 
 
 def _iter_with_taxon(opener, *, taxon_id: str, **kwargs):
@@ -108,66 +99,84 @@ def _iter_with_taxon(opener, *, taxon_id: str, **kwargs):
         yield row
 
 
-# =============================================================================
-# Schema
-# =============================================================================
-
 metabolite_builder = EntityBuilder(
-    entity_type=EntityTypeCv.CHEMICAL,
+    entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
-        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-           value=f('pubchem_cid_sid', transform='pubchem_cid')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
-        CV(term=IdentifierNamespaceCv.SMILES, value=f('canonical_smiles')),
-        CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('molecular_formula')),
+        CV(term=Namespace.HMDB, value=f('hmdb_id')),
+        CV(
+            term=Namespace.PUBCHEM,
+            value=f('pubchem_cid_sid', transform='pubchem_cid'),
+        ),
+        CV(
+            term=Namespace.PUBCHEM_SUBSTANCE,
+            value=f('pubchem_cid_sid', transform='pubchem_sid'),
+        ),
+        CV(term=Namespace.SMILES, value=f('canonical_smiles')),
+        CV(term=Namespace.NAME, value=f('metabolite_name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.COMPOUND_KINGDOM, value=f('kingdom')),
-        CV(term=MoleculeAnnotationsCv.COMPOUND_SUPERCLASS, value=f('super_class')),
-        CV(term=MoleculeAnnotationsCv.COMPOUND_CLASS, value=f('class')),
-        CV(term=ParticipantMetadataCv.SOURCE),
+        CV(term=slots.has_chemical_formula, value=f('molecular_formula'))
     ),
 )
-
 single_receptor_builder = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
+    entity_type=Protein,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.UNIPROT,  value=f(_if_single('receptor_uniprot_id'))),
-        CV(term=IdentifierNamespaceCv.ENTREZ,   value=f(_if_single('receptor_gene_id'))),
-        CV(term=IdentifierNamespaceCv.NAME,     value=f(_if_single('protein_name'), transform='primary_name')),
-        CV(term=IdentifierNamespaceCv.SYNONYM,  value=f(_if_single('protein_name'), transform='alt_names')),
+        CV(term=Namespace.UNIPROT, value=f(_if_single('receptor_uniprot_id'))),
+        CV(term=Namespace.ENTREZ, value=f(_if_single('receptor_gene_id'))),
+        CV(term=Namespace.GENESYMBOL, value=f(_if_single('receptor_symbol'))),
+        CV(
+            term=Namespace.NAME,
+            value=f(_if_single('protein_name'), transform='primary_name'),
+        ),
+        CV(
+            term=Namespace.SYNONYM,
+            value=f(_if_single('protein_name'), transform='alt_names'),
+        ),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-        CV(term=ParticipantMetadataCv.TARGET),
+        CV(
+            term=slots.in_taxon,
+            value=f('taxon_id', transform=lambda v: f'NCBITaxon:{v}'),
+        )
     ),
 )
-
 complex_receptor_builder = EntityBuilder(
-    entity_type=EntityTypeCv.COMPLEX,
+    entity_type=MacromolecularComplex,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.NAME,    value=f(_if_complex('protein_name'), transform='primary_name')),
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f(_if_complex('protein_name'), transform='alt_names')),
+        CV(
+            term=Namespace.NAME,
+            value=f(_if_complex('protein_name'), transform='primary_name'),
+        ),
+        CV(
+            term=Namespace.SYNONYM,
+            value=f(_if_complex('protein_name'), transform='alt_names'),
+        ),
     ),
-    annotations=AnnotationsBuilder(
-        CV(term=ParticipantMetadataCv.TARGET),
-    ),
+    annotations=AnnotationsBuilder(),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.PROTEIN,
+            entity_type=Protein,
             identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.UNIPROT,
-                    value=f('receptor_uniprot_id', delimiter='_')),
-                CV(term=IdentifierNamespaceCv.ENTREZ,
-                    value=f('receptor_gene_id',    delimiter='_')),
-                CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
-                   value=f('receptor_symbol',     delimiter='_')),
+                CV(
+                    term=Namespace.UNIPROT,
+                    value=f('receptor_uniprot_id', delimiter='_'),
+                ),
+                CV(
+                    term=Namespace.ENTREZ,
+                    value=f('receptor_gene_id', delimiter='_'),
+                ),
+                CV(
+                    term=Namespace.GENESYMBOL,
+                    value=f('receptor_symbol', delimiter='_'),
+                ),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
+                CV(
+                    term=slots.in_taxon,
+                    value=f('taxon_id', transform=lambda v: f'NCBITaxon:{v}'),
+                )
             ),
-        ),
+        )
     ),
 )
 
@@ -180,111 +189,66 @@ def _mrclinksdb_receptor_builder(row: dict[str, object]) -> object | None:
 
 interactions_schema = RelationBuilder(
     subject=metabolite_builder,
-    predicate='interacts_with',
+    predicate=slots.interacts_with,
     object=_mrclinksdb_receptor_builder,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.MRCLINKSDB, value=f('mrid')),
+        CV(term=Namespace.MRCLINKSDB, value=f('mrid'))
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.PUBMED, value=f('pmid', delimiter=';')),
-        CV(term=CurationCv.COMMENT, value=f('other_db', delimiter=';')),
-    ),
-)
-
-
-# =============================================================================
-# Transporter Schemas
-# =============================================================================
-
-human_transporters_schema = EntityBuilder(
-    entity_type=EntityTypeCv.TRANSPORT,
-    identifiers=IdentifiersBuilder(
         CV(
-            term=IdentifierNamespaceCv.NAME,
-            value=f(lambda row: f"{row.get('hmdb_id', '')}_{row.get('uniprot_id', '')}"),
+            term=slots.supporting_data_source,
+            value=f('other_db', delimiter=';'),
         ),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.SUBSTRATE),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT,           value=f('uniprot_id')),
-                    CV(term=IdentifierNamespaceCv.ENTREZ,            value=f('human_geneid')),
-                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('gene_name')),
-                    CV(term=IdentifierNamespaceCv.NAME,              value=f('enzyme_name', transform='primary_name')),
-                    CV(term=IdentifierNamespaceCv.SYNONYM,           value=f('enzyme_name', transform='alt_names')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.CONTROLLER),
-            ),
-        ),
-    ),
-)
-
-mouse_transporters_schema = EntityBuilder(
-    entity_type=EntityTypeCv.TRANSPORT,
-    identifiers=IdentifiersBuilder(
         CV(
-            term=IdentifierNamespaceCv.NAME,
-            value=f(lambda row: f"{row.get('hmdb_id', '')}_{row.get('mouse_uniprot', '')}"),
-        ),
-    ),
-    membership=MembershipBuilder(
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.HMDB, value=f('hmdb_id')),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('metabolite_name')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.SUBSTRATE),
-            ),
-        ),
-        Member(
-            entity=EntityBuilder(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT,           value=f('mouse_uniprot')),
-                    CV(term=IdentifierNamespaceCv.ENTREZ,            value=f('mouse_geneid')),
-                    CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('mouse_gene_symbol')),
-                    CV(term=IdentifierNamespaceCv.NAME,              value=f('enzyme_name', transform='primary_name')),
-                    CV(term=IdentifierNamespaceCv.SYNONYM,           value=f('enzyme_name', transform='alt_names')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                CV(term=BiologicalRoleCv.CONTROLLER),
+            term=slots.publications,
+            value=f(
+                'pmid',
+                delimiter=';',
+                transform=lambda v: f'PMID:{v.removeprefix("PMID:")}',
             ),
         ),
     ),
 )
 
 
-# =============================================================================
-# Resource Definition
-# =============================================================================
+def _transporter_schema(species: str) -> RelationBuilder:
+    fields = {
+        'human': ('uniprot_id', 'human_geneid', 'gene_name'),
+        'mouse': ('mouse_uniprot', 'mouse_geneid', 'mouse_gene_symbol'),
+    }[species]
+    return RelationBuilder(
+        subject=EntityBuilder(
+            entity_type=Protein,
+            identifiers=IdentifiersBuilder(
+                CV(term=Namespace.UNIPROT, value=f(fields[0])),
+                CV(term=Namespace.ENTREZ, value=f(fields[1])),
+                CV(term=Namespace.GENESYMBOL, value=f(fields[2])),
+                CV(
+                    term=Namespace.NAME,
+                    value=f('enzyme_name', transform='primary_name'),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(
+                    term=slots.in_taxon,
+                    value=f('taxon_id', transform=lambda v: f'NCBITaxon:{v}'),
+                )
+            ),
+        ),
+        predicate=slots.associated_with,
+        object=EntityBuilder(
+            entity_type=ChemicalEntity,
+            identifiers=IdentifiersBuilder(
+                CV(term=Namespace.HMDB, value=f('hmdb_id')),
+                CV(term=Namespace.NAME, value=f('metabolite_name')),
+            ),
+            annotations=AnnotationsBuilder(),
+        ),
+    )
 
+
+human_transporters_schema = _transporter_schema('human')
+mouse_transporters_schema = _transporter_schema('mouse')
 resource = Resource(
     config,
     human_interactions=Dataset(
@@ -295,7 +259,9 @@ resource = Resource(
             ext='txt',
         ),
         mapper=interactions_schema,
-        raw_parser=lambda opener, **kwargs: _iter_with_taxon(opener, taxon_id='9606', **kwargs),
+        raw_parser=lambda opener, **kwargs: _iter_with_taxon(
+            opener, taxon_id='9606', **kwargs
+        ),
     ),
     mouse_interactions=Dataset(
         download=Download(
@@ -305,7 +271,9 @@ resource = Resource(
             ext='txt',
         ),
         mapper=interactions_schema,
-        raw_parser=lambda opener, **kwargs: _iter_with_taxon(opener, taxon_id='10090', **kwargs),
+        raw_parser=lambda opener, **kwargs: _iter_with_taxon(
+            opener, taxon_id='10090', **kwargs
+        ),
     ),
     human_transporters=Dataset(
         download=Download(
@@ -315,7 +283,9 @@ resource = Resource(
             ext='txt',
         ),
         mapper=human_transporters_schema,
-        raw_parser=lambda opener, **kwargs: _iter_with_taxon(opener, taxon_id='9606', **kwargs),
+        raw_parser=lambda opener, **kwargs: _iter_with_taxon(
+            opener, taxon_id='9606', **kwargs
+        ),
     ),
     mouse_transporters=Dataset(
         download=Download(
@@ -325,6 +295,8 @@ resource = Resource(
             ext='txt',
         ),
         mapper=mouse_transporters_schema,
-        raw_parser=lambda opener, **kwargs: _iter_with_taxon(opener, taxon_id='10090', **kwargs),
+        raw_parser=lambda opener, **kwargs: _iter_with_taxon(
+            opener, taxon_id='10090', **kwargs
+        ),
     ),
 )

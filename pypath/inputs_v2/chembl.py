@@ -8,183 +8,173 @@ into Entity records using the schema defined in pypath.internals.silver_schema.
 from __future__ import annotations
 
 from functools import partial
+import math
 from pathlib import Path
+import re
+
+from biolink_model.datamodel.model import (
+    AnatomicalEntity,
+    Cell,
+    CellLine,
+    ChemicalEntity,
+    DirectionQualifierEnum,
+    Gene,
+    GeneFamily,
+    MacromolecularComplex,
+    MolecularActivity,
+    MolecularEntity,
+    NamedThing,
+    NucleicAcidEntity,
+    OrganismTaxon,
+    Protein,
+    QuantityValue,
+    RNAProduct,
+    slots,
+)
+from omnipath_core.measurements import Measurement
+from omnipath_core.naming import Namespace
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.chembl import (
-    molecules_parser,
-    targets_parser,
     activities_parser,
     mechanisms_parser,
+    molecules_parser,
 )
-from pypath.share import cache
-
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    ResourceCv,
-    MoleculeSubtypeCv,
-    ProteinFunctionalClassCv,
-    MoleculeAnnotationsCv,
-    AssayTypeCv,
-    AssayAnnotationsCv,
-    CurationCv,
-    PharmacologicalActionCv,
-    InteractionMetadataCv,
-    InteractionParameterCv,
-)
-
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    Member,
-    MembershipBuilder,
     MembersFromList,
+    MembershipBuilder,
     RelationBuilder,
 )
+from pypath.share import cache
+
+
+def _measurement(value, unit=None, source_field=None, comparator=None):
+    """Keep numeric source observations, units and comparison bounds together."""
+    if value is None:
+        return None
+    match = re.fullmatch(
+        '\\s*(<=|>=|<|>|=|~)?\\s*([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?)\\s*',
+        str(value),
+    )
+    if match is None:
+        return None
+    original_comparator = comparator or match.group(1)
+    if original_comparator not in {None, '<', '>', '=', '<=', '>=', '~', '≈'}:
+        return None
+    relation = {'<': 'less_than', '>': 'greater_than', '=': 'equal_to'}.get(
+        original_comparator
+    )
+    number = float(match.group(2))
+    if not math.isfinite(number):
+        return None
+    quantity = QuantityValue(
+        has_numeric_value=number,
+        has_unit=unit or None,
+        has_binary_relation=relation,
+    )
+    return Measurement(
+        quantity=quantity,
+        source_field=source_field,
+        comparator=original_comparator,
+    )
 
 
 VERSION = 36
-# Relative path to the SQLite database file within the downloaded archive
 DB_REL_PATH = f'chembl_{VERSION}/chembl_{VERSION}_sqlite/chembl_{VERSION}.db'
-# Local path to the cached SQLite database file
 SQLITE_PATH = Path(cache.get_cachedir()) / f'ChEMBL_SQLite_{VERSION}.sqlite'
 
 
 def _chembl_url(version: int = VERSION, **_kwargs: object) -> str:
-    return ('https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/'
-            f'chembl_{version:02d}/chembl_{version:02d}_sqlite.tar.gz')
+    return f'https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_{version:02d}/chembl_{version:02d}_sqlite.tar.gz'
 
 
 def _files_needed(version: int = VERSION, **_kwargs: object) -> list[str]:
-    return [f'chembl_{version:02d}/chembl_{version:02d}_sqlite/chembl_{version:02d}.db']
+    return [
+        f'chembl_{version:02d}/chembl_{version:02d}_sqlite/chembl_{version:02d}.db'
+    ]
 
 
 config = ResourceConfig(
     id=ResourceCv.CHEMBL,
-    name="ChEMBL",
-    url="https://www.ebi.ac.uk/chembl/",
+    name='ChEMBL',
+    url='https://www.ebi.ac.uk/chembl/',
     license=LicenseCV.CC_BY_SA_3_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='21948594',
     primary_category='interactions',
-    description=(
-        "ChEMBL is a manually curated chemical database of bioactive molecules "
-        "with drug-like properties."
-    ),
+    description='ChEMBL is a manually curated chemical database of bioactive molecules with drug-like properties.',
 )
-
 download = Download(
     url=_chembl_url,
-    filename=f"chembl_{VERSION}_sqlite.tar.gz",
-    subfolder="chembl",
+    filename=f'chembl_{VERSION}_sqlite.tar.gz',
+    subfolder='chembl',
     large=True,
-    ext=".tar.gz",
-    needed=_files_needed()
+    ext='.tar.gz',
+    needed=_files_needed(),
 )
-
-# Mapping of ChEMBL molecule_type strings to EntityTypeCv
 MOLECULE_TYPE_TO_ENTITY_TYPE = {
-    'Small molecule': EntityTypeCv.CHEMICAL,
-    'Protein': EntityTypeCv.PROTEIN,
-    'Antibody': EntityTypeCv.PROTEIN,
-    'Enzyme': EntityTypeCv.PROTEIN,
-    'Oligosaccharide': EntityTypeCv.CHEMICAL,
-    'Oligonucleotide': EntityTypeCv.CHEMICAL,
-    'Gene': EntityTypeCv.PROTEIN,
-    'Cell': EntityTypeCv.PHYSICAL_ENTITY,
-    'Unknown': EntityTypeCv.CHEMICAL,
-    'Unclassified': EntityTypeCv.CHEMICAL,
+    'Small molecule': ChemicalEntity,
+    'Protein': Protein,
+    'Antibody': Protein,
+    'Enzyme': Protein,
+    'Oligosaccharide': ChemicalEntity,
+    'Oligonucleotide': ChemicalEntity,
+    'Gene': Gene,
+    'Cell': Cell,
+    'Unknown': ChemicalEntity,
+    'Unclassified': ChemicalEntity,
 }
-
-# Mapping of ChEMBL molecule_type strings to more specific subclasses
-MOLECULE_TYPE_TO_MOLECULE_SUBTYPE = {
-    'Antibody': MoleculeSubtypeCv.ANTIBODY,
-    'Small molecule': MoleculeSubtypeCv.SYNTHETIC_ORGANIC,
-}
-MOLECULE_TYPE_TO_PROTEIN_FUNCTIONAL_CLASS = {
-    'Enzyme': ProteinFunctionalClassCv.ENZYME,
-}
-
-# Mapping of ChEMBL assay_type codes to AssayTypeCv
-ASSAY_TYPE_MAP = {
-    'B': AssayTypeCv.BINDING,
-    'F': AssayTypeCv.FUNCTIONAL,
-    'A': AssayTypeCv.ADME,
-    'T': AssayTypeCv.TOXICITY,
-    'P': AssayTypeCv.PHYSICOCHEMICAL,
-}
-
-# Mapping of ChEMBL action_type strings to PharmacologicalActionCv
-ACTION_TYPE_MAP = {
-    'AGONIST': PharmacologicalActionCv.AGONIST,
-    'ANTAGONIST': PharmacologicalActionCv.ANTAGONIST,
-    'INHIBITOR': PharmacologicalActionCv.INHIBITION,
-    'ACTIVATOR': PharmacologicalActionCv.ACTIVATION,
-    'PARTIAL AGONIST': PharmacologicalActionCv.PARTIAL_AGONIST,
-    'INVERSE AGONIST': PharmacologicalActionCv.INVERSE_AGONIST,
-    'POTENTIATOR': PharmacologicalActionCv.POTENTIATION,
-    'POSITIVE ALLOSTERIC MODULATOR': PharmacologicalActionCv.POSITIVE,
-    'NEGATIVE ALLOSTERIC MODULATOR': PharmacologicalActionCv.NEGATIVE,
-    'BINDING AGENT': PharmacologicalActionCv.BINDING,
-}
-
-# Mapping of ChEMBL target_type strings to EntityTypeCv
 TARGET_TYPE_MAP = {
-    'SINGLE PROTEIN': EntityTypeCv.PROTEIN,
-    'PROTEIN COMPLEX': EntityTypeCv.COMPLEX,
-    'PROTEIN FAMILY': EntityTypeCv.PROTEIN_FAMILY,
-    'PROTEIN-PROTEIN INTERACTION': EntityTypeCv.INTERACTION,
-    # SELECTIVITY GROUP refers to a pair of proteins used to report selectivity
-    # data, commonly closely related subtypes. Mapping to PROTEIN_FAMILY for now.
-    'SELECTIVITY GROUP': EntityTypeCv.PROTEIN_FAMILY,
-    'NUCLEIC-ACID': EntityTypeCv.NUCLEIC_ACID,
-    'ORGANISM': EntityTypeCv.ORGANISM,
-    'CELL LINE': EntityTypeCv.CELL_LINE,
-    'SUBCELLULAR': EntityTypeCv.PHYSICAL_ENTITY,
-    'MACROMOLECULE': EntityTypeCv.MACROMOLECULE,
-    'TISSUE': EntityTypeCv.TISSUE,
+    'SINGLE PROTEIN': Protein,
+    'PROTEIN COMPLEX': MacromolecularComplex,
+    'PROTEIN FAMILY': GeneFamily,
+    'PROTEIN-PROTEIN INTERACTION': MolecularActivity,
+    'SELECTIVITY GROUP': NamedThing,
+    'NUCLEIC-ACID': NucleicAcidEntity,
+    'ORGANISM': OrganismTaxon,
+    'CELL LINE': CellLine,
+    'SUBCELLULAR': NamedThing,
+    'MACROMOLECULE': MolecularEntity,
+    'TISSUE': AnatomicalEntity,
 }
-
-# Mapping of ChEMBL component_type to EntityTypeCv
 COMPONENT_TYPE_MAP = {
-    'PROTEIN': EntityTypeCv.PROTEIN,
-    'RNA': EntityTypeCv.RNA,
-    'DNA': EntityTypeCv.DNA,
+    'PROTEIN': Protein,
+    'RNA': RNAProduct,
+    'DNA': NucleicAcidEntity,
+}
+AFFINITY_TERMS = {
+    'IC50': 'BAO:0000190',
+    'EC50': 'BAO:0000188',
+    'KI': 'BAO:0000192',
+    'KD': 'BAO:0000034',
+    'KON': 'BAO:0000480',
+    'KOFF': 'BAO:0000479',
 }
 
-# Mapping of ChEMBL standard_type strings to InteractionParameterCv
-STANDARD_TYPE_MAP = {
-    'IC50': InteractionParameterCv.IC50,
-    'EC50': InteractionParameterCv.EC50,
-    'Ki': InteractionParameterCv.KI,
-    'Kd': InteractionParameterCv.KD,
-    'Kon': InteractionParameterCv.KON,
-    'kon': InteractionParameterCv.KON,
-    'Koff': InteractionParameterCv.KOFF,
-    'k_off': InteractionParameterCv.KOFF,
-}
+
+def _ensembl_namespace(value):
+    match = re.fullmatch('ENS[A-Z]*([GTP])\\d+(?:\\.\\d+)?', str(value))
+    return (
+        {'G': Namespace.ENSG, 'T': Namespace.ENST, 'P': Namespace.ENSP}.get(
+            match.group(1)
+        )
+        if match
+        else None
+    )
+
 
 f = FieldConfig(
-    transform={
-        'bool_to_cv': lambda v, cv: cv if str(v) == '1' else None,
-        'true_label': lambda v, label: label if str(v) == '1' else None,
-    },
     map={
         'entity_type': MOLECULE_TYPE_TO_ENTITY_TYPE,
-        'molecule_subtype': MOLECULE_TYPE_TO_MOLECULE_SUBTYPE,
-        'protein_functional_class': MOLECULE_TYPE_TO_PROTEIN_FUNCTIONAL_CLASS,
-        'assay_type': ASSAY_TYPE_MAP,
-        'action_type': ACTION_TYPE_MAP,
         'target_type': TARGET_TYPE_MAP,
         'component_type': COMPONENT_TYPE_MAP,
-        'standard_type': STANDARD_TYPE_MAP,
-    },
+    }
 )
 
 
@@ -192,9 +182,7 @@ def _split_chembl_list(value: object) -> list[str]:
     if value is None:
         return []
     return [
-        item.strip()
-        for item in str(value).split(',')
-        if item and item.strip()
+        item.strip() for item in str(value).split(',') if item and item.strip()
     ]
 
 
@@ -207,150 +195,222 @@ def _target_component_values(row: dict[str, object], key: str) -> list[str]:
 molecules_schema = EntityBuilder(
     entity_type=f('molecule_type', map='entity_type'),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('chembl_id')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('pref_name')),
-        CV(term=IdentifierNamespaceCv.SMILES, value=f('canonical_smiles')),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('standard_inchi')),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('standard_inchi_key')),
+        CV(term=Namespace.CHEMBL, value=f('chembl_id')),
+        CV(term=Namespace.SMILES, value=f('canonical_smiles')),
+        CV(term=Namespace.INCHI, value=f('standard_inchi')),
+        CV(term=Namespace.INCHIKEY, value=f('standard_inchi_key')),
+        CV(term=Namespace.NAME, value=f('pref_name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.CLINICAL_PHASE, value=f('max_phase')),
-        CV(
-            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
-            value=f('molecule_type', map='molecule_subtype'),
-        ),
-        CV(
-            term=MoleculeAnnotationsCv.PROTEIN_FUNCTIONAL_CLASS,
-            value=f('molecule_type', map='protein_functional_class'),
-        ),
-        CV(term=f('therapeutic_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.APPROVED))),
-        CV(term=f('withdrawn_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.WITHDRAWN))),
-        CV(term=f('polymer_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.POLYMER))),
-        CV(term=f('inorganic_flag', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.INORGANIC))),
-        CV(term=f('natural_product', transform=lambda v: f.transform['bool_to_cv'](v, MoleculeAnnotationsCv.NATURAL_PRODUCT))),
-        CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('full_mwt')),
-        CV(term=MoleculeAnnotationsCv.ALOGP, value=f('alogp')),
+        CV(term='chemrof:mass', value=f('full_mwt'))
     ),
 )
-
 targets_schema = EntityBuilder(
     entity_type=f('target_type', map='target_type'),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('chembl_id')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('pref_name')),
+        CV(term=Namespace.CHEMBL_TARGET, value=f('chembl_id')),
+        CV(term=Namespace.NAME, value=f('pref_name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('tax_id')),
-        CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('organism')),
+        CV(
+            term=slots.in_taxon,
+            value=f(
+                'tax_id',
+                transform=lambda v: 'NCBITaxon:'
+                + str(v).removeprefix('NCBITaxon:'),
+            ),
+        )
     ),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=f('component_types', delimiter=',', map='component_type'),
+            entity_type=f(
+                'component_types', delimiter=',', map='component_type'
+            ),
             identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.UNIPROT, value=f('component_uniprot_accessions', delimiter=',', preserve_indices=True)),
-                CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('component_ensembl_accessions', delimiter=',', preserve_indices=True)),
+                CV(
+                    term=Namespace.UNIPROT,
+                    value=f(
+                        'component_uniprot_accessions',
+                        delimiter=',',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=f(
+                        'component_ensembl_accessions',
+                        delimiter=',',
+                        preserve_indices=True,
+                        transform=_ensembl_namespace,
+                    ),
+                    value=f(
+                        'component_ensembl_accessions',
+                        delimiter=',',
+                        preserve_indices=True,
+                    ),
+                ),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('tax_id')),
-                CV(term=MoleculeAnnotationsCv.DESCRIPTION, value=f('component_descriptions', delimiter=',')),
+                CV(
+                    term=slots.in_taxon,
+                    value=f(
+                        'tax_id',
+                        transform=lambda v: 'NCBITaxon:'
+                        + str(v).removeprefix('NCBITaxon:'),
+                    ),
+                ),
+                CV(
+                    term=slots.description,
+                    value=f('component_descriptions', delimiter=','),
+                ),
             ),
         )
     ),
 )
+ACTION_DIRECTION = {
+    'AGONIST': DirectionQualifierEnum.increased,
+    'PARTIAL AGONIST': DirectionQualifierEnum.increased,
+    'ACTIVATOR': DirectionQualifierEnum.increased,
+    'POTENTIATOR': DirectionQualifierEnum.increased,
+    'POSITIVE ALLOSTERIC MODULATOR': DirectionQualifierEnum.increased,
+    'ANTAGONIST': DirectionQualifierEnum.decreased,
+    'INVERSE AGONIST': DirectionQualifierEnum.decreased,
+    'INHIBITOR': DirectionQualifierEnum.decreased,
+    'NEGATIVE ALLOSTERIC MODULATOR': DirectionQualifierEnum.decreased,
+}
 
-def chembl_predicate(row: dict[str, object]) -> str:
-    action = str(row.get('action_type') or '').strip()
-    if action:
-        return action
-    standard = str(row.get('standard_type') or '').strip()
-    if standard:
-        return standard
-    return 'interacts_with'
+
+def chembl_predicate(row):
+    action = str(row.get('action_type') or '').strip().upper()
+    if action in ACTION_DIRECTION:
+        return slots.affects
+    if action == 'BINDING AGENT':
+        return slots.physically_interacts_with
+    return slots.associated_with
 
 
 molecule_builder = EntityBuilder(
-    entity_type=EntityTypeCv.CHEMICAL,
+    entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=f('molecule_chembl_id')),
+        CV(term=Namespace.CHEMBL, value=f('molecule_chembl_id'))
     ),
 )
-
 target_builder = EntityBuilder(
-    entity_type=f('target_type', map='target_type', default=EntityTypeCv.PHYSICAL_ENTITY),
+    entity_type=f('target_type', map='target_type', default=NamedThing),
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.CHEMBL_TARGET, value=f('target_chembl_id')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('target_pref_name')),
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=lambda row: _target_component_values(row, 'target_component_uniprot_accessions')),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=lambda row: _target_component_values(row, 'target_component_ensembl_accessions')),
+        CV(term=Namespace.CHEMBL_TARGET, value=f('target_chembl_id')),
+        CV(
+            term=Namespace.UNIPROT,
+            value=lambda row: _target_component_values(
+                row, 'target_component_uniprot_accessions'
+            ),
+        ),
+        CV(
+            term=lambda row: [
+                _ensembl_namespace(v)
+                for v in _target_component_values(
+                    row, 'target_component_ensembl_accessions'
+                )
+            ],
+            value=lambda row: _target_component_values(
+                row, 'target_component_ensembl_accessions'
+            ),
+        ),
+        CV(term=Namespace.NAME, value=f('target_pref_name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('target_tax_id')),
+        CV(
+            term=slots.in_taxon,
+            value=f(
+                'target_tax_id',
+                transform=lambda v: 'NCBITaxon:'
+                + str(v).removeprefix('NCBITaxon:'),
+            ),
+        )
     ),
 )
-
 activities_schema = RelationBuilder(
     subject=molecule_builder,
     predicate=chembl_predicate,
     object=target_builder,
     annotations=AnnotationsBuilder(
-        CV(term=f('standard_type', map='standard_type'), value=f('standard_value')),
-        CV(term=InteractionParameterCv.PCHEMBL_VALUE, value=f('pchembl_value')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('standard_relation')),
-        CV(term=CurationCv.COMMENT, value=f('data_validity_comment')),
-        CV(term=f('action_type', map='action_type')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('action_description')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('action_parent_type')),
-        CV(term=IdentifierNamespaceCv.CHEMBL_ASSAY, value=f('assay_chembl_id')),
-        CV(term=IdentifierNamespaceCv.CHEMBL_DOCUMENT, value=f('document_chembl_id')),
-        CV(term=IdentifierNamespaceCv.CHEMBL_MECHANISM, value=f('mec_id')),
-        CV(term=IdentifierNamespaceCv.CHEMBL_ACTIVITY, value=f('activity_id')),
-        CV(term=f('assay_type', map='assay_type')),
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('assay_tax_id')),
-        CV(term=AssayAnnotationsCv.CONFIDENCE_SCORE, value=f('confidence_score')),
-        CV(term=AssayAnnotationsCv.ASSAY_CATEGORY, value=f('assay_category')),
-        CV(term=AssayAnnotationsCv.SUBCELLULAR_FRACTION, value=f('assay_subcellular_fraction')),
-        CV(term=AssayAnnotationsCv.TISSUE, value=f('assay_tissue')),
-        CV(term=AssayAnnotationsCv.CELL_TYPE, value=f('assay_cell_type')),
-        CV(term=IdentifierNamespaceCv.PUBMED, value=f('pubmed_id')),
-        CV(term=IdentifierNamespaceCv.DOI, value=f('doi')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('mechanism_action_type')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('mechanism_of_action')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('mechanism_comment')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('selectivity_comment')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('binding_site_comment')),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('direct_interaction', transform=lambda v: f.transform['true_label'](v, 'direct_interaction'))),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('molecular_mechanism', transform=lambda v: f.transform['true_label'](v, 'molecular_mechanism'))),
-        CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('disease_efficacy', transform=lambda v: f.transform['true_label'](v, 'disease_efficacy'))),
+        CV(
+            term=slots.has_quantitative_value,
+            value=f(
+                'pchembl_value',
+                transform=lambda v: _measurement(
+                    v, source_field='pchembl_value'
+                ),
+            ),
+        ),
+        CV(term=slots.description, value=f('data_validity_comment')),
+        CV(term=slots.description, value=f('action_description')),
+        CV(
+            term=slots.in_taxon,
+            value=f(
+                'assay_tax_id',
+                transform=lambda v: 'NCBITaxon:'
+                + str(v).removeprefix('NCBITaxon:'),
+            ),
+        ),
+        CV(
+            term=slots.publications,
+            value=f(
+                'pubmed_id',
+                transform=lambda v: 'PMID:' + str(v).removeprefix('PMID:'),
+            ),
+        ),
+        CV(
+            term=slots.publications,
+            value=f(
+                'doi', transform=lambda v: 'doi:' + str(v).removeprefix('doi:')
+            ),
+        ),
+        CV(term=slots.description, value=f('mechanism_of_action')),
+        CV(term=slots.description, value=f('mechanism_comment')),
+        CV(term=slots.description, value=f('selectivity_comment')),
+        CV(term=slots.description, value=f('binding_site_comment')),
+        CV(
+            term=slots.object_direction_qualifier,
+            value=lambda row: ACTION_DIRECTION.get(
+                str(row.get('action_type') or '').strip().upper()
+            ),
+        ),
+        CV(
+            term=lambda row: AFFINITY_TERMS.get(
+                str(row.get('standard_type') or '').upper()
+            ),
+            value=lambda row: _measurement(
+                row.get('standard_value'),
+                row.get('standard_units'),
+                row.get('standard_type'),
+                row.get('standard_relation'),
+            ),
+        ),
+        CV(term=slots.chembl_confidence_score, value=f('confidence_score')),
     ),
+    identifiers=IdentifiersBuilder(),
 )
-
 resource = Resource(
     config=config,
     molecules=Dataset(
         download=download,
         mapper=molecules_schema,
         raw_parser=partial(
-            molecules_parser,
-            sqlite_path=SQLITE_PATH,
-            db_rel_path=DB_REL_PATH,
+            molecules_parser, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH
         ),
     ),
     activities=Dataset(
         download=download,
         mapper=activities_schema,
         raw_parser=partial(
-            activities_parser,
-            sqlite_path=SQLITE_PATH,
-            db_rel_path=DB_REL_PATH,
+            activities_parser, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH
         ),
     ),
     mechanisms=Dataset(
         download=download,
         mapper=activities_schema,
         raw_parser=partial(
-            mechanisms_parser,
-            sqlite_path=SQLITE_PATH,
-            db_rel_path=DB_REL_PATH,
+            mechanisms_parser, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH
         ),
     ),
 )

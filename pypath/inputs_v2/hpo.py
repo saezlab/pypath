@@ -10,9 +10,10 @@ and their associations with genes.
 
 from __future__ import annotations
 
+from biolink_model.datamodel.model import Gene, OntologyClass, slots
+from omnipath_core.naming import Namespace
+
 from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
     LicenseCV,
     OntologyCv,
     UpdateCategoryCV,
@@ -58,25 +59,26 @@ config = ResourceConfig(
 f = FieldConfig()
 
 annotations_schema = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
+    entity_type=Gene,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.ENTREZ, value=f('ncbi_gene_id')),
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('gene_symbol')),
+        CV(term=Namespace.ENTREZ, value=f('ncbi_gene_id')),
+        CV(term=Namespace.GENESYMBOL, value=f('gene_symbol')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
+        CV(term=slots.in_taxon, value='NCBITaxon:9606'),
     ),
     associations=AssociationsBuilder(
         AssociationBuilder(
-            object_entity_type=EntityTypeCv.CV_TERM,
-            object_identifier_type=IdentifierNamespaceCv.CV_TERM_ACCESSION,
+            predicate=slots.associated_with,
+            object_entity_type=OntologyClass,
+            object_identifier_type=Namespace.HPO,
             object_identifier=f('hpo_id'),
         ),
     ),
 )
 
 
-terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='hpo')
+terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='hpo', identifier_type=Namespace.HPO)
 
 
 resource = Resource(

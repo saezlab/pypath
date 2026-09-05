@@ -12,25 +12,61 @@ Data sources:
 
 from __future__ import annotations
 
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    MoleculeAnnotationsCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    ResourceCv,
+import math
+import re
+
+from biolink_model.datamodel.model import (
+    ChemicalEntity,
+    Food,
+    QuantityValue,
+    slots,
 )
+from omnipath_core.measurements import Measurement
+from omnipath_core.naming import Namespace
+
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2.parsers.phenol_explorer import MEMBER_DELIMITER, _raw
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
-    MembershipBuilder,
     MembersFromList,
+    MembershipBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.phenol_explorer import _raw, MEMBER_DELIMITER
+
+
+def _measurement(value, unit=None, source_field=None, comparator=None):
+    """Keep numeric source observations, units and comparison bounds together."""
+    if value is None:
+        return None
+    match = re.fullmatch(
+        '\\s*(<=|>=|<|>|=|~)?\\s*([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?)\\s*',
+        str(value),
+    )
+    if match is None:
+        return None
+    original_comparator = comparator or match.group(1)
+    if original_comparator not in {None, '<', '>', '=', '<=', '>=', '~', '≈'}:
+        return None
+    relation = {'<': 'less_than', '>': 'greater_than', '=': 'equal_to'}.get(
+        original_comparator
+    )
+    number = float(match.group(2))
+    if not math.isfinite(number):
+        return None
+    quantity = QuantityValue(
+        has_numeric_value=number,
+        has_unit=unit or None,
+        has_binary_relation=relation,
+    )
+    return Measurement(
+        quantity=quantity,
+        source_field=source_field,
+        comparator=original_comparator,
+    )
 
 
 config = ResourceConfig(
@@ -39,20 +75,10 @@ config = ResourceConfig(
     url='http://phenol-explorer.eu/',
     license=LicenseCV.ACADEMIC_FREE,
     update_category=UpdateCategoryCV.REGULAR,
-    pubmed='24103452',  # Latest Phenol-Explorer publication
+    pubmed='24103452',
     primary_category='foods',
-    description=(
-        'Phenol-Explorer is the first comprehensive database on polyphenol '
-        'content in foods. It contains data on the content and composition of '
-        'polyphenols and other bioactive compounds in foods, with detailed '
-        'classification of both compounds and food sources.'
-    ),
+    description='Phenol-Explorer is the first comprehensive database on polyphenol content in foods. It contains data on the content and composition of polyphenols and other bioactive compounds in foods, with detailed classification of both compounds and food sources.',
 )
-
-# =============================================================================
-# Download configurations
-# =============================================================================
-
 download_compounds = Download(
     url='http://phenol-explorer.eu/system/downloads/current/compounds.csv.zip',
     filename='compounds.csv.zip',
@@ -60,7 +86,6 @@ download_compounds = Download(
     large=True,
     ext='zip',
 )
-
 download_compounds_structures = Download(
     url='http://phenol-explorer.eu/system/downloads/current/compounds-structures.csv.zip',
     filename='compounds-structures.csv.zip',
@@ -68,7 +93,6 @@ download_compounds_structures = Download(
     large=True,
     ext='zip',
 )
-
 download_foods = Download(
     url='http://phenol-explorer.eu/system/downloads/current/foods.csv.zip',
     filename='foods.csv.zip',
@@ -76,7 +100,6 @@ download_foods = Download(
     large=True,
     ext='zip',
 )
-
 download_composition = Download(
     url='http://phenol-explorer.eu/system/downloads/current/composition-data.xlsx.zip',
     filename='composition-data.xlsx.zip',
@@ -85,91 +108,136 @@ download_composition = Download(
     ext='zip',
     default_mode='rb',
 )
-
-
-# =============================================================================
-# Field configuration
-# =============================================================================
-
 f = FieldConfig(
     delimiter=MEMBER_DELIMITER,
     preserve_indices=True,
-    extract={
-        'chebi': r'^(?:CHEBI:)?(\d+)$',
-    },
+    extract={'chebi': '^(?:CHEBI:)?(\\d+)$'},
 )
-
-
-# =============================================================================
-# Food Schema with Compound Membership (declarative)
-# =============================================================================
-
 foods_schema = EntityBuilder(
-    entity_type=EntityTypeCv.FOOD,
+    entity_type=Food,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.PHENOL_EXPLORER, value=f('id')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('name')),
-        CV(term=IdentifierNamespaceCv.SCIENTIFIC_NAME, value=f('scientific_name')),
+        CV(term=Namespace.PHENOL_EXPLORER_FOOD, value=f('id')),
+        CV(term=Namespace.NAME, value=f('name')),
+        CV(term=Namespace.SYNONYM, value=f('scientific_name')),
     ),
-    annotations=AnnotationsBuilder(
-        CV(term=MoleculeAnnotationsCv.FOOD_CLASS, value=f('food_group')),
-        CV(term=MoleculeAnnotationsCv.FOOD_SUBCLASS, value=f('food_subgroup')),
-        CV(term=MoleculeAnnotationsCv.BOTANICAL_FAMILY, value=f('botanical_family')),
-    ),
+    annotations=AnnotationsBuilder(),
     membership=MembershipBuilder(
         MembersFromList(
-            entity_type=EntityTypeCv.CHEMICAL,
+            entity_type=ChemicalEntity,
             identifiers=IdentifiersBuilder(
-                CV(term=IdentifierNamespaceCv.PHENOL_EXPLORER, value=f('member_compound_id')),
-                CV(term=IdentifierNamespaceCv.NAME, value=f('member_compound_name')),
-                CV(term=IdentifierNamespaceCv.CHEBI, value=f('member_chebi', extract='chebi')),
-                CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('member_pubchem')),
-                CV(term=IdentifierNamespaceCv.CAS, value=f('member_cas')),
-                CV(term=IdentifierNamespaceCv.SMILES, value=f('member_smiles')),
-                CV(term=IdentifierNamespaceCv.MOLECULAR_FORMULA, value=f('member_formula')),
-                CV(term=IdentifierNamespaceCv.SYNONYM, value=f('member_synonyms')),
+                CV(
+                    term=Namespace.PHENOL_EXPLORER_COMPOUND,
+                    value=f('member_compound_id'),
+                ),
+                CV(
+                    term=Namespace.CHEBI,
+                    value=f('member_chebi', extract='chebi'),
+                ),
+                CV(term=Namespace.PUBCHEM, value=f('member_pubchem')),
+                CV(term=Namespace.CAS, value=f('member_cas')),
+                CV(term=Namespace.SMILES, value=f('member_smiles')),
+                CV(term=Namespace.NAME, value=f('member_compound_name')),
+                CV(term=Namespace.SYNONYM, value=f('member_synonyms')),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(term=MoleculeAnnotationsCv.COMPOUND_CLASS, value=f('member_compound_class')),
-                CV(term=MoleculeAnnotationsCv.COMPOUND_SUBCLASS, value=f('member_compound_subclass')),
-                CV(term=MoleculeAnnotationsCv.MASS_DALTON, value=f('member_molecular_weight')),
-                CV(term=MoleculeAnnotationsCv.AGLYCONE, value=f('member_aglycones')),
+                CV(term=slots.has_chemical_formula, value=f('member_formula')),
+                CV(term='chemrof:mass', value=f('member_molecular_weight')),
             ),
             annotations=AnnotationsBuilder(
                 CV(
-                    term=MoleculeAnnotationsCv.CONCENTRATION_MEAN,
-                    value=f('member_mean'),
-                    unit=f('member_units'),
+                    term=slots.publications,
+                    value=f(
+                        'member_pubmed',
+                        transform=lambda v: [
+                            'PMID:' + p.strip().removeprefix('PMID:')
+                            for p in str(v).split(';')
+                            if p.strip().removeprefix('PMID:').isdigit()
+                        ],
+                    ),
                 ),
                 CV(
-                    term=MoleculeAnnotationsCv.CONCENTRATION_MIN,
-                    value=f('member_min'),
-                    unit=f('member_units'),
+                    term='PATO:0000033',
+                    value=lambda row: [
+                        _measurement(
+                            v,
+                            units[i] if i < len(units) else None,
+                            'member_mean',
+                        )
+                        for units in [
+                            str(row.get('member_units') or '').split(
+                                MEMBER_DELIMITER
+                            )
+                        ]
+                        for i, v in enumerate(
+                            str(row.get('member_mean') or '').split(
+                                MEMBER_DELIMITER
+                            )
+                        )
+                    ],
                 ),
                 CV(
-                    term=MoleculeAnnotationsCv.CONCENTRATION_MAX,
-                    value=f('member_max'),
-                    unit=f('member_units'),
+                    term='PATO:0000033',
+                    value=lambda row: [
+                        _measurement(
+                            v,
+                            units[i] if i < len(units) else None,
+                            'member_min',
+                        )
+                        for units in [
+                            str(row.get('member_units') or '').split(
+                                MEMBER_DELIMITER
+                            )
+                        ]
+                        for i, v in enumerate(
+                            str(row.get('member_min') or '').split(
+                                MEMBER_DELIMITER
+                            )
+                        )
+                    ],
                 ),
                 CV(
-                    term=MoleculeAnnotationsCv.CONCENTRATION_SD,
-                    value=f('member_sd'),
-                    unit=f('member_units'),
+                    term='PATO:0000033',
+                    value=lambda row: [
+                        _measurement(
+                            v,
+                            units[i] if i < len(units) else None,
+                            'member_max',
+                        )
+                        for units in [
+                            str(row.get('member_units') or '').split(
+                                MEMBER_DELIMITER
+                            )
+                        ]
+                        for i, v in enumerate(
+                            str(row.get('member_max') or '').split(
+                                MEMBER_DELIMITER
+                            )
+                        )
+                    ],
                 ),
-                CV(term=MoleculeAnnotationsCv.SAMPLE_COUNT, value=f('member_n')),
-                CV(term=MoleculeAnnotationsCv.DATA_POINT_COUNT, value=f('member_N')),
-                CV(term=MoleculeAnnotationsCv.EXPERIMENTAL_METHOD, value=f('member_experimental_method')),
-                CV(term=IdentifierNamespaceCv.PUBMED, value=f('member_pubmed')),
+                CV(
+                    term='PATO:0000033',
+                    value=lambda row: [
+                        _measurement(
+                            v, units[i] if i < len(units) else None, 'member_sd'
+                        )
+                        for units in [
+                            str(row.get('member_units') or '').split(
+                                MEMBER_DELIMITER
+                            )
+                        ]
+                        for i, v in enumerate(
+                            str(row.get('member_sd') or '').split(
+                                MEMBER_DELIMITER
+                            )
+                        )
+                    ],
+                ),
             ),
-        ),
+            predicate=slots.has_part,
+        )
     ),
 )
-
-
-# =============================================================================
-# Resource definition
-# =============================================================================
-
 resource = Resource(
     config,
     foods=Dataset(
@@ -184,6 +252,4 @@ resource = Resource(
         ),
     ),
 )
-
-
 __all__ = ['config', 'resource']

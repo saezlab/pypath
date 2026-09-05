@@ -1,35 +1,22 @@
 """Parse Cellinker ligand-receptor and metabolite-protein data."""
 
 from __future__ import annotations
-
 from collections.abc import Callable
 from urllib.parse import quote
-
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.internals.cv_terms import (
-    BiologicalRoleCv,
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    InteractionMetadataCv,
-    InterCellAnnotations,
-    LicenseCV,
-    MoleculeAnnotationsCv,
-    ProteinFunctionalClassCv,
-    ReactionAnnotationsCv,
-    ResourceCv,
-    UpdateCategoryCV,
-)
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from biolink_model.datamodel.model import Protein, ChemicalEntity, slots
+from omnipath_core.naming import Namespace
+from omnipath_core.silver_schema import format_term
 from pypath.internals.silver_schema import (
     Annotation,
     Entity,
     Identifier,
-    Membership,
     Relation,
 )
 
 BASE_URL = 'https://www.cellknowledge.com.cn/cellinker/download/'
-
 SPECIES = {
     'human': {
         'label': 'Homo sapiens',
@@ -50,8 +37,6 @@ SPECIES = {
         'uniprot': 'Mouse_uniprot',
     },
 }
-
-
 config = ResourceConfig(
     id=ResourceCv.CELLINKER,
     name='Cellinker',
@@ -60,11 +45,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33471060',
     primary_category='interactions',
-    description=(
-        'Cellinker is a literature-curated repository of ligand-receptor '
-        'interactions involved in cell-cell communication, including protein '
-        'ligands, metabolite ligands, receptors, enzymes and transporters.'
-    ),
+    description='Cellinker is a literature-curated repository of ligand-receptor interactions involved in cell-cell communication, including protein ligands, metabolite ligands, receptors, enzymes and transporters.',
 )
 
 
@@ -98,9 +79,7 @@ def _row_value(row: dict[str, object], *keys: str) -> str:
 
 def _split(value: object, delimiter: str = ';') -> list[str]:
     return [
-        item.strip()
-        for item in _clean(value).split(delimiter)
-        if item.strip()
+        item.strip() for item in _clean(value).split(delimiter) if item.strip()
     ]
 
 
@@ -109,17 +88,13 @@ def _annotation(term: object, value: object = None) -> Annotation | None:
     return Annotation(term=term, value=value) if value else None
 
 
-def _flag(term: object, enabled: bool) -> Annotation | None:
-    return Annotation(term=term) if enabled else None
-
-
 def _annotations(*items: Annotation | None) -> list[Annotation] | None:
     out: list[Annotation] = []
     seen: set[tuple[object, object, object]] = set()
     for item in items:
         if item is None:
             continue
-        key = (item.term, item.value, item.units)
+        key = (format_term(item.term), format_term(item.value), item.units)
         if key in seen:
             continue
         out.append(item)
@@ -148,15 +123,8 @@ def _identifier(term: object, value: object) -> Identifier | None:
 
 def _pubmed_annotations(value: object) -> list[Annotation]:
     return [
-        Annotation(term=IdentifierNamespaceCv.PUBMED, value=pmid)
+        Annotation(term=slots.publications, value=f'PMID:{pmid}')
         for pmid in _split(value)
-    ]
-
-
-def _database_annotations(value: object) -> list[Annotation]:
-    return [
-        Annotation(term=InteractionMetadataCv.INTERACTION_XREF, value=database)
-        for database in _split(value)
     ]
 
 
@@ -166,14 +134,13 @@ def _pubchem_identifiers(value: object) -> list[Identifier]:
         if token.startswith('CID:'):
             identifiers.append(
                 Identifier(
-                    type=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-                    value=token.removeprefix('CID:'),
+                    type=Namespace.PUBCHEM, value=token.removeprefix('CID:')
                 )
             )
         elif token.startswith('SID:'):
             identifiers.append(
                 Identifier(
-                    type=IdentifierNamespaceCv.PUBCHEM_SUBSTANCE,
+                    type=Namespace.PUBCHEM_SUBSTANCE,
                     value=token.removeprefix('SID:'),
                 )
             )
@@ -188,17 +155,23 @@ def _protein(
     taxon_id: str,
     name: object = None,
     annotations: list[Annotation] | None = None,
-) -> Entity:
+) -> Entity | None:
+    identifiers = _identifiers(
+        _identifier(Namespace.UNIPROT, uniprot),
+        _identifier(Namespace.ENTREZ, gene_id),
+        _identifier(Namespace.GENESYMBOL, gene_name),
+    )
+    if not identifiers:
+        identifiers = _identifiers(_identifier(Namespace.NAME, name))
+    if not identifiers:
+        return None
     return Entity(
-        type=EntityTypeCv.PROTEIN,
+        type=Protein,
         identifiers=_identifiers(
-            _identifier(IdentifierNamespaceCv.UNIPROT, uniprot),
-            _identifier(IdentifierNamespaceCv.ENTREZ, gene_id),
-            _identifier(IdentifierNamespaceCv.GENE_NAME_PRIMARY, gene_name),
-            _identifier(IdentifierNamespaceCv.NAME, name),
+            *identifiers, _identifier(Namespace.NAME, name)
         ),
         annotations=_annotations(
-            Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+            Annotation(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}'),
             *(annotations or []),
         ),
     )
@@ -206,64 +179,64 @@ def _protein(
 
 def _metabolite(row: dict[str, object]) -> Entity:
     return Entity(
-        type=EntityTypeCv.CHEMICAL,
+        type=ChemicalEntity,
         identifiers=_identifiers(
-            _identifier(IdentifierNamespaceCv.HMDB, _row_value(row, 'HMDB ID', 'HMDB_ID')),
-            _identifier(IdentifierNamespaceCv.NAME, _row_value(row, 'Metabolite name', 'METABOLITE_NAME', 'mETABOLITE_NAME')),
-            _identifier(IdentifierNamespaceCv.SMILES, row.get('Canonical SMILES')),
+            _identifier(Namespace.HMDB, _row_value(row, 'HMDB ID', 'HMDB_ID')),
+            _identifier(Namespace.SMILES, row.get('Canonical SMILES')),
             *_pubchem_identifiers(row.get('PubChem CID/SID')),
-            _identifier(IdentifierNamespaceCv.MOLECULAR_FORMULA, row.get('Molecular Formula')),
+            _identifier(
+                Namespace.NAME,
+                _row_value(
+                    row, 'Metabolite name', 'METABOLITE_NAME', 'mETABOLITE_NAME'
+                ),
+            ),
         ),
         annotations=_annotations(
-            _annotation(MoleculeAnnotationsCv.COMPOUND_KINGDOM, row.get('Kingdom')),
-            _annotation(MoleculeAnnotationsCv.COMPOUND_SUPERCLASS, row.get('Super Class')),
-            _annotation(MoleculeAnnotationsCv.COMPOUND_CLASS, row.get('Class')),
+            _annotation(
+                slots.has_chemical_formula, row.get('Molecular Formula')
+            )
         ),
     )
 
 
-def _cellinker_id(row: dict[str, object], fallback_parts: tuple[object, ...]) -> str:
-    direct = _row_value(row, 'LRID', 'MRID')
-    if direct:
-        return direct
-    return ':'.join(_clean(part) or '-' for part in fallback_parts)
-
-
 def _make_protein_interaction_mapper(
     species: str,
-) -> Callable[[dict[str, object]], Relation]:
+) -> Callable[[dict[str, object]], Relation | None]:
     taxon_id = SPECIES[species]['taxon_id']
 
-    def mapper(row: dict[str, object]) -> Relation:
+    def mapper(row: dict[str, object]) -> Relation | None:
         ligand = _protein(
             uniprot=row.get('Ligand_Uniprot'),
             gene_id=row.get('Ligand_geneid'),
             gene_name=row.get('ligand_symbol'),
             taxon_id=taxon_id,
-            annotations=[Annotation(term=InterCellAnnotations.LIGAND)],
         )
         receptor = _protein(
             uniprot=row.get('Receptor_Uniprot'),
             gene_id=row.get('Receptor_geneid'),
             gene_name=row.get('Receptor_symbol'),
             taxon_id=taxon_id,
-            annotations=[Annotation(term=InterCellAnnotations.RECEPTOR)],
         )
+        if ligand is None or receptor is None:
+            return None
         return Relation(
             subject=ligand,
-            predicate='interacts_with',
+            predicate=slots.interacts_with,
             object=receptor,
             identifiers=_identifiers(
-                _identifier(IdentifierNamespaceCv.CELLINKER, row.get('LRID')),
+                _identifier(Namespace.CELLINKER, row.get('LRID')),
                 _identifier(
-                    IdentifierNamespaceCv.NAME,
+                    Namespace.NAME,
                     f'{_clean(row.get("ligand_symbol"))} - {_clean(row.get("Receptor_symbol"))}',
                 ),
             ),
             annotations=_annotations(
-                Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+                Annotation(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}'),
                 *_pubmed_annotations(row.get('PMID')),
-                *_database_annotations(row.get('Database')),
+                *[
+                    Annotation(term=slots.supporting_data_source, value=v)
+                    for v in _split(_row_value(row, 'Other.DB', 'Database'))
+                ],
             ),
         )
 
@@ -272,34 +245,40 @@ def _make_protein_interaction_mapper(
 
 def _make_metabolite_interaction_mapper(
     species: str,
-) -> Callable[[dict[str, object]], Relation]:
+) -> Callable[[dict[str, object]], Relation | None]:
     taxon_id = SPECIES[species]['taxon_id']
 
-    def mapper(row: dict[str, object]) -> Relation:
+    def mapper(row: dict[str, object]) -> Relation | None:
         metabolite = _metabolite(row)
         receptor = _protein(
-            uniprot=_row_value(row, 'Receptor uniprot_ id', 'Receptor_uniprot_ id'),
+            uniprot=_row_value(
+                row, 'Receptor uniprot_ id', 'Receptor_uniprot_ id'
+            ),
             gene_id=_row_value(row, 'Receptor_gene ID', 'Receptor_geneID'),
             gene_name=row.get('Receptor_symbol'),
             name=row.get('protein name'),
             taxon_id=taxon_id,
-            annotations=[Annotation(term=InterCellAnnotations.RECEPTOR)],
         )
+        if receptor is None or not metabolite.identifiers:
+            return None
         return Relation(
             subject=metabolite,
-            predicate='interacts_with',
+            predicate=slots.interacts_with,
             object=receptor,
             identifiers=_identifiers(
-                _identifier(IdentifierNamespaceCv.CELLINKER, row.get('MRID')),
+                _identifier(Namespace.CELLINKER, row.get('MRID')),
                 _identifier(
-                    IdentifierNamespaceCv.NAME,
+                    Namespace.NAME,
                     f'{_row_value(row, "Metabolite name")} - {_row_value(row, "Receptor_symbol")}',
                 ),
             ),
             annotations=_annotations(
-                Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+                Annotation(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}'),
                 *_pubmed_annotations(row.get('PMID')),
-                *_database_annotations(_row_value(row, 'Other.DB', 'Database')),
+                *[
+                    Annotation(term=slots.supporting_data_source, value=v)
+                    for v in _split(_row_value(row, 'Other.DB', 'Database'))
+                ],
             ),
         )
 
@@ -307,16 +286,13 @@ def _make_metabolite_interaction_mapper(
 
 
 def _make_metabolite_protein_mapper(
-    species: str,
-    role: str,
-) -> Callable[[dict[str, object]], Relation]:
+    species: str, role: str
+) -> Callable[[dict[str, object]], Relation | None]:
     taxon_id = SPECIES[species]['taxon_id']
     protein_keys = SPECIES[species]
 
-    def mapper(row: dict[str, object]) -> Relation:
+    def mapper(row: dict[str, object]) -> Relation | None:
         protein_uniprot = _row_value(row, protein_keys['uniprot'])
-        metabolite_id = _row_value(row, 'HMDB_ID')
-        cellinker_id = _cellinker_id(row, (role, metabolite_id, protein_uniprot))
         metabolite = _metabolite(row)
         protein = _protein(
             uniprot=protein_uniprot,
@@ -324,35 +300,25 @@ def _make_metabolite_protein_mapper(
             gene_name=_row_value(row, protein_keys['gene_name']),
             name=row.get('ENZYME_NAME'),
             taxon_id=taxon_id,
-            annotations=[
-                item
-                for item in (
-                    _annotation(
-                        MoleculeAnnotationsCv.PROTEIN_FUNCTIONAL_CLASS,
-                        ProteinFunctionalClassCv.TRANSPORTER
-                        if role == 'transporter'
-                        else row.get('type'),
-                    ),
-                )
-                if item is not None
-            ],
         )
-        predicate = role or 'interacts_with'
+        if protein is None or not metabolite.identifiers:
+            return None
+        predicate = slots.associated_with
         return Relation(
             subject=metabolite,
             predicate=predicate,
             object=protein,
             identifiers=_identifiers(
-                _identifier(IdentifierNamespaceCv.CELLINKER, cellinker_id),
                 _identifier(
-                    IdentifierNamespaceCv.NAME,
-                    f'{_row_value(row, "METABOLITE_NAME", "mETABOLITE_NAME")} - '
-                    f'{_row_value(row, "ENZYME_NAME")}',
+                    Namespace.CELLINKER, _row_value(row, 'LRID', 'MRID')
+                ),
+                _identifier(
+                    Namespace.NAME,
+                    f'{_row_value(row, "METABOLITE_NAME", "mETABOLITE_NAME")} - {_row_value(row, "ENZYME_NAME")}',
                 ),
             ),
             annotations=_annotations(
-                Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
-                _annotation(ReactionAnnotationsCv.XREF, row.get('REACTIONS')),
+                Annotation(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}')
             ),
         )
 

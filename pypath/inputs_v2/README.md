@@ -123,10 +123,10 @@ schema = EntityBuilder(
     entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.CHEBI, value=f('chebi_id', extract='chebi')),
+        CV(term=Namespace.NAME, value=f('name')),
+        CV(term=Namespace.SYNONYM, value=f('synonyms', delimiter=';')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.name, value=f('name')),
-        CV(term=slots.synonym, value=f('synonyms', delimiter=';')),
         CV(term=slots.description, value=f('description')),
     ),
 )
@@ -346,6 +346,52 @@ CV(term=slots.publications, value=lambda row: [f'PMID:{v}' for v in row['pubmed_
 
 ## Advanced Patterns
 
+### Efficient repeated mappings
+
+Caching is automatic in the shared mapping executor. Source modules describe
+what to extract and transform; they do not need cache decorators or duplicate
+lists of cache-key columns.
+
+```python
+participant = EntityBuilder(
+    entity_type=Protein,
+    identifiers=IdentifiersBuilder(
+        CV.from_pairs(f('cross_references', transform=parse_identifier_pairs)),
+    ),
+    annotations=AnnotationsBuilder(CV(term=slots.name, value=f('label'))),
+)
+# parse_identifier_pairs returns ((Namespace.UNIPROT, 'P04637'), ...)
+```
+
+`Column` reuses splitting, extraction, transformation and mapping for repeated
+immutable cell values. `CV.from_pairs(Column(...))` projects a cell's sequence of
+pairs into aligned namespace/value columns, evaluating the source only once.
+The existing `CV.from_pairs(row_callback)` form remains supported.
+
+Flat `EntityBuilder` instances infer identifier/annotation dependencies from
+these field definitions. Unrelated fields, such as a relation's evidence, do
+not prevent endpoint reuse. Dynamic entity types are evaluated and validated
+on **every row**, and the resolved type is part of the cache key. An opaque
+identifier/annotation callback conservatively depends on the entire dictionary
+row, including field order; the executor never guesses which fields it reads.
+An explicit `cache_by` remains available for compatibility but is unnecessary
+for declarative fields and must include every identifier/annotation dependency.
+
+Each cache holds at most 4,096 entries, with least-recently-used eviction.
+Missing fields, nulls and scalar types remain distinct. Mutable/custom inputs
+bypass cross-row caching; cell results are retained only when their elements
+are immutable (including tuples). Returned lists are separate containers.
+Nested entities use the ordinary build path, while their fields still benefit
+from cell caching. Custom mapping rows also use the ordinary entity build path.
+These are per-definition bounds, not a process-wide memory limit.
+
+Callbacks must be pure transformations, and mapping specifications/constants
+must remain stable. Construct new definitions when their configuration changes.
+For stateful callbacks, set `cache_size=0` on the enclosing `EntityBuilder` and
+on the affected `Column`/`FieldConfig` fields. Row-local extraction sharing still
+applies. Declare reusable fields when defining a mapper rather than constructing
+them inside per-row callbacks.
+
 ### Dynamic URLs
 
 ```python
@@ -451,3 +497,46 @@ poetry run python -c "from pypath.inputs_v2.mebocost import resource; print(next
 ## Discovery
 
 The `omnipath_build` loaders automatically discover `Resource` objects exported at module level. Each resource's datasets are then processed to build the silver layer.
+
+## Quantitative attributes
+
+Keep assay measurements structured. The annotation term describes the measured
+endpoint; its value can be a native Biolink `QuantityValue`. A `Measurement` wrapper
+preserves the source column and original comparison operator alongside it:
+
+```python
+from biolink_model.datamodel.model import QuantityValue
+from omnipath_core.measurements import Measurement
+
+# BAO:0000190 is IC50. A source-specific parser has read "<=10" nM.
+attribute = CV(
+    term='BAO:0000190',
+    value=lambda row: Measurement(
+        quantity=QuantityValue(has_numeric_value=10, has_unit='nM'),
+        source_field='IC50 (nM)',
+        comparator='<=',
+    ),
+)
+```
+
+A real mapper parses each source value, keeps its units and handles malformed cells
+explicitly. Raw IC50 is not `pIC50`: native log-affinity slots are only used for
+source log values. Source-field provenance distinguishes reported minimum, maximum
+and median without inventing a statistical interpretation. Quantities are retained
+in the serving annotations' optional typed `quantity` struct and in each evidence
+occurrence. Effects, mechanisms and other assertion qualifiers remain separate.
+
+Use `description` for actual prose. Prefer a faithful native slot or a reviewed
+external ontology attribute for structured fields; document fields that cannot yet
+be exposed faithfully. Do not replace useful measurements with descriptions.
+
+Nested participants may specify an explicit native `predicate` on `Member` or
+`MembersFromList` (for example, reaction `has_input`/`has_output`/`enabled_by`). The
+default remains `has_member`. A dynamic predicate returning `None` omits that member;
+use `preserve_indices=True` for aligned columns so missing roles cannot shift the
+predicates onto different participants.
+
+Source names, synonyms and abbreviations are identifier values: use `Namespace.NAME`
+and `Namespace.SYNONYM` in the identifier builder, after source accessions. They are
+not emitted as name/synonym annotations; the serving label is derived from these
+identifiers. This convention also applies to nested members and ontology terms.

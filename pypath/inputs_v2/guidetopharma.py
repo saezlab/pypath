@@ -6,25 +6,26 @@ into Entity records using the schema defined in pypath.internals.silver_schema.
 """
 
 from __future__ import annotations
-
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 import csv
 import re
-
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    InteractionParameterCv,
-    ProteinFunctionalClassCv,
-    MoleculeSubtypeCv,
-    IdentifierNamespaceCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    PharmacologicalActionCv,
-    LigandTypeCv,
-    AffinityUnitCv,
-    MoleculeAnnotationsCv,
-    ResourceCv,
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from biolink_model.datamodel.model import (
+    Protein,
+    MacromolecularComplex,
+    ChemicalEntity,
+    Gene,
+    RNAProduct,
+    NucleicAcidEntity,
+    Polypeptide,
+    NamedThing,
+    slots,
+    DirectionQualifierEnum,
+    CausalMechanismQualifierEnum,
+    QuantityValue,
 )
+from omnipath_core.naming import Namespace
+from omnipath_core.measurements import Measurement
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -35,81 +36,15 @@ from pypath.internals.tabular_builder import (
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
-
-# Processing helpers
-action_cv_mapping = {
-    'Activation': PharmacologicalActionCv.ACTIVATION,
-    'Agonist': PharmacologicalActionCv.AGONIST,
-    'Antagonist': PharmacologicalActionCv.ANTAGONIST,
-    'Biased agonist': PharmacologicalActionCv.BIASED_AGONIST,
-    'Binding': PharmacologicalActionCv.BINDING,
-    'Biphasic': PharmacologicalActionCv.BIPHASIC,
-    'Competitive': PharmacologicalActionCv.COMPETITIVE,
-    'Feedback inhibition': PharmacologicalActionCv.FEEDBACK_INHIBITION,
-    'Full agonist': PharmacologicalActionCv.FULL_AGONIST,
-    'Inhibition': PharmacologicalActionCv.INHIBITION,
-    'Inverse agonist': PharmacologicalActionCv.INVERSE_AGONIST,
-    'Irreversible agonist': PharmacologicalActionCv.IRREVERSIBLE_AGONIST,
-    'Irreversible inhibition': PharmacologicalActionCv.IRREVERSIBLE_INHIBITION,
-    'Mixed': PharmacologicalActionCv.MIXED,
-    'Negative': PharmacologicalActionCv.NEGATIVE,
-    'Neutral': PharmacologicalActionCv.NEUTRAL,
-    'Non-competitive': PharmacologicalActionCv.NON_COMPETITIVE,
-    'None': PharmacologicalActionCv.NONE,
-    'Partial agonist': PharmacologicalActionCv.PARTIAL_AGONIST,
-    'Pore blocker': PharmacologicalActionCv.PORE_BLOCKER,
-    'Positive': PharmacologicalActionCv.POSITIVE,
-    'Potentiation': PharmacologicalActionCv.POTENTIATION,
-    'Slows inactivation': PharmacologicalActionCv.SLOWS_INACTIVATION,
-    'Unknown': PharmacologicalActionCv.UNKNOWN,
-    'Voltage-dependent inhibition': PharmacologicalActionCv.VOLTAGE_DEPENDENT_INHIBITION,
-}
-
-type_cv_mapping = {
-    'Activator': LigandTypeCv.ACTIVATOR,
-    'Agonist': LigandTypeCv.AGONIST,
-    'Allosteric modulator': LigandTypeCv.ALLOSTERIC_MODULATOR,
-    'Antagonist': LigandTypeCv.ANTAGONIST,
-    'Antibody': LigandTypeCv.ANTIBODY,
-    'Channel blocker': LigandTypeCv.CHANNEL_BLOCKER,
-    'Fusion protein': LigandTypeCv.FUSION_PROTEIN,
-    'Gating inhibitor': LigandTypeCv.GATING_INHIBITOR,
-    'Inhibitor': LigandTypeCv.INHIBITOR,
-    'None': LigandTypeCv.NONE,
-    'Subunit-specific': LigandTypeCv.SUBUNIT_SPECIFIC,
-}
-
-affinity_units_cv_mapping = {
-    'pA2': AffinityUnitCv.PA2,
-    'pEC50': AffinityUnitCv.PEC50,
-    'pIC50': AffinityUnitCv.PIC50,
-    'pKB': AffinityUnitCv.PKB,
-    'pKd': AffinityUnitCv.PKD,
-    'pKi': AffinityUnitCv.PKI,
-}
-
 ligand_chemical_type_mapping = {
-    'Synthetic organic': MoleculeSubtypeCv.SYNTHETIC_ORGANIC,
-    'Natural product': MoleculeSubtypeCv.NATURAL_PRODUCT,
-    'Metabolite': MoleculeSubtypeCv.METABOLITE,
-    'Inorganic': MoleculeSubtypeCv.INORGANIC,
-    'Peptide': MoleculeSubtypeCv.PEPTIDE,
-    'Antibody': MoleculeSubtypeCv.ANTIBODY,
-    'Nucleic acid': MoleculeSubtypeCv.NUCLEIC_ACID,
+    'Synthetic organic': 'synthetic organic',
+    'Natural product': 'natural product',
+    'Metabolite': 'metabolite',
+    'Inorganic': 'inorganic',
+    'Peptide': 'peptide',
+    'Antibody': 'antibody',
+    'Nucleic acid': 'nucleic acid',
 }
-
-target_type_mapping = {
-    'gpcr': ProteinFunctionalClassCv.GPCR,
-    'lgic': ProteinFunctionalClassCv.LGIC,
-    'vgic': ProteinFunctionalClassCv.VGIC,
-    'other_ic': ProteinFunctionalClassCv.OTHER_ION_CHANNEL,
-    'enzyme': ProteinFunctionalClassCv.ENZYME,
-    'catalytic_receptor': ProteinFunctionalClassCv.CATALYTIC_RECEPTOR,
-    'nhr': ProteinFunctionalClassCv.NUCLEAR_HORMONE_RECEPTOR,
-    'transporter': ProteinFunctionalClassCv.TRANSPORTER,
-    'other_protein': ProteinFunctionalClassCv.OTHER_PROTEIN,
-}
-
 species_to_taxid = {
     'Human': '9606',
     'Mouse': '10090',
@@ -159,44 +94,33 @@ species_to_taxid = {
     'Hepatitis C virus': '3052230',
     'Zika virus': '64320',
 }
-
-
 f = FieldConfig(
-    extract={
-        'lower': str.lower,
-    },
+    extract={'lower': str.lower},
     map={
-        'action': action_cv_mapping,
-        'ligand_type': type_cv_mapping,
-        'affinity_units': affinity_units_cv_mapping,
-        'ligand_chemical_type': ligand_chemical_type_mapping,
-        'target_type': target_type_mapping,
-        'species_taxid': species_to_taxid,
+        'species_taxid': {
+            name: f'NCBITaxon:{taxon}'
+            for name, taxon in species_to_taxid.items()
+        }
     },
 )
-
-
-_NUCLEIC_ACID_LIGAND_SUBTYPES = {
-    MoleculeSubtypeCv.NUCLEIC_ACID,
-}
-_MACROMOLECULE_LIGAND_SUBTYPES = {
-    MoleculeSubtypeCv.PEPTIDE,
-    MoleculeSubtypeCv.ANTIBODY,
-}
+_NUCLEIC_ACID_LIGAND_SUBTYPES = {'nucleic acid'}
+_MACROMOLECULE_LIGAND_SUBTYPES = {'peptide', 'antibody'}
 _TAXON_SCOPED_ENTITY_TYPES = {
-    EntityTypeCv.PROTEIN,
-    EntityTypeCv.GENE,
-    EntityTypeCv.RNA,
-    EntityTypeCv.DNA,
-    EntityTypeCv.MACROMOLECULE,
-    EntityTypeCv.NUCLEIC_ACID,
+    Protein,
+    Gene,
+    RNAProduct,
+    NucleicAcidEntity,
+    Polypeptide,
+    NucleicAcidEntity,
 }
 
 
 def _split_pipe_values(raw: object) -> list[str]:
     if raw is None:
         return []
-    return [part.strip() for part in str(raw).split('|') if part and part.strip()]
+    return [
+        part.strip() for part in str(raw).split('|') if part and part.strip()
+    ]
 
 
 def _filter_refseq(raw: object, prefixes: tuple[str, ...]) -> list[str]:
@@ -208,14 +132,9 @@ def _filter_refseq(raw: object, prefixes: tuple[str, ...]) -> list[str]:
 
 
 _UNIPROT_ACCESSION_RE = re.compile(
-    r'^(?:'
-    r'[OPQ][0-9][A-Z0-9]{3}[0-9]'
-    r'|'
-    r'[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2}'
-    r')(?:-\d+)?$'
+    '^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\\d+)?$'
 )
-_UNIPROT_ENTRY_NAME_RE = re.compile(r'^[A-Z0-9]+_[A-Z0-9]+$')
-
+_UNIPROT_ENTRY_NAME_RE = re.compile('^[A-Z0-9]+_[A-Z0-9]+$')
 
 
 def _normalize_chembl(raw: object) -> list[str]:
@@ -223,16 +142,24 @@ def _normalize_chembl(raw: object) -> list[str]:
     for value in _split_pipe_values(raw):
         upper = value.upper()
         if upper.startswith('CHEMBL'):
-            values.append(f'CHEMBL{value[len("CHEMBL"):]}')
+            values.append(f'CHEMBL{value[len("CHEMBL") :]}')
     return values
 
 
 def _filter_uniprot_accessions(raw: object) -> list[str]:
-    return [value for value in _split_pipe_values(raw) if _UNIPROT_ACCESSION_RE.fullmatch(value)]
+    return [
+        value
+        for value in _split_pipe_values(raw)
+        if _UNIPROT_ACCESSION_RE.fullmatch(value)
+    ]
 
 
 def _filter_uniprot_entry_names(raw: object) -> list[str]:
-    return [value for value in _split_pipe_values(raw) if _UNIPROT_ENTRY_NAME_RE.fullmatch(value)]
+    return [
+        value
+        for value in _split_pipe_values(raw)
+        if _UNIPROT_ENTRY_NAME_RE.fullmatch(value)
+    ]
 
 
 def _iter_guidetopharma_csv(opener, **_kwargs: object):
@@ -244,10 +171,7 @@ def _iter_guidetopharma_csv(opener, **_kwargs: object):
 
 
 def _guidetopharma_rows_by_id(
-    download: Download,
-    key: str,
-    *,
-    force_refresh: bool = False,
+    download: Download, key: str, *, force_refresh: bool = False
 ) -> dict[str, dict[str, str]]:
     rows: dict[str, dict[str, str]] = {}
     opener = download.open(force_refresh=force_refresh)
@@ -269,14 +193,12 @@ def _iter_guidetopharma_interactions(opener, **kwargs: object):
         'Target id',
         force_refresh=bool(kwargs.get('force_refresh', False)),
     )
-
     for row in _iter_guidetopharma_csv(opener):
         row = dict(row)
         row['_ligand'] = ligands.get((row.get('Ligand ID') or '').strip(), {})
         row['_target'] = targets.get((row.get('Target ID') or '').strip(), {})
         row['_target_ligand'] = ligands.get(
-            (row.get('Target Ligand ID') or '').strip(),
-            {},
+            (row.get('Target Ligand ID') or '').strip(), {}
         )
         yield row
 
@@ -300,45 +222,48 @@ def _target_ligand_row(row: Mapping[str, object]) -> Mapping[str, object]:
 
 def _guidetopharma_ligand_entity_type(row):
     row = _ligand_row(row)
-    ligand_subtype = ligand_chemical_type_mapping.get((row.get('Type') or '').strip())
-
+    ligand_subtype = ligand_chemical_type_mapping.get(
+        (row.get('Type') or '').strip()
+    )
     if _filter_uniprot_accessions(row.get('UniProt ID')):
-        return EntityTypeCv.PROTEIN
-
+        return Protein
     if ligand_subtype in _NUCLEIC_ACID_LIGAND_SUBTYPES:
-        return EntityTypeCv.NUCLEIC_ACID
-
+        return NucleicAcidEntity
     if ligand_subtype in _MACROMOLECULE_LIGAND_SUBTYPES:
-        return EntityTypeCv.MACROMOLECULE
-
-    return EntityTypeCv.CHEMICAL
+        return Polypeptide
+    return ChemicalEntity
 
 
 def _guidetopharma_ligand_taxon_id(row):
     row = _ligand_row(row)
     entity_type = _guidetopharma_ligand_entity_type(row)
     taxon_id = species_to_taxid.get((row.get('Species') or '').strip())
-
-    return taxon_id if entity_type in _TAXON_SCOPED_ENTITY_TYPES else None
+    return (
+        f'NCBITaxon:{taxon_id}'
+        if taxon_id and entity_type in _TAXON_SCOPED_ENTITY_TYPES
+        else None
+    )
 
 
 def _guidetopharma_target_entity_type(row):
+    if row.get('_entity_type') is not None:
+        return row['_entity_type']
     if any(
-        _split_pipe_values(row.get(field))
-        for field in (
-            'Human SwissProt',
-            'Human Ensembl Gene',
-            'Human Entrez Gene',
-            'HGNC id',
-            'HGNC symbol',
+        (
+            _split_pipe_values(row.get(field))
+            for field in (
+                'Human SwissProt',
+                'Human Ensembl Gene',
+                'Human Entrez Gene',
+                'HGNC id',
+                'HGNC symbol',
+            )
         )
     ):
-        return EntityTypeCv.PROTEIN
-
+        return Protein
     if _split_pipe_values(row.get('Subunit id')):
-        return EntityTypeCv.COMPLEX
-
-    return EntityTypeCv.PROTEIN_FAMILY
+        return MacromolecularComplex
+    return NamedThing
 
 
 config = ResourceConfig(
@@ -349,17 +274,8 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='41160876',
     primary_category='interactions',
-    description=(
-        'The IUPHAR/BPS Guide to PHARMACOLOGY is an expert-curated resource '
-        'of ligand-activity-target relationships, providing quantitative '
-        'information on drug targets and the prescription medicines and '
-        'experimental drugs that act on them. It covers G protein-coupled '
-        'receptors, voltage-gated ion channels, ligand-gated ion channels, '
-        'nuclear hormone receptors, catalytic receptors, enzymes, and '
-        'transporters.'
-    ),
+    description='The IUPHAR/BPS Guide to PHARMACOLOGY is an expert-curated resource of ligand-activity-target relationships, providing quantitative information on drug targets and the prescription medicines and experimental drugs that act on them. It covers G protein-coupled receptors, voltage-gated ion channels, ligand-gated ion channels, nuclear hormone receptors, catalytic receptors, enzymes, and transporters.',
 )
-
 _targets_download = Download(
     url='http://www.guidetopharmacology.org/DATA/targets_and_families.csv',
     filename='targets_and_families.csv',
@@ -375,87 +291,103 @@ _interactions_download = Download(
     filename='interactions.csv',
     subfolder='guidetopharma',
 )
-
 targets_schema = EntityBuilder(
     entity_type=_guidetopharma_target_entity_type,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Target id')),
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=f('Human SwissProt', delimiter='|')),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Human Ensembl Gene', delimiter='|')),
-        CV(term=IdentifierNamespaceCv.ENTREZ, value=f('Human Entrez Gene', delimiter='|')),
+        CV(term=Namespace.GUIDETOPHARMA_TARGET, value=f('Target id')),
+        CV(term=Namespace.UNIPROT, value=f('Human SwissProt', delimiter='|')),
+        CV(term=Namespace.ENSG, value=f('Human Ensembl Gene', delimiter='|')),
+        CV(term=Namespace.ENTREZ, value=f('Human Entrez Gene', delimiter='|')),
         CV(
-            term=IdentifierNamespaceCv.REFSEQ,
+            term=Namespace.REFSEQ,
             value=lambda row: _filter_refseq(
                 row.get('Human nucleotide RefSeq'),
-                ('NM_', 'XM_', 'NR_', 'XR_', 'NG_', 'NT_', 'NW_', 'NC_', 'AC_', 'NP_'),
+                (
+                    'NM_',
+                    'XM_',
+                    'NR_',
+                    'XR_',
+                    'NG_',
+                    'NT_',
+                    'NW_',
+                    'NC_',
+                    'AC_',
+                    'NP_',
+                ),
             ),
         ),
         CV(
-            term=IdentifierNamespaceCv.REFSEQ_PROTEIN,
+            term=Namespace.REFSEQ_PROTEIN,
             value=lambda row: _filter_refseq(
                 row.get('Human protein RefSeq'),
                 ('NP_', 'XP_', 'YP_', 'WP_', 'AP_', 'ZP_'),
             ),
         ),
         CV(
-            term=IdentifierNamespaceCv.REFSEQ,
+            term=Namespace.REFSEQ,
             value=lambda row: _filter_refseq(
-                row.get('Human protein RefSeq'),
-                ('NM_', 'XM_', 'NR_', 'XR_'),
+                row.get('Human protein RefSeq'), ('NM_', 'XM_', 'NR_', 'XR_')
             ),
         ),
-        CV(term=IdentifierNamespaceCv.HGNC, value=f('HGNC id', delimiter='|')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('Target name')),
-        CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('HGNC symbol', delimiter='|')),
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('synonyms', delimiter='|')),
-        CV(term=IdentifierNamespaceCv.SYSTEMATIC_NAME, value=f('Target systematic name')),
-        CV(term=IdentifierNamespaceCv.ABBREVIATED_NAME, value=f('Target abbreviated name')),
+        CV(term=Namespace.HGNC, value=f('HGNC id', delimiter='|')),
+        CV(term=Namespace.GENESYMBOL, value=f('HGNC symbol', delimiter='|')),
+        CV(term=Namespace.NAME, value=f('Target name')),
+        CV(term=Namespace.SYNONYM, value=f('synonyms', delimiter='|')),
+        CV(term=Namespace.SYNONYM, value=f('Target systematic name')),
+        CV(term=Namespace.SYNONYM, value=f('Target abbreviated name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value='9606'),
-        CV(term=MoleculeAnnotationsCv.PROTEIN_FAMILY, value=f('Family name')),
         CV(
-            term=MoleculeAnnotationsCv.PROTEIN_FUNCTIONAL_CLASS,
-            value=f('Type', map='target_type'),
-        ),
+            term=slots.in_taxon,
+            value=lambda row: f'NCBITaxon:{row["_taxon_id"]}'
+            if row.get('_taxon_id')
+            else 'NCBITaxon:9606'
+            if any(
+                (
+                    row.get(k)
+                    for k in (
+                        'Human SwissProt',
+                        'Human Ensembl Gene',
+                        'Human Entrez Gene',
+                        'HGNC id',
+                    )
+                )
+            )
+            else None,
+        )
     ),
 )
-
 ligands_schema = EntityBuilder(
     entity_type=_guidetopharma_ligand_entity_type,
     identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.GUIDETOPHARMA, value=f('Ligand ID')),
-        CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('PubChem SID')),
-        CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('PubChem CID')),
-        CV(term=IdentifierNamespaceCv.UNIPROT, value=lambda row: _filter_uniprot_accessions(row.get('UniProt ID'))),
+        CV(term=Namespace.GUIDETOPHARMA, value=f('Ligand ID')),
+        CV(term=Namespace.PUBCHEM_SUBSTANCE, value=f('PubChem SID')),
+        CV(term=Namespace.PUBCHEM, value=f('PubChem CID')),
         CV(
-            term=IdentifierNamespaceCv.UNIPROT_ENTRY_NAME,
-            value=lambda row: _filter_uniprot_entry_names(row.get('UniProt ID')),
+            term=Namespace.UNIPROT,
+            value=lambda row: _filter_uniprot_accessions(row.get('UniProt ID')),
         ),
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('Ensembl ID', delimiter='|')),
-        CV(term=IdentifierNamespaceCv.CHEMBL_COMPOUND, value=lambda row: _normalize_chembl(row.get('ChEMBL ID'))),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI_KEY, value=f('InChIKey')),
-        CV(term=IdentifierNamespaceCv.SYNONYM, value=f('Synonyms')),
-        CV(term=IdentifierNamespaceCv.NAME, value=f('Name')),
-        CV(term=IdentifierNamespaceCv.IUPAC_NAME, value=f('IUPAC name')),
-        CV(term=IdentifierNamespaceCv.SMILES, value=f('SMILES')),
-        CV(term=IdentifierNamespaceCv.STANDARD_INCHI, value=f('InChI')),
-        CV(term=IdentifierNamespaceCv.INN, value=f('INN')),
+        CV(
+            term=Namespace.UNIPROT_ENTRY,
+            value=lambda row: _filter_uniprot_entry_names(
+                row.get('UniProt ID')
+            ),
+        ),
+        CV(term=Namespace.ENSG, value=f('Ensembl ID', delimiter='|')),
+        CV(
+            term=Namespace.CHEMBL,
+            value=lambda row: _normalize_chembl(row.get('ChEMBL ID')),
+        ),
+        CV(term=Namespace.INCHIKEY, value=f('InChIKey')),
+        CV(term=Namespace.SMILES, value=f('SMILES')),
+        CV(term=Namespace.INCHI, value=f('InChI')),
+        CV(term=Namespace.SYNONYM, value=f('Synonyms')),
+        CV(term=Namespace.NAME, value=f('Name')),
+        CV(term=Namespace.SYNONYM, value=f('IUPAC name')),
+        CV(term=Namespace.SYNONYM, value=f('INN')),
     ),
     annotations=AnnotationsBuilder(
-        CV(
-            term=IdentifierNamespaceCv.NCBI_TAX_ID,
-            value=_guidetopharma_ligand_taxon_id,
-        ),
-        CV(term=f('Approved', extract='lower', map={'yes': MoleculeAnnotationsCv.APPROVED})),
-        CV(term=f('Withdrawn', extract='lower', map={'yes': MoleculeAnnotationsCv.WITHDRAWN})),
-        CV(term=f('Labelled', extract='lower', map={'yes': MoleculeAnnotationsCv.LABELLED})),
-        CV(term=f('Radioactive', extract='lower', map={'yes': MoleculeAnnotationsCv.RADIOACTIVE})),
-        CV(term=f('Antibacterial', extract='lower', map={'yes': MoleculeAnnotationsCv.ANTIBACTERIAL})),
-        CV(
-            term=MoleculeAnnotationsCv.MOLECULE_SUBTYPE,
-            value=f('Type', map='ligand_chemical_type'),
-        ),
+        CV(term=slots.in_taxon, value=_guidetopharma_ligand_taxon_id)
     ),
 )
 
@@ -475,20 +407,132 @@ class _GuidetopharmaTargetMemberBuilder:
 
     def build(self, row: Mapping[str, object]) -> object | None:
         if row.get('Target ID'):
-            return targets_schema.build(_interaction_target_row(row))
+            target = _interaction_target_row(row)
+            if target:
+                target = dict(target)
+                taxon = species_to_taxid.get(
+                    str(row.get('Target Species') or '').strip()
+                )
+                if taxon:
+                    target['_taxon_id'] = taxon
+                if taxon and taxon != '9606':
+                    # Human reference aliases cannot identify a nonhuman assay
+                    # target. Preserve the taxon-scoped source target accession.
+                    target['_entity_type'] = _guidetopharma_target_entity_type(
+                        target
+                    )
+                    for field in list(target):
+                        if field.startswith('Human ') or field in (
+                            'HGNC id',
+                            'HGNC symbol',
+                        ):
+                            target.pop(field)
+                return targets_schema.build(target)
+            # Retain an explicit source target accession even when a cached
+            # metadata table does not contain its newly added record.
+            return targets_schema.build(
+                {
+                    'Target id': row['Target ID'],
+                    'Target name': row.get('Target'),
+                }
+            )
         if row.get('Target Ligand ID'):
             return ligands_schema.build(_target_ligand_row(row))
         return None
 
 
-def guidetopharma_predicate(row: Mapping[str, object]) -> str:
+# Exact source actions map to schema-defined mechanisms. Broader source
+# qualifiers such as "Competitive" do not alone determine inhibition.
+_ACTION_MECHANISM = {
+    'Activation': CausalMechanismQualifierEnum.activation,
+    'Agonist': CausalMechanismQualifierEnum.agonism,
+    'Full agonist': CausalMechanismQualifierEnum.agonism,
+    'Partial agonist': CausalMechanismQualifierEnum.partial_agonism,
+    'Biased agonist': CausalMechanismQualifierEnum.biased_agonism,
+    'Antagonist': CausalMechanismQualifierEnum.antagonism,
+    'Inhibition': CausalMechanismQualifierEnum.inhibition,
+    'Feedback inhibition': CausalMechanismQualifierEnum.feedback_inhibition,
+    'Irreversible inhibition': CausalMechanismQualifierEnum.irreversible_inhibition,
+    'Inverse agonist': CausalMechanismQualifierEnum.inverse_agonism,
+    'Positive': CausalMechanismQualifierEnum.positive_modulation,
+    'Negative': CausalMechanismQualifierEnum.negative_modulation,
+    'Potentiation': CausalMechanismQualifierEnum.potentiation,
+    'Pore blocker': CausalMechanismQualifierEnum.molecular_channel_blockage,
+    'Binding': CausalMechanismQualifierEnum.binding,
+    'Mixed': CausalMechanismQualifierEnum.modulation,
+    'Biphasic': CausalMechanismQualifierEnum.modulation,
+}
+
+_AFFINITY_SLOT = {
+    'pIC50': slots.pIC50,
+    'pEC50': slots.pEC50,
+    'pKi': slots.pKi,
+    'pKd': slots.pKd,
+}
+
+
+def _affinity_measurements(row):
+    measure = str(row.get('Affinity Units') or '').strip()
+    out = []
+    for field in ('Affinity High', 'Affinity Low', 'Affinity Median'):
+        raw = str(row.get(field) or '').strip()
+        if not raw or raw == '-':
+            continue
+        out.append(
+            Measurement(
+                quantity=QuantityValue(has_numeric_value=float(raw)),
+                source_field=f'{measure or "unspecified measure"} {field}',
+            )
+        )
+    return out
+
+
+def _original_affinity_measurements(row):
+    measure = str(row.get('Original Affinity Units') or '').strip()
+    comparator = (
+        str(row.get('Original Affinity Relation') or '').strip() or None
+    )
+    return [
+        Measurement(
+            quantity=QuantityValue(
+                has_numeric_value=float(row[field]), has_unit='nM'
+            ),
+            source_field=f'{measure or "unspecified measure"} {field}',
+            comparator=comparator,
+        )
+        for field in (
+            'Original Affinity High nm',
+            'Original Affinity Low nm',
+            'Original Affinity Median nm',
+        )
+        if str(row.get(field) or '').strip() not in ('', '-')
+    ]
+
+
+_ACTION_DIRECTION = {
+    'Activation': DirectionQualifierEnum.increased,
+    'Agonist': DirectionQualifierEnum.increased,
+    'Full agonist': DirectionQualifierEnum.increased,
+    'Partial agonist': DirectionQualifierEnum.increased,
+    'Inhibition': DirectionQualifierEnum.decreased,
+    'Antagonist': DirectionQualifierEnum.decreased,
+    'Feedback inhibition': DirectionQualifierEnum.decreased,
+    'Irreversible inhibition': DirectionQualifierEnum.decreased,
+    'Inverse agonist': DirectionQualifierEnum.decreased,
+    'Voltage-dependent inhibition': DirectionQualifierEnum.decreased,
+}
+
+
+def guidetopharma_predicate(row: Mapping[str, object]):
     action = str(row.get('Action') or '').strip()
-    if action:
-        return action
-    return 'interacts_with'
+    if action in _ACTION_DIRECTION or (
+        action in _ACTION_MECHANISM and action != 'Binding'
+    ):
+        return slots.affects
+    if action == 'Binding':
+        return slots.directly_physically_interacts_with
+    return slots.interacts_with
 
-
-affinity_units_source = f('Affinity Units', map='affinity_units')
 
 interactions_schema = RelationBuilder(
     subject=_GuidetopharmaLigandMemberBuilder(),
@@ -496,40 +540,51 @@ interactions_schema = RelationBuilder(
     object=_GuidetopharmaTargetMemberBuilder(),
     identifiers=IdentifiersBuilder(
         CV(
-            term=IdentifierNamespaceCv.NAME,
+            term=Namespace.NAME,
             value=f(
-                lambda row: f"{row['Target ID']}_{row['Ligand ID']}"
+                lambda row: f'{row["Target ID"]}_{row["Ligand ID"]}'
                 if row.get('Target ID') and row.get('Ligand ID')
                 else None
             ),
-        ),
+        )
     ),
     annotations=AnnotationsBuilder(
-        CV(term=f('Action', map='action')),
-        CV(term=f('Type', map='ligand_type')),
         CV(
-            term=InteractionParameterCv.AFFINITY_HIGH,
-            value=f('Affinity High'),
-            unit=affinity_units_source,
+            term=slots.has_quantitative_value,
+            value=_original_affinity_measurements,
+        ),
+        CV(term=slots.description, value=f('Action comment')),
+        CV(term=slots.description, value=f('Assay Description')),
+        CV(
+            term=slots.causal_mechanism_qualifier,
+            value=lambda row: _ACTION_MECHANISM.get(
+                str(row.get('Action') or '').strip()
+            ),
         ),
         CV(
-            term=InteractionParameterCv.AFFINITY_LOW,
-            value=f('Affinity Low'),
-            unit=affinity_units_source,
+            term=lambda row: _AFFINITY_SLOT.get(
+                str(row.get('Affinity Units') or '').strip(),
+                slots.has_quantitative_value,
+            ),
+            value=_affinity_measurements,
         ),
         CV(
-            term=InteractionParameterCv.AFFINITY_MEDIAN,
-            value=f('Affinity Median'),
-            unit=affinity_units_source,
+            term=slots.object_direction_qualifier,
+            value=lambda row: _ACTION_DIRECTION.get(
+                str(row.get('Action') or '').strip()
+            ),
         ),
-        CV(term=IdentifierNamespaceCv.PUBMED, value=f('PubMed ID')),
         CV(
-            term=IdentifierNamespaceCv.NCBI_TAX_ID,
-            value=f('Target Species', map='species_taxid'),
+            term=slots.publications,
+            value=f(
+                'PubMed ID',
+                delimiter='|',
+                transform=lambda v: f'PMID:{v.removeprefix("PMID:")}',
+            ),
         ),
+        CV(term=slots.in_taxon, value=f('Target Species', map='species_taxid')),
     ),
 )
-
 resource = Resource(
     config,
     interactions=Dataset(

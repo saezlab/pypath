@@ -72,7 +72,10 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33237286',
     primary_category='proteins',
-    annotation_ontologies=(OntologyCv.GENE_ONTOLOGY, OntologyCv.UNIPROT_KEYWORDS),
+    annotation_ontologies=(
+        OntologyCv.GENE_ONTOLOGY,
+        OntologyCv.UNIPROT_KEYWORDS,
+    ),
     description=(
         'UniProt is a comprehensive resource for protein sequence and '
         'functional information. It provides high-quality, manually annotated '
@@ -209,11 +212,16 @@ def _parse_ensembl_dr_line(line: str) -> list[tuple[Namespace, str]]:
     identifiers: set[tuple[Namespace, str]] = set()
 
     parts = [part.strip() for part in line[5:].rstrip('.').split(';')[1:4]]
-    for namespace, part in zip((Namespace.ENST, Namespace.ENSP, Namespace.ENSG), parts):
+    for namespace, part in zip(
+        (Namespace.ENST, Namespace.ENSP, Namespace.ENSG), parts
+    ):
         if not part or part == '-':
             continue
         identifier = part.split(' [', 1)[0]
-        identifiers.update((namespace, value) for value in _versioned_and_unversioned(identifier))
+        identifiers.update(
+            (namespace, value)
+            for value in _versioned_and_unversioned(identifier)
+        )
 
     return sorted(identifiers)
 
@@ -239,7 +247,9 @@ def _strip_flatfile_evidence(value: str) -> str:
     return re.sub(r'\s*\{[^}]*\}', '', value).strip()
 
 
-def _reference_id_translation_raw(opener, max_records: int | None = None, **kwargs):
+def _reference_id_translation_raw(
+    opener, max_records: int | None = None, **kwargs
+):
     emitted = 0
     taxonomy_ids = kwargs.get('taxonomy_ids')
     taxonomy_ids = {str(int(t)) for t in taxonomy_ids} if taxonomy_ids else None
@@ -267,20 +277,24 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
         ]
 
         if entry_name:
-            rows.append({
-                'key_type': Namespace.UNIPROT_ENTRY,
-                'key_value': str(entry_name),
-                'taxonomy_id': taxonomy_id,
-                'primary_uniprot': primary_uniprot,
-            })
+            rows.append(
+                {
+                    'key_type': Namespace.UNIPROT_ENTRY,
+                    'key_value': str(entry_name),
+                    'taxonomy_id': taxonomy_id,
+                    'primary_uniprot': primary_uniprot,
+                }
+            )
 
         if rec.get('gene_primary'):
-            rows.append({
-                'key_type': Namespace.GENESYMBOL,
-                'key_value': rec.get('gene_primary'),
-                'taxonomy_id': taxonomy_id,
-                'primary_uniprot': primary_uniprot,
-            })
+            rows.append(
+                {
+                    'key_type': Namespace.GENESYMBOL,
+                    'key_value': rec.get('gene_primary'),
+                    'taxonomy_id': taxonomy_id,
+                    'primary_uniprot': primary_uniprot,
+                }
+            )
 
         rows.extend(
             {
@@ -326,7 +340,9 @@ def _reference_id_translation_raw(opener, max_records: int | None = None, **kwar
                 return
 
 
-def _secondary_to_primary_raw(_opener, max_records: int | None = None, **_kwargs):
+def _secondary_to_primary_raw(
+    _opener, max_records: int | None = None, **_kwargs
+):
     emitted = 0
     path = dm.download(urls.urls['uniprot_sec']['url'])
 
@@ -353,15 +369,25 @@ def _secondary_to_primary_raw(_opener, max_records: int | None = None, **_kwargs
 
 
 # Source narrative headings are retained verbatim; none imply graph predicates.
+# Numeric sequence length/mass and family classifications stay in raw payloads.
 _PROTEIN_DESCRIPTION_FIELDS = (
-    'Length', 'Mass', 'Function [CC]', 'Subcellular location [CC]', 'Post-translational modification',
-    'Involvement in disease', 'Pathway', 'Activity regulation', 'Mutagenesis',
-    'Transmembrane', 'Protein families',
+    'Function [CC]',
+    'Subcellular location [CC]',
+    'Post-translational modification',
+    'Involvement in disease',
+    'Pathway',
+    'Activity regulation',
+    'Mutagenesis',
+    'Transmembrane',
 )
 
 
 def _protein_descriptions(row):
-    return [f'{field}: {row[field]}' for field in _PROTEIN_DESCRIPTION_FIELDS if row.get(field)]
+    return [
+        f'{field}: {row[field]}'
+        for field in _PROTEIN_DESCRIPTION_FIELDS
+        if row.get(field)
+    ]
 
 
 proteins_schema = EntityBuilder(
@@ -372,15 +398,28 @@ proteins_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=slots.has_biological_sequence, value=f('Sequence')),
         CV(term=slots.description, value=_protein_descriptions),
-        CV(term=slots.in_taxon, value=lambda row: (
-            f"NCBITaxon:{row['Organism (ID)']}" if row.get('Organism (ID)') else None
-        )),
-        CV(term=slots.publications, value=lambda row: [
-            f'PMID:{value}' for value in _split_semicolon_field(row.get('PubMed ID'))
-        ]),
-        CV(term=slots.has_topic, value=lambda row: [
-            f'EC:{value}' for value in _split_semicolon_field(row.get('EC number'))
-        ]),
+        CV(
+            term=slots.in_taxon,
+            value=lambda row: (
+                f'NCBITaxon:{row["Organism (ID)"]}'
+                if row.get('Organism (ID)')
+                else None
+            ),
+        ),
+        CV(
+            term=slots.publications,
+            value=lambda row: [
+                f'PMID:{value}'
+                for value in _split_semicolon_field(row.get('PubMed ID'))
+            ],
+        ),
+        CV(
+            term=slots.has_topic,
+            value=lambda row: [
+                f'EC:{value}'
+                for value in _split_semicolon_field(row.get('EC number'))
+            ],
+        ),
     ),
     associations=AssociationsBuilder(
         AssociationBuilder(
@@ -401,23 +440,33 @@ proteins_schema = EntityBuilder(
 
 _keyword_builder = EntityBuilder(
     entity_type=OntologyClass,
-    identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT_KEYWORD, value=f('id'))),
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.UNIPROT_KEYWORD, value=f('id')),
+        CV(term=Namespace.NAME, value=f('name')),
+        CV(term=Namespace.SYNONYM, value=lambda row: row.get('synonyms', [])),
+    ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.name, value=f('name')),
         CV(term=slots.description, value=f('definition')),
-        CV(term=slots.synonym, value=lambda row: row.get('synonyms', [])),
-        CV(term=slots.xref, value=lambda row: [x.split()[0] for x in row.get('xrefs', [])]),
-        CV(term=slots.has_topic, value=lambda row: [
-            f"UniProtKB-KW:{rel['target']}" for rel in row.get('relationships', [])
-            if rel['type'] == 'category'
-        ]),
+        CV(
+            term=slots.xref,
+            value=lambda row: [x.split()[0] for x in row.get('xrefs', [])],
+        ),
+        CV(
+            term=slots.has_topic,
+            value=lambda row: [
+                f'UniProtKB-KW:{rel["target"]}'
+                for rel in row.get('relationships', [])
+                if rel['type'] == 'category'
+            ],
+        ),
     ),
     ontology_relations=lambda row: [
         OntologyRelation(
             predicate=slots.subclass_of,
             object=EntityRef(OntologyClass, Namespace.UNIPROT_KEYWORD, parent),
             ontology_id=_UNIPROT_KEYWORDS_ONTOLOGY_ID,
-        ) for parent in row.get('is_a', [])
+        )
+        for parent in row.get('is_a', [])
     ],
 )
 

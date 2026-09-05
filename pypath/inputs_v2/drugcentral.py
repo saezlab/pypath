@@ -1,37 +1,73 @@
-"""Parse DrugCentral drug-target interaction data and emit Entity records."""
+"""DrugCentral mappings preserve action codes without guessing target complexes."""
 
 from __future__ import annotations
 
 import csv
-from functools import cache
+import math
+import re
+
+from biolink_model.datamodel.model import (
+    ChemicalEntity,
+    DirectionQualifierEnum,
+    NamedThing,
+    Protein,
+    QuantityValue,
+    slots,
+)
+from omnipath_core.measurements import Measurement
+from omnipath_core.naming import Namespace
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
-from pypath.share.downloads import download_and_open
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    InteractionParameterCv,
-    InteractionMetadataCv,
-    LicenseCV,
-    MoleculeAnnotationsCv,
-    PharmacologicalActionCv,
-    ResourceCv,
-    UpdateCategoryCV,
-)
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.silver_schema import (
-    Annotation,
     Entity,
     Identifier,
     Membership,
-    Relation,
 )
-
-DRUGCENTRAL_STRUCTURES_URL = (
-    'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/'
-    'structures.smiles.tsv'
+from pypath.internals.tabular_builder import (
+    CV,
+    AnnotationsBuilder,
+    EntityBuilder,
+    FieldConfig,
+    IdentifiersBuilder,
+    RelationBuilder,
 )
+from pypath.share.downloads import download_and_open
 
+
+def _measurement(value, unit=None, source_field=None, comparator=None):
+    """Keep numeric source observations, units and comparison bounds together."""
+    if value is None:
+        return None
+    match = re.fullmatch(
+        '\\s*(<=|>=|<|>|=|~)?\\s*([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?)\\s*',
+        str(value),
+    )
+    if match is None:
+        return None
+    original_comparator = comparator or match.group(1)
+    if original_comparator not in {None, '<', '>', '=', '<=', '>=', '~', '≈'}:
+        return None
+    relation = {'<': 'less_than', '>': 'greater_than', '=': 'equal_to'}.get(
+        original_comparator
+    )
+    number = float(match.group(2))
+    if not math.isfinite(number):
+        return None
+    quantity = QuantityValue(
+        has_numeric_value=number,
+        has_unit=unit or None,
+        has_binary_relation=relation,
+    )
+    return Measurement(
+        quantity=quantity,
+        source_field=source_field,
+        comparator=original_comparator,
+    )
+
+
+DRUGCENTRAL_STRUCTURES_URL = 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/structures.smiles.tsv'
 config = ResourceConfig(
     id=ResourceCv.DRUGCENTRAL,
     name='DrugCentral',
@@ -40,74 +76,142 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='36484092',
     primary_category='interactions',
-    description=(
-        'DrugCentral is an online drug information resource with active '
-        'ingredients, chemical entities, pharmacologic action, indications, '
-        'mechanism of action and drug-target interaction data.'
-    ),
+    description='DrugCentral is an online drug information resource with active ingredients, chemical entities, pharmacologic action, indications, mechanism of action and drug-target interaction data.',
 )
+AFFINITY_TERMS = {
+    'IC50': 'BAO:0000190',
+    'EC50': 'BAO:0000188',
+    'KI': 'BAO:0000192',
+    'KD': 'BAO:0000034',
+    'KON': 'BAO:0000480',
+    'KOFF': 'BAO:0000479',
+}
+f = FieldConfig()
+ACTION_DIRECTION = {
+    'AGONIST': DirectionQualifierEnum.increased,
+    'ACTIVATOR': DirectionQualifierEnum.increased,
+    'ANTAGONIST': DirectionQualifierEnum.decreased,
+    'INHIBITOR': DirectionQualifierEnum.decreased,
+    'BLOCKER': DirectionQualifierEnum.decreased,
+}
 
 
-def _clean(value: object) -> str:
+def _clean(value):
     return str(value or '').strip().strip('"')
 
 
-def _values(value: object, delimiter: str = '|') -> list[str]:
-    return [
-        item.strip()
-        for item in _clean(value).split(delimiter)
-        if item.strip()
+def _values(value):
+    return [v.strip() for v in _clean(value).split('|') if v.strip()]
+
+
+def _taxon(row):
+    organism = _clean(row.get('ORGANISM'))
+    taxon = {
+        'Homo sapiens': '9606',
+        'Mus musculus': '10090',
+        'Rattus norvegicus': '10116',
+    }.get(organism)
+    return f'NCBITaxon:{taxon}' if taxon else None
+
+
+chemical_builder = EntityBuilder(
+    entity_type=ChemicalEntity,
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.DRUGCENTRAL, value=f('STRUCT_ID')),
+        CV(term=Namespace.INCHIKEY, value=f('structure_inchikey')),
+        CV(term=Namespace.NAME, value=f('DRUG_NAME')),
+    ),
+    annotations=AnnotationsBuilder(),
+)
+protein_builder = EntityBuilder(
+    entity_type=Protein,
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.UNIPROT, value=f('accession')),
+        CV(term=Namespace.GENESYMBOL, value=f('gene')),
+        CV(term=Namespace.UNIPROT_ENTRY, value=f('swissprot')),
+        CV(term=Namespace.NAME, value=f('name')),
+    ),
+    annotations=AnnotationsBuilder(CV(term=slots.in_taxon, value=_taxon)),
+)
+
+
+def _target_entity(row):
+    accessions = _values(row.get('ACCESSION'))
+    genes = _values(row.get('GENE'))
+    entries = _values(row.get('SWISSPROT'))
+    proteins = [
+        protein_builder.build(
+            {
+                **row,
+                'accession': accession,
+                'gene': genes[i] if i < len(genes) else None,
+                'swissprot': entries[i] if i < len(entries) else None,
+                'name': row.get('TARGET_NAME')
+                if len(accessions) == 1
+                else None,
+            }
+        )
+        for i, accession in enumerate(accessions)
     ]
-
-
-def _annotation(
-    term: object,
-    value: object = None,
-    units: object = None,
-) -> Annotation | None:
-    value = _clean(value)
-    units = _clean(units)
-    if not value:
+    proteins = [p for p in proteins if p is not None]
+    if len(proteins) == 1:
+        return proteins[0]
+    if not proteins:
         return None
-    return Annotation(term=term, value=value, units=units or None)
+    return Entity(
+        type=NamedThing,
+        identifiers=[
+            Identifier(
+                type=Namespace.NAME, value=_clean(row.get('TARGET_NAME'))
+            )
+        ],
+        annotations=[],
+        membership=[
+            Membership(member=p, predicate=slots.has_member) for p in proteins
+        ],
+    )
 
 
-def _annotations(*items: Annotation | None) -> list[Annotation] | None:
-    out: list[Annotation] = []
-    seen: set[tuple[object, object, object]] = set()
-    for item in items:
-        if item is None:
-            continue
-        key = (item.term, item.value, item.units)
-        if key in seen:
-            continue
-        out.append(item)
-        seen.add(key)
-    return out or None
+def _predicate(row):
+    action = _clean(row.get('ACTION_TYPE')).upper()
+    if action in ACTION_DIRECTION:
+        return slots.affects
+    if action == 'BINDER':
+        return slots.physically_interacts_with
+    return slots.associated_with
 
 
-def _identifiers(*items: Identifier | None) -> list[Identifier]:
-    out: list[Identifier] = []
-    seen: set[tuple[object, str]] = set()
-    for item in items:
-        if item is None or not _clean(item.value):
-            continue
-        key = (item.type, _clean(item.value))
-        if key in seen:
-            continue
-        out.append(item)
-        seen.add(key)
-    return out
+interactions_schema = RelationBuilder(
+    subject=chemical_builder,
+    predicate=_predicate,
+    object=_target_entity,
+    annotations=AnnotationsBuilder(
+        CV(
+            term=slots.object_direction_qualifier,
+            value=lambda row: ACTION_DIRECTION.get(
+                _clean(row.get('ACTION_TYPE')).upper()
+            ),
+        ),
+        CV(
+            term=lambda row: AFFINITY_TERMS.get(
+                str(row.get('ACT_TYPE') or '').upper()
+            ),
+            value=lambda row: _measurement(
+                row.get('ACT_VALUE'),
+                row.get('ACT_UNIT'),
+                row.get('ACT_TYPE'),
+                row.get('RELATION'),
+            ),
+        ),
+        CV(term=slots.description, value=f('ACT_COMMENT')),
+    ),
+    identifiers=IdentifiersBuilder(),
+)
+map_drugcentral_interaction = interactions_schema
 
 
-def _identifier(term: object, value: object) -> Identifier | None:
-    value = _clean(value)
-    return Identifier(type=term, value=value) if value else None
-
-
-@cache
-def _structure_inchikeys() -> dict[str, str]:
-    opener = download_and_open(
+def _raw(opener, **kwargs):
+    structures = download_and_open(
         url=DRUGCENTRAL_STRUCTURES_URL,
         filename='structures.smiles.tsv',
         subfolder='drugcentral',
@@ -115,205 +219,17 @@ def _structure_inchikeys() -> dict[str, str]:
         default_mode='r',
     )
     try:
-        return {
-            _clean(row.get('ID')): _clean(row.get('InChIKey'))
-            for row in csv.DictReader(opener.result, delimiter='\t')
-            if _clean(row.get('ID')) and _clean(row.get('InChIKey'))
+        inchikeys = {
+            _clean(r.get('ID')): _clean(r.get('InChIKey'))
+            for r in csv.DictReader(structures.result, delimiter='\t')
         }
     finally:
-        opener.close()
-
-
-def _interaction_id(row: dict[str, object]) -> str:
-    fields = (
-        row.get('STRUCT_ID'),
-        row.get('ACCESSION'),
-        row.get('ACT_TYPE'),
-        row.get('ACTION_TYPE'),
-        row.get('ACT_SOURCE'),
-    )
-    return ':'.join(_clean(value) or '-' for value in fields)
-
-
-_ACTIVITY_TYPE_MAP = {
-    'IC50': InteractionParameterCv.IC50,
-    'EC50': InteractionParameterCv.EC50,
-    'KI': InteractionParameterCv.KI,
-    'KD': InteractionParameterCv.KD,
-}
-
-_ACTION_TYPE_MAP = {
-    'AGONIST': PharmacologicalActionCv.AGONIST,
-    'ANTAGONIST': PharmacologicalActionCv.ANTAGONIST,
-    'ACTIVATOR': PharmacologicalActionCv.ACTIVATION,
-    'INHIBITOR': PharmacologicalActionCv.INHIBITION,
-    'BLOCKER': PharmacologicalActionCv.INHIBITION,
-    'BINDER': PharmacologicalActionCv.BINDING,
-    'MODULATOR': PharmacologicalActionCv.MIXED,
-}
-
-
-def _activity_annotation(row: dict[str, object]) -> Annotation | None:
-    act_type = _clean(row.get('ACT_TYPE')).upper()
-    act_value = _clean(row.get('ACT_VALUE'))
-    act_unit = _clean(row.get('ACT_UNIT'))
-    if not act_value:
-        return None
-    term = _ACTIVITY_TYPE_MAP.get(act_type)
-    if term is not None:
-        return Annotation(term=term, value=act_value, units=act_unit or None)
-    activity = '='.join(item for item in (act_type, act_value) if item)
-    return _annotation(InteractionMetadataCv.INTERACTION_PARAMETER, activity, act_unit)
-
-
-def _action_annotation(row: dict[str, object]) -> Annotation | None:
-    action_type = _clean(row.get('ACTION_TYPE')).upper()
-    term = _ACTION_TYPE_MAP.get(action_type)
-    return Annotation(term=term) if term is not None else None
-
-
-def _taxon_id(row: dict[str, object]) -> str:
-    return {
-        'Homo sapiens': '9606',
-        'Mus musculus': '10090',
-        'Rattus norvegicus': '10116',
-    }.get(_clean(row.get('ORGANISM')), _clean(row.get('ORGANISM')))
-
-
-def _organism_annotation(row: dict[str, object]) -> Annotation | None:
-    taxon_id = _taxon_id(row)
-    if taxon_id.isdigit():
-        return Annotation(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id)
-    return _annotation(IdentifierNamespaceCv.SCIENTIFIC_NAME, taxon_id)
-
-
-def _small_molecule(row: dict[str, object]) -> Entity:
-    struct_id = _clean(row.get('STRUCT_ID'))
-    return Entity(
-        type=EntityTypeCv.CHEMICAL,
-        identifiers=_identifiers(
-            _identifier(IdentifierNamespaceCv.DRUGCENTRAL, struct_id),
-            _identifier(
-                IdentifierNamespaceCv.STANDARD_INCHI_KEY,
-                _structure_inchikeys().get(struct_id),
-            ),
-            _identifier(IdentifierNamespaceCv.NAME, row.get('DRUG_NAME')),
-        ),
-    )
-
-
-def _protein(
-    row: dict[str, object],
-    *,
-    accession: object,
-    gene: object = None,
-    swissprot: object = None,
-    name: object = None,
-) -> Entity:
-    return Entity(
-        type=EntityTypeCv.PROTEIN,
-        identifiers=_identifiers(
-            _identifier(IdentifierNamespaceCv.UNIPROT, accession),
-            _identifier(IdentifierNamespaceCv.GENE_NAME_PRIMARY, gene),
-            _identifier(IdentifierNamespaceCv.UNIPROT_ENTRY_NAME, swissprot),
-            _identifier(IdentifierNamespaceCv.NAME, name),
-        ),
-        annotations=_annotations(
-            _organism_annotation(row),
-            _annotation(MoleculeAnnotationsCv.TARGET_CLASS, row.get('TARGET_CLASS')),
-            _annotation(MoleculeAnnotationsCv.TARGET_DEVELOPMENT_LEVEL, row.get('TDL')),
-        ),
-    )
-
-
-def _aligned(values: list[str], index: int) -> str:
-    return values[index] if index < len(values) else ''
-
-
-def _target_group_type(row: dict[str, object]) -> EntityTypeCv:
-    name = _clean(row.get('TARGET_NAME')).lower()
-    if len(_values(row.get('ACCESSION'))) < 2:
-        return EntityTypeCv.PROTEIN
-    if (
-        'complex' in name
-        or '/' in name
-        or ('receptor' in name and ',' in name)
-        or 'urease' in name
-        or 'transporting atpase' in name
-    ):
-        return EntityTypeCv.COMPLEX
-    return EntityTypeCv.PROTEIN_FAMILY
-
-
-def _target_entity(row: dict[str, object]) -> Entity:
-    accessions = _values(row.get('ACCESSION'))
-    genes = _values(row.get('GENE'))
-    swissprots = _values(row.get('SWISSPROT'))
-    target_name = _clean(row.get('TARGET_NAME'))
-
-    if len(accessions) < 2:
-        return _protein(
-            row,
-            accession=accessions[0] if accessions else '',
-            gene=genes[0] if genes else '',
-            swissprot=swissprots[0] if swissprots else '',
-            name=target_name,
-        )
-
-    return Entity(
-        type=_target_group_type(row),
-        identifiers=_identifiers(
-            _identifier(IdentifierNamespaceCv.NAME, target_name),
-        ),
-        annotations=_annotations(
-            _organism_annotation(row),
-            _annotation(MoleculeAnnotationsCv.TARGET_CLASS, row.get('TARGET_CLASS')),
-            _annotation(MoleculeAnnotationsCv.TARGET_DEVELOPMENT_LEVEL, row.get('TDL')),
-        ),
-        membership=[
-            Membership(
-                member=_protein(
-                    row,
-                    accession=accession,
-                    gene=_aligned(genes, index),
-                    swissprot=_aligned(swissprots, index),
-                ),
-            )
-            for index, accession in enumerate(accessions)
-        ],
-    )
-
-
-def map_drugcentral_interaction(row: dict[str, object]) -> Relation:
-    """Map a DrugCentral raw row to a drug-target interaction relation."""
-    action = _clean(row.get('ACTION_TYPE')) or 'interacts_with'
-    return Relation(
-        subject=_small_molecule(row),
-        predicate=action,
-        object=_target_entity(row),
-        identifiers=_identifiers(
-            _identifier(IdentifierNamespaceCv.DRUGCENTRAL, _interaction_id(row)),
-            _identifier(
-                IdentifierNamespaceCv.NAME,
-                f'{_clean(row.get("DRUG_NAME"))} - {_clean(row.get("TARGET_NAME"))}',
-            ),
-        ),
-        annotations=_annotations(
-            _organism_annotation(row),
-            _activity_annotation(row),
-            _annotation(InteractionMetadataCv.INTERACTION_ANNOTATION, row.get('ACT_COMMENT')),
-            _annotation(InteractionMetadataCv.ACTIVITY_SOURCE, row.get('ACT_SOURCE')),
-            _annotation(InteractionMetadataCv.RELATION, row.get('RELATION')),
-            _annotation(InteractionMetadataCv.ACTIVITY_SOURCE, row.get('MOA_SOURCE')),
-            _annotation(InteractionMetadataCv.INTERACTION_XREF, row.get('ACT_SOURCE_URL')),
-            _annotation(InteractionMetadataCv.INTERACTION_XREF, row.get('MOA_SOURCE_URL')),
-            _action_annotation(row),
-            _annotation(
-                InteractionMetadataCv.MECHANISM_OF_ACTION,
-                'mechanism_of_action' if _clean(row.get('MOA')) == '1' else None,
-            ),
-        ),
-    )
+        structures.close()
+    for row in iter_tsv(opener, **kwargs):
+        yield {
+            **row,
+            'structure_inchikey': inchikeys.get(_clean(row.get('STRUCT_ID'))),
+        }
 
 
 resource = Resource(
@@ -325,7 +241,7 @@ resource = Resource(
             subfolder='drugcentral',
             ext='gz',
         ),
-        mapper=map_drugcentral_interaction,
-        raw_parser=iter_tsv,
+        mapper=interactions_schema,
+        raw_parser=_raw,
     ),
 )

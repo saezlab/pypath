@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from omnipath_core.naming import Namespace
+
 import re
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
@@ -37,7 +39,7 @@ def _iter_fixed_obo(opener, **kwargs):
     yield from iter_obo(opener, preprocess_text=_fix_obo_text, **kwargs)
 
 
-terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='psi-mi')
+terms_schema = ontology_entity_mapper(obo_record_to_term, ontology_id='psi-mi', identifier_type=Namespace.MI)
 
 
 resource = Resource(

@@ -7,16 +7,13 @@ and databases like HMDB, Recon2, and GPCRdb.
 """
 
 from __future__ import annotations
-
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    InteractionMetadataCv,
-    LicenseCV,
-    UpdateCategoryCV,
-    ResourceCv,
-    CurationCv,
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from biolink_model.datamodel.model import (
+    Protein,
+    ChemicalEntity,
+    slots,
 )
+from omnipath_core.naming import Namespace
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -28,7 +25,6 @@ from pypath.internals.tabular_builder import (
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
 
-
 config = ResourceConfig(
     id=ResourceCv.MEBOCOST,
     name='MEBOCOST DB',
@@ -37,28 +33,20 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='40568942',
     primary_category='interactions',
-    description=(
-        'MEBOCOST DB is a curated resource of metabolite-sensor interactions '
-        'collected through computational text-mining and manual curation '
-        'from PubMed abstracts and databases like HMDB, Recon2, and GPCRdb.'
-    ),
+    description='MEBOCOST DB is a curated resource of metabolite-sensor interactions collected through computational text-mining and manual curation from PubMed abstracts and databases like HMDB, Recon2, and GPCRdb.',
 )
-
-# Evidence source mapping
 evidence_source_map = {
-    'HMDB': IdentifierNamespaceCv.HMDB,
-    'Recon2': IdentifierNamespaceCv.RECON2,
-    'Celllinker': IdentifierNamespaceCv.CELLINKER,
-    'CellPhoneDB': IdentifierNamespaceCv.CELLPHONEDB,
-    'CellChat': IdentifierNamespaceCv.CELLCHAT,
+    name: name
+    for name in ('HMDB', 'Recon2', 'Celllinker', 'CellPhoneDB', 'CellChat')
 }
-
 f = FieldConfig(
     extract={
-        'pubmed': r'^(\d+)$',
+        'pubmed': '^(\\d+)$',
         'source': lambda v: evidence_source_map.get(v),
-        'comment': lambda v: v if v.startswith('http')
-        or (not v.isdigit() and v not in evidence_source_map) else None,
+        'comment': lambda v: v
+        if v.startswith('http')
+        or (not v.isdigit() and v not in evidence_source_map)
+        else None,
     },
     delimiter='; ',
 )
@@ -75,34 +63,45 @@ def get_interactions_schema(taxon_id: str) -> RelationBuilder:
         RelationBuilder for MEBOCOST interactions.
     """
     metabolite_builder = EntityBuilder(
-        entity_type=EntityTypeCv.CHEMICAL,
+        entity_type=ChemicalEntity,
         identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.HMDB, value=f('HMDB_ID', extract=r'(HMDB\d+)')),
-            CV(term=IdentifierNamespaceCv.NAME, value=f('standard_metName')),
-            CV(term=IdentifierNamespaceCv.SYNONYM, value=f('metName', delimiter='; ')),
+            CV(term=Namespace.HMDB, value=f('HMDB_ID', extract='(HMDB\\d+)')),
+            CV(term=Namespace.NAME, value=f('standard_metName')),
+            CV(term=Namespace.SYNONYM, value=f('metName', delimiter='; ')),
         ),
+        annotations=AnnotationsBuilder(),
     )
     sensor_builder = EntityBuilder(
-        entity_type=EntityTypeCv.PROTEIN,
+        entity_type=Protein,
         identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.GENE_NAME_PRIMARY, value=f('Gene_name')),
-            CV(term=IdentifierNamespaceCv.NAME, value=f('Protein_name')),
+            CV(term=Namespace.GENESYMBOL, value=f('Gene_name')),
+            CV(term=Namespace.NAME, value=f('Protein_name')),
         ),
         annotations=AnnotationsBuilder(
-            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=taxon_id),
+            CV(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}')
         ),
     )
     return RelationBuilder(
         subject=metabolite_builder,
-        predicate='interacts_with',
+        predicate=slots.interacts_with,
         object=sensor_builder,
         identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.MEBOCOST, value=f('ID')),
+            CV(term=Namespace.MEBOCOST, value=f('ID'))
         ),
         annotations=AnnotationsBuilder(
-            CV(term=IdentifierNamespaceCv.PUBMED, value=f('Evidence', extract='pubmed')),
-            CV(term=InteractionMetadataCv.INTERACTION_XREF, value=f('Evidence', extract='source')),
-            CV(term=CurationCv.COMMENT, value=f('Evidence', extract='comment')),
+            CV(
+                term=slots.publications,
+                value=f(
+                    'Evidence',
+                    extract='pubmed',
+                    transform=lambda v: f'PMID:{v}',
+                ),
+            ),
+            CV(
+                term=slots.supporting_data_source,
+                value=f('Evidence', extract='source'),
+            ),
+            CV(term=slots.description, value=f('Evidence', extract='comment')),
         ),
     )
 

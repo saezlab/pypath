@@ -1,7 +1,10 @@
 """Parse KEGG metabolic reaction network data into reaction entities."""
 
 from __future__ import annotations
-
+from biolink_model.datamodel import model
+from biolink_model.datamodel.model import slots
+from omnipath_core.naming import Namespace
+from pypath.internals.tabular_builder import AnnotationsBuilder
 from collections.abc import Iterable
 import contextlib
 import fcntl
@@ -11,29 +14,24 @@ import os
 import time
 
 _log = logging.getLogger(__name__)
-
 _KEGG_REST = 'https://rest.kegg.jp'
-# KEGG REST `get` flat-file requests are limited to 10 entries.
 _KEGG_BATCH_SIZE = 10
 _KEGG_REST_DELAY = 0.0
-
 _KEGG_ORGANISM_CODES: dict[int, str] = {
-    9606:  'hsa',   # Homo sapiens (human)
-    10090: 'mmu',   # Mus musculus (mouse)
-    10116: 'rno',   # Rattus norvegicus (rat)
-    7955:  'dre',   # Danio rerio (zebrafish)
-    6239:  'cel',   # Caenorhabditis elegans
-    7227:  'dme',   # Drosophila melanogaster
-    4932:  'sce',   # Saccharomyces cerevisiae
+    9606: 'hsa',
+    10090: 'mmu',
+    10116: 'rno',
+    7955: 'dre',
+    6239: 'cel',
+    7227: 'dme',
+    4932: 'sce',
 }
 _DEFAULT_KEGG_ORGANISMS: tuple[str, ...] = tuple(_KEGG_ORGANISM_CODES.values())
-
-# Organism-agnostic KEGG REST endpoints (shared across all organisms).
 _SHARED_URLS: dict[str, str] = {
     'link_reaction': 'https://rest.kegg.jp/link/reaction/enzyme',
     'list_compound': 'https://rest.kegg.jp/list/compound',
-    'conv_chebi':    'https://rest.kegg.jp/conv/chebi/compound',
-    'conv_pubchem':  'https://rest.kegg.jp/conv/pubchem/compound',
+    'conv_chebi': 'https://rest.kegg.jp/conv/chebi/compound',
+    'conv_pubchem': 'https://rest.kegg.jp/conv/pubchem/compound',
     'list_reaction': 'https://rest.kegg.jp/list/reaction',
 }
 _SHARED_SUBFOLDER = 'kegg_shared'
@@ -51,254 +49,456 @@ def _kegg_organism_codes(
     """Return KEGG organism codes, defaulting to all configured organisms."""
     if organism is None:
         return _DEFAULT_KEGG_ORGANISMS
-
     if isinstance(organism, str):
         if organism in {'all', '*'}:
             return _DEFAULT_KEGG_ORGANISMS
         return (organism,)
-
     if isinstance(organism, int):
         organism_code = kegg_organism_code(organism)
         if organism_code is None:
             raise ValueError(f'Unsupported KEGG organism taxon ID: {organism}')
         return (organism_code,)
-
     organism_codes: list[str] = []
     for item in organism:
         organism_codes.extend(_kegg_organism_codes(item))
     return tuple(dict.fromkeys(organism_codes))
 
 
-# ---------------------------------------------------------------------------
-# inputs_v2 schema objects (used by the omnipath-build pipeline).
-# Guarded so that missing CV terms or API changes in the local pypath do
-# not prevent this module from being imported in other contexts.
-# ---------------------------------------------------------------------------
+from pypath.inputs_v2.base import (
+    Dataset,
+    Resource,
+    ResourceConfig,
+    ontology_entity_mapper,
+)
+from pypath.internals.cv_terms import (
+    LicenseCV,
+    OntologyCv,
+    ResourceCv,
+    UpdateCategoryCV,
+)
+from pypath.internals.tabular_builder import (
+    AssociationBuilder,
+    AssociationsBuilder,
+    CV,
+    AnnotationsBuilder,
+    EntityBuilder,
+    FieldConfig,
+    IdentifiersBuilder,
+    MembersFromList,
+    MembershipBuilder,
+)
+from pypath.internals.ontology_builder import OntologyBuilder
 
-try:
-    from pypath.inputs_v2.base import (
-        Dataset,
-        Resource,
-        ResourceConfig,
-        ontology_entity_mapper,
-    )
-    from pypath.internals.cv_terms import (
-        BiologicalRoleCv,
-        EntityTypeCv,
-        IdentifierNamespaceCv,
-        InteractionMetadataCv,
-        LicenseCV,
-        OntologyCv,
-        ParticipantMetadataCv,
-        ReactionAnnotationsCv,
-        ResourceCv,
-        UpdateCategoryCV,
-    )
-    from pypath.internals.tabular_builder import (
-        AssociationBuilder,
-        AssociationsBuilder,
-        CV,
-        AnnotationsBuilder,
-        EntityBuilder,
-        FieldConfig,
-        IdentifiersBuilder,
-        MembersFromList,
-        MembershipBuilder,
-    )
-    from pypath.internals.ontology_builder import OntologyBuilder
-
-    config = ResourceConfig(
-        id=ResourceCv.KEGG_METABOLIC,
-        name='KEGG Metabolic Reactions',
-        slug='kegg',
-        short='KEGG',
-        full='KEGG Metabolic Reactions',
-        url='https://www.genome.jp/kegg/reaction/',
-        license=LicenseCV.KEGG_ACADEMIC,
-        update_category=UpdateCategoryCV.REGULAR,
-        pubmed='10592173',
-        primary_category='metabolism',
-        annotation_ontologies=(OntologyCv.KEGG_PATHWAYS,),
-        description=(
-            'Biochemical reactions from KEGG REACTION, with exact KEGG '
-            'compound participants parsed from reaction equations and enriched '
-            'with EC, Rhea, KO, RCLASS, ChEBI, and PubChem identifiers.'
+config = ResourceConfig(
+    id=ResourceCv.KEGG_METABOLIC,
+    name='KEGG Metabolic Reactions',
+    slug='kegg',
+    short='KEGG',
+    full='KEGG Metabolic Reactions',
+    url='https://www.genome.jp/kegg/reaction/',
+    license=LicenseCV.KEGG_ACADEMIC,
+    update_category=UpdateCategoryCV.REGULAR,
+    pubmed='10592173',
+    primary_category='metabolism',
+    annotation_ontologies=(OntologyCv.KEGG_PATHWAYS,),
+    description='Biochemical reactions from KEGG REACTION, with exact KEGG compound participants parsed from reaction equations and enriched with EC, Rhea, KO, RCLASS, ChEBI, and PubChem identifiers.',
+)
+f = FieldConfig(
+    extract={
+        'kegg_cpd': '^(?:cpd:)?(C\\d{5})$',
+        'chebi': '^(?:chebi:)?(\\d+)$',
+        'pubchem': '^(?:pubchem:)?(\\d+)$',
+        'rhea': '^(?:RHEA:)?(\\d+)$',
+    }
+)
+reactions_schema = EntityBuilder(
+    entity_type=model.MolecularActivity,
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.KEGG_REACTION, value=f('reaction_id')),
+        CV(
+            term=Namespace.RHEA,
+            value=f('rhea_ids', delimiter=';', extract='rhea'),
         ),
-    )
-
-    f = FieldConfig(
-        extract={
-            'kegg_cpd': r'^(?:cpd:)?(C\d{5})$',
-            'chebi':    r'^(?:chebi:)?(\d+)$',
-            'pubchem':  r'^(?:pubchem:)?(\d+)$',
-            'rhea':     r'^(?:RHEA:)?(\d+)$',
-        },
-    )
-
-    reactions_schema = EntityBuilder(
-        entity_type=EntityTypeCv.REACTION,
-        identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.KEGG_REACTION, value=f('reaction_id')),
-            CV(term=IdentifierNamespaceCv.NAME, value=f('reaction_name', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.RHEA_ID, value=f('rhea_ids', delimiter=';', extract='rhea')),
-            CV(term=IdentifierNamespaceCv.KEGG, value=f('ko_ids', delimiter=';')),
-            CV(term=IdentifierNamespaceCv.KEGG, value=f('rclass_ids', delimiter=';')),
+        CV(term=Namespace.NAME, value=f('reaction_name', delimiter=';')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.description, value=f('reaction_definition')),
+        CV(
+            term=slots.has_topic,
+            value=lambda row, source=f('ec_numbers', delimiter=';'): [
+                'EC:' + str(v).removeprefix('EC:') for v in source.extract(row)
+            ],
         ),
-        annotations=AnnotationsBuilder(
-            CV(term=InteractionMetadataCv.CONVERSION_DIRECTION, value=f('conversion_direction')),
-            CV(term=InteractionMetadataCv.INTERACTION_ANNOTATION, value=f('reaction_equation')),
-            CV(term=ReactionAnnotationsCv.DEFINITION, value=f('reaction_definition')),
-            CV(term=ReactionAnnotationsCv.EC_NUMBER, value=f('ec_numbers', delimiter=';')),
-            CV(term=ReactionAnnotationsCv.PATHWAY, value=f('pathway_names', delimiter=';')),
-        ),
-        associations=AssociationsBuilder(
-            AssociationBuilder(
-                object_entity_type=EntityTypeCv.PATHWAY,
-                object_identifier_type=IdentifierNamespaceCv.KEGG_PATHWAY,
-                object_identifier=f('pathway_term_accessions', delimiter=';'),
+        CV(
+            term=slots.has_topic,
+            value=f(
+                'ko_ids',
+                delimiter=';',
+                transform=lambda v: 'KEGG.ORTHOLOGY:' + str(v),
             ),
         ),
-        membership=MembershipBuilder(
-            MembersFromList(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('reactant_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.NAME,          value=f('reactant_name',    delimiter='||', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.CHEBI,         value=f('reactant_chebi',   delimiter='||', extract='chebi', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('reactant_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=BiologicalRoleCv.REACTANT),
-                    CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('reactant_stoichiometry', delimiter='||', preserve_indices=True)),
-                ),
-            ),
-            MembersFromList(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('product_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.NAME,          value=f('product_name',    delimiter='||', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.CHEBI,         value=f('product_chebi',   delimiter='||', extract='chebi', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('product_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=BiologicalRoleCv.PRODUCT),
-                    CV(term=ParticipantMetadataCv.STOICHIOMETRY, value=f('product_stoichiometry', delimiter='||', preserve_indices=True)),
-                ),
-            ),
-            MembersFromList(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('uniprot_ids', delimiter=';')),
-                ),
-                entity_annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=BiologicalRoleCv.CATALYST),
-                ),
+        CV(
+            term=slots.has_topic,
+            value=f(
+                'rclass_ids',
+                delimiter=';',
+                transform=lambda v: 'KEGG.RCLASS:' + str(v),
             ),
         ),
-    )
-
-    pathways_schema = EntityBuilder(
-        entity_type=EntityTypeCv.PATHWAY,
-        identifiers=IdentifiersBuilder(
-            CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('pathway_term_accession')),
-            CV(term=IdentifierNamespaceCv.NAME, value=f('pathway_name')),
+    ),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            object_entity_type=model.Pathway,
+            object_identifier_type=Namespace.KEGG_PATHWAY,
+            object_identifier=f('pathway_term_accessions', delimiter=';'),
+        )
+    ),
+    membership=MembershipBuilder(
+        MembersFromList(
+            entity_type=model.ChemicalEntity,
+            identifiers=IdentifiersBuilder(
+                CV(
+                    term=Namespace.KEGG,
+                    value=f(
+                        'reactant_kegg_id',
+                        delimiter='||',
+                        extract='kegg_cpd',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.CHEBI,
+                    value=f(
+                        'reactant_chebi',
+                        delimiter='||',
+                        extract='chebi',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.PUBCHEM_SUBSTANCE,
+                    value=f(
+                        'reactant_pubchem',
+                        delimiter='||',
+                        extract='pubchem',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.NAME,
+                    value=f(
+                        'reactant_name', delimiter='||', preserve_indices=True
+                    ),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(
+                    term=slots.stoichiometry,
+                    value=f(
+                        'reactant_stoichiometry',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                )
+            ),
+            entity_annotations=AnnotationsBuilder(),
+            predicate=slots.has_input,
         ),
-        annotations=AnnotationsBuilder(
-            CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
+        MembersFromList(
+            entity_type=model.ChemicalEntity,
+            identifiers=IdentifiersBuilder(
+                CV(
+                    term=Namespace.KEGG,
+                    value=f(
+                        'product_kegg_id',
+                        delimiter='||',
+                        extract='kegg_cpd',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.CHEBI,
+                    value=f(
+                        'product_chebi',
+                        delimiter='||',
+                        extract='chebi',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.PUBCHEM_SUBSTANCE,
+                    value=f(
+                        'product_pubchem',
+                        delimiter='||',
+                        extract='pubchem',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.NAME,
+                    value=f(
+                        'product_name', delimiter='||', preserve_indices=True
+                    ),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(
+                    term=slots.stoichiometry,
+                    value=f(
+                        'product_stoichiometry',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                )
+            ),
+            entity_annotations=AnnotationsBuilder(),
+            predicate=slots.has_output,
         ),
-        membership=MembershipBuilder(
-            MembersFromList(
-                entity_type=EntityTypeCv.REACTION,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG_REACTION, value=f('reaction_ids', delimiter=';', preserve_indices=True)),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=BiologicalRoleCv.PATHWAY_COMPONENT),
-                ),
+        MembersFromList(
+            entity_type=model.Protein,
+            identifiers=IdentifiersBuilder(
+                CV(
+                    term=Namespace.UNIPROT,
+                    value=f('uniprot_ids', delimiter=';'),
+                )
             ),
-            MembersFromList(
-                entity_type=EntityTypeCv.PROTEIN,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG, value=f('protein_member_kegg_ids', delimiter='||', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.ENTREZ, value=f('protein_member_entrez_ids', delimiter='||', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.UNIPROT, value=f('protein_member_uniprot_ids', delimiter='||', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('protein_member_names', delimiter='||', preserve_indices=True)),
-                ),
-                entity_annotations=AnnotationsBuilder(
-                    CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('taxon_id')),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=BiologicalRoleCv.PATHWAY_COMPONENT),
-                    CV(term=IdentifierNamespaceCv.KEGG_REACTION, value=f('protein_member_reaction_ids', delimiter='||', preserve_indices=True)),
-                ),
+            entity_annotations=AnnotationsBuilder(
+                CV(
+                    term=slots.in_taxon,
+                    value=f(
+                        'taxon_id',
+                        transform=lambda v: 'NCBITaxon:'
+                        + str(v).removeprefix('NCBITaxon:')
+                        if str(v).removeprefix('NCBITaxon:').isdigit()
+                        and int(str(v).removeprefix('NCBITaxon:')) > 0
+                        else None,
+                    ),
+                )
             ),
-            MembersFromList(
-                entity_type=EntityTypeCv.CHEMICAL,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('small_molecule_member_kegg_ids', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('small_molecule_member_names', delimiter='||', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.CHEBI, value=f('small_molecule_member_chebi_ids', delimiter='||', extract='chebi', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM, value=f('small_molecule_member_pubchem_ids', delimiter='||', extract='pubchem', preserve_indices=True)),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=BiologicalRoleCv.PATHWAY_COMPONENT),
-                ),
-            ),
-            MembersFromList(
-                entity_type=EntityTypeCv.CV_TERM,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG, value=f('ortholog_member_kegg_ids', delimiter='||', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('ortholog_member_names', delimiter='||', preserve_indices=True)),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=BiologicalRoleCv.PATHWAY_COMPONENT),
-                ),
-            ),
-            MembersFromList(
-                entity_type=EntityTypeCv.PATHWAY,
-                identifiers=IdentifiersBuilder(
-                    CV(term=IdentifierNamespaceCv.KEGG_PATHWAY, value=f('linked_pathway_term_accessions', delimiter='||', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.NAME, value=f('linked_pathway_names', delimiter='||', preserve_indices=True)),
-                ),
-                annotations=AnnotationsBuilder(
-                    CV(term=BiologicalRoleCv.PATHWAY_COMPONENT),
-                ),
-            ),
+            annotations=AnnotationsBuilder(),
+            predicate=slots.enabled_by,
         ),
-    )
+    ),
+)
+pathways_schema = EntityBuilder(
+    entity_type=model.Pathway,
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.KEGG_PATHWAY, value=f('pathway_term_accession')),
+        CV(term=Namespace.NAME, value=f('pathway_name')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(
+            term=slots.in_taxon,
+            value=f(
+                'taxon_id',
+                transform=lambda v: 'NCBITaxon:'
+                + str(v).removeprefix('NCBITaxon:')
+                if str(v).removeprefix('NCBITaxon:').isdigit()
+                and int(str(v).removeprefix('NCBITaxon:')) > 0
+                else None,
+            ),
+        )
+    ),
+    membership=MembershipBuilder(
+        MembersFromList(
+            entity_type=model.MolecularActivity,
+            identifiers=IdentifiersBuilder(
+                CV(
+                    term=Namespace.KEGG_REACTION,
+                    value=f(
+                        'reaction_ids', delimiter=';', preserve_indices=True
+                    ),
+                )
+            ),
+            annotations=AnnotationsBuilder(),
+            predicate=slots.has_part,
+        ),
+        MembersFromList(
+            entity_type=model.Protein,
+            identifiers=IdentifiersBuilder(
+                CV(
+                    term=Namespace.KEGG_GENE,
+                    value=f(
+                        'protein_member_kegg_ids',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.ENTREZ,
+                    value=f(
+                        'protein_member_entrez_ids',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.UNIPROT,
+                    value=f(
+                        'protein_member_uniprot_ids',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.NAME,
+                    value=f(
+                        'protein_member_names',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+            ),
+            entity_annotations=AnnotationsBuilder(
+                CV(
+                    term=slots.in_taxon,
+                    value=f(
+                        'taxon_id',
+                        transform=lambda v: 'NCBITaxon:'
+                        + str(v).removeprefix('NCBITaxon:')
+                        if str(v).removeprefix('NCBITaxon:').isdigit()
+                        and int(str(v).removeprefix('NCBITaxon:')) > 0
+                        else None,
+                    ),
+                )
+            ),
+            annotations=AnnotationsBuilder(
+                CV(
+                    term=slots.has_topic,
+                    value=f(
+                        'ko_ids',
+                        delimiter=';',
+                        transform=lambda v: 'KEGG.ORTHOLOGY:' + str(v),
+                    ),
+                ),
+                CV(
+                    term=slots.has_topic,
+                    value=f(
+                        'rclass_ids',
+                        delimiter=';',
+                        transform=lambda v: 'KEGG.RCLASS:' + str(v),
+                    ),
+                ),
+                CV(
+                    term=slots.has_topic,
+                    value=f(
+                        'protein_member_reaction_ids',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+            ),
+            predicate=slots.has_participant,
+        ),
+        MembersFromList(
+            entity_type=model.ChemicalEntity,
+            identifiers=IdentifiersBuilder(
+                CV(
+                    term=Namespace.KEGG,
+                    value=f(
+                        'small_molecule_member_kegg_ids',
+                        delimiter='||',
+                        extract='kegg_cpd',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.CHEBI,
+                    value=f(
+                        'small_molecule_member_chebi_ids',
+                        delimiter='||',
+                        extract='chebi',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.PUBCHEM_SUBSTANCE,
+                    value=f(
+                        'small_molecule_member_pubchem_ids',
+                        delimiter='||',
+                        extract='pubchem',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.NAME,
+                    value=f(
+                        'small_molecule_member_names',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+            ),
+            annotations=AnnotationsBuilder(),
+            entity_annotations=AnnotationsBuilder(),
+            predicate=slots.has_participant,
+        ),
+        MembersFromList(
+            entity_type=model.GeneFamily,
+            identifiers=IdentifiersBuilder(
+                CV(
+                    term=Namespace.KEGG_ORTHOLOGY,
+                    value=f(
+                        'ortholog_member_kegg_ids',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.NAME,
+                    value=f(
+                        'ortholog_member_names',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+            ),
+            annotations=AnnotationsBuilder(),
+            entity_annotations=AnnotationsBuilder(),
+            predicate=slots.associated_with,
+        ),
+        MembersFromList(
+            entity_type=model.Pathway,
+            identifiers=IdentifiersBuilder(
+                CV(
+                    term=Namespace.KEGG_PATHWAY,
+                    value=f(
+                        'linked_pathway_term_accessions',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.NAME,
+                    value=f(
+                        'linked_pathway_names',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+            ),
+            annotations=AnnotationsBuilder(),
+            entity_annotations=AnnotationsBuilder(),
+            predicate=slots.associated_with,
+        ),
+    ),
+)
+pathway_ontology_schema = OntologyBuilder(
+    id='id',
+    name='name',
+    definition='definition',
+    synonyms=f('synonyms', delimiter=';'),
+    comments=f('comments', delimiter=';'),
+    xrefs=f('xrefs', delimiter=';'),
+    is_a=f('parent_ids', delimiter=';'),
+)
+pathway_ontology_terms_schema = ontology_entity_mapper(
+    pathway_ontology_schema,
+    ontology_id='kegg_pathways',
+    entity_type=model.Pathway,
+    identifier_type=Namespace.KEGG_PATHWAY,
+)
 
-    pathway_ontology_schema = OntologyBuilder(
-        id='id',
-        name='name',
-        definition='definition',
-        synonyms=f('synonyms', delimiter=';'),
-        comments=f('comments', delimiter=';'),
-        xrefs=f('xrefs', delimiter=';'),
-        is_a=f('parent_ids', delimiter=';'),
-    )
-
-    pathway_ontology_terms_schema = ontology_entity_mapper(
-        pathway_ontology_schema,
-        ontology_id='kegg_pathways',
-        entity_type=EntityTypeCv.PATHWAY,
-        identifier_type=IdentifierNamespaceCv.KEGG_PATHWAY,
-    )
-
-except Exception as _e:  # pragma: no cover
-    _log.debug('kegg: schema objects unavailable (%s)', _e)
-    config = None  # type: ignore[assignment]
-    reactions_schema = None  # type: ignore[assignment]
-    pathways_schema = None  # type: ignore[assignment]
-    pathway_ontology_schema = None  # type: ignore[assignment]
-    pathway_ontology_terms_schema = None  # type: ignore[assignment]
-
-
-# ---------------------------------------------------------------------------
-# Simple multi-file downloader
-# ---------------------------------------------------------------------------
 
 class _MultiOpener:
     """Minimal opener whose .result is a dict of named text handles."""
@@ -384,9 +584,7 @@ def _shared_cache_lock(dest: str):
 
 
 def _fetch_reaction_details(
-    reaction_ids: list[str],
-    dest: str,
-    delay: float = _KEGG_REST_DELAY,
+    reaction_ids: list[str], dest: str, delay: float = _KEGG_REST_DELAY
 ) -> None:
     """Fetch KEGG reaction flat files in REST batches and write one combined file."""
     from pathlib import Path
@@ -394,46 +592,39 @@ def _fetch_reaction_details(
     dest_path = Path(dest)
     tmp_path = dest_path.with_suffix(dest_path.suffix + '.tmp')
     expected = len(reaction_ids)
-
-    # Serialize across concurrent dataset workers (reactions + pathways both
-    # populate this shared file); losers wait then hit the early-return below.
     with _shared_cache_lock(dest):
         completed = _completed_kegg_entries(dest_path)
         if completed == expected:
             return
-        if completed and not tmp_path.exists():
+        if completed and (not tmp_path.exists()):
             dest_path.replace(tmp_path)
         completed = _completed_kegg_entries(tmp_path)
         if completed > expected:
             tmp_path.unlink(missing_ok=True)
             completed = 0
-
-        # Resume only at a batch boundary so a killed process cannot leave a
-        # partial batch that shifts subsequent reaction IDs.
         if completed % _KEGG_BATCH_SIZE:
             tmp_path.unlink(missing_ok=True)
             completed = 0
         mode = 'a' if completed else 'w'
         _log.info('[KEGG] fetching reaction entries %d/%d', completed, expected)
-
         with open(tmp_path, mode, encoding='utf-8') as out:
             for start in range(completed, expected, _KEGG_BATCH_SIZE):
-                batch = reaction_ids[start:start + _KEGG_BATCH_SIZE]
-                url = f"{_KEGG_REST}/get/{'+'.join(batch)}"
+                batch = reaction_ids[start : start + _KEGG_BATCH_SIZE]
+                url = f'{_KEGG_REST}/get/{"+".join(batch)}'
                 out.write(_fetch_kegg_rest(url))
                 if delay:
                     time.sleep(delay)
-                if (start + len(batch)) % 500 == 0 or start + len(batch) >= expected:
+                if (start + len(batch)) % 500 == 0 or start + len(
+                    batch
+                ) >= expected:
                     _log.info(
                         '[KEGG] fetched reaction entries %d/%d',
                         start + len(batch),
                         expected,
                     )
-
         if _completed_kegg_entries(tmp_path) != expected:
             raise RuntimeError(
-                f'Incomplete KEGG reaction cache: '
-                f'{_completed_kegg_entries(tmp_path)}/{expected} entries'
+                f'Incomplete KEGG reaction cache: {_completed_kegg_entries(tmp_path)}/{expected} entries'
             )
         tmp_path.replace(dest_path)
 
@@ -468,13 +659,19 @@ def _fetch_pathway_kgml(
     dest_dir.mkdir(parents=True, exist_ok=True)
     for index, pathway_id in enumerate(pathway_ids, start=1):
         file_path = dest_dir / f'{pathway_id}.kgml'
-        if not force_refresh and file_path.exists() and file_path.stat().st_size > 0:
+        if (
+            not force_refresh
+            and file_path.exists()
+            and (file_path.stat().st_size > 0)
+        ):
             continue
         url = f'{_KEGG_REST}/get/{pathway_id}/kgml'
         try:
             file_path.write_text(_fetch_kegg_rest(url), encoding='utf-8')
-        except Exception as exc:  # pragma: no cover - network/API defensive path
-            _log.warning('[KEGG] failed to fetch KGML for %s: %s', pathway_id, exc)
+        except Exception as exc:
+            _log.warning(
+                '[KEGG] failed to fetch KGML for %s: %s', pathway_id, exc
+            )
         if delay:
             time.sleep(delay)
         if index % 50 == 0 or index == len(pathway_ids):
@@ -489,13 +686,12 @@ def _reference_map_ids_from_brite(path) -> list[str]:
     """Return reference ``mapNNNNN`` IDs listed in the KEGG pathway BRITE tree."""
     with open(path, encoding='utf-8') as handle:
         data = json.load(handle)
-
     map_ids: list[str] = []
 
     def walk(node: dict) -> None:
         name = str(node.get('name') or '').strip()
         parts = name.split(None, 1)
-        if parts and parts[0].isdigit() and len(parts[0]) == 5:
+        if parts and parts[0].isdigit() and (len(parts[0]) == 5):
             map_ids.append(f'map{parts[0]}')
         for child in node.get('children') or []:
             walk(child)
@@ -505,9 +701,7 @@ def _reference_map_ids_from_brite(path) -> list[str]:
 
 
 def _fetch_pathway_map_details(
-    map_ids: list[str],
-    dest: str,
-    delay: float = _KEGG_REST_DELAY,
+    map_ids: list[str], dest: str, delay: float = _KEGG_REST_DELAY
 ) -> None:
     """Fetch KEGG reference pathway flat files in REST batches."""
     from pathlib import Path
@@ -515,53 +709,47 @@ def _fetch_pathway_map_details(
     dest_path = Path(dest)
     tmp_path = dest_path.with_suffix(dest_path.suffix + '.tmp')
     expected = len(map_ids)
-
-    # Serialize across concurrent dataset workers sharing this file (see
-    # _fetch_reaction_details); losers wait then hit the early-return below.
     with _shared_cache_lock(dest):
         completed = _completed_kegg_entries(dest_path)
         if completed == expected:
             return
-        if completed and not tmp_path.exists():
+        if completed and (not tmp_path.exists()):
             dest_path.replace(tmp_path)
         completed = _completed_kegg_entries(tmp_path)
         if completed > expected or completed % _KEGG_BATCH_SIZE:
             tmp_path.unlink(missing_ok=True)
             completed = 0
-
         mode = 'a' if completed else 'w'
-        _log.info('[KEGG] fetching pathway map entries %d/%d', completed, expected)
-
+        _log.info(
+            '[KEGG] fetching pathway map entries %d/%d', completed, expected
+        )
         with open(tmp_path, mode, encoding='utf-8') as out:
             for start in range(completed, expected, _KEGG_BATCH_SIZE):
-                batch = map_ids[start:start + _KEGG_BATCH_SIZE]
-                url = f"{_KEGG_REST}/get/{'+'.join(batch)}"
+                batch = map_ids[start : start + _KEGG_BATCH_SIZE]
+                url = f'{_KEGG_REST}/get/{"+".join(batch)}'
                 out.write(_fetch_kegg_rest(url))
                 if delay:
                     time.sleep(delay)
-                if (start + len(batch)) % 100 == 0 or start + len(batch) >= expected:
+                if (start + len(batch)) % 100 == 0 or start + len(
+                    batch
+                ) >= expected:
                     _log.info(
                         '[KEGG] fetched pathway map entries %d/%d',
                         start + len(batch),
                         expected,
                     )
-
         if _completed_kegg_entries(tmp_path) != expected:
             raise RuntimeError(
-                f'Incomplete KEGG pathway map cache: '
-                f'{_completed_kegg_entries(tmp_path)}/{expected} entries'
+                f'Incomplete KEGG pathway map cache: {_completed_kegg_entries(tmp_path)}/{expected} entries'
             )
         tmp_path.replace(dest_path)
 
 
 def _download_kegg_pathway_ontology_files(
-    organism_codes: Iterable[str],
-    *,
-    force_refresh: bool = False,
+    organism_codes: Iterable[str], *, force_refresh: bool = False
 ) -> _MultiOpener:
     """Download only the KEGG files needed for the pathway ontology."""
     from pathlib import Path
-
     from pypath.share.downloads import _resolve_data_dir, get_download_manager
 
     organism_codes = tuple(dict.fromkeys(organism_codes))
@@ -569,44 +757,39 @@ def _download_kegg_pathway_ontology_files(
     shared_dir = base_dir / _SHARED_SUBFOLDER
     shared_dir.mkdir(parents=True, exist_ok=True)
     dm = get_download_manager()
-
     brite_path = shared_dir / f'kegg_{_KEGG_PATHWAY_BRITE}.json'
     dm.download(
-        f'{_KEGG_REST}/get/br:{_KEGG_PATHWAY_BRITE}/json',
-        dest=str(brite_path),
+        f'{_KEGG_REST}/get/br:{_KEGG_PATHWAY_BRITE}/json', dest=str(brite_path)
     )
     map_ids = _reference_map_ids_from_brite(brite_path)
-
     map_details_path = shared_dir / 'kegg_get_pathway_maps.txt'
-    if (
-        force_refresh
-        or _completed_kegg_entries(map_details_path) != len(map_ids)
+    if force_refresh or _completed_kegg_entries(map_details_path) != len(
+        map_ids
     ):
         _fetch_pathway_map_details(map_ids, str(map_details_path))
-
     organism_list_pathways = {}
     for organism_code in organism_codes:
         data_dir = base_dir / f'kegg_{organism_code}'
         data_dir.mkdir(parents=True, exist_ok=True)
         file_path = data_dir / f'kegg_list_pathway_{organism_code}.tsv'
         dm.download(
-            f'{_KEGG_REST}/list/pathway/{organism_code}',
-            dest=str(file_path),
+            f'{_KEGG_REST}/list/pathway/{organism_code}', dest=str(file_path)
         )
-        organism_list_pathways[organism_code] = open(file_path, encoding='utf-8')  # noqa: SIM115
-
-    return _MultiOpener({
-        'pathway_brite': open(brite_path, encoding='utf-8'),  # noqa: SIM115
-        'get_pathway_maps': open(map_details_path, encoding='utf-8'),  # noqa: SIM115
-        'organism_list_pathways': organism_list_pathways,
-        'ontology_organism_codes': organism_codes,
-    })
+        organism_list_pathways[organism_code] = open(
+            file_path, encoding='utf-8'
+        )
+    return _MultiOpener(
+        {
+            'pathway_brite': open(brite_path, encoding='utf-8'),
+            'get_pathway_maps': open(map_details_path, encoding='utf-8'),
+            'organism_list_pathways': organism_list_pathways,
+            'ontology_organism_codes': organism_codes,
+        }
+    )
 
 
 def _download_kegg_files(
-    organism_code: str,
-    *,
-    force_refresh: bool = False,
+    organism_code: str, *, force_refresh: bool = False
 ) -> _MultiOpener:
     """
     Download KEGG REST endpoints needed for the reaction network
@@ -620,12 +803,11 @@ def _download_kegg_files(
     ``Opener`` ``UnboundLocalError`` bug on plain TSV files.
     """
     from pathlib import Path
-
     from pypath.share.downloads import _resolve_data_dir, get_download_manager
 
     organism_urls = {
         'conv_uniprot': f'https://rest.kegg.jp/conv/uniprot/{organism_code}',
-        'link_enzyme':  f'https://rest.kegg.jp/link/enzyme/{organism_code}',
+        'link_enzyme': f'https://rest.kegg.jp/link/enzyme/{organism_code}',
         'list_pathway': f'https://rest.kegg.jp/list/pathway/{organism_code}',
     }
     base_dir: Path = _resolve_data_dir()
@@ -635,46 +817,38 @@ def _download_kegg_files(
     shared_dir.mkdir(parents=True, exist_ok=True)
     dm = get_download_manager()
     result: dict = {}
-
     for key, url in organism_urls.items():
         filename = f'kegg_{key}_{organism_code}.tsv'
         file_path = data_dir / filename
         _log.debug('[KEGG] %s → %s', key, file_path)
         dm.download(url, dest=str(file_path))
-        result[key] = open(file_path, encoding='utf-8')  # noqa: SIM115
-
+        result[key] = open(file_path, encoding='utf-8')
     for key, url in _SHARED_URLS.items():
         file_path = shared_dir / f'kegg_{key}.tsv'
         _log.debug('[KEGG] %s → %s', key, file_path)
         dm.download(url, dest=str(file_path))
-        result[key] = open(file_path, encoding='utf-8')  # noqa: SIM115
-
+        result[key] = open(file_path, encoding='utf-8')
     details_path = shared_dir / 'kegg_get_reaction.txt'
     reaction_ids = _reaction_ids(result['list_reaction'])
-    if (
-        force_refresh
-        or _completed_kegg_entries(details_path) != len(reaction_ids)
+    if force_refresh or _completed_kegg_entries(details_path) != len(
+        reaction_ids
     ):
-        _log.info('[KEGG] fetching %d reaction flat-file entries', len(reaction_ids))
+        _log.info(
+            '[KEGG] fetching %d reaction flat-file entries', len(reaction_ids)
+        )
         _fetch_reaction_details(reaction_ids, str(details_path))
-    result['get_reaction'] = open(details_path, encoding='utf-8')  # noqa: SIM115
-
+    result['get_reaction'] = open(details_path, encoding='utf-8')
     kgml_dir = data_dir / 'kgml'
     pathway_ids = _pathway_ids(result['list_pathway'])
     _log.info('[KEGG] ensuring %d pathway KGML files', len(pathway_ids))
     _fetch_pathway_kgml(pathway_ids, kgml_dir, force_refresh=force_refresh)
     result['kgml_pathways'] = {
-        pathway_id: open(kgml_dir / f'{pathway_id}.kgml', encoding='utf-8')  # noqa: SIM115
+        pathway_id: open(kgml_dir / f'{pathway_id}.kgml', encoding='utf-8')
         for pathway_id in pathway_ids
         if (kgml_dir / f'{pathway_id}.kgml').exists()
     }
-
     return _MultiOpener(result)
 
-
-# ---------------------------------------------------------------------------
-# Lightweight Resource / Dataset wrappers
-# ---------------------------------------------------------------------------
 
 class _KeggDataset:
     """Minimal dataset whose raw() downloads KEGG REST files and yields rows."""
@@ -689,7 +863,10 @@ class _KeggDataset:
 
     def raw(self, **kwargs):
         from pypath.inputs_v2.parsers.kegg import _raw
-        organism_codes = _kegg_organism_codes(kwargs.pop('organism', self._orgs))
+
+        organism_codes = _kegg_organism_codes(
+            kwargs.pop('organism', self._orgs)
+        )
         if self._data_type == 'pathway_terms':
             opener = _download_kegg_pathway_ontology_files(
                 organism_codes,
@@ -702,30 +879,25 @@ class _KeggDataset:
                 **kwargs,
             )
             return
-
         for organism in organism_codes:
             opener = _download_kegg_files(
-                organism,
-                force_refresh=bool(kwargs.get('force_refresh', False)),
+                organism, force_refresh=bool(kwargs.get('force_refresh', False))
             )
-            yield from _raw(opener, data_type=self._data_type, organism=organism, **kwargs)
+            yield from _raw(
+                opener, data_type=self._data_type, organism=organism, **kwargs
+            )
 
 
 class _KeggResource:
     """Minimal Resource wrapper with KEGG reaction, pathway and ontology datasets."""
 
     def __init__(
-        self,
-        organism_codes: str | int | Iterable[str | int] | None,
+        self, organism_codes: str | int | Iterable[str | int] | None
     ) -> None:
         self.reactions = _KeggDataset(organism_codes, 'reactions')
         self.pathways = _KeggDataset(organism_codes, 'pathways')
         self.pathway_ontology = _KeggDataset(organism_codes, 'pathway_terms')
 
-
-# ---------------------------------------------------------------------------
-# Public factory
-# ---------------------------------------------------------------------------
 
 def make_kegg_resource(
     organism_code: str | int | Iterable[str | int] | None = None,
@@ -754,13 +926,13 @@ def make_kegg_resource(
 
 def _default_raw(data_type: str, opener=None, **kwargs):
     from pypath.inputs_v2.parsers.kegg import _raw
+
     requested_organism = kwargs.pop('organism', None)
     if opener is None:
         organism_codes = _kegg_organism_codes(requested_organism)
         for organism in organism_codes:
             organism_opener = _download_kegg_files(
-                organism,
-                force_refresh=bool(kwargs.get('force_refresh', False)),
+                organism, force_refresh=bool(kwargs.get('force_refresh', False))
             )
             yield from _raw(
                 organism_opener,
@@ -769,11 +941,14 @@ def _default_raw(data_type: str, opener=None, **kwargs):
                 **kwargs,
             )
         return
-
     organism_codes = _kegg_organism_codes(requested_organism or 'mmu')
     if len(organism_codes) != 1:
-        raise ValueError('A single organism must be specified when passing opener.')
-    yield from _raw(opener, data_type=data_type, organism=organism_codes[0], **kwargs)
+        raise ValueError(
+            'A single organism must be specified when passing opener.'
+        )
+    yield from _raw(
+        opener, data_type=data_type, organism=organism_codes[0], **kwargs
+    )
 
 
 def _default_reactions_raw(opener=None, **kwargs):
@@ -786,15 +961,14 @@ def _default_pathways_raw(opener=None, **kwargs):
 
 def _default_pathway_terms_raw(opener=None, **kwargs):
     from pypath.inputs_v2.parsers.kegg import _raw
+
     requested_organism = kwargs.pop('organism', None)
     organism_codes = _kegg_organism_codes(requested_organism)
-
     if opener is None:
         opener = _download_kegg_pathway_ontology_files(
             organism_codes,
             force_refresh=bool(kwargs.get('force_refresh', False)),
         )
-
     yield from _raw(
         opener,
         data_type='pathway_terms',
@@ -806,8 +980,8 @@ def _default_pathway_terms_raw(opener=None, **kwargs):
 if (
     config is not None
     and reactions_schema is not None
-    and pathways_schema is not None
-    and pathway_ontology_terms_schema is not None
+    and (pathways_schema is not None)
+    and (pathway_ontology_terms_schema is not None)
 ):
     resource = Resource(
         config,
@@ -827,5 +1001,5 @@ if (
             raw_parser=_default_pathway_terms_raw,
         ),
     )
-else:  # pragma: no cover
-    resource = None  # type: ignore[assignment]
+else:
+    resource = None

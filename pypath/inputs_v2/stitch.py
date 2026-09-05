@@ -9,34 +9,63 @@ with the links file (confidence sub-scores) and filters by combined_score.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
+import re
 from typing import Any
 
-from pypath.internals.cv_terms import (
-    EntityTypeCv,
-    IdentifierNamespaceCv,
-    InteractionMetadataCv,
-    InteractionTypeCv,
-    LicenseCV,
-    ParticipantMetadataCv,
-    PharmacologicalActionCv,
-    ResourceCv,
-    UpdateCategoryCV,
+from biolink_model.datamodel.model import (
+    ChemicalEntity,
+    DirectionQualifierEnum,
+    Protein,
+    QuantityValue,
+    slots,
 )
+from omnipath_core.measurements import Measurement
+from omnipath_core.naming import Namespace
+
+from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2.parsers.stitch import iter_stitch_interactions
+from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
+    AnnotationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
     RelationBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.stitch import iter_stitch_interactions
 
 
-# =============================================================================
-# Resource Configuration
-# =============================================================================
+def _measurement(value, unit=None, source_field=None, comparator=None):
+    """Keep numeric source observations, units and comparison bounds together."""
+    if value is None:
+        return None
+    match = re.fullmatch(
+        '\\s*(<=|>=|<|>|=|~)?\\s*([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?)\\s*',
+        str(value),
+    )
+    if match is None:
+        return None
+    original_comparator = comparator or match.group(1)
+    if original_comparator not in {None, '<', '>', '=', '<=', '>=', '~', '≈'}:
+        return None
+    relation = {'<': 'less_than', '>': 'greater_than', '=': 'equal_to'}.get(
+        original_comparator
+    )
+    number = float(match.group(2))
+    if not math.isfinite(number):
+        return None
+    quantity = QuantityValue(
+        has_numeric_value=number,
+        has_unit=unit or None,
+        has_binary_relation=relation,
+    )
+    return Measurement(
+        quantity=quantity,
+        source_field=source_field,
+        comparator=original_comparator,
+    )
+
 
 config = ResourceConfig(
     id=ResourceCv.STITCH,
@@ -46,19 +75,9 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='26590256',
     primary_category='interactions',
-    description=(
-        'STITCH is a database of known and predicted interactions between '
-        'chemicals and proteins. Interactions include direct (physical) and '
-        'indirect (functional) associations derived from genomic context, '
-        'high-throughput experiments, conserved coexpression, and published '
-        'literature.'
-    ),
+    description='STITCH is a database of known and predicted interactions between chemicals and proteins. Interactions include direct (physical) and indirect (functional) associations derived from genomic context, high-throughput experiments, conserved coexpression, and published literature.',
 )
 
-
-# =============================================================================
-# Custom Download
-# =============================================================================
 
 @dataclass(frozen=True)
 class _StitchOpener:
@@ -78,10 +97,7 @@ class StitchDownload:
     actions: Download
 
     def open(
-            self,
-            *,
-            force_refresh: bool = False,
-            **_kwargs: Any,
+        self, *, force_refresh: bool = False, **_kwargs: Any
     ) -> _StitchOpener:
         """
         Open both STITCH files and return a combined opener.
@@ -99,96 +115,92 @@ class StitchDownload:
         )
 
 
-# =============================================================================
-# Field Config and Schema
-# =============================================================================
+f = FieldConfig()
+ACTION_DIRECTION = {
+    'activation': DirectionQualifierEnum.increased,
+    'inhibition': DirectionQualifierEnum.decreased,
+}
 
-f = FieldConfig(
-    map={
-        'action_cv': {
-            'activation': PharmacologicalActionCv.ACTIVATION,
-            'inhibition': PharmacologicalActionCv.INHIBITION,
-        },
-        'mode_cv': {
-            'activation': PharmacologicalActionCv.ACTIVATION,
-            'inhibition': PharmacologicalActionCv.INHIBITION,
-            'binding': PharmacologicalActionCv.BINDING,
-            'reaction': InteractionTypeCv.ENZYMATIC_REACTION,
-            'catalysis': InteractionTypeCv.ENZYMATIC_REACTION,
-            'expression': InteractionTypeCv.CAUSAL_REGULATORY_MECHANISM,
-            'ptmod': InteractionTypeCv.PTM_MODIFICATION,
-        },
-        'role_cv': {
-            'source': ParticipantMetadataCv.SOURCE,
-            'target': ParticipantMetadataCv.TARGET,
-            'undirected': None,
-        },
-    },
-)
 
-def stitch_predicate(row: dict[str, object]) -> str:
-    mode = str(row.get('mode') or '').strip()
-    if mode and mode != 'undirected':
-        return mode
-    action = str(row.get('action') or '').strip()
-    if action and action != 'undirected':
-        return action
-    return 'interacts_with'
+def stitch_direction(row):
+    if row.get('chem_role') != 'source' and row.get('prot_role') != 'source':
+        return None
+    return ACTION_DIRECTION.get(row.get('action')) or ACTION_DIRECTION.get(
+        row.get('mode')
+    )
+
+
+def stitch_predicate(row):
+    if stitch_direction(row) is not None:
+        return slots.affects
+    if row.get('mode') == 'binding':
+        return slots.physically_interacts_with
+    return slots.associated_with
 
 
 chemical_builder = EntityBuilder(
-    entity_type=EntityTypeCv.CHEMICAL,
+    entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
+        CV(term=Namespace.PUBCHEM, value=f('chemical_id'))
+    ),
+    annotations=AnnotationsBuilder(),
+)
+protein_builder = EntityBuilder(
+    entity_type=Protein,
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.ENSP, value=f('protein_id'))
+    ),
+    annotations=AnnotationsBuilder(
         CV(
-            term=IdentifierNamespaceCv.PUBCHEM_COMPOUND,
-            value=f('chemical_id'),
+            term=slots.in_taxon,
+            value=f(
+                'ncbi_tax_id',
+                transform=lambda v: 'NCBITaxon:'
+                + str(v).removeprefix('NCBITaxon:'),
+            ),
+        )
+    ),
+)
+interactions_schema = RelationBuilder(
+    subject=lambda row: (
+        protein_builder
+        if row.get('prot_role') == 'source'
+        else chemical_builder
+    ).build(row),
+    predicate=stitch_predicate,
+    object=lambda row: (
+        chemical_builder
+        if row.get('prot_role') == 'source'
+        else protein_builder
+    ).build(row),
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.NAME, value=f('interaction_name'))
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.object_direction_qualifier, value=stitch_direction),
+        CV(
+            term=slots.has_confidence_score,
+            value=f(
+                'combined_score',
+                transform=lambda v: _measurement(
+                    v, source_field='combined_score'
+                ),
+            ),
+        ),
+        CV(
+            term=slots.has_confidence_score,
+            value=f(
+                'action_score',
+                transform=lambda v: _measurement(
+                    v, source_field='action_score'
+                ),
+            ),
         ),
     ),
-    annotations=AnnotationsBuilder(
-        CV(term=f('chem_role', map='role_cv')),
-    ),
 )
-
-protein_builder = EntityBuilder(
-    entity_type=EntityTypeCv.PROTEIN,
-    identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.ENSEMBL, value=f('protein_id')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=f('ncbi_tax_id')),
-        CV(term=f('prot_role', map='role_cv')),
-    ),
-)
-
-interactions_schema = RelationBuilder(
-    subject=chemical_builder,
-    predicate=stitch_predicate,
-    object=protein_builder,
-    identifiers=IdentifiersBuilder(
-        CV(term=IdentifierNamespaceCv.NAME, value=f('interaction_name')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=InteractionMetadataCv.CONFIDENCE_VALUE, value=f('combined_score')),
-        CV(term=InteractionMetadataCv.STITCH_ACTION_SCORE, value=f('action_score')),
-        CV(term=f('mode', map='mode_cv')),
-        CV(term=InteractionMetadataCv.STEREOSPECIFIC, value=f('stereospecific')),
-        CV(term=InteractionMetadataCv.CONTROL_TYPE, value=f('action', map='action_cv')),
-    ),
-)
-
-
-# =============================================================================
-# Resource Definition
-# =============================================================================
-
-_LINKS_URL = (
-    'http://stitch.embl.de/download/'
-    'protein_chemical.links.detailed.v5.0/'
-    '{taxid}.protein_chemical.links.detailed.v5.0.tsv.gz'
-)
+_LINKS_URL = 'http://stitch.embl.de/download/protein_chemical.links.detailed.v5.0/{taxid}.protein_chemical.links.detailed.v5.0.tsv.gz'
 _ACTIONS_URL = (
-    'http://stitch.embl.de/download/actions.v5.0/'
-    '{taxid}.actions.v5.0.tsv.gz'
+    'http://stitch.embl.de/download/actions.v5.0/{taxid}.actions.v5.0.tsv.gz'
 )
 
 
