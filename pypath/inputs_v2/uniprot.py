@@ -8,6 +8,7 @@ translation datasets for reference identifiers and secondary accessions.
 from __future__ import annotations
 
 from collections.abc import Iterable
+from html import unescape
 import re
 
 from biolink_model.datamodel.model import OntologyClass, Protein, slots
@@ -368,7 +369,7 @@ def _secondary_to_primary_raw(
                 break
 
 
-# Source narrative headings are retained verbatim; none imply graph predicates.
+# Source narratives are plain text; none imply graph predicates.
 # Numeric sequence length/mass and family classifications stay in raw payloads.
 _PROTEIN_DESCRIPTION_FIELDS = (
     'Function [CC]',
@@ -382,12 +383,38 @@ _PROTEIN_DESCRIPTION_FIELDS = (
 )
 
 
+def _clean_protein_description(text):
+    """Remove UniProt serialization and citations, preserving biological prose."""
+    text = unescape(str(text))
+    text = re.sub(r'\{ECO:[^{}]*\}', '', text)
+    text = re.sub(r'\((?:PubMed:\s*\d+[\s,;]*)+\)', '', text)
+    text = re.sub(r'\[(?:MIM|OMIM):\s*\d+\]', '', text)
+    text = re.sub(
+        r'(^|(?<=[.;])\s+)(?:FUNCTION|SUBCELLULAR LOCATION|PTM|DISEASE|'
+        r'PATHWAY|ACTIVITY REGULATION):\s*',
+        r'\1',
+        text,
+    )
+    text = re.sub(r'\bNote=', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    text = re.sub(r'\s+([.,;:])', r'\1', text)
+    # Evidence blocks can have their own trailing period after a full sentence.
+    text = re.sub(r'([.!?])\s*[.;]', r'\1', text)
+    return text
+
+
 def _protein_descriptions(row):
-    return [
-        f'{field}: {row[field]}'
-        for field in _PROTEIN_DESCRIPTION_FIELDS
-        if row.get(field)
-    ]
+    descriptions = []
+    for field in _PROTEIN_DESCRIPTION_FIELDS:
+        if not row.get(field):
+            continue
+        value = row[field]
+        if field in {'Mutagenesis', 'Transmembrane'}:
+            # Keep prose notes, not feature coordinates, IDs or evidence.
+            value = '; '.join(re.findall(r'/note="([^"]*)"', value))
+        if text := _clean_protein_description(value):
+            descriptions.append(text)
+    return descriptions
 
 
 proteins_schema = EntityBuilder(

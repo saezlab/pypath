@@ -17,7 +17,8 @@ from pypath.internals.silver_schema import (
     Relation,
 )
 
-BASE_URL = 'https://www.cellknowledge.com.cn/cellinker/download/'
+# The provider now serves the full eight-file collection under MRCLinkDB.
+BASE_URL = 'https://www.cellknowledge.com.cn/mrclinkdb/download/'
 SPECIES = {
     'human': {
         'label': 'Homo sapiens',
@@ -61,7 +62,8 @@ def _download(species: str, dataset: str) -> Download:
     return Download(
         url=f'{BASE_URL}{quote(f"{title}.txt")}',
         filename=f'{title}.txt',
-        subfolder='cellinker',
+        # Separate from cached HTML errors left by the retired /cellinker path.
+        subfolder='cellinker/mrclinkdb',
         encoding='latin-1',
     )
 

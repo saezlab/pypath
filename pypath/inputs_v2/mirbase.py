@@ -7,9 +7,10 @@ stages of a microRNA: ``MI#`` to the precursor (pre-miRNA stem-loop) and
 two distinct MicroRNA entities, distinguished by their source accession namespaces.
 Each mature product derives_from its precursor.
 
-Data come from the legacy ``pypath.inputs.mirbase`` tables (already on the
-dlmachine download stack); all organisms are emitted (the miRBase name itself
-encodes the organism, e.g. ``hsa-mir-21`` / ``hsa-miR-21-5p``).
+Data come from the official release-22 EMBL archive, pinned explicitly because
+release 23 does not currently expose its full annotation download. All organisms
+and explicit precursor/product links are retained. Raw evidence records carry
+the source release and URL independently of the OmniPath build version.
 
 Data source: https://www.mirbase.org/
 """
@@ -19,7 +20,7 @@ from __future__ import annotations
 from biolink_model.datamodel.model import MicroRNA, slots
 from omnipath_core.naming import Namespace
 
-import collections
+import re
 from collections.abc import Generator
 from typing import Any
 
@@ -37,11 +38,21 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.inputs_v2.base import Dataset, Resource, ResourceConfig
-from pypath.inputs.mirbase import (
-    mirbase_mirna,
-    mirbase_mirna_mature,
-    mirbase_mirna_pre_mature,
+from pypath.inputs_v2.base import (
+    Dataset, Download, Resource, ResourceConfig, _first_handle,
+)
+
+
+SOURCE_RELEASE = '22'
+SOURCE_URL = f'https://www.mirbase.org/download_version_files/{SOURCE_RELEASE}/miRNA.dat'
+
+download = Download(
+    url=SOURCE_URL,
+    filename='miRNA.dat',
+    subfolder=f'mirbase/release-{SOURCE_RELEASE}',
+    large=True,
+    ext='.dat',
+    default_mode='r',
 )
 
 
@@ -58,71 +69,114 @@ config = ResourceConfig(
         'miRBase is the primary public repository and online resource for '
         'microRNA sequences and annotation. This inputs_v2 module emits '
         'precursor (MI#) and mature (MIMAT#) miRNAs as distinct entities '
-        'joined by maturation relations.'
+        'joined by maturation relations. Source: official miRBase release 22 EMBL archive.'
     ),
 )
 
 
 # =============================================================================
-# Raw parsers (data come from the legacy mirbase tables, not a single file)
+# Raw parsers: release-pinned EMBL records
 # =============================================================================
 
 
-def _precursor_to_matures() -> dict[str, list[str]]:
-    """Map each precursor MI# to its mature MIMAT# products."""
-    matures: dict[str, list[str]] = collections.defaultdict(list)
-    for precursor_row, mature_row in mirbase_mirna_pre_mature(None):
-        mi_accession = precursor_row[1]
-        mimat_accession = mature_row[3]
-        if mi_accession and mimat_accession:
-            if mimat_accession not in matures[mi_accession]:
-                matures[mi_accession].append(mimat_accession)
-    return dict(matures)
+def _embl_records(opener):
+    """Stream complete EMBL entries; reject error pages and truncated records."""
+    handle = _first_handle(opener)
+    if handle is None:
+        raise ValueError('miRBase EMBL download is empty')
+    record = []
+    count = 0
+    for line in handle:
+        if isinstance(line, bytes):
+            line = line.decode('utf-8')
+        line = line.rstrip('\r\n')
+        if not record:
+            if not line.strip():
+                continue
+            if not line.startswith('ID   '):
+                raise ValueError('Expected miRBase EMBL ID record')
+        elif line.startswith('ID   '):
+            raise ValueError('Unterminated miRBase EMBL entry')
+        record.append(line)
+        if line == '//':
+            yield _parse_entry(record)
+            count += 1
+            record = []
+    if record or not count:
+        raise ValueError('Truncated or empty miRBase EMBL archive')
+
+
+def _parse_entry(lines):
+    name = lines[0][5:].split()[0]
+    accessions = [
+        accession.strip()
+        for line in lines if line.startswith('AC   ')
+        for accession in line[5:].split(';') if accession.strip()
+    ]
+    if len(accessions) != 1 or not re.fullmatch(r'MI\d+', accessions[0]):
+        raise ValueError(f'Invalid precursor accession for {name}')
+    features = []
+    feature = None
+    for line in lines:
+        if not line.startswith('FT   '):
+            continue
+        key = line[5:21].strip()
+        if key:
+            feature = [] if key == 'miRNA' else None
+            if feature is not None:
+                features.append(feature)
+        elif feature is not None:
+            feature.append(line[21:].strip())
+    products = {}
+    for feature in features:
+        qualifiers = ' '.join(feature)
+        accession = re.search(r'/accession="(MIMAT\d+)"', qualifiers)
+        product = re.search(r'/product="([^"\n]+)"', qualifiers)
+        if not accession or not product:
+            raise ValueError(f'Missing mature accession/product for {name}')
+        accession, product = accession[1], product[1]
+        if accession in products and products[accession] != product:
+            raise ValueError(f'Conflicting mature names for {accession}')
+        products[accession] = product
+    return {
+        'mirbase_pre': accessions[0],
+        'name': name,
+        'description': ' '.join(line[5:] for line in lines if line.startswith('DE   ')),
+        'products': products,
+        'source_release': SOURCE_RELEASE,
+        'source_url': SOURCE_URL,
+    }
 
 
 def _precursors_raw(
     opener: Any = None,
     **kwargs: Any,
 ) -> Generator[dict[str, Any], None, None]:
-    """Yield one row per pre-miRNA, carrying its mature products for the edge."""
-    matures = _precursor_to_matures()
-    for row in mirbase_mirna(None):
-        mi_accession = row[1]
-        if not mi_accession:
-            continue
-        yield {
-            'mirbase_pre': mi_accession,
-            'name': row[2] if len(row) > 2 else None,
-            'synonym': row[3] if len(row) > 3 else None,
-            'description': row[4] if len(row) > 4 else None,
-            'matures': matures.get(mi_accession, []),
-        }
+    for entry in _embl_records(opener):
+        products = entry.pop('products')
+        yield {**entry, 'synonym': None, 'matures': list(products)}
 
 
 def _matures_raw(
     opener: Any = None,
     **kwargs: Any,
 ) -> Generator[dict[str, Any], None, None]:
-    """Yield one row per mature miRNA (MIMAT#).
-
-    Only the mature's own name (``row[1]``) is kept as the entity name; the
-    parent precursor name (``row[2]``) is deliberately not emitted as a
-    synonym, so precursor names resolve to MI# and mature names to MIMAT#
-    without cross-contamination.
-    """
-    precursors = collections.defaultdict(list)
-    for precursor, matures in _precursor_to_matures().items():
-        for mature in matures:
-            precursors[mature].append(precursor)
-    for row in mirbase_mirna_mature(None):
-        mimat_accession = row[3] if len(row) > 3 else None
-        if not mimat_accession:
-            continue
-        yield {
-            'mirbase_mat': mimat_accession,
-            'precursors': precursors.get(mimat_accession, []),
-            'name': row[1] if len(row) > 1 else None,
-        }
+    """Aggregate all explicit parents; never use precursor names as aliases."""
+    matures = {}
+    for entry in _embl_records(opener):
+        for accession, name in entry['products'].items():
+            row = matures.setdefault(accession, {
+                'mirbase_mat': accession,
+                'name': name,
+                'precursors': [],
+                'source_release': SOURCE_RELEASE,
+                'source_url': SOURCE_URL,
+            })
+            if row['name'] != name:
+                raise ValueError(f'Conflicting mature names for {accession}')
+            if entry['mirbase_pre'] not in row['precursors']:
+                row['precursors'].append(entry['mirbase_pre'])
+    yield from matures.values()
 
 
 # =============================================================================
@@ -170,12 +224,12 @@ matures_schema = EntityBuilder(
 resource = Resource(
     config,
     precursors=Dataset(
-        download=None,
+        download=download,
         mapper=precursors_schema,
         raw_parser=_precursors_raw,
     ),
     matures=Dataset(
-        download=None,
+        download=download,
         mapper=matures_schema,
         raw_parser=_matures_raw,
     ),
