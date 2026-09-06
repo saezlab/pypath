@@ -371,16 +371,18 @@ def _secondary_to_primary_raw(
 
 # Source narratives are plain text; none imply graph predicates.
 # Numeric sequence length/mass and family classifications stay in raw payloads.
-_PROTEIN_DESCRIPTION_FIELDS = (
-    'Function [CC]',
-    'Subcellular location [CC]',
-    'Post-translational modification',
-    'Involvement in disease',
-    'Pathway',
-    'Activity regulation',
-    'Mutagenesis',
-    'Transmembrane',
-)
+# up: expands to http://purl.uniprot.org/core/. These are annotation
+# categories, not graph predicates; values contain their cleaned prose.
+_PROTEIN_DESCRIPTION_FIELDS = {
+    'Function [CC]': 'up:Function_Annotation',
+    'Subcellular location [CC]': 'up:Subcellular_Location_Annotation',
+    'Post-translational modification': 'up:PTM_Annotation',
+    'Involvement in disease': 'up:Disease_Annotation',
+    'Pathway': 'up:Pathway_Annotation',
+    'Activity regulation': 'up:Activity_Regulation_Annotation',
+    'Mutagenesis': 'up:Mutagenesis_Annotation',
+    'Transmembrane': 'up:Transmembrane_Annotation',
+}
 
 
 def _clean_protein_description(text):
@@ -403,9 +405,9 @@ def _clean_protein_description(text):
     return text
 
 
-def _protein_descriptions(row):
+def _protein_description_pairs(row):
     descriptions = []
-    for field in _PROTEIN_DESCRIPTION_FIELDS:
+    for field, term in _PROTEIN_DESCRIPTION_FIELDS.items():
         if not row.get(field):
             continue
         value = row[field]
@@ -413,8 +415,12 @@ def _protein_descriptions(row):
             # Keep prose notes, not feature coordinates, IDs or evidence.
             value = '; '.join(re.findall(r'/note="([^"]*)"', value))
         if text := _clean_protein_description(value):
-            descriptions.append(text)
+            descriptions.append((term, text))
     return descriptions
+
+
+def _protein_descriptions(row):
+    return [text for _, text in _protein_description_pairs(row)]
 
 
 proteins_schema = EntityBuilder(
@@ -424,7 +430,7 @@ proteins_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=slots.has_biological_sequence, value=f('Sequence')),
-        CV(term=slots.description, value=_protein_descriptions),
+        CV.from_pairs(_protein_description_pairs),
         CV(
             term=slots.in_taxon,
             value=lambda row: (
