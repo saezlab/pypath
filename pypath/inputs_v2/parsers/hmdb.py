@@ -114,6 +114,7 @@ def _raw(
             'pubchem_compound_id': get_from_path(elem, 'pubchem_compound_id'),
             'kegg_id': get_from_path(elem, 'kegg_id'),
             'drugbank_id': get_from_path(elem, 'drugbank_id'),
+            'foodb_id': get_from_path(elem, 'foodb_id'),
             'cas_registry_number': get_from_path(elem, 'cas_registry_number'),
             'description': get_from_path(elem, 'description'),
             'pubmed_ids': get_from_path(elem, 'general_references', 'reference', 'pubmed_id'),

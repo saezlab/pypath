@@ -85,6 +85,7 @@ metabolites_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_compound_id')),
         CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_id', extract='kegg_compound', transform='kegg_compound')),
         CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('drugbank_id', extract='drugbank')),
+        CV(term=IdentifierNamespaceCv.FOODB, value=f('foodb_id')),
         CV(term=IdentifierNamespaceCv.CAS, value=f('cas_registry_number')),
     ),
     annotations=AnnotationsBuilder(
