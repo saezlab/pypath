@@ -127,9 +127,8 @@ try:
         # KEGG mints its own compound and reaction accessions. It cites
         # PubChem identifiers via `conv/pubchem` but does not mint them.
         # That endpoint returns PubChem substance IDs, not compound IDs, so
-        # `pubchem_compound` deliberately stays off this list. The schema
-        # below still tags the cross-reference as PUBCHEM_COMPOUND. A
-        # separate fix corrects that extraction, not this declaration.
+        # `pubchem_compound` deliberately stays off this list, and the
+        # schema below tags the cross-reference as PUBCHEM_SUBSTANCE.
         mints=(
             IdentifierNamespaceCv.KEGG_COMPOUND,
             IdentifierNamespaceCv.KEGG_REACTION,
@@ -175,7 +174,7 @@ try:
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('reactant_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME,          value=f('reactant_name',    delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.CHEBI,         value=f('reactant_chebi',   delimiter='||', extract='chebi', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('reactant_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
+                    CV(term=IdentifierNamespaceCv.PUBCHEM_SUBSTANCE, value=f('reactant_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=BiologicalRoleCv.REACTANT),
@@ -188,7 +187,7 @@ try:
                     CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('product_kegg_id', delimiter='||', extract='kegg_cpd', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.NAME,          value=f('product_name',    delimiter='||', preserve_indices=True)),
                     CV(term=IdentifierNamespaceCv.CHEBI,         value=f('product_chebi',   delimiter='||', extract='chebi', preserve_indices=True)),
-                    CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('product_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
+                    CV(term=IdentifierNamespaceCv.PUBCHEM_SUBSTANCE, value=f('product_pubchem', delimiter='||', extract='pubchem', preserve_indices=True)),
                 ),
                 annotations=AnnotationsBuilder(
                     CV(term=BiologicalRoleCv.PRODUCT),
