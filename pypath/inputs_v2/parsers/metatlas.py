@@ -30,6 +30,8 @@ from __future__ import annotations
 
 import csv
 import re
+import os
+from pathlib import Path
 from functools import cache
 from collections.abc import Generator
 from typing import Any
@@ -107,30 +109,41 @@ def _load(opener: Any) -> dict:
 
 @cache
 def _metabolite_xrefs() -> dict[str, dict[str, str]]:
+    if path := os.environ.get('OMNIPATH_HUMAN_GEM_XREFS'):
+        with Path(path).open() as handle:
+            return _parse_metabolite_xrefs(handle)
+    return _read_metabolite_xrefs()
+
+
+def _read_metabolite_xrefs() -> dict[str, dict[str, str]]:
     opener = download_and_open(
         url = _METABOLITE_XREF_URL,
         filename = 'Human-GEM-metabolites.tsv',
+        ext = 'tsv',
         subfolder = 'metatlas',
         large = True,
         default_mode = 'r',
     )
 
     try:
-        handle = opener.result
-        xrefs: dict[str, dict[str, str]] = {}
-        for row in csv.DictReader(handle, delimiter = '\t'):
-            metabolite_id = row.get('metsNoComp')
-            if not metabolite_id:
-                continue
-
-            current = xrefs.setdefault(metabolite_id, {})
-            for key, value in _metabolite_xref_row(row).items():
-                if value and not current.get(key):
-                    current[key] = value
-
-        return xrefs
+        return _parse_metabolite_xrefs(opener.result)
     finally:
         opener.close()
+
+
+def _parse_metabolite_xrefs(handle):
+    xrefs: dict[str, dict[str, str]] = {}
+    for row in csv.DictReader(handle, delimiter='\t'):
+        metabolite_id = row.get('metsNoComp')
+        if not metabolite_id:
+            continue
+        current = xrefs.setdefault(metabolite_id, {})
+        for key, value in _metabolite_xref_row(row).items():
+            if value and not current.get(key):
+                current[key] = value
+    if not xrefs:
+        raise ValueError('Human-GEM metabolite cross-reference table is empty')
+    return xrefs
 
 
 def _metabolite_xref_row(row: dict[str, str]) -> dict[str, str]:
@@ -139,6 +152,7 @@ def _metabolite_xref_row(row: dict[str, str]) -> dict[str, str]:
         'hmdb': _first_xref(row.get('metHMDBID'), r'^HMDB\d+$'),
         'pubchem_compound': _first_xref(row.get('metPubChemID'), r'^\d+$'),
         'lipidmaps': _first_xref(row.get('metLipidMapsID'), r'^LM[A-Z0-9]+$'),
+        'smiles': (row.get('metSmiles') or '').strip(),
     }
 
 

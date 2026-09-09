@@ -159,8 +159,16 @@ def _target_component_values(row: dict[str, object], key: str) -> list[str]:
     return _split_chembl_list(row.get(key))
 
 
+def _molecule_entity_type(row):
+    # Structurally specified molecule records use chemical identity, including
+    # peptide drugs. Biological target records retain TARGET_TYPE_MAP.
+    if row.get('standard_inchi_key') or row.get('standard_inchi') or row.get('canonical_smiles'):
+        return ChemicalEntity
+    return MOLECULE_TYPE_TO_ENTITY_TYPE.get(row.get('molecule_type'), ChemicalEntity)
+
+
 molecules_schema = EntityBuilder(
-    entity_type=f('molecule_type', map='entity_type'),
+    entity_type=_molecule_entity_type,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.CHEMBL, value=f('chembl_id')),
         CV(term=Namespace.SMILES, value=f('canonical_smiles')),

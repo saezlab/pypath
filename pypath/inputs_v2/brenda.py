@@ -5,6 +5,7 @@ source concept, not an invented catalytic reaction.
 """
 
 from __future__ import annotations
+from pathlib import Path
 
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
@@ -18,6 +19,7 @@ from pypath.inputs_v2.base import (
     ontology_entity_mapper,
 )
 from pypath.inputs_v2.parsers import brenda as _parsers
+from pypath.inputs_v2.parsers import protein_ids
 from pypath.internals.tabular_builder import (
     AssociationBuilder,
     AnnotationsBuilder,
@@ -85,7 +87,7 @@ enzyme_ontology_schema = ontology_entity_mapper(
 schema = EntityBuilder(
     entity_type=model.Protein,
     identifiers=IdentifiersBuilder(
-        CV(term=Namespace.UNIPROT, value=f('UniProt'))
+        CV(term=lambda row: protein_ids.accession_namespace(row.get('UniProt')), value=f('UniProt'))
     ),
     annotations=AnnotationsBuilder(
         CV(
@@ -108,6 +110,10 @@ schema = EntityBuilder(
 )
 
 # ================================= RESOURCE ===================================
+
+def preparation_inputs():
+    return [Path(protein_ids.__file__)]
+
 
 resource = Resource(
     config=config,

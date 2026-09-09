@@ -20,6 +20,9 @@ from omnipath_core.naming import Namespace
 from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 
 import functools
+from pathlib import Path
+from pypath.inputs_v2.parsers import protein_ids
+from pypath.inputs_v2.parsers.protein_ids import accession_namespace as _accession_namespace
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers import tcdb as _parsers
@@ -56,10 +59,14 @@ f = FieldConfig(
     },
 )
 
+def preparation_inputs():
+    return [Path(protein_ids.__file__)]
+
+
 _transporters_schema = EntityBuilder(
     entity_type=model.Protein,
     identifiers=IdentifiersBuilder(
-        CV(term=Namespace.UNIPROT, value=f('uniprot'))
+        CV(term=lambda row: _accession_namespace(row.get('uniprot')), value=f('uniprot'))
     ),
     annotations=AnnotationsBuilder(
         CV(
@@ -74,7 +81,7 @@ _transport_schema = RelationBuilder(
     subject=EntityBuilder(
         entity_type=model.Protein,
         identifiers=IdentifiersBuilder(
-            CV(term=Namespace.UNIPROT, value=f('transporter_uniprot'))
+            CV(term=lambda row: _accession_namespace(row.get('transporter_uniprot')), value=f('transporter_uniprot'))
         ),
     ),
     predicate=slots.affects,

@@ -9,6 +9,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+from pathlib import Path
+from functools import partial
 
 import math
 
@@ -25,7 +28,7 @@ from omnipath_core.measurements import Measurement
 from omnipath_core.naming import Namespace
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.metatlas import _raw
+from pypath.inputs_v2.parsers.metatlas import _raw, _metabolite_xrefs, _METABOLITE_XREF_URL
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
 from pypath.internals.tabular_builder import (
@@ -139,6 +142,7 @@ metabolites_schema = EntityBuilder(
         CV(term=Namespace.CHEBI, value=f('chebi', extract='chebi')),
         CV(term=Namespace.PUBCHEM, value=f('pubchem_compound')),
         CV(term=Namespace.LIPIDMAPS, value=f('lipidmaps')),
+        CV(term=Namespace.SMILES, value=f('smiles')),
         CV(term=Namespace.NAME, value=f('name')),
     ),
     annotations=AnnotationsBuilder(
@@ -412,32 +416,62 @@ def enzyme_complexes_schema(row: dict) -> Entity | None:
 
 
 
+def _map_with_structures(schema, row):
+    """Join native Human-GEM metabolite structures, including cached participants."""
+    entity = schema(row)
+
+    def enrich(current):
+        if current is None:
+            return None
+        identifiers = list(current.identifiers)
+        annotations = list(current.annotations or [])
+        native = next((i.value for i in identifiers if i.type == Namespace.HUMAN_GEM_METABOLITE), None)
+        if native and not any(i.type == Namespace.SMILES for i in identifiers):
+            smiles = _metabolite_xrefs().get(native, {}).get('smiles')
+            if smiles:
+                identifiers.append(Identifier(type=Namespace.SMILES, value=smiles))
+                annotations.append(Annotation(
+                    term='omnipath:structure_source', value=_METABOLITE_XREF_URL,
+                ))
+        members = [m._replace(member=enrich(m.member)) for m in current.membership or []]
+        return current._replace(identifiers=identifiers, annotations=annotations, membership=members)
+
+    return enrich(entity)
+
+
+def preparation_inputs():
+    """Expose the selected native auxiliary table for preparation cache identity."""
+    from pypath.share.downloads import _resolve_data_dir
+    path = os.environ.get('OMNIPATH_HUMAN_GEM_XREFS')
+    return [Path(path) if path else _resolve_data_dir() / 'metatlas' / 'Human-GEM-metabolites.tsv']
+
+
 resource = Resource(
     config,
     metabolites=Dataset(
         download=download,
-        mapper=metabolites_schema,
+        mapper=partial(_map_with_structures, metabolites_schema),
         raw_parser=lambda opener, **kwargs: _raw(
             opener, data_type='metabolites', **kwargs
         ),
     ),
     reactions=Dataset(
         download=download,
-        mapper=reactions_schema,
+        mapper=partial(_map_with_structures, reactions_schema),
         raw_parser=lambda opener, **kwargs: _raw(
             opener, data_type='reactions', **kwargs
         ),
     ),
     transport_reactions=Dataset(
         download=download,
-        mapper=transport_reactions_schema,
+        mapper=partial(_map_with_structures, transport_reactions_schema),
         raw_parser=lambda opener, **kwargs: _raw(
             opener, data_type='transport_reactions', **kwargs
         ),
     ),
     metabolic_reactions=Dataset(
         download=download,
-        mapper=reactions_schema,
+        mapper=partial(_map_with_structures, reactions_schema),
         raw_parser=lambda opener, **kwargs: _raw(
             opener, data_type='metabolic_reactions', **kwargs
         ),

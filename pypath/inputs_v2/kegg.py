@@ -324,14 +324,8 @@ pathways_schema = EntityBuilder(
                         preserve_indices=True,
                     ),
                 ),
-                CV(
-                    term=Namespace.ENTREZ,
-                    value=f(
-                        'protein_member_entrez_ids',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
+                # KEGG gene local IDs are not an explicit NCBI Gene mapping.
+                # Retain native KEGG identity and the supplied UniProt conversion.
                 CV(
                     term=Namespace.UNIPROT,
                     value=f(

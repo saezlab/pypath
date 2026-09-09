@@ -832,7 +832,8 @@ def _parse_kgml_documents(
                             pathway['protein_members'],
                             {
                                 'kegg_id': gene_id,
-                                'entrez_id': _strip_kegg_object_prefix(gene_id),
+                                # A KEGG gene local ID does not establish an Entrez ID.
+                                'entrez_id': '',
                                 'uniprot_id': uniprot,
                                 'name': gene_name,
                                 'reaction_ids': ';'.join(reaction_ids),

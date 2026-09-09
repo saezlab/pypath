@@ -27,7 +27,7 @@ from pypath.internals.tabular_builder import (
     RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.wikipathways import _raw, current_rdf_url
+from pypath.inputs_v2.parsers.wikipathways import _raw, current_rdf_url, _infer_identifier_from_uri
 
 
 config = ResourceConfig(
@@ -240,6 +240,24 @@ interactions_schema = RelationBuilder(
 )
 
 
+def map_interaction(row):
+    """Prefer explicit node identity over BridgeDb-derived product lists.
+
+    The caller retains the original row as evidence. Unknown/local node URIs
+    continue to use the supplied cross-references without guessing an identity.
+    """
+    mapped = dict(row)
+    fields = ('uniprot', 'entrez', 'ensembl', 'chebi', 'hmdb',
+              'kegg_compound', 'pubchem_compound', 'hgnc')
+    for prefix in ('source', 'target'):
+        native = _infer_identifier_from_uri(str(row.get(f'{prefix}_uri') or ''))
+        native = {key: value for key, value in native.items() if key in fields}
+        if len(native) == 1:
+            for field in fields:
+                mapped[f'{prefix}_{field}'] = native.get(field, '')
+    return interactions_schema(mapped)
+
+
 download = Download(
     url=current_rdf_url,
     filename='wikipathways_rdf_wp.zip',
@@ -261,7 +279,7 @@ resource = Resource(
     ),
     interactions=Dataset(
         download=download,
-        mapper=interactions_schema,
+        mapper=map_interaction,
         raw_parser=lambda opener, **kwargs: _raw(
             opener, data_type='interactions', **kwargs
         ),

@@ -9,6 +9,8 @@ This module converts SLC tables reference data into Entity records using the
 declarative schema pattern.
 """
 
+import re
+
 from bs4 import BeautifulSoup
 
 from pypath.inputs_v2.base import (
@@ -121,6 +123,18 @@ def _primary_slc_gene_names(row: dict) -> list[str]:
     return [value]
 
 
+def _protein_gene_name(row: dict) -> list[str]:
+    """A single symbol-like name in this human-only table is exact evidence.
+
+    Descriptions, lists and explicitly labelled pseudogenes are not protein
+    identifiers. Reference lookup still has to validate the supplied symbol.
+    """
+    value = str(row.get('Protein name') or '').strip()
+    if 'pseudogene' not in value.lower() and re.fullmatch(r'[A-Za-z][A-Za-z0-9-]*', value):
+        return [value.upper()]
+    return []
+
+
 def _slc_gene_synonyms(row: dict) -> list[str]:
     value = _slc_name(row)
     synonyms = []
@@ -151,6 +165,7 @@ schema = EntityBuilder(
     entity_type=model.Protein,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.GENESYMBOL, value=_primary_slc_gene_names),
+        CV(term=Namespace.GENESYMBOL_SYN, value=_protein_gene_name),
         CV(term=Namespace.GENESYMBOL_SYN, value=_slc_gene_synonyms),
         CV(term=Namespace.NAME, value=f('Protein name', delimiter=', ')),
         CV(term=Namespace.SYNONYM, value=f('Aliases', delimiter=', ')),
