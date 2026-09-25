@@ -106,7 +106,6 @@ f = FieldConfig(
 
 def schema(key):
 
-
     return EntityBuilder(
         entity_type=EntityTypeCv.INTERACTION,
         annotations=AnnotationsBuilder(
@@ -126,7 +125,6 @@ def schema(key):
                             term=IdentifierNamespaceCv.GENE_NAME_PRIMARY,
                             value=f('Sensor.Gene')
                         ),
-                        CV()
                     )
                 ),
                 annotations=AnnotationsBuilder(
