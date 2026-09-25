@@ -49,6 +49,7 @@ class ResourceCv(CvEnum):
     BRENDA = ("OM:1166", "BRENDA", "https://www.brenda-enzymes.org/index.php")
     HORMONE2CELL = ("OM:1168", "Hormone2Cell", "https://hormonecellatlas.org.uk/")
     PMIDB = ("OM:1169", "PMI-DB", "http://easybioai.com/PMIDB/")
+    METACHATDB = ("OM:1182", "MetaChatDB", "https://github.com/SonghaoLuo/MetaChat")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
