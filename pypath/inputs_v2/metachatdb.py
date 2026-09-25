@@ -64,6 +64,15 @@ config = ResourceConfig(
     ),
 )
 
+def parser(opener, **_kwargs):
+    # Filtering out any entry that is not reported by MetaChatDB itself
+
+    yield from [
+        entry for entry in iter_tsv(opener)
+        if 'MetaChatDB' in entry['Sources'].split('; ')
+    ]
+
+
 download = {
     k: Download(
         url=BASE_URL % k,
@@ -169,7 +178,7 @@ resource = Resource(
         k: Dataset(
             download=download[k],
             mapper=schema(k),
-            raw_parser=iter_tsv
+            raw_parser=parser,
         )
         for k in files
     }
