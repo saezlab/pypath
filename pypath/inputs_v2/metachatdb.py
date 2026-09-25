@@ -81,7 +81,8 @@ download = {
 f = FieldConfig(
     extract={
         'wp_id': r'^(WP\d+):',
-        'notna': r'\b(.*)\b(?<!NA)'
+        'notna': r'\b(.*)\b(?<!NA)',
+        'pmid': r'(\d+)',
     },
     map={
         'type_to_entity': {
@@ -111,7 +112,7 @@ def schema(key):
         annotations=AnnotationsBuilder(
             CV(
                 term=IdentifierNamespaceCv.PUBMED,
-                value=f('Evidences', delimiter='; ')
+                value=f('Evidences', delimiter='; ', extract='pmid')
             ),
             CV(term=IdentifierNamespaceCv.NCBI_TAX_ID, value=TAXON_ID[key])
         ),
@@ -169,7 +170,7 @@ resource = Resource(
     **{
         k: Dataset(
             download=download[k],
-            mapper=schema,
+            mapper=schema(k),
             raw_parser=iter_tsv
         )
         for k in files
