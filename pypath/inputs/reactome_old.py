@@ -104,7 +104,7 @@ def _reactome_data_gen(
 
 
     result = set()
-    record = collections.namedtuple('Reactome', fields)
+    record = collections.namedtuple(_RECORD_NAMES[dataset], _FIELDS[dataset])
 
     for line in c.result:
 

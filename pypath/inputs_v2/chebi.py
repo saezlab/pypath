@@ -40,6 +40,7 @@ config = ResourceConfig(
     pubmed='41312627',
     primary_category='small_molecules',
     annotation_ontologies=(OntologyCv.CHEBI,),
+    mints=(IdentifierNamespaceCv.CHEBI,),
     description=(
         'ChEBI is a manually curated database and ontology of small molecular '
         'entities. This inputs_v2 module emits searchable small-molecule '

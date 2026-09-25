@@ -96,6 +96,11 @@ class IdentifierNamespaceCv(CvEnum):
     NCBI_TAX_ID = ('OM:0205', 'NCBI Taxonomy database ID', 'https://www.ncbi.nlm.nih.gov/taxonomy')
     SYSTEMATIC_NAME = ('OM:0207', 'Systematic or official nomenclature name')
     ABBREVIATED_NAME = ('OM:0208', 'Abbreviated or short form name')
+    LIPID_NAME = (
+        'OM:0209',
+        'Standardized lipid nomenclature name (Goslin grammar)',
+        'https://lifs-tools.org/goslin',
+    )
 
     # Chemical names (OM:0210-0219 range)
     IUPAC_NAME = ('OM:0210', 'IUPAC chemical name')

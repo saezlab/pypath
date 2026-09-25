@@ -72,6 +72,7 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='21948594',
     primary_category='interactions',
+    mints=(IdentifierNamespaceCv.CHEMBL_COMPOUND,),
     description=(
         "ChEMBL is a manually curated chemical database of bioactive molecules "
         "with drug-like properties."

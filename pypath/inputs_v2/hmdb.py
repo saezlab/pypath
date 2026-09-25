@@ -7,6 +7,8 @@ records using the declarative schema pattern from tabular_builder.
 
 from __future__ import annotations
 
+import logging
+
 from pypath.internals.cv_terms import (
     EntityTypeCv,
     IdentifierNamespaceCv,
@@ -33,6 +35,8 @@ from pypath.inputs_v2.parsers.hmdb import (
     chemont_name_map,
 )
 
+_log = logging.getLogger(__name__)
+
 
 config = ResourceConfig(
     id=ResourceCv.HMDB,
@@ -46,6 +50,7 @@ config = ResourceConfig(
     pubmed='34986597',
     primary_category='small_molecules',
     annotation_ontologies=(OntologyCv.CHEMONT,),
+    mints=(IdentifierNamespaceCv.HMDB,),
     description=(
         'The Human Metabolome Database (HMDB) is a comprehensive database '
         'containing detailed information about small molecule metabolites '
@@ -84,6 +89,7 @@ metabolites_schema = EntityBuilder(
         CV(term=IdentifierNamespaceCv.PUBCHEM_COMPOUND, value=f('pubchem_compound_id')),
         CV(term=IdentifierNamespaceCv.KEGG_COMPOUND, value=f('kegg_id', extract='kegg_compound', transform='kegg_compound')),
         CV(term=IdentifierNamespaceCv.DRUGBANK, value=f('drugbank_id', extract='drugbank')),
+        CV(term=IdentifierNamespaceCv.FOODB, value=f('foodb_id')),
         CV(term=IdentifierNamespaceCv.CAS, value=f('cas_registry_number')),
     ),
     annotations=AnnotationsBuilder(
@@ -125,9 +131,19 @@ chemont_download = Download(
 )
 
 def _raw_with_ontology_maps(opener, force_refresh: bool = False, **kwargs):
-    chemont_map = chemont_name_map(
-        chemont_download.open(force_refresh=force_refresh),
-    )
+    try:
+        chemont_map = chemont_name_map(
+            chemont_download.open(force_refresh=force_refresh),
+        )
+    except Exception as e:
+        # ChemOnt only supplies the chemont_ids/chemont_annotation_ids
+        # classification fields. Every other field in an HMDB record
+        # comes from HMDB's own archive, not this fetch. That includes
+        # the ChEBI/KEGG/PubChem/DrugBank/FooDB cross-references this
+        # load exists for, so a failure here should not cost the whole
+        # load.
+        _log.warning('hmdb: ChemOnt fetch failed, no classification map: %s', e)
+        chemont_map = {}
     yield from _raw(
         opener,
         force_refresh=force_refresh,
