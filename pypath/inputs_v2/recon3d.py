@@ -1,8 +1,8 @@
 """Recon3D metabolic activities, chemical participants and model genes.
 
-Input/output edges retain stoichiometry; chemical formula and charge use typed
-attributes. Compartments, numeric bounds and original Boolean gene rules remain source
-payload fields. GPR alternatives link activities to source-scoped logical AND
+Input/output evidence retains stoichiometry, compartments and original conversion
+direction. Chemical formula and charge use typed attributes. Numeric bounds and
+original Boolean gene rules remain source payload fields. GPR alternatives link activities to source-scoped logical AND
 groups of genes; these groups do not assert physical assemblies.
 """
 
@@ -14,8 +14,10 @@ import json
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.source_attributes import CELLULAR_LOCATION
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2._source_context import conversion_direction_cv
 from pypath.inputs_v2.parsers.recon3d import _raw
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
@@ -203,6 +205,7 @@ reactions_schema = EntityBuilder(
                 ),
             ),
             annotations=AnnotationsBuilder(
+                conversion_direction_cv(),
                 CV(
                     term=slots.stoichiometry,
                     value=f(
@@ -212,7 +215,7 @@ reactions_schema = EntityBuilder(
                         preserve_indices=True,
                     ),
                 ),
-                CV(term='biopax:cellularLocation', value=f('reactants', delimiter='||', map='stoich_comp', preserve_indices=True))
+                CV(term=CELLULAR_LOCATION, value=f('reactants', delimiter='||', map='stoich_comp', preserve_indices=True))
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(
@@ -288,6 +291,7 @@ reactions_schema = EntityBuilder(
                 ),
             ),
             annotations=AnnotationsBuilder(
+                conversion_direction_cv(),
                 CV(
                     term=slots.stoichiometry,
                     value=f(
@@ -297,7 +301,7 @@ reactions_schema = EntityBuilder(
                         preserve_indices=True,
                     ),
                 ),
-                CV(term='biopax:cellularLocation', value=f('products', delimiter='||', map='stoich_comp', preserve_indices=True))
+                CV(term=CELLULAR_LOCATION, value=f('products', delimiter='||', map='stoich_comp', preserve_indices=True))
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(
@@ -393,6 +397,7 @@ transport_reactions_schema = EntityBuilder(
                 ),
             ),
             annotations=AnnotationsBuilder(
+                conversion_direction_cv(),
                 CV(
                     term=slots.stoichiometry,
                     value=f(
@@ -402,7 +407,7 @@ transport_reactions_schema = EntityBuilder(
                         preserve_indices=True,
                     ),
                 ),
-                CV(term='biopax:cellularLocation', value=f('reactants', delimiter='||', map='stoich_comp', preserve_indices=True))
+                CV(term=CELLULAR_LOCATION, value=f('reactants', delimiter='||', map='stoich_comp', preserve_indices=True))
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(
@@ -478,6 +483,7 @@ transport_reactions_schema = EntityBuilder(
                 ),
             ),
             annotations=AnnotationsBuilder(
+                conversion_direction_cv(),
                 CV(
                     term=slots.stoichiometry,
                     value=f(
@@ -487,7 +493,7 @@ transport_reactions_schema = EntityBuilder(
                         preserve_indices=True,
                     ),
                 ),
-                CV(term='biopax:cellularLocation', value=f('products', delimiter='||', map='stoich_comp', preserve_indices=True))
+                CV(term=CELLULAR_LOCATION, value=f('products', delimiter='||', map='stoich_comp', preserve_indices=True))
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(

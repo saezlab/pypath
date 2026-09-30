@@ -1,8 +1,8 @@
 """Human-GEM chemicals and model reactions.
 
-Input/output edges retain model orientation and stoichiometry. Numeric flux
-bounds are source-defined quantities; compartments remain source context. Gene
-rules are associations, not independent catalysis claims for every listed gene.
+Input/output evidence retains model orientation, stoichiometry, compartments and
+reported conversion direction. Numeric flux bounds are source-defined quantities.
+Gene rules are associations, not independent catalysis claims for every listed gene.
 """
 
 from __future__ import annotations
@@ -26,8 +26,10 @@ from biolink_model.datamodel.model import (
 )
 from omnipath_core.measurements import Measurement
 from omnipath_core.naming import Namespace
+from omnipath_core.source_attributes import CELLULAR_LOCATION
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2._source_context import conversion_direction_cv
 from pypath.inputs_v2.parsers.metatlas import _raw, _metabolite_xrefs, _METABOLITE_XREF_URL
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
@@ -214,12 +216,13 @@ reactions_schema = EntityBuilder(
                 ),
             ),
             annotations=AnnotationsBuilder(
+                conversion_direction_cv(),
                 CV(
                     term=slots.stoichiometry,
                     value=f('reactants', delimiter='||', map='stoich_val'),
                 ),
                 CV(
-                    term='biopax:cellularLocation',
+                    term=CELLULAR_LOCATION,
                     value=f('reactants', delimiter='||', map='stoich_comp'),
                 )
             ),
@@ -265,12 +268,13 @@ reactions_schema = EntityBuilder(
                 ),
             ),
             annotations=AnnotationsBuilder(
+                conversion_direction_cv(),
                 CV(
                     term=slots.stoichiometry,
                     value=f('products', delimiter='||', map='stoich_val'),
                 ),
                 CV(
-                    term='biopax:cellularLocation',
+                    term=CELLULAR_LOCATION,
                     value=f('products', delimiter='||', map='stoich_comp'),
                 )
             ),
@@ -342,12 +346,13 @@ transport_reactions_schema = EntityBuilder(
                 ),
             ),
             annotations=AnnotationsBuilder(
+                conversion_direction_cv(),
                 CV(
                     term=slots.stoichiometry,
                     value=f('reactants', delimiter='||', map='stoich_val'),
                 ),
                 CV(
-                    term='biopax:cellularLocation',
+                    term=CELLULAR_LOCATION,
                     value=f('reactants', delimiter='||', map='stoich_comp'),
                 )
             ),
@@ -393,12 +398,13 @@ transport_reactions_schema = EntityBuilder(
                 ),
             ),
             annotations=AnnotationsBuilder(
+                conversion_direction_cv(),
                 CV(
                     term=slots.stoichiometry,
                     value=f('products', delimiter='||', map='stoich_val'),
                 ),
                 CV(
-                    term='biopax:cellularLocation',
+                    term=CELLULAR_LOCATION,
                     value=f('products', delimiter='||', map='stoich_comp'),
                 )
             ),

@@ -13,6 +13,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.source_attributes import PARTICIPANT_ROLE
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -113,7 +114,8 @@ ligand_builder = EntityBuilder(
         CV(term=Namespace.ENSG, value=f('Ligand ENSEMBL ID')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.in_taxon, value=f('Species', map='species_taxon'))
+        CV(term=slots.in_taxon, value=f('Species', map='species_taxon')),
+        CV(term=PARTICIPANT_ROLE, value='ligand'),
     ),
 )
 receptor_builder = EntityBuilder(
@@ -130,7 +132,8 @@ receptor_builder = EntityBuilder(
         CV(term=Namespace.ENSG, value=f('Receptor ENSEMBL ID')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.in_taxon, value=f('Species', map='species_taxon'))
+        CV(term=slots.in_taxon, value=f('Species', map='species_taxon')),
+        CV(term=PARTICIPANT_ROLE, value='receptor'),
     ),
 )
 interactions_schema = RelationBuilder(

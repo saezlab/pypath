@@ -9,6 +9,7 @@ from __future__ import annotations
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.source_attributes import CELLULAR_LOCATION
 from functools import partial
 import re
 from pypath.internals.cv_terms import (
@@ -30,6 +31,7 @@ from pypath.internals.tabular_builder import (
     MembershipBuilder,
     RelationBuilder,
 )
+from pypath.inputs_v2._source_context import conversion_direction_cv
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.reactome import _raw
 
@@ -342,9 +344,10 @@ reactions_schema = EntityBuilder(
                 ),
             ),
             annotations=AnnotationsBuilder(
+                conversion_direction_cv(),
                 CV(term=slots.source_record_urls, value=f('participant_source_physical_entity', delimiter='||', map='missing')),
                 CV(term='biopax:displayName', value=f('participant_display_name', delimiter='||', map='missing')),
-                CV(term='biopax:cellularLocation', value=f('participant_compartment', delimiter='||', map='missing')),
+                CV(term=CELLULAR_LOCATION, value=f('participant_compartment', delimiter='||', map='missing')),
                 CV(term='biopax:feature', value=f('participant_modification', delimiter='||', map='missing')),
                 CV(
                     term=slots.stoichiometry,

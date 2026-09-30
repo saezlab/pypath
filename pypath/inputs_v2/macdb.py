@@ -23,6 +23,7 @@ from pypath.inputs_v2.base import (
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.source_attributes import TRAIT_TYPE
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -87,7 +88,10 @@ trait_terms_schema = EntityBuilder(
         CV(term=Namespace.MACDB_TRAIT, value=f('Trait_Ontology_ID')),
         CV(term=Namespace.NAME, value=f('Trait_Ontology')),
     ),
-    annotations=AnnotationsBuilder(CV(term=slots.has_topic, value=f('EFO_ID'))),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.has_topic, value=f('EFO_ID')),
+        CV(term=TRAIT_TYPE, value=f('Trait_Type')),
+    ),
 )
 
 
