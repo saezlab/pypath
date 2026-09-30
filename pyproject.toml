@@ -52,7 +52,7 @@ keywords = [
 dependencies = [
     "beautifulsoup4",
     "biolink-model==4.4.4",
-    "omnipath-core>=0.1.0",
+    "omnipath-core>=0.1.0,<0.2",
     "cachedir>=0.1.2",
     "certifi>=2023.7.22",
     "cffi>=1.17.0",
@@ -230,5 +230,3 @@ section-order = [
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.uv.sources]
-omnipath-core = { path = "../../full_parquet/packages/omnipath_core", editable = true }

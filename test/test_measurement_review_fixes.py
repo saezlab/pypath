@@ -77,8 +77,15 @@ def test_bindingdb_retains_occurrence_id_and_approximate_measurement():
         },
     )
     assert out.relations[0].upstream_id == '34'
-    quantity = next(a['quantity'] for a in out.relations[0].annotations)
+    quantity = next(
+        annotation['quantity']
+        for annotation in out.relations[0].annotations
+        if annotation['term'] == 'BAO:0000190'
+    )
     assert quantity['comparator'] == '≈'
+    assert quantity['has_numeric_value'] == 3
+    assert quantity['has_unit'] == 'nM'
+    assert quantity['source_field'] == 'IC50 (nM)'
 
 
 def test_drugcentral_preserves_parallel_identifier_positions():
