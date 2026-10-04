@@ -11,6 +11,7 @@ configuration API.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import copy
 from collections import OrderedDict
 from enum import Enum
 import logging
@@ -29,6 +30,8 @@ from pypath.internals.silver_schema import (
     format_term,
 )
 from omnipath_core.naming import normalize_namespace
+from omnipath_core.keys import canonical_json
+from omnipath_core.molecular_forms import normalize_molecular_form
 from omnipath_core.biolink import predicate as biolink_predicate, annotation_value, annotation_term
 from omnipath_core.biolink import entity_type as biolink_entity_type
 from biolink_model.datamodel import model
@@ -947,6 +950,7 @@ class MembersFromList:
         associations: "AssociationsBuilder" | None = None,
         entity_annotations: AnnotationsBuilder | None = None,
         entity_associations: "AssociationsBuilder" | None = None,
+        molecular_form: Callable[[Any, int], Any] | None = None,
     ) -> None:
         _validate_static_entity_type(entity_type)
         self.predicate = (predicate if isinstance(predicate, Column) or callable(predicate)
@@ -957,6 +961,7 @@ class MembersFromList:
         self.membership_associations = associations
         self.entity_annotations = entity_annotations
         self.entity_associations = entity_associations
+        self.molecular_form = molecular_form
 
     def build(self, row: Any, cache: ColumnCache) -> list[SilverMembership]:
         lengths: list[int] = []
@@ -1016,6 +1021,9 @@ class MembersFromList:
                 annotations=entity_annotations if entity_annotations else None,
                 associations=entity_associations if entity_associations else None,
                 membership=None,
+                molecular_form=normalize_molecular_form(
+                    self.molecular_form(row, index), allow_resolved=False,
+                ) if self.molecular_form is not None else None,
             )
 
             memberships.append(
@@ -1411,6 +1419,7 @@ class EntityBuilder:
         | None = None,
         cache_by: Sequence[str] | None = None,
         cache_size: int = 4096,
+        molecular_form: Any | Callable[[Any], Any] | None = None,
     ) -> None:
         _validate_static_entity_type(entity_type)
         self.entity_type = entity_type
@@ -1419,6 +1428,7 @@ class EntityBuilder:
         self.associations = associations
         self.membership = membership
         self.ontology_relations = ontology_relations
+        self.molecular_form = molecular_form
         if isinstance(cache_by, str):
             raise TypeError('cache_by must be a sequence of column names, not a string')
         if cache_by is not None and (associations or membership or ontology_relations):
@@ -1448,6 +1458,7 @@ class EntityBuilder:
         resolved_type = self._resolve_type(row, cache)
         if resolved_type is None:
             return None
+        form = self._resolve_molecular_form(row, cache)
         columns = self.cache_by if self.cache_by is not None else self._inferred_columns
         try:
             if columns is None:
@@ -1455,14 +1466,15 @@ class EntityBuilder:
                 values = tuple((_immutable_key(k), _immutable_key(v)) for k, v in row.items())
             else:
                 values = tuple((name in row, _immutable_key(row.get(name))) for name in columns)
-            key = (resolved_type, values)
+            # Forms are occurrence-scoped even when cache_by omits their inputs.
+            key = (resolved_type, values, canonical_json(form))
         except TypeError:
-            return self._build(row, resolved_type, cache)
+            return self._build(row, resolved_type, cache, form)
         if key in self._entity_cache:
             self._entity_cache.move_to_end(key)
             entity = self._entity_cache[key]
         else:
-            entity = self._build(row, resolved_type, cache)
+            entity = self._build(row, resolved_type, cache, form)
             self._entity_cache[key] = entity
             if len(self._entity_cache) > self.cache_size:
                 self._entity_cache.popitem(last=False)
@@ -1473,7 +1485,18 @@ class EntityBuilder:
         return entity._replace(
             identifiers=list(entity.identifiers),
             annotations=list(entity.annotations) if entity.annotations is not None else None,
+            molecular_form=copy.deepcopy(entity.molecular_form),
         )
+
+
+    def _resolve_molecular_form(self, row: Any, cache: ColumnCache) -> dict | None:
+        source = self.molecular_form
+        if isinstance(source, Column):
+            values = cache.values(source, row)
+            source = values[0] if values else None
+        elif callable(source):
+            source = source(row)
+        return normalize_molecular_form(source, allow_resolved=False)
 
 
     def _resolve_type(self, row: Any, cache: ColumnCache) -> str | None:
@@ -1501,6 +1524,7 @@ class EntityBuilder:
 
     def _build(
         self, row: Any, resolved_type: Any = _UNCOMPUTED, cache: ColumnCache | None = None,
+        molecular_form: Any = _UNCOMPUTED,
     ) -> SilverEntity | None:
         if cache is None:
             cache = ColumnCache()
@@ -1508,6 +1532,8 @@ class EntityBuilder:
             resolved_type = self._resolve_type(row, cache)
         if resolved_type is None:
             return None
+        if molecular_form is _UNCOMPUTED:
+            molecular_form = self._resolve_molecular_form(row, cache)
 
         identifiers = self.identifiers.build(row, cache) if self.identifiers else []
         if not identifiers:
@@ -1527,6 +1553,7 @@ class EntityBuilder:
             ontology_relations=(
                 ontology_relations if ontology_relations else None
             ),
+            molecular_form=molecular_form,
         )
 
     def _build_ontology_relations(

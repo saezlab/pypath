@@ -15,6 +15,9 @@ from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2._molecular_forms import mitab_participant_form
+from omnipath_core.biolink import entity_type as biolink_entity_type
+from omnipath_core.molecular_forms import molecular_form_from_identifiers
 from pypath.internals.cv_terms import (
     LicenseCV,
     ResourceCv,
@@ -305,9 +308,20 @@ def _group_member_type(value):
     return model.NamedThing if value.startswith('SIGNOR-') else None
 
 
+def _group_member_form(row, index):
+    values = str(row.get('LIST OF ENTITIES') or '').split(',')
+    if index >= len(values):
+        return None
+    value = values[index].strip()
+    if _group_member_type(value) is not model.Protein:
+        return None
+    return molecular_form_from_identifiers([{'ns': 'uniprot', 'id': value}])
+
+
 def _group_members():
     return MembershipBuilder(
         MembersFromList(
+            molecular_form=_group_member_form,
             entity_type=f(
                 'LIST OF ENTITIES', delimiter=',',
                 transform=_group_member_type, preserve_indices=True,
@@ -418,6 +432,10 @@ def signor_predicate(row):
 def _participant_builder(suffix):
     return EntityBuilder(
         entity_type=interactor_entity_type(suffix),
+        molecular_form=lambda row: mitab_participant_form(
+            row, suffix,
+            entity_type=biolink_entity_type(_infer_signor_interactor_type(row, suffix)),
+        ),
         identifiers=IdentifiersBuilder(
             general_identifier_cv(
                 '\ufeff#ID(s) interactor A'

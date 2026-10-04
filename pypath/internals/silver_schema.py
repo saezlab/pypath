@@ -4,6 +4,14 @@ Canonical definitions live in omnipath_core.silver_schema.
 """
 from __future__ import annotations
 
+from omnipath_core.molecular_forms import (
+    SequenceIdentifier,
+    CoordinateReference,
+    MolecularModification,
+    MolecularVariant,
+    MolecularForm,
+    MOLECULAR_FORM_STRUCT,
+)
 from omnipath_core.silver_schema import (
     ANNOTATION_FIELDS,
     ASSOCIATION_FIELDS,
@@ -30,6 +38,12 @@ from omnipath_core.silver_schema import (
 )
 
 __all__ = [
+    'SequenceIdentifier',
+    'CoordinateReference',
+    'MolecularModification',
+    'MolecularVariant',
+    'MolecularForm',
+    'MOLECULAR_FORM_STRUCT',
     "Identifier",
     "Annotation",
     "Association",

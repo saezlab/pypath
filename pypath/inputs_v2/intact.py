@@ -29,6 +29,8 @@ from pypath.internals.tabular_builder import (
     RelationBuilder,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2._molecular_forms import mitab_participant_form
+from omnipath_core.biolink import entity_type as biolink_entity_type
 
 
 _IDENTIFIER_CV_MAPPING = {
@@ -222,6 +224,9 @@ def intact_predicate(row):
 
 interactor_a_builder = EntityBuilder(
     entity_type=_interactor_entity_type('A'),
+    molecular_form=lambda row: mitab_participant_form(
+        row, 'A', entity_type=biolink_entity_type(_interactor_entity_type('A')(row)),
+    ),
     identifiers=IdentifiersBuilder(
         CV(
             term=parsed_identifier_terms('#ID(s) interactor A'),
@@ -233,6 +238,7 @@ interactor_a_builder = EntityBuilder(
         ),
     ),
     annotations=AnnotationsBuilder(
+        CV(term=slots.description, value=f('Feature(s) interactor A')),
         CV(
             term=slots.in_taxon,
             value=f(
@@ -263,6 +269,9 @@ interactor_a_builder = EntityBuilder(
 
 interactor_b_builder = EntityBuilder(
     entity_type=_interactor_entity_type('B'),
+    molecular_form=lambda row: mitab_participant_form(
+        row, 'B', entity_type=biolink_entity_type(_interactor_entity_type('B')(row)),
+    ),
     identifiers=IdentifiersBuilder(
         CV(
             term=parsed_identifier_terms('ID(s) interactor B'),
@@ -274,6 +283,7 @@ interactor_b_builder = EntityBuilder(
         ),
     ),
     annotations=AnnotationsBuilder(
+        CV(term=slots.description, value=f('Feature(s) interactor B')),
         CV(
             term=slots.in_taxon,
             value=f(
