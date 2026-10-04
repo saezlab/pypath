@@ -14,6 +14,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.molecular_forms import molecular_form_from_identifiers
 
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
@@ -61,7 +62,7 @@ f = FieldConfig(
         'pubchem_cid': '^CID[:\\s]?(\\d+)$',
         'kegg': '^(C\\d{5})$',
         'tax': '(\\d+)',
-        'uniprot': '^([A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2}|[OPQ][0-9][A-Z0-9]{3}[0-9])$',
+        'uniprot': '^((?:[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2}|[OPQ][0-9][A-Z0-9]{3}[0-9])(?:-\\d+)?(?:-PRO_\\d+)?)$',
     }
 )
 tax_value = lambda row: {
@@ -117,8 +118,18 @@ chemical_builder = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(),
 )
+def _target_chain_form(row):
+    return molecular_form_from_identifiers([
+        {'ns': 'uniprot', 'id': value}
+        for stem in ('UniProt (SwissProt) Primary ID of Target Chain 1',
+                     'UniProt (TrEMBL) Primary ID of Target Chain 1')
+        for value in str(row.get(stem) or '').split()
+    ])
+
+
 target_builder = EntityBuilder(
     entity_type=Protein,
+    molecular_form=_target_chain_form,
     identifiers=IdentifiersBuilder(
         CV(
             term=Namespace.UNIPROT,

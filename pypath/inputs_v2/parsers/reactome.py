@@ -11,6 +11,8 @@ Parses Reactome BioPAX (OWL) data files using RDF graph traversal with optimizat
 from __future__ import annotations
 
 import pickle
+import json
+import re
 from collections import defaultdict
 from collections.abc import Generator
 from pathlib import Path
@@ -19,6 +21,7 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDF
 
 from pypath.share.downloads import DATA_DIR
+from omnipath_core.molecular_forms import molecular_form_from_identifiers, normalize_molecular_form
 
 
 # BioPAX namespace
@@ -28,7 +31,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 11  # Includes participant physical-entity identity and state.
+_CACHE_VERSION = 12  # Includes occurrence molecular forms before feature flattening.
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
@@ -38,7 +41,7 @@ _MISSING_VALUE = "__MISSING__"
 PHYSICAL_ENTITY_TYPE_MAP = {
     'smallmolecule': 'chemical',
     'protein': 'protein',
-    'gene': 'protein',
+    'gene': 'gene',
     'complex': 'complex',
     'complexassembly': 'complex',
     'dna': 'dna',
@@ -218,6 +221,7 @@ def _extract_names_from_props(props: dict, bp_ns: Namespace) -> dict[str, str | 
 
 _PARTICIPANT_FIELDS = [
     'source_physical_entity', 'compartment', 'modification',
+    'molecular_form',
     'role',
     'entity_type',
     'display_name',
@@ -258,6 +262,10 @@ def _flatten_participants(participants: list[dict], prefix: str = 'participant')
         items = []
         for participant in participants:
             value = participant.get(field, '')
+            if field == 'molecular_form' and value:
+                # Preserve form structure through the source's tabular transport.
+                # Escape the participant delimiter even in source descriptions.
+                value = json.dumps(value, sort_keys=True).replace('|', '\\u007c')
             if value in (None, ''):
                 value = _MISSING_VALUE
             items.append(str(value))
@@ -520,6 +528,75 @@ def _load_entity_reference_index(g: Graph, xref_cache: dict[str, dict]) -> dict[
 # Data Extraction
 # --------------------------------------------------------------------------- #
 
+def _participant_molecular_form(g, molecule_uri, participant):
+    """Read explicit BioPAX features without assigning unknown sequence positions."""
+    source_type = participant.get('entity_type')
+    if source_type not in {'protein', 'rna', 'dna'}:
+        return None
+    form = molecular_form_from_identifiers([
+        {'ns': 'uniprot', 'id': accession}
+        for accession in str(participant.get('uniprot') or '').split(';') if accession
+    ]) or {}
+    sequences = form.get('sequence_identifiers') or []
+    coordinate = {
+        'identifier': sequences[0] if len(sequences) == 1 else None,
+        'coordinate_system': 'protein' if source_type == 'protein' else 'transcript' if source_type == 'rna' else 'genomic',
+        'position_base': 1,
+    }
+    modifications = []
+
+    def exact_position(location):
+        if location is None:
+            return None
+        statuses = {str(status) for status in g.objects(location, BP.positionStatus)}
+        # A missing status is not an assertion of equality.
+        if statuses != {'EQUAL'}:
+            return None
+        positions = list(g.objects(location, BP.sequencePosition))
+        if len(positions) != 1 or not str(positions[0]).isdigit():
+            return None
+        return int(positions[0]) or None
+
+    for feature in g.objects(molecule_uri, BP.feature):
+        vocabularies = list(g.objects(feature, BP.modificationType))
+        if not vocabularies:
+            continue
+        labels = [str(term) for vocabulary in vocabularies for term in g.objects(vocabulary, BP['term'])]
+        mod_accessions = []
+        for vocabulary in vocabularies:
+            for xref in g.objects(vocabulary, BP.xref):
+                databases = {str(db).lower() for db in g.objects(xref, BP.db)}
+                if not databases.intersection({'mod', 'psi-mod'}):
+                    continue
+                for identifier in g.objects(xref, BP.id):
+                    match = re.fullmatch(r'(?:MOD:)?(\d+)', str(identifier))
+                    if match and f'MOD:{match[1]}' not in mod_accessions:
+                        mod_accessions.append(f'MOD:{match[1]}')
+        locations = list(g.objects(feature, BP.featureLocation)) or [None]
+        for location in locations:
+            starts = list(g.objects(location, BP.sequenceIntervalBegin)) if location else []
+            ends = list(g.objects(location, BP.sequenceIntervalEnd)) if location else []
+            start = exact_position(starts[0]) if len(starts) == 1 else exact_position(location)
+            end = exact_position(ends[0]) if len(ends) == 1 else start
+            source_locations = starts + ends if starts or ends else [location]
+            source_ranges = [
+                {'position': [str(p) for p in g.objects(source_location, BP.sequencePosition)],
+                 'status': [str(s) for s in g.objects(source_location, BP.positionStatus)]}
+                for source_location in source_locations if source_location is not None
+            ]
+            modifications.append({
+                'term': mod_accessions[0] if len(mod_accessions) == 1 else '; '.join(labels) or None,
+                'position': start, 'end_position': end,
+                'coordinate_reference': coordinate,
+                'description': json.dumps({'source_feature': str(feature),
+                                           'source_terms': labels,
+                                           'mod_accessions': mod_accessions,
+                                           'source_ranges': source_ranges}, sort_keys=True),
+            })
+    form['modifications'] = modifications
+    return normalize_molecular_form(form, allow_resolved=False)
+
+
 def _extract_participant_data(g, molecule_uri, role, entity_reference_index, xref_cache, stoich_map):
     """Preserve physical-state context independently of the reference identity."""
     result = _extract_participant_core(g, molecule_uri, role, entity_reference_index, xref_cache, stoich_map)
@@ -539,6 +616,7 @@ def _extract_participant_data(g, molecule_uri, role, entity_reference_index, xre
         participant['source_physical_entity'] = str(molecule_uri)
         participant['compartment'] = '; '.join(compartments)
         participant['modification'] = '; '.join(features)
+        participant['molecular_form'] = _participant_molecular_form(g, molecule_uri, participant)
     return result
 
 

@@ -15,6 +15,24 @@ from omnipath_core.molecular_forms import (
     normalize_molecular_form,
 )
 
+# Exact source/vocabulary labels. Unknown features stay in source descriptions.
+# Includes spellings present in the SIGNOR causalTab export, without repairing
+# their labels or asserting ontology terms that the export does not supply.
+_MODIFICATION_LABELS = {
+    'phosphorylated residue', 'de-phosphorylated residue',
+    'ubiquitinylated lysine', 'acetylated residue', 'de-acetylated residue',
+    'polyubiquitinated residue', 'de-methylated residue', 'sumoylated lysine',
+    'monoubiquitinated residue', 'methylated residue', 'carboxylated residue',
+    'de-ubiquitinated residue', 'glycosylated residue', 'hydroxylated residue',
+    'palmitoylated residue', 'chemical modificated residue',
+    'de-glycosylated residue', 'post translatedal modificated residue',
+    'de-sumoylated residue', 'neddylated lysine', 'trimethylated residue',
+}
+_VARIANT_LABELS = {
+    'mutation', 'mutation decreasing', 'mutation increasing',
+    'mutation disrupting', 'mutation disrupting strength', 'sequence variant',
+}
+
 
 def mitab_participant_form(
         row: dict[str, Any],
@@ -56,12 +74,9 @@ def mitab_participant_form(
             continue
         term, ranges = match.groups()
         lower = term.lower()
-        is_variant = ('mutation' in lower or 'variant' in lower
+        is_variant = (lower in _VARIANT_LABELS
                       or term in {'MI:0118', 'MI:0119', 'MI:0120', 'MI:0121', 'MI:1128'})
-        is_modification = term.startswith('MOD:') or any(word in lower for word in (
-            'phosphorylat', 'phosphoryl', 'acetylat', 'methylat', 'ubiquitinat',
-            'glycosylat', 'sumoylat', 'cleavage', 'lipidat', 'disulfide',
-        ))
+        is_modification = term.startswith('MOD:') or lower in _MODIFICATION_LABELS
         if not (is_variant or is_modification):
             continue
         # Descriptions retain fuzzy/unknown/n/c ranges and source feature labels.

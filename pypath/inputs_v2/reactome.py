@@ -11,6 +11,7 @@ from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 from functools import partial
+import json
 import re
 from pypath.internals.cv_terms import (
     LicenseCV,
@@ -112,6 +113,13 @@ f = FieldConfig(
         ],
     },
 )
+
+
+def _participant_molecular_form(row, index):
+    values = str(row.get('participant_molecular_form') or '').split('||')
+    if index >= len(values) or values[index] in ('', _MISSING_VALUE):
+        return None
+    return json.loads(values[index])
 
 
 def _participant_taxon_ids(row):
@@ -288,6 +296,7 @@ reactions_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
+            molecular_form=_participant_molecular_form,
             entity_type=f(
                 'participant_entity_type', delimiter='||', map='entity_type'
             ),
