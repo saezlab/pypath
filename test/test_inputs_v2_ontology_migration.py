@@ -106,9 +106,13 @@ def test_dynamic_member_predicates_keep_alignment_and_skip_unspecified():
     assert result.entities[output.object_entity_key].identifier == '3'
 
 
-def test_mirbase_raw_mature_rows_link_back_to_precursor(monkeypatch):
-    monkeypatch.setattr(mirbase, '_precursor_to_matures', lambda: {'MI1': ['MIMAT1']})
-    monkeypatch.setattr(mirbase, 'mirbase_mirna_mature', lambda _: [(None, 'mature', 'precursor', 'MIMAT1')])
-    row, = mirbase._matures_raw()
+def test_mirbase_raw_mature_rows_link_back_to_precursor():
+    text = ('ID   precursor standard; RNA;\nAC   MI1;\n'
+            'FT   miRNA           1..4\n'
+            'FT                   /accession="MIMAT1"\n'
+            'FT                   /product="mature"\n'
+            'SQ   Sequence 4 BP;\n     acgu 4\n//\n')
+    row, = mirbase._matures_raw(SimpleNamespace(result=io.StringIO(text)))
     assert row['precursors'] == ['MI1']
+    assert row['sequence'] == 'ACGU'
     assert {r.predicate for r in extract(mirbase.matures_schema(row)).relations} == {'derives_from'}

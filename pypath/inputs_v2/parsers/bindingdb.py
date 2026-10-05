@@ -57,6 +57,7 @@ _BINDINGDB_COLUMNS = [
     'ZINC ID of Ligand',
     'Target Name',
     'Target Source Organism According to Curator or DataSource',
+    'BindingDB Target Chain 1 Sequence',
     'UniProt (SwissProt) Primary ID of Target Chain 1',
     'UniProt (SwissProt) Recommended Name of Target Chain 1',
     'UniProt (TrEMBL) Primary ID of Target Chain 1',
@@ -79,6 +80,10 @@ _BINDINGDB_COLUMNS.extend(
 
 def _normalize_row(row: dict[str, str | None]) -> dict[str, str]:
     normalized = {key: '' if value is None else str(value) for key, value in row.items()}
+    for key, sequence in row.items():
+        match = re.fullmatch(r'BindingDB Target Chain\s*(\d+)?\s*Sequence(?:\s*(\d+))?', key)
+        if match and sequence:
+            normalized[f'BindingDB Target Chain {match[1] or match[2] or "1"} Sequence'] = str(sequence)
     value = normalized.get('ChEMBL ID of Ligand', '').strip()
     if value and value.count('CHEMBL') > 1 and '::' not in value and ';' not in value and '|' not in value:
         normalized['ChEMBL ID of Ligand'] = _CHEMBL_RUN_RE.sub(r'\1::', value)
@@ -172,6 +177,23 @@ def _read_header(tsv_path: Path) -> set[str]:
     return set(header.split('\t')) if header else set()
 
 
+def _selected_columns(header: object) -> list[str]:
+    """Keep all reported chains, including sequence-column spelling variants."""
+    columns = list(_BINDINGDB_COLUMNS)
+    for column in header or []:
+        if re.fullmatch(
+            r'BindingDB Target Chain\s*(\d+)?\s*Sequence(?:\s*(\d+))?', column
+        ) or re.fullmatch(
+            r'UniProt \((?:SwissProt|TrEMBL)\) '
+            r'(?:Primary ID|Recommended Name|Submitted Name) '
+            r'of Target Chain \d+',
+            column,
+        ):
+            if column not in columns:
+                columns.append(column)
+    return columns
+
+
 def _bindingdb_tsv_path(opener, *, extract: bool = True) -> Path | None:
     """Return an on-disk TSV path, extracting the zip member if necessary.
 
@@ -226,7 +248,7 @@ def _iter_duckdb_tsv(
             if column in available_columns
             else f'NULL AS {_quote_identifier(column)}'
         )
-        for column in _BINDINGDB_COLUMNS
+        for column in _selected_columns(sorted(available_columns))
     ]
     limit_clause = f' LIMIT {int(max_lines)}' if max_lines is not None else ''
     query = f"""
@@ -263,7 +285,8 @@ def _iter_csv_fallback(opener, max_lines: int | None = None) -> Generator[dict[s
         for i, row in enumerate(reader):
             if max_lines is not None and i >= max_lines:
                 break
-            yield _normalize_row({column: row.get(column, '') for column in _BINDINGDB_COLUMNS})
+            yield _normalize_row({column: row.get(column, '')
+                                  for column in _selected_columns(reader.fieldnames)})
         break
 
 

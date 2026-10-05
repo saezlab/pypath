@@ -63,7 +63,10 @@ class _ReactionMembership(MembershipBuilder):
                 continue
             group = _gene_rule_group(genes)
             member = group.membership[0].member if len(genes) == 1 else group
-            members.append(Membership(member=member, predicate=slots.associated_with))
+            alternatives = [clause for clause in row.get('source_gene_rule_clauses', [])
+                            if sorted({item.split('_AT', 1)[0] for item in clause}) == sorted(set(genes))]
+            annotations = [Annotation(term='recon3d:source_product_clauses', value=json.dumps(alternatives, sort_keys=True))] if alternatives else None
+            members.append(Membership(member=member, predicate=slots.associated_with, annotations=annotations))
         return members
 
 
@@ -523,7 +526,10 @@ transport_reactions_schema = EntityBuilder(
 def enzyme_complexes_schema(row: dict) -> Entity | None:
     """Retain a source model AND group with a deterministic internal ID."""
     genes = [gene for gene in str(row.get('complex_subunits') or '').split('||') if gene]
-    return _gene_rule_group(genes) if genes else None
+    if not genes:
+        return None
+    entity = _gene_rule_group(genes)
+    return entity._replace(annotations=[Annotation(term='recon3d:source_product_clauses', value=json.dumps(row['source_gene_rule_clauses'], sort_keys=True))]) if row.get('source_gene_rule_clauses') else entity
 
 
 # ── genes ────────────────────────────────────────────────────────────────────
@@ -535,7 +541,8 @@ genes_schema = EntityBuilder(
         CV(term=Namespace.GENESYMBOL, value=f('name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.in_taxon, value='NCBITaxon:9606')
+        CV(term=slots.in_taxon, value='NCBITaxon:9606'),
+        CV(term='recon3d:source_product_selector', value=lambda row: row.get('source_selectors', [])),
     ),
 )
 

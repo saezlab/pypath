@@ -219,7 +219,7 @@ def _reaction_member_fields(
     }
 
 
-def _parse_gene_rule(rule: str) -> list[list[str]]:
+def _parse_gene_rule(rule: str, *, project_to_gene: bool = True) -> list[list[str]]:
     """Parse AND/OR rules into deterministic alternatives of required genes.
 
     Parentheses and AND precedence are respected. Malformed expressions raise
@@ -245,7 +245,7 @@ def _parse_gene_rule(rule: str) -> list[list[str]]:
             return clauses
         if token.lower() in ('and', 'or') or token == ')':
             raise ValueError(f'Unexpected gene-rule token: {token!r}')
-        return [frozenset([_strip_isoform(token)])]
+        return [frozenset([_strip_isoform(token) if project_to_gene else token])]
 
     def conjunction():
         nonlocal position
@@ -386,6 +386,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
             'upper_bound': ub,
             'gene_reaction_rule': r.get('gene_reaction_rule', ''),
             'gene_rule_clauses': _parse_gene_rule(r.get('gene_reaction_rule', '')),
+            'source_gene_rule_clauses': _parse_gene_rule(r.get('gene_reaction_rule', ''), project_to_gene=False),
             'compartments': data.get('compartments', {}),
             'ec': _annotation_list(ann, 'ec-code'),
             'metanetx_reaction': _annotation_list(ann, 'metanetx.reaction'),
@@ -513,16 +514,15 @@ def _parse_genes(data: dict) -> Generator[dict, None, None]:
             ``name``.  Absent names are ``None`` and will be skipped by
             the framework.
     """
-    seen: set[str] = set()
-    for g in data.get('genes', []):
-        entrez = _strip_isoform(g['id'])
-        if not entrez or entrez == '0' or entrez in seen:
+    genes = {}
+    for gene in data.get('genes', []):
+        entrez = _strip_isoform(gene['id'])
+        if not entrez or entrez == '0':
             continue
-        seen.add(entrez)
-        yield {
-            'entrez_id': entrez,
-            'name': g.get('name'),
-        }
+        record = genes.setdefault(entrez, {'entrez_id': entrez, 'name': gene.get('name'), 'source_selectors': []})
+        if gene['id'] not in record['source_selectors']:
+            record['source_selectors'].append(gene['id'])
+    yield from genes.values()
 
 
 def _parse_catalysis(data: dict) -> Generator[dict, None, None]:
@@ -561,6 +561,7 @@ def _parse_catalysis(data: dict) -> Generator[dict, None, None]:
                 yield {
                     'enzyme_type': 'protein',
                     'enzyme_entrez': subunit_list[0],
+                    'source_gene_rule_clauses': [clause for clause in _parse_gene_rule(r.get('gene_reaction_rule', ''), project_to_gene=False) if sorted({_strip_isoform(gene) for gene in clause}) == sorted(subunit_list)],
                     'reaction_bigg_id': r['id'],
                     'reaction_name': r.get('name'),
                     'subsystem': r.get('subsystem'),
@@ -573,6 +574,7 @@ def _parse_catalysis(data: dict) -> Generator[dict, None, None]:
                 yield {
                     'enzyme_type': 'complex',
                     'enzyme_entrez': None,
+                    'source_gene_rule_clauses': [clause for clause in _parse_gene_rule(r.get('gene_reaction_rule', ''), project_to_gene=False) if sorted({_strip_isoform(gene) for gene in clause}) == sorted(subunit_list)],
                     'reaction_bigg_id': r['id'],
                     'reaction_name': r.get('name'),
                     'subsystem': r.get('subsystem'),
@@ -594,21 +596,16 @@ def _parse_enzyme_complexes(data: dict) -> Generator[dict, None, None]:
             ``complex_subunits``, a ``||``-delimited string of Entrez IDs
             in original (non-sorted) order.
     """
-    seen: set[tuple] = set()
-    for r in data.get('reactions', []):
-        for subunit_list in _parse_gene_rule(r.get('gene_reaction_rule', '')):
-            subunit_list = list(dict.fromkeys(
-                _strip_isoform(g) for g in subunit_list if g
-            ))
-            if len(subunit_list) < 2:
+    groups = {}
+    for reaction in data.get('reactions', []):
+        for clause in _parse_gene_rule(reaction.get('gene_reaction_rule', ''), project_to_gene=False):
+            genes = sorted({_strip_isoform(gene) for gene in clause if gene})
+            if len(genes) < 2:
                 continue
-            key = tuple(sorted(subunit_list))
-            if key in seen:
-                continue
-            seen.add(key)
-            yield {
-                'complex_subunits': '||'.join(subunit_list),
-            }
+            record = groups.setdefault(tuple(genes), {'complex_subunits': '||'.join(genes), 'source_gene_rule_clauses': []})
+            if clause not in record['source_gene_rule_clauses']:
+                record['source_gene_rule_clauses'].append(clause)
+    yield from groups.values()
 
 
 _PARSERS = {

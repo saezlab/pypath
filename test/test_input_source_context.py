@@ -3,7 +3,7 @@
 import importlib
 from pathlib import Path
 
-from omnipath_build.resolver import EntityResolver
+from omnipath_resolver.resolver import EntityResolver
 from omnipath_build.silver import SilverExtractor
 from omnipath_build.writer import ParquetWriter
 from omnipath_core.biolink import direction_sign, qualifiers

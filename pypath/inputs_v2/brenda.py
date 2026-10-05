@@ -5,11 +5,15 @@ source concept, not an invented catalytic reaction.
 """
 
 from __future__ import annotations
+import json
 from pathlib import Path
 
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+
+from pypath.inputs_v2._molecular_forms import protein_variants
+from omnipath_core.molecular_forms import normalize_molecular_form
 
 from pypath.inputs_v2.base import (
     ResourceConfig,
@@ -109,6 +113,70 @@ schema = EntityBuilder(
     ),
 )
 
+
+def _molecular_form(row):
+    descriptor = row['descriptor']
+    if row['section'] == 'EN':
+        if descriptor.lower() in {
+            'wild-type',
+            'wild type',
+            'more',
+            'additional information',
+            'no data',
+        }:
+            return None
+        return normalize_molecular_form(
+            {
+                'variants': protein_variants(
+                    descriptor,
+                    coordinate_reference={
+                        'identifier': None,
+                        'coordinate_system': 'protein',
+                        'position_base': 1,
+                    },
+                )
+            },
+            allow_resolved=False,
+        )
+    # Negated, uncertain and generic PM statements retain source context only.
+    # We don't translate arbitrary narrative words to controlled PTM terms.
+    if descriptor not in {
+        'glycoprotein',
+        'phosphoprotein',
+        'lipoprotein',
+        'side-chain modification',
+        'proteolytic modification',
+    }:
+        return None
+    return normalize_molecular_form(
+        {
+            'modifications': [
+                {
+                    'term': descriptor,
+                    'description': row['observation'],
+                }
+            ]
+        },
+        allow_resolved=False,
+    )
+
+
+molecular_forms_schema = EntityBuilder(
+    entity_type=model.Protein,
+    molecular_form=_molecular_form,
+    identifiers=IdentifiersBuilder(
+        CV(term=lambda row: protein_ids.accession_namespace(row.get('UniProt')), value=f('UniProt')),
+        CV(term='brenda_protein_record', value=lambda row: row['EC'] + '#' + row['protein_record_id']),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term='brenda:molecular_observation', value=f('observation')),
+        CV(term='brenda:observation_scope', value='reference_catalogue'),
+        CV(term='brenda:source_protein_record', value=f('source_protein_record')),
+        CV(term='brenda:source_accessions', value=lambda row: json.dumps(row['source_accessions'])),
+        CV(term=slots.publications, value=lambda row: ['PMID:' + p for p in row.get('Refs', [])]),
+    ),
+)
+
 # ================================= RESOURCE ===================================
 
 def preparation_inputs():
@@ -127,6 +195,7 @@ resource = Resource(
         mapper=schema,
         raw_parser=_parsers.iter_protein_enzyme_class_annotations,
     ),
+    molecular_forms=Dataset(download=download, mapper=molecular_forms_schema, raw_parser=_parsers.iter_molecular_forms),
     data=Dataset(
         download=download,
         mapper=schema,

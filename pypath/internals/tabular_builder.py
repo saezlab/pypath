@@ -31,13 +31,34 @@ from pypath.internals.silver_schema import (
 )
 from omnipath_core.naming import normalize_namespace
 from omnipath_core.keys import canonical_json
-from omnipath_core.molecular_forms import normalize_molecular_form
+from omnipath_core.molecular_forms import molecular_form_from_identifiers, normalize_molecular_form
 from omnipath_core.biolink import predicate as biolink_predicate, annotation_value, annotation_term
 from omnipath_core.biolink import entity_type as biolink_entity_type
 from biolink_model.datamodel import model
 
 logger = logging.getLogger(__name__)
 _UNCOMPUTED = object()
+
+
+def _with_primary_molecular_form(entity_type: Any, identifiers: list, form: Any) -> dict | None:
+    """Preserve the principal product ID; other cross-references stay aliases."""
+    form = normalize_molecular_form(form, allow_resolved=False)
+    if biolink_entity_type(entity_type) not in {
+        'protein', 'enzyme', 'rna_product', 'transcript',
+        'noncoding_rna_product', 'microrna', 'sirna', 'snorna', 'snrna', 'rrna', 'trna',
+    }:
+        return form
+    primary = molecular_form_from_identifiers(identifiers[:1])
+    if not primary:
+        return form
+    combined = {**primary, **{key: value for key, value in (form or {}).items() if value is not None}}
+    sequences = []
+    for item in [*(primary.get('sequence_identifiers') or []),
+                 *((form or {}).get('sequence_identifiers') or [])]:
+        if item not in sequences:
+            sequences.append(item)
+    combined['sequence_identifiers'] = sequences
+    return normalize_molecular_form(combined, allow_resolved=False)
 
 
 def _immutable_key(value: Any) -> Any:
@@ -1021,9 +1042,10 @@ class MembersFromList:
                 annotations=entity_annotations if entity_annotations else None,
                 associations=entity_associations if entity_associations else None,
                 membership=None,
-                molecular_form=normalize_molecular_form(
-                    self.molecular_form(row, index), allow_resolved=False,
-                ) if self.molecular_form is not None else None,
+                molecular_form=_with_primary_molecular_form(
+                    member_entity_type, member_identifiers,
+                    self.molecular_form(row, index) if self.molecular_form is not None else None,
+                ),
             )
 
             memberships.append(
@@ -1538,6 +1560,7 @@ class EntityBuilder:
         identifiers = self.identifiers.build(row, cache) if self.identifiers else []
         if not identifiers:
             return None
+        molecular_form = _with_primary_molecular_form(resolved_type, identifiers, molecular_form)
 
         annotations = self.annotations.build(row, cache) if self.annotations else None
         associations = self.associations.build(row, cache) if self.associations else None

@@ -63,7 +63,7 @@ download_proteins = Download(
     ext='csv',
 )
 UNIPROT_ACC_RE = re.compile(
-    '^([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})$'
+    r'^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?(?:-PRO_\d+)?$'
 )
 HUMAN_TAXON_ID = '9606'
 SYNTHETIC_METABOLITE_SYSTEM_RE = re.compile('^(.+?)_by[A-Za-z0-9].*')

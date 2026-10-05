@@ -17,6 +17,7 @@ from omnipath_core.naming import Namespace
 from omnipath_core.molecular_forms import molecular_form_from_identifiers
 
 from pypath.inputs_v2._measurements import measurement as _measurement
+from pypath.inputs_v2._molecular_forms import combine_forms, sequence_form
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.bindingdb import _raw
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
@@ -35,12 +36,12 @@ from pypath.internals.tabular_builder import (
 )
 
 
-def _bindingdb_url(bindingdb_subset: str = 'All', **_kwargs: object) -> str:
-    return f'https://bindingdb.org/rwd/bind/downloads/BindingDB_{bindingdb_subset}_202605_tsv.zip'
+def _bindingdb_url(bindingdb_subset: str = 'All', bindingdb_release: str = '202610', **_kwargs: object) -> str:
+    return f'https://www.bindingdb.org/rwd/bind/downloads/BindingDB_{bindingdb_subset}_{bindingdb_release}_tsv.zip'
 
 
-def _bindingdb_filename(bindingdb_subset: str = 'All', **_kwargs: object) -> str:
-    return f'BindingDB_{bindingdb_subset}_202605_tsv.zip'
+def _bindingdb_filename(bindingdb_subset: str = 'All', bindingdb_release: str = '202610', **_kwargs: object) -> str:
+    return f'BindingDB_{bindingdb_subset}_{bindingdb_release}_tsv.zip'
 
 
 config = ResourceConfig(
@@ -119,12 +120,12 @@ chemical_builder = EntityBuilder(
     annotations=AnnotationsBuilder(),
 )
 def _target_chain_form(row):
-    return molecular_form_from_identifiers([
+    return combine_forms(molecular_form_from_identifiers([
         {'ns': 'uniprot', 'id': value}
         for stem in ('UniProt (SwissProt) Primary ID of Target Chain 1',
                      'UniProt (TrEMBL) Primary ID of Target Chain 1')
         for value in str(row.get(stem) or '').split()
-    ])
+    ]), sequence_form(row.get('BindingDB Target Chain 1 Sequence')))
 
 
 target_builder = EntityBuilder(
@@ -156,6 +157,13 @@ target_builder = EntityBuilder(
             term=Namespace.NAME,
             value=f('UniProt (TrEMBL) Submitted Name of Target Chain 1'),
         ),
+        CV(
+            term='protein_sequence_sha256',
+            value=lambda row: (
+                (sequence_form(row.get('BindingDB Target Chain 1 Sequence')) or {})
+                .get('sequence_identifiers', [{}])[0].get('id')
+            ),
+        ),
     ),
     annotations=AnnotationsBuilder(CV(term=slots.in_taxon, value=tax_value)),
 )
@@ -182,6 +190,9 @@ def _target(row):
             'UniProt (TrEMBL) Submitted Name of Target Chain ',
         ):
             chain[stem + '1'] = row.get(stem + str(index))
+        chain['BindingDB Target Chain 1 Sequence'] = row.get(
+            f'BindingDB Target Chain {index} Sequence'
+        )
         if (protein := target_builder.build(chain)) is not None:
             members.append(Membership(member=protein, predicate=slots.has_part))
     return Entity(

@@ -130,6 +130,64 @@ def iter_protein_enzyme_class_annotations(
                     return
 
 
+def iter_molecular_forms(opener, max_records=None, **kwargs):
+    """Keep each EN/PM observation with its explicit protein and citations.
+
+    Official 2026.1 README: EN=engineering, PM=posttranslation modification;
+    #protein# and <reference> delimiters are local to each EC record.
+    Catalogue states are not broadcast to the separate kinetics datasets.
+    """
+    emitted = 0
+    for record in iter_brenda_records(
+        opener, fields={'ID', 'PR', 'RF', 'EN', 'PM'}
+    ):
+        ec, status = parse_ec_id(record.get('ID'))
+        if not ec or status:
+            continue
+        proteins = {}
+        for protein in record.get('PR', []):
+            match = ID.match(protein)
+            if match:
+                for pid in match[1].split(','):
+                    proteins[pid] = protein
+        references = process_references(record)
+        for section in ('EN', 'PM'):
+            for observation in record.get(section, []):
+                match = ID.match(observation)
+                if not match:
+                    continue
+                descriptor = re.split(
+                    r'\s*[<(]', observation[match.end() :].strip(), maxsplit=1
+                )[0].strip()
+                publication_ids = (
+                    split_ref_ids(reference[1])
+                    if (reference := REFERENCE.match(observation))
+                    else []
+                )
+                for pid in match[1].split(','):
+                    accessions = extract_uniprot_ids(proteins.get(pid, ''))
+                    yield {
+                        'EC': ec,
+                        'protein_record_id': pid,
+                        'UniProt': accessions[0]
+                        if len(accessions) == 1
+                        else None,
+                        'source_protein_record': proteins.get(pid),
+                        'source_accessions': accessions,
+                        'section': section,
+                        'descriptor': descriptor,
+                        'observation': observation,
+                        'Refs': [
+                            references[ref]
+                            for ref in publication_ids
+                            if references.get(ref)
+                        ],
+                    }
+                    emitted += 1
+                    if max_records is not None and emitted >= max_records:
+                        return
+
+
 def term_record_to_term(row: dict[str, Any]) -> OntologyTerm | None:
     if not row.get('id'):
         return None
@@ -302,23 +360,36 @@ def iter_brenda_records(
     *,
     fields: set[str] | None = None,
 ) -> Generator[dict[str, Any], None, None]:
-    text = read_brenda_text(opener)
-    for entry in text.replace('\r\n', '\n').replace('\n\t', ' ').split('///'):
-        record: dict[str, Any] = defaultdict(list)
-        for line in entry.split('\n'):
-            if not line or '\t' not in line:
-                continue
-            key, value = line.split('\t', maxsplit=1)
-            if fields is not None and key not in fields:
-                continue
-            value = value.strip()
-            if key == 'ID':
-                record[key] = value
+    if not opener or not getattr(opener, 'result', None):
+        return
+    handle = opener.result[sorted(opener.result)[0]]
+    if hasattr(handle, 'seek'):
+        handle.seek(0)
+    record = defaultdict(list)
+    previous_key = None
+    for raw_line in handle:
+        line = raw_line.decode('utf-8') if isinstance(raw_line, bytes) else raw_line
+        line = line.rstrip('\r\n')
+        if line.startswith('///'):
+            if record.get('ID'):
+                yield dict(record)
+            record = defaultdict(list)
+            previous_key = None
+        elif line[:1].isspace() and previous_key:
+            if previous_key == 'ID':
+                record['ID'] += ' ' + line.strip()
             else:
-                record[key].append(value)
-
-        if record.get('ID'):
-            yield dict(record)
+                record[previous_key][-1] += ' ' + line.strip()
+        elif '\t' in line:
+            key, value = line.split('\t', 1)
+            previous_key = key if fields is None or key in fields else None
+            if previous_key:
+                if key == 'ID':
+                    record[key] = value.strip()
+                else:
+                    record[key].append(value.strip())
+    if record.get('ID'):
+        yield dict(record)
 
 
 def parse_ec_id(value: str | None) -> tuple[str | None, str | None]:

@@ -20,6 +20,7 @@ from __future__ import annotations
 from biolink_model.datamodel.model import MicroRNA, slots
 from omnipath_core.naming import Namespace
 
+import json
 import re
 from collections.abc import Generator
 from typing import Any
@@ -38,6 +39,7 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
+from pypath.inputs_v2._molecular_forms import sequence_form
 from pypath.inputs_v2.base import (
     Dataset, Download, Resource, ResourceConfig, _first_handle,
 )
@@ -124,10 +126,20 @@ def _parse_entry(lines):
         if key:
             feature = [] if key == 'miRNA' else None
             if feature is not None:
+                feature.append(line[21:].strip())
                 features.append(feature)
         elif feature is not None:
             feature.append(line[21:].strip())
     products = {}
+    regions = {}
+    sequence_lines = []
+    in_sequence = False
+    for line in lines:
+        if line.startswith('SQ   '):
+            in_sequence = True
+        elif in_sequence and line.startswith('     '):
+            sequence_lines.append(re.sub(r'[\s0-9]', '', line))
+    sequence = ''.join(sequence_lines).upper() or None
     for feature in features:
         qualifiers = ' '.join(feature)
         accession = re.search(r'/accession="(MIMAT\d+)"', qualifiers)
@@ -138,11 +150,31 @@ def _parse_entry(lines):
         if accession in products and products[accession] != product:
             raise ValueError(f'Conflicting mature names for {accession}')
         products[accession] = product
+        location = feature[0] if feature else ''
+        exact = re.fullmatch(r'([1-9]\d*)\.\.([1-9]\d*)', location)
+        start, stop = (int(exact[1]), int(exact[2])) if exact else (None, None)
+        if start is not None and start > stop:
+            start, stop = None, None
+        mature_sequence = (sequence[start - 1:stop] if sequence and start is not None
+                           and start <= stop <= len(sequence) else None)
+        region = {
+            'precursor': accessions[0], 'location': location,
+            'position': start, 'end_position': stop,
+            'coordinate_reference': {'identifier': {'ns': 'mirbase_precursor_release',
+                                                     'id': accessions[0] + '@' + SOURCE_RELEASE},
+                                     'coordinate_system': 'transcript', 'position_base': 1},
+            'sequence': mature_sequence,
+        }
+        regions.setdefault(accession, [])
+        if region not in regions[accession]:
+            regions[accession].append(region)
     return {
         'mirbase_pre': accessions[0],
         'name': name,
         'description': ' '.join(line[5:] for line in lines if line.startswith('DE   ')),
         'products': products,
+        'sequence': sequence,
+        'product_regions': regions,
         'source_release': SOURCE_RELEASE,
         'source_url': SOURCE_URL,
     }
@@ -165,17 +197,21 @@ def _matures_raw(
     matures = {}
     for entry in _embl_records(opener):
         for accession, name in entry['products'].items():
-            row = matures.setdefault(accession, {
-                'mirbase_mat': accession,
-                'name': name,
-                'precursors': [],
-                'source_release': SOURCE_RELEASE,
-                'source_url': SOURCE_URL,
-            })
-            if row['name'] != name:
-                raise ValueError(f'Conflicting mature names for {accession}')
-            if entry['mirbase_pre'] not in row['precursors']:
-                row['precursors'].append(entry['mirbase_pre'])
+            for region in entry['product_regions'][accession]:
+                sequence = region['sequence']
+                row = matures.setdefault((accession, sequence), {
+                    'mirbase_mat': accession,
+                    'name': name,
+                    'precursors': [], 'precursor_regions': [], 'sequence': sequence,
+                    'source_release': SOURCE_RELEASE,
+                    'source_url': SOURCE_URL,
+                })
+                if row['name'] != name:
+                    raise ValueError(f'Conflicting mature names for {accession}')
+                if region not in row['precursor_regions']:
+                    row['precursor_regions'].append(region)
+                if entry['mirbase_pre'] not in row['precursors']:
+                    row['precursors'].append(entry['mirbase_pre'])
     yield from matures.values()
 
 
@@ -187,6 +223,7 @@ f = FieldConfig()
 
 
 precursors_schema = EntityBuilder(
+    molecular_form=lambda row: sequence_form(row.get('sequence'), system='transcript'),
     entity_type=MicroRNA,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.MIRBASE_PRECURSOR, value=f('mirbase_pre')),
@@ -200,12 +237,16 @@ precursors_schema = EntityBuilder(
 
 
 matures_schema = EntityBuilder(
+    molecular_form=lambda row: sequence_form(row.get('sequence'), system='transcript'),
     entity_type=MicroRNA,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.MIRBASE_MATURE, value=f('mirbase_mat')),
         CV(term=Namespace.NAME, value=f('name')),
     ),
-    annotations=AnnotationsBuilder(),
+    annotations=AnnotationsBuilder(
+        CV(term='mirbase:precursor_region', value=lambda row: [json.dumps(region, sort_keys=True)
+            for region in row.get('precursor_regions', [])]),
+    ),
     associations=AssociationsBuilder(
         AssociationBuilder(
             object_entity_type=MicroRNA,

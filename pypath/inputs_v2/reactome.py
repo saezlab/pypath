@@ -59,6 +59,7 @@ entity_type_map = {
     'complex': model.MacromolecularComplex,
     'chemical': model.ChemicalEntity,
     'physical_entity': model.PhysicalEntity,
+    'logical_control_set': model.NamedThing,
     'protein_family': model.ProteinFamily,
     'reaction': model.MolecularActivity,
     'degradation': model.BiologicalProcess,
@@ -113,6 +114,13 @@ f = FieldConfig(
         ],
     },
 )
+
+
+def _indexed_molecular_form(row, index, prefix):
+    values = str(row.get(prefix + '_molecular_form') or '').split('||')
+    if index >= len(values) or values[index] in {'', _MISSING_VALUE}:
+        return None
+    return json.loads(values[index])
 
 
 def _participant_molecular_form(row, index):
@@ -274,6 +282,7 @@ reactions_schema = EntityBuilder(
         CV(term=Namespace.SYNONYM, value=f('synonyms')),
     ),
     annotations=AnnotationsBuilder(
+        CV(term='biopax:templateDirection', value=lambda row: row.get('template_direction')),
         CV(
             term=slots.publications,
             value=f(
@@ -319,6 +328,8 @@ reactions_schema = EntityBuilder(
                     term=Namespace.UNIPROT,
                     value=f('participant_uniprot', delimiter='||', map='split'),
                 ),
+                CV(term='refseq', value=f('participant_refseq', delimiter='||', map='split')),
+                CV(term='ensembl', value=f('participant_ensembl', delimiter='||', map='split')),
                 CV(
                     term=Namespace.CHEBI,
                     value=f(
@@ -358,6 +369,7 @@ reactions_schema = EntityBuilder(
                 CV(term='biopax:displayName', value=f('participant_display_name', delimiter='||', map='missing')),
                 CV(term=CELLULAR_LOCATION, value=f('participant_compartment', delimiter='||', map='missing')),
                 CV(term='biopax:feature', value=f('participant_modification', delimiter='||', map='missing')),
+                CV(term='biopax:feature_context', value=f('participant_feature_context', delimiter='||', map='missing')),
                 CV(
                     term=slots.stoichiometry,
                     value=f(
@@ -396,13 +408,17 @@ def reactome_predicate(row):
 
 
 controller_builder = EntityBuilder(
+    molecular_form=lambda row: _indexed_molecular_form(row, 0, 'controller'),
     entity_type=f('controller_entity_type', map='entity_type'),
     identifiers=IdentifiersBuilder(
         CV(
             term=Namespace.REACTOME,
             value=f('controller_reactome_stable_id', map='split'),
         ),
+        CV(term='biopax_physical_entity', value=f('controller_source_physical_entity', map='missing')),
         CV(term=Namespace.UNIPROT, value=f('controller_uniprot', map='split')),
+        CV(term='refseq', value=f('controller_refseq', map='split')),
+        CV(term='ensembl', value=f('controller_ensembl', map='split')),
         CV(
             term=Namespace.CHEBI, value=f('controller_chebi', map='split_chebi')
         ),
@@ -418,6 +434,9 @@ controller_builder = EntityBuilder(
         CV(term=Namespace.SYNONYM, value=f('controller_synonyms', map='split')),
     ),
     annotations=AnnotationsBuilder(
+        CV(term='biopax:feature_context', value=lambda row: row.get('controller_feature_context')),
+        CV(term='biopax:control_set', value=lambda row: row.get('controller_control_set')),
+        CV(term=slots.source_record_urls, value=f('controller_source_physical_entity', map='missing')),
         CV(
             term=slots.in_taxon,
             value=_entity_taxon_id(
@@ -520,13 +539,17 @@ pathways_schema = EntityBuilder(
     ontology_relations=_pathway_ontology_relations,
 )
 control_groups_schema = EntityBuilder(
+    molecular_form=lambda row: _indexed_molecular_form(row, 0, 'controller'),
     entity_type=f('controller_entity_type', map='entity_type'),
     identifiers=IdentifiersBuilder(
         CV(
             term=Namespace.REACTOME,
             value=f('controller_reactome_stable_id', map='split'),
         ),
+        CV(term='biopax_physical_entity', value=f('controller_source_physical_entity', map='missing')),
         CV(term=Namespace.UNIPROT, value=f('controller_uniprot', map='split')),
+        CV(term='refseq', value=f('controller_refseq', map='split')),
+        CV(term='ensembl', value=f('controller_ensembl', map='split')),
         CV(
             term=Namespace.CHEBI, value=f('controller_chebi', map='split_chebi')
         ),
@@ -542,6 +565,9 @@ control_groups_schema = EntityBuilder(
         CV(term=Namespace.SYNONYM, value=f('controller_synonyms', map='split')),
     ),
     annotations=AnnotationsBuilder(
+        CV(term='biopax:feature_context', value=lambda row: row.get('controller_feature_context')),
+        CV(term='biopax:control_set', value=lambda row: row.get('controller_control_set')),
+        CV(term=slots.source_record_urls, value=f('controller_source_physical_entity', map='missing')),
         CV(
             term=slots.in_taxon,
             value=_entity_taxon_id(
@@ -557,6 +583,7 @@ control_groups_schema = EntityBuilder(
     ),
     membership=MembershipBuilder(
         MembersFromList(
+            molecular_form=lambda row, index: _indexed_molecular_form(row, index, 'controller_member'),
             entity_type=f(
                 'controller_member_entity_type',
                 delimiter='||',
@@ -577,6 +604,8 @@ control_groups_schema = EntityBuilder(
                         'controller_member_uniprot', delimiter='||', map='split'
                     ),
                 ),
+                CV(term='refseq', value=f('controller_member_refseq', delimiter='||', map='split')),
+                CV(term='ensembl', value=f('controller_member_ensembl', delimiter='||', map='split')),
                 CV(
                     term=Namespace.CHEBI,
                     value=f(
@@ -617,7 +646,9 @@ control_groups_schema = EntityBuilder(
                 ),
             ),
             entity_annotations=AnnotationsBuilder(
-                CV(term=slots.in_taxon, value=_controller_member_taxon_ids)
+                CV(term=slots.in_taxon, value=_controller_member_taxon_ids),
+                CV(term='biopax:feature_context', value=f('controller_member_feature_context', delimiter='||', map='missing')),
+                CV(term=slots.source_record_urls, value=f('controller_member_source_physical_entity', delimiter='||', map='missing')),
             ),
             entity_associations=_combined_associations(
                 _pathway_association(
@@ -658,6 +689,10 @@ resource = Resource(
         download=download,
         mapper=controls_schema,
         raw_parser=partial(_raw, data_type='controls'),
+    ),
+    physical_groups=Dataset(
+        download=download, mapper=control_groups_schema,
+        raw_parser=partial(_raw, data_type='physical_groups'),
     ),
     control_groups=Dataset(
         download=download,

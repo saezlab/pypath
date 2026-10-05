@@ -7,6 +7,8 @@ into Entity records using the schema defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
+import json
+
 from functools import partial
 from pathlib import Path
 import re
@@ -32,13 +34,19 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 
 from pypath.inputs_v2._measurements import measurement as _measurement
+from pypath.inputs_v2._molecular_forms import combine_forms, protein_variants, sequence_form
+from omnipath_core.molecular_forms import molecular_form_from_identifiers
+
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.chembl import (
     activities_parser,
+    assays_parser,
+    targets_parser,
     mechanisms_parser,
     molecules_parser,
 )
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from pypath.internals.silver_schema import Membership
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
@@ -180,7 +188,7 @@ molecules_schema = EntityBuilder(
         CV(term='chemrof:mass', value=f('full_mwt'))
     ),
 )
-targets_schema = EntityBuilder(
+_legacy_targets_schema = EntityBuilder(
     entity_type=f('target_type', map='target_type'),
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.CHEMBL_TARGET, value=f('chembl_id')),
@@ -241,6 +249,39 @@ targets_schema = EntityBuilder(
         )
     ),
 )
+
+_component_schema = EntityBuilder(
+    entity_type=lambda row: COMPONENT_TYPE_MAP.get(row.get('component_type'), NamedThing),
+    molecular_form=lambda row: sequence_form(row.get('sequence'), system='protein' if row.get('component_type') == 'PROTEIN' else 'transcript') if row.get('component_type') in {'PROTEIN', 'RNA'} else None,
+    identifiers=IdentifiersBuilder(
+        CV(term=lambda row: Namespace.UNIPROT if row.get('db_source') in {'SWISS-PROT', 'TREMBL'} else _ensembl_namespace(row.get('accession')) if str(row.get('accession') or '').startswith('ENS') else 'chembl_component_accession', value=f('accession')),
+        CV(term='chembl_component', value=f('component_id')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term=slots.description, value=f('description')),
+        CV(term='chembl:observation_scope', value='target_component_catalogue'),
+        CV(term=slots.in_taxon, value=lambda row: 'NCBITaxon:' + str(row['tax_id']) if row.get('tax_id') else None),
+    ),
+)
+
+
+def targets_schema(row):
+    result = _legacy_targets_schema(row)
+    if result is None or 'component_records' not in row:
+        return result
+    components = json.loads(row.get('component_records') or '[]')
+    membership = [
+        Membership(member=member, predicate=slots.has_member)
+        for component in components
+        if component.get('component_id') is not None
+        if (
+            member := _component_schema(
+                {**component, 'tax_id': row.get('tax_id')}
+            )
+        )
+    ]
+    return result._replace(membership=membership)
+
 ACTION_DIRECTION = {
     'AGONIST': DirectionQualifierEnum.increased,
     'PARTIAL AGONIST': DirectionQualifierEnum.increased,
@@ -275,7 +316,56 @@ molecule_builder = EntityBuilder(
         CV(term=Namespace.CHEMBL, value=f('molecule_chembl_id'))
     ),
 )
+def _assay_molecular_form(row):
+    """The assay's variant is independent of its target's component catalogue."""
+    variant_id = row.get('variant_id')
+    if variant_id in (None, ''):
+        return None
+    accession = str(row.get('variant_accession') or '').strip()
+    isoform = row.get('variant_isoform')
+    if accession and isoform not in (None, '') and str(isoform).isdigit():
+        accession = accession.split('-')[0] + '-' + str(isoform)
+    identity = (
+        molecular_form_from_identifiers([{'ns': 'uniprot', 'id': accession}])
+        if accession
+        and (
+            row.get('_variant_observation')
+            or accession.split('-')[0]
+            in _split_chembl_list(
+                row.get('target_component_uniprot_accessions')
+            )
+        )
+        else None
+    )
+    version = row.get('variant_version')
+    reference = (
+        {'ns': 'uniprot_sequence_version', 'id': f'{accession}.{version}'}
+        if accession and version not in (None, '')
+        else {'ns': 'uniprot', 'id': accession}
+        if accession
+        else None
+    )
+    variants = protein_variants(
+        row.get('variant_mutation') or row.get('assay_description'),
+        identifier={'ns': 'chembl_variant', 'id': str(variant_id)},
+        coordinate_reference={
+            'identifier': reference,
+            'coordinate_system': 'protein',
+            'position_base': 1,
+        },
+    )
+    # ChEMBL reconstructs a representative sequence, not necessarily the
+    # sequence used experimentally (VARIANT_SEQUENCES schema documentation).
+    representative = sequence_form(row.get('variant_sequence'))
+    if representative:
+        representative['sequence_identifiers'][0]['ns'] = (
+            'chembl_representative_sequence_sha256'
+        )
+    return combine_forms(identity, representative, {'variants': variants})
+
+
 target_builder = EntityBuilder(
+    molecular_form=lambda row: _assay_molecular_form(row) if row.get('target_type') == 'SINGLE PROTEIN' else None,
     entity_type=f('target_type', map='target_type', default=NamedThing),
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.CHEMBL_TARGET, value=f('target_chembl_id')),
@@ -309,6 +399,21 @@ target_builder = EntityBuilder(
         )
     ),
 )
+
+assay_variants_schema = EntityBuilder(
+    entity_type=Protein,
+    molecular_form=_assay_molecular_form,
+    identifiers=IdentifiersBuilder(
+        CV(term=Namespace.UNIPROT, value=f('variant_accession')),
+        CV(term='chembl_variant', value=f('variant_id')),
+    ),
+    annotations=AnnotationsBuilder(
+        CV(term='chembl:sequence_role', value='representative_reconstruction'),
+        CV(term=slots.source_record_urls, value=lambda row: 'https://www.ebi.ac.uk/chembl/explore/assay/' + str(row.get('assay_chembl_id') or row.get('chembl_id'))),
+        CV(term=slots.description, value=lambda row: row.get('assay_description') or row.get('description')),
+    ),
+)
+
 activities_schema = RelationBuilder(
     subject=molecule_builder,
     predicate=chembl_predicate,
@@ -326,6 +431,13 @@ activities_schema = RelationBuilder(
                 ),
             ),
         ),
+        CV(term=slots.description, value=f('assay_description')),
+        CV(term='chembl:assay_variant', value=lambda row: json.dumps({
+            'variant_id': row['variant_id'],
+            'accession': row.get('variant_accession'),
+            'sequence_role': 'representative_reconstruction',
+            'molecular_form': _assay_molecular_form(row),
+        }, sort_keys=True) if row.get('variant_id') not in (None, '') else None),
         CV(term=slots.description, value=f('data_validity_comment')),
         CV(term=slots.description, value=f('action_description')),
         CV(
@@ -377,8 +489,26 @@ activities_schema = RelationBuilder(
         CV(term=Namespace.CHEMBL_MECHANISM, value=f('mec_id')),
     ),
 )
+
+def _assay_variant_rows(opener, **kwargs):
+    for row in assays_parser(
+        opener, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH, **kwargs
+    ):
+        if row.get('variant_id') not in (None, ''):
+            yield {
+                **row,
+                '_variant_observation': True,
+                'assay_description': row.get('description'),
+            }
+
 resource = Resource(
     config=config,
+    assay_variants=Dataset(
+        download=download,
+        raw_parser=_assay_variant_rows,
+        mapper=assay_variants_schema,
+    ),
+    targets=Dataset(download=download, mapper=targets_schema, raw_parser=partial(targets_parser, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH)),
     molecules=Dataset(
         download=download,
         mapper=molecules_schema,
@@ -390,7 +520,9 @@ resource = Resource(
         download=download,
         mapper=activities_schema,
         raw_parser=partial(
-            activities_parser, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH
+            activities_parser,
+    assays_parser,
+    targets_parser, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH
         ),
     ),
     mechanisms=Dataset(

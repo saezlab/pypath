@@ -563,6 +563,11 @@ def test_chembl_staging_cache_requires_measurement_units(tmp_path):
     assert not _duckdb_cache_compatible(path)
     with duckdb.connect(str(path)) as con:
         con.execute('ALTER TABLE activities ADD COLUMN standard_units VARCHAR')
+    assert not _duckdb_cache_compatible(path)
+    with duckdb.connect(str(path)) as con:
+        con.execute('CREATE TABLE assays (variant_id BIGINT)')
+        con.execute('CREATE TABLE component_sequences (sequence VARCHAR)')
+        con.execute('CREATE TABLE variant_sequences (mutation VARCHAR, accession VARCHAR, version INTEGER, isoform INTEGER, sequence VARCHAR)')
     assert _duckdb_cache_compatible(path)
 
 

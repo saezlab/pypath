@@ -52,7 +52,7 @@ config = ResourceConfig(
 f = FieldConfig(
     delimiter=';',
     extract={
-        'uniprot': r'((?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?)',
+        'uniprot': r'((?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?(?:-PRO_\d+)?)',
     },
     map={
         'organism_taxid': {

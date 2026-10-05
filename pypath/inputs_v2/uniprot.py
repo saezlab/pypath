@@ -9,12 +9,17 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from html import unescape
+import csv
+import json
 import re
 
 from biolink_model.datamodel.model import OntologyClass, Protein, slots
 from omnipath_core.naming import Namespace
 
 from pypath.internals.silver_schema import EntityRef, OntologyRelation
+from pypath.inputs_v2._molecular_forms import combine_forms, sequence_form
+from omnipath_core.molecular_forms import molecular_form_from_identifiers
+
 from pypath.inputs_v2.base import (
     Dataset,
     Download,
@@ -53,7 +58,9 @@ UNIPROT_DATA_URL = (
     '&query=(taxonomy_id:9606 OR taxonomy_id:10090 OR taxonomy_id:10116) AND reviewed:true'
     '&fields=accession,length,mass,sequence,organism_id,cc_disease,ft_mutagen,'
     'cc_subcellular_location,cc_ptm,lit_pubmed_id,cc_function,cc_pathway,'
-    'cc_activity_regulation,keywordid,ec,go_id,ft_transmem,protein_families'
+    'cc_activity_regulation,keywordid,ec,go_id,ft_transmem,protein_families,'
+    'sequence_version,ft_mod_res,ft_lipid,ft_carbohyd,ft_disulfid,ft_crosslnk,'
+    'ft_variant,ft_var_seq,ft_chain,ft_signal,ft_propep,ft_peptide'
 )
 
 UNIPROT_KEYWORDS_OBO_URL = (
@@ -423,7 +430,214 @@ def _protein_descriptions(row):
     return [text for _, text in _protein_description_pairs(row)]
 
 
+# Each catalogue feature is one evidence observation. Features on the same
+# reference are not assertions that all these states coexist experimentally.
+_FEATURE_FIELDS = {
+    'Mutagenesis': ('MUTAGEN', 'variant'),
+    'Natural variant': ('VARIANT', 'variant'),
+    'Alternative sequence': ('VAR_SEQ', 'variant'),
+    'Modified residue': ('MOD_RES', 'modification'),
+    'Lipidation': ('LIPID', 'modification'),
+    'Glycosylation': ('CARBOHYD', 'modification'),
+    'Disulfide bond': ('DISULFID', 'modification'),
+    'Cross-link': ('CROSSLNK', 'modification'),
+    'Chain': ('CHAIN', 'region'),
+    'Signal peptide': ('SIGNAL', 'region'),
+    'Propeptide': ('PROPEP', 'region'),
+    'Peptide': ('PEPTIDE', 'region'),
+    'Transmembrane': ('TRANSMEM', 'region'),
+}
+
+
+def _feature_records(value, code):
+    # Semicolons inside quoted notes belong to the note, not a new feature.
+    tokens = re.split(r';(?=(?:[^"\\]*"[^"\\]*")*[^"\\]*$)', str(value or ''))
+    current = None
+    for token in tokens:
+        token = token.strip()
+        match = re.fullmatch(code + r'\s+(.+)', token)
+        if match:
+            if current:
+                yield current
+            current = {'type': code, 'location': match[1], 'qualifiers': {}}
+        elif current and token.startswith('/'):
+            key, sep, value = token[1:].partition('=')
+            if sep:
+                current['qualifiers'].setdefault(key, []).append(
+                    value.strip('"')
+                )
+    if current:
+        yield current
+
+
+def _protein_rows(opener, **kwargs):
+    # Dense variant catalogues (e.g. TP53) exceed Python CSV's 128 KiB default.
+    csv.field_size_limit(max(csv.field_size_limit(), 16 * 1024 * 1024))
+    yield from iter_tsv(opener, **kwargs)
+
+
+def _catalogue_feature_rows(opener, max_records=None, **kwargs):
+    emitted = 0
+    for row in _protein_rows(opener):
+        reference_form = sequence_form(row.get('Sequence'))
+        reference_id = (
+            reference_form['sequence_identifiers'][0]
+            if reference_form
+            else {
+                'ns': 'uniprot_sequence_version',
+                'id': f'{row["Entry"]}.{row["Sequence version"]}',
+            }
+            if row.get('Sequence version')
+            else {'ns': 'uniprot', 'id': row['Entry']}
+        )
+        for field, (code, category) in _FEATURE_FIELDS.items():
+            for feature in _feature_records(row.get(field), code):
+                location = feature['location']
+                isoform, sep, coordinates = location.rpartition(':')
+                if not sep:
+                    coordinates, isoform = location, None
+                exact = re.fullmatch(
+                    r'([1-9]\d*)(?:\.\.([1-9]\d*))?', coordinates
+                )
+                start, end = (
+                    (int(exact[1]), int(exact[2] or exact[1]))
+                    if exact
+                    else (None, None)
+                )
+                if start is not None and start > end:
+                    start = end = None
+                note = '; '.join(feature['qualifiers'].get('note', []))
+                ids = feature['qualifiers'].get('id', [])
+                coordinate = {
+                    'identifier': {'ns': 'uniprot', 'id': isoform}
+                    if isoform
+                    else reference_id,
+                    'coordinate_system': 'protein',
+                    'position_base': 1,
+                }
+                identity = (
+                    molecular_form_from_identifiers(
+                        [{'ns': 'uniprot', 'id': isoform}]
+                    )
+                    if isoform
+                    else None
+                )
+                specific = next(
+                    (
+                        identifier
+                        for identifier in ids
+                        if identifier.startswith('PRO_')
+                    ),
+                    None,
+                )
+                if specific:
+                    identity = combine_forms(
+                        identity,
+                        molecular_form_from_identifiers(
+                            [
+                                {
+                                    'ns': 'uniprot',
+                                    'id': row['Entry'] + '-' + specific,
+                                }
+                            ]
+                        ),
+                    )
+                item = {
+                    'position': start,
+                    'end_position': end,
+                    'coordinate_reference': coordinate,
+                    'description': note or json.dumps(feature, sort_keys=True),
+                }
+                forms = [identity]
+                if category == 'modification':
+                    forms = [
+                        combine_forms(
+                            identity,
+                            {
+                                'modifications': [
+                                    {
+                                        **item,
+                                        'term': note.split(';', 1)[0] or code,
+                                        'residue': row['Sequence'][start - 1]
+                                        if not isoform
+                                        and start == end
+                                        and start is not None
+                                        and start
+                                        <= len(row.get('Sequence') or '')
+                                        else None,
+                                    }
+                                ]
+                            },
+                        )
+                    ]
+                elif category == 'variant':
+                    replacement = re.match(
+                        r'^([A-Z*]+)\s*->\s*([A-Z*]+(?:\s*,\s*[A-Z*]+)*)(?=[:;\s]|$)',
+                        note,
+                    )
+                    alternatives = (
+                        replacement[2].split(',') if replacement else [None]
+                    )
+                    forms = [
+                        combine_forms(
+                            identity,
+                            {
+                                'variants': [
+                                    {
+                                        **item,
+                                        'identifier': {
+                                            'ns': 'uniprot_feature',
+                                            'id': ids[0],
+                                        }
+                                        if ids
+                                        else None,
+                                        'reference': replacement[1]
+                                        if replacement
+                                        else None,
+                                        'alternate': alternate.strip()
+                                        if alternate
+                                        else None,
+                                    }
+                                ]
+                            },
+                        )
+                        for alternate in alternatives
+                    ]
+                for form in forms:
+                    yield {
+                        'Entry': row['Entry'],
+                        'Sequence': row.get('Sequence'),
+                        'Sequence version': row.get('Sequence version'),
+                        'Organism (ID)': row.get('Organism (ID)'),
+                        'catalogue_feature': feature,
+                        'feature_field': field,
+                        'molecular_form': form,
+                        'feature_publications': sorted(
+                            set(
+                                re.findall(r'PubMed:(\d+)', json.dumps(feature))
+                            )
+                        ),
+                    }
+                    emitted += 1
+                    if max_records is not None and emitted >= max_records:
+                        return
+
+
+catalogue_features_schema = EntityBuilder(
+    entity_type=Protein,
+    molecular_form=lambda row: row.get('molecular_form'),
+    identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=f('Entry'))),
+    annotations=AnnotationsBuilder(
+        CV(term='uniprot:catalogue_feature', value=lambda row: json.dumps(row['catalogue_feature'], sort_keys=True)),
+        CV(term='uniprot:observation_scope', value='reference_catalogue'),
+        CV(term=slots.in_taxon, value=lambda row: f"NCBITaxon:{row['Organism (ID)']}" if row.get('Organism (ID)') else None),
+        CV(term=slots.publications, value=lambda row: ['PMID:' + p for p in row.get('feature_publications', [])]),
+    ),
+)
+
+
 proteins_schema = EntityBuilder(
+    molecular_form=lambda row: sequence_form(row.get('Sequence')),
     entity_type=Protein,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.UNIPROT, value=f('Entry')),
@@ -529,7 +743,7 @@ resource = Resource(
     proteins=Dataset(
         download=Download(
             url=UNIPROT_DATA_URL,
-            filename='uniprot_proteins_slim_9606_10090_10116.tsv.gz',
+            filename='uniprot_proteins_molecular_v1_9606_10090_10116.tsv.gz',
             subfolder='uniprot',
             large=True,
             encoding='utf-8',
@@ -537,7 +751,17 @@ resource = Resource(
             ext='gz',
         ),
         mapper=proteins_schema,
-        raw_parser=iter_tsv,
+        raw_parser=_protein_rows,
+    ),
+    molecular_features=Dataset(
+        download=Download(
+            url=UNIPROT_DATA_URL,
+            filename='uniprot_proteins_molecular_v1_9606_10090_10116.tsv.gz',
+            subfolder='uniprot', large=True, encoding='utf-8',
+            default_mode='r', ext='gz',
+        ),
+        mapper=catalogue_features_schema,
+        raw_parser=_catalogue_feature_rows,
     ),
     reference_id_translation=Dataset(
         download=Download(

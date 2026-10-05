@@ -26,7 +26,7 @@ CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE = int(
 )
 CHEMBL_DUCKDB_MEMORY = os.environ.get('OMNIPATH_CHEMBL_DUCKDB_MEMORY', '1500MB')
 
-CHEMBL_PARQUET_CACHE_VERSION = 7
+CHEMBL_PARQUET_CACHE_VERSION = 8
 CHEMBL_ACTIVITY_MIN_PCHEMBL = 5.0
 
 
@@ -48,10 +48,14 @@ DUCKDB_TABLES: dict[str, str] = {
     """,
     'assays': """
         SELECT
-            assay_id, tid, doc_id, chembl_id, description, assay_type,
+            assay_id, tid, doc_id, chembl_id, description, assay_type, variant_id,
             assay_tax_id, confidence_score, assay_category,
             assay_subcellular_fraction, assay_tissue, assay_cell_type
         FROM s.assays
+    """,
+    'variant_sequences': """
+        SELECT variant_id, mutation, accession, version, isoform, sequence
+        FROM s.variant_sequences
     """,
     'assay_parameters': """
         SELECT assay_id, standard_type, standard_value, standard_units
@@ -66,7 +70,7 @@ DUCKDB_TABLES: dict[str, str] = {
         FROM s.target_components
     """,
     'component_sequences': """
-        SELECT component_id, component_type, db_source, accession, description
+        SELECT component_id, component_type, db_source, accession, description, sequence
         FROM s.component_sequences
     """,
     'docs': """
@@ -150,10 +154,16 @@ PARQUET_QUERIES: dict[str, str] = {
         )
         SELECT
             a.*,
+            vs.accession AS variant_accession,
+            vs.version AS variant_version,
+            vs.isoform AS variant_isoform,
+            vs.mutation AS variant_mutation,
+            vs.sequence AS variant_sequence,
             t.chembl_id AS target_chembl_id,
             d.chembl_id AS document_chembl_id,
             apa.parameters
         FROM assays a
+        LEFT JOIN variant_sequences vs ON a.variant_id = vs.variant_id
         LEFT JOIN target_dictionary t ON a.tid = t.tid
         LEFT JOIN docs d ON a.doc_id = d.doc_id
         LEFT JOIN assay_params_agg apa ON a.assay_id = apa.assay_id
@@ -182,7 +192,8 @@ PARQUET_QUERIES: dict[str, str] = {
                 ELSE ''
             END) AS component_ensembl_accessions,
             GROUP_CONCAT(COALESCE(cs.component_type, '')) AS component_types,
-            GROUP_CONCAT(COALESCE(cs.description, '')) AS component_descriptions
+            GROUP_CONCAT(COALESCE(cs.description, '')) AS component_descriptions,
+            to_json(list(struct_pack(component_id := cs.component_id, component_type := cs.component_type, db_source := cs.db_source, accession := cs.accession, description := cs.description, sequence := cs.sequence)) FILTER (WHERE cs.component_id IS NOT NULL)) AS component_records
         FROM target_dictionary td
         LEFT JOIN target_components tc ON td.tid = tc.tid
         LEFT JOIN component_sequences cs ON tc.component_id = cs.component_id
@@ -302,6 +313,13 @@ PARQUET_QUERIES: dict[str, str] = {
             cs.standard_inchi,
             cs.standard_inchi_key,
             a.chembl_id AS assay_chembl_id,
+            a.description AS assay_description,
+            a.variant_id,
+            vs.accession AS variant_accession,
+            vs.version AS variant_version,
+            vs.isoform AS variant_isoform,
+            vs.mutation AS variant_mutation,
+            vs.sequence AS variant_sequence,
             a.assay_type,
             a.assay_tax_id,
             a.confidence_score,
@@ -333,6 +351,7 @@ PARQUET_QUERIES: dict[str, str] = {
         LEFT JOIN molecule_dictionary md ON act.molregno = md.molregno
         LEFT JOIN compound_structures cs ON act.molregno = cs.molregno
         LEFT JOIN assays a ON act.assay_id = a.assay_id
+        LEFT JOIN variant_sequences vs ON a.variant_id = vs.variant_id
         LEFT JOIN target_dictionary td ON a.tid = td.tid
         LEFT JOIN target_components_agg tca ON a.tid = tca.tid
         LEFT JOIN docs d ON act.doc_id = d.doc_id
@@ -406,6 +425,9 @@ def _duckdb_cache_compatible(duckdb_path: Path) -> bool:
     try:
         with duckdb.connect(str(duckdb_path), read_only=True) as con:
             con.execute('SELECT standard_units FROM activities LIMIT 0')
+            con.execute('SELECT variant_id FROM assays LIMIT 0')
+            con.execute('SELECT sequence FROM component_sequences LIMIT 0')
+            con.execute('SELECT mutation, accession, version, isoform, sequence FROM variant_sequences LIMIT 0')
         return True
     except duckdb.Error:
         return False
@@ -642,6 +664,11 @@ SQLITE_QUERIES: dict[str, str] = {
     'assays': """
         SELECT
             a.*,
+            vs.accession AS variant_accession,
+            vs.version AS variant_version,
+            vs.isoform AS variant_isoform,
+            vs.mutation AS variant_mutation,
+            vs.sequence AS variant_sequence,
             t.chembl_id AS target_chembl_id,
             d.chembl_id AS document_chembl_id,
             GROUP_CONCAT(
@@ -651,6 +678,7 @@ SQLITE_QUERIES: dict[str, str] = {
                 '; '
             ) AS parameters
         FROM assays a
+        LEFT JOIN variant_sequences vs ON a.variant_id = vs.variant_id
         LEFT JOIN target_dictionary t ON a.tid = t.tid
         LEFT JOIN docs d ON a.doc_id = d.doc_id
         LEFT JOIN assay_parameters ap ON a.assay_id = ap.assay_id
@@ -731,7 +759,8 @@ SQLITE_QUERIES: dict[str, str] = {
                 ELSE ''
             END) AS component_ensembl_accessions,
             GROUP_CONCAT(COALESCE(cs.component_type, '')) AS component_types,
-            GROUP_CONCAT(COALESCE(cs.description, '')) AS component_descriptions
+            GROUP_CONCAT(COALESCE(cs.description, '')) AS component_descriptions,
+            json_group_array(json_object('component_id', cs.component_id, 'component_type', cs.component_type, 'db_source', cs.db_source, 'accession', cs.accession, 'description', cs.description, 'sequence', cs.sequence)) AS component_records
         FROM target_dictionary td
         LEFT JOIN target_components tc ON td.tid = tc.tid
         LEFT JOIN component_sequences cs ON tc.component_id = cs.component_id
@@ -783,6 +812,13 @@ SQLITE_QUERIES: dict[str, str] = {
             cs.standard_inchi,
             cs.standard_inchi_key,
             a.chembl_id AS assay_chembl_id,
+            a.description AS assay_description,
+            a.variant_id,
+            vs.accession AS variant_accession,
+            vs.version AS variant_version,
+            vs.isoform AS variant_isoform,
+            vs.mutation AS variant_mutation,
+            vs.sequence AS variant_sequence,
             a.assay_type,
             a.assay_tax_id,
             a.confidence_score,
@@ -814,6 +850,7 @@ SQLITE_QUERIES: dict[str, str] = {
         LEFT JOIN molecule_dictionary md ON act.molregno = md.molregno
         LEFT JOIN compound_structures cs ON act.molregno = cs.molregno
         LEFT JOIN assays a ON act.assay_id = a.assay_id
+        LEFT JOIN variant_sequences vs ON a.variant_id = vs.variant_id
         LEFT JOIN target_dictionary td ON a.tid = td.tid
         LEFT JOIN target_components_agg tca ON a.tid = tca.tid
         LEFT JOIN docs d ON act.doc_id = d.doc_id

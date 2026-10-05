@@ -22,6 +22,7 @@ from rdflib.namespace import RDF
 
 from pypath.share.downloads import DATA_DIR
 from omnipath_core.molecular_forms import molecular_form_from_identifiers, normalize_molecular_form
+from pypath.inputs_v2._molecular_forms import combine_forms, sequence_form
 
 
 # BioPAX namespace
@@ -31,7 +32,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 12  # Includes occurrence molecular forms before feature flattening.
+_CACHE_VERSION = 13  # Includes occurrence molecular forms before feature flattening.
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
@@ -57,6 +58,8 @@ ENTITY_REFERENCE_TYPE_MAP = {
     'smallmoleculereference': 'chemical',
     'dnareference': 'dna',
     'rnareference': 'rna',
+    'rnaregionreference': 'rna',
+    'dnaregionreference': 'dna',
 }
 
 # EntityReference types to process
@@ -65,6 +68,8 @@ ENTITY_REFERENCE_TYPES = {
     BP.SmallMoleculeReference,
     BP.DnaReference,
     BP.RnaReference,
+    BP.RnaRegionReference,
+    BP.DnaRegionReference,
 }
 
 
@@ -185,6 +190,10 @@ def _extract_xrefs_from_props(
             xrefs.setdefault(key, []).append(id_str)
         elif 'uniprot' in db:
             xrefs.setdefault('uniprot', []).append(id_str)
+        elif db in {'refseq', 'refseq protein', 'refseq rna'}:
+            xrefs.setdefault('refseq', []).append(id_str)
+        elif db in {'ensembl', 'ensembl protein', 'ensembl transcript'}:
+            xrefs.setdefault('ensembl', []).append(id_str)
         elif 'chebi' in db:
             xrefs.setdefault('chebi', []).append(id_str)
         elif 'pubchem' in db or 'compound' in db:
@@ -221,7 +230,7 @@ def _extract_names_from_props(props: dict, bp_ns: Namespace) -> dict[str, str | 
 
 _PARTICIPANT_FIELDS = [
     'source_physical_entity', 'compartment', 'modification',
-    'molecular_form',
+    'molecular_form', 'feature_context', 'refseq', 'ensembl',
     'role',
     'entity_type',
     'display_name',
@@ -238,6 +247,7 @@ _PARTICIPANT_FIELDS = [
 ]
 
 _CONTROLLER_MEMBER_FIELDS = [
+    'molecular_form', 'feature_context', 'refseq', 'ensembl', 'source_physical_entity',
     'entity_type',
     'display_name',
     'synonyms',
@@ -262,7 +272,7 @@ def _flatten_participants(participants: list[dict], prefix: str = 'participant')
         items = []
         for participant in participants:
             value = participant.get(field, '')
-            if field == 'molecular_form' and value:
+            if field in {'molecular_form', 'feature_context'} and value:
                 # Preserve form structure through the source's tabular transport.
                 # Escape the participant delimiter even in source descriptions.
                 value = json.dumps(value, sort_keys=True).replace('|', '\\u007c')
@@ -307,6 +317,8 @@ def _flatten_controller_members(members: list[dict], prefix: str = 'controller_m
         items = []
         for member in members:
             value = member.get(field, '')
+            if field in {'molecular_form', 'feature_context'} and value:
+                value = json.dumps(value, sort_keys=True).replace('|', '\\u007c')
             if value in (None, ''):
                 value = _MISSING_VALUE
             items.append(str(value))
@@ -434,11 +446,11 @@ def _build_degradation_index(
             if pe and coeff:
                 stoich_map[str(pe[0])] = str(coeff[0])
 
-        for mol in props.get(BP.left, []):
+        for mol in [*props.get(BP.left, []), *props.get(BP.template, [])]:
             participant = _extract_participant_data(
                 g,
                 mol,
-                'reactant',
+                'template' if mol in props.get(BP.template, []) else 'reactant',
                 entity_reference_index,
                 xref_cache,
                 stoich_map,
@@ -502,6 +514,10 @@ def _load_entity_reference_index(g: Graph, xref_cache: dict[str, dict]) -> dict[
         for go_id in xrefs.get('go', []):
             identifiers.append(Identifier(type='go', value=go_id))
 
+        for namespace in ('refseq', 'ensembl'):
+            for accession in xrefs.get(namespace, []):
+                identifiers.append(Identifier(type=namespace, value=accession))
+
         annotations = []
         for pubmed_id in xrefs.get('pubmed', []):
             annotations.append(Annotation(term='publications', value=pubmed_id))
@@ -519,6 +535,7 @@ def _load_entity_reference_index(g: Graph, xref_cache: dict[str, dict]) -> dict[
             'primary_name': names.get('display_name', ''),
             'reactome_identifier': ';'.join(xrefs.get('reactome_stable_id', [])),
             'entity': entity,
+            'sequence': str(next(g.objects(s, BP.sequence), '')),
         }
 
     return reference_index
@@ -536,10 +553,17 @@ def _participant_molecular_form(g, molecule_uri, participant):
     form = molecular_form_from_identifiers([
         {'ns': 'uniprot', 'id': accession}
         for accession in str(participant.get('uniprot') or '').split(';') if accession
+    ] + [
+        {'ns': namespace, 'id': accession}
+        for namespace in ('refseq', 'ensembl')
+        for accession in str(participant.get(namespace) or '').split(';') if accession
     ]) or {}
+    form = combine_forms(form, sequence_form(participant.get('sequence'),
+        system='protein' if source_type == 'protein' else 'transcript' if source_type == 'rna' else 'genomic')) or {}
     sequences = form.get('sequence_identifiers') or []
+    explicit_sequence = sequence_form(participant.get('sequence'), system='protein' if source_type == 'protein' else 'transcript' if source_type == 'rna' else 'genomic')
     coordinate = {
-        'identifier': sequences[0] if len(sequences) == 1 else None,
+        'identifier': explicit_sequence['sequence_identifiers'][0] if explicit_sequence else sequences[0] if len(sequences) == 1 else None,
         'coordinate_system': 'protein' if source_type == 'protein' else 'transcript' if source_type == 'rna' else 'genomic',
         'position_base': 1,
     }
@@ -597,6 +621,93 @@ def _participant_molecular_form(g, molecule_uri, participant):
     return normalize_molecular_form(form, allow_resolved=False)
 
 
+def _attach_molecular_context(g, uri, participant, reference_index, xref_cache):
+    """Keep one physical entity's form and uninterpreted source feature context."""
+    props = _get_entity_props(g, uri)
+    xrefs = _extract_xrefs_from_props(props, xref_cache, BP)
+    references = [
+        reference_index.get(str(ref), {})
+        for ref in props.get(BP.entityReference, [])
+    ]
+    for namespace in ('refseq', 'ensembl'):
+        values = list(xrefs.get(namespace, []))
+        for reference in references:
+            for identifier in (
+                getattr(reference.get('entity'), 'identifiers', None) or []
+            ):
+                if (
+                    identifier.type == namespace
+                    and identifier.value not in values
+                ):
+                    values.append(identifier.value)
+        participant[namespace] = ';'.join(values)
+    sequences = list(
+        dict.fromkeys(
+            reference.get('sequence')
+            for reference in references
+            if reference.get('sequence')
+        )
+    )
+    participant['sequence'] = sequences[0] if len(sequences) == 1 else ''
+    participant['source_physical_entity'] = str(uri)
+    context = []
+    for predicate, present in ((BP.feature, True), (BP.notFeature, False)):
+        for feature in props.get(predicate, []):
+            feature_props = _get_entity_props(g, feature)
+            context.append(
+                {
+                    'source_feature': str(feature),
+                    'present': present,
+                    'properties': {
+                        str(key): [str(value) for value in values]
+                        for key, values in feature_props.items()
+                    },
+                    'locations': [
+                        {
+                            'properties': {
+                                str(key): [str(value) for value in values]
+                                for key, values in _get_entity_props(
+                                    g, location
+                                ).items()
+                            },
+                            'boundaries': [
+                                {
+                                    str(key): [str(value) for value in values]
+                                    for key, values in _get_entity_props(
+                                        g, boundary
+                                    ).items()
+                                }
+                                for predicate in (
+                                    BP.sequenceIntervalBegin,
+                                    BP.sequenceIntervalEnd,
+                                )
+                                for boundary in g.objects(location, predicate)
+                            ],
+                        }
+                        for location in feature_props.get(
+                            BP.featureLocation, []
+                        )
+                    ],
+                    'modification_types': [
+                        {
+                            str(key): [str(value) for value in values]
+                            for key, values in _get_entity_props(
+                                g, vocabulary
+                            ).items()
+                        }
+                        for vocabulary in feature_props.get(
+                            BP.modificationType, []
+                        )
+                    ],
+                }
+            )
+    participant['feature_context'] = context or None
+    participant['molecular_form'] = _participant_molecular_form(
+        g, uri, participant
+    )
+    return participant
+
+
 def _extract_participant_data(g, molecule_uri, role, entity_reference_index, xref_cache, stoich_map):
     """Preserve physical-state context independently of the reference identity."""
     result = _extract_participant_core(g, molecule_uri, role, entity_reference_index, xref_cache, stoich_map)
@@ -616,7 +727,7 @@ def _extract_participant_data(g, molecule_uri, role, entity_reference_index, xre
         participant['source_physical_entity'] = str(molecule_uri)
         participant['compartment'] = '; '.join(compartments)
         participant['modification'] = '; '.join(features)
-        participant['molecular_form'] = _participant_molecular_form(g, molecule_uri, participant)
+        _attach_molecular_context(g, molecule_uri, participant, entity_reference_index, xref_cache)
     return result
 
 
@@ -696,10 +807,9 @@ def _extract_participant_core(
         return participant
 
     elif members:
-        if entity_type == 'protein':
-            family_type = 'protein_family'
-        else:
-            family_type = entity_type
+        # memberPhysicalEntity denotes alternatives, not a physical assembly
+        # or an evolutionary protein family. The children keep their own types.
+        family_type = 'complex' if entity_type == 'complex' else 'physical_entity'
 
         family = {
             'role': role,
@@ -777,6 +887,7 @@ def _extract_participant_core(
                     member_data['kegg'] = ';'.join(all_kegg)
                     member_data['go'] = ';'.join(all_go)
 
+            _attach_molecular_context(g, member_uri, member_data, entity_reference_index, xref_cache)
             member_list.append(member_data)
 
         family['members'] = member_list
@@ -843,6 +954,10 @@ def _iterate_reactions(
     reaction_targets = {
         BP.BiochemicalReaction: 'reaction',
         BP.Degradation: 'degradation',
+        BP.Transport: 'reaction',
+        BP.TransportWithBiochemicalReaction: 'reaction',
+        BP.ComplexAssembly: 'reaction',
+        BP.TemplateReaction: 'reaction',
     }
 
     count = 0
@@ -874,7 +989,7 @@ def _iterate_reactions(
                 stoich_map[str(pe[0])] = str(coeff[0])
 
         reactants = []
-        for mol in props.get(BP.left, []):
+        for mol in [*props.get(BP.left, []), *props.get(BP.template, [])]:
             participant = _extract_participant_data(
                 g,
                 mol,
@@ -891,7 +1006,7 @@ def _iterate_reactions(
                 reactants.append(participant)
 
         products = []
-        for mol in props.get(BP.right, []):
+        for mol in [*props.get(BP.right, []), *props.get(BP.product, [])]:
             participant = _extract_participant_data(
                 g,
                 mol,
@@ -907,8 +1022,7 @@ def _iterate_reactions(
                 participant.pop('is_family', None)
                 products.append(participant)
 
-        if _is_transcription_or_translation(reactants, products):
-            continue
+        # Keep explicitly reported transcription/translation participants too.
 
         pathway_term_accession = _pathway_term_accessions(pathway_index, reaction_uri)
 
@@ -928,6 +1042,7 @@ def _iterate_reactions(
             'pubmed': ';'.join(xrefs.get('pubmed', [])),
             'ec_number': ec_number,
             'direction': direction,
+            'template_direction': str(next(iter(props.get(BP.templateDirection, [])), '')),
             'pathway_term_accession': pathway_term_accession,
             **participant_data,
         }
@@ -1100,9 +1215,7 @@ def _classify_group_controller_entity_type(
     because Reactome memberPhysicalEntity sets often mean alternatives / sets /
     grouped active forms, not a curated protein family in the biological sense.
     """
-    member_type_set = set(member_types)
-
-    if controller_type == 'complex' or 'complex' in member_type_set:
+    if controller_type == 'complex':
         return 'complex'
 
     return 'physical_entity'
@@ -1111,6 +1224,29 @@ def _classify_group_controller_entity_type(
 def _causal_statement_for_control(control_type_val: str, is_degradation: bool = False) -> str | None:
     """Preserve source control type; the resource module chooses biological semantics."""
     return control_type_val or None
+
+
+def _controller_set_info(control, controllers):
+    return {
+        'entity_type': 'logical_control_set',
+        'display_name': 'Controllers of ' + str(control),
+        'source_physical_entity': str(control) + '#controllers',
+        'control_set': {
+            'source_control': str(control),
+            'logic': 'AND',
+            'controllers': [str(uri) for uri in controllers],
+        },
+    }
+
+
+def _controller_set_members(g, controllers, reference_index, xref_cache):
+    members = []
+    for controller in controllers:
+        values = _extract_participant_data(
+            g, controller, 'member', reference_index, xref_cache, {}
+        )
+        members.extend(values if isinstance(values, list) else [values])
+    return members
 
 
 def _iterate_controls(
@@ -1151,7 +1287,7 @@ def _iterate_controls(
         controller_info = {}
         controller_members: list[dict[str, str]] = []
         controllers = props.get(BP.controller, [])
-        if controllers:
+        if len(controllers) == 1:
             c_uri = controllers[0]
             c_props = _get_entity_props(g, c_uri)
             c_names = _extract_names_from_props(c_props, BP)
@@ -1186,7 +1322,7 @@ def _iterate_controls(
                 controller_refs_to_merge.append(str(c_refs[0]))
 
             if not controller_refs_to_merge:
-                c_members = c_props.get(BP.memberPhysicalEntity, [])
+                c_members = list(dict.fromkeys([*c_props.get(BP.memberPhysicalEntity, []), *c_props.get(BP.component, [])]))
                 has_member_physical_entities = bool(c_members)
                 for member_uri in c_members:
                     member_props = _get_entity_props(g, member_uri)
@@ -1251,6 +1387,7 @@ def _iterate_controls(
                             member_data['kegg'] = ';'.join(all_kegg)
                             member_data['go'] = ';'.join(all_go)
 
+                    _attach_molecular_context(g, member_uri, member_data, entity_reference_index, xref_cache)
                     controller_members.append(member_data)
 
             if controller_refs_to_merge:
@@ -1306,124 +1443,134 @@ def _iterate_controls(
                 controller_info['kegg'] = ';'.join(all_kegg)
                 controller_info['go'] = ';'.join(all_go)
 
-        controlled_info = {}
-        is_degradation_controlled = False
-        controlled_list = props.get(BP.controlled, [])
-        if controlled_list:
-            cd_uri = controlled_list[0]
-            cd_uri_str = str(cd_uri)
-            cd_props = _get_entity_props(g, cd_uri)
-            cd_names = _extract_names_from_props(cd_props, BP)
-            cd_xrefs = _extract_xrefs_from_props(cd_props, xref_cache, BP)
-            cd_types = cd_props.get(RDF.type, [])
-            cd_type_str = str(cd_types[0]).split('#')[-1] if cd_types else ''
-            cd_type_str_lower = cd_type_str.lower()
+        if len(controllers) == 1:
+            _attach_molecular_context(g, c_uri, controller_info, entity_reference_index, xref_cache)
+        elif len(controllers) > 1:
+            controller_info = _controller_set_info(s, controllers)
+            controller_members = _controller_set_members(g, controllers, entity_reference_index, xref_cache)
 
-            if cd_type_str_lower == 'degradation':
-                # Preserve the controlled process, not an inferred effect on its substrate.
-                is_degradation_controlled = True
-                controlled_info = {
-                    'role': 'controlled',
-                    'display_name': cd_names.get('display_name', ''),
-                    'entity_type': 'degradation',
-                    'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
-                    'pathway_term_accession': pathway_term_accession,
-                }
-            elif cd_type_str_lower == 'biochemicalreaction':
-                controlled_entity_type = 'reaction'
-                controlled_info = {
-                    'role': 'controlled',
-                    'display_name': cd_names.get('display_name', ''),
-                    'entity_type': controlled_entity_type,
-                    'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
-                    'uniprot': '',
-                    'chebi': '',
-                    'synonyms': '',
-                    'pubchem_compound': '',
-                    'kegg': '',
-                    'go': '',
-                    'ncbi_tax_id': '',
-                    'stoichiometry': '',
-                    'pathway_term_accession': pathway_term_accession,
-                }
-            elif cd_type_str_lower == 'pathway':
-                controlled_entity_type = 'pathway'
-                controlled_info = {
-                    'role': 'controlled',
-                    'display_name': cd_names.get('display_name', ''),
-                    'entity_type': controlled_entity_type,
-                    'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
-                    'uniprot': '',
-                    'chebi': '',
-                    'synonyms': '',
-                    'pubchem_compound': '',
-                    'kegg': '',
-                    'go': '',
-                    'ncbi_tax_id': '',
-                    'stoichiometry': '',
-                    'pathway_term_accession': pathway_term_accession,
-                }
-            else:
-                controlled_entity_type = 'interaction'
-                controlled_info = {
-                    'role': 'controlled',
-                    'display_name': cd_names.get('display_name', ''),
-                    'entity_type': controlled_entity_type,
-                    'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
-                    'uniprot': '',
-                    'chebi': '',
-                    'synonyms': '',
-                    'pubchem_compound': '',
-                    'kegg': '',
-                    'go': '',
-                    'ncbi_tax_id': '',
-                    'stoichiometry': '',
-                    'pathway_term_accession': pathway_term_accession,
-                }
+        for cd_uri in props.get(BP.controlled, []) or [None]:
+            controlled_info = {}
+            is_degradation_controlled = False
+            if cd_uri is not None:
+                cd_uri_str = str(cd_uri)
+                cd_props = _get_entity_props(g, cd_uri)
+                cd_names = _extract_names_from_props(cd_props, BP)
+                cd_xrefs = _extract_xrefs_from_props(cd_props, xref_cache, BP)
+                cd_types = cd_props.get(RDF.type, [])
+                cd_type_str = str(cd_types[0]).split('#')[-1] if cd_types else ''
+                cd_type_str_lower = cd_type_str.lower()
 
-        control_display_name = names.get('display_name', '')
-        if not control_display_name and controller_info.get('display_name'):
-            control_display_name = f"{control_type_cls} by {controller_info['display_name']}"
+                if cd_type_str_lower == 'degradation':
+                    # Preserve the controlled process, not an inferred effect on its substrate.
+                    is_degradation_controlled = True
+                    controlled_info = {
+                        'role': 'controlled',
+                        'display_name': cd_names.get('display_name', ''),
+                        'entity_type': 'degradation',
+                        'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                        'pathway_term_accession': pathway_term_accession,
+                    }
+                elif cd_type_str_lower in {'biochemicalreaction', 'transport', 'transportwithbiochemicalreaction', 'complexassembly', 'templatereaction'}:
+                    controlled_entity_type = 'reaction'
+                    controlled_info = {
+                        'role': 'controlled',
+                        'display_name': cd_names.get('display_name', ''),
+                        'entity_type': controlled_entity_type,
+                        'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                        'uniprot': '',
+                        'chebi': '',
+                        'synonyms': '',
+                        'pubchem_compound': '',
+                        'kegg': '',
+                        'go': '',
+                        'ncbi_tax_id': '',
+                        'stoichiometry': '',
+                        'pathway_term_accession': pathway_term_accession,
+                    }
+                elif cd_type_str_lower == 'pathway':
+                    controlled_entity_type = 'pathway'
+                    controlled_info = {
+                        'role': 'controlled',
+                        'display_name': cd_names.get('display_name', ''),
+                        'entity_type': controlled_entity_type,
+                        'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                        'uniprot': '',
+                        'chebi': '',
+                        'synonyms': '',
+                        'pubchem_compound': '',
+                        'kegg': '',
+                        'go': '',
+                        'ncbi_tax_id': '',
+                        'stoichiometry': '',
+                        'pathway_term_accession': pathway_term_accession,
+                    }
+                else:
+                    controlled_entity_type = 'interaction'
+                    controlled_info = {
+                        'role': 'controlled',
+                        'display_name': cd_names.get('display_name', ''),
+                        'entity_type': controlled_entity_type,
+                        'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                        'uniprot': '',
+                        'chebi': '',
+                        'synonyms': '',
+                        'pubchem_compound': '',
+                        'kegg': '',
+                        'go': '',
+                        'ncbi_tax_id': '',
+                        'stoichiometry': '',
+                        'pathway_term_accession': pathway_term_accession,
+                    }
 
-        yield {
-            'uri': str(s),
-            'control_class': control_type_cls,
-            'entity_type': entity_type_cv,
-            'display_name': control_display_name,
-            'reactome_stable_id': ';'.join(xrefs.get('reactome_stable_id', [])),
-            'reactome_id': ';'.join(xrefs.get('reactome_id', [])),
-            'go': ';'.join(xrefs.get('go', [])),
-            'control_type': control_type_val,
-            'causal_statement': _causal_statement_for_control(
-                control_type_val,
-                is_degradation=is_degradation_controlled,
-            ) or '',
-            'pathway_term_accession': pathway_term_accession,
-            'controller_entity_type': controller_info.get('entity_type', ''),
-            'controller_display_name': controller_info.get('display_name', ''),
-            'controller_synonyms': controller_info.get('synonyms', ''),
-            'controller_reactome_stable_id': controller_info.get('reactome_stable_id', ''),
-            'controller_uniprot': controller_info.get('uniprot', ''),
-            'controller_chebi': controller_info.get('chebi', ''),
-            'controller_pubchem_compound': controller_info.get('pubchem_compound', ''),
-            'controller_kegg': controller_info.get('kegg', ''),
-            'controller_go': controller_info.get('go', ''),
-            'controller_ncbi_tax_id': controller_info.get('ncbi_tax_id', ''),
-            'controller_pathway_term_accession': controller_info.get('pathway_term_accession', ''),
-            'controlled_entity_type': controlled_info.get('entity_type', ''),
-            'controlled_display_name': controlled_info.get('display_name', ''),
-            'controlled_synonyms': controlled_info.get('synonyms', ''),
-            'controlled_reactome_stable_id': controlled_info.get('reactome_stable_id', ''),
-            'controlled_uniprot': controlled_info.get('uniprot', ''),
-            'controlled_chebi': controlled_info.get('chebi', ''),
-            'controlled_pubchem_compound': controlled_info.get('pubchem_compound', ''),
-            'controlled_kegg': controlled_info.get('kegg', ''),
-            'controlled_go': controlled_info.get('go', ''),
-            'controlled_ncbi_tax_id': controlled_info.get('ncbi_tax_id', ''),
-            'controlled_pathway_term_accession': controlled_info.get('pathway_term_accession', ''),
-            **_flatten_controller_members(controller_members, prefix='controller_member'),
-        }
-        count += 1
+            control_display_name = names.get('display_name', '')
+            if not control_display_name and controller_info.get('display_name'):
+                control_display_name = f"{control_type_cls} by {controller_info['display_name']}"
+
+            yield {
+                'controlled_source_uri': str(cd_uri) if cd_uri is not None else '',
+                'uri': str(s),
+                'control_class': control_type_cls,
+                'entity_type': entity_type_cv,
+                'display_name': control_display_name,
+                'reactome_stable_id': ';'.join(xrefs.get('reactome_stable_id', [])),
+                'reactome_id': ';'.join(xrefs.get('reactome_id', [])),
+                'go': ';'.join(xrefs.get('go', [])),
+                'control_type': control_type_val,
+                'causal_statement': _causal_statement_for_control(
+                    control_type_val,
+                    is_degradation=is_degradation_controlled,
+                ) or '',
+                'pathway_term_accession': pathway_term_accession,
+                **{f'controller_{field}': (json.dumps(controller_info.get(field), sort_keys=True).replace('|', '\\u007c')
+                                          if field in {'molecular_form', 'feature_context', 'control_set'} and controller_info.get(field)
+                                          else controller_info.get(field, ''))
+                   for field in ('molecular_form', 'feature_context', 'refseq', 'ensembl', 'source_physical_entity', 'control_set')},
+                'controller_entity_type': controller_info.get('entity_type', ''),
+                'controller_display_name': controller_info.get('display_name', ''),
+                'controller_synonyms': controller_info.get('synonyms', ''),
+                'controller_reactome_stable_id': controller_info.get('reactome_stable_id', ''),
+                'controller_uniprot': controller_info.get('uniprot', ''),
+                'controller_chebi': controller_info.get('chebi', ''),
+                'controller_pubchem_compound': controller_info.get('pubchem_compound', ''),
+                'controller_kegg': controller_info.get('kegg', ''),
+                'controller_go': controller_info.get('go', ''),
+                'controller_ncbi_tax_id': controller_info.get('ncbi_tax_id', ''),
+                'controller_pathway_term_accession': controller_info.get('pathway_term_accession', ''),
+                'controlled_entity_type': controlled_info.get('entity_type', ''),
+                'controlled_display_name': controlled_info.get('display_name', ''),
+                'controlled_synonyms': controlled_info.get('synonyms', ''),
+                'controlled_reactome_stable_id': controlled_info.get('reactome_stable_id', ''),
+                'controlled_uniprot': controlled_info.get('uniprot', ''),
+                'controlled_chebi': controlled_info.get('chebi', ''),
+                'controlled_pubchem_compound': controlled_info.get('pubchem_compound', ''),
+                'controlled_kegg': controlled_info.get('kegg', ''),
+                'controlled_go': controlled_info.get('go', ''),
+                'controlled_ncbi_tax_id': controlled_info.get('ncbi_tax_id', ''),
+                'controlled_pathway_term_accession': controlled_info.get('pathway_term_accession', ''),
+                **_flatten_controller_members(controller_members, prefix='controller_member'),
+            }
+            count += 1
 
 
 def _iterate_control_groups(
@@ -1459,6 +1606,8 @@ def _iterate_control_groups(
             str(record.get('controller_display_name', '')),
             str(record.get('controller_reactome_stable_id', '')),
             str(record.get('controller_uniprot', '')),
+            str(record.get('controller_source_physical_entity', '')),
+            str(record.get('controller_member_molecular_form', '')),
         )
         if key in seen:
             continue
@@ -1468,6 +1617,8 @@ def _iterate_control_groups(
             break
 
         yield {
+            **{key: value for key, value in record.items()
+               if key.startswith('controller_')},
             'controller_entity_type': record.get('controller_entity_type', ''),
             'controller_display_name': record.get('controller_display_name', ''),
             'controller_synonyms': record.get('controller_synonyms', ''),
@@ -1499,13 +1650,80 @@ def _iterate_control_groups(
 # Main Parser Function
 # --------------------------------------------------------------------------- #
 
+def _iterate_physical_groups(g, xref_cache, reference_index, max_records=None):
+    """Preserve member/component forms even for groups outside control records."""
+    for control in dict.fromkeys(g.subjects(BP.controller, None)):
+        controllers = list(g.objects(control, BP.controller))
+        if len(controllers) > 1:
+            info = _controller_set_info(control, controllers)
+            yield {
+                **{
+                    'controller_' + key: value
+                    for key, value in info.items()
+                    if key != 'control_set'
+                },
+                'controller_control_set': json.dumps(
+                    info['control_set'], sort_keys=True
+                ),
+                **_flatten_controller_members(
+                    _controller_set_members(
+                        g, controllers, reference_index, xref_cache
+                    )
+                ),
+            }
+    count = 0
+    uris = dict.fromkeys(
+        [
+            *g.subjects(BP.memberPhysicalEntity, None),
+            *g.subjects(BP.component, None),
+        ]
+    )
+    for uri in uris:
+        if max_records is not None and count >= max_records:
+            return
+        props = _get_entity_props(g, uri)
+        xrefs = _extract_xrefs_from_props(props, xref_cache, BP)
+        names = _extract_names_from_props(props, BP)
+        members = []
+        for member in dict.fromkeys(
+            [
+                *props.get(BP.memberPhysicalEntity, []),
+                *props.get(BP.component, []),
+            ]
+        ):
+            values = _extract_participant_data(
+                g, member, 'member', reference_index, xref_cache, {}
+            )
+            members.extend(values if isinstance(values, list) else [values])
+        root = _extract_participant_data(
+            g, uri, 'member', reference_index, xref_cache, {}
+        )
+        yield {
+            'controller_feature_context': json.dumps(
+                root.get('feature_context'), sort_keys=True
+            )
+            if root.get('feature_context')
+            else '',
+            'controller_entity_type': 'complex'
+            if BP.Complex in props.get(RDF.type, [])
+            else 'physical_entity',
+            'controller_reactome_stable_id': ';'.join(
+                xrefs.get('reactome_stable_id', [])
+            ),
+            'controller_display_name': names.get('display_name', ''),
+            'controller_source_physical_entity': str(uri),
+            **_flatten_controller_members(members),
+        }
+        count += 1
+
+
 def _ensure_all_caches_populated(
     opener,
     species: str = 'Homo_sapiens',
     force_refresh: bool = False,
 ) -> bool:
     """Ensure all data types are cached."""
-    data_types = ['reactions', 'pathways', 'controls', 'control_groups']
+    data_types = ['reactions', 'pathways', 'controls', 'control_groups', 'physical_groups']
 
     if not force_refresh:
         all_cached = all(_load_cached_data(dt) is not None for dt in data_types)
@@ -1540,6 +1758,10 @@ def _ensure_all_caches_populated(
     if _load_cached_data('control_groups', force_refresh) is None:
         data = list(_iterate_control_groups(g, xref_cache, ref_index, pathway_index, max_records=None))
         _save_cached_data('control_groups', data)
+
+    if _load_cached_data('physical_groups', force_refresh) is None:
+        data = list(_iterate_physical_groups(g, xref_cache, ref_index))
+        _save_cached_data('physical_groups', data)
 
     return True
 
