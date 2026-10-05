@@ -54,6 +54,13 @@ Inputs are modeled individually; do not add a migration adapter.
    context (see README); otherwise preserve them in parsed evidence payloads and document that they are not exposed
    as serving annotations. Do not turn them into labeled description strings or mint
    an OmniPath term merely because an upstream label looks convenient.
+7. Ontology loaders (`ontology_term_to_entity`) emit only current terms: an
+   obsolete term produces no entity and no hierarchy edges. Earlier CV-based
+   inputs emitted obsolete terms with an `is_obsolete` flag; that is intentionally
+   not carried over. Consequence: an annotation in another resource that still
+   cites an obsolete GO/HPO/MONDO/EC/ChemOnt term keeps its CURIE but has no
+   ontology name, parents or replacement link. `replaced_by`/`consider` hints are
+   not used to redirect such references; doing so would need a reviewed mapping.
 
 Examples:
 

@@ -4,6 +4,12 @@ This module provides a declarative framework for downloading, parsing, and norma
 
 Read [Biolink modeling conventions](BIOLINK_MODELING.md) before changing an input module.
 
+`inputs_v2` needs the `inputs-v2` extra (`pypath-omnipath[inputs-v2]`), which adds
+`biolink-model`, `polars` and `omnipath-core`. `omnipath-core` is not on PyPI yet:
+it lives in the [omnipath-build](https://github.com/saezlab/omnipath-build)
+superproject (`packages/core`), which contains pypath as its `pypath` submodule, and
+uv resolves it from there (`../packages/core`). The rest of pypath installs without it.
+
 ## Overview
 
 The `inputs_v2` system replaces the legacy input modules with a composable, declarative approach. Each data source is defined as a **Resource** containing one or more **Datasets**, which combine:

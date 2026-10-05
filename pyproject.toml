@@ -51,8 +51,6 @@ keywords = [
 ]
 dependencies = [
     "beautifulsoup4",
-    "biolink-model==4.4.4",
-    "omnipath-core>=0.1.0,<0.2",
     "cachedir>=0.1.2",
     "certifi>=2023.7.22",
     "cffi>=1.17.0",
@@ -65,7 +63,6 @@ dependencies = [
     "numpy",
     "openpyxl",
     "pandas",
-    "polars",
     "pkg-infra>=0.1.1",
     "pypath-common>=0.2.6",
     "psutil",
@@ -90,6 +87,8 @@ dependencies = [
 
 [project.optional-dependencies]
 curl = ["pycurl>=7.45.3"]
+# pypath.inputs_v2 (Parquet migration) needs the shared OmniPath contracts.
+inputs-v2 = ["biolink-model==4.4.4", "omnipath-core>=0.1.0,<0.2", "polars"]
 vis = ["matplotlib"]
 graph = ["python-igraph"]
 metabo = ["openbabel", "rdkit", "epam.indigo"]
@@ -230,3 +229,7 @@ section-order = [
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+[tool.uv.sources]
+# omnipath-core is developed in the omnipath-build superproject (packages/core),
+# which contains this repository as its `pypath` submodule.
+omnipath-core = { path = "../packages/core", editable = true }

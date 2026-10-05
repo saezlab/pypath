@@ -220,7 +220,10 @@ def test_guidetopharma_group_accessions_do_not_alias_components(
 
 
 def test_bindingdb_download_does_not_use_logical_dataset_as_archive_name():
+    import inspect
     from pypath.inputs_v2.bindingdb import _bindingdb_url, _bindingdb_filename
-    assert _bindingdb_filename(dataset='interactions') == 'BindingDB_All_202605_tsv.zip'
-    assert _bindingdb_url(dataset='interactions').endswith('/BindingDB_All_202605_tsv.zip')
-    assert _bindingdb_filename(bindingdb_subset='Articles', dataset='interactions') == 'BindingDB_Articles_202605_tsv.zip'
+    # The archive is named by the pinned release, never by the logical dataset.
+    release = inspect.signature(_bindingdb_filename).parameters['bindingdb_release'].default
+    assert _bindingdb_filename(dataset='interactions') == f'BindingDB_All_{release}_tsv.zip'
+    assert _bindingdb_url(dataset='interactions').endswith(f'/BindingDB_All_{release}_tsv.zip')
+    assert _bindingdb_filename(bindingdb_subset='Articles', dataset='interactions') == f'BindingDB_Articles_{release}_tsv.zip'
