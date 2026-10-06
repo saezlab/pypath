@@ -520,9 +520,7 @@ resource = Resource(
         download=download,
         mapper=activities_schema,
         raw_parser=partial(
-            activities_parser,
-    assays_parser,
-    targets_parser, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH
+            activities_parser, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH
         ),
     ),
     mechanisms=Dataset(
