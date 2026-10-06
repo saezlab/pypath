@@ -192,6 +192,25 @@ _legacy_targets_schema = EntityBuilder(
     entity_type=f('target_type', map='target_type'),
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.CHEMBL_TARGET, value=f('chembl_id')),
+        # A single-protein target is that protein: give it the component
+        # accessions, as activity targets do, so it resolves like one.
+        CV(
+            term=Namespace.UNIPROT,
+            value=lambda row: _target_component_values(
+                row, 'component_uniprot_accessions'
+            ),
+        ),
+        CV(
+            term=lambda row: [
+                _ensembl_namespace(v)
+                for v in _target_component_values(
+                    row, 'component_ensembl_accessions'
+                )
+            ],
+            value=lambda row: _target_component_values(
+                row, 'component_ensembl_accessions'
+            ),
+        ),
         CV(term=Namespace.NAME, value=f('pref_name')),
     ),
     annotations=AnnotationsBuilder(

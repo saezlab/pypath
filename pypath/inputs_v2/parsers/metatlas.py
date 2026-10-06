@@ -46,6 +46,14 @@ _METABOLITE_XREF_URL = (
     'https://raw.githubusercontent.com/SysBioChalmers/Human-GEM/main/model/'
     'metabolites.tsv'
 )
+_REACTION_XREF_URL = (
+    'https://raw.githubusercontent.com/SysBioChalmers/Human-GEM/main/model/'
+    'reactions.tsv'
+)
+# Cross-references copied from metabolites onto reaction participants.
+_MEMBER_XREFS = (
+    'chebi', 'hmdb', 'pubchem_compound', 'lipidmaps', 'kegg_compound', 'bigg', 'metanetx',
+)
 
 _RE_BROKEN_QUOTES = re.compile(
     r'^(\s*- \w+: )'
@@ -152,7 +160,57 @@ def _metabolite_xref_row(row: dict[str, str]) -> dict[str, str]:
         'hmdb': _first_xref(row.get('metHMDBID'), r'^HMDB\d+$'),
         'pubchem_compound': _first_xref(row.get('metPubChemID'), r'^\d+$'),
         'lipidmaps': _first_xref(row.get('metLipidMapsID'), r'^LM[A-Z0-9]+$'),
+        'kegg_compound': _first_xref(row.get('metKEGGID'), r'^C\d{5}$'),
+        'bigg': _first_xref(row.get('metBiGGID'), r'^[A-Za-z0-9_]+$'),
+        'metanetx': _first_xref(row.get('metMetaNetXID'), r'^MNXM\w+$'),
         'smiles': (row.get('metSmiles') or '').strip(),
+    }
+
+
+@cache
+def _reaction_xrefs() -> dict[str, dict[str, str]]:
+    """Human-GEM's own reaction cross-references: MetaNetX has no Human-GEM namespace."""
+    if path := os.environ.get('OMNIPATH_HUMAN_GEM_REACTION_XREFS'):
+        with Path(path).open() as handle:
+            return _parse_reaction_xrefs(handle)
+    opener = download_and_open(
+        url = _REACTION_XREF_URL,
+        filename = 'Human-GEM-reactions.tsv',
+        ext = 'tsv',
+        subfolder = 'metatlas',
+        large = True,
+        default_mode = 'r',
+    )
+
+    try:
+        return _parse_reaction_xrefs(opener.result)
+    finally:
+        opener.close()
+
+
+def _parse_reaction_xrefs(handle):
+    xrefs: dict[str, dict[str, str]] = {}
+    for row in csv.DictReader(handle, delimiter='\t'):
+        reaction_id = (row.get('rxns') or '').strip()
+        if reaction_id:
+            xrefs[reaction_id] = {
+                key: value for key, value in _reaction_xref_row(row).items() if value
+            }
+    if not xrefs:
+        raise ValueError('Human-GEM reaction cross-reference table is empty')
+    return xrefs
+
+
+def _reaction_xref_row(row: dict[str, str]) -> dict[str, str]:
+    # The Rhea master reaction is the identity; a directional ID is the fallback.
+    rhea = _first_xref(row.get('rxnRheaMasterID'), r'^(?:RHEA:)?\d+$') or _first_xref(
+        row.get('rxnRheaID'), r'^(?:RHEA:)?\d+$'
+    )
+    return {
+        'rhea': rhea.upper().removeprefix('RHEA:'),
+        'kegg_reaction': _first_xref(row.get('rxnKEGGID'), r'^R\d{5}$'),
+        'bigg_reaction': _first_xref(row.get('rxnBiGGID'), r'^[A-Za-z0-9_]+$'),
+        'metanetx_reaction': _first_xref(row.get('rxnMetaNetXID'), r'^MNXR\w+$'),
     }
 
 
@@ -181,7 +239,7 @@ def _xref_fields(
             xrefs.get(member_id, {}).get(xref_name, '')
             for member_id in member_ids
         )
-        for xref_name in ('chebi', 'hmdb', 'pubchem_compound', 'lipidmaps')
+        for xref_name in _MEMBER_XREFS
     }
 
 
@@ -288,6 +346,7 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
     """
 
     xrefs = _metabolite_xrefs()
+    reaction_xrefs = _reaction_xrefs()
     gene_names = {
         dict(g)['id']: dict(g).get('name')
         for g in data.get('genes', [])
@@ -356,6 +415,7 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
             'products': '||'.join(products),
             **_xref_fields(reactant_ids, xrefs, 'reactant'),
             **_xref_fields(product_ids, xrefs, 'product'),
+            **reaction_xrefs.get(r.get('id', ''), {}),
         }
 
 

@@ -144,6 +144,9 @@ metabolites_schema = EntityBuilder(
         CV(term=Namespace.CHEBI, value=f('chebi', extract='chebi')),
         CV(term=Namespace.PUBCHEM, value=f('pubchem_compound')),
         CV(term=Namespace.LIPIDMAPS, value=f('lipidmaps')),
+        CV(term=Namespace.KEGG, value=f('kegg_compound')),
+        CV(term=Namespace.BIGG_METABOLITE, value=f('bigg')),
+        CV(term=Namespace.METANETX, value=f('metanetx')),
         CV(term=Namespace.SMILES, value=f('smiles')),
         CV(term=Namespace.NAME, value=f('name')),
     ),
@@ -156,6 +159,10 @@ reactions_schema = EntityBuilder(
     entity_type=MolecularActivity,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.HUMAN_GEM_REACTION, value=f('human_gem_reaction_id')),
+        CV(term=Namespace.RHEA, value=f('rhea')),
+        CV(term=Namespace.KEGG_REACTION, value=f('kegg_reaction')),
+        CV(term=Namespace.BIGG_REACTION, value=f('bigg_reaction')),
+        CV(term=Namespace.METANETX_REACTION, value=f('metanetx_reaction')),
         CV(term=Namespace.NAME, value=f('name')),
     ),
     annotations=AnnotationsBuilder(
@@ -214,6 +221,30 @@ reactions_schema = EntityBuilder(
                         preserve_indices=True,
                     ),
                 ),
+                CV(
+                    term=Namespace.KEGG,
+                    value=f(
+                        'reactant_kegg_compound',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.BIGG_METABOLITE,
+                    value=f(
+                        'reactant_bigg',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.METANETX,
+                    value=f(
+                        'reactant_metanetx',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
             ),
             annotations=AnnotationsBuilder(
                 conversion_direction_cv(),
@@ -262,6 +293,30 @@ reactions_schema = EntityBuilder(
                     term=Namespace.LIPIDMAPS,
                     value=f(
                         'product_lipidmaps',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.KEGG,
+                    value=f(
+                        'product_kegg_compound',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.BIGG_METABOLITE,
+                    value=f(
+                        'product_bigg',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.METANETX,
+                    value=f(
+                        'product_metanetx',
                         delimiter='||',
                         preserve_indices=True,
                     ),
@@ -286,6 +341,10 @@ transport_reactions_schema = EntityBuilder(
     entity_type=MolecularActivity,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.HUMAN_GEM_REACTION, value=f('human_gem_reaction_id')),
+        CV(term=Namespace.RHEA, value=f('rhea')),
+        CV(term=Namespace.KEGG_REACTION, value=f('kegg_reaction')),
+        CV(term=Namespace.BIGG_REACTION, value=f('bigg_reaction')),
+        CV(term=Namespace.METANETX_REACTION, value=f('metanetx_reaction')),
         CV(term=Namespace.NAME, value=f('name')),
     ),
     annotations=AnnotationsBuilder(
@@ -344,6 +403,30 @@ transport_reactions_schema = EntityBuilder(
                         preserve_indices=True,
                     ),
                 ),
+                CV(
+                    term=Namespace.KEGG,
+                    value=f(
+                        'reactant_kegg_compound',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.BIGG_METABOLITE,
+                    value=f(
+                        'reactant_bigg',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.METANETX,
+                    value=f(
+                        'reactant_metanetx',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
             ),
             annotations=AnnotationsBuilder(
                 conversion_direction_cv(),
@@ -392,6 +475,30 @@ transport_reactions_schema = EntityBuilder(
                     term=Namespace.LIPIDMAPS,
                     value=f(
                         'product_lipidmaps',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.KEGG,
+                    value=f(
+                        'product_kegg_compound',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.BIGG_METABOLITE,
+                    value=f(
+                        'product_bigg',
+                        delimiter='||',
+                        preserve_indices=True,
+                    ),
+                ),
+                CV(
+                    term=Namespace.METANETX,
+                    value=f(
+                        'product_metanetx',
                         delimiter='||',
                         preserve_indices=True,
                     ),
