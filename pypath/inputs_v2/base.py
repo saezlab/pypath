@@ -204,11 +204,24 @@ class Dataset:
         raw_parser: Callable[..., Generator[dict[str, Any], None, None]],
         *,
         kind: DatasetKind | None = None,
+        raw_table: Callable[..., int] | None = None,
     ) -> None:
         self.download = download
         self.mapper = mapper
         self._raw_parser = raw_parser
+        self._raw_table = raw_table
         self.kind = kind
+
+    @property
+    def has_table(self) -> bool:
+        return self._raw_table is not None
+
+    def table(self, db, name: str, force_refresh: bool = False, **kwargs: Any) -> int:
+        """Parse into DuckDB table ``name``: ``rid`` (the row's position in
+        :meth:`raw`'s output) and one VARCHAR column per field, NULL where a row
+        lacks the field. Returns the row count."""
+        opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
+        return self._raw_table(db, name, opener, **kwargs)
 
     def raw(
         self,

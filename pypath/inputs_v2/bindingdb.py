@@ -19,7 +19,7 @@ from omnipath_core.molecular_forms import molecular_form_from_identifiers
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2._molecular_forms import combine_forms, sequence_form
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2.parsers.bindingdb import _raw
+from pypath.inputs_v2.parsers.bindingdb import _raw, raw_table as _raw_table
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.silver_schema import (
     Entity,
@@ -309,5 +309,6 @@ resource = Resource(
         ),
         mapper=interactions_schema,
         raw_parser=_raw,
+        raw_table=_raw_table,
     ),
 )
