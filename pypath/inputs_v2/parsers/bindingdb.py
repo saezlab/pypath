@@ -330,3 +330,78 @@ def _raw(
     for row in _iter_csv_fallback(opener, max_lines=max_lines):
         if _row_passes_filters(row, kwargs=kwargs):
             yield row
+
+
+_SEQUENCE_COLUMN_RE = re.compile(r'BindingDB Target Chain\s*(\d+)?\s*Sequence(?:\s*(\d+))?')
+_AFFINITY_SQL_RE = r'([0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)'
+
+
+def _chembl_runs(value: str | None) -> str | None:
+    """``_normalize_row``'s ChEMBL fix (a lookahead regex, which DuckDB lacks)."""
+    if value is None:
+        return None
+    stripped = value.strip()
+    if (
+        stripped and stripped.count('CHEMBL') > 1
+        and '::' not in stripped and ';' not in stripped and '|' not in stripped
+    ):
+        return _CHEMBL_RUN_RE.sub(r'\1::', stripped)
+    return value
+
+
+def raw_table(db, name: str, opener, max_lines: int | None = None, **kwargs: object) -> int:
+    """The rows of :func:`_raw` as DuckDB table ``name``, built in SQL.
+
+    Same columns, values, filter and order as the ``csv`` row parser: selected
+    columns ('' when empty or missing), chain sequences under their normalized
+    name, ChEMBL runs split, ``pchembl_value`` formatted as ``%.6g`` and filtered.
+    """
+    tsv_path = _bindingdb_tsv_path(opener, extract=True)
+    with tsv_path.open('r', encoding='utf-8', errors='replace', newline='') as handle:
+        header = handle.readline().rstrip('\r\n').split('\t')
+    columns = _selected_columns(header)
+    q = _quote_identifier
+    present = set(header)
+    select = [f"coalesce({q(c)}, '') AS {q(c)}" if c in present else f"'' AS {q(c)}" for c in columns]
+    # Chain sequences: the last non-empty source column wins, as in _normalize_row.
+    targets: dict[str, list[str]] = {}
+    for column in columns:
+        if match := _SEQUENCE_COLUMN_RE.fullmatch(column):
+            target = f'BindingDB Target Chain {match[1] or match[2] or "1"} Sequence'
+            targets.setdefault(target, []).append(column)
+    fallback = {t: ("''" if t in columns else 'NULL') for t in targets}
+    sequence = {
+        t: f"coalesce({', '.join(f'nullif({q(s)}, {chr(39)}{chr(39)})' for s in reversed(sources))}, {fallback[t]})"
+        for t, sources in targets.items()
+    }
+    affinities = [
+        f"""CASE WHEN trim({q(c)}) = '' OR starts_with(trim({q(c)}), '>') THEN NULL
+            ELSE 9 - log10(nullif(greatest(TRY_CAST(nullif(regexp_extract(trim({q(c)}), '{_AFFINITY_SQL_RE}', 1), '') AS DOUBLE), 0), 0)) END"""
+        for c in _BINDINGDB_AFFINITY_COLUMNS
+    ]
+    function = f'{name}_chembl_runs'
+    db.create_function(function, _chembl_runs, ['VARCHAR'], 'VARCHAR', null_handling='special')
+    limit = f'LIMIT {int(max_lines)}' if max_lines is not None else ''
+    db.execute('SET preserve_insertion_order=true')
+    db.execute(f"""CREATE OR REPLACE TEMP TABLE {name}_read AS SELECT {', '.join(select)}
+        FROM read_csv({_quote_string(tsv_path)}, delim='\t', header=true, all_varchar=true, quote='"',
+                      escape='"', strict_mode=false, null_padding=true) {limit}""")
+    chembl = q('ChEMBL ID of Ligand')
+    replaced = {chembl: f"CASE WHEN length({chembl}) - length(replace({chembl}, 'CHEMBL', '')) > 6 THEN {function}({chembl}) ELSE {chembl} END"}
+    outputs = [c for c in columns if c not in targets] + list(targets)
+    expressions = [sequence.get(c) or replaced.get(q(c)) or q(c) for c in outputs]
+    pchembl = f"greatest({', '.join(affinities)})"
+    min_pchembl = _bindingdb_min_pchembl(kwargs)
+    keep = (
+        f"pchembl_value <> '' AND pchembl_value::DOUBLE > {min_pchembl!r}"
+        if _bindingdb_pchembl_filter_enabled(kwargs) else 'true'
+    )
+    db.execute(f"""CREATE OR REPLACE TABLE {name} AS
+        SELECT row_number() OVER (ORDER BY read_order) - 1 AS rid, * EXCLUDE (read_order) FROM (
+            SELECT rowid AS read_order, {', '.join(f'{e} AS {q(c)}' for e, c in zip(expressions, outputs))},
+                   coalesce(printf('%.6g', {pchembl}), '') AS pchembl_value
+            FROM {name}_read) WHERE {keep}""")
+    db.execute(f'DROP TABLE {name}_read')
+    db.remove_function(function)
+    db.execute('SET preserve_insertion_order=false')
+    return db.execute(f'SELECT count(*) FROM {name}').fetchone()[0]
