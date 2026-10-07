@@ -39,6 +39,7 @@ from typing import Any
 import yaml
 
 from pypath.inputs_v2.base import read_opener_text
+from pypath.inputs_v2._source_context import flux_direction
 from pypath.inputs_v2.parsers.recon3d import _parse_gene_rule
 from pypath.share.downloads import download_and_open
 
@@ -333,8 +334,8 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
     strings for reactants and products — the same encoding used in Recon3D so
     the ``metatlas.py`` schema can reuse the same ``FieldConfig`` map lambdas.
 
-    Direction follows the same convention as Recon3D: ``'reversible'`` when
-    ``lower_bound < 0 < upper_bound``, ``'left_to_right'`` otherwise.
+    Direction is the BioPAX conversion direction of the flux bounds, as for
+    Recon3D.
 
     Args:
         data: The parsed top-level Human-GEM YAML dict.
@@ -391,7 +392,7 @@ def _reactions(data: dict) -> Generator[dict, None, None]:
 
         lb = float(r['lower_bound'])
         ub = float(r['upper_bound'])
-        direction = 'reversible' if lb < 0 < ub else 'left_to_right'
+        direction = flux_direction(lb, ub)
         enzyme_ensembl = _reaction_enzyme_ensembl_ids(r)
 
         yield {

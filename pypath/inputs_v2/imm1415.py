@@ -8,17 +8,13 @@ records using the declarative schema pattern.
 import json
 from pypath.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     CV,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
 )
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from biolink_model.datamodel.model import (
-    ChemicalEntity,
-    slots,
-)
+from biolink_model.datamodel.model import ChemicalEntity
 from omnipath_core.naming import Namespace
 
 URL = 'http://bigg.ucsd.edu/static/models/iMM1415.json'
@@ -89,7 +85,7 @@ schema = EntityBuilder(
         CV(term=Namespace.SWISSLIPIDS, value=f('slm')),
         CV(term=Namespace.NAME, value=f('name')),
     ),
-    annotations=AnnotationsBuilder(CV(term=slots.has_topic, value=f('sbo'))),
+    # No annotations: every metabolite has the SBO term of a simple chemical.
 )
 resource = Resource(
     config=config,

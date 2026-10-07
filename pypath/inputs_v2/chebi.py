@@ -13,6 +13,7 @@ from pypath.inputs_v2.base import (
     Download,
     Resource,
     ResourceConfig,
+    relationship_predicate,
 )
 from pypath.inputs_v2.parsers.chebi import _raw
 from pypath.internals.cv_terms import (
@@ -21,7 +22,7 @@ from pypath.internals.cv_terms import (
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import EntityRef, OntologyRelation
+from pypath.internals.silver_schema import Annotation, EntityRef, OntologyRelation
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
@@ -92,16 +93,8 @@ molecules_schema = EntityBuilder(
         CV(term='chemrof:monoisotopic_mass', value=f('monoisotopic_mass')),
         CV(term='chemrof:charge', value=f('charge')),
         CV(
-            term=lambda row: [
-                r['type']
-                for r in row.get('relationships', [])
-                if r['type'] != 'BFO:0000051'
-            ],
-            value=lambda row: [
-                r['target']
-                for r in row.get('relationships', [])
-                if r['type'] != 'BFO:0000051'
-            ],
+            term=lambda row: [r['type'] for r in _unmapped_relationships(row)],
+            value=lambda row: [r['target'] for r in _unmapped_relationships(row)],
         ),
     ),
     ontology_relations=lambda row: _ontology_relations(row),
@@ -136,26 +129,50 @@ def _ontology_relations(row: dict) -> list[OntologyRelation]:
             )
         )
     for relationship in row.get('relationships') or []:
-        predicate = relationship.get('type')
-        target_id = _chebi_identifier(relationship.get('target'))
-        if predicate != 'BFO:0000051' or not target_id:
+        edge = _relationship_edge(relationship)
+        if not edge:
             continue
-        key = (predicate, target_id)
+        predicate, target_id, original = edge
+        key = (str(predicate), target_id)
         if key in seen:
             continue
         seen.add(key)
         relations.append(
             OntologyRelation(
-                predicate=slots.has_part,
+                predicate=predicate,
                 object=EntityRef(
                     type=ChemicalEntity,
                     identifier_type=Namespace.CHEBI,
                     identifier=target_id,
                 ),
                 ontology_id='chebi',
+                annotations=[
+                    Annotation(term=slots.original_predicate, value=original)
+                ]
+                if original
+                else None,
             )
         )
     return relations
+
+
+def _relationship_edge(relationship: dict) -> tuple | None:
+    """Predicate, target and original predicate of an edge-like relationship."""
+    mapped = relationship_predicate(relationship.get('type') or '')
+    target_id = _chebi_identifier(relationship.get('target'))
+    if not mapped or not target_id:
+        return None
+    predicate, exact = mapped
+    return predicate, target_id, None if exact else relationship['type']
+
+
+def _unmapped_relationships(row: dict) -> list[dict]:
+    """Relationships without a Biolink predicate remain attributes."""
+    return [
+        relationship
+        for relationship in row.get('relationships') or []
+        if not _relationship_edge(relationship)
+    ]
 
 
 def _id_translation_rows(row: dict) -> Iterable[dict]:

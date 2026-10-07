@@ -25,13 +25,13 @@ def test_foodb_list_columns_preserve_empty_zero_and_context():
     assert {'Alpha', 'Beta', 'Gamma'} <= {i['id'] for e in out.entities.values() for i in e.identifiers}
 
 
-@pytest.mark.parametrize('module,id_field,compartments', [
-    ('metatlas', 'human_gem_reaction_id', ('c', 'e')),
-    ('recon3d', 'bigg_reaction_id', ('cytosol', 'extracellular space')),
+@pytest.mark.parametrize('module,id_field', [
+    ('metatlas', 'human_gem_reaction_id'),
+    ('recon3d', 'bigg_reaction_id'),
 ])
-def test_transport_keeps_compartment_on_each_participant(module, id_field, compartments):
+def test_transport_keeps_compartment_on_each_participant(module, id_field):
     out = extract(module, 'reactions_schema', {id_field: 'R1', 'reactants': 'h2o:c:2', 'products': 'h2o:e:1'})
-    assert {(r.predicate, a['value']) for r in out.relations for a in r.annotations if a['term'] == 'biopax:cellularLocation'} == {('has_input', compartments[0]), ('has_output', compartments[1])}
+    assert {(r.predicate, a['value']) for r in out.relations for a in r.annotations if a['term'] == 'biopax:cellularLocation'} == {('has_input', 'cytosol'), ('has_output', 'extracellular space')}
 
 
 def test_reactome_physical_state_survives_parser_and_mapping():

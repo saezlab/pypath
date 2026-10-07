@@ -135,7 +135,7 @@ reactions_schema = EntityBuilder(
             value=f(
                 'ko_ids',
                 delimiter=';',
-                transform=lambda v: 'KEGG.ORTHOLOGY:' + str(v),
+                transform=lambda v: 'KEGG.ORTHOLOGY:' + str(v).removeprefix('ko:'),
             ),
         ),
         CV(
@@ -143,7 +143,7 @@ reactions_schema = EntityBuilder(
             value=f(
                 'rclass_ids',
                 delimiter=';',
-                transform=lambda v: 'KEGG.RCLASS:' + str(v),
+                transform=lambda v: 'KEGG.RCLASS:' + str(v).removeprefix('rc:'),
             ),
         ),
     ),
@@ -365,7 +365,7 @@ pathways_schema = EntityBuilder(
                     value=f(
                         'ko_ids',
                         delimiter=';',
-                        transform=lambda v: 'KEGG.ORTHOLOGY:' + str(v),
+                        transform=lambda v: 'KEGG.ORTHOLOGY:' + str(v).removeprefix('ko:'),
                     ),
                 ),
                 CV(
@@ -373,7 +373,7 @@ pathways_schema = EntityBuilder(
                     value=f(
                         'rclass_ids',
                         delimiter=';',
-                        transform=lambda v: 'KEGG.RCLASS:' + str(v),
+                        transform=lambda v: 'KEGG.RCLASS:' + str(v).removeprefix('rc:'),
                     ),
                 ),
                 CV(
@@ -382,6 +382,11 @@ pathways_schema = EntityBuilder(
                         'protein_member_reaction_ids',
                         delimiter='||',
                         preserve_indices=True,
+                        map=lambda v: [
+                            'KEGG.REACTION:' + reaction
+                            for reaction in v.split(';')
+                            if reaction
+                        ],
                     ),
                 ),
             ),

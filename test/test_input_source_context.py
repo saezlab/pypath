@@ -9,10 +9,10 @@ from omnipath_build.writer import ParquetWriter
 from omnipath_core.biolink import direction_sign, qualifiers
 from omnipath_core.keys import relation_key
 from omnipath_core.source_attributes import (
-    CELLULAR_LOCATION,
     CONVERSION_DIRECTION,
     PARTICIPANT_ROLE,
     TRAIT_TYPE,
+    TRANSPORT_SIDE,
 )
 import pyarrow.parquet as pq
 from omnipath_core.fixtures import read_resource
@@ -191,7 +191,7 @@ def test_direction_keeps_source_events_separate(
 def test_rhea_missing_identifier_preserves_compartment_pairing(
     missing: str, mapper: str
 ) -> None:
-    """Retain the correct compartment after an omitted or invalid middle identity."""
+    """Retain the correct transport side after an omitted or invalid middle identity."""
     row = {
         'rhea_id': '123',
         'participant_chebi': f'1||{missing}||3',
@@ -209,7 +209,7 @@ def test_rhea_missing_identifier_preserves_compartment_pairing(
         (
             r.predicate,
             result.entities[r.object_entity_key].identifier,
-            _values(r.annotations, CELLULAR_LOCATION),
+            _values(r.annotations, TRANSPORT_SIDE),
         )
         for r in edges
     ] == [('has_input', '1', ['in']), ('has_output', '3', ['out'])]
@@ -340,7 +340,7 @@ def test_ligand_receptor_roles_follow_canonical_flips_per_evidence(
     'mapper', ['reactions_schema', 'transport_reactions_schema']
 )
 def test_rhea_short_compartment_array_does_not_broadcast(mapper: str) -> None:
-    """Leave unreported compartments absent instead of copying the first value."""
+    """Leave unreported transport sides absent instead of copying the first value."""
     result = _extract(
         'rhea',
         mapper,
@@ -356,7 +356,7 @@ def test_rhea_short_compartment_array_does_not_broadcast(mapper: str) -> None:
         for r in result.relations
         if r.predicate in {'has_input', 'has_output'}
     ]
-    assert [_values(r.annotations, CELLULAR_LOCATION) for r in edges] == [
+    assert [_values(r.annotations, TRANSPORT_SIDE) for r in edges] == [
         ['in'],
         [],
         [],

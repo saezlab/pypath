@@ -11,6 +11,8 @@ from collections.abc import Mapping
 import csv
 import re
 
+import numpy
+
 from biolink_model.datamodel.model import (
     CausalMechanismQualifierEnum,
     ChemicalEntity,
@@ -506,6 +508,21 @@ _AFFINITY_SLOT = {
 }
 
 
+_DECIMAL_RE = re.compile(r'\d*\.\d+(?:[eE][+-]?\d+)?')
+
+
+def _single_precision(value: object) -> object:
+    """Affinities as the source curated them.
+
+    GtoPdb exports single-precision values in full (6.47 as
+    6.46999979019165); the shortest decimal of the single-precision number is
+    the curated value.
+    """
+    if not isinstance(value, str):
+        return value
+    return _DECIMAL_RE.sub(lambda match: str(numpy.float32(match[0])), value)
+
+
 def _affinity_measurements(row):
     measure = str(row.get('Affinity Units') or '').strip()
     return [
@@ -513,7 +530,7 @@ def _affinity_measurements(row):
         for field in ('Affinity High', 'Affinity Low', 'Affinity Median')
         if (
             value := measurement(
-                row.get(field),
+                _single_precision(row.get(field)),
                 source_field=f'{measure or "unspecified measure"} {field}',
             )
         )
@@ -532,7 +549,7 @@ def _original_affinity_measurements(row):
         )
         if (
             value := measurement(
-                row.get(field),
+                _single_precision(row.get(field)),
                 # These source columns explicitly express concentrations in nM.
                 unit='nM',
                 source_field=f'{measure or "unspecified measure"} {field}',

@@ -9,6 +9,7 @@ import csv
 from dataclasses import dataclass
 import functools
 import json
+import re
 from typing import Any, Literal, Protocol
 
 from pypath.internals.cv_terms import (
@@ -251,6 +252,99 @@ def _ontology_identifier_namespace(identifier, default):
     }.get(prefix, prefix.lower())
 
 
+# Relationship types Biolink does not map although a predicate carries their
+# meaning: (predicate, exact). Tautomers and enantiomers are symmetric relations.
+_RELATIONSHIP_PREDICATES = {
+    'RO:0000087': (slots.has_chemical_role, True),  # has role
+    'RO:0002211': (slots.regulates, False),  # regulates
+    'RO:0002212': (slots.regulates, False),  # negatively regulates
+    'RO:0002213': (slots.regulates, False),  # positively regulates
+    'RO:0002203': (slots.develops_into, True),  # develops into
+    'BFO:0000067': (slots.contains_process, True),  # contains process
+    'CL:4030045': (slots.lacks_part, True),  # lacks_part
+    'CL:4030046': (slots.lacks_part, False),  # lacks_plasma_membrane_part
+    'RO:0018036': (slots.chemically_similar_to, False),  # is tautomer of
+    'RO:0018039': (slots.chemically_similar_to, False),  # is enantiomer of
+}
+
+
+@functools.cache
+def relationship_predicate(relationship_type: str) -> tuple[Any, bool] | None:
+    """Biolink predicate of an ontology relationship CURIE, and whether it is exact.
+
+    Uses Biolink's own exact mappings, else a broader predicate that Biolink
+    lists the relationship under (narrow mappings). A directional relationship
+    under a symmetric predicate (e.g. ``related_to``) would lose which term is
+    the subject, so it has no predicate.
+    """
+    from omnipath_core.biolink import is_symmetric, predicate, schema
+
+    if relationship_type in _RELATIONSHIP_PREDICATES:
+        return _RELATIONSHIP_PREDICATES[relationship_type]
+    view = schema()
+    for kind in ('exact_mappings', 'narrow_mappings'):
+        candidates = []
+        for name, slot in view.all_slots().items():
+            if relationship_type in (getattr(slot, kind) or ()):
+                try:
+                    predicate(name)
+                except ValueError:  # not a predicate, or deprecated
+                    continue
+                candidates.append(name)
+        if candidates:
+            # The most specific of several mapped predicates.
+            name = max(sorted(candidates), key=lambda c: len(view.slot_ancestors(c)))
+            exact = kind == 'exact_mappings'
+            return (predicate(name), exact) if exact or not is_symmetric(name) else None
+    return None
+
+
+_OBO_ESCAPE_RE = re.compile(r'\\(.)')
+_IDENTIFIERS_ORG_RE = re.compile(r'https?://identifiers\.org/([^/]+)/(.+)')
+# Publication xrefs (ChemOnt cites books by ISBN) and their CURIE prefixes.
+_PUBLICATION_PREFIXES = {
+    'PMID': 'PMID',
+    'PMCID': 'PMC',
+    'DOI': 'DOI',
+    'ISBN': 'ISBN',
+    'ISBN-10': 'ISBN',
+    'ISBN-13': 'ISBN',
+}
+
+
+def _obo_unescape(value: str) -> str:
+    """OBO escapes (``\\:``, ``\\"``) of an unquoted value."""
+    return _OBO_ESCAPE_RE.sub(r'\1', value)
+
+
+def _obo_xref(value: str) -> tuple[Any, str] | None:
+    """Annotation of an OBO ``xref``: a cross-reference, publication or URL.
+
+    Property-style xrefs (``search-url: "…"``, ``id-validation-regexp: "…"``)
+    describe how to use a database, not a cross-reference, and are dropped.
+    """
+    text = _obo_unescape(value).strip()
+    prefix, _, local = text.partition(':')
+    if prefix.lower() in {'url', 'http', 'https'}:
+        url = (text if prefix.lower() != 'url' else local).strip().strip('"')
+        return (slots.url, url.split()[0]) if url else None
+    if not local or local[0].isspace():
+        return None
+    # OBO 1.2 writes database and ID separately: ``GO:GO\:0044093``.
+    local = local.split()[0].removeprefix(f'{prefix}:')
+    if prefix.upper() in _PUBLICATION_PREFIXES:
+        return slots.publications, f'{_PUBLICATION_PREFIXES[prefix.upper()]}:{local}'
+    return slots.xref, f'{prefix}:{local}'
+
+
+def _curie(value: str) -> str | None:
+    """CURIE of a relationship target: a CURIE, or an identifiers.org URI."""
+    match = _IDENTIFIERS_ORG_RE.fullmatch(value)
+    if match:
+        return f'{match[1].upper()}:{match[2]}'
+    return value if re.fullmatch(r'[A-Za-z][\w.-]*:(?!//)\S+', value) else None
+
+
 def ontology_term_to_entity(
     term: OntologyTerm,
     *,
@@ -261,8 +355,10 @@ def ontology_term_to_entity(
 ) -> Entity | None:
     """Serialize ontology structure using the resource's explicit semantic choices.
 
-    Only OBO is_a and source-approved relationship mappings become edges.
-    Unmapped published CURIE predicates remain attributes; other fields stay raw.
+    OBO is_a, source-approved relationship mappings and CURIE relationships
+    with a Biolink predicate (``relationship_predicate``) between two terms
+    become edges; an edge under a broader predicate keeps the ontology's own
+    as ``original_predicate``. Other CURIE relationships remain attributes.
     """
     if not term.id or term.is_obsolete:
         return None
@@ -281,25 +377,31 @@ def ontology_term_to_entity(
         for value in term.synonyms or []
         if value
     )
-    annotations = []
-    for slot, values in (
-        (slots.description, [term.definition, *(term.comments or [])]),
-        (slots.xref, [value.split()[0] for value in term.xrefs or [] if value]),
-    ):
-        annotations.extend(
-            Annotation(term=slot, value=value) for value in values if value
+    annotations = [
+        Annotation(term=slot, value=value)
+        for slot, value in (
+            (slots.description, term.definition),
+            *(('rdfs:comment', value) for value in term.comments or []),
+            *filter(None, map(_obo_xref, filter(None, term.xrefs or []))),
         )
+        if value
+    ]
+    edges = [(slots.subclass_of, parent, None) for parent in term.is_a or []]
+    for rel in term.relationships or []:
+        if relationship_predicates and rel.type in relationship_predicates:
+            edges.append((relationship_predicates[rel.type], rel.target, None))
+        elif ':' in rel.type:
+            mapped = relationship_predicate(rel.type)
+            target = _curie(rel.target)
+            if mapped and target == rel.target:
+                predicate, exact = mapped
+                edges.append((predicate, target, None if exact else rel.type))
+            else:
+                annotations.append(Annotation(term=rel.type, value=target or rel.target))
     relations = []
     seen = set()
-    for predicate, target in [
-        *((slots.subclass_of, parent) for parent in term.is_a or []),
-        *(
-            (relationship_predicates.get(rel.type), rel.target)
-            for rel in term.relationships or []
-            if relationship_predicates and rel.type in relationship_predicates
-        ),
-    ]:
-        key = (str(predicate), target)
+    for predicate, target, original in edges:
+        key = (str(predicate), target, original)
         if not target or key in seen:
             continue
         seen.add(key)
@@ -308,14 +410,11 @@ def ontology_term_to_entity(
                 predicate=predicate,
                 object=EntityRef(entity_type, _ontology_identifier_namespace(target, identifier_type), target),
                 ontology_id=ontology_id,
+                annotations=[Annotation(term=slots.original_predicate, value=original)]
+                if original
+                else None,
             )
         )
-    for rel in term.relationships or []:
-        if (
-            not relationship_predicates
-            or rel.type not in relationship_predicates
-        ) and ':' in rel.type:
-            annotations.append(Annotation(term=rel.type, value=rel.target))
     return Entity(
         type=entity_type,
         identifiers=identifiers,

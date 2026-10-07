@@ -18,8 +18,8 @@ from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2._source_context import conversion_direction_cv
-from pypath.inputs_v2.parsers.recon3d import _raw, compartment_name
+from pypath.inputs_v2._source_context import compartment_name, conversion_direction_cv
+from pypath.inputs_v2.parsers.recon3d import _raw
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
 from pypath.internals.tabular_builder import (

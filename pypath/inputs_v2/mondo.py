@@ -150,10 +150,10 @@ def gene_disease_association_to_entity(row: dict[str, Any]) -> Relation | None:
         gene_identifiers.append(
             Identifier(type=Namespace.GENESYMBOL, value=row['gene_symbol'])
         )
-    # Preserve published source predicates as external attributes; symbolic
-    # predicates and provenance strings remain in the parsed evidence payload.
+    # The published RO predicate is the source's own; symbolic predicates and
+    # provenance strings remain in the parsed evidence payload.
     annotations = (
-        [Annotation(term=row['relation'], value=f'HGNC:{row["hgnc_id"]}')]
+        [Annotation(term=slots.original_predicate, value=row['relation'])]
         if row['relation'].startswith('RO:')
         else []
     )

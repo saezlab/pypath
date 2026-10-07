@@ -1,6 +1,6 @@
 """Rhea master reactions as molecular activities with explicit input, output and enzyme edges.
 
-Transport compartments and reported conversion direction attach to membership
+Transport sides (in/out) and reported conversion direction attach to membership
 evidence as ordinary attributes, without gene-effect direction qualifiers.
 Reaction identifiers, equations, EC topics, publications and cross-references
 are preserved.
@@ -15,7 +15,7 @@ from typing import Any
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
-from omnipath_core.source_attributes import CELLULAR_LOCATION
+from omnipath_core.source_attributes import TRANSPORT_SIDE
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
@@ -206,7 +206,7 @@ reactions_schema = EntityBuilder(
             annotations=AnnotationsBuilder(
                 conversion_direction_cv(),
                 CV(
-                    term=CELLULAR_LOCATION,
+                    term=TRANSPORT_SIDE,
                     value=_participant_field('participant_compartment'),
                 ),
             ),
@@ -291,7 +291,7 @@ transport_reactions_schema = EntityBuilder(
             annotations=AnnotationsBuilder(
                 conversion_direction_cv(),
                 CV(
-                    term=CELLULAR_LOCATION,
+                    term=TRANSPORT_SIDE,
                     value=_participant_field('participant_compartment'),
                 ),
             ),

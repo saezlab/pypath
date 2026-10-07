@@ -16,40 +16,34 @@ from omnipath_core.molecular_forms import (
     normalize_molecular_form,
 )
 
-# Exact source/vocabulary labels. Unknown features stay in source descriptions.
-# Includes spellings present in the SIGNOR causalTab export, without repairing
-# their labels or asserting ontology terms that the export does not supply.
-_MODIFICATION_LABELS = {
-    'phosphorylated residue',
-    'de-phosphorylated residue',
-    'ubiquitinylated lysine',
-    'acetylated residue',
-    'de-acetylated residue',
-    'polyubiquitinated residue',
-    'de-methylated residue',
-    'sumoylated lysine',
-    'monoubiquitinated residue',
-    'methylated residue',
-    'carboxylated residue',
-    'de-ubiquitinated residue',
-    'glycosylated residue',
-    'hydroxylated residue',
-    'palmitoylated residue',
-    'chemical modificated residue',
-    'de-glycosylated residue',
-    'post translatedal modificated residue',
-    'de-sumoylated residue',
-    'neddylated lysine',
-    'trimethylated residue',
-}
+# Source/vocabulary feature labels; unknown features stay in source
+# descriptions. Labels are not repaired and no ontology accession is asserted
+# that the export does not supply.
+# IntAct and SIGNOR mutation labels all start with "mutation" ("mutation with
+# no effect", "mutation decreasing interaction strength", ...).
 _VARIANT_LABELS = {
-    'mutation',
-    'mutation decreasing',
-    'mutation increasing',
-    'mutation disrupting',
-    'mutation disrupting strength',
+    'variant',
     'sequence variant',
+    'disease causing amino-acid variant',
+    'trapping mutant',
 }
+# PSI-MI binding region feature types; the label is the region type.
+_REGION_LABELS = {
+    'binding-associated region',
+    'necessary binding region',
+    'sufficient binding region',
+    'direct binding region',
+}
+# Modified residues are named by PSI-MOD terms ("O4'-phospho-L-tyrosine",
+# "N6,N6-dimethyl-L-lysine", "acylated residue", "protein modification") or,
+# in the SIGNOR causalTab export, similar labels ("phosphorylated residue",
+# "sumoylated lysine", "post translatedal modificated residue").
+_MODIFICATION_NAME_RE = re.compile(
+    r'\b(?:alanine|arginine|asparagine|aspartic acid|cysteine|cystine|'
+    r'glutamic acid|glutamine|glycine|histidine|isoleucine|leucine|lysine|'
+    r'methionine|selenomethionine|phenylalanine|proline|serine|threonine|'
+    r'tryptophan|tyrosine|valine|citrulline|residues?|modification)\b'
+)
 
 
 def sequence_form(sequence: object, *, system: str = 'protein') -> dict | None:
@@ -224,7 +218,7 @@ def mitab_participant_form(
         else 'transcript',
         'position_base': 1,
     }
-    modifications, variants = [], []
+    modifications, variants, regions = [], [], []
     for feature in str(row.get(f'Feature(s) interactor {suffix}') or '').split(
         '|'
     ):
@@ -236,18 +230,17 @@ def mitab_participant_form(
         if not match:
             continue
         term, ranges = match.groups()
-        lower = term.lower()
-        is_variant = lower in _VARIANT_LABELS or term in {
-            'MI:0118',
-            'MI:0119',
-            'MI:0120',
-            'MI:0121',
-            'MI:1128',
-        }
-        is_modification = (
-            term.startswith('MOD:') or lower in _MODIFICATION_LABELS
+        lower = term.strip('"').lower()
+        is_variant = (
+            lower.startswith('mutation')
+            or lower in _VARIANT_LABELS
+            or term in {'MI:0118', 'MI:0119', 'MI:0120', 'MI:0121', 'MI:1128'}
         )
-        if not (is_variant or is_modification):
+        is_region = lower in _REGION_LABELS
+        is_modification = not (is_variant or is_region) and (
+            term.startswith('MOD:') or bool(_MODIFICATION_NAME_RE.search(lower))
+        )
+        if not (is_variant or is_region or is_modification):
             continue
         # Descriptions retain fuzzy/unknown/n/c ranges and source feature labels.
         for range_value in ranges.split(','):
@@ -256,7 +249,7 @@ def mitab_participant_form(
             )
             start, end = (
                 (int(position[1]), int(position[2]))
-                if position
+                if position and 0 < int(position[1]) <= int(position[2])
                 else (None, None)
             )
             item = {
@@ -278,8 +271,10 @@ def mitab_participant_form(
                         reference=substitution[1], alternate=substitution[3]
                     )
                 variants.append(item)
+            elif is_region:
+                regions.append({'type': lower, **item})
             else:
-                item['term'] = term
+                item['term'] = term.strip('"')
                 modifications.append(item)
-    form.update(modifications=modifications, variants=variants)
+    form.update(modifications=modifications, variants=variants, regions=regions)
     return normalize_molecular_form(form, allow_resolved=False)

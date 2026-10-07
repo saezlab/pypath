@@ -13,42 +13,15 @@ from collections.abc import Generator
 from typing import Any
 
 from pypath.inputs_v2.base import read_opener_text
+from pypath.inputs_v2._source_context import (
+    flux_direction,
+    stoichiometric_coefficient,
+)
 
 _ISOFORM_RE = re.compile(r'_[A-Z]+\d*$')
 _MEMBER_VALUE_DELIMITER = ';;'
 _CHEBI_RE = re.compile(r'^(?:CHEBI:)?(\d+)$', re.IGNORECASE)
 _HMDB_RE = re.compile(r'^HMDB(\d+)$', re.IGNORECASE)
-# Recon3D compartment codes as GO cellular component names; [i] is the
-# mitochondrial intermembrane space of Recon 2/3 (BiGG: "inner mitochondrial
-# compartment"), [m] the mitochondrion.
-_COMPARTMENTS = {
-    'c': 'cytosol',
-    'e': 'extracellular space',
-    'g': 'Golgi apparatus',
-    'i': 'mitochondrial intermembrane space',
-    'l': 'lysosome',
-    'm': 'mitochondrion',
-    'n': 'nucleus',
-    'r': 'endoplasmic reticulum',
-    'x': 'peroxisome',
-}
-
-
-def compartment_name(code: str) -> str | None:
-    """GO cellular component name of a compartment code; unknown codes are kept."""
-    return _COMPARTMENTS.get(code, code) or None
-
-
-def _coefficient(value: float) -> str:
-    """Stoichiometric coefficient as text, integral values without decimals."""
-    return str(int(value)) if float(value).is_integer() else str(value)
-
-
-def _direction(lower_bound: float, upper_bound: float) -> str:
-    """BioPAX conversion direction from the model's flux bounds."""
-    if lower_bound < 0 < upper_bound:
-        return 'REVERSIBLE'
-    return 'RIGHT-TO-LEFT' if lower_bound < 0 else 'LEFT-TO-RIGHT'
 
 
 def _annotation_list(annotation_dict: dict, key: str) -> list[str] | None:
@@ -371,7 +344,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
             member_fields = _reaction_member_fields(metabolite_index, base_id)
 
             if stoich < 0:
-                reactants.append(f'{base_id}:{compartment}:{_coefficient(abs(stoich))}')
+                reactants.append(f'{base_id}:{compartment}:{stoichiometric_coefficient(abs(stoich))}')
                 reactant_name.append(_serialize_member_value(member_fields['name']))
                 reactant_formula.append(
                     _serialize_member_value(member_fields['formula'])
@@ -388,7 +361,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
                     _serialize_member_value(member_fields['metanetx'])
                 )
             else:
-                products.append(f'{base_id}:{compartment}:{_coefficient(stoich)}')
+                products.append(f'{base_id}:{compartment}:{stoichiometric_coefficient(stoich)}')
                 product_name.append(_serialize_member_value(member_fields['name']))
                 product_formula.append(
                     _serialize_member_value(member_fields['formula'])
@@ -407,7 +380,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
 
         lb = r.get('lower_bound', 0)
         ub = r.get('upper_bound', 0)
-        direction = _direction(lb, ub)
+        direction = flux_direction(lb, ub)
         enzyme_entrez = _reaction_enzyme_entrez_ids(r)
         yield {
             'bigg_reaction_id': r['id'],

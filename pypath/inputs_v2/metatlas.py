@@ -29,7 +29,7 @@ from omnipath_core.naming import Namespace
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
-from pypath.inputs_v2._source_context import conversion_direction_cv
+from pypath.inputs_v2._source_context import compartment_name, conversion_direction_cv
 from pypath.inputs_v2.parsers.metatlas import _raw, _metabolite_xrefs, _METABOLITE_XREF_URL
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
@@ -119,7 +119,9 @@ f = FieldConfig(
         if value == 'complex'
         else Gene,
         'stoich_id': lambda value: value.split(':')[0] if value else None,
-        'stoich_comp': lambda value: value.split(':')[1] if value else None,
+        'stoich_comp': lambda value: compartment_name(value.split(':')[1])
+        if value
+        else None,
         'stoich_val': lambda value: value.split(':')[2] if value else None,
         'complex_name': lambda value: 'complex:' + '-'.join(value.split('||'))
         if value

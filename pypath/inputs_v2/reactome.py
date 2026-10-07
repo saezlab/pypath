@@ -32,7 +32,10 @@ from pypath.internals.tabular_builder import (
     MembershipBuilder,
     RelationBuilder,
 )
-from pypath.inputs_v2._source_context import conversion_direction_cv
+from pypath.inputs_v2._source_context import (
+    conversion_direction_cv,
+    stoichiometric_coefficient,
+)
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.reactome import _raw
 
@@ -102,6 +105,9 @@ f = FieldConfig(
         'missing': lambda value: ''
         if not value or value == _MISSING_VALUE
         else value,
+        'coefficient': lambda value: ''
+        if not value or value == _MISSING_VALUE
+        else stoichiometric_coefficient(value),
         'split': lambda value: []
         if not value or value == _MISSING_VALUE
         else [item for item in value.split(';') if item],
@@ -373,7 +379,7 @@ reactions_schema = EntityBuilder(
                     value=f(
                         'participant_stoichiometry',
                         delimiter='||',
-                        map='missing',
+                        map='coefficient',
                     ),
                 )
             ),

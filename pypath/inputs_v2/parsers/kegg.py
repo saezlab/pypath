@@ -352,7 +352,8 @@ def _parse_kegg_equation(
     ]
 
     if arrow == '<=>':
-        return 'REVERSIBLE', left_parts, right_parts
+        # KEGG writes every reaction with <=>; it asserts no reversibility.
+        return '', left_parts, right_parts
     if arrow == '=>':
         return 'LEFT-TO-RIGHT', left_parts, right_parts
     if arrow == '<=':
@@ -670,8 +671,7 @@ def _build_pathway_term_records(handles: dict[str, Any]) -> list[dict[str, Any]]
             )
 
     organism_list_pathways = handles.get('organism_list_pathways') or {}
-    for organism_code, handle in organism_list_pathways.items():
-        taxon_id = _ORGANISM_TAXA.get(organism_code, '')
+    for handle in organism_list_pathways.values():
         for pathway_id, pathway_name in _iter_tsv(handle):
             pathway_id = _pathway_term_id(pathway_id)
             map_id = _pathway_reference_id(pathway_id)
@@ -682,10 +682,8 @@ def _build_pathway_term_records(handles: dict[str, Any]) -> list[dict[str, Any]]
                 'definition': reference.get('definition', ''),
                 'synonyms': '',
                 'comments': '',
-                'xrefs': _join_unique([
-                    f'KEGG_PATHWAY:{pathway_id}',
-                    f'NCBITaxon:{taxon_id}' if taxon_id else '',
-                ]),
+                # The organism is the pathway's in_taxon, not a cross-reference.
+                'xrefs': f'KEGG_PATHWAY:{pathway_id}',
                 'parent_ids': map_id,
             }
 
