@@ -75,6 +75,17 @@ _INTERACTOR_TYPE_MAPPING = {
     'MI:0317': model.MolecularEntity,
 }
 
+# PSI-MI participant attributes without a Biolink slot; values are MI terms.
+_BIOLOGICAL_ROLE = 'psi_mi:biological_role'
+_EXPERIMENTAL_ROLE = 'psi_mi:experimental_role'
+_IDENTIFICATION_METHOD = 'psi_mi:participant_identification_method'
+_PARTICIPANT_FEATURE = 'psi_mi:participant_feature'
+_UNSPECIFIED_ROLE = 'MI:0499'
+# MITAB 2.7 feature ranges: n-n/c-c are terminal, ?-? is undetermined.
+_FEATURE_RE = re.compile(r'((?:MOD|MI):\d+|[^:]+):([^(]*)(?:\((.*)\))?')
+_RANGE_LABELS = {'n-n': 'N-terminal', 'c-c': 'C-terminal'}
+# Source feature record IDs, and the feature type's own PSI-MI accession.
+_FEATURE_ACCESSION_RE = re.compile(r'(?:EBI-|MINT-|MI:)\d+')
 _ENSEMBL_RE = re.compile(r'^ENS[A-Z0-9]*\d+(?:\.\d+)?$')
 _REFSEQ_RE = re.compile(r'^[A-Z]{2}_[0-9]+(?:\.\d+)?$')
 
@@ -186,6 +197,10 @@ def _interactor_entity_type(suffix: str):
     return _value
 
 
+def _specified_role(value: str) -> str | None:
+    return None if value == _UNSPECIFIED_ROLE else value
+
+
 def _intact_raw(opener, organism: int = 9606, **_kwargs: object):
     if organism != 9606:
         raise ValueError('Currently only human (9606) is supported for IntAct')
@@ -222,11 +237,104 @@ def intact_predicate(row):
     return slots.interacts_with
 
 
+def _participant_form(suffix: str):
+    return lambda row: mitab_participant_form(
+        row,
+        suffix,
+        entity_type=biolink_entity_type(_interactor_entity_type(suffix)(row)),
+    )
+
+
+def _feature_label(feature: str) -> str:
+    """Readable MITAB 2.7 ``type:range,range(text)`` participant feature."""
+    match = _FEATURE_RE.fullmatch(feature)
+    if not match:
+        return feature
+    term, ranges, text = match.groups()
+    positions = []
+    for value in map(str.strip, ranges.split(',')):
+        start, _, end = value.partition('-')
+        if value in _RANGE_LABELS:
+            positions.append(_RANGE_LABELS[value])
+        elif value != '?-?':
+            positions.append(start if start == end else value)
+    text = (text or '').strip().strip('"')
+    details = [', '.join(positions)] if positions else []
+    if text and not _FEATURE_ACCESSION_RE.fullmatch(text):
+        details.append(text)
+    return f'{term} ({"; ".join(details)})' if details else term
+
+
+def _participant_features(suffix: str):
+    """Features the participant's molecular form does not already describe."""
+    form = _participant_form(suffix)
+
+    def _value(row: dict[str, object]) -> list[str]:
+        participant_form = form(row) or {}
+        described = {
+            item['description']
+            for key in ('modifications', 'variants', 'regions')
+            for item in participant_form.get(key) or []
+        }
+        features = str(row.get(f'Feature(s) interactor {suffix}') or '')
+        return [
+            _feature_label(feature)
+            for feature in map(str.strip, features.split('|'))
+            if feature and feature != '-' and feature not in described
+        ]
+
+    return _value
+
+
+def _participant_annotations(suffix: str) -> AnnotationsBuilder:
+    return AnnotationsBuilder(
+        CV(term=_PARTICIPANT_FEATURE, value=_participant_features(suffix)),
+        CV(
+            term=slots.in_taxon,
+            value=f(
+                f'Taxid interactor {suffix}',
+                extract='tax',
+                transform=lambda v: 'NCBITaxon:'
+                + str(v).removeprefix('NCBITaxon:')
+                if str(v).removeprefix('NCBITaxon:').isdigit()
+                and int(str(v).removeprefix('NCBITaxon:')) > 0
+                else None,
+            ),
+        ),
+        CV(
+            term=_BIOLOGICAL_ROLE,
+            value=f(
+                f'Biological role(s) interactor {suffix}',
+                extract='mi',
+                transform=_specified_role,
+            ),
+        ),
+        CV(
+            term=_EXPERIMENTAL_ROLE,
+            value=f(
+                f'Experimental role(s) interactor {suffix}',
+                extract='mi',
+                transform=_specified_role,
+            ),
+        ),
+        # MITAB uses 0 for an unknown stoichiometry.
+        CV(
+            term=slots.stoichiometry,
+            value=f(
+                f'Stoichiometry(s) interactor {suffix}',
+                transform=lambda v: None if v == '0' else v,
+            ),
+        ),
+        CV(
+            term=_IDENTIFICATION_METHOD,
+            value=f(f'Identification method participant {suffix}', extract='mi'),
+        ),
+    )
+
+
 interactor_a_builder = EntityBuilder(
     entity_type=_interactor_entity_type('A'),
-    molecular_form=lambda row: mitab_participant_form(
-        row, 'A', entity_type=biolink_entity_type(_interactor_entity_type('A')(row)),
-    ),
+    molecular_form=_participant_form('A'),
     identifiers=IdentifiersBuilder(
         CV(
             term=parsed_identifier_terms('#ID(s) interactor A'),
@@ -237,41 +345,12 @@ interactor_a_builder = EntityBuilder(
             value=parsed_identifier_values('Alt. ID(s) interactor A'),
         ),
     ),
-    annotations=AnnotationsBuilder(
-        CV(term=slots.description, value=f('Feature(s) interactor A')),
-        CV(
-            term=slots.in_taxon,
-            value=f(
-                'Taxid interactor A',
-                extract='tax',
-                transform=lambda v: 'NCBITaxon:'
-                + str(v).removeprefix('NCBITaxon:')
-                if str(v).removeprefix('NCBITaxon:').isdigit()
-                and int(str(v).removeprefix('NCBITaxon:')) > 0
-                else None,
-            ),
-        ),
-        CV(
-            term=slots.has_topic,
-            value=f('Biological role(s) interactor A', extract='mi'),
-        ),
-        CV(
-            term=slots.has_topic,
-            value=f('Experimental role(s) interactor A', extract='mi'),
-        ),
-        CV(term=slots.stoichiometry, value=f('Stoichiometry(s) interactor A')),
-        CV(
-            term=slots.has_topic,
-            value=f('Identification method participant A', extract='mi'),
-        ),
-    ),
+    annotations=_participant_annotations('A'),
 )
 
 interactor_b_builder = EntityBuilder(
     entity_type=_interactor_entity_type('B'),
-    molecular_form=lambda row: mitab_participant_form(
-        row, 'B', entity_type=biolink_entity_type(_interactor_entity_type('B')(row)),
-    ),
+    molecular_form=_participant_form('B'),
     identifiers=IdentifiersBuilder(
         CV(
             term=parsed_identifier_terms('ID(s) interactor B'),
@@ -282,34 +361,7 @@ interactor_b_builder = EntityBuilder(
             value=parsed_identifier_values('Alt. ID(s) interactor B'),
         ),
     ),
-    annotations=AnnotationsBuilder(
-        CV(term=slots.description, value=f('Feature(s) interactor B')),
-        CV(
-            term=slots.in_taxon,
-            value=f(
-                'Taxid interactor B',
-                extract='tax',
-                transform=lambda v: 'NCBITaxon:'
-                + str(v).removeprefix('NCBITaxon:')
-                if str(v).removeprefix('NCBITaxon:').isdigit()
-                and int(str(v).removeprefix('NCBITaxon:')) > 0
-                else None,
-            ),
-        ),
-        CV(
-            term=slots.has_topic,
-            value=f('Biological role(s) interactor B', extract='mi'),
-        ),
-        CV(
-            term=slots.has_topic,
-            value=f('Experimental role(s) interactor B', extract='mi'),
-        ),
-        CV(term=slots.stoichiometry, value=f('Stoichiometry(s) interactor B')),
-        CV(
-            term=slots.has_topic,
-            value=f('Identification method participant B', extract='mi'),
-        ),
-    ),
+    annotations=_participant_annotations('B'),
 )
 
 interactions_schema = RelationBuilder(
@@ -330,12 +382,18 @@ interactions_schema = RelationBuilder(
                 extract=r'(?:^|\|)intact-miscore:([0-9.]+)',
             ),
         ),
-        CV(term=slots.has_topic, value=f('Interaction type(s)', extract='mi')),
         CV(
-            term=slots.has_topic,
+            term=slots.original_predicate,
+            value=f('Interaction type(s)', extract='mi'),
+        ),
+        CV(
+            term=slots.has_evidence_of_type,
             value=f('Interaction detection method(s)', extract='mi'),
         ),
-        CV(term=slots.has_topic, value=f('Source database(s)', extract='mi')),
+        CV(
+            term=slots.supporting_data_source,
+            value=f('Source database(s)', extract='mi'),
+        ),
         CV(
             term=slots.publications,
             value=f(

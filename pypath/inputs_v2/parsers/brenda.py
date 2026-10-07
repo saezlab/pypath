@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Generator
 import re
-from typing import Any
+from typing import Any, NamedTuple
 
 from pypath.internals.ontology_schema import OntologyRelationship, OntologyTerm
 
@@ -39,6 +39,22 @@ UNIPROT_IDENTIFIER = re.compile(
     flags=re.IGNORECASE,
 )
 TRAILING_REFERENCE = re.compile(r'\s*<[\d,]+>\s*$')
+TRAILING_REFERENCES = re.compile(r'\s*<([\d,\s]+)>\s*$')
+REFERENCE_MARKER = re.compile(r'\s*<[\d,\s]+>')
+NOTE_START = re.compile(r'\(\s*#[\d,]+#')
+NOTE_SEPARATOR = re.compile(r';\s*(?=#[\d,]+#)')
+ACCESSION_BLOCK = re.compile(r'\s*\{[^{}]*\}')
+
+
+
+class Commentary(NamedTuple):
+    """A ``#proteins# text <references>`` statement with its notes."""
+
+    proteins: list[str]
+    text: str
+    notes: list[Commentary]
+    references: list[str]
+
 
 TOP_EC_CLASS_NAMES = {
     '1': 'Oxidoreductases',
@@ -134,7 +150,8 @@ def iter_molecular_forms(opener, max_records=None, **kwargs):
     """Keep each EN/PM observation with its explicit protein and citations.
 
     Official 2026.1 README: EN=engineering, PM=posttranslation modification;
-    #protein# and <reference> delimiters are local to each EC record.
+    #protein# and <reference> delimiters are local to each EC record. Each
+    protein keeps only the commentary and references the source assigns to it.
     Catalogue states are not broadcast to the separate kinetics datasets.
     """
     emitted = 0
@@ -146,46 +163,92 @@ def iter_molecular_forms(opener, max_records=None, **kwargs):
             continue
         proteins = {}
         for protein in record.get('PR', []):
-            match = ID.match(protein)
-            if match:
-                for pid in match[1].split(','):
-                    proteins[pid] = protein
+            if parsed := parse_commentary(protein):
+                organism = clean_text(ACCESSION_BLOCK.sub('', parsed.text))
+                for pid in parsed.proteins:
+                    proteins[pid] = (
+                        protein,
+                        organism or None,
+                        [n.text for n in parsed.notes if pid in n.proteins],
+                    )
         references = process_references(record)
         for section in ('EN', 'PM'):
             for observation in record.get(section, []):
-                match = ID.match(observation)
-                if not match:
+                parsed = parse_commentary(observation)
+                if not parsed:
                     continue
-                descriptor = re.split(
-                    r'\s*[<(]', observation[match.end() :].strip(), maxsplit=1
-                )[0].strip()
-                publication_ids = (
-                    split_ref_ids(reference[1])
-                    if (reference := REFERENCE.match(observation))
-                    else []
-                )
-                for pid in match[1].split(','):
-                    accessions = extract_uniprot_ids(proteins.get(pid, ''))
+                noted = {ref for note in parsed.notes for ref in note.references}
+                for pid in parsed.proteins:
+                    own = [note for note in parsed.notes if pid in note.proteins]
+                    own_notes = dedupe([note.text for note in own])
+                    if not observation_texts(parsed.text, own_notes):
+                        continue
+                    own_refs = (
+                        dedupe([ref for note in own for ref in note.references])
+                        or [ref for ref in parsed.references if ref not in noted]
+                        or parsed.references
+                    )
+                    protein, organism, protein_notes = proteins.get(
+                        pid, ('', None, [])
+                    )
+                    accessions = extract_uniprot_ids(protein)
                     yield {
                         'EC': ec,
                         'protein_record_id': pid,
                         'UniProt': accessions[0]
                         if len(accessions) == 1
                         else None,
-                        'source_protein_record': proteins.get(pid),
+                        'organism': organism,
+                        'protein_notes': protein_notes,
                         'source_accessions': accessions,
                         'section': section,
-                        'descriptor': descriptor,
-                        'observation': observation,
+                        'descriptor': parsed.text,
+                        'notes': own_notes,
                         'Refs': [
                             references[ref]
-                            for ref in publication_ids
+                            for ref in own_refs
                             if references.get(ref)
                         ],
                     }
                     emitted += 1
                     if max_records is not None and emitted >= max_records:
                         return
+
+
+def parse_commentary(value: str) -> Commentary | None:
+    """Split BRENDA ``#1,2# text (#1# note <3>; #2# note <4>) <3,4>`` lines.
+
+    Markers are removed from all texts; protein and reference numbers are
+    local to the EC record.
+    """
+    match = ID.match(value)
+    if not match:
+        return None
+    pids = split_ref_ids(match[1])
+    body = value[match.end():].strip()
+    refs = []
+    if trailing := TRAILING_REFERENCES.search(body):
+        refs = split_ref_ids(trailing[1])
+        body = body[: trailing.start()]
+    notes = []
+    if body.endswith(')') and (start := NOTE_START.search(body)):
+        commentary = body[start.start() + 1 : -1]
+        # Some source lines close the commentary twice.
+        while commentary.endswith(')') and commentary.count(')') > commentary.count('('):
+            commentary = commentary[:-1]
+        for entry in NOTE_SEPARATOR.split(commentary):
+            note = parse_commentary(entry.strip()) or Commentary(pids, entry, [], [])
+            if text := clean_text(REFERENCE_MARKER.sub('', note.text)):
+                notes.append(note._replace(text=text))
+        body = body[: start.start()]
+    return Commentary(pids, clean_text(REFERENCE_MARKER.sub('', body)), notes, refs)
+
+
+def observation_texts(descriptor: str, notes: list[str]) -> list[str]:
+    """One readable statement per note; ``more`` is BRENDA's free-text placeholder."""
+    if descriptor.lower() in {'more', 'additional information'}:
+        return notes
+    return [f'{descriptor}: {note}' for note in notes] or [descriptor]
 
 
 def term_record_to_term(row: dict[str, Any]) -> OntologyTerm | None:

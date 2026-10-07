@@ -137,13 +137,9 @@ def test_negative_and_nonmodification_features_preserve_source_context_only():
     participant = parser._extract_participant_data(
         graph, physical, 'reactant', references, xrefs, {}
     )
+    # Neither feature is a present modification; the raw BioPAX features are not kept.
     assert participant['molecular_form']['modifications'] is None
-    contexts = participant['feature_context']
-    assert {feature['present'] for feature in contexts} == {True, False}
-    negative = next(feature for feature in contexts if not feature['present'])
-    assert negative['locations'][0]['properties'][str(BP.positionStatus)] == [
-        'LESS-THAN'
-    ]
+    assert 'feature_context' not in participant
     row = parser._flatten_participants([participant])
     row.update(
         {
@@ -153,14 +149,10 @@ def test_negative_and_nonmodification_features_preserve_source_context_only():
         }
     )
     mapped = reactome.reactions_schema(row)
-    context = json.loads(
-        next(
-            annotation.value
-            for annotation in mapped.membership[0].annotations
-            if annotation.term == 'biopax:feature_context'
-        )
+    assert not any(
+        annotation.term == 'biopax:feature_context'
+        for annotation in mapped.membership[0].annotations
     )
-    assert len(context) == 2
 
 
 def test_transcript_reference_and_translation_are_not_dropped():

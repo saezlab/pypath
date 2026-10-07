@@ -20,7 +20,6 @@ from __future__ import annotations
 from biolink_model.datamodel.model import MicroRNA, slots
 from omnipath_core.naming import Namespace
 
-import json
 import re
 from collections.abc import Generator
 from typing import Any
@@ -39,7 +38,7 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
-from pypath.inputs_v2._molecular_forms import sequence_form
+from pypath.inputs_v2._molecular_forms import combine_forms, sequence_form
 from pypath.inputs_v2.base import (
     Dataset, Download, Resource, ResourceConfig, _first_handle,
 )
@@ -236,16 +235,31 @@ precursors_schema = EntityBuilder(
 )
 
 
+def _mature_form(row):
+    """The mature sequence and its extent in each precursor of this release."""
+    return combine_forms(
+        sequence_form(row.get('sequence'), system='transcript'),
+        {'regions': [
+            {
+                'type': 'Mature miRNA',
+                'position': region['position'],
+                'end_position': region['end_position'],
+                'coordinate_reference': region['coordinate_reference'],
+                # An inexact source location keeps its text, not a position.
+                'description': None if region['position'] is not None
+                else f"source location {region['location']}",
+            }
+            for region in row.get('precursor_regions', [])
+        ]},
+    )
+
+
 matures_schema = EntityBuilder(
-    molecular_form=lambda row: sequence_form(row.get('sequence'), system='transcript'),
+    molecular_form=_mature_form,
     entity_type=MicroRNA,
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.MIRBASE_MATURE, value=f('mirbase_mat')),
         CV(term=Namespace.NAME, value=f('name')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term='mirbase:precursor_region', value=lambda row: [json.dumps(region, sort_keys=True)
-            for region in row.get('precursor_regions', [])]),
     ),
     associations=AssociationsBuilder(
         AssociationBuilder(

@@ -448,7 +448,8 @@ def test_human_gem_parser_and_mapper_preserve_flux_bounds(monkeypatch):
             for a in entity.annotations
             if a['term'] == 'has_quantitative_value'
         }
-        assert quantities['lower_bound']['has_numeric_value'] == -1000.0
+        # -1000 is the model's default for an unconstrained flux, not a bound.
+        assert 'lower_bound' not in quantities
         assert quantities['upper_bound']['has_numeric_value'] == 500.0
         assert all(q['has_unit'] is None for q in quantities.values())
 

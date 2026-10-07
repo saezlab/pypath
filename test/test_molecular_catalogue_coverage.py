@@ -64,6 +64,15 @@ def tsv(row):
     return stream.getvalue()
 
 
+PTMLIST = '''ID   Phosphoserine
+AC   PTM-0253
+FT   MOD_RES
+TG   Serine.
+DR   PSI-MOD; MOD:00046.
+//
+'''
+
+
 def test_uniprot_catalogue_alternatives_are_individual_observations():
     row = {
         'Entry': 'P04637',
@@ -72,18 +81,24 @@ def test_uniprot_catalogue_alternatives_are_individual_observations():
         'Mutagenesis': 'MUTAGEN 2; /note="A->G,V: two alternatives; distinct mutants"; /evidence="ECO:0000269|PubMed:123"; MUTAGEN <3; /note="Missing: uncertain region"',
         'Modified residue': 'MOD_RES 3; /note="Phosphoserine"',
     }
-    features = list(uniprot._catalogue_feature_rows(opener(tsv(row))))
+    features = list(
+        uniprot._catalogue_feature_rows(
+            opener(tsv(row)), ptmlist=opener(PTMLIST)
+        )
+    )
     assert len(features) == 4
     forms = [
         uniprot.catalogue_features_schema(row).molecular_form
         for row in features
     ]
     variants = [form['variants'][0] for form in forms if form['variants']]
-    assert [variant['alternate'] for variant in variants] == ['G', 'V', None]
+    assert [variant['alternate'] for variant in variants] == ['G', 'V', '']
     assert variants[2]['position'] is None
+    assert variants[2]['description'].endswith('source location <3')
     assert 'distinct mutants' in variants[0]['description']
     assert not forms[0]['modifications']
-    assert forms[-1]['modifications'][0]['term'] == 'Phosphoserine'
+    assert forms[-1]['modifications'][0]['term'] == 'MOD:00046'
+    assert forms[-1]['modifications'][0]['description'] == 'Phosphoserine'
     assert (
         variants[0]['coordinate_reference']['identifier']['ns']
         == 'protein_sequence_sha256'
@@ -96,7 +111,9 @@ def test_uniprot_real_tsv_features_keep_ids_and_positions():
     text = (
         Path(__file__).parent / 'data/molecular/uniprot-P04637.tsv'
     ).read_text()
-    rows = list(uniprot._catalogue_feature_rows(opener(text)))
+    rows = list(
+        uniprot._catalogue_feature_rows(opener(text), ptmlist=opener(PTMLIST))
+    )
     assert len(rows) > 100
     assert any(
         row['molecular_form'] and row['molecular_form']['variants']
@@ -114,6 +131,11 @@ def test_uniprot_real_tsv_features_keep_ids_and_positions():
             or []
         )
         for row in rows
+    )
+    assert any(
+        region['type'] == 'Chain' and region['position'] is not None
+        for row in rows
+        for region in row['molecular_form']['regions'] or []
     )
     assert all(
         extract(uniprot.catalogue_features_schema(row)).entities for row in rows
@@ -205,8 +227,8 @@ def test_chembl_assay_variants_remain_per_assay_and_representative():
         ).molecular_form
         is None
     )
-    unknown = chembl.target_builder({**base, 'variant_id': -1})
-    assert unknown.molecular_form['variants'][0]['position'] is None
+    # ChEMBL's -1 is a mutation it could not map: no specific variant.
+    assert chembl.target_builder({**base, 'variant_id': -1}).molecular_form is None
     assert (
         chembl.target_builder(
             {**base, 'variant_accession': 'P04637', 'variant_id': 12}
@@ -276,6 +298,10 @@ def test_mirbase_products_keep_precursor_ranges_and_actual_sequences():
     form = mirbase.matures_schema(rows[0]).molecular_form
     assert form['sequence_identifiers'][0]['ns'] == 'transcript_sequence_sha256'
     assert form['modifications'] is None
+    assert [
+        (r['position'], r['end_position'], r['coordinate_reference']['identifier']['id'])
+        for r in form['regions']
+    ] == [(1, 4, 'MI1@22'), (5, 8, 'MI2@22')]
     assert {
         relation.predicate
         for relation in extract(mirbase.matures_schema(rows[0])).relations
@@ -294,10 +320,12 @@ def test_mirbase_different_sequences_and_fuzzy_positions_are_not_collapsed():
     fuzzy = next(row for row in rows if row['sequence'] is None)
     assert fuzzy['precursor_regions'][0]['location'] == '<2..4'
     assert fuzzy['precursor_regions'][0]['position'] is None
-    assert mirbase.matures_schema(fuzzy).molecular_form is None
+    (region,) = mirbase.matures_schema(fuzzy).molecular_form['regions']
+    assert region['position'] is None and region['end_position'] is None
+    assert region['description'] == 'source location <2..4'
 
 
-def test_recon3d_selectors_remain_source_context_without_guessed_forms():
+def test_recon3d_transcript_labels_stay_in_the_source_rule():
     data = {
         'genes': [{'id': '1_AT1', 'name': 'A'}, {'id': '1_AT2', 'name': 'A'}],
         'metabolites': [],
@@ -312,19 +340,15 @@ def test_recon3d_selectors_remain_source_context_without_guessed_forms():
         ],
     }
     (gene,) = rp._parse_genes(data)
-    assert gene['source_selectors'] == ['1_AT1', '1_AT2']
-    assert recon3d.genes_schema(gene).molecular_form is None
+    record = recon3d.genes_schema(gene)
+    assert record.molecular_form is None
+    assert {a.term for a in record.annotations} == {'in_taxon'}
     (row,) = rp._parse_reactions(data)
     assert row['gene_rule_clauses'] == [['1']]
-    assert row['source_gene_rule_clauses'] == [['1_AT1'], ['1_AT2']]
+    assert row['gene_reaction_rule'] == '1_AT1 or 1_AT2'
     (relation,) = extract(recon3d.reactions_schema(row)).relations
-    assert json.loads(
-        next(
-            annotation['value']
-            for annotation in relation.annotations
-            if annotation['term'] == 'recon3d:source_product_clauses'
-        )
-    ) == [['1_AT1'], ['1_AT2']]
+    assert relation.predicate == 'associated_with'
+    assert not relation.annotations
 
 
 @pytest.mark.parametrize('accession', ['P04637-2', 'P04637-PRO_0000185703'])
@@ -349,23 +373,19 @@ def test_other_resource_member_and_endpoint_suffixes_survive(accession):
     )
 
 
-def test_recon3d_complex_catalogue_keeps_separate_selector_alternatives():
+def test_recon3d_complex_catalogue_merges_transcript_alternatives():
     data = {
         'reactions': [
             {'gene_reaction_rule': '(1_AT1 and 2_AT1) or (1_AT2 and 2_AT1)'}
         ]
     }
     (row,) = rp._parse_enzyme_complexes(data)
-    assert len(row['source_gene_rule_clauses']) == 2
+    assert row == {'complex_subunits': '1||2'}
     record = recon3d.enzyme_complexes_schema(row)
-    assert json.loads(record.annotations[0].value) == [
-        ['1_AT1', '2_AT1'],
-        ['1_AT2', '2_AT1'],
-    ]
+    assert not record.annotations
     assert all(
         member.member.molecular_form is None for member in record.membership
     )
-
 
 
 def test_conflicting_same_site_substitutions_keep_ambiguous_source_description():

@@ -15,6 +15,7 @@ from omnipath_core.source_attributes import (
     TRAIT_TYPE,
 )
 import pyarrow.parquet as pq
+from omnipath_core.fixtures import read_resource
 import pytest
 
 from pypath.internals.tabular_builder import EntityBuilder, RelationBuilder
@@ -272,8 +273,10 @@ def _publish(
                 module, mapper, row, f'interactions:{index}'
             )
             writer.append_observations(observations, resolver)
-        paths = writer.close()[:3]
-        return [pq.read_table(item).to_pylist() for item in paths]
+        writer.close()
+        entities, relations = read_resource(path)
+        payloads = pq.read_table(path / 'evidence_payloads.parquet').to_pylist()
+        return [entities, relations, payloads]
     finally:
         resolver.close()
 

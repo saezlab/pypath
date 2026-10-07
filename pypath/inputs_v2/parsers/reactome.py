@@ -32,7 +32,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 13  # Includes occurrence molecular forms before feature flattening.
+_CACHE_VERSION = 14  # Includes occurrence molecular forms with fragment regions.
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
@@ -567,7 +567,7 @@ def _participant_molecular_form(g, molecule_uri, participant):
         'coordinate_system': 'protein' if source_type == 'protein' else 'transcript' if source_type == 'rna' else 'genomic',
         'position_base': 1,
     }
-    modifications = []
+    modifications, regions = [], []
 
     def exact_position(location):
         if location is None:
@@ -581,9 +581,15 @@ def _participant_molecular_form(g, molecule_uri, participant):
             return None
         return int(positions[0]) or None
 
+    def site_text(site):
+        positions = '/'.join(str(p) for p in g.objects(site, BP.sequencePosition)) or '?'
+        statuses = ', '.join(sorted(str(s) for s in g.objects(site, BP.positionStatus)))
+        return f'{positions} ({statuses})' if statuses else positions
+
     for feature in g.objects(molecule_uri, BP.feature):
         vocabularies = list(g.objects(feature, BP.modificationType))
-        if not vocabularies:
+        is_fragment = (feature, RDF.type, BP.FragmentFeature) in g
+        if not vocabularies and not is_fragment:
             continue
         labels = [str(term) for vocabulary in vocabularies for term in g.objects(vocabulary, BP['term'])]
         mod_accessions = []
@@ -602,22 +608,27 @@ def _participant_molecular_form(g, molecule_uri, participant):
             ends = list(g.objects(location, BP.sequenceIntervalEnd)) if location else []
             start = exact_position(starts[0]) if len(starts) == 1 else exact_position(location)
             end = exact_position(ends[0]) if len(ends) == 1 else start
-            source_locations = starts + ends if starts or ends else [location]
-            source_ranges = [
-                {'position': [str(p) for p in g.objects(source_location, BP.sequencePosition)],
-                 'status': [str(s) for s in g.objects(source_location, BP.positionStatus)]}
-                for source_location in source_locations if source_location is not None
-            ]
-            modifications.append({
-                'term': mod_accessions[0] if len(mod_accessions) == 1 else '; '.join(labels) or None,
+            sites = starts + ends if starts or ends else [location] if location else []
+            # Readable source context; inexact source positions stay in text only.
+            description = '; '.join([
+                *labels,
+                *(mod_accessions if len(mod_accessions) > 1 else []),
+                *([f"source position {'..'.join(site_text(site) for site in sites)}"]
+                  if sites and (start is None or end is None) else []),
+            ]) or None
+            item = {
                 'position': start, 'end_position': end,
                 'coordinate_reference': coordinate,
-                'description': json.dumps({'source_feature': str(feature),
-                                           'source_terms': labels,
-                                           'mod_accessions': mod_accessions,
-                                           'source_ranges': source_ranges}, sort_keys=True),
-            })
-    form['modifications'] = modifications
+                'description': description,
+            }
+            if vocabularies:
+                modifications.append({
+                    **item,
+                    'term': mod_accessions[0] if len(mod_accessions) == 1 else '; '.join(labels) or None,
+                })
+            else:
+                regions.append({**item, 'type': 'Fragment'})
+    form.update(modifications=modifications, regions=regions)
     return normalize_molecular_form(form, allow_resolved=False)
 
 

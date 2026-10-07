@@ -1,9 +1,10 @@
 """Recon3D metabolic activities, chemical participants and model genes.
 
-Input/output evidence retains stoichiometry, compartments and original conversion
-direction. Chemical formula and charge use typed attributes. Numeric bounds and
-original Boolean gene rules remain source payload fields. GPR alternatives link activities to source-scoped logical AND
-groups of genes; these groups do not assert physical assemblies.
+Input/output evidence retains stoichiometry, GO compartment names and BioPAX
+conversion direction. Chemical formula and charge use typed attributes. Numeric
+bounds and original Boolean gene rules, including transcript labels, remain
+source payload fields. GPR alternatives link activities to source-scoped logical
+AND groups of genes; these groups do not assert physical assemblies.
 """
 
 from __future__ import annotations
@@ -18,7 +19,7 @@ from omnipath_core.source_attributes import CELLULAR_LOCATION
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2._source_context import conversion_direction_cv
-from pypath.inputs_v2.parsers.recon3d import _raw
+from pypath.inputs_v2.parsers.recon3d import _raw, compartment_name
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.silver_schema import Annotation, Entity, Identifier, Membership
 from pypath.internals.tabular_builder import (
@@ -63,10 +64,7 @@ class _ReactionMembership(MembershipBuilder):
                 continue
             group = _gene_rule_group(genes)
             member = group.membership[0].member if len(genes) == 1 else group
-            alternatives = [clause for clause in row.get('source_gene_rule_clauses', [])
-                            if sorted({item.split('_AT', 1)[0] for item in clause}) == sorted(set(genes))]
-            annotations = [Annotation(term='recon3d:source_product_clauses', value=json.dumps(alternatives, sort_keys=True))] if alternatives else None
-            members.append(Membership(member=member, predicate=slots.associated_with, annotations=annotations))
+            members.append(Membership(member=member, predicate=slots.associated_with))
         return members
 
 
@@ -91,7 +89,9 @@ f = FieldConfig(
         if value == 'complex'
         else model.Protein,
         'stoich_id': lambda value: value.split(':')[0] if value else None,
-        'stoich_comp': lambda value: value.split(':')[1] if value else None,
+        'stoich_comp': lambda value: compartment_name(value.split(':')[1])
+        if value
+        else None,
         'stoich_val': lambda value: value.split(':')[2] if value else None,
         'split_member_values': lambda value: value.split(';;')
         if value
@@ -528,8 +528,7 @@ def enzyme_complexes_schema(row: dict) -> Entity | None:
     genes = [gene for gene in str(row.get('complex_subunits') or '').split('||') if gene]
     if not genes:
         return None
-    entity = _gene_rule_group(genes)
-    return entity._replace(annotations=[Annotation(term='recon3d:source_product_clauses', value=json.dumps(row['source_gene_rule_clauses'], sort_keys=True))]) if row.get('source_gene_rule_clauses') else entity
+    return _gene_rule_group(genes)
 
 
 # ── genes ────────────────────────────────────────────────────────────────────
@@ -542,7 +541,6 @@ genes_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=slots.in_taxon, value='NCBITaxon:9606'),
-        CV(term='recon3d:source_product_selector', value=lambda row: row.get('source_selectors', [])),
     ),
 )
 

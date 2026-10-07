@@ -152,7 +152,7 @@ def _molecular_form(row):
             'modifications': [
                 {
                     'term': descriptor,
-                    'description': row['observation'],
+                    'description': '; '.join(row['notes']) or None,
                 }
             ]
         },
@@ -168,8 +168,14 @@ molecular_forms_schema = EntityBuilder(
         CV(term='brenda_protein_record', value=lambda row: row['EC'] + '#' + row['protein_record_id']),
     ),
     annotations=AnnotationsBuilder(
-        CV(term='brenda:molecular_observation', value=f('observation')),
-        CV(term='brenda:source_protein_record', value=f('source_protein_record')),
+        CV(
+            term='brenda:molecular_observation',
+            value=lambda row: _parsers.observation_texts(
+                row['descriptor'], row['notes']
+            ),
+        ),
+        CV(term=slots.in_taxon_label, value=f('organism')),
+        CV(term='brenda:protein_note', value=f('protein_notes')),
         CV(term=slots.publications, value=lambda row: ['PMID:' + p for p in row.get('Refs', [])]),
     ),
 )

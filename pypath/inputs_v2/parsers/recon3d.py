@@ -18,6 +18,37 @@ _ISOFORM_RE = re.compile(r'_[A-Z]+\d*$')
 _MEMBER_VALUE_DELIMITER = ';;'
 _CHEBI_RE = re.compile(r'^(?:CHEBI:)?(\d+)$', re.IGNORECASE)
 _HMDB_RE = re.compile(r'^HMDB(\d+)$', re.IGNORECASE)
+# Recon3D compartment codes as GO cellular component names; [i] is the
+# mitochondrial intermembrane space of Recon 2/3 (BiGG: "inner mitochondrial
+# compartment"), [m] the mitochondrion.
+_COMPARTMENTS = {
+    'c': 'cytosol',
+    'e': 'extracellular space',
+    'g': 'Golgi apparatus',
+    'i': 'mitochondrial intermembrane space',
+    'l': 'lysosome',
+    'm': 'mitochondrion',
+    'n': 'nucleus',
+    'r': 'endoplasmic reticulum',
+    'x': 'peroxisome',
+}
+
+
+def compartment_name(code: str) -> str | None:
+    """GO cellular component name of a compartment code; unknown codes are kept."""
+    return _COMPARTMENTS.get(code, code) or None
+
+
+def _coefficient(value: float) -> str:
+    """Stoichiometric coefficient as text, integral values without decimals."""
+    return str(int(value)) if float(value).is_integer() else str(value)
+
+
+def _direction(lower_bound: float, upper_bound: float) -> str:
+    """BioPAX conversion direction from the model's flux bounds."""
+    if lower_bound < 0 < upper_bound:
+        return 'REVERSIBLE'
+    return 'RIGHT-TO-LEFT' if lower_bound < 0 else 'LEFT-TO-RIGHT'
 
 
 def _annotation_list(annotation_dict: dict, key: str) -> list[str] | None:
@@ -219,7 +250,7 @@ def _reaction_member_fields(
     }
 
 
-def _parse_gene_rule(rule: str, *, project_to_gene: bool = True) -> list[list[str]]:
+def _parse_gene_rule(rule: str) -> list[list[str]]:
     """Parse AND/OR rules into deterministic alternatives of required genes.
 
     Parentheses and AND precedence are respected. Malformed expressions raise
@@ -245,7 +276,7 @@ def _parse_gene_rule(rule: str, *, project_to_gene: bool = True) -> list[list[st
             return clauses
         if token.lower() in ('and', 'or') or token == ')':
             raise ValueError(f'Unexpected gene-rule token: {token!r}')
-        return [frozenset([_strip_isoform(token) if project_to_gene else token])]
+        return [frozenset([_strip_isoform(token)])]
 
     def conjunction():
         nonlocal position
@@ -300,9 +331,10 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
 
     Iterates over the ``reactions`` array in the BiGG JSON and encodes
     stoichiometry as ``||``-delimited ``base_id:compartment:coefficient``
-    strings for reactants and products separately.  Direction is ``'REVERSIBLE'`` when
-    ``lower_bound < 0 < upper_bound`` (consistent with the legacy module),
-    and ``'LEFT-TO-RIGHT'`` otherwise.
+    strings for reactants and products separately, integral coefficients
+    without decimals.  Direction is the BioPAX ``'REVERSIBLE'`` when
+    ``lower_bound < 0 < upper_bound``, ``'RIGHT-TO-LEFT'`` when only the
+    reverse flux is allowed and ``'LEFT-TO-RIGHT'`` otherwise.
 
     Args:
         data: The parsed top-level BiGG JSON dict.
@@ -339,7 +371,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
             member_fields = _reaction_member_fields(metabolite_index, base_id)
 
             if stoich < 0:
-                reactants.append(f'{base_id}:{compartment}:{abs(stoich)}')
+                reactants.append(f'{base_id}:{compartment}:{_coefficient(abs(stoich))}')
                 reactant_name.append(_serialize_member_value(member_fields['name']))
                 reactant_formula.append(
                     _serialize_member_value(member_fields['formula'])
@@ -356,7 +388,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
                     _serialize_member_value(member_fields['metanetx'])
                 )
             else:
-                products.append(f'{base_id}:{compartment}:{stoich}')
+                products.append(f'{base_id}:{compartment}:{_coefficient(stoich)}')
                 product_name.append(_serialize_member_value(member_fields['name']))
                 product_formula.append(
                     _serialize_member_value(member_fields['formula'])
@@ -375,7 +407,7 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
 
         lb = r.get('lower_bound', 0)
         ub = r.get('upper_bound', 0)
-        direction = 'REVERSIBLE' if lb < 0 < ub else 'LEFT-TO-RIGHT'
+        direction = _direction(lb, ub)
         enzyme_entrez = _reaction_enzyme_entrez_ids(r)
         yield {
             'bigg_reaction_id': r['id'],
@@ -386,7 +418,6 @@ def _parse_reactions(data: dict) -> Generator[dict, None, None]:
             'upper_bound': ub,
             'gene_reaction_rule': r.get('gene_reaction_rule', ''),
             'gene_rule_clauses': _parse_gene_rule(r.get('gene_reaction_rule', '')),
-            'source_gene_rule_clauses': _parse_gene_rule(r.get('gene_reaction_rule', ''), project_to_gene=False),
             'compartments': data.get('compartments', {}),
             'ec': _annotation_list(ann, 'ec-code'),
             'metanetx_reaction': _annotation_list(ann, 'metanetx.reaction'),
@@ -519,9 +550,7 @@ def _parse_genes(data: dict) -> Generator[dict, None, None]:
         entrez = _strip_isoform(gene['id'])
         if not entrez or entrez == '0':
             continue
-        record = genes.setdefault(entrez, {'entrez_id': entrez, 'name': gene.get('name'), 'source_selectors': []})
-        if gene['id'] not in record['source_selectors']:
-            record['source_selectors'].append(gene['id'])
+        genes.setdefault(entrez, {'entrez_id': entrez, 'name': gene.get('name')})
     yield from genes.values()
 
 
@@ -561,7 +590,6 @@ def _parse_catalysis(data: dict) -> Generator[dict, None, None]:
                 yield {
                     'enzyme_type': 'protein',
                     'enzyme_entrez': subunit_list[0],
-                    'source_gene_rule_clauses': [clause for clause in _parse_gene_rule(r.get('gene_reaction_rule', ''), project_to_gene=False) if sorted({_strip_isoform(gene) for gene in clause}) == sorted(subunit_list)],
                     'reaction_bigg_id': r['id'],
                     'reaction_name': r.get('name'),
                     'subsystem': r.get('subsystem'),
@@ -574,7 +602,6 @@ def _parse_catalysis(data: dict) -> Generator[dict, None, None]:
                 yield {
                     'enzyme_type': 'complex',
                     'enzyme_entrez': None,
-                    'source_gene_rule_clauses': [clause for clause in _parse_gene_rule(r.get('gene_reaction_rule', ''), project_to_gene=False) if sorted({_strip_isoform(gene) for gene in clause}) == sorted(subunit_list)],
                     'reaction_bigg_id': r['id'],
                     'reaction_name': r.get('name'),
                     'subsystem': r.get('subsystem'),
@@ -593,18 +620,14 @@ def _parse_enzyme_complexes(data: dict) -> Generator[dict, None, None]:
 
     Yields:
         dict: One record per unique complex with the key
-            ``complex_subunits``, a ``||``-delimited string of Entrez IDs
-            in original (non-sorted) order.
+            ``complex_subunits``, a ``||``-delimited string of sorted
+            Entrez IDs.
     """
     groups = {}
     for reaction in data.get('reactions', []):
-        for clause in _parse_gene_rule(reaction.get('gene_reaction_rule', ''), project_to_gene=False):
-            genes = sorted({_strip_isoform(gene) for gene in clause if gene})
-            if len(genes) < 2:
-                continue
-            record = groups.setdefault(tuple(genes), {'complex_subunits': '||'.join(genes), 'source_gene_rule_clauses': []})
-            if clause not in record['source_gene_rule_clauses']:
-                record['source_gene_rule_clauses'].append(clause)
+        for genes in _parse_gene_rule(reaction.get('gene_reaction_rule', '')):
+            if len(genes) > 1:
+                groups.setdefault(tuple(genes), {'complex_subunits': '||'.join(genes)})
     yield from groups.values()
 
 

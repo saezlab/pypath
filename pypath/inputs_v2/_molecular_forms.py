@@ -98,7 +98,12 @@ def combine_forms(*forms: dict | None) -> dict | None:
         if form
     ]
     result: dict = {}
-    for key in ('sequence_identifiers', 'modifications', 'variants'):
+    for key in (
+        'sequence_identifiers',
+        'modifications',
+        'variants',
+        'regions',
+    ):
         items = []
         for form in values:
             for item in (form or {}).get(key) or []:

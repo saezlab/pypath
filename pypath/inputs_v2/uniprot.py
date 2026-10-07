@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from html import unescape
 import csv
+import functools
 import json
 import re
 
@@ -66,6 +67,10 @@ UNIPROT_DATA_URL = (
 UNIPROT_KEYWORDS_OBO_URL = (
     'https://rest.uniprot.org/keywords/stream'
     '?compressed=true&format=obo&query=%28*%29'
+)
+UNIPROT_PTMLIST_URL = (
+    'https://ftp.uniprot.org/pub/databases/uniprot/current_release/'
+    'knowledgebase/complete/docs/ptmlist.txt'
 )
 UNIPROT_SPROT_FLATFILE_URL = (
     'https://ftp.uniprot.org/pub/databases/uniprot/current_release/'
@@ -447,6 +452,8 @@ _FEATURE_FIELDS = {
     'Peptide': ('PEPTIDE', 'region'),
     'Transmembrane': ('TRANSMEM', 'region'),
 }
+# Their 'a..b' location names two linked residues, not a range.
+_LINKED_RESIDUES = {'DISULFID', 'CROSSLNK'}
 
 
 def _feature_records(value, code):
@@ -476,10 +483,70 @@ def _protein_rows(opener, **kwargs):
     yield from iter_tsv(opener, **kwargs)
 
 
-def _catalogue_feature_rows(opener, max_records=None, **kwargs):
+_PTMLIST_DOWNLOAD = Download(
+    url=UNIPROT_PTMLIST_URL,
+    filename='ptmlist.txt',
+    subfolder='uniprot',
+    large=True,
+    encoding='utf-8',
+    default_mode='r',
+    ext='txt',
+)
+
+
+def _ptm_vocabulary(opener):
+    """Return a PSI-MOD lookup from UniProt's PTM vocabulary (ptmlist.txt).
+
+    Feature notes start with a controlled vocabulary name. Names ending in
+    ``-...)`` are templates for the partner residue of interchain crosslinks
+    and match by prefix. Entries without a single PSI-MOD cross-reference keep
+    their UniProt name.
+    """
+    exact, templates = {}, []
+    entry = {'mod': []}
+    for line in _first_handle(opener) or []:
+        code, value = line[:2], line[5:].strip()
+        if code == 'ID':
+            entry = {'name': value, 'mod': []}
+        elif code == 'FT':
+            entry['feature'] = value
+        elif code == 'DR' and value.startswith('PSI-MOD;'):
+            entry['mod'].append(value.split(';')[1].strip().rstrip('.'))
+        elif code == '//':
+            if entry.get('feature') and len(entry['mod']) == 1:
+                if entry['name'].endswith('-...)'):
+                    templates.append(
+                        (entry['feature'], entry['name'][:-4], entry['mod'][0])
+                    )
+                else:
+                    exact[entry['feature'], entry['name']] = entry['mod'][0]
+            entry = {'mod': []}
+
+    @functools.cache
+    def psi_mod(feature, name):
+        return exact.get((feature, name)) or next(
+            (
+                mod
+                for key, prefix, mod in templates
+                if key == feature and name.startswith(prefix)
+            ),
+            None,
+        )
+
+    return psi_mod
+
+
+def _catalogue_feature_rows(opener, max_records=None, ptmlist=None, **kwargs):
+    psi_mod = _ptm_vocabulary(
+        ptmlist
+        or _PTMLIST_DOWNLOAD.open(
+            force_refresh=kwargs.get('force_refresh', False)
+        )
+    )
     emitted = 0
     for row in _protein_rows(opener):
-        reference_form = sequence_form(row.get('Sequence'))
+        sequence = row.get('Sequence') or ''
+        reference_form = sequence_form(sequence)
         reference_id = (
             reference_form['sequence_identifiers'][0]
             if reference_form
@@ -492,20 +559,17 @@ def _catalogue_feature_rows(opener, max_records=None, **kwargs):
         )
         for field, (code, category) in _FEATURE_FIELDS.items():
             for feature in _feature_records(row.get(field), code):
-                location = feature['location']
-                isoform, sep, coordinates = location.rpartition(':')
-                if not sep:
-                    coordinates, isoform = location, None
-                exact = re.fullmatch(
-                    r'([1-9]\d*)(?:\.\.([1-9]\d*))?', coordinates
-                )
-                start, end = (
-                    (int(exact[1]), int(exact[2] or exact[1]))
-                    if exact
-                    else (None, None)
-                )
-                if start is not None and start > end:
+                isoform, _, coordinates = feature['location'].rpartition(':')
+                # Uncertain endpoints (?, <, >) stay unknown; the source
+                # location is kept in the description instead.
+                endpoints = [
+                    int(value) if re.fullmatch(r'[1-9]\d*', value) else None
+                    for value in coordinates.split('..')
+                ]
+                start, end = endpoints[0], endpoints[-1]
+                if None not in (start, end) and start > end:
                     start = end = None
+                exact = None not in endpoints and start is not None
                 note = '; '.join(feature['qualifiers'].get('note', []))
                 ids = feature['qualifiers'].get('id', [])
                 coordinate = {
@@ -546,10 +610,38 @@ def _catalogue_feature_rows(opener, max_records=None, **kwargs):
                     'position': start,
                     'end_position': end,
                     'coordinate_reference': coordinate,
-                    'description': note or json.dumps(feature, sort_keys=True),
+                    'description': '; '.join(
+                        text
+                        for text in (
+                            note,
+                            None if exact else f'source location {coordinates}',
+                        )
+                        if text
+                    )
+                    or None,
                 }
-                forms = [identity]
+                identifier = (
+                    {'ns': 'uniprot_feature', 'id': ids[0]} if ids else None
+                )
                 if category == 'modification':
+                    # Notes open with a PTM vocabulary name; disulfide notes
+                    # are free text, so the feature name is their term.
+                    name = re.sub(
+                        r'^\(Microbial infection\) ',
+                        '',
+                        note.split(';', 1)[0].strip(),
+                    )
+                    term = (
+                        field
+                        if code == 'DISULFID'
+                        else psi_mod(code, name) or name or field
+                    )
+                    # 'a..b' of a bond or crosslink links two residues.
+                    sites = (
+                        [(start, start), (end, end)]
+                        if code in _LINKED_RESIDUES and len(endpoints) == 2
+                        else [(start, end)]
+                    )
                     forms = [
                         combine_forms(
                             identity,
@@ -557,15 +649,17 @@ def _catalogue_feature_rows(opener, max_records=None, **kwargs):
                                 'modifications': [
                                     {
                                         **item,
-                                        'term': note.split(';', 1)[0] or code,
-                                        'residue': row['Sequence'][start - 1]
+                                        'term': term,
+                                        'position': position,
+                                        'end_position': end_position,
+                                        'residue': sequence[position - 1]
                                         if not isoform
-                                        and start == end
-                                        and start is not None
-                                        and start
-                                        <= len(row.get('Sequence') or '')
+                                        and position is not None
+                                        and position == end_position
+                                        and position <= len(sequence)
                                         else None,
                                     }
+                                    for position, end_position in sites
                                 ]
                             },
                         )
@@ -575,8 +669,11 @@ def _catalogue_feature_rows(opener, max_records=None, **kwargs):
                         r'^([A-Z*]+)\s*->\s*([A-Z*]+(?:\s*,\s*[A-Z*]+)*)(?=[:;\s]|$)',
                         note,
                     )
+                    # An empty alternate is an explicit deletion.
                     alternatives = (
-                        replacement[2].split(',') if replacement else [None]
+                        replacement[2].split(',')
+                        if replacement
+                        else [''] if note.startswith('Missing') else [None]
                     )
                     forms = [
                         combine_forms(
@@ -585,23 +682,33 @@ def _catalogue_feature_rows(opener, max_records=None, **kwargs):
                                 'variants': [
                                     {
                                         **item,
-                                        'identifier': {
-                                            'ns': 'uniprot_feature',
-                                            'id': ids[0],
-                                        }
-                                        if ids
-                                        else None,
+                                        'identifier': identifier,
                                         'reference': replacement[1]
                                         if replacement
                                         else None,
                                         'alternate': alternate.strip()
                                         if alternate
-                                        else None,
+                                        else alternate,
                                     }
                                 ]
                             },
                         )
                         for alternate in alternatives
+                    ]
+                else:
+                    forms = [
+                        combine_forms(
+                            identity,
+                            {
+                                'regions': [
+                                    {
+                                        **item,
+                                        'type': field,
+                                        'identifier': identifier,
+                                    }
+                                ]
+                            },
+                        )
                     ]
                 for form in forms:
                     yield {
@@ -628,7 +735,6 @@ catalogue_features_schema = EntityBuilder(
     molecular_form=lambda row: row.get('molecular_form'),
     identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=f('Entry'))),
     annotations=AnnotationsBuilder(
-        CV(term='uniprot:catalogue_feature', value=lambda row: json.dumps(row['catalogue_feature'], sort_keys=True)),
         CV(term=slots.in_taxon, value=lambda row: f"NCBITaxon:{row['Organism (ID)']}" if row.get('Organism (ID)') else None),
         CV(term=slots.publications, value=lambda row: ['PMID:' + p for p in row.get('feature_publications', [])]),
     ),

@@ -25,10 +25,13 @@ def test_foodb_list_columns_preserve_empty_zero_and_context():
     assert {'Alpha', 'Beta', 'Gamma'} <= {i['id'] for e in out.entities.values() for i in e.identifiers}
 
 
-@pytest.mark.parametrize('module,id_field', [('metatlas', 'human_gem_reaction_id'), ('recon3d', 'bigg_reaction_id')])
-def test_transport_keeps_compartment_on_each_participant(module, id_field):
+@pytest.mark.parametrize('module,id_field,compartments', [
+    ('metatlas', 'human_gem_reaction_id', ('c', 'e')),
+    ('recon3d', 'bigg_reaction_id', ('cytosol', 'extracellular space')),
+])
+def test_transport_keeps_compartment_on_each_participant(module, id_field, compartments):
     out = extract(module, 'reactions_schema', {id_field: 'R1', 'reactants': 'h2o:c:2', 'products': 'h2o:e:1'})
-    assert {(r.predicate, a['value']) for r in out.relations for a in r.annotations if a['term'] == 'biopax:cellularLocation'} == {('has_input', 'c'), ('has_output', 'e')}
+    assert {(r.predicate, a['value']) for r in out.relations for a in r.annotations if a['term'] == 'biopax:cellularLocation'} == {('has_input', compartments[0]), ('has_output', compartments[1])}
 
 
 def test_reactome_physical_state_survives_parser_and_mapping():
@@ -54,7 +57,8 @@ def test_reactome_physical_state_survives_parser_and_mapping():
     annotations = {a['term']: a['value'] for r in out.relations for a in r.annotations}
     assert annotations['biopax:cellularLocation'] == 'cytosol'
     assert annotations['biopax:feature'] == 'phosphoserine; position 259'
-    assert annotations['source_record_urls'] == str(p)
+    # BioPAX file URIs are not web pages; participants are linked by their Reactome IDs.
+    assert 'source_record_urls' not in annotations
 
 
 def test_cellchat_role_does_not_rename_reference_protein():
