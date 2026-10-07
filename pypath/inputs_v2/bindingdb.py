@@ -180,7 +180,10 @@ def _target(row):
         return target_builder.build(row)
     members = []
     for index in range(1, count + 1):
-        chain = dict(row)
+        # Only the fields target_builder reads: copying the whole row would make
+        # every chain depend on every column of the record.
+        organism = 'Target Source Organism According to Curator or DataSource'
+        chain = {organism: row.get(organism)}
         # The whole target name identifies the complex, not an unnamed chain.
         chain['Target Name'] = None
         for stem in (
