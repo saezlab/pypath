@@ -475,7 +475,8 @@ interactions_schema = RelationBuilder(
             term=slots.description,
             value=f(
                 'Interaction annotation(s)',
-                transform=lambda v: re.sub(r'^comment:"(.*)"$', r'\1', v, flags=re.S),
+                # The source sometimes omits the closing quote.
+                transform=lambda v: re.sub(r'^comment:"(.*?)"?$', r'\1', v, flags=re.S),
             ),
         ),
     ),
