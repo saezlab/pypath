@@ -365,11 +365,9 @@ reactions_schema = EntityBuilder(
             ),
             annotations=AnnotationsBuilder(
                 conversion_direction_cv(),
-                CV(term=slots.source_record_urls, value=f('participant_source_physical_entity', delimiter='||', map='missing')),
                 CV(term='biopax:displayName', value=f('participant_display_name', delimiter='||', map='missing')),
                 CV(term=CELLULAR_LOCATION, value=f('participant_compartment', delimiter='||', map='missing')),
                 CV(term='biopax:feature', value=f('participant_modification', delimiter='||', map='missing')),
-                CV(term='biopax:feature_context', value=f('participant_feature_context', delimiter='||', map='missing')),
                 CV(
                     term=slots.stoichiometry,
                     value=f(
@@ -434,9 +432,7 @@ controller_builder = EntityBuilder(
         CV(term=Namespace.SYNONYM, value=f('controller_synonyms', map='split')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term='biopax:feature_context', value=lambda row: row.get('controller_feature_context')),
         CV(term='biopax:control_set', value=lambda row: row.get('controller_control_set')),
-        CV(term=slots.source_record_urls, value=f('controller_source_physical_entity', map='missing')),
         CV(
             term=slots.in_taxon,
             value=_entity_taxon_id(
@@ -533,7 +529,6 @@ pathways_schema = EntityBuilder(
             ),
         ),
         CV(term=slots.description, value=f('definition')),
-        CV(term=slots.description, value=f('comments')),
     ),
     associations=_cv_term_associations(f('go')),
     ontology_relations=_pathway_ontology_relations,
@@ -565,9 +560,7 @@ control_groups_schema = EntityBuilder(
         CV(term=Namespace.SYNONYM, value=f('controller_synonyms', map='split')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term='biopax:feature_context', value=lambda row: row.get('controller_feature_context')),
         CV(term='biopax:control_set', value=lambda row: row.get('controller_control_set')),
-        CV(term=slots.source_record_urls, value=f('controller_source_physical_entity', map='missing')),
         CV(
             term=slots.in_taxon,
             value=_entity_taxon_id(
@@ -647,8 +640,6 @@ control_groups_schema = EntityBuilder(
             ),
             entity_annotations=AnnotationsBuilder(
                 CV(term=slots.in_taxon, value=_controller_member_taxon_ids),
-                CV(term='biopax:feature_context', value=f('controller_member_feature_context', delimiter='||', map='missing')),
-                CV(term=slots.source_record_urls, value=f('controller_member_source_physical_entity', delimiter='||', map='missing')),
             ),
             entity_associations=_combined_associations(
                 _pathway_association(

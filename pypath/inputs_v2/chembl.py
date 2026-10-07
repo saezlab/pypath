@@ -278,7 +278,6 @@ _component_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=slots.description, value=f('description')),
-        CV(term='chembl:observation_scope', value='target_component_catalogue'),
         CV(term=slots.in_taxon, value=lambda row: 'NCBITaxon:' + str(row['tax_id']) if row.get('tax_id') else None),
     ),
 )
@@ -335,10 +334,16 @@ molecule_builder = EntityBuilder(
         CV(term=Namespace.CHEMBL, value=f('molecule_chembl_id'))
     ),
 )
+def _variant_id(row):
+    """The assay's mapped variant; ChEMBL's -1 (a mutation it could not map) is none."""
+    variant_id = row.get('variant_id')
+    return None if variant_id in (None, '') or str(variant_id) == '-1' else variant_id
+
+
 def _assay_molecular_form(row):
     """The assay's variant is independent of its target's component catalogue."""
-    variant_id = row.get('variant_id')
-    if variant_id in (None, ''):
+    variant_id = _variant_id(row)
+    if variant_id is None:
         return None
     accession = str(row.get('variant_accession') or '').strip()
     isoform = row.get('variant_isoform')
@@ -426,12 +431,8 @@ assay_variants_schema = EntityBuilder(
         CV(term=Namespace.UNIPROT, value=f('variant_accession')),
         CV(term='chembl_variant', value=f('variant_id')),
     ),
-    annotations=AnnotationsBuilder(
-        CV(term='chembl:sequence_role', value='representative_reconstruction'),
-        CV(term=slots.source_record_urls, value=lambda row: 'https://www.ebi.ac.uk/chembl/explore/assay/' + str(row.get('assay_chembl_id') or row.get('chembl_id'))),
-        CV(term=slots.description, value=lambda row: row.get('assay_description') or row.get('description')),
-    ),
 )
+
 
 activities_schema = RelationBuilder(
     subject=molecule_builder,
@@ -451,14 +452,8 @@ activities_schema = RelationBuilder(
             ),
         ),
         CV(term=slots.description, value=f('assay_description')),
-        CV(term='chembl:assay_variant', value=lambda row: json.dumps({
-            'variant_id': row['variant_id'],
-            'accession': row.get('variant_accession'),
-            'sequence_role': 'representative_reconstruction',
-            'molecular_form': _assay_molecular_form(row),
-        }, sort_keys=True) if row.get('variant_id') not in (None, '') else None),
-        CV(term=slots.description, value=f('data_validity_comment')),
-        CV(term=slots.description, value=f('action_description')),
+        CV(term='chembl:data_validity_comment', value=f('data_validity_comment')),
+        CV(term='chembl:action', value=f('action_description')),
         CV(
             term=slots.in_taxon,
             value=f(
@@ -513,7 +508,7 @@ def _assay_variant_rows(opener, **kwargs):
     for row in assays_parser(
         opener, sqlite_path=SQLITE_PATH, db_rel_path=DB_REL_PATH, **kwargs
     ):
-        if row.get('variant_id') not in (None, ''):
+        if _variant_id(row) is not None:
             yield {
                 **row,
                 '_variant_observation': True,

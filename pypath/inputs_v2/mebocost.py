@@ -7,6 +7,8 @@ and databases like HMDB, Recon2, and GPCRdb.
 """
 
 from __future__ import annotations
+
+import re
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import (
     Protein,
@@ -36,21 +38,27 @@ config = ResourceConfig(
     primary_category='interactions',
     description='MEBOCOST DB is a curated resource of metabolite-sensor interactions collected through computational text-mining and manual curation from PubMed abstracts and databases like HMDB, Recon2, and GPCRdb.',
 )
-evidence_source_map = {
-    name: name
-    for name in ('HMDB', 'Recon2', 'Celllinker', 'CellPhoneDB', 'CellChat')
-}
-f = FieldConfig(
-    extract={
-        'pubmed': '^(\\d+)$',
-        'source': lambda v: evidence_source_map.get(v),
-        'comment': lambda v: v
-        if v.startswith('http')
-        or (not v.isdigit() and v not in evidence_source_map)
-        else None,
-    },
-    delimiter='; ',
-)
+EVIDENCE_SOURCES = {'hmdb': 'HMDB', 'recon2': 'Recon2', 'cellinker': 'Cellinker',
+                    'cellphonedb': 'CellPhoneDB', 'cellchat': 'CellChat'}
+f = FieldConfig(delimiter='; ')
+
+
+def _evidence(row):
+    """The Evidence column's PubMed IDs, source databases, URLs and remaining notes."""
+    parsed = {'pubmed': [], 'source': [], 'url': [], 'comment': []}
+    for item in re.split(r'[;,]\s*', str(row.get('Evidence') or '')):
+        item = item.strip()
+        if not item:
+            continue
+        if item.isdigit():
+            parsed['pubmed'].append(f'PMID:{item}')
+        elif item.lower() in EVIDENCE_SOURCES:
+            parsed['source'].append(EVIDENCE_SOURCES[item.lower()])
+        elif item.startswith(('http://', 'https://')):
+            parsed['url'].append(item)
+        else:
+            parsed['comment'].append(item)
+    return parsed
 
 
 def _is_transporter(row):
@@ -96,19 +104,10 @@ def get_interactions_schema(taxon_id: str) -> RelationBuilder:
         annotations=AnnotationsBuilder(
             CV(term=slots.original_predicate, value=f('Annotation')),
             *(CV(term=term, value=lambda row, value=value: value if _is_transporter(row) else None) for term, value in TRANSPORT_QUALIFIERS),
-            CV(
-                term=slots.publications,
-                value=f(
-                    'Evidence',
-                    extract='pubmed',
-                    transform=lambda v: f'PMID:{v}',
-                ),
-            ),
-            CV(
-                term=slots.supporting_data_source,
-                value=f('Evidence', extract='source'),
-            ),
-            CV(term=slots.description, value=f('Evidence', extract='comment')),
+            CV(term=slots.publications, value=lambda row: _evidence(row)['pubmed']),
+            CV(term=slots.supporting_data_source, value=lambda row: _evidence(row)['source']),
+            CV(term=slots.source_record_urls, value=lambda row: _evidence(row)['url']),
+            CV(term=slots.description, value=lambda row: _evidence(row)['comment']),
         ),
     )
 

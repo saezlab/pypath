@@ -444,13 +444,8 @@ def _participant_builder(suffix):
             ),
             general_identifier_cv(f'Alt. ID(s) interactor {suffix}'),
         ),
-        annotations=AnnotationsBuilder(
-            interactor_tax_cv(suffix),
-            CV(
-                term=slots.description,
-                value=f(f'Feature(s) interactor {suffix}'),
-            ),
-        ),
+        # Participant features (e.g. phosphorylated residues) are in the molecular form.
+        annotations=AnnotationsBuilder(interactor_tax_cv(suffix)),
     )
 
 
@@ -476,7 +471,13 @@ interactions_schema = RelationBuilder(
             value=f('Interaction detection method(s)', extract='mi'),
         ),
         pubmed_annotation('Publication Identifier(s)'),
-        CV(term=slots.description, value=f('Interaction annotation(s)')),
+        CV(
+            term=slots.description,
+            value=f(
+                'Interaction annotation(s)',
+                transform=lambda v: re.sub(r'^comment:"(.*)"$', r'\1', v, flags=re.S),
+            ),
+        ),
     ),
 )
 

@@ -629,7 +629,6 @@ catalogue_features_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=f('Entry'))),
     annotations=AnnotationsBuilder(
         CV(term='uniprot:catalogue_feature', value=lambda row: json.dumps(row['catalogue_feature'], sort_keys=True)),
-        CV(term='uniprot:observation_scope', value='reference_catalogue'),
         CV(term=slots.in_taxon, value=lambda row: f"NCBITaxon:{row['Organism (ID)']}" if row.get('Organism (ID)') else None),
         CV(term=slots.publications, value=lambda row: ['PMID:' + p for p in row.get('feature_publications', [])]),
     ),

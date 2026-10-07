@@ -12,6 +12,8 @@ Data sources:
 
 from __future__ import annotations
 
+import re
+
 from biolink_model.datamodel.model import (
     ChemicalEntity,
     Food,
@@ -69,8 +71,13 @@ def _member_measurements(row, field):
     """Keep list-column positions aligned, including missing and zero values."""
     values = f(field).extract(row)
     units = f('member_unit').extract(row)
-    return [_measurement(value, units[i] if i < len(units) else None, field)
+    return [_measurement(value, _unit(units[i]) if i < len(units) else None, field)
             for i, value in enumerate(values)]
+
+
+def _unit(unit):
+    """One spelling per unit: 'mg/100 g' and 'mg/100g' are the same."""
+    return re.sub(r'(\d)\s+g\b', r'\1g', unit.strip()) if isinstance(unit, str) else unit
 
 
 foods_schema = EntityBuilder(
@@ -108,10 +115,12 @@ foods_schema = EntityBuilder(
                 CV(term='PATO:0000033', value=lambda row: _member_measurements(row, 'member_content')),
                 CV(term='PATO:0000033', value=lambda row: _member_measurements(row, 'member_min')),
                 CV(term='PATO:0000033', value=lambda row: _member_measurements(row, 'member_max')),
-                CV(term=slots.publications, value=f('member_citation')),
+                # FooDB citations are PubMed IDs or the names of source databases.
+                CV(term=slots.publications, value=f('member_citation', transform=lambda v: f'PMID:{v}' if str(v).isdigit() else None)),
+                CV(term=slots.supporting_data_source, value=f('member_citation', transform=lambda v: None if str(v).isdigit() else v)),
                 CV(term=slots.supporting_study_method_description, value=f('member_method')),
                 CV(term=slots.supporting_study_method_description, value=f('member_food_part', transform=lambda v: f'Food part: {v}' if v else None)),
-                CV(term=slots.supporting_study_method_description, value=f('member_preparation', transform=lambda v: f'Preparation: {v}' if v else None)),
+                CV(term=slots.supporting_study_method_description, value=f('member_preparation', transform=lambda v: f'Preparation: {v}' if v and str(v).strip().lower() != 'other' else None)),
             ),
             predicate=slots.has_part,
         )

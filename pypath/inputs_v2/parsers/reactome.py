@@ -230,7 +230,7 @@ def _extract_names_from_props(props: dict, bp_ns: Namespace) -> dict[str, str | 
 
 _PARTICIPANT_FIELDS = [
     'source_physical_entity', 'compartment', 'modification',
-    'molecular_form', 'feature_context', 'refseq', 'ensembl',
+    'molecular_form', 'refseq', 'ensembl',
     'role',
     'entity_type',
     'display_name',
@@ -247,7 +247,7 @@ _PARTICIPANT_FIELDS = [
 ]
 
 _CONTROLLER_MEMBER_FIELDS = [
-    'molecular_form', 'feature_context', 'refseq', 'ensembl', 'source_physical_entity',
+    'molecular_form', 'refseq', 'ensembl', 'source_physical_entity',
     'entity_type',
     'display_name',
     'synonyms',
@@ -272,7 +272,7 @@ def _flatten_participants(participants: list[dict], prefix: str = 'participant')
         items = []
         for participant in participants:
             value = participant.get(field, '')
-            if field in {'molecular_form', 'feature_context'} and value:
+            if field == 'molecular_form' and value:
                 # Preserve form structure through the source's tabular transport.
                 # Escape the participant delimiter even in source descriptions.
                 value = json.dumps(value, sort_keys=True).replace('|', '\\u007c')
@@ -317,7 +317,7 @@ def _flatten_controller_members(members: list[dict], prefix: str = 'controller_m
         items = []
         for member in members:
             value = member.get(field, '')
-            if field in {'molecular_form', 'feature_context'} and value:
+            if field == 'molecular_form' and value:
                 value = json.dumps(value, sort_keys=True).replace('|', '\\u007c')
             if value in (None, ''):
                 value = _MISSING_VALUE
@@ -650,58 +650,6 @@ def _attach_molecular_context(g, uri, participant, reference_index, xref_cache):
     )
     participant['sequence'] = sequences[0] if len(sequences) == 1 else ''
     participant['source_physical_entity'] = str(uri)
-    context = []
-    for predicate, present in ((BP.feature, True), (BP.notFeature, False)):
-        for feature in props.get(predicate, []):
-            feature_props = _get_entity_props(g, feature)
-            context.append(
-                {
-                    'source_feature': str(feature),
-                    'present': present,
-                    'properties': {
-                        str(key): [str(value) for value in values]
-                        for key, values in feature_props.items()
-                    },
-                    'locations': [
-                        {
-                            'properties': {
-                                str(key): [str(value) for value in values]
-                                for key, values in _get_entity_props(
-                                    g, location
-                                ).items()
-                            },
-                            'boundaries': [
-                                {
-                                    str(key): [str(value) for value in values]
-                                    for key, values in _get_entity_props(
-                                        g, boundary
-                                    ).items()
-                                }
-                                for predicate in (
-                                    BP.sequenceIntervalBegin,
-                                    BP.sequenceIntervalEnd,
-                                )
-                                for boundary in g.objects(location, predicate)
-                            ],
-                        }
-                        for location in feature_props.get(
-                            BP.featureLocation, []
-                        )
-                    ],
-                    'modification_types': [
-                        {
-                            str(key): [str(value) for value in values]
-                            for key, values in _get_entity_props(
-                                g, vocabulary
-                            ).items()
-                        }
-                        for vocabulary in feature_props.get(
-                            BP.modificationType, []
-                        )
-                    ],
-                }
-            )
-    participant['feature_context'] = context or None
     participant['molecular_form'] = _participant_molecular_form(
         g, uri, participant
     )
@@ -722,7 +670,10 @@ def _extract_participant_data(g, molecule_uri, role, entity_reference_index, xre
                   for term in g.objects(vocabulary, BP['term'])]
         positions = [str(position) for location in g.objects(feature, BP.featureLocation)
                      for position in g.objects(location, BP.sequencePosition)]
-        features.append('; '.join([*labels, *[f'position {p}' for p in positions]]) or str(feature))
+        # A feature without a modification type or position has no readable label.
+        label = '; '.join([*labels, *[f'position {p}' for p in positions]])
+        if label:
+            features.append(label)
     for participant in result if isinstance(result, list) else [result]:
         participant['source_physical_entity'] = str(molecule_uri)
         participant['compartment'] = '; '.join(compartments)
@@ -1126,15 +1077,13 @@ def _iterate_pathways(
         if orgs:
             ncbi_tax_id = _get_organism_tax_id(g, orgs[0], xref_cache, BP)
 
-        comments = []
-        descriptions = []
-        for comment in props.get(BP.comment, []):
-            c_str = str(comment)
-            if "Reactome DB_ID:" not in c_str:
-                if any(c_str.startswith(p) for p in ['Reviewed:', 'Authored:', 'Edited:']):
-                    comments.append(c_str)
-                else:
-                    descriptions.append(c_str)
+        # Curation credits (Authored/Reviewed/Edited) and database IDs are not descriptions.
+        descriptions = [
+            str(comment)
+            for comment in props.get(BP.comment, [])
+            if "Reactome DB_ID:" not in str(comment)
+            and not str(comment).startswith(('Reviewed:', 'Authored:', 'Edited:'))
+        ]
 
         step_order_map = {}
         step_index = 0
@@ -1197,7 +1146,6 @@ def _iterate_pathways(
             'go': ';'.join(xrefs.get('go', [])),
             'ncbi_tax_id': ncbi_tax_id,
             'definition': ' '.join(descriptions),
-            'comments': ';'.join(comments),
             **_flatten_child_pathways(child_pathways, prefix='child_pathway'),
             **_flatten_parent_pathways(parent_index.get(str(s), []), prefix='parent_pathway'),
         }
@@ -1543,9 +1491,9 @@ def _iterate_controls(
                 ) or '',
                 'pathway_term_accession': pathway_term_accession,
                 **{f'controller_{field}': (json.dumps(controller_info.get(field), sort_keys=True).replace('|', '\\u007c')
-                                          if field in {'molecular_form', 'feature_context', 'control_set'} and controller_info.get(field)
+                                          if field in {'molecular_form', 'control_set'} and controller_info.get(field)
                                           else controller_info.get(field, ''))
-                   for field in ('molecular_form', 'feature_context', 'refseq', 'ensembl', 'source_physical_entity', 'control_set')},
+                   for field in ('molecular_form', 'refseq', 'ensembl', 'source_physical_entity', 'control_set')},
                 'controller_entity_type': controller_info.get('entity_type', ''),
                 'controller_display_name': controller_info.get('display_name', ''),
                 'controller_synonyms': controller_info.get('synonyms', ''),
@@ -1695,15 +1643,7 @@ def _iterate_physical_groups(g, xref_cache, reference_index, max_records=None):
                 g, member, 'member', reference_index, xref_cache, {}
             )
             members.extend(values if isinstance(values, list) else [values])
-        root = _extract_participant_data(
-            g, uri, 'member', reference_index, xref_cache, {}
-        )
         yield {
-            'controller_feature_context': json.dumps(
-                root.get('feature_context'), sort_keys=True
-            )
-            if root.get('feature_context')
-            else '',
             'controller_entity_type': 'complex'
             if BP.Complex in props.get(RDF.type, [])
             else 'physical_entity',

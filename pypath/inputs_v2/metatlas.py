@@ -89,7 +89,8 @@ def _flux_bound(row, field):
         number = float(value)
     except (TypeError, ValueError):
         return None
-    if not math.isfinite(number):
+    # ±1000 is the model's default for an unconstrained flux, not a measured bound.
+    if not math.isfinite(number) or abs(number) == 1000:
         return None
     return Measurement(
         quantity=QuantityValue(

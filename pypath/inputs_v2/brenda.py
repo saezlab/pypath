@@ -5,7 +5,6 @@ source concept, not an invented catalytic reaction.
 """
 
 from __future__ import annotations
-import json
 from pathlib import Path
 
 from biolink_model.datamodel import model
@@ -170,9 +169,7 @@ molecular_forms_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term='brenda:molecular_observation', value=f('observation')),
-        CV(term='brenda:observation_scope', value='reference_catalogue'),
         CV(term='brenda:source_protein_record', value=f('source_protein_record')),
-        CV(term='brenda:source_accessions', value=lambda row: json.dumps(row['source_accessions'])),
         CV(term=slots.publications, value=lambda row: ['PMID:' + p for p in row.get('Refs', [])]),
     ),
 )
