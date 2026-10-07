@@ -608,6 +608,9 @@ def _participant_molecular_form(g, molecule_uri, participant):
             ends = list(g.objects(location, BP.sequenceIntervalEnd)) if location else []
             start = exact_position(starts[0]) if len(starts) == 1 else exact_position(location)
             end = exact_position(ends[0]) if len(ends) == 1 else start
+            if start is not None and end is not None and end < start:
+                # A reversed interval is not a usable range; its text stays below.
+                start = end = None
             sites = starts + ends if starts or ends else [location] if location else []
             # Readable source context; inexact source positions stay in text only.
             description = '; '.join([
