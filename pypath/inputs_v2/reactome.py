@@ -136,6 +136,54 @@ def _participant_molecular_form(row, index):
     return json.loads(values[index])
 
 
+_REFERENCE_FIELDS = ('uniprot', 'refseq', 'ensembl', 'chebi', 'pubchem_compound', 'kegg')
+# Physical entities that are forms of one reference entity; complexes and sets list
+# their members' references but are entities of their own.
+_FORM_TYPES = {'protein', 'rna', 'dna', 'gene', 'chemical'}
+
+
+def _referenced(row, prefix, delimiter=None):
+    """Whether each physical entity of ``prefix`` is a form of a referenced entity."""
+    columns = [
+        f(f'{prefix}_{field}', delimiter=delimiter, map='split', preserve_indices=True).extract(row)
+        for field in _REFERENCE_FIELDS
+    ]
+    types = f(f'{prefix}_entity_type', delimiter=delimiter, map='missing', preserve_indices=True).extract(row)
+    if delimiter is None:
+        return [bool(types) and types[0] in _FORM_TYPES and any(columns)]
+    size = max(map(len, [*columns, types]), default=0)
+    return [
+        idx < len(types) and types[idx] in _FORM_TYPES
+        and any(idx < len(column) and column[idx] for column in columns)
+        for idx in range(size)
+    ]
+
+
+def _by_reference(values, prefix, delimiter=None, referenced=False):
+    """Keep ``values`` only for physical entities without (or, with ``referenced``,
+    with) a reference identifier.
+
+    A protein or chemical physical entity is one form of its reference entity, e.g.
+    'Ac-K120,K382,p-S15,S20-TP53' of UniProt P04637. Its name, synonyms and Reactome
+    ids identify that form: as identifiers of the resolved entity every form would
+    add its names to the protein. They stay with the participation instead, while
+    complexes and sets, which have no reference, keep them as their identity.
+    """
+
+    def value(row):
+        extracted = values.extract(row)
+        flags = _referenced(row, prefix, delimiter)
+        if delimiter is None:
+            return extracted if flags[0] == referenced else []
+        return [
+            v if (idx < len(flags) and flags[idx]) == referenced
+            else [] if isinstance(v, list) else ''
+            for idx, v in enumerate(extracted)
+        ]
+
+    return value
+
+
 def _participant_taxon_ids(row):
     entity_types = f(
         'participant_entity_type',
@@ -324,11 +372,11 @@ reactions_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(
                     term=Namespace.REACTOME,
-                    value=f(
+                    value=_by_reference(f(
                         'participant_reactome_stable_id',
                         delimiter='||',
                         map='split',
-                    ),
+                    ), 'participant', '||'),
                 ),
                 CV(
                     term=Namespace.UNIPROT,
@@ -356,22 +404,29 @@ reactions_schema = EntityBuilder(
                 ),
                 CV(
                     term=Namespace.NAME,
-                    value=f(
+                    value=_by_reference(f(
                         'participant_display_name',
                         delimiter='||',
                         map='missing',
-                    ),
+                    ), 'participant', '||'),
                 ),
                 CV(
                     term=Namespace.SYNONYM,
-                    value=f(
+                    value=_by_reference(f(
                         'participant_synonyms', delimiter='||', map='split'
-                    ),
+                    ), 'participant', '||'),
                 ),
             ),
             annotations=AnnotationsBuilder(
                 conversion_direction_cv(),
                 CV(term='biopax:displayName', value=f('participant_display_name', delimiter='||', map='missing')),
+                CV(
+                    term='reactome:physical_entity',
+                    value=_by_reference(
+                        f('participant_reactome_stable_id', delimiter='||', map='split'),
+                        'participant', '||', referenced=True,
+                    ),
+                ),
                 CV(term=CELLULAR_LOCATION, value=f('participant_compartment', delimiter='||', map='missing')),
                 CV(term='biopax:feature', value=f('participant_modification', delimiter='||', map='missing')),
                 CV(
@@ -417,9 +472,9 @@ controller_builder = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(
             term=Namespace.REACTOME,
-            value=f('controller_reactome_stable_id', map='split'),
+            value=_by_reference(f('controller_reactome_stable_id', map='split'), 'controller'),
         ),
-        CV(term='biopax_physical_entity', value=f('controller_source_physical_entity', map='missing')),
+        CV(term='biopax_physical_entity', value=_by_reference(f('controller_source_physical_entity', map='missing'), 'controller')),
         CV(term=Namespace.UNIPROT, value=f('controller_uniprot', map='split')),
         CV(term='refseq', value=f('controller_refseq', map='split')),
         CV(term='ensembl', value=f('controller_ensembl', map='split')),
@@ -433,9 +488,9 @@ controller_builder = EntityBuilder(
         CV(term=Namespace.KEGG, value=f('controller_kegg', map='split')),
         CV(
             term=Namespace.NAME,
-            value=f('controller_display_name', map='missing'),
+            value=_by_reference(f('controller_display_name', map='missing'), 'controller'),
         ),
-        CV(term=Namespace.SYNONYM, value=f('controller_synonyms', map='split')),
+        CV(term=Namespace.SYNONYM, value=_by_reference(f('controller_synonyms', map='split'), 'controller')),
     ),
     annotations=AnnotationsBuilder(
         CV(term='biopax:control_set', value=lambda row: row.get('controller_control_set')),
@@ -458,7 +513,7 @@ controlled_builder = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(
             term=Namespace.REACTOME,
-            value=f('controlled_reactome_stable_id', map='split'),
+            value=_by_reference(f('controlled_reactome_stable_id', map='split'), 'controlled'),
         ),
         CV(term=Namespace.UNIPROT, value=f('controlled_uniprot', map='split')),
         CV(
@@ -471,9 +526,9 @@ controlled_builder = EntityBuilder(
         CV(term=Namespace.KEGG, value=f('controlled_kegg', map='split')),
         CV(
             term=Namespace.NAME,
-            value=f('controlled_display_name', map='missing'),
+            value=_by_reference(f('controlled_display_name', map='missing'), 'controlled'),
         ),
-        CV(term=Namespace.SYNONYM, value=f('controlled_synonyms', map='split')),
+        CV(term=Namespace.SYNONYM, value=_by_reference(f('controlled_synonyms', map='split'), 'controlled')),
     ),
     annotations=AnnotationsBuilder(
         CV(
@@ -501,6 +556,15 @@ controls_schema = RelationBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=slots.object_direction_qualifier, value=_control_effect),
+        # A protein or chemical controller is one named form of its reference entity.
+        CV(
+            term='original_subject',
+            value=_by_reference(f('controller_display_name', map='missing'), 'controller', referenced=True),
+        ),
+        CV(
+            term='original_object',
+            value=_by_reference(f('controlled_display_name', map='missing'), 'controlled', referenced=True),
+        ),
         CV(term=slots.publications, value=f('pubmed', transform=lambda v: 'PMID:' + str(v).removeprefix('PMID:'))),
     ),
 )
@@ -545,9 +609,9 @@ control_groups_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(
             term=Namespace.REACTOME,
-            value=f('controller_reactome_stable_id', map='split'),
+            value=_by_reference(f('controller_reactome_stable_id', map='split'), 'controller'),
         ),
-        CV(term='biopax_physical_entity', value=f('controller_source_physical_entity', map='missing')),
+        CV(term='biopax_physical_entity', value=_by_reference(f('controller_source_physical_entity', map='missing'), 'controller')),
         CV(term=Namespace.UNIPROT, value=f('controller_uniprot', map='split')),
         CV(term='refseq', value=f('controller_refseq', map='split')),
         CV(term='ensembl', value=f('controller_ensembl', map='split')),
@@ -561,9 +625,9 @@ control_groups_schema = EntityBuilder(
         CV(term=Namespace.KEGG, value=f('controller_kegg', map='split')),
         CV(
             term=Namespace.NAME,
-            value=f('controller_display_name', map='missing'),
+            value=_by_reference(f('controller_display_name', map='missing'), 'controller'),
         ),
-        CV(term=Namespace.SYNONYM, value=f('controller_synonyms', map='split')),
+        CV(term=Namespace.SYNONYM, value=_by_reference(f('controller_synonyms', map='split'), 'controller')),
     ),
     annotations=AnnotationsBuilder(
         CV(term='biopax:control_set', value=lambda row: row.get('controller_control_set')),
@@ -591,11 +655,11 @@ control_groups_schema = EntityBuilder(
             identifiers=IdentifiersBuilder(
                 CV(
                     term=Namespace.REACTOME,
-                    value=f(
+                    value=_by_reference(f(
                         'controller_member_reactome_stable_id',
                         delimiter='||',
                         map='split',
-                    ),
+                    ), 'controller_member', '||'),
                 ),
                 CV(
                     term=Namespace.UNIPROT,
@@ -629,18 +693,34 @@ control_groups_schema = EntityBuilder(
                 ),
                 CV(
                     term=Namespace.NAME,
-                    value=f(
+                    value=_by_reference(f(
                         'controller_member_display_name',
                         delimiter='||',
                         map='missing',
-                    ),
+                    ), 'controller_member', '||'),
                 ),
                 CV(
                     term=Namespace.SYNONYM,
-                    value=f(
+                    value=_by_reference(f(
                         'controller_member_synonyms',
                         delimiter='||',
                         map='split',
+                    ), 'controller_member', '||'),
+                ),
+            ),
+            annotations=AnnotationsBuilder(
+                CV(
+                    term='biopax:displayName',
+                    value=_by_reference(
+                        f('controller_member_display_name', delimiter='||', map='missing'),
+                        'controller_member', '||', referenced=True,
+                    ),
+                ),
+                CV(
+                    term='reactome:physical_entity',
+                    value=_by_reference(
+                        f('controller_member_reactome_stable_id', delimiter='||', map='split'),
+                        'controller_member', '||', referenced=True,
                     ),
                 ),
             ),

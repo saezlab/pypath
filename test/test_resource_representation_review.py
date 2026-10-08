@@ -83,3 +83,39 @@ def test_unspecified_diagram_edges_do_not_claim_interaction():
     from omnipath_core.biolink import predicate
     assert predicate(wikipathways_predicate({'interaction_types': ['Conversion']})) == 'related_to'
     assert predicate(wikipathways_predicate({'interaction_types': ['Binding']})) == 'interacts_with'
+
+
+def test_reactome_forms_do_not_rename_their_reference_entity():
+    """A protein participant is one named form of its UniProt entry; a complex has no
+    reference, so its Reactome name and id are its identity."""
+    out = extract('reactome', 'reactions_schema', {
+        'entity_type': 'reaction', 'reactome_stable_id': 'R-HSA-1',
+        'participant_entity_type': 'protein||complex',
+        'participant_uniprot': 'P04637||__MISSING__',
+        'participant_reactome_stable_id': 'R-HSA-69488||R-HSA-2',
+        'participant_display_name': 'Ac-K120,K382,p-S15,S20-TP53||TP53:MDM2',
+        'participant_synonyms': 'p53 form||__MISSING__',
+        'participant_role': 'reactant||product',
+    })
+    ids = {i['id']: e for e in out.entities.values() for i in e.identifiers}
+    assert 'P04637' in ids
+    assert not {'Ac-K120,K382,p-S15,S20-TP53', 'R-HSA-69488', 'p53 form'} & set(ids)
+    assert {'TP53:MDM2', 'R-HSA-2'} <= set(ids)
+    protein = [r for r in out.relations if r.predicate == 'has_input']
+    annotations = {a['term']: a['value'] for r in protein for a in r.annotations}
+    assert annotations['biopax:displayName'] == 'Ac-K120,K382,p-S15,S20-TP53'
+    assert annotations['reactome:physical_entity'] == 'R-HSA-69488'
+
+    out = extract('reactome', 'controls_schema', {
+        'reactome_stable_id': 'R-HSA-3', 'control_class': 'Catalysis',
+        'controller_entity_type': 'protein', 'controller_uniprot': 'P00533',
+        'controller_reactome_stable_id': 'R-HSA-4', 'controller_display_name': 'p-Y1068-EGFR',
+        'controlled_entity_type': 'reaction', 'controlled_reactome_stable_id': 'R-HSA-5',
+        'controlled_display_name': 'EGFR autophosphorylates',
+    })
+    ids = {i['id'] for e in out.entities.values() for i in e.identifiers}
+    assert 'P00533' in ids and not {'p-Y1068-EGFR', 'R-HSA-4'} & ids
+    assert {'R-HSA-5', 'EGFR autophosphorylates'} <= ids
+    annotations = {a['term']: a['value'] for r in out.relations for a in r.annotations}
+    assert annotations['original_subject'] == 'p-Y1068-EGFR'
+    assert 'original_object' not in annotations
