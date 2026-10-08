@@ -184,8 +184,19 @@ def _extract_quoted(value: str) -> str:
     return _strip_inline_comment(value)
 
 
+# A tag value, its optional trailing qualifier block ({source="…", …}) and ``! comment``.
+_TAG_VALUE_RE = re.compile(
+    r'(?P<value>.*?)\s*(?:\{(?:[^{}"]|"(?:\\.|[^"\\])*")*\})?\s*(?:!(?:\s.*)?)?'
+)
+
+
 def _strip_inline_comment(value: str) -> str:
-    return value.split(' ! ', 1)[0].strip()
+    """The value of a tag line without its trailing qualifiers and comment.
+
+    ``is_a: MONDO:0000001 {source="EFO:0005932"} ! disease`` names MONDO:0000001;
+    kept, the qualifiers would make a different identifier of every annotated line.
+    """
+    return _TAG_VALUE_RE.fullmatch(value.strip())['value'].strip()
 
 
 def _parse_relationship(value: str) -> dict[str, str] | None:
