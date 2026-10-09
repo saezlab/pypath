@@ -369,34 +369,17 @@ participant = EntityBuilder(
 # parse_identifier_pairs returns ((Namespace.UNIPROT, 'P04637'), ...)
 ```
 
-`Column` reuses splitting, extraction, transformation and mapping for repeated
-immutable cell values. `CV.from_pairs(Column(...))` projects a cell's sequence of
-pairs into aligned namespace/value columns, evaluating the source only once.
-The existing `CV.from_pairs(row_callback)` form remains supported.
+`CV.from_pairs(Column(...))` projects a cell's sequence of pairs into aligned
+namespace/value columns, evaluating the source only once per row. The
+`CV.from_pairs(row_callback)` form remains supported.
 
-Flat `EntityBuilder` instances infer identifier/annotation dependencies from
-these field definitions. Unrelated fields, such as a relation's evidence, do
-not prevent endpoint reuse. Dynamic entity types are evaluated and validated
-on **every row**, and the resolved type is part of the cache key. An opaque
-identifier/annotation callback conservatively depends on the entire dictionary
-row, including field order; the executor never guesses which fields it reads.
-An explicit `cache_by` remains available for compatibility but is unnecessary
-for declarative fields and must include every identifier/annotation dependency.
-
-Each cache holds at most 4,096 entries, with least-recently-used eviction.
-Missing fields, nulls and scalar types remain distinct. Mutable/custom inputs
-bypass cross-row caching; cell results are retained only when their elements
-are immutable (including tuples). Returned lists are separate containers.
-Nested entities use the ordinary build path, while their fields still benefit
-from cell caching. Custom mapping rows also use the ordinary entity build path.
-These are per-definition bounds, not a process-wide memory limit.
-
-Callbacks must be pure transformations, and mapping specifications/constants
-must remain stable. Construct new definitions when their configuration changes.
-For stateful callbacks, set `cache_size=0` on the enclosing `EntityBuilder` and
-on the affected `Column`/`FieldConfig` fields. Row-local extraction sharing still
-applies. Declare reusable fields when defining a mapper rather than constructing
-them inside per-row callbacks.
+Builders evaluate every row; nothing is memoized across rows. Within a row,
+fields that share a source extract it once. Cross-row caches were removed
+because, on measured inputs, building their keys and copying results cost more
+than the repeated work they saved. Callbacks should still be pure
+transformations, and mapping specifications/constants must remain stable.
+Declare reusable fields when defining a mapper rather than constructing them
+inside per-row callbacks.
 
 ### Dynamic URLs
 

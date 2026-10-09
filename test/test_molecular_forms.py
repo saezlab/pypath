@@ -68,12 +68,10 @@ def test_unknown_sequence_and_fuzzy_feature_range_are_not_guessed():
     assert feature['description'].endswith('5..7-9..10')
 
 
-def test_builder_cache_preserves_distinct_forms_even_with_explicit_cache_by():
-    calls = []
+def test_builder_keeps_each_rows_form_and_rejects_resolved_keys():
     builder = EntityBuilder(
-        entity_type=Protein, cache_by=('id',),
-        identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT,
-                                         value=lambda row: calls.append(row['id']) or row['id'])),
+        entity_type=Protein,
+        identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=lambda row: row['id'])),
         molecular_form=lambda row: {'isoform_identifier': {'ns': 'uniprot', 'id': row['isoform']}},
     )
     first = builder({'id': 'P04637', 'isoform': 'P04637-2'})
@@ -82,7 +80,6 @@ def test_builder_cache_preserves_distinct_forms_even_with_explicit_cache_by():
     first.molecular_form['isoform_identifier']['id'] = 'mutated'
     repeated = builder({'id': 'P04637', 'isoform': 'P04637-2'})
     assert repeated.molecular_form['isoform_identifier']['id'] == 'P04637-2'
-    assert calls == ['P04637', 'P04637']
     builder.molecular_form = {'protein_entity_key': 'forged'}
     with pytest.raises(ValueError, match='resolution'):
         builder({'id': 'P04637'})

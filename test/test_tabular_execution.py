@@ -4,7 +4,7 @@ import pytest
 from biolink_model.datamodel.model import Protein, slots
 from omnipath_core.naming import Namespace
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder, Column, ColumnCache, CV, EntityBuilder, IdentifiersBuilder,
+    AnnotationsBuilder, AssociationBuilder, Column, ColumnCache, CV, EntityBuilder, IdentifiersBuilder,
 )
 
 
@@ -65,143 +65,22 @@ def test_presence_annotations_match_dynamic_terms():
     assert static.build({}) == dynamic.build({})
 
 
-def test_flat_entity_cache_tracks_fields_and_isolates_mutation():
-    calls = []
-
-    def identifier(row):
-        calls.append(row['id'])
-        return row['id']
-
-    builder = EntityBuilder(
-        entity_type=Protein, cache_by=('id', 'name'), cache_size=2,
-        identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=identifier)),
-        annotations=AnnotationsBuilder(CV(term=slots.name, value=Column('name'))),
-    )
-    first = builder({'id': 'P1', 'name': 'first'})
-    first.identifiers.clear()
-    first.annotations.clear()
-    repeated = builder({'id': 'P1', 'name': 'first'})
-    assert repeated.identifiers[0].value == 'P1'
-    assert repeated.annotations[0].value == 'first'
-    assert calls == ['P1']
-    assert builder({'id': 'P1', 'name': 'changed'}).annotations[0].value == 'changed'
-    builder({'id': 'P2', 'name': 'second'})
-    builder({'id': 'P1', 'name': 'first'})
-    assert calls == ['P1', 'P1', 'P2', 'P1']  # bounded cache evicted first
 
 
-def test_flat_cache_distinguishes_missing_null_and_scalar_types():
-    def identifier(row):
-        return 'missing' if 'id' not in row else f'{type(row["id"]).__name__}:{row["id"]}'
-
-    builder = EntityBuilder(
-        entity_type=Protein, cache_by=('id',),
-        identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=identifier)),
-    )
-    assert [builder(row).identifiers[0].value for row in [{}, {'id': None}, {'id': 0}, {'id': False}]] == [
-        'missing', 'NoneType:None', 'int:0', 'bool:False',
-    ]
 
 
-def test_column_memoization_is_automatic_bounded_and_isolated():
-    calls = []
-    column = Column('id', transform=lambda value: calls.append(value) or value.upper(), cache_size=2)
-    first = column.extract({'id': 'a'})
-    first.clear()
-    assert column.extract({'id': 'a'}) == ['A']
-    column.extract({'id': 'b'})
-    column.extract({'id': 'a'})  # refresh LRU
-    column.extract({'id': 'c'})
-    column.extract({'id': 'b'})
-    assert calls == ['a', 'b', 'c', 'b']
 
 
-def test_column_bypasses_mutable_inputs_and_outputs():
-    calls = []
-    column = Column('id', transform=lambda value: calls.append(value) or value)
-    row = {'id': ['a']}
-    assert column.extract(row) == ['a']
-    row['id'].append('b')
-    assert column.extract(row) == ['a', 'b']
-    assert calls == ['a', 'a', 'b']
-    mutable = Column('id', transform=lambda value: [value])
-    first = mutable.extract({'id': 'a'})
-    first[0].append('changed')
-    assert mutable.extract({'id': 'a'}) == [['a']]
 
 
-def test_pair_column_reuses_cell_transformation_across_different_rows():
-    calls = []
-    pairs = Column('ids', transform=lambda value: calls.append(value) or ((Namespace.UNIPROT, value),))
-    builder = IdentifiersBuilder(CV.from_pairs(pairs))
-    assert builder.build({'ids': 'P1', 'other': 'a'}) == builder.build({'ids': 'P1', 'other': 'b'})
-    assert calls == ['P1']
 
 
-def test_entity_infers_fields_and_checks_dynamic_type_each_time(monkeypatch):
-    from biolink_model.datamodel.model import ChemicalEntity
-
-    calls = []
-    builder = EntityBuilder(
-        entity_type=lambda row: Protein if row['kind'] == 'protein' else ChemicalEntity,
-        identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=Column('id'))),
-        annotations=AnnotationsBuilder(CV(term=slots.name, value=Column('name'))),
-    )
-    original = builder._build
-    monkeypatch.setattr(builder, '_build', lambda *args: calls.append(1) or original(*args))
-    first = builder({'id': 'P1', 'name': 'one', 'kind': 'protein', 'evidence': 'a'})
-    first.annotations.clear()
-    repeated = builder({'id': 'P1', 'name': 'one', 'kind': 'protein', 'evidence': 'b'})
-    assert repeated.annotations[0].value == 'one'
-    assert len(calls) == 1
-    changed_type = builder({'id': 'P1', 'name': 'one', 'kind': 'chemical'})
-    assert changed_type.type != repeated.type
-    assert len(calls) == 2
-    assert builder({'id': 'P1', 'name': 'two', 'kind': 'protein'}).annotations[0].value == 'two'
-    assert len(calls) == 3
-    with pytest.raises(KeyError):
-        builder({'id': 'P1', 'name': 'one'})
 
 
-def test_opaque_callback_cache_uses_whole_row_including_presence_and_order():
-    calls = []
-
-    def identifier(row):
-        calls.append(1)
-        return repr(list(row.items()))
-
-    builder = EntityBuilder(
-        entity_type=Protein,
-        identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=identifier)),
-    )
-    rows = [{}, {'id': None}, {'id': False}, {'id': 0}, {'id': -0.0}, {'id': 0.0},
-            {'a': 1, 'b': 2}, {'b': 2, 'a': 1}]
-    results = [builder(row) for row in rows]
-    assert len({result.identifiers[0].value for result in results}) == len(rows)
-    assert [builder(row) for row in rows] == results
-    assert len(calls) == len(rows)
 
 
-def test_disabling_caches_reexecutes_transformations():
-    calls = []
-    column = Column('id', transform=lambda value: calls.append(value) or value, cache_size=0)
-    builder = EntityBuilder(
-        entity_type=Protein, cache_size=0,
-        identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=column)),
-    )
-    assert builder({'id': 'a'}) == builder({'id': 'a'})
-    assert calls == ['a', 'a']
 
 
-def test_mutable_opaque_row_is_not_cached():
-    builder = EntityBuilder(
-        entity_type=Protein,
-        identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=lambda row: row['ids'][0])),
-    )
-    row = {'ids': ['P1']}
-    assert builder(row).identifiers[0].value == 'P1'
-    row['ids'][0] = 'P2'
-    assert builder(row).identifiers[0].value == 'P2'
 
 
 def test_entity_type_and_identifier_share_row_local_extraction():
@@ -215,15 +94,6 @@ def test_entity_type_and_identifier_share_row_local_extraction():
     assert calls == [1]
 
 
-def test_nested_entities_do_not_reuse_complete_results():
-    calls = []
-    builder = EntityBuilder(
-        entity_type=Protein,
-        identifiers=IdentifiersBuilder(CV(term=Namespace.UNIPROT, value=Column('id'))),
-        ontology_relations=lambda row: calls.append(row) or [],
-    )
-    assert builder({'id': 'P1'}) == builder({'id': 'P1'})
-    assert len(calls) == 2
 
 
 def test_relation_emission_reuses_the_same_mapping_and_validation():
@@ -239,3 +109,29 @@ def test_relation_emission_reuses_the_same_mapping_and_validation():
     invalid = RelationBuilder(subject=endpoint, predicate=lambda row: 'invalid-predicate', object=endpoint)
     with pytest.raises(ValueError):
         invalid.build(row, emit=dict)
+
+
+def test_associations_deduplicate_identifiers_under_a_slot_predicate():
+    from biolink_model.datamodel.model import OntologyClass
+
+    builder = AssociationBuilder(
+        predicate=slots.associated_with,
+        object_entity_type=OntologyClass,
+        object_identifier_type=Namespace.GO,
+        object_identifier=Column('go', delimiter=';'),
+    )
+    associations = builder.build({'go': 'GO:0001;GO:0002;GO:0001'}, ColumnCache())
+    assert [a.object.identifier for a in associations] == ['GO:0001', 'GO:0002']
+    assert {(a.predicate, a.object.type, a.object.identifier_type) for a in associations} == {
+        ('associated_with', 'ontology_class', 'go'),
+    }
+    assert builder.build({'go': ''}, ColumnCache()) == []
+
+
+def test_measurements_deduplicate_by_their_fields():
+    from pypath.inputs_v2._measurements import measurement
+
+    values = [measurement('5', 'nM', 'Ki (nM)'), measurement('5', 'nM', 'Ki (nM)'),
+              measurement('7', 'nM', 'Ki (nM)'), measurement('5', 'nM', 'Kd (nM)')]
+    builder = AnnotationsBuilder(CV(term=slots.has_quantitative_value, value=lambda row: values))
+    assert len(builder.build({})) == 3

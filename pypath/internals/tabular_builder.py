@@ -10,10 +10,7 @@ configuration API.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-import copy
-from collections import OrderedDict
-from enum import Enum
+from dataclasses import dataclass, field, fields, is_dataclass
 import logging
 import re
 from typing import Any, Callable, Mapping, Sequence
@@ -30,7 +27,6 @@ from pypath.internals.silver_schema import (
     format_term,
 )
 from omnipath_core.naming import normalize_namespace
-from omnipath_core.keys import canonical_json
 from omnipath_core.molecular_forms import molecular_form_from_identifiers, normalize_molecular_form
 from omnipath_core.biolink import predicate as biolink_predicate, annotation_value, annotation_term
 from omnipath_core.biolink import entity_type as biolink_entity_type
@@ -59,23 +55,6 @@ def _with_primary_molecular_form(entity_type: Any, identifiers: list, form: Any)
             sequences.append(item)
     combined['sequence_identifiers'] = sequences
     return normalize_molecular_form(combined, allow_resolved=False)
-
-
-def _immutable_key(value: Any) -> Any:
-    """Typed keys for immutable inputs; unsupported values bypass memoization."""
-    if value is None or type(value) in (str, bytes, int, bool):
-        return (type(value), value)
-    if type(value) is float:
-        if value != value:
-            raise TypeError('NaN payloads cannot be memoized')
-        return (float, value.hex())
-    if isinstance(value, Enum):
-        return (type(value), value.name)
-    if isinstance(value, type):
-        return (type, value)
-    if type(value) is tuple:
-        return (tuple, tuple(_immutable_key(item) for item in value))
-    raise TypeError('Mutable or custom value cannot be memoized')
 
 
 def _clean_annotation_term(term: Any) -> str:
@@ -126,10 +105,6 @@ class Column:
         - ``None`` to return the extracted value unchanged.
     default:
         Optional fallback value if mapping yields no result.
-    cache_size:
-        Maximum repeated immutable cell values retained (default 4096).
-        Callbacks must be pure and definitions stable. Set to zero to disable
-        cell memoization; also disable enclosing entity caches for stateful code.
     """
 
     def __init__(
@@ -142,7 +117,6 @@ class Column:
         map: Mapping[Any, Any] | Callable[[Any], Any] | None = None,
         default: Any | None = None,
         preserve_indices: bool = False,
-        cache_size: int = 4096,
     ) -> None:
         self.selector = selector
         self.delimiter = delimiter
@@ -151,39 +125,17 @@ class Column:
         self.mapping = map
         self.default = default
         self.preserve_indices = preserve_indices
-        if cache_size < 0:
-            raise ValueError('cache_size must not be negative')
-        self.cache_size = cache_size
-        self._value_cache: OrderedDict = OrderedDict()
 
     def extract(self, row: Any, cache: ColumnCache | None = None) -> list[Any]:
         """Extract a list of processed values from the given row.
-        
+
         When preserve_indices is True, empty/placeholder values are preserved
         as None in the output list to maintain index alignment across multiple
         delimited fields (needed for MembersFromList).
         """
-        raw_value = self._lookup(row)
-        if not self.cache_size:
-            return self._extract_value(raw_value)
-        try:
-            key = _immutable_key(raw_value)
-        except TypeError:
-            return self._extract_value(raw_value)
-        if key in self._value_cache:
-            self._value_cache.move_to_end(key)
-            return list(self._value_cache[key])
-        result = self._extract_value(raw_value)
-        try:
-            # Only retain immutable results; the outer list is copied on hits.
-            _immutable_key(tuple(result))
-        except TypeError:
-            return result
-        self._value_cache[key] = tuple(result)
-        if len(self._value_cache) > self.cache_size:
-            self._value_cache.popitem(last=False)
-        return result
-
+        # Not memoized across rows: on measured inputs a cell cache cost more
+        # (key building, copies) than the repeated work it saved.
+        return self._extract_value(self._lookup(row))
 
     def _extract_value(self, raw_value: Any) -> list[Any]:
         if raw_value is None:
@@ -430,7 +382,6 @@ class FieldConfig:
         delimiter: str | None = None,
         default: Any | None = None,
         preserve_indices: bool | None = None,
-        cache_size: int = 4096,
     ) -> Column:
         extract_steps = self._resolve_extract(extract)
         transform_func = self._resolve_transform(transform)
@@ -443,7 +394,6 @@ class FieldConfig:
             map=mapping,
             default=default,
             preserve_indices=preserve_indices if preserve_indices is not None else self.preserve_indices,
-            cache_size=cache_size,
         )
 
     def _resolve_extract(
@@ -554,35 +504,6 @@ class _PairsSource:
 
     def extract(self, row: Any, cache: ColumnCache) -> list[Any]:
         return [pair for pairs in cache.values(self.column, row) for pair in pairs]
-
-
-def _source_columns(source: Any) -> set[str] | None:
-    """None means an opaque row callback: conservatively depend on the whole row."""
-    if source is None or isinstance(source, _ConstantSource):
-        return set()
-    if type(source) is Column and isinstance(source.selector, str):
-        return {source.selector}
-    if isinstance(source, _PairColumn):
-        return _source_columns(source.source)
-    if isinstance(source, _PairsSource):
-        return _source_columns(source.column)
-    return None
-
-
-def _entity_columns(*builders: Any) -> tuple[str, ...] | None:
-    columns = set()
-    for builder in builders:
-        if builder is None:
-            continue
-        if type(builder) not in (IdentifiersBuilder, AnnotationsBuilder):
-            return None
-        for cv in builder.cvs:
-            for source in (cv.term_source, cv.value_source, cv.unit_source):
-                dependencies = _source_columns(source)
-                if dependencies is None:
-                    return None
-                columns.update(dependencies)
-    return tuple(sorted(columns))
 
 
 def _normalize_source(spec: Any) -> Any:
@@ -896,6 +817,13 @@ class _BaseCvBuilder:
             )
         if isinstance(value, (list, tuple, set)):
             return tuple(_BaseCvBuilder._make_hashable(item) for item in value)
+        if is_dataclass(value) and not isinstance(value, type):
+            # Measurements and LinkML objects: compare their fields; their repr
+            # runs LinkML's pretty-printer.
+            return (type(value),) + tuple(
+                (item.name, _BaseCvBuilder._make_hashable(getattr(value, item.name)))
+                for item in fields(value)
+            )
 
         return repr(value)
 
@@ -1336,27 +1264,28 @@ class AssociationBuilder:
         if object_entity_type is None or object_identifier_type is None:
             return []
 
+        items = _BaseCvBuilder._explode_values(object_identifier)
+        if not items:
+            return []
+        # Predicate, type and identifier type are shared by every item of this
+        # index: canonicalize them once (str() of a LinkML slot is a slow repr).
+        canonical_predicate = _canonical_predicate(predicate) if predicate else None
+        canonical_type = _canonical_entity_type(object_entity_type)
+        identifier_type = normalize_namespace(object_identifier_type) or str(object_identifier_type)
         associations: list[SilverAssociation] = []
-        seen: set[tuple[str | None, str, str, str]] = set()
-        for object_identifier_item in _BaseCvBuilder._explode_values(
-            object_identifier
-        ):
-            key = (
-                str(predicate) if predicate else None,
-                str(object_entity_type),
-                str(object_identifier_type),
-                str(object_identifier_item),
-            )
-            if key in seen:
+        seen: set[str] = set()
+        for object_identifier_item in items:
+            identifier = str(object_identifier_item)
+            if identifier in seen:
                 continue
-            seen.add(key)
+            seen.add(identifier)
             associations.append(
                 SilverAssociation(
-                    predicate=_canonical_predicate(predicate) if predicate else None,
+                    predicate=canonical_predicate,
                     object=SilverEntityRef(
-                        type=_canonical_entity_type(object_entity_type),
-                        identifier_type=normalize_namespace(object_identifier_type) or str(object_identifier_type),
-                        identifier=str(object_identifier_item),
+                        type=canonical_type,
+                        identifier_type=identifier_type,
+                        identifier=identifier,
                     ),
                 )
             )
@@ -1420,13 +1349,7 @@ class AssociationsBuilder:
 
 
 class EntityBuilder:
-    """Declarative spec that produces `Entity` records from rows.
-
-    Flat entities automatically reuse pure mappings, inferring dependencies
-    from identifier/annotation columns. Opaque callbacks depend on the whole
-    dictionary row. Dynamic types are evaluated on every row. ``cache_size=0``
-    disables entity reuse; fields have their own independent cache setting.
-    """
+    """Declarative spec that produces `Entity` records from rows."""
 
     def __init__(
         self,
@@ -1439,8 +1362,6 @@ class EntityBuilder:
         ontology_relations: OntologyRelationsBuilder
         | Callable[[Any], list[SilverOntologyRelation]]
         | None = None,
-        cache_by: Sequence[str] | None = None,
-        cache_size: int = 4096,
         molecular_form: Any | Callable[[Any], Any] | None = None,
     ) -> None:
         _validate_static_entity_type(entity_type)
@@ -1451,65 +1372,9 @@ class EntityBuilder:
         self.membership = membership
         self.ontology_relations = ontology_relations
         self.molecular_form = molecular_form
-        if isinstance(cache_by, str):
-            raise TypeError('cache_by must be a sequence of column names, not a string')
-        if cache_by is not None and (associations or membership or ontology_relations):
-            raise ValueError('cache_by is supported for flat entities only')
-        if cache_size < 0:
-            raise ValueError('cache_size must not be negative')
-        self.cache_by = tuple(cache_by) if cache_by is not None else None
-        self._inferred_columns = _entity_columns(identifiers, annotations)
-        standard_fields = (
-            (identifiers is None or type(identifiers) is IdentifiersBuilder)
-            and (annotations is None or type(annotations) is AnnotationsBuilder)
-        )
-        self.cache_size = (
-            cache_size if standard_fields and not (associations or membership or ontology_relations) else 0
-        )
-        self._entity_cache: OrderedDict[tuple, SilverEntity | None] = OrderedDict()
 
     def __call__(self, row: Any) -> SilverEntity | None:
         return self.build(row)
-
-    def build(self, row: Any) -> SilverEntity | None:
-        if not self.cache_size or type(row) is not dict:
-            return self._build(row)
-        # Evaluate dynamic type on every call. It may depend on arbitrary fields
-        # and must still validate a row even when identifiers/annotations repeat.
-        cache = ColumnCache()
-        resolved_type = self._resolve_type(row, cache)
-        if resolved_type is None:
-            return None
-        form = self._resolve_molecular_form(row, cache)
-        columns = self.cache_by if self.cache_by is not None else self._inferred_columns
-        try:
-            if columns is None:
-                # Preserve iteration order for opaque callbacks as well as values.
-                values = tuple((_immutable_key(k), _immutable_key(v)) for k, v in row.items())
-            else:
-                values = tuple((name in row, _immutable_key(row.get(name))) for name in columns)
-            # Forms are occurrence-scoped even when cache_by omits their inputs.
-            key = (resolved_type, values, canonical_json(form))
-        except TypeError:
-            return self._build(row, resolved_type, cache, form)
-        if key in self._entity_cache:
-            self._entity_cache.move_to_end(key)
-            entity = self._entity_cache[key]
-        else:
-            entity = self._build(row, resolved_type, cache, form)
-            self._entity_cache[key] = entity
-            if len(self._entity_cache) > self.cache_size:
-                self._entity_cache.popitem(last=False)
-        # Flat Identifier/Annotation records contain immutable scalar values.
-        # Copy their containers so consumers cannot mutate later results.
-        if entity is None:
-            return None
-        return entity._replace(
-            identifiers=list(entity.identifiers),
-            annotations=list(entity.annotations) if entity.annotations is not None else None,
-            molecular_form=copy.deepcopy(entity.molecular_form),
-        )
-
 
     def _resolve_molecular_form(self, row: Any, cache: ColumnCache) -> dict | None:
         source = self.molecular_form
@@ -1544,18 +1409,12 @@ class EntityBuilder:
         return resolved_type
 
 
-    def _build(
-        self, row: Any, resolved_type: Any = _UNCOMPUTED, cache: ColumnCache | None = None,
-        molecular_form: Any = _UNCOMPUTED,
-    ) -> SilverEntity | None:
-        if cache is None:
-            cache = ColumnCache()
-        if resolved_type is _UNCOMPUTED:
-            resolved_type = self._resolve_type(row, cache)
+    def build(self, row: Any) -> SilverEntity | None:
+        cache = ColumnCache()
+        resolved_type = self._resolve_type(row, cache)
         if resolved_type is None:
             return None
-        if molecular_form is _UNCOMPUTED:
-            molecular_form = self._resolve_molecular_form(row, cache)
+        molecular_form = self._resolve_molecular_form(row, cache)
 
         identifiers = self.identifiers.build(row, cache) if self.identifiers else []
         if not identifiers:
