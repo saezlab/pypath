@@ -226,10 +226,10 @@ class Dataset:
         With ``max_records``, the table holds the first rows only, and only a prefix
         of the input is parsed: it grows until enough rows pass the parser's filter.
         """
-        kwargs.pop('max_lines', None)
+        max_lines = kwargs.pop('max_lines', None)
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
         if max_records is None:
-            return self._raw_table(db, name, opener, **kwargs)
+            return self._raw_table(db, name, opener, max_lines=max_lines, **kwargs)
         # Estimate the filter's pass rate on a probe, then read a quarter more than needed
         # (early lines may pass more often): one parse of the prefix, rarely two.
         lines = 20_000
