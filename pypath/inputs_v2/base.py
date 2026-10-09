@@ -216,18 +216,46 @@ class Dataset:
     def has_table(self) -> bool:
         return self._raw_table is not None
 
-    def table(self, db, name: str, force_refresh: bool = False, **kwargs: Any) -> int:
+    def table(
+        self, db, name: str, force_refresh: bool = False, max_records: int | None = None, **kwargs: Any
+    ) -> int:
         """Parse into DuckDB table ``name``: ``rid`` (the row's position in
         :meth:`raw`'s output) and one VARCHAR column per field, NULL where a row
-        lacks the field. Returns the row count."""
+        lacks the field. Returns the row count.
+
+        With ``max_records``, the table holds the first rows only, and only a prefix
+        of the input is parsed: it grows until enough rows pass the parser's filter.
+        """
+        kwargs.pop('max_lines', None)
         opener = self.download.open(force_refresh=force_refresh, **kwargs) if self.download else None
-        return self._raw_table(db, name, opener, **kwargs)
+        if max_records is None:
+            return self._raw_table(db, name, opener, **kwargs)
+        # Estimate the filter's pass rate on a probe, then read a quarter more than needed
+        # (early lines may pass more often): one parse of the prefix, rarely two.
+        lines = 20_000
+        count = self._raw_table(db, name, opener, max_lines=lines, **kwargs)
+        while count < max_records:
+            previous = count
+            lines = int(max_records * lines / max(count, 1) * 1.25) + 1000
+            count = self._raw_table(db, name, opener, max_lines=lines, **kwargs)
+            if count == previous:  # the input has no more lines
+                break
+        if count > max_records:
+            db.execute(f'DELETE FROM {name} WHERE rid >= {int(max_records)}')
+            count = int(max_records)
+        return count
 
     def raw(
         self,
         force_refresh: bool = False,
         **kwargs: Any,
     ) -> Generator[dict[str, Any], None, None]:
+        """Parsed rows. A dataset with a table parser parses in SQL and streams the
+        table's rows; ``row_parser=True`` uses the row parser instead."""
+        if self._raw_table is not None and not kwargs.pop('row_parser', False):
+            yield from self._table_rows(force_refresh=force_refresh, **kwargs)
+            return
+        kwargs.pop('row_parser', None)
         skip_download_open = bool(kwargs.pop('skip_download_open', False))
         skip_download_open = skip_download_open or _prepared_cache_available(
             self._raw_parser,
@@ -244,6 +272,41 @@ class Dataset:
         yield from self._raw_parser(
             opener, force_refresh=force_refresh, **kwargs
         )
+
+    def _table_rows(
+        self, force_refresh: bool = False, batch_rows: int = 8192, **kwargs: Any
+    ) -> Generator[dict[str, Any], None, None]:
+        """The table parser's rows in ``rid`` order, as the row parser yields them:
+        a field the row lacks (NULL) is not a key.
+
+        With ``max_records``, only a prefix of the input is parsed; it grows until
+        it holds enough rows (a parser's filter may drop lines).
+        """
+        import os
+        import tempfile
+
+        import duckdb
+
+        max_records = kwargs.pop('max_records', None)
+        # Large inputs spill: work on disk next to the downloads, not in /tmp (often RAM).
+        parent = (
+            os.environ.get('PYPATH_TABLE_TMPDIR')
+            or os.environ.get('PYPATH_DOWNLOAD_DATADIR')
+            or None
+        )
+        with tempfile.TemporaryDirectory(prefix='pypath-table-', dir=parent) as directory:
+            db = duckdb.connect(os.path.join(directory, 'table.duckdb'))
+            try:
+                db.execute(f"SET threads={int(os.environ.get('PYPATH_TABLE_THREADS', 4))}")
+                db.execute(f"SET memory_limit='{os.environ.get('PYPATH_TABLE_MEMORY', '2GB')}'")
+                db.execute(f"SET temp_directory='{directory}/spill'")
+                self.table(db, 'raw', force_refresh=force_refresh, max_records=max_records, **kwargs)
+                cursor = db.execute('SELECT * EXCLUDE (rid) FROM raw ORDER BY rid')
+                for batch in cursor.fetch_record_batch(batch_rows):
+                    for row in batch.to_pylist():
+                        yield {key: value for key, value in row.items() if value is not None}
+            finally:
+                db.close()
 
     def __call__(
         self, force_refresh: bool = False, **kwargs: Any
