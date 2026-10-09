@@ -46,6 +46,13 @@ _MODIFICATION_NAME_RE = re.compile(
 )
 
 
+_SEQUENCE_ALPHABETS = {
+    'protein': frozenset('ACDEFGHIKLMNPQRSTVWYBXZJUO*'),
+    'transcript': frozenset('ACGUNRYSWKMBDHV'),
+    'genomic': frozenset('ACGTNRYSWKMBDHV'),
+}
+
+
 def sequence_form(sequence: object, *, system: str = 'protein') -> dict | None:
     """Identify an explicitly supplied sequence without assigning an accession.
 
@@ -53,11 +60,7 @@ def sequence_form(sequence: object, *, system: str = 'protein') -> dict | None:
     no T/U conversion or reference-sequence alignment is performed. The source
     sequence remains in the raw record.
     """
-    alphabets = {
-        'protein': 'ACDEFGHIKLMNPQRSTVWYBXZJUO*',
-        'transcript': 'ACGUNRYSWKMBDHV',
-        'genomic': 'ACGTNRYSWKMBDHV',
-    }
+    alphabets = _SEQUENCE_ALPHABETS
     if system not in alphabets:
         raise ValueError(f'Unsupported sequence system: {system}')
     text = str(sequence or '').strip()
@@ -71,7 +74,7 @@ def sequence_form(sequence: object, *, system: str = 'protein') -> dict | None:
     }:
         return None
     value = re.sub(r'\s+', '', text).upper()
-    if not value or any(letter not in alphabets[system] for letter in value):
+    if not value or not alphabets[system].issuperset(value):
         return None
     identifier = hashlib.sha256(value.encode('ascii')).hexdigest()
     return normalize_molecular_form(
