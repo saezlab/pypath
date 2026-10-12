@@ -151,6 +151,111 @@ class LicenseCV(CvEnum):
         LicenseUse.ALLOWED,
         LicenseUse.ALLOWED,
     )
+    CC_BY_2_0 = (
+        "OM:0527",
+        "Creative Commons Attribution 2.0 Generic license",
+        "https://creativecommons.org/licenses/by/2.0/",
+        LicenseUse.ALLOWED,
+        LicenseUse.ALLOWED,
+    )
+    CC_BY_2_5 = (
+        "OM:0516",
+        "Creative Commons Attribution 2.5 Generic license",
+        "https://creativecommons.org/licenses/by/2.5/",
+        LicenseUse.ALLOWED,
+        LicenseUse.ALLOWED,
+    )
+    CC_BY_ND_3_0 = (
+        "OM:0517",
+        "Creative Commons Attribution-NoDerivs 3.0 Unported license",
+        "https://creativecommons.org/licenses/by-nd/3.0/",
+        LicenseUse.ALLOWED,
+        LicenseUse.ALLOWED,
+    )
+    CC_BY_NC_2_0 = (
+        "OM:0518",
+        "Creative Commons Attribution-NonCommercial 2.0 Generic license",
+        "https://creativecommons.org/licenses/by-nc/2.0/",
+        LicenseUse.ALLOWED,
+        LicenseUse.NOT_ALLOWED,
+    )
+    CC_BY_NC_3_0 = (
+        "OM:0519",
+        "Creative Commons Attribution-NonCommercial 3.0 Unported license",
+        "https://creativecommons.org/licenses/by-nc/3.0/",
+        LicenseUse.ALLOWED,
+        LicenseUse.NOT_ALLOWED,
+    )
+    CC_BY_NC_SA_3_0 = (
+        "OM:0520",
+        "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported license",
+        "https://creativecommons.org/licenses/by-nc-sa/3.0/",
+        LicenseUse.ALLOWED,
+        LicenseUse.NOT_ALLOWED,
+    )
+    CC_BY_NC_SA_4_0 = (
+        "OM:0521",
+        "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license",
+        "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        LicenseUse.ALLOWED,
+        LicenseUse.NOT_ALLOWED,
+    )
+    CC_BY_NC_ND_3_0 = (
+        "OM:0522",
+        "Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported license",
+        "https://creativecommons.org/licenses/by-nc-nd/3.0/",
+        LicenseUse.ALLOWED,
+        LicenseUse.NOT_ALLOWED,
+    )
+    DSL = (
+        "OM:0523",
+        "Design Science License",
+        "https://www.gnu.org/licenses/dsl.html",
+        LicenseUse.ALLOWED,
+        LicenseUse.ALLOWED,
+    )
+    ARTISTIC_2_0 = (
+        "OM:0524",
+        "Artistic License 2.0",
+        "https://opensource.org/license/artistic-2-0",
+        LicenseUse.UNKNOWN,
+        LicenseUse.UNKNOWN,
+    )
+    LGPL_3_0 = (
+        "OM:0525",
+        "GNU Lesser General Public License v3.0",
+        "https://www.gnu.org/licenses/lgpl-3.0.html",
+        LicenseUse.UNKNOWN,
+        LicenseUse.UNKNOWN,
+    )
+    COMPOSITE = (
+        "OM:0526",
+        "Composite - the constituent databases carry their own licenses",
+        None,
+        LicenseUse.UNKNOWN,
+        LicenseUse.UNKNOWN,
+    )
+    NONCOMMERCIAL = (
+        "OM:0528",
+        "Non-commercial use only",
+        None,
+        LicenseUse.ALLOWED,
+        LicenseUse.NOT_ALLOWED,
+    )
+    NAR_OPEN_ACCESS = (
+        "OM:0529",
+        "Nucleic Acids Research Open Access - databases of the NAR database issue are freely usable",
+        None,
+        LicenseUse.ALLOWED,
+        LicenseUse.ALLOWED,
+    )
+    MPPI = (
+        "OM:0530",
+        "MPPI license - free use, commercial use included",
+        "http://mips.helmholtz-muenchen.de/proj/ppi/",
+        LicenseUse.ALLOWED,
+        LicenseUse.ALLOWED,
+    )
     UNSPECIFIED = (
         "OM:0599",
         "License not specified or unclear",
