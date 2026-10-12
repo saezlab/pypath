@@ -9,6 +9,7 @@ from __future__ import annotations
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 from functools import partial
 import json
@@ -46,11 +47,19 @@ config = ResourceConfig(
     license=LicenseCV.CC0_1_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='34788843',
-    primary_category='pathways',
     annotation_ontologies=(
         OntologyCv.GENE_ONTOLOGY,
         OntologyCv.REACTOME_PATHWAYS,
     ),
+    topics=(Topic.SIGNALING, Topic.METABOLISM),
+    content=(
+        Content.PATHWAYS,
+        Content.BIOCHEMICAL_REACTIONS,
+        Content.CAUSAL_REGULATION,
+        Content.PROTEIN_COMPLEXES,
+    ),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Biological pathways, biochemical activities and explicit regulatory controls.',
     description='Reactome is a free, open-source, curated and peer-reviewed pathway database.',
 )
 _MISSING_VALUE = '__MISSING__'

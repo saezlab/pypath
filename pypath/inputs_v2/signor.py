@@ -13,6 +13,7 @@ import re
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2._molecular_forms import mitab_participant_form
@@ -283,7 +284,10 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='31665520',
-    primary_category='interactions',
+    topics=(Topic.SIGNALING,),
+    content=(Content.CAUSAL_REGULATION, Content.ENZYME_PTM_RELATIONSHIPS),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Causal signaling interactions, mechanisms and protein modification relationships.',
     description=(
         'SIGNOR (SIGnaling Network Open Resource) is a comprehensive '
         'resource of causal relationships between biological entities '

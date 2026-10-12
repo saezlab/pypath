@@ -15,6 +15,7 @@ from typing import Any
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.source_attributes import TRANSPORT_SIDE
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
@@ -41,7 +42,10 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='34755880',
-    primary_category='reactions',
+    topics=(Topic.METABOLISM,),
+    content=(Content.BIOCHEMICAL_REACTIONS,),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Curated biochemical reactions with chemical inputs, outputs and enzyme associations.',
     description=(
         'Rhea is an expert-curated knowledgebase of chemical and transport '
         'reactions of biological interest.'

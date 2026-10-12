@@ -10,6 +10,7 @@ from __future__ import annotations
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin
 
 from pypath.internals.cv_terms import (
     LicenseCV,
@@ -39,8 +40,10 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_NC_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='30357367',
-    primary_category='complexes',
     annotation_ontologies=(OntologyCv.GENE_ONTOLOGY,),
+    content=(Content.PROTEIN_COMPLEXES,),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Curated mammalian protein complexes and their subunits.',
     description=(
         'CORUM is a manually curated repository of experimentally characterized '
         'protein complexes from mammalian organisms. Each complex includes '

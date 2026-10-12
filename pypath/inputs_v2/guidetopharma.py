@@ -27,6 +27,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
 from pypath.inputs_v2._measurements import measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
@@ -287,7 +288,10 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_SA_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='41160876',
-    primary_category='interactions',
+    topics=(Topic.PHARMACOLOGY,),
+    content=(Content.COMPOUND_TARGET_INTERACTIONS,),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Curated pharmacological ligands and their molecular targets.',
     description='The IUPHAR/BPS Guide to PHARMACOLOGY is an expert-curated resource of ligand-activity-target relationships, providing quantitative information on drug targets and the prescription medicines and experimental drugs that act on them. It covers G protein-coupled receptors, voltage-gated ion channels, ligand-gated ion channels, nuclear hormone receptors, catalytic receptors, enzymes, and transporters.',
 )
 _targets_download = Download(

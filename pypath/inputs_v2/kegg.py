@@ -4,6 +4,7 @@ from __future__ import annotations
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 from pypath.inputs_v2._source_context import conversion_direction_cv
 from pypath.internals.tabular_builder import AnnotationsBuilder
 from collections.abc import Iterable
@@ -92,7 +93,7 @@ from pypath.internals.ontology_builder import OntologyBuilder
 
 config = ResourceConfig(
     id=ResourceCv.KEGG_METABOLIC,
-    name='KEGG Metabolic Reactions',
+    name='KEGG',
     slug='kegg',
     short='KEGG',
     full='KEGG Metabolic Reactions',
@@ -100,8 +101,10 @@ config = ResourceConfig(
     license=LicenseCV.KEGG_ACADEMIC,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='10592173',
-    primary_category='metabolism',
     annotation_ontologies=(OntologyCv.KEGG_PATHWAYS,),
+    topics=(Topic.METABOLISM,),
+    content=(Content.BIOCHEMICAL_REACTIONS,),
+    summary='Metabolic reactions and their chemical participants from KEGG.',
     description='Biochemical reactions from KEGG REACTION, with exact KEGG compound participants parsed from reaction equations and enriched with EC, Rhea, KO, RCLASS, ChEBI, and PubChem identifiers.',
 )
 f = FieldConfig(
@@ -121,9 +124,10 @@ reactions_schema = EntityBuilder(
             value=f('rhea_ids', delimiter=';', extract='rhea'),
         ),
         CV(term=Namespace.NAME, value=f('reaction_name', delimiter=';')),
+        # DEFINITION is the equation written with compound names.
+        CV(term=Namespace.SYNONYM, value=f('reaction_definition')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.description, value=f('reaction_definition')),
         CV(
             term=slots.has_topic,
             value=lambda row, source=f('ec_numbers', delimiter=';'): [

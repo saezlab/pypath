@@ -18,6 +18,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
@@ -40,7 +41,10 @@ config = ResourceConfig(
     license=LicenseCV.ACADEMIC_FREE,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='24103452',
-    primary_category='foods',
+    topics=(Topic.NUTRITION,),
+    content=(Content.FOOD_COMPOSITION,),
+    knowledge_origin=(KnowledgeOrigin.EXPERIMENTAL,),
+    summary='Polyphenol constituents of foods with identifiers and concentration measurements.',
     description='Phenol-Explorer is the first comprehensive database on polyphenol content in foods. It contains data on the content and composition of polyphenols and other bioactive compounds in foods, with detailed classification of both compounds and food sources.',
 )
 download_compounds = Download(

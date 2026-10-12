@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.inputs_v2.base import (
@@ -23,8 +24,8 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='41413728',
-    primary_category='ontologies',
-    resource_kind='ontology',
+    content=(Content.ONTOLOGIES,),
+    summary='Gene Ontology concepts describing biological processes, functions and cellular components.',
     description='The Gene Ontology provides controlled vocabulary terms for gene product function, process, and cellular location.',
 )
 

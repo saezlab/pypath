@@ -20,6 +20,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
@@ -41,7 +42,9 @@ config = ResourceConfig(
     url='https://foodb.ca/',
     license=LicenseCV.CC_BY_NC_4_0,
     update_category=UpdateCategoryCV.REGULAR,
-    primary_category='foods',
+    topics=(Topic.NUTRITION,),
+    content=(Content.FOOD_COMPOSITION, Content.MOLECULAR_ANNOTATIONS),
+    summary='Food constituents with chemical identifiers and concentration annotations.',
     description="FooDB is the world's largest and most comprehensive resource on food constituents, chemistry and biology. It provides information on both macronutrients and micronutrients, including compounds that give foods their taste, colour, texture and aroma.",
 )
 download_csv = Download(

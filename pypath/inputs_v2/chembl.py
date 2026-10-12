@@ -32,6 +32,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2._molecular_forms import combine_forms, protein_variants, sequence_form
@@ -82,7 +83,10 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_SA_3_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='21948594',
-    primary_category='interactions',
+    topics=(Topic.PHARMACOLOGY,),
+    content=(Content.COMPOUND_TARGET_INTERACTIONS,),
+    knowledge_origin=(KnowledgeOrigin.EXPERIMENTAL,),
+    summary='Bioactive compounds, molecular targets and ligand–target activity measurements.',
     description='ChEMBL is a manually curated chemical database of bioactive molecules with drug-like properties.',
 )
 download = Download(

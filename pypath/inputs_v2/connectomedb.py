@@ -13,6 +13,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.source_attributes import PARTICIPANT_ROLE
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -27,12 +28,15 @@ from pypath.inputs_v2.parsers.base import iter_csv
 
 config = ResourceConfig(
     id=ResourceCv.CONNECTOMEDB,
-    name='ConnectomeDB2025',
+    name='connectomeDB2025',
     url='https://connectomedb.org/',
     license=LicenseCV.MIT,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='41171146',
-    primary_category='interactions',
+    topics=(Topic.CELL_CELL_COMMUNICATION,),
+    content=(Content.LIGAND_RECEPTOR_INTERACTIONS, Content.PROTEIN_COMPLEXES),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Cell communication interactions and their ligand and receptor complexes.',
     description='ConnectomeDB is a comprehensive and ongoing project that provides ahigh-quality manually curated database of interacting ligand-receptorpairs for use in cell-cell communication analysis. First released in2015 (Ramilowski, et al.), and subsequently updated in 2020 (Hou, et al.)and 2025 (Liu, Maezono et al.), it aims to enhance the understanding ofcell-cell communication in humans and other mammals, supporting biologicaland medical research.',
 )
 BASE_URL = 'https://connectomedb.org/downloads/Current-Release/CSV/'

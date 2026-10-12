@@ -1,6 +1,7 @@
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content
 
 """
 Parse SLC tables data and emit Entity records.
@@ -35,12 +36,13 @@ HUMAN_TAXON_ID = '9606'
 
 config = ResourceConfig(
     id=ResourceCv.SLC_TABLES,
-    name='SLC Tables',
+    name='SLC tables',
     url='https://slc.bioparadigms.org/',
     license=LicenseCV.UNSPECIFIED,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='23506860',
-    primary_category='transporters',
+    content=(Content.MOLECULAR_TRANSPORT, Content.MOLECULAR_ANNOTATIONS),
+    summary='Solute carrier proteins, transporter families and reference annotations.',
     description=(
         'The SLC (Solute Carrier) series includes the “classical” transporter '
         'families (ion-coupled transporters, exchangers, passive transporters, '

@@ -7,6 +7,7 @@ records using the declarative schema pattern.
 
 from biolink_model.datamodel.model import ChemicalEntity, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_csv
@@ -29,7 +30,9 @@ config = ResourceConfig(
     license=LicenseCV.ACADEMIC_FREE,
     update_category=UpdateCategoryCV.STATIC,
     pubmed='33199890',
-    primary_category='metabolism',
+    topics=(Topic.METABOLISM,),
+    content=(Content.MOLECULAR_ANNOTATIONS, Content.IDENTIFIER_MAPPINGS),
+    summary='Reference metabolite names, identifiers and chemical classifications.',
     description='The main objective of RefMet is to provide a standardized reference nomenclature for both discrete metabolite structures and metabolite species identified by spectroscopic techniques in metabolomics experiments',
 )
 download = Download(

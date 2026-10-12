@@ -23,6 +23,7 @@ from pypath.internals.cv_terms import (
 )
 from biolink_model.datamodel.model import OntologyClass, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from pypath.internals.ontology_schema import OntologyTerm
 from pypath.internals.silver_schema import (
     Annotation,
@@ -85,10 +86,15 @@ class ResourceConfig:
     license: LicenseCV
     update_category: UpdateCategoryCV
     description: str
+    # One line on what this module imports. The resources page shows it and `name`.
+    summary: str
     pubmed: str | None = None
-    primary_category: str | None = None
     annotation_ontologies: tuple[OntologyCv, ...] = ()
-    resource_kind: str = 'data_resource'
+    # What this module imports, in the groups the resources page filters by.
+    # Controlled: see omnipath_core's resource_tags.yaml.
+    topics: tuple[Topic, ...] = ()
+    content: tuple[Content, ...] = ()
+    knowledge_origin: tuple[KnowledgeOrigin, ...] = ()
     # 3-name model (Milestone M; see pypath.inputs_v2.resource_names):
     #   slug  — all-lowercase canonical id/filter key, no `_`, no spaces
     #   short — the resource's own spelling (display name), no `_`, no spaces
@@ -99,6 +105,22 @@ class ResourceConfig:
     short: str | None = None
     full: str | None = None
     synonyms: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        # A tag outside its group's vocabulary fails here, when the module is imported.
+        for field, vocabulary in (
+            ('topics', Topic),
+            ('content', Content),
+            ('knowledge_origin', KnowledgeOrigin),
+        ):
+            object.__setattr__(
+                self, field, tuple(vocabulary(tag) for tag in getattr(self, field))
+            )
+
+    @property
+    def tags(self) -> tuple[str, ...]:
+        """All tags, in the order the resources page shows their groups."""
+        return (*self.topics, *self.content, *self.knowledge_origin)
 
     def names(self) -> 'ResourceNames':
         """Resolve this resource's (slug, short, full, synonyms).

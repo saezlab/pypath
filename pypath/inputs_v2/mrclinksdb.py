@@ -16,6 +16,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -36,8 +37,11 @@ config = ResourceConfig(
     url='https://www.cellknowledge.com.cn/mrclinkdb/',
     license=LicenseCV.UNSPECIFIED,
     update_category=UpdateCategoryCV.IRREGULAR,
-    primary_category='interactions',
     pubmed='38978014',
+    topics=(Topic.CELL_CELL_COMMUNICATION,),
+    content=(Content.LIGAND_RECEPTOR_INTERACTIONS,),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Curated metabolite–receptor interactions with compound classification and literature evidence.',
     description='MRClinksDB is a curated database of metabolite–receptor interactions, covering ligand-receptor pairs with compound classification based on the ClassyFire taxonomy, receptor UniProt identifiers, and PubMed literature support.',
 )
 f = FieldConfig(

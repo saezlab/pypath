@@ -18,6 +18,7 @@ from biolink_model.datamodel.model import (
     DirectionQualifierEnum,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.silver_schema import format_term
 from pypath.internals.silver_schema import (
     Annotation,
@@ -36,12 +37,16 @@ from pypath.inputs_v2.parsers.cellchat import (
 
 config = ResourceConfig(
     id=ResourceCv.CELLCHAT,
-    name='CellChatDB',
+    name='CellChat',
+    full='CellChatDB',
     url='https://github.com/jinworks/CellChat',
     license=LicenseCV.GPL_3_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33597522',
-    primary_category='interactions',
+    topics=(Topic.CELL_CELL_COMMUNICATION,),
+    content=(Content.LIGAND_RECEPTOR_INTERACTIONS, Content.PROTEIN_COMPLEXES),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Ligand–receptor interactions, protein complexes and signaling cofactors from CellChatDB.',
     description='CellChatDB is a manually curated database of literature-supported cell-cell communication interactions for CellChat, including ligand-receptor pairs, multi-subunit complexes and signaling cofactors across multiple species.',
 )
 BASE_URL = 'https://raw.githubusercontent.com/jinworks/CellChat/main/data/'

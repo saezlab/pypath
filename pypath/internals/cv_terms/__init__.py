@@ -67,6 +67,6 @@ from .annotations import (
     DiseaseAnnotationCv,
     InterCellAnnotations
 )
-from .resource_metadata import LicenseCV, UpdateCategoryCV
+from .resource_metadata import LicenseCV, LicenseUse, UpdateCategoryCV
 from .resources import ResourceCv
 from .ontologies import OntologyCv

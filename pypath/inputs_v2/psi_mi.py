@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content
 
 import re
 
@@ -19,13 +20,14 @@ from pypath.inputs_v2.parsers.obo import iter_obo, obo_record_to_term
 
 config = ResourceConfig(
     id=ResourceCv.PSI_MI,
-    name='PSI-MI Controlled Vocabulary',
+    name='PSI-MI',
+    full='PSI-MI Controlled Vocabulary',
     url='https://github.com/HUPO-PSI/psi-mi-CV',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='14755292',
-    primary_category='ontologies',
-    resource_kind='ontology',
+    content=(Content.ONTOLOGIES,),
+    summary='PSI-MI controlled vocabulary for describing molecular interaction experiments.',
     description='The PSI-MI controlled vocabulary provides molecular interaction terms and metadata.',
 )
 

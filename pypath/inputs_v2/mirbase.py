@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from biolink_model.datamodel.model import MicroRNA, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 import re
 from collections.abc import Generator
@@ -30,7 +31,6 @@ from pypath.internals.cv_terms import (
     UpdateCategoryCV,
 )
 from pypath.internals.tabular_builder import (
-    AnnotationsBuilder,
     AssociationBuilder,
     AssociationsBuilder,
     CV,
@@ -63,9 +63,11 @@ config = ResourceConfig(
     url='https://www.mirbase.org/',
     license=LicenseCV.PUBLIC,
     update_category=UpdateCategoryCV.REGULAR,
-    primary_category='mirna',
     short='miRBase',
     pubmed='30423142',
+    topics=(Topic.GENE_REGULATION,),
+    content=(Content.MOLECULAR_ANNOTATIONS,),
+    summary='Precursor and mature microRNA identities with maturation relationships.',
     description=(
         'miRBase is the primary public repository and online resource for '
         'microRNA sequences and annotation. This inputs_v2 module emits '
@@ -185,7 +187,7 @@ def _precursors_raw(
 ) -> Generator[dict[str, Any], None, None]:
     for entry in _embl_records(opener):
         products = entry.pop('products')
-        yield {**entry, 'synonym': None, 'matures': list(products)}
+        yield {**entry, 'matures': list(products)}
 
 
 def _matures_raw(
@@ -227,10 +229,8 @@ precursors_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.MIRBASE_PRECURSOR, value=f('mirbase_pre')),
         CV(term=Namespace.NAME, value=f('name')),
-        CV(term=Namespace.SYNONYM, value=f('synonym')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(term=slots.description, value=f('description')),
+        # The DE line is a formulaic label ("Homo sapiens miR-21 stem-loop").
+        CV(term=Namespace.SYNONYM, value=f('description')),
     ),
 )
 

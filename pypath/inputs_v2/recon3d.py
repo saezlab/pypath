@@ -15,6 +15,7 @@ import json
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
@@ -75,7 +76,9 @@ config = ResourceConfig(
     license=LicenseCV.BIGG,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='29457794',
-    primary_category='metabolic_network',
+    topics=(Topic.METABOLISM,),
+    content=(Content.BIOCHEMICAL_REACTIONS,),
+    summary='Human metabolic activities, chemical participants and model gene associations.',
     description=(
         'Recon3D is a comprehensive human genome-scale metabolic reconstruction '
         'that accounts for three-dimensional molecular structures.'

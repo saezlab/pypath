@@ -26,6 +26,7 @@ from biolink_model.datamodel.model import (
 )
 from omnipath_core.measurements import Measurement
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
@@ -103,12 +104,15 @@ def _flux_bound(row, field):
 
 config = ResourceConfig(
     id=ResourceCv.HUMAN_GEM,
-    name='Human-GEM',
+    name='Metabolic Atlas',
+    full='Human-GEM',
     url='https://github.com/SysBioChalmers/Human-GEM',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='41950094',
-    primary_category='metabolic_network',
+    topics=(Topic.METABOLISM,),
+    content=(Content.BIOCHEMICAL_REACTIONS,),
+    summary='Human-GEM chemicals and metabolic reactions with stoichiometry and gene associations.',
     description='Human-GEM is a genome-scale metabolic model of human metabolism maintained by the SysBioChalmers group.',
 )
 f = FieldConfig(

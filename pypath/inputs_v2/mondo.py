@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from biolink_model.datamodel.model import Gene, OntologyClass, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 import re
 from collections.abc import Generator, Iterable
@@ -65,14 +66,16 @@ _SOURCE_RE = re.compile(r'\bsource="([^"]+)"')
 
 config = ResourceConfig(
     id=ResourceCv.MONDO,
-    name='Mondo Disease Ontology',
+    name='Mondo',
+    full='Mondo Disease Ontology',
     url='https://mondo.monarchinitiative.org/',
     pubmed='41052288',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
-    primary_category='diseases',
-    resource_kind='ontology',
     annotation_ontologies=(OntologyCv.MONDO,),
+    topics=(Topic.DISEASE_PHENOTYPE,),
+    content=(Content.ONTOLOGIES, Content.TRAIT_ASSOCIATIONS),
+    summary='Disease ontology concepts and explicit gene–disease associations.',
     description=(
         'The Mondo Disease Ontology harmonizes disease concepts across sources. '
         'This module provides the MONDO OBO ontology and gene-disease '

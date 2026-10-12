@@ -16,6 +16,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -30,12 +31,16 @@ from pypath.inputs_v2.parsers.base import iter_tsv
 
 config = ResourceConfig(
     id=ResourceCv.MEBOCOST,
-    name='MEBOCOST DB',
+    name='MEBOCOST',
+    full='MEBOCOST DB',
     url='https://github.com/kaifuchenlab/MEBOCOST',
     license=LicenseCV.BSD_3,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='40568942',
-    primary_category='interactions',
+    topics=(Topic.CELL_CELL_COMMUNICATION, Topic.METABOLISM),
+    content=(Content.COMPOUND_TARGET_INTERACTIONS,),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED, KnowledgeOrigin.TEXT_MINED),
+    summary='Metabolite–sensor interactions assembled through text mining and manual curation.',
     description='MEBOCOST DB is a curated resource of metabolite-sensor interactions collected through computational text-mining and manual curation from PubMed abstracts and databases like HMDB, Recon2, and GPCRdb.',
 )
 EVIDENCE_SOURCES = {'hmdb': 'HMDB', 'recon2': 'Recon2', 'cellinker': 'Cellinker',

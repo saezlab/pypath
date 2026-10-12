@@ -10,6 +10,7 @@ from __future__ import annotations
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin
 
 import csv
 import re
@@ -220,7 +221,9 @@ config = ResourceConfig(
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='34761267',
     annotation_ontologies=(OntologyCv.PSI_MI,),
-    primary_category='interactions',
+    content=(Content.PHYSICAL_INTERACTIONS,),
+    knowledge_origin=(KnowledgeOrigin.EXPERIMENTAL, KnowledgeOrigin.LITERATURE_CURATED),
+    summary='Experimentally supported molecular interactions from IntAct.',
     description=(
         'IntAct provides a freely available, open source database system '
         'and analysis tools for molecular interaction data. All interactions '

@@ -17,6 +17,7 @@ from __future__ import annotations
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content
 from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 
 import functools
@@ -44,7 +45,8 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_SA_3_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33170213',
-    primary_category='annotations',
+    content=(Content.MOLECULAR_TRANSPORT, Content.MOLECULAR_ANNOTATIONS),
+    summary='Transporter protein classifications and transporter–substrate relationships.',
     description=(
         'The Transporter Classification Database (TCDB) provides a '
         'comprehensive classification system for membrane transport proteins '

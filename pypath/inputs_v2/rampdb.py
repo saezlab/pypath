@@ -15,6 +15,7 @@ import shutil
 from biolink_model.datamodel.model import ChemicalEntity, Gene, Pathway, slots
 from bs4 import BeautifulSoup
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 import requests
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
@@ -52,7 +53,9 @@ config = ResourceConfig(
     license=LicenseCV.GPL_2_0,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='36373969',
-    primary_category='pathways',
+    topics=(Topic.METABOLISM,),
+    content=(Content.MOLECULAR_ANNOTATIONS, Content.IDENTIFIER_MAPPINGS),
+    summary='Lipid and metabolite annotations with reference identifiers.',
     description='RaMP-DB (Relational database of Metabolomic Pathways) is a multi-sourced integrated database with comprehensive annotations on biological pathways, structure/chemistry, disease and ontology annotations for genes, proteins, and metabolites.',
 )
 

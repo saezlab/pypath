@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from biolink_model.datamodel.model import ChemicalEntity, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.lipidmaps import _raw
@@ -24,12 +25,15 @@ from pypath.internals.tabular_builder import (
 
 config = ResourceConfig(
     id=ResourceCv.LIPIDMAPS,
-    name='LIPID MAPS Structure Database',
+    name='LIPID MAPS',
+    full='LIPID MAPS Structure Database',
     url='https://lipidmaps.org/',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37855672',
-    primary_category='lipids',
+    topics=(Topic.METABOLISM,),
+    content=(Content.MOLECULAR_ANNOTATIONS, Content.IDENTIFIER_MAPPINGS),
+    summary='Lipid structures, identifiers and chemical annotations from LIPID MAPS.',
     description='The LIPID MAPS Structure Database (LMSD) is a comprehensive database of lipid structures, annotations, and cross-references. It contains over 47,000 unique lipid structures, classified according to a comprehensive lipid classification system. The database includes structure-based identifiers (InChI, InChIKey, SMILES), chemical properties (formula, exact mass), lipid classification (category, main class, sub class), and cross-references to other databases (ChEBI, PubChem, SwissLipids, HMDB).',
 )
 f = FieldConfig(

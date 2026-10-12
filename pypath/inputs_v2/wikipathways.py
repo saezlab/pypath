@@ -9,6 +9,7 @@ from __future__ import annotations
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
 from pypath.internals.cv_terms import (
     LicenseCV,
@@ -37,8 +38,11 @@ config = ResourceConfig(
     license=LicenseCV.CC0_1_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='37941138',
-    primary_category='pathways',
     annotation_ontologies=(OntologyCv.WIKIPATHWAYS,),
+    topics=(Topic.SIGNALING, Topic.METABOLISM),
+    content=(Content.PATHWAYS,),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Biological pathways and source-defined diagram interactions.',
     description=(
         'WikiPathways is a community-curated pathway database. '
         'This inputs_v2 module parses the current RDF pathway export and '

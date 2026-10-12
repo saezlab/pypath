@@ -14,6 +14,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 from omnipath_core.silver_schema import format_term
 from pypath.internals.silver_schema import (
     Annotation,
@@ -32,7 +33,9 @@ config = ResourceConfig(
     license=LicenseCV.GPL_3_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='36854676',
-    primary_category='interactions',
+    topics=(Topic.CELL_CELL_COMMUNICATION,),
+    content=(Content.LIGAND_RECEPTOR_INTERACTIONS,),
+    summary='Neural communication molecules and their receptor interactions.',
     description='NeuronChat is a manually curated resource of neural-specific intercellular molecular interactions, designed for inferring neuron-neuron communication from single-cell and spatial transcriptomics data.',
 )
 SMALL_MOLECULE_LIGANDS = {

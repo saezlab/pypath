@@ -7,6 +7,7 @@ native Biolink terms. Exporting them does not authorize new OmniPath terms.
 from __future__ import annotations
 
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content
 
 import inspect
 from collections.abc import Generator
@@ -24,8 +25,8 @@ config = ResourceConfig(
     url='https://omnipathdb.org/',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
-    primary_category='ontologies',
-    resource_kind='ontology',
+    content=(Content.ONTOLOGIES,),
+    summary='Archived OmniPath controlled vocabulary concepts for interpreting historical data.',
     description='OmniPath controlled vocabulary ontology export.',
 )
 

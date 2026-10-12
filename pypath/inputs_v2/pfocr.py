@@ -11,6 +11,7 @@ import re
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.silver_schema import (
     Annotation,
@@ -32,8 +33,10 @@ config = ResourceConfig(
     url='https://pfocr.wikipathways.org/',
     license=LicenseCV.CC0_1_0,
     update_category=UpdateCategoryCV.REGULAR,
-    primary_category='pathways',
     pubmed='38007419',
+    content=(Content.LITERATURE_MENTIONS,),
+    knowledge_origin=(KnowledgeOrigin.TEXT_MINED,),
+    summary='Gene and chemical mentions extracted from published pathway figures.',
     description=(
         'PFOCR (Pathway Figure OCR) extracts genes and chemicals from pathway '
         'figures in the biomedical literature. This module parses the current '

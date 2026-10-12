@@ -60,8 +60,10 @@ Create a real `ResourceConfig` with the existing metadata contract:
 | --- | --- |
 | `id`, `name` and resolved resource names | Reuse the canonical resource identity; add a resource registry entry only when needed. Follow the existing slug/short/full name conventions. |
 | `url`, `description`, `pubmed` | Describe the upstream resource accurately; distinguish a resource citation from publications supporting individual records. |
-| `license`, `update_category` | Use reviewed metadata and existing operational enums; do not guess permissions or update frequency. |
-| `primary_category`, `annotation_ontologies` | Declare actual dataset scope and ontology dependencies when applicable. |
+| `summary` | Say in one line what the module imports. The resources page shows it. |
+| `license`, `update_category` | Use reviewed metadata and existing operational enums; do not guess permissions or update frequency. Academic and commercial use belong to the `LicenseCV` term, not to the resource. |
+| `annotation_ontologies` | Declare ontology dependencies when applicable. |
+| `topics`, `content`, `knowledge_origin` | Declare what the module imports with members of the `Topic`, `Content` and `KnowledgeOrigin` enums. The resources page filters on them, and on the entity types found in the built data. |
 
 Operational resource/license enums remain acceptable in configuration. They must not become biological entity types or annotation vocabulary.
 

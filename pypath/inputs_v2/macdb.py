@@ -23,6 +23,7 @@ from pypath.inputs_v2.base import (
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.source_attributes import TRAIT_TYPE
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
@@ -46,7 +47,10 @@ config = ResourceConfig(
     license=LicenseCV.ACADEMIC_FREE,
     update_category=UpdateCategoryCV.IRREGULAR,  # Static?
     pubmed='37027007',
-    primary_category='metabolism',
+    topics=(Topic.METABOLISM, Topic.DISEASE_PHENOTYPE),
+    content=(Content.TRAIT_ASSOCIATIONS,),
+    knowledge_origin=(KnowledgeOrigin.EXPERIMENTAL,),
+    summary='Chemical–trait associations with study evidence and reported measurements.',
     description=(
         'MACdb is a comprehensive knowledgebase based totally on manual '
         'curation of cancer metabolic literature, providing high quality '

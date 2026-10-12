@@ -16,6 +16,7 @@ from pypath.internals.tabular_builder import (
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import ChemicalEntity
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 URL = 'http://bigg.ucsd.edu/static/models/iMM1415.json'
 config = ResourceConfig(
@@ -25,7 +26,9 @@ config = ResourceConfig(
     license=LicenseCV.BIGG,
     update_category=UpdateCategoryCV.STATIC,
     pubmed='20959003',
-    primary_category='metabolism',
+    topics=(Topic.METABOLISM,),
+    content=(Content.BIOCHEMICAL_REACTIONS,),
+    summary='Mouse metabolic model entities and metabolic network information.',
     description='A high-quality mouse genome-scale metabolic reconstruction, iMM1415(Mus Musculus, 1415 genes)',
 )
 

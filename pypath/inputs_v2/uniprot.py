@@ -16,6 +16,7 @@ import re
 
 from biolink_model.datamodel.model import OntologyClass, Protein, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content
 
 from pypath.internals.silver_schema import EntityRef, OntologyRelation
 from pypath.inputs_v2._molecular_forms import combine_forms, sequence_form
@@ -84,11 +85,12 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33237286',
-    primary_category='proteins',
     annotation_ontologies=(
         OntologyCv.GENE_ONTOLOGY,
         OntologyCv.UNIPROT_KEYWORDS,
     ),
+    content=(Content.MOLECULAR_ANNOTATIONS, Content.IDENTIFIER_MAPPINGS),
+    summary='Protein identities, functional annotations and reference identifier translations.',
     description=(
         'UniProt is a comprehensive resource for protein sequence and '
         'functional information. It provides high-quality, manually annotated '

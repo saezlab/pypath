@@ -23,6 +23,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 import requests
 
 from pypath.inputs_v2._measurements import measurement as _measurement
@@ -42,11 +43,15 @@ from pypath.share.downloads import get_data_dir
 
 config = ResourceConfig(
     id=ResourceCv.PTFI,
-    name='PTFI Discover',
+    name='PTFI',
+    full='PTFI Discover',
     url='https://ptfidiscover.markerlab.com/',
     license=LicenseCV.UNSPECIFIED,
     update_category=UpdateCategoryCV.REGULAR,
-    primary_category='foods',
+    topics=(Topic.NUTRITION,),
+    content=(Content.FOOD_COMPOSITION, Content.MOLECULAR_ANNOTATIONS),
+    knowledge_origin=(KnowledgeOrigin.EXPERIMENTAL,),
+    summary='Food composition, compound classifications and concentration measurements from PTFI Discover.',
     description='PTFI Discover is a comprehensive database of food composition and metabolomics data, providing detailed information on chemical compounds found in foods with statistical measurements across multiple samples.',
 )
 BASE_API_URL = 'https://ptfidiscover.markerlab.com/food/{specimen_id}/detail'

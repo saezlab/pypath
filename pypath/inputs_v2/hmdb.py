@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from biolink_model.datamodel.model import ChemicalEntity, OntologyClass, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.hmdb import _raw, chemont_name_map
@@ -30,14 +31,17 @@ from pypath.internals.tabular_builder import (
 
 config = ResourceConfig(
     id=ResourceCv.HMDB,
-    name='Human Metabolome Database',
+    name='HMDB',
+    full='Human Metabolome Database',
     short='HMDB',
     url='https://hmdb.ca/',
     license=LicenseCV.CC_BY_NC_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='34986597',
-    primary_category='small_molecules',
     annotation_ontologies=(OntologyCv.CHEMONT,),
+    topics=(Topic.METABOLISM,),
+    content=(Content.MOLECULAR_ANNOTATIONS, Content.IDENTIFIER_MAPPINGS),
+    summary='Human metabolite identities, chemical properties and biological annotations.',
     description='The Human Metabolome Database (HMDB) is a comprehensive database containing detailed information about small molecule metabolites found in the human body. It includes chemical, clinical, and biochemical/molecular biology data, with over 220,000 metabolite entries including both water-soluble and lipid-soluble metabolites.',
 )
 f = FieldConfig(

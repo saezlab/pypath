@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content
 
 from pypath.internals.cv_terms import (
     LicenseCV,
@@ -27,9 +28,9 @@ config = ResourceConfig(
     license=LicenseCV.ACADEMIC_FREE,
     update_category=UpdateCategoryCV.STATIC,
     pubmed='27867422',
-    primary_category='ontologies',
     annotation_ontologies=(OntologyCv.CHEMONT,),
-    resource_kind='ontology',
+    content=(Content.ONTOLOGIES, Content.MOLECULAR_ANNOTATIONS),
+    summary='Chemical classification concepts and their ontology hierarchy.',
     description=(
         'ChemOnt is the chemical taxonomy used by ClassyFire for hierarchical '
         'chemical classification of compounds.'

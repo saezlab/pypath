@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from biolink_model.datamodel.model import ChemicalEntity, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_tsv
@@ -34,8 +35,10 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='25943471',
-    primary_category='lipids',
     annotation_ontologies=(OntologyCv.SWISSLIPIDS,),
+    topics=(Topic.METABOLISM,),
+    content=(Content.MOLECULAR_ANNOTATIONS, Content.IDENTIFIER_MAPPINGS),
+    summary='Lipid identities, classifications and molecular annotations.',
     description='SwissLipids is a curated resource providing a framework for the annotation of mass spectrometry data. It provides over 750,000 lipid structures with expert curation of lipid classes and nomenclature, hierarchical organization, cross-references to other databases (ChEBI, LIPID MAPS, HMDB), and integration with mass spectrometry tools. The database covers all major lipid categories including fatty acyls, glycerolipids, glycerophospholipids, sphingolipids, sterol lipids, prenol lipids, saccharolipids, and polyketides.',
 )
 f = FieldConfig(

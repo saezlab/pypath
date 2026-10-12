@@ -10,6 +10,7 @@ from pathlib import Path
 from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 from pypath.inputs_v2._molecular_forms import protein_variants
 from omnipath_core.molecular_forms import normalize_molecular_form
@@ -51,8 +52,10 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='41206471',
-    primary_category='enzsub',
     annotation_ontologies=(OntologyCv.ENZYME_CLASSIFICATION,),
+    topics=(Topic.METABOLISM,),
+    content=(Content.MOLECULAR_ANNOTATIONS, Content.ONTOLOGIES),
+    summary='Protein enzyme-class annotations and the enzyme classification hierarchy.',
     description=(
         'BRENDA is the main collection of enzyme functional data available to '
         'the scientific community.'

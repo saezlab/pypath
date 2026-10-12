@@ -18,6 +18,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
@@ -39,7 +40,14 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='26590256',
-    primary_category='interactions',
+    topics=(Topic.PHARMACOLOGY,),
+    content=(Content.COMPOUND_TARGET_INTERACTIONS,),
+    knowledge_origin=(
+        KnowledgeOrigin.EXPERIMENTAL,
+        KnowledgeOrigin.COMPUTATIONALLY_PREDICTED,
+        KnowledgeOrigin.TEXT_MINED,
+    ),
+    summary='Chemical–protein interactions with action annotations and confidence evidence.',
     description='STITCH is a database of known and predicted interactions between chemicals and proteins. Interactions include direct (physical) and indirect (functional) associations derived from genomic context, high-throughput experiments, conserved coexpression, and published literature.',
 )
 

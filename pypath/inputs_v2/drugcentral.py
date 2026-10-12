@@ -13,6 +13,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
@@ -41,7 +42,9 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_SA_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='36484092',
-    primary_category='interactions',
+    topics=(Topic.PHARMACOLOGY,),
+    content=(Content.COMPOUND_TARGET_INTERACTIONS,),
+    summary='Drug identities, molecular targets and source-defined target action annotations.',
     description='DrugCentral is an online drug information resource with active ingredients, chemical entities, pharmacologic action, indications, mechanism of action and drug-target interaction data.',
 )
 AFFINITY_TERMS = {

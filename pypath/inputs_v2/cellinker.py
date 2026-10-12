@@ -8,6 +8,7 @@ from pypath.inputs_v2.parsers.base import iter_tsv
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import Protein, ChemicalEntity, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 from omnipath_core.silver_schema import format_term
 from pypath.internals.silver_schema import (
@@ -46,7 +47,12 @@ config = ResourceConfig(
     license=LicenseCV.UNSPECIFIED,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33471060',
-    primary_category='interactions',
+    topics=(Topic.CELL_CELL_COMMUNICATION,),
+    content=(
+        Content.LIGAND_RECEPTOR_INTERACTIONS,
+        Content.COMPOUND_TARGET_INTERACTIONS,
+    ),
+    summary='Ligand–receptor and metabolite–protein interactions for intercellular communication.',
     description='Cellinker is a literature-curated repository of ligand-receptor interactions involved in cell-cell communication, including protein ligands, metabolite ligands, receptors, enzymes and transporters.',
 )
 

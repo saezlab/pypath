@@ -11,6 +11,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 from pypath.internals.silver_schema import (
     Annotation,
     Entity,
@@ -22,12 +23,15 @@ from pypath.inputs_v2.parsers.nichenet import iter_lr_network
 
 config = ResourceConfig(
     id=ResourceCv.NICHENET,
-    name='NicheNet v2 ligand-receptor network',
+    name='NicheNet',
+    full='NicheNet v2 ligand-receptor network',
     url='https://zenodo.org/records/7074291',
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.IRREGULAR,
     pubmed='31819264',
-    primary_category='interactions',
+    topics=(Topic.CELL_CELL_COMMUNICATION,),
+    content=(Content.LIGAND_RECEPTOR_INTERACTIONS,),
+    summary='Ligand–receptor networks from NicheNet v2.',
     description='NicheNet v2 ligand-receptor networks provide prior knowledge for modeling intercellular communication by linking sender-cell ligands to receiver-cell receptors and downstream target gene regulation.',
 )
 BASE_URL = 'https://zenodo.org/records/7074291/files/'

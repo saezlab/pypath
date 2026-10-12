@@ -7,6 +7,7 @@ import re
 
 from biolink_model.datamodel.model import ChemicalEntity, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 from pypath.inputs_v2.base import (
     Dataset,
@@ -38,8 +39,14 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='41312627',
-    primary_category='small_molecules',
     annotation_ontologies=(OntologyCv.CHEBI,),
+    topics=(Topic.METABOLISM,),
+    content=(
+        Content.ONTOLOGIES,
+        Content.MOLECULAR_ANNOTATIONS,
+        Content.IDENTIFIER_MAPPINGS,
+    ),
+    summary='Chemical entities, identifiers and the ChEBI ontology hierarchy.',
     description=(
         'ChEBI is a manually curated database and ontology of small molecular '
         'entities. This inputs_v2 module emits searchable small-molecule '

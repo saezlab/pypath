@@ -14,6 +14,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.molecular_forms import molecular_form_from_identifiers
 
 from pypath.inputs_v2._measurements import measurement as _measurement
@@ -51,7 +52,10 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_3_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='26481362',
-    primary_category='interactions',
+    topics=(Topic.PHARMACOLOGY,),
+    content=(Content.COMPOUND_TARGET_INTERACTIONS,),
+    knowledge_origin=(KnowledgeOrigin.EXPERIMENTAL,),
+    summary='Measured binding affinities between small molecules and protein targets.',
     description='BindingDB is a public, web-accessible database of measured binding affinities, focusing chiefly on the interactions of proteins considered to be drug-targets with small, drug-like molecules. It contains binding data for over 2 million protein-ligand complexes with experimental measurements including Ki, Kd, IC50, and EC50 values.',
 )
 f = FieldConfig(

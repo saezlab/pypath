@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from biolink_model.datamodel.model import Gene, OntologyClass, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, Topic
 
 from pypath.internals.cv_terms import (
     LicenseCV,
@@ -46,9 +47,10 @@ config = ResourceConfig(
     license=LicenseCV.HPO,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='33264411',
-    primary_category='phenotypes',
-    resource_kind='ontology',
     annotation_ontologies=(OntologyCv.HUMAN_PHENOTYPE_ONTOLOGY,),
+    topics=(Topic.DISEASE_PHENOTYPE,),
+    content=(Content.ONTOLOGIES, Content.TRAIT_ASSOCIATIONS),
+    summary='Human phenotype concepts and gene–phenotype associations.',
     description=(
         'The Human Phenotype Ontology (HPO) provides a standardized vocabulary '
         'for describing phenotypic abnormalities encountered in human disease. '

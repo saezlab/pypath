@@ -50,19 +50,82 @@ inputs_v2/
 Defines metadata about a data source:
 
 ```python
+from omnipath_core.resource_metadata import Content
 from pypath.inputs_v2.base import ResourceConfig
 from pypath.internals.cv_terms import ResourceCv, LicenseCV, UpdateCategoryCV
 
 config = ResourceConfig(
     id=ResourceCv.UNIPROT,           # CV term identifying the resource
-    name='UniProt',                   # Human-readable name
+    name='UniProt',                   # Display name
     url='https://www.uniprot.org/',   # Resource URL
-    license=LicenseCV.CC_BY_4_0,      # License type
+    license=LicenseCV.CC_BY_4_0,      # License term, with its academic/commercial use
     update_category=UpdateCategoryCV.REGULAR,  # How often data updates
     pubmed='33237286',                # Optional PubMed reference
-    description='UniProt is a comprehensive resource for protein...',
+    # Tags: what this module imports (see below)
+    content=(Content.MOLECULAR_ANNOTATIONS, Content.IDENTIFIER_MAPPINGS),
+    # One line on what this module imports
+    summary='Protein identities, functional annotations and reference identifier translations.',
+    description='UniProt is a comprehensive resource for protein...',  # The resource itself
 )
 ```
+
+The website's resources page is built from this object: `name` is the name it shows,
+`summary` the line under it, the three tag fields its filters, and `license` its
+license and permitted use.
+
+- `name` is the resource's own short spelling (`HMDB`, `Mondo`). Put a longer name in
+  `full` (`Human Metabolome Database`).
+- `summary` says what this module imports, in one line. `description` describes the
+  resource itself and can be longer.
+- Academic and commercial use are not set per resource. Each `LicenseCV` term carries
+  them (`LicenseCV.CC_BY_NC_4_0.commercial` is `LicenseUse.NOT_ALLOWED`); to classify a
+  new license, add a term with both uses in `pypath/internals/cv_terms/resource_metadata.py`.
+
+#### Tags
+
+Three fields say what the module imports, one per group of filters on the website's
+resources page. Each takes members of its own enum from `omnipath_core.resource_metadata`:
+
+| Field | Enum | Says | Examples |
+| --- | --- | --- | --- |
+| `topics` | `Topic` | The area of biology | `SIGNALING`, `METABOLISM`, `PHARMACOLOGY` |
+| `content` | `Content` | The kind of records | `PATHWAYS`, `LIGAND_RECEPTOR_INTERACTIONS`, `ONTOLOGIES` |
+| `knowledge_origin` | `KnowledgeOrigin` | Where the knowledge comes from | `LITERATURE_CURATED`, `EXPERIMENTAL`, `TEXT_MINED` |
+
+They are a controlled vocabulary: the enums have one member per entry of
+`omnipath_core/vocab/resource_tags.yaml` (`packages/core` of the omnipath-build
+superproject), grouped by the entry's `dimension`. A value outside its field's enum
+fails when the module is imported. The YAML file has every tag with its dimension and
+description. To list one group's IDs:
+
+```bash
+uv run python -c "from omnipath_core.resource_metadata import Content; print(*Content, sep='\n')"
+```
+
+`config.tags` is the three fields joined, in that order.
+
+The page's fourth group, Entities, is not declared: it lists the entity types the
+build found in the data (`Protein`, `ChemicalEntity`, `Pathway`, ...), so the mappers'
+`entity_type` choices are what it shows.
+
+Rules for assigning them:
+
+- Tag what the module imports, not everything the provider offers.
+- A knowledge-origin tag means the resource contains that kind of knowledge, not that
+  every record has that evidence.
+- Leave out a tag you are unsure of; a field may stay empty, but every resource needs
+  at least one tag.
+
+To add a tag, add it to `resource_tags.yaml` with a label, dimension and description;
+it becomes a member of that dimension's enum.
+After changing any `ResourceConfig`, regenerate the copy the API reads, from the
+superproject root:
+
+```bash
+uv run python scripts/generate_resource_metadata.py
+```
+
+`make check-generated` fails while that copy is stale.
 
 ### 2. Download
 
@@ -234,6 +297,7 @@ from pypath.internals.tabular_builder import (
     FieldConfig,
     IdentifiersBuilder,
 )
+from omnipath_core.resource_metadata import Content, Topic
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 
 config = ResourceConfig(
@@ -243,6 +307,9 @@ config = ResourceConfig(
     license=LicenseCV.CC_BY_4_0,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='12345678',
+    topics=(Topic.SIGNALING,),
+    content=(Content.PHYSICAL_INTERACTIONS,),
+    summary='One line on what this module imports.',
     description='Description of the resource...',
 )
 ```

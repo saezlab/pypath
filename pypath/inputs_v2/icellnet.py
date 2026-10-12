@@ -12,6 +12,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.silver_schema import format_term
 from pypath.internals.silver_schema import (
     Annotation,
@@ -25,12 +26,16 @@ from pypath.inputs_v2.parsers.base import iter_csv
 
 config = ResourceConfig(
     id=ResourceCv.ICELLNET,
-    name='ICELLNET v2',
+    name='ICELLNET',
+    full='ICELLNET v2',
     url='https://github.com/soumelis-lab/ICELLNET',
     license=LicenseCV.UNSPECIFIED,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='38490248',
-    primary_category='interactions',
+    topics=(Topic.CELL_CELL_COMMUNICATION,),
+    content=(Content.LIGAND_RECEPTOR_INTERACTIONS,),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Curated ligand–receptor interactions for cell communication analysis.',
     description='ICELLNET is a transcriptomic framework with an expert-curated human ligand-receptor interaction database accounting for multi-subunit ligands and receptors.',
 )
 download = Download(

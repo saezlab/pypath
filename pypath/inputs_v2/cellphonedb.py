@@ -16,6 +16,7 @@ from biolink_model.datamodel.model import (
     slots,
 )
 from omnipath_core.naming import Namespace
+from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.silver_schema import format_term
 from pypath.internals.silver_schema import Annotation, Entity, Identifier
 from pypath.internals.tabular_builder import (
@@ -38,7 +39,10 @@ config = ResourceConfig(
     license=LicenseCV.MIT,
     update_category=UpdateCategoryCV.REGULAR,
     pubmed='40133495',
-    primary_category='interactions',
+    topics=(Topic.CELL_CELL_COMMUNICATION,),
+    content=(Content.LIGAND_RECEPTOR_INTERACTIONS, Content.PROTEIN_COMPLEXES),
+    knowledge_origin=(KnowledgeOrigin.LITERATURE_CURATED,),
+    summary='Ligand–receptor interactions and multisubunit protein complexes.',
     description='CellPhoneDB is a publicly available repository of curated receptors, ligands and their interactions, designed to enable the analysis of cell-cell communication from single-cell transcriptomics data.',
 )
 BASE_URL = (
