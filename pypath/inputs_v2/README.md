@@ -341,13 +341,96 @@ schema = EntityBuilder(
 
 ### Step 3: Create or Select a Parser
 
-For standard formats, use existing parsers:
+Most resources need no parser of their own. `parsers/base.py` reads the standard
+formats. A table reader takes the opener and yields one dict per row:
+
+| Reader | Reads |
+| --- | --- |
+| `iter_tsv`, `iter_csv` (`delimiter=`), `iter_semicolon` | Delimited text with a header row; see the options below |
+| `iter_json`, `iter_jsonl` | JSON documents and JSON lines |
+| `iter_gmt` | Sets of a GMT file: `name`, `description`, `members` |
+| `iter_rdata` (`name=`) | An R data frame in an `.rds`, `.rda` or `.RData` file |
+| `iter_excel` (`sheet=`, `header_row=`, `fieldnames=`, `required=`) | A worksheet of an `.xlsx` or `.xls` file |
+| `iter_parquet`, `iter_sqlite` | Parquet files and SQLite tables |
+
+The delimited readers take these options:
+
+| Option | Use |
+| --- | --- |
+| `fieldnames=(...)` | Column names of a file without a header row, or in place of its header |
+| `skip_rows=n` | Skip `n` lines at the start: a title, or a header that `fieldnames` replaces |
+| `strict=True` | Raise on a row with another number of fields than columns; blank rows are skipped |
+| `quotechar=None` | Read quote characters as data (the default quotes fields with `"`) |
+| `encoding=` | Encoding of a download opened in binary mode (default UTF-8) |
+| `allow_repeated=True` | Accept a header that repeats a column name and keep the last column of that name |
+| `required=(...)` | The columns the mapper reads: raise when one is missing from the header, and when the table has no rows |
+
+A header that repeats a column name is an error in the delimited readers and in
+`iter_excel`, because only one of those columns could be returned: name the
+columns with `fieldnames`. To check such a header, leave `skip_rows` out and
+compare the first row the reader yields.
+
+Other readers take the opener, or content that the module has already read:
+
+| Reader | Reads |
+| --- | --- |
+| `read_bytes`, `read_text` (`encoding=`) | The whole content of a download; `content_text` does the same for one archive member |
+| `read_xml_root` | The root element of an XML download |
+| `iter_html_tables(html)` | The tables of an HTML page: rows of cells with `text`, `links`, `content`, `header`, `attrs` |
+| `iter_html_links(html)` | The links of an HTML page: `href`, `text`, `attrs` |
+| `iter_psimi_xml(xml, level=)` | The interactions of a PSI-MI XML document of level 1 or 2.5; the keys of each level are in its docstring |
 
 ```python
-from pypath.inputs_v2.parsers.base import iter_tsv
+import functools
+from pypath.inputs_v2.parsers.base import iter_excel, iter_tsv
+
+raw_parser = iter_tsv
+raw_parser = functools.partial(iter_tsv, fieldnames=('gene', 'site'), strict=True)
+raw_parser = functools.partial(iter_excel, sheet='Table S1', header_row=3)
+raw_parser = functools.partial(iter_tsv, required=('ligand', 'receptor', 'pmid'))
 ```
 
-For custom formats, create a parser in `parsers/`:
+Pass `required=` whenever a standard reader is the whole parser, so that a changed
+header or an empty download fails in the reader and not as missing values in the
+mapper.
+
+#### PubMed identifiers
+
+A PubMed identifier is a whole number of one to eight digits with no leading zero.
+`pypath/inputs_v2/_publications.py` holds the rule: `PMID_EXTRACT` as a `FieldConfig`
+extract pattern for a column that holds one identifier, `is_pmid` and `pmid_curie`
+for parser and mapper functions, and `PMID_PATTERN` to build a pattern that tolerates
+what a source writes around the number. Two cases keep a stricter rule, each with a
+comment that says why: code that looks for identifiers inside free text, where a
+short number can be a year or a page; and a parser whose file is known to contain
+cut or fused numbers (KEA's six-digit references are cut numbers that happen to be
+other papers' identifiers).
+
+#### Parsing and mapping are kept apart
+
+The resource module (`inputs_v2/<name>.py`) is about mapping to the schema. It holds
+the `ResourceConfig`, the `Download` definitions, the mapping (builders or mapper
+functions, crosswalks of source values, helpers that build an entity or relation from
+one row) and the `Resource`. It has no code that reads the file.
+
+Parsing, which is everything that turns the download into row dictionaries, is either:
+
+- a standard reader from `parsers/base.py`, used directly as `raw_parser` (with
+  `functools.partial` for its arguments), when the file needs nothing more; or
+- a resource-specific `parsers/<name>.py`, built on the shared readers, when the source
+  needs more: checking the header, skipping a preamble, joining tables, expanding one
+  source row into several records, decoding a cell (a list, a site string, a
+  shorthand), selecting the rows of a dataset, repairing a known source defect,
+  raising on an empty or malformed table.
+
+A function that takes the `opener` or iterates over the file's rows belongs in the
+parser file. A function that takes one row and returns an `Entity`, a `Relation` or a
+value for one belongs in the module. Field handling declared in the mapping
+(`FieldConfig` patterns, delimiters, transforms) is mapping. The parser yields plain
+row dictionaries, documents their fields and knows nothing about Biolink. Do not copy
+file-reading code into a parser; use the shared readers.
+
+A resource-specific parser interprets what the shared readers return:
 
 ```python
 # parsers/myresource.py

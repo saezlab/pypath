@@ -97,7 +97,8 @@ def iter_associations(
         **kwargs,
     )
 
-    for row in iter_tsv(opener):
+    # The header names two columns ``Delta_concentration``; the second is kept.
+    for row in iter_tsv(opener, allow_repeated=True):
         study = cohort_to_study.get(row.get('Cohort_id'), {})
         row.update({f'study_{key}': value for key, value in study.items()})
         trait_id = study.get('Trait_onto_ID', '')
