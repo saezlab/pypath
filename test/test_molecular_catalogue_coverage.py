@@ -264,7 +264,11 @@ def test_chembl_component_records_preserve_commas_and_sequence_alignment():
         }
     )
     first, second = [member.member for member in record.membership]
-    assert first.annotations[0].value == 'first, with comma'
+    assert [(i.type, i.value) for i in first.identifiers][-1] == (
+        chembl.Namespace.NAME,
+        'first, with comma',
+    )
+    assert not first.annotations
     assert first.molecular_form['isoform_identifier']['id'] == 'P04637-2'
     assert (
         first.molecular_form['sequence_identifiers']

@@ -260,10 +260,6 @@ _legacy_targets_schema = EntityBuilder(
                         + str(v).removeprefix('NCBITaxon:'),
                     ),
                 ),
-                CV(
-                    term=slots.description,
-                    value=f('component_descriptions', delimiter=','),
-                ),
             ),
         )
     ),
@@ -275,9 +271,10 @@ _component_schema = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=lambda row: Namespace.UNIPROT if row.get('db_source') in {'SWISS-PROT', 'TREMBL'} else _ensembl_namespace(row.get('accession')) if str(row.get('accession') or '').startswith('ENS') else 'chembl_component_accession', value=f('accession')),
         CV(term='chembl_component', value=f('component_id')),
+        # component_sequences.description holds the component's name.
+        CV(term=Namespace.NAME, value=f('description')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.description, value=f('description')),
         CV(term=slots.in_taxon, value=lambda row: 'NCBITaxon:' + str(row['tax_id']) if row.get('tax_id') else None),
     ),
 )
@@ -475,7 +472,7 @@ activities_schema = RelationBuilder(
                 'doi', transform=lambda v: 'doi:' + str(v).removeprefix('doi:')
             ),
         ),
-        CV(term=slots.description, value=f('mechanism_of_action')),
+        CV(term='chembl:mechanism_of_action', value=f('mechanism_of_action')),
         CV(term=slots.description, value=f('mechanism_comment')),
         CV(term=slots.description, value=f('selectivity_comment')),
         CV(term=slots.description, value=f('binding_site_comment')),

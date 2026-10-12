@@ -192,7 +192,6 @@ PARQUET_QUERIES: dict[str, str] = {
                 ELSE ''
             END) AS component_ensembl_accessions,
             GROUP_CONCAT(COALESCE(cs.component_type, '')) AS component_types,
-            GROUP_CONCAT(COALESCE(cs.description, '')) AS component_descriptions,
             to_json(list(struct_pack(component_id := cs.component_id, component_type := cs.component_type, db_source := cs.db_source, accession := cs.accession, description := cs.description, sequence := cs.sequence)) FILTER (WHERE cs.component_id IS NOT NULL)) AS component_records
         FROM target_dictionary td
         LEFT JOIN target_components tc ON td.tid = tc.tid
@@ -759,7 +758,6 @@ SQLITE_QUERIES: dict[str, str] = {
                 ELSE ''
             END) AS component_ensembl_accessions,
             GROUP_CONCAT(COALESCE(cs.component_type, '')) AS component_types,
-            GROUP_CONCAT(COALESCE(cs.description, '')) AS component_descriptions,
             json_group_array(json_object('component_id', cs.component_id, 'component_type', cs.component_type, 'db_source', cs.db_source, 'accession', cs.accession, 'description', cs.description, 'sequence', cs.sequence)) AS component_records
         FROM target_dictionary td
         LEFT JOIN target_components tc ON td.tid = tc.tid
