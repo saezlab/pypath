@@ -344,6 +344,8 @@ def _ontology_identifier_namespace(identifier, default):
         return default
     return {
         'GO': Namespace.GO, 'HP': Namespace.HPO, 'MONDO': Namespace.MONDO,
+        'BTO': Namespace.BTO, 'CL': Namespace.CL, 'UBERON': Namespace.UBERON,
+        'APO': Namespace.APO,
         'CHEMONTID': Namespace.CHEMONT, 'MI': Namespace.MI,
         'EC': Namespace.EC, 'OM': Namespace.OM,
         'UniProtKB-KW': Namespace.UNIPROT_KEYWORD,
@@ -528,10 +530,17 @@ def ontology_entity_mapper(
     identifier_type: Namespace,
     entity_type: Any = OntologyClass,
     relationship_predicates: dict[str, Any] | None = None,
+    id_prefix: str | None = None,
 ) -> Callable[[dict[str, Any]], Entity | None]:
-    """Bind source-owned ontology modeling choices to a parsed term mapper."""
+    """Bind source-owned ontology modeling choices to a parsed term mapper.
+
+    With ``id_prefix`` (``'CL:'``), only the terms whose id starts with it are this
+    ontology's own: a file that merges in imports also holds the terms of others.
+    """
 
     def mapper(row: dict[str, Any]) -> Entity | None:
+        if id_prefix and not str(row.get('id') or '').startswith(id_prefix):
+            return None
         term = term_mapper(row)
         return (
             None
