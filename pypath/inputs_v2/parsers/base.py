@@ -255,31 +255,45 @@ def _cell(value: Any) -> Any:
     return value
 
 
+# Rows of an R data frame converted to dictionaries at a time (``iter_rdata``).
+RDATA_ROWS = 10_000
+
+
 def iter_rdata(opener, name: str | None = None, **_kwargs: Any) -> Generator[dict[str, Any], None, None]:
     """Rows of an R data frame in an ``.rds`` or ``.rda``/``.RData`` file.
 
     ``name`` is the object to read from a file that holds several; a file with one
     object needs none. Missing values are None.
-    """
-    import warnings
 
-    import rdata
+    The file is read with ``pyreadr`` (the librdata C library). The ``rdata`` package,
+    which reads in Python, held 4 to 8 GB for the table of DoRothEA (a million rows in
+    a file of 3 MB) where this holds under 1 GB; both give the same rows.
+    """
+    import io
+
+    import pyreadr
 
     data = read_bytes(opener)
     if not data:
         return
-    with warnings.catch_warnings():
-        # An .rds file has no header saying so, and tibbles convert as data frames.
-        warnings.filterwarnings('ignore', category=UserWarning, module='rdata')
-        converted = rdata.conversion.convert(rdata.parser.parse_data(data))
-    if isinstance(converted, dict):
-        if name is None and len(converted) != 1:
-            raise ValueError(f'R data file holds {sorted(converted)}; name the object to read')
-        converted = converted[name] if name else next(iter(converted.values()))
-    if not hasattr(converted, 'to_dict'):
-        raise ValueError(f'Expected an R data frame, found {type(converted).__name__}')
-    for row in converted.to_dict(orient='records'):
-        yield {str(column): _cell(value) for column, value in row.items()}
+    tables = pyreadr.read_r(io.BytesIO(data))
+    if not tables:
+        raise ValueError('R data file holds no data frame')
+    if list(tables) == [None]:  # an .rds file: one object without a name
+        frame = tables[None]
+    elif name is None:
+        if len(tables) != 1:
+            raise ValueError(f'R data file holds {sorted(tables)}; name the object to read')
+        frame = next(iter(tables.values()))
+    elif name not in tables:
+        raise ValueError(f'R data file holds {sorted(tables)}, not {name!r}')
+    else:
+        frame = tables[name]
+    # The rows are made a slice at a time: a table of a million rows as one list of
+    # dictionaries is gigabytes.
+    for start in range(0, len(frame), RDATA_ROWS):
+        for row in frame.iloc[start : start + RDATA_ROWS].to_dict(orient='records'):
+            yield {str(column): _cell(value) for column, value in row.items()}
 
 
 def iter_excel(

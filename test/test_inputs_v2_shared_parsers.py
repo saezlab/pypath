@@ -400,3 +400,44 @@ def test_pubmed_identifier_is_one_to_eight_digits_without_a_leading_zero():
         assert not is_pmid(value)
     assert re.match(PMID_EXTRACT, '7').group(1) == '7'
     assert re.match(PMID_EXTRACT, '12345678x') is None
+
+
+def test_rdata_reads_named_objects_and_rows_in_slices(tmp_path, monkeypatch):
+    import pandas as pd
+    import rdata
+
+    from pypath.inputs_v2.parsers import base
+    from pypath.inputs_v2.parsers.base import iter_rdata
+
+    first = pd.DataFrame({'gene': pd.Series(['EGFR', ' TP53 ', ''], dtype=object), 'weight': [1.5, -2.0, 0.25]})
+    second = pd.DataFrame({'gene': pd.Series(['MYC'], dtype=object), 'weight': [3.0]})
+
+    def opener(path):
+        return SimpleNamespace(result=io.BytesIO(path.read_bytes()))
+
+    rda = tmp_path / 'two.rda'
+    rdata.write_rda(rda, {'first': first, 'second': second})
+    rows = list(iter_rdata(opener(rda), name='first'))
+    # Text is stripped, an empty value is None, numbers are plain values.
+    assert rows == [
+        {'gene': 'EGFR', 'weight': 1.5},
+        {'gene': 'TP53', 'weight': -2.0},
+        {'gene': None, 'weight': 0.25},
+    ]
+    assert [type(value) for value in rows[0].values()] == [str, float]
+    assert list(iter_rdata(opener(rda), name='second')) == [{'gene': 'MYC', 'weight': 3.0}]
+    # A file with two objects needs the name, and the name must be one of them.
+    with pytest.raises(ValueError, match='name the object'):
+        list(iter_rdata(opener(rda)))
+    with pytest.raises(ValueError, match="not 'third'"):
+        list(iter_rdata(opener(rda), name='third'))
+    # The rows do not depend on the size of a slice.
+    monkeypatch.setattr(base, 'RDATA_ROWS', 2)
+    assert list(iter_rdata(opener(rda), name='first')) == rows
+    # An .rds file holds one object without a name.
+    rds = tmp_path / 'one.rds'
+    rdata.write_rds(rds, first)
+    assert list(iter_rdata(opener(rds))) == rows
+    assert list(iter_rdata(opener(rds), name='first')) == rows
+    assert list(iter_rdata(SimpleNamespace(result=b''))) == []
+
