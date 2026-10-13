@@ -40,9 +40,13 @@ _mi_term = re.compile(r'(MI:\d{4})- ?\S.*')
 
 
 def iter_compleat_complexes(
-    opener, source: str | None = None, **_kwargs: Any
+    opener, evidence: str | None = None, **_kwargs: Any
 ) -> Generator[dict[str, Any], None, None]:
-    """Complexes of the file, those of one ``source`` (Literature | Predicted) if given.
+    """Complexes of the file, those of one ``evidence`` (the value of the column
+    ``source``: Literature | Predicted) if given.
+
+    The option is not called ``source``: the build passes the name of the
+    resource to every parser under that keyword, which would replace it.
 
     The columns of :data:`COLUMNS` are yielded as they are, except:
 
@@ -58,8 +62,8 @@ def iter_compleat_complexes(
     members that match ``size`` is an error, and so is a file without
     complexes.
     """
-    if source is not None and source not in SOURCES:
-        raise ValueError(f'Unknown COMPLEAT source: {source!r}')
+    if evidence is not None and evidence not in SOURCES:
+        raise ValueError(f'Unknown COMPLEAT source: {evidence!r}')
     rows = 0
     for record in iter_tsv(opener, fieldnames=COLUMNS, quotechar=None):
         if record['source'] is None:
@@ -78,7 +82,7 @@ def iter_compleat_complexes(
             raise ValueError(f'COMPLEAT {record["compleat_id"]} has malformed members')
         if str(len(members)) != record['size']:
             raise ValueError(f'COMPLEAT {record["compleat_id"]} size does not match its members')
-        if source is not None and record['source'] != source:
+        if evidence is not None and record['source'] != evidence:
             continue
         publications = []
         for token in record['pubmeds'].split(','):

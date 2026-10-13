@@ -159,11 +159,11 @@ resource = Resource(
     literature_complexes=Dataset(
         download=download_complexes(),
         mapper=map_complex,
-        raw_parser=functools.partial(iter_compleat_complexes, source='Literature'),
+        raw_parser=functools.partial(iter_compleat_complexes, evidence='Literature'),
     ),
     predicted_complexes=Dataset(
         download=download_complexes(),
         mapper=map_complex,
-        raw_parser=functools.partial(iter_compleat_complexes, source='Predicted'),
+        raw_parser=functools.partial(iter_compleat_complexes, evidence='Predicted'),
     ),
 )

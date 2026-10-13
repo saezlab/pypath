@@ -48,7 +48,7 @@ def opener(content=None):
 
 
 def parsed(source=None, content=None):
-    return {row['compleat_id']: row for row in iter_compleat_complexes(opener(content), source=source)}
+    return {row['compleat_id']: row for row in iter_compleat_complexes(opener(content), evidence=source)}
 
 
 def extract(row, dataset='literature_complexes'):
@@ -79,7 +79,7 @@ def test_reader_selects_a_dataset_by_the_source_column():
     assert list(parsed('Predicted')) == ['HC4831', 'HC6106']
     assert list(parsed('Literature')) == ['HC1', 'HC2543', 'HC2501', 'HC3339', 'HC1332']
     with pytest.raises(ValueError, match='Unknown COMPLEAT source'):
-        list(iter_compleat_complexes(opener(), source='Curated'))
+        list(iter_compleat_complexes(opener(), evidence='Curated'))
 
 
 def test_reader_decodes_publications_and_psimi_methods_only():
@@ -173,3 +173,18 @@ def test_unknown_database_is_an_error_and_there_are_no_pairs():
     _, out = extract(parsed()['HC4831'])
     assert {r.predicate for r in out.relations} == {'has_member'}
     assert map_complex({**parsed()['HC1'], 'members': []}) is None
+
+
+def test_the_arguments_of_the_build_do_not_replace_the_selection_of_a_dataset():
+    # The build calls every parser with the resource and dataset names as
+    # keywords; a dataset still reads its own kind of complex.
+    from pypath.inputs_v2 import compleat
+
+    for name, dataset in compleat.resource.datasets().items():
+        rows = list(
+            dataset._raw_parser(opener(), source='compleat', dataset=name, max_records=None)
+        )
+        assert rows and {row['source'] for row in rows} == {
+            dataset._raw_parser.keywords['evidence']
+        }
+
