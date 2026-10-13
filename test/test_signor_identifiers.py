@@ -45,7 +45,7 @@ def test_entity_identifiers_and_attributes(builder, cls, id, name_field):
     ('MI:2237', 'increased', 'abundance'), ('MI:2238', 'increased', 'expression'),
     ('MI:2239', 'increased', 'stability'), ('MI:2240', 'decreased', None),
     ('MI:2241', 'decreased', 'activity'), ('MI:2242', 'decreased', 'abundance'),
-    ('MI:2243', 'decreased', 'stability'), ('MI:2244', 'decreased', 'expression'),
+    ('MI:2243', 'decreased', 'expression'), ('MI:2244', 'decreased', 'stability'),
 ])
 def test_causal_qualifiers_are_source_accession_driven(code, direction, aspect):
     relation = interactions_schema.build(interaction_row(code))

@@ -413,8 +413,10 @@ _CAUSAL_QUALIFIERS = {
     'MI:2240': (_DIRECTION.decreased, None),
     'MI:2241': (_DIRECTION.decreased, _ASPECT.activity),
     'MI:2242': (_DIRECTION.decreased, _ASPECT.abundance),
-    'MI:2243': (_DIRECTION.decreased, _ASPECT.stability),
-    'MI:2244': (_DIRECTION.decreased, _ASPECT.expression),
+    # MI:2243 is "down-regulates quantity by repression", MI:2244 "down-regulates
+    # quantity by destabilization" (PSI-MI CV).
+    'MI:2243': (_DIRECTION.decreased, _ASPECT.expression),
+    'MI:2244': (_DIRECTION.decreased, _ASPECT.stability),
 }
 
 
