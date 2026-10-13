@@ -104,6 +104,73 @@ knowledge graph assertions. Retain source predicate accessions in raw evidence i
 External attributes currently use the annotation term/value storage representation;
 this is not a claim that the complete graph instantiates every LinkML class directly.
 
+## Annotation resources
+
+Annotation inputs (classifications, localizations, markers, gene sets, disease and drug
+annotations of genes and proteins) are modelled so that a term can be searched as an
+entity and the molecules annotated with it are shown. The pattern is that of `uniprot.py`,
+`hpo.py`, `mondo.py` and `macdb.py`. Examples: `cspa.py`, `tfcensus.py`, `kinasedotcom.py`,
+`matrisome.py`.
+
+**Statements.** The subject is a `Protein` when the source identifies proteins (UniProt,
+PDB, entry name) and a `Gene` when it identifies genes (symbol, Entrez, Ensembl gene,
+HGNC, MGI); when a row has both, `Protein` if there is a UniProt accession. Source
+identifiers are kept; nothing is translated and no species is guessed. The object is an
+`OntologyClass` entity. A statement with nothing attached is an `Association` on the
+molecule's entity; one with a class, a score, a publication or a context is a `Relation`.
+One statement per source statement.
+
+**Term identity.** A source accession of a real vocabulary is written in that vocabulary's
+`Namespace` exactly as its ontology module writes it (`GO:0005886`, `CL:0000312`,
+`EC:3.4.21.4`, `IPR000001`), so the term is the same entity as the ontology's own. A term
+the source gives only by name is not looked up in an ontology. A source-owned vocabulary
+gets the namespace `<resource>_<field>` (one per field), the source's own value as the
+identifier (label, code, number or path) and `Namespace.NAME` for the label. Levels of
+one hierarchy share a namespace only where the ids are unique across levels
+(`almen2009_class`, `gpcrdb_family`); otherwise there is one per level
+(`kinasedotcom_group`, `_family`, `_subfamily`). A term is never identified by
+`Namespace.NAME` alone.
+
+**Terms datasets.** A source-owned vocabulary is also emitted by a dataset of its own,
+called `terms`, with the name, the definition (`description`) where the source gives one,
+and `subclass_of` for the levels the source states. The object of a statement and the
+terms entity must have the same type, namespace and identifier; without the terms dataset
+the term would be a code with no name. The dataset name has no meaning for the build; it
+labels the evidence and selects with `--datasets`.
+
+**Plain lists.** A resource that is a set of molecules with one property (a list of
+transcription factors) is one term in the namespace `<resource>_list`, with a slug as the
+identifier, and one statement per listed molecule. The list's own columns go on the
+statement.
+
+**Predicates.** `located_in` for the subcellular location or membrane of a molecule;
+`expressed_in` for a marker or detection in a cell type or tissue; `associated_with` for
+a class, role, list, gene set or disease. `associated_with` asserts nothing causal.
+Domain and range are checked in the pinned model.
+
+**Families.** A source organised as families with member lists (HGNC groups, kinase.com,
+GPCRdb, the phosphatome tree, DNA-binding domain families, integrins) is emitted as
+`GeneFamily` or `ProteinFamily` with `has_member`, nested as the source nests it. A source
+that is a table with a class column per molecule (Almen, OPM, matrisome, LOCATE) is terms
+with `subclass_of` and `associated_with`.
+
+**Attributes.** Source fields on a statement are `<resource>:<field>`, lowercase, with
+text as written. Every annotation has a value: the build leaves out a term without one.
+Numbers the source states as measurements are a `Measurement` with the scale in a
+comment. Yes/no flags are `'true'`/`'false'`. A confidence class is
+`has_confidence_level`; a probability is `has_confidence_score`. A context that is an
+ontology accession is an attribute value; a context that is a text label is kept as text.
+
+**Species and provenance.** `in_taxon` is on the molecule, stated by the file where it
+states one and a module constant where the resource covers one species (human), with a
+comment. PubMed identifiers go through `pmid_curie`. Source databases named by the file go
+to `supporting_data_source` under the source's own labels.
+
+**Not ported.** OmniPath's own derived classifications (`intercell_annot`) and consensus
+fields; rows the source marks as not members (TFcensus class x, Lambert "No", kinase
+pseudogenes); collections the licence excludes (MSigDB BioCarta, KEGG legacy); and any
+term-to-ontology matching by label.
+
 ## Verification before considering an input rewritten
 
 - Exercise representative source rows through `SilverExtractor`, not only the builder.
