@@ -256,6 +256,27 @@ class LicenseCV(CvEnum):
         LicenseUse.ALLOWED,
         LicenseUse.ALLOWED,
     )
+    CC_BY_NC_ND_4_0 = (
+        "OM:0532",
+        "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International license",
+        "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        LicenseUse.ALLOWED,
+        LicenseUse.NOT_ALLOWED,
+    )
+    ELSEVIER_USER_LICENSE = (
+        "OM:0533",
+        "Elsevier user license",
+        "https://www.elsevier.com/about/policies/open-access-licenses/elsevier-user-license",
+        LicenseUse.ALLOWED,
+        LicenseUse.NOT_ALLOWED,
+    )
+    APACHE_2_0 = (
+        "OM:0531",
+        "Apache License, version 2.0",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        LicenseUse.ALLOWED,
+        LicenseUse.ALLOWED,
+    )
     UNSPECIFIED = (
         "OM:0599",
         "License not specified or unclear",
