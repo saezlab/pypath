@@ -7,7 +7,9 @@ from biolink_model.datamodel.model import ChemicalEntity, MolecularActivity, slo
 from omnipath_build.silver import SilverExtractor
 from omnipath_core.naming import Namespace
 from omnipath_core.silver_schema import Entity, Identifier, Membership
-from pypath.inputs_v2 import apo, bto, chemont, cl, go, hpo, mirbase, mondo, omnipath_ontology, psi_mi, uberon
+from pypath.inputs_v2 import (
+    apo, bto, chemont, cl, doid, eco, go, hpo, mirbase, mondo, mp, omnipath_ontology, pato, psi_mi, uberon, wbphenotype,
+)
 from pypath.internals.tabular_builder import EntityBuilder, IdentifiersBuilder, CV, Member, MembersFromList, MembershipBuilder, FieldConfig
 
 
@@ -21,7 +23,9 @@ def extract(record):
     (chemont, 'CHEMONTID', 'chemont'), (go, 'GO', 'go'),
     (hpo, 'HP', 'hpo'), (mondo, 'MONDO', 'mondo'), (psi_mi, 'MI', 'mi'),
     (bto, 'BTO', 'bto'), (cl, 'CL', 'cl'), (uberon, 'UBERON', 'uberon'),
-    (apo, 'APO', 'apo'),
+    (apo, 'APO', 'apo'), (doid, 'DOID', 'doid'), (pato, 'PATO', 'pato'),
+    (eco, 'ECO', 'eco'),
+    (mp, 'MP', 'mp'), (wbphenotype, 'WBPhenotype', 'wbphenotype'),
 ])
 def test_ontology_hierarchy_and_unknown_relations(module, prefix, namespace):
     row = {'id': f'{prefix}:1', 'name': 'a concept', 'is_a': [f'{prefix}:2'],

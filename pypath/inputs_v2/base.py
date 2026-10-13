@@ -345,7 +345,9 @@ def _ontology_identifier_namespace(identifier, default):
     return {
         'GO': Namespace.GO, 'HP': Namespace.HPO, 'MONDO': Namespace.MONDO,
         'BTO': Namespace.BTO, 'CL': Namespace.CL, 'UBERON': Namespace.UBERON,
-        'APO': Namespace.APO,
+        'APO': Namespace.APO, 'DOID': Namespace.DOID, 'PATO': Namespace.PATO,
+        'ECO': Namespace.ECO,
+        'MP': Namespace.MP, 'WBPhenotype': Namespace.WBPHENOTYPE,
         'CHEMONTID': Namespace.CHEMONT, 'MI': Namespace.MI,
         'EC': Namespace.EC, 'OM': Namespace.OM,
         'UniProtKB-KW': Namespace.UNIPROT_KEYWORD,

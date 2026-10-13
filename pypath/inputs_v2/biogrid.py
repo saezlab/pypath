@@ -292,18 +292,16 @@ _CELL_LINE_REPAIRS = frozenset({('phenotype', 'BTO')})
 # The kind whose terms of a genetic interaction are associations of the two
 # genes, and the namespace of each vocabulary cited (by the prefix of the
 # accessions). The identifier is the accession as written (``APO:0000112``), as
-# the ontology modules write the identifiers of their terms (apo, hpo and go
-# keep the prefix); PATO, MP and WBPhenotype have no ``Namespace`` member and no
-# ontology module, so their namespace is the lowercase prefix. A phenotype
-# vocabulary that is not here raises, in the parser.
+# the ontology modules write the identifiers of their terms (they keep the
+# prefix). A phenotype vocabulary that is not here raises, in the parser.
 _PHENOTYPE = 'phenotype'
-_PHENOTYPE_VOCABULARIES: dict[str, Namespace | str] = {
+_PHENOTYPE_VOCABULARIES: dict[str, Namespace] = {
     'APO': Namespace.APO,
     'GO': Namespace.GO,
     'HP': Namespace.HPO,
-    'MP': 'mp',
-    'PATO': 'pato',
-    'WBPhenotype': 'wbphenotype',
+    'MP': Namespace.MP,
+    'PATO': Namespace.PATO,
+    'WBPhenotype': Namespace.WBPHENOTYPE,
 }
 # Attributes of the interaction: the accessions of the terms of each kind and
 # of their qualifiers, in the order of first appearance in the table.
