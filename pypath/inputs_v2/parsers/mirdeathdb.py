@@ -100,6 +100,33 @@ def mirbase_products(names: Any, accessions: Any) -> dict[str, Any]:
     }
 
 
+def each_product(products: dict[str, Any]) -> list[dict[str, Any]]:
+    """The fields of ``mirbase_products`` once for each MIMAT accession listed.
+
+    As legacy pypath, a symbol with several products gives an observation for
+    each of them. The mature name is that of the same position where the cell
+    of names lists as many names as accessions.
+    """
+    accessions = [a for a in products['mature_accessions'] if _mimat.fullmatch(a)]
+    if products['mirbase_mature'] or len(accessions) < 2:
+        return [products]
+    names = products['mature_names']
+    aligned = len(names) == len(products['mature_accessions'])
+    result = []
+    for accession in accessions:
+        name = names[products['mature_accessions'].index(accession)] if aligned else None
+        name = name if name and _mature_name.fullmatch(name) else None
+        result.append({
+            **products,
+            'mirbase_mature': accession,
+            'mirbase_mature_name': name,
+            'mature_organism_codes': (
+                [_mature_name.match(name).group(1)] if name else products['mature_organism_codes']
+            ),
+        })
+    return result
+
+
 def gene_links(value: Any) -> dict[str, Any]:
     """The HGNC ID and the Ensembl human gene ID of a ``Links`` cell, where it has exactly one."""
     links = {}
@@ -135,8 +162,8 @@ def iter_interactions(opener, **_kwargs: Any) -> Generator[dict[str, Any], None,
     """Yield the observations of miRDeathDB, checking that the columns are the expected ones.
 
     Fields: ``rna_symbol`` (the microRNA symbol of the source), ``mature_names``,
-    ``mature_accessions``, ``mirbase_mature`` and ``mirbase_mature_name`` (set when
-    the symbol has a single product, see ``mirbase_products``),
+    ``mature_accessions``, ``mirbase_mature`` and ``mirbase_mature_name`` (one
+    observation for each product of the symbol, see ``each_product``),
     ``mature_organism_codes``; the gene fields of ``gene_fields``; ``pathway``,
     ``expression_direction`` (``Action_Mode``), ``organism``, ``tax_id`` (as in the
     source), ``tissue``; ``pmids`` (list of PubMed IDs; the PMID cell as a
@@ -156,16 +183,17 @@ def iter_interactions(opener, **_kwargs: Any) -> Generator[dict[str, Any], None,
         pmid = cell(row['PMID'])
         if pmid is not None and not pmid.isdigit():
             raise ValueError(f'miRDeathDB PMID is not a number: {pmid!r}')
-        yield {
-            'rna_symbol': cell(row['miRNA_symbol']),
-            **mirbase_products(row['miRBase_mature_ID'], row['miRBase_ID']),
-            **gene_fields(row),
-            'pathway': cell(row['Pathway']),
-            'expression_direction': cell(row['Action_Mode']),
-            'organism': cell(row['Organism']),
-            'tax_id': cell(row['tax_id']),
-            'tissue': cell(row['Tissue']),
-            'pmids': [pmid] if is_pmid(pmid) else [],
-        }
+        for products in each_product(mirbase_products(row['miRBase_mature_ID'], row['miRBase_ID'])):
+            yield {
+                'rna_symbol': cell(row['miRNA_symbol']),
+                **products,
+                **gene_fields(row),
+                'pathway': cell(row['Pathway']),
+                'expression_direction': cell(row['Action_Mode']),
+                'organism': cell(row['Organism']),
+                'tax_id': cell(row['tax_id']),
+                'tissue': cell(row['Tissue']),
+                'pmids': [pmid] if is_pmid(pmid) else [],
+            }
     if not count:
         raise ValueError('miRDeathDB table has no rows')

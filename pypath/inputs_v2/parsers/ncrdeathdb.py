@@ -34,6 +34,7 @@ from pypath.inputs_v2.parsers.base import iter_tsv
 from pypath.inputs_v2.parsers.mirdeathdb import (
     cell,
     gene_fields,
+    each_product,
     mirbase_products,
 )
 
@@ -85,25 +86,26 @@ def _observations(opener) -> Generator[dict[str, Any], None, None]:
         if pmid is not None and pmid != PREDICTION and not pmid.isdigit():
             raise ValueError(f'ncRDeathDB PMID is neither a number nor "prediction": {pmid!r}')
         category = cell(row['RNA Category'])
-        yield {
-            'id': cell(row['id']),
-            'rna_symbol': cell(row['miRNA_symbol']),
-            'rna_category': category,
-            **(
-                mirbase_products(row['miRBase_mature_ID'], row['miRBase_ID'])
-                if category == 'miRNA'
-                else {}
-            ),
-            **gene_fields(row),
-            'pathway': cell(row['Pathway']),
-            'expression_direction': cell(row['Action_Mode']),
-            'organism': cell(row['Organism']),
-            'tax_id': cell(row['tax_id']),
-            'tissue': cell(row['Tissue']),
-            'pmids': [pmid] if is_pmid(pmid) else [],
-            'prediction': pmid == PREDICTION,
-            'description': cell(row['Evidence']),
-        }
+        for products in (
+            each_product(mirbase_products(row['miRBase_mature_ID'], row['miRBase_ID']))
+            if category == 'miRNA'
+            else [{}]
+        ):
+            yield {
+                'id': cell(row['id']),
+                'rna_symbol': cell(row['miRNA_symbol']),
+                'rna_category': category,
+                **products,
+                **gene_fields(row),
+                'pathway': cell(row['Pathway']),
+                'expression_direction': cell(row['Action_Mode']),
+                'organism': cell(row['Organism']),
+                'tax_id': cell(row['tax_id']),
+                'tissue': cell(row['Tissue']),
+                'pmids': [pmid] if is_pmid(pmid) else [],
+                'prediction': pmid == PREDICTION,
+                'description': cell(row['Evidence']),
+            }
 
 
 def _selection(prediction: bool, label: str) -> Callable[..., Generator[dict[str, Any], None, None]]:

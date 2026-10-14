@@ -153,12 +153,41 @@ f = FieldConfig(
 )
 
 
+# A cell of one name, as a gene symbol can be written.
+_ONE_NAME = re.compile(r'[-A-Za-z0-9.]+')
+# Legacy pypath's reading of a cell: its first word of three or more letters,
+# digits and dashes, without the dashes.
+_FIRST_NAME = re.compile(r'([-A-Za-z0-9]{3,})')
+
+
+def _symbol(value: Any) -> str | None:
+    """The gene symbol of a factor or gene cell.
+
+    A cell of several names or with a remark (``STAT1/STAT3``, ``E4TF1, Fli-1
+    (RBF Motif)``) is read as legacy pypath read it, as its first name. Legacy
+    read every cell this way; a cell of one name is kept as it is, so that a
+    symbol with a dash (``HLA-A``) keeps it.
+    """
+    value = str(value or '').strip()
+    if not value or _ONE_NAME.fullmatch(value):
+        return value or None
+    match = _FIRST_NAME.search(value)
+    return re.sub(r'[-/]', '', match.group(1)) if match else None
+
+
 def _participant(entity_type, role: str) -> EntityBuilder:
     symbol = f'{role}_symbol'
     return EntityBuilder(
         entity_type=entity_type,
         identifiers=IdentifiersBuilder(
-            CV(term=Namespace.GENESYMBOL, value=f(symbol)),
+            CV(term=Namespace.GENESYMBOL, value=lambda row: _symbol(row.get(symbol))),
+            # The cell as written, where it is not the symbol.
+            CV(
+                term=Namespace.NAME,
+                value=lambda row: row.get(symbol)
+                if row.get(symbol) and row.get(symbol) != _symbol(row.get(symbol))
+                else None,
+            ),
             CV(
                 term=Namespace.ENTREZ,
                 value=lambda row: _identifier(row, role, 'NCBI'),
