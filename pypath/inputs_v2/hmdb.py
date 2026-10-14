@@ -48,12 +48,11 @@ f = FieldConfig(
     extract={
         'chebi': '^(?:CHEBI:)?(\\d+)$',
         'drugbank': '^(DB\\d+)$',
-        'kegg_compound': '^([CDGcdg])(\\d{4,5})$',
+        # One group: the builder takes the first group of a pattern.
+        'kegg_compound': '^([CDGcdg]\\d{4,5})$',
     },
     transform={
-        'kegg_compound': lambda v: f'{v[0].upper()}{v[1].zfill(5)}'
-        if v and len(v) == 2
-        else None
+        'kegg_compound': lambda v: f'{v[0].upper()}{v[1:].zfill(5)}' if v else None,
     },
 )
 metabolites_schema = EntityBuilder(

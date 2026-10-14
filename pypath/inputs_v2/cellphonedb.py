@@ -178,8 +178,14 @@ def _is_synthetic_metabolite_system(val: str) -> bool:
     return _synthetic_metabolite_name(val) is not None
 
 
+def hla_symbol(val: str) -> str | None:
+    """The gene symbol of an HLA gene CellPhoneDB writes without the dash
+    ("HLAA" for HLA-A), as legacy pypath read it."""
+    return f'HLA-{val[3:]}' if re.fullmatch(r'HLA[A-Z]', val or '') else None
+
+
 def _extract_partner_name(val: str) -> str | None:
-    if UNIPROT_ACC_RE.match(val):
+    if UNIPROT_ACC_RE.match(val) or hla_symbol(val):
         return None
     return _synthetic_metabolite_name(val) or val
 
@@ -199,7 +205,9 @@ def _get_partner_type(col: str) -> Any:
         val = row.get(col, '')
         if _is_synthetic_metabolite_system(val):
             return ChemicalEntity
-        return Protein if UNIPROT_ACC_RE.match(val) else MacromolecularComplex
+        if UNIPROT_ACC_RE.match(val) or hla_symbol(val):
+            return Protein
+        return MacromolecularComplex
 
     return _type_selector
 
@@ -219,6 +227,7 @@ partner_a_builder = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.UNIPROT, value=f('partner_a', extract='uniprot_acc')),
         CV(term=Namespace.CHEBI, value=f('partner_a_chebi')),
+        CV(term=Namespace.GENESYMBOL, value=lambda row: hla_symbol(row.get('partner_a'))),
         CV(term=Namespace.NAME, value=f('partner_a', extract='partner_name')),
     ),
     annotations=AnnotationsBuilder(
@@ -235,6 +244,7 @@ partner_b_builder = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.UNIPROT, value=f('partner_b', extract='uniprot_acc')),
         CV(term=Namespace.CHEBI, value=f('partner_b_chebi')),
+        CV(term=Namespace.GENESYMBOL, value=lambda row: hla_symbol(row.get('partner_b'))),
         CV(term=Namespace.NAME, value=f('partner_b', extract='partner_name')),
     ),
     annotations=AnnotationsBuilder(
@@ -429,9 +439,7 @@ def _protein_entity(row: dict[str, Any]) -> Entity:
         identifier = Identifier(type=Namespace.UNIPROT, value=value)
     else:
         # HLA genes are written without the dash ("HLAA"); IFNA1 by its symbol.
-        if value.startswith('HLA') and '-' not in value:
-            value = f'HLA-{value[3:]}'
-        identifier = Identifier(type=Namespace.GENESYMBOL, value=value)
+        identifier = Identifier(type=Namespace.GENESYMBOL, value=hla_symbol(value) or value)
     return Entity(
         type=Protein,
         identifiers=[identifier],
