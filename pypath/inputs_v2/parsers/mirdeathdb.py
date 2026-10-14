@@ -104,11 +104,13 @@ def each_product(products: dict[str, Any]) -> list[dict[str, Any]]:
     """The fields of ``mirbase_products`` once for each MIMAT accession listed.
 
     As legacy pypath, a symbol with several products gives an observation for
-    each of them. The mature name is that of the same position where the cell
-    of names lists as many names as accessions.
+    each of them, and so does a cell with a malformed accession beside a valid
+    one (``MIMAT0000257,MIMAT00226921``; the malformed one is left out). The
+    mature name is that of the same position where the cell of names lists as
+    many names as accessions.
     """
     accessions = [a for a in products['mature_accessions'] if _mimat.fullmatch(a)]
-    if products['mirbase_mature'] or len(accessions) < 2:
+    if products['mirbase_mature'] or not accessions:
         return [products]
     names = products['mature_names']
     aligned = len(names) == len(products['mature_accessions'])
