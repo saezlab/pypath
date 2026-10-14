@@ -11,6 +11,9 @@ import warnings
 
 import rdata
 
+# CellChat's annotation of metabolite ligands (and of a few protein hormones).
+NON_PROTEIN = 'Non-protein Signaling'
+
 
 def _first_handle(opener) -> Any | None:
     """Extract the first file handle from an opener result."""
@@ -243,6 +246,16 @@ def iter_cellchat_complexes(
     complexes = db.get('complex')
     if complexes is None:
         return
+    interactions = db.get('interaction')
+    non_protein_ligands = (
+        {
+            _clean(ligand)
+            for ligand, annotation in zip(interactions['ligand'], interactions['annotation'])
+            if _clean(annotation) == NON_PROTEIN
+        }
+        if interactions is not None and {'ligand', 'annotation'} <= set(interactions.columns)
+        else set()
+    )
 
     for name, row in complexes.iterrows():
         genes = [
@@ -255,6 +268,7 @@ def iter_cellchat_complexes(
                 'name': _clean(name),
                 'genes': genes,
                 'taxon_id': str(taxon_id),
+                'non_protein_ligand': _clean(name) in non_protein_ligands,
             }
 
 
