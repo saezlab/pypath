@@ -76,6 +76,12 @@ SAMPLE_SOURCES = frozenset({'cl', 'ts', 'fl'})
 _NO_VALUE = frozenset({'', '0', '-'})
 
 
+def _symbol(value: str) -> str | None:
+    """A gene symbol of the table; None where it writes no value."""
+    value = value.strip()
+    return None if value in _NO_VALUE else value
+
+
 def _list(value: str | None, separator: str) -> list[str]:
     """The parts of a cell, stripped and without repeats or empty parts."""
     parts: list[str] = []
@@ -142,7 +148,7 @@ def iter_detections(
 ) -> Generator[dict[str, Any], None, None]:
     """One row for each vesicle type of each molecule found in an experiment.
 
-    Fields: ``entrez``, ``symbol``, ``species`` (stripped), ``content_type``
+    Fields: ``entrez``, ``symbol`` (None where the table has none), ``species`` (stripped), ``content_type``
     (see ``CONTENT_TYPES``), ``methods`` (list), ``vesicle_type`` and the
     fields of the experiment: ``experiment``, ``pmid`` (None for 0),
     ``sample``, ``sample_name``, ``sample_source`` (list) and
@@ -161,7 +167,9 @@ def iter_detections(
         for vesicle_type in experiment['vesicle_types']:
             yield {
                 'entrez': row['ENTREZ GENE ID'].strip(),
-                'symbol': row['GENE SYMBOL'].strip(),
+                # Vesiclepedia writes ``-`` for the symbol of 19,280 rows (genes of
+                # bacteria and other species without one); that is no symbol.
+                'symbol': _symbol(row['GENE SYMBOL']),
                 'species': row['SPECIES'].strip(),
                 'content_type': content_type,
                 'methods': _list(row['METHODS'], '|'),

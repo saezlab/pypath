@@ -214,3 +214,15 @@ def test_the_mapping_is_in_a_shared_private_module_and_no_resource_imports_the_o
     assert vesiclepedia.map_vesicle_type is _vesicles.map_vesicle_type is exocarta.map_vesicle_type
     assert 'inputs_v2.exocarta' not in inspect.getsource(vesiclepedia)
     assert 'inputs_v2.vesiclepedia' not in inspect.getsource(exocarta)
+
+
+def test_a_dash_is_no_gene_symbol():
+    # Vesiclepedia writes "-" as the symbol of genes without one (19,280 rows of
+    # release 5.1, such as "71693  protein  7996741  -  Acinetobacter baumannii");
+    # here the ACTB row with its symbol replaced by the dash.
+    (row,) = [r for r in rows(detections=[ACTB.replace('\tACTB\t', '\t-\t')]) if r['experiment'] == '694']
+    assert row['symbol'] is None and row['entrez'] == '60'
+    gene, _, _ = relation_of(process('detections', row))
+    assert [(i['ns'], i['id']) for i in gene.identifiers] == [('entrez', '60')]
+    assert gene.label != '-'
+

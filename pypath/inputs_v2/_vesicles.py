@@ -29,12 +29,12 @@ def map_detection(
     """
     if row['species'] not in taxa:
         raise ValueError(f'Unknown {prefix} species: {row["species"]!r}')
+    identifiers = [Identifier(type=Namespace.ENTREZ, value=row['entrez'])]
+    if row['symbol']:
+        identifiers.append(Identifier(type=Namespace.GENESYMBOL, value=row['symbol']))
     gene = Entity(
         type=Gene,
-        identifiers=[
-            Identifier(type=Namespace.ENTREZ, value=row['entrez']),
-            Identifier(type=Namespace.GENESYMBOL, value=row['symbol']),
-        ],
+        identifiers=identifiers,
         annotations=[Annotation(term=slots.in_taxon, value=taxa[row['species']])],
     )
     # The content type says whether the table lists a protein or an RNA of the gene.
