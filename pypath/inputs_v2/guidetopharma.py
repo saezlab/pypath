@@ -200,12 +200,30 @@ def _iter_guidetopharma_interactions(opener, **kwargs: object):
     )
     for row in _iter_guidetopharma_csv(opener):
         row = dict(row)
-        row['_ligand'] = ligands.get((row.get('Ligand ID') or '').strip(), {})
+        row['_ligand'] = _with_gene_symbol(
+            ligands.get((row.get('Ligand ID') or '').strip(), {}),
+            row.get('Ligand Gene Symbol'),
+        )
         row['_target'] = targets.get((row.get('Target ID') or '').strip(), {})
-        row['_target_ligand'] = ligands.get(
-            (row.get('Target Ligand ID') or '').strip(), {}
+        row['_target_ligand'] = _with_gene_symbol(
+            ligands.get((row.get('Target Ligand ID') or '').strip(), {}),
+            row.get('Target Ligand Gene Symbol'),
         )
         yield row
+
+
+def _with_gene_symbol(ligand: dict[str, str], symbols: str | None) -> dict[str, str]:
+    """The ligand with the gene symbol the interaction gives for it.
+
+    The ligands file has no symbol; the interactions file gives one for
+    peptide ligands, as legacy pypath named them. A cell of two genes
+    (``INHBA|INHBB``) is a ligand of several subunits and gives none;
+    ``Calca|Calca`` is one gene.
+    """
+    genes = {s.strip() for s in (symbols or '').split('|') if s.strip()}
+    if not ligand or len(genes) != 1:
+        return ligand
+    return {**ligand, 'Gene Symbol': genes.pop()}
 
 
 def _nested_row(row: Mapping[str, object], key: str) -> Mapping[str, object]:
@@ -415,6 +433,7 @@ ligands_schema = EntityBuilder(
             ),
         ),
         CV(term=Namespace.ENSG, value=f('Ensembl ID', delimiter='|')),
+        CV(term=Namespace.GENESYMBOL, value=f('Gene Symbol')),
         CV(
             term=Namespace.CHEMBL,
             value=lambda row: _normalize_chembl(row.get('ChEMBL ID')),
