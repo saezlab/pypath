@@ -8,13 +8,18 @@ interactant and its label on the map, the interaction type, its location and
 one supporting PubMed ID; an interaction with several publications takes
 several rows.
 
-Only rows between two single proteins, or a protein and a gene, are mapped.
-The cells of partners drawn as complexes sometimes list all members and
-sometimes only the member that takes part, so they cannot be read as complexes.
+Rows between proteins and genes are mapped. A partner drawn as a complex is
+read as legacy pypath read it: its cell lists the members' symbols (and Gene
+IDs), and each member is paired with the other partner (or each of its
+members). The cells sometimes list all members of the complex and sometimes
+only the member that takes part, so they are not read as complexes; the
+relation keeps the complex's cell as the original subject or object.
 """
 
 from __future__ import annotations
-from collections.abc import Callable
+from collections.abc import Callable, Generator
+import itertools
+import re
 from typing import Any
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from biolink_model.datamodel.model import (
@@ -197,11 +202,15 @@ def _participant(partner: str) -> Callable[[dict[str, Any]], Any]:
         ),
     )
 
+    symbol = f(f'{partner} Official Gene Symbol', extract='symbol')
+
     def build(row: dict[str, Any]) -> Any:
-        # One protein or gene with its Gene ID. Complexes, DNA elements,
-        # pathogen components, drugs and cells listing several genes are not
-        # participants this mapping can identify.
-        if row.get(kind) not in INTERACTANT_TYPES or not gene_id.extract(row):
+        # A protein or gene with its Gene ID, or with the symbol legacy reads
+        # from its cell. DNA elements, pathogen components, drugs and cells are
+        # not participants this mapping can identify.
+        if row.get(kind) not in INTERACTANT_TYPES:
+            return None
+        if not gene_id.extract(row) and not (row.get(f'{partner} Member') and symbol.extract(row)):
             return None
         return builder.build(row)
 
@@ -227,6 +236,10 @@ interactions_schema = RelationBuilder(
             value=f('NCBI-PubMed ID', extract='pmid', transform='pmid_curie'),
         ),
         CV(term=slots.description, value=f('Interaction-description')),
+        # The cell of a partner drawn as a complex, of which the subject or
+        # object is a member.
+        CV(term=slots.original_subject, value=f('Partner 1 Complex')),
+        CV(term=slots.original_object, value=f('Partner 2 Complex')),
     ),
 )
 
@@ -237,12 +250,80 @@ def interactions_mapper(row: dict[str, Any]) -> Any:
     _taxon(row)
     if _effect(row) is None:
         return None
+    gene_id = row.get('Partner 1 Gene ID')
     if (
-        row.get('Partner 1 Gene ID') == row.get('Partner 2 Gene ID')
+        gene_id
+        and gene_id == row.get('Partner 2 Gene ID')
         and row.get('Interaction Type') not in SELF_INTERACTION_TYPES
     ):
         return None
     return interactions_schema.build(row)
+
+
+def _members(row: dict[str, Any], partner: str) -> list[tuple[str, str | None]]:
+    """Symbols and Gene IDs of the members of a partner drawn as a complex.
+
+    As legacy pypath: forms and modifications in brackets and words in lower
+    case (``NFKB1(p50)``, ``ATM[P]``, ``proIL18``) are removed, and the cell is
+    split at ":". Legacy removed from the first bracket to the last, and with it
+    the members between (``NFKB1(p50):RELA(p65)`` was NFKB1 alone); here each
+    bracket is removed. A Gene ID is taken where the cell has as many IDs as
+    symbols.
+    """
+    cell = str(row.get(f'{partner} Official Gene Symbol') or '')
+    cell = re.sub(r'\[[^\]]*\]', '', re.sub(r'\([^)]*\)', '', cell))
+    cell = re.sub(r'[A-Z]?[a-z]+', '', cell)
+    symbols = [s.strip() for s in cell.split(':')]
+    ids = [i.strip() for i in str(row.get(f'{partner} Gene ID') or '').split(':')]
+    if len(ids) != len(symbols):
+        ids = [None] * len(symbols)
+    return [
+        (symbol, gene_id if gene_id and gene_id.isdigit() else None)
+        for symbol, gene_id in zip(symbols, ids)
+        if symbol and symbol != '-'
+    ]
+
+
+def iter_member_interactions(opener, **kwargs: Any) -> Generator[dict[str, Any], None, None]:
+    """The rows of the sheet with each partner read as legacy pypath read it:
+    the genes of its cell (one, or the members of a complex), and a row once
+    for each pair of them; a gene is not paired with itself."""
+    partners = ('Partner 1', 'Partner 2')
+    for row in iter_interactions(opener, **kwargs):
+        sides = []
+        for partner in partners:
+            kind = row.get(f'{partner} Interactant Type')
+            readable = kind == 'Complex' or kind in INTERACTANT_TYPES
+            sides.append(_members(row, partner) if readable else [None])
+        if sides == [[None], [None]]:
+            yield row
+            continue
+        for pair in itertools.product(*sides):
+            symbols = [
+                member[0] if member else row.get(f'{partner} Official Gene Symbol')
+                for partner, member in zip(partners, pair)
+            ]
+            if symbols[0] == symbols[1]:
+                # Legacy pairs no gene with itself. The module keeps the
+                # self-interactions of one protein (binding, autophosphorylation).
+                if any(len(side) > 1 for side in sides) or symbols[0] is None:
+                    continue
+            expanded = dict(row)
+            for partner, member, side in zip(partners, pair, sides):
+                if not member:
+                    continue
+                cell = row.get(f'{partner} Official Gene Symbol')
+                complex_ = row.get(f'{partner} Interactant Type') == 'Complex'
+                expanded.update({
+                    f'{partner} Member': True,
+                    f'{partner} Complex': cell if complex_ or len(side) > 1 else None,
+                    f'{partner} Official Gene Symbol': member[0],
+                    f'{partner} Gene ID': member[1],
+                    f'{partner} Interactant Type': (
+                        'Protein' if complex_ else row.get(f'{partner} Interactant Type')
+                    ),
+                })
+            yield expanded
 
 
 resource = Resource(
@@ -250,6 +331,6 @@ resource = Resource(
     interactions=Dataset(
         download=download,
         mapper=interactions_mapper,
-        raw_parser=iter_interactions,
+        raw_parser=iter_member_interactions,
     ),
 )
