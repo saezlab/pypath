@@ -49,6 +49,9 @@ _pmid_re = re.compile('\\d+')
 # A spreadsheet read some gene symbols as amounts of money: DKK1 as "1,00 DKK",
 # NPR3 as "3,00 NPR" (the Nepalese rupee).
 _spreadsheet_currency_gene_re = re.compile('^(\\d+),00[\\s\\xa0]+([A-Z]{3})$')
+# Misspelt symbols. SCD2 (an alias of SCD5) stands for syndecan-2: both rows cite
+# papers on syndecan-2 (PMID 21813734 with PTPRJ, 14976204 with TGFB1).
+_misspelt_genes = {'SCD2': 'SDC2'}
 
 
 def _clean(value: Any) -> str:
@@ -59,7 +62,7 @@ def _clean_gene(value: Any) -> str:
     value = _clean(value)
     if match := _spreadsheet_currency_gene_re.fullmatch(value):
         return f'{match.group(2)}{match.group(1)}'
-    return value
+    return _misspelt_genes.get(value, value)
 
 
 def _components(row: dict[str, Any], prefix: str, count: int) -> list[str]:
