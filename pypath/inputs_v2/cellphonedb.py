@@ -191,8 +191,16 @@ def hla_symbol(val: str) -> str | None:
     return f'HLA-{val[3:]}' if re.fullmatch(r'HLA[A-Z]', val or '') else None
 
 
-def _extract_partner_name(val: str) -> str | None:
-    if UNIPROT_ACC_RE.match(val) or hla_symbol(val):
+def partner_symbol(row: dict[str, Any], col: str) -> str | None:
+    """The gene symbol of a partner that is a protein written by its symbol:
+    an HLA gene, or a protein of protein_input.csv without an accession (IFNA1),
+    as `iter_interactions` marks it."""
+    return hla_symbol(row.get(col)) or row.get(f'{col}_symbol') or None
+
+
+def _partner_name(row: dict[str, Any], col: str) -> str | None:
+    val = row.get(col) or ''
+    if not val or UNIPROT_ACC_RE.match(val) or partner_symbol(row, col):
         return None
     return _synthetic_metabolite_name(val) or val
 
@@ -212,7 +220,7 @@ def _get_partner_type(col: str) -> Any:
         val = row.get(col, '')
         if _is_synthetic_metabolite_system(val):
             return ChemicalEntity
-        if UNIPROT_ACC_RE.match(val) or hla_symbol(val):
+        if UNIPROT_ACC_RE.match(val) or partner_symbol(row, col):
             return Protein
         return MacromolecularComplex
 
@@ -226,7 +234,6 @@ f = FieldConfig(
         'comment': _extract_comment,
         'uniprot_acc': _extract_uniprot_acc,
         'non_uniprot': _extract_non_uniprot,
-        'partner_name': _extract_partner_name,
     }
 )
 partner_a_builder = EntityBuilder(
@@ -234,8 +241,8 @@ partner_a_builder = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.UNIPROT, value=f('partner_a', extract='uniprot_acc')),
         CV(term=Namespace.CHEBI, value=f('partner_a_chebi')),
-        CV(term=Namespace.GENESYMBOL, value=lambda row: hla_symbol(row.get('partner_a'))),
-        CV(term=Namespace.NAME, value=f('partner_a', extract='partner_name')),
+        CV(term=Namespace.GENESYMBOL, value=lambda row: partner_symbol(row, 'partner_a')),
+        CV(term=Namespace.NAME, value=lambda row: _partner_name(row, 'partner_a')),
     ),
     annotations=AnnotationsBuilder(
         CV(
@@ -251,8 +258,8 @@ partner_b_builder = EntityBuilder(
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.UNIPROT, value=f('partner_b', extract='uniprot_acc')),
         CV(term=Namespace.CHEBI, value=f('partner_b_chebi')),
-        CV(term=Namespace.GENESYMBOL, value=lambda row: hla_symbol(row.get('partner_b'))),
-        CV(term=Namespace.NAME, value=f('partner_b', extract='partner_name')),
+        CV(term=Namespace.GENESYMBOL, value=lambda row: partner_symbol(row, 'partner_b')),
+        CV(term=Namespace.NAME, value=lambda row: _partner_name(row, 'partner_b')),
     ),
     annotations=AnnotationsBuilder(
         CV(
@@ -374,16 +381,28 @@ def complexes_schema(row: dict[str, Any]) -> Entity:
 
 def iter_interactions(opener, **kwargs: Any) -> Generator[dict[str, Any], None, None]:
     """The interactions, with the ChEBI term of a metabolite partner from the
-    complex table."""
+    complex table, and the symbol of a partner that is a protein of the protein
+    table written by its symbol instead of its accession (IFNA1)."""
     chebi = {
         row['complex_name']: metabolite_chebi(row['complex_name'], row.get('secreted_desc'))
         for row in iter_csv(download_complexes.open())
+    }
+    symbols = {
+        value
+        for row in iter_csv(download_proteins.open())
+        if (value := str(row.get('uniprot') or '').strip())
+        and not UNIPROT_ACC_RE.match(value)
+        and value not in chebi
     }
     for row in iter_csv(opener, **kwargs):
         yield {
             **row,
             **{
                 f'{side}_chebi': chebi.get(row.get(side, '')) or metabolite_chebi(row.get(side, ''))
+                for side in ('partner_a', 'partner_b')
+            },
+            **{
+                f'{side}_symbol': row.get(side) if row.get(side) in symbols else None
                 for side in ('partner_a', 'partner_b')
             },
         }

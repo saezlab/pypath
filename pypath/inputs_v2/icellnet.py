@@ -50,8 +50,10 @@ _pmid_re = re.compile('\\d+')
 # NPR3 as "3,00 NPR" (the Nepalese rupee).
 _spreadsheet_currency_gene_re = re.compile('^(\\d+),00[\\s\\xa0]+([A-Z]{3})$')
 # Misspelt symbols. SCD2 (an alias of SCD5) stands for syndecan-2: both rows cite
-# papers on syndecan-2 (PMID 21813734 with PTPRJ, 14976204 with TGFB1).
-_misspelt_genes = {'SCD2': 'SDC2'}
+# papers on syndecan-2 (PMID 21813734 with PTPRJ, 14976204 with TGFB1). NRP, a
+# symbol of no human gene, is Norrin (NDP): its row binds FZD4 and LRP5, the Norrin
+# receptor complex.
+_misspelt_genes = {'SCD2': 'SDC2', 'NRP': 'NDP'}
 
 
 def _clean(value: Any) -> str:

@@ -120,15 +120,23 @@ def _cofactor_members(cofactors: Any, name: str) -> list[str]:
 
 
 def _participant_genes(
-    db: dict[str, Any], row: dict[str, Any], role: str, known_symbols: set[str]
+    db: dict[str, Any],
+    row: dict[str, Any],
+    role: str,
+    known_symbols: set[str],
+    spellings: dict[str, str],
 ) -> list[str]:
     name = row.get(role) or ''
     complex_genes = _complex_members(db.get('complex'), name)
     if complex_genes:
         return complex_genes
-    symbols = _split_symbols(row.get(f'{role}_symbol'))
-    # Exact lookup in CellChat's geneInfo table; no gene names are inferred
-    # from a complex label or from capitalization.
+    # A symbol missing from CellChat's geneInfo table takes the spelling of the
+    # one geneInfo symbol it matches ignoring case: the human table writes Cd99
+    # and Pilrb. No gene names are inferred from a complex label.
+    symbols = [
+        symbol if symbol in known_symbols else spellings.get(symbol.upper(), symbol)
+        for symbol in _split_symbols(row.get(f'{role}_symbol'))
+    ]
     return symbols or ([name] if name in known_symbols else [])
 
 
@@ -146,6 +154,10 @@ def _iter_interaction_rows(
         if gene_info is not None and 'Symbol' in gene_info
         else set()
     )
+    by_upper: dict[str, set[str]] = {}
+    for symbol in known_symbols:
+        by_upper.setdefault(symbol.upper(), set()).add(symbol)
+    spellings = {key: next(iter(v)) for key, v in by_upper.items() if len(v) == 1}
 
     for _, raw_row in interactions.iterrows():
         row = _row_dict(raw_row)
@@ -154,11 +166,11 @@ def _iter_interaction_rows(
                 'taxon_id': str(taxon_id),
                 'ligand_name': row.get('ligand', ''),
                 'ligand_genes': _participant_genes(
-                    db, row, 'ligand', known_symbols
+                    db, row, 'ligand', known_symbols, spellings
                 ),
                 'receptor_name': row.get('receptor', ''),
                 'receptor_genes': _participant_genes(
-                    db, row, 'receptor', known_symbols
+                    db, row, 'receptor', known_symbols, spellings
                 ),
             }
         )
