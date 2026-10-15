@@ -21,6 +21,7 @@ from biolink_model.datamodel.model import (
 )
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
+from omnipath_core.source_attributes import PARTICIPANT_ROLE
 from omnipath_core.silver_schema import format_term
 from pypath.internals.silver_schema import (
     Annotation,
@@ -256,28 +257,59 @@ def _protein_group_entity(
     )
 
 
+# Attributes CellChatDB gives an interaction ("Secreted Signaling", "Cell-Cell
+# Contact", "ECM-Receptor", "Non-protein Signaling") and each of its partners
+# (subcellular location, whether it is transmembrane, its secreted type), as it
+# writes them. The partner attributes are participant-scoped relation annotations,
+# with the partner's role: the predicate is symmetric, so the stored subject and
+# object need not be the ligand and the receptor.
+INTERACTION_CLASS = 'cellchat:annotation'
+LOCATION = 'cellchat:location'
+TRANSMEMBRANE = 'cellchat:transmembrane'
+SECRETED_TYPE = 'cellchat:secreted_type'
+
+
+def _participant_annotations(row: dict[str, Any], role: str) -> list[Annotation]:
+    """The role of a partner (``ligand`` or ``receptor``) and its attributes."""
+    return [
+        annotation
+        for annotation in (
+            Annotation(term=PARTICIPANT_ROLE, value=role),
+            _annotation(LOCATION, row.get(f'{role}_location')),
+            _annotation(TRANSMEMBRANE, row.get(f'{role}_transmembrane')),
+            _annotation(SECRETED_TYPE, row.get(f'{role}_secreted_type')),
+        )
+        if annotation is not None
+    ]
+
+
 def map_cellchat_interaction(row: dict[str, Any]) -> Relation:
     taxon_id = _first(row.get('taxon_id'))
     evidence = _first(row.get('evidence'))
     annotations = _annotations(
         Annotation(term=slots.in_taxon, value=f'NCBITaxon:{taxon_id}'),
+        _annotation(INTERACTION_CLASS, row.get('annotation')),
         *_pubmed_annotations(evidence),
         *_pmc_annotations(evidence),
     )
     abbreviation = _row_metabolite(row, 'ligand_name')
     ligand = (
-        _metabolite_entity(abbreviation)
+        _metabolite_entity(abbreviation)._replace(
+            annotations=_participant_annotations(row, 'ligand')
+        )
         if abbreviation
         else _protein_group_entity(
             name=_first(row.get('ligand_name')),
             genes=_values(row.get('ligand_genes')),
             taxon_id=taxon_id,
+            annotations=_participant_annotations(row, 'ligand'),
         )
     )
     receptor = _protein_group_entity(
         name=_first(row.get('receptor_name')),
         genes=_values(row.get('receptor_genes')),
         taxon_id=taxon_id,
+        annotations=_participant_annotations(row, 'receptor'),
     )
     return Relation(
         subject=ligand,

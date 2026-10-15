@@ -14,6 +14,7 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from omnipath_core.silver_schema import format_term
+from omnipath_core.source_attributes import PARTICIPANT_ROLE
 from pypath.internals.silver_schema import (
     Annotation,
     Entity,
@@ -45,7 +46,9 @@ download = Download(
     encoding='utf-8-sig',
 )
 _pmid_re = re.compile('\\d+')
-_spreadsheet_currency_gene_re = re.compile('^(\\d+),00[\\s\\xa0]+(DKK)$')
+# A spreadsheet read some gene symbols as amounts of money: DKK1 as "1,00 DKK",
+# NPR3 as "3,00 NPR" (the Nepalese rupee).
+_spreadsheet_currency_gene_re = re.compile('^(\\d+),00[\\s\\xa0]+([A-Z]{3})$')
 
 
 def _clean(value: Any) -> str:
@@ -136,9 +139,17 @@ def map_icellnet_interaction(row: dict[str, Any]) -> Relation | None:
         ],
     )
     return Relation(
-        subject=_participant('+'.join(ligands), ligands, []),
+        subject=_participant(
+            '+'.join(ligands),
+            ligands,
+            [Annotation(term=PARTICIPANT_ROLE, value='ligand')],
+        ),
         predicate=slots.interacts_with,
-        object=_participant('+'.join(receptors), receptors, []),
+        object=_participant(
+            '+'.join(receptors),
+            receptors,
+            [Annotation(term=PARTICIPANT_ROLE, value='receptor')],
+        ),
         identifiers=[Identifier(type=Namespace.NAME, value=name)],
         annotations=[*(annotations or [])],
     )

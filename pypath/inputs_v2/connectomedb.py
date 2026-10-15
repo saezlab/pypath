@@ -26,6 +26,11 @@ from pypath.internals.tabular_builder import (
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_csv
 
+# Where the source places the ligand or receptor ("secreted", "cell membrane",
+# "secreted, cell membrane", "unknown" ...), as it writes it; a participant-scoped
+# relation annotation, beside the participant's role.
+LOCATION = 'connectomedb:location'
+
 config = ResourceConfig(
     id=ResourceCv.CONNECTOMEDB,
     name='connectomeDB2025',
@@ -120,6 +125,7 @@ ligand_builder = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=slots.in_taxon, value=f('Species', map='species_taxon')),
         CV(term=PARTICIPANT_ROLE, value='ligand'),
+        CV(term=LOCATION, value=f('Ligand Location')),
     ),
 )
 receptor_builder = EntityBuilder(
@@ -138,6 +144,7 @@ receptor_builder = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=slots.in_taxon, value=f('Species', map='species_taxon')),
         CV(term=PARTICIPANT_ROLE, value='receptor'),
+        CV(term=LOCATION, value=f('Receptor Location')),
     ),
 )
 interactions_schema = RelationBuilder(

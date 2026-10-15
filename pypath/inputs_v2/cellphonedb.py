@@ -86,6 +86,13 @@ UNIPROT_ACC_RE = re.compile(
     r'^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-\d+)?(?:-PRO_\d+)?$'
 )
 HUMAN_TAXON_ID = '9606'
+# Attributes of an interaction, as interaction_input.csv writes them: which kind
+# of partners it joins ("Ligand-Receptor", "Adhesion-Adhesion", "Ligand-Ligand",
+# "Receptor-Receptor", "Gap-Gap"), its class ("Signaling by WNT") and whether it
+# is a protein-protein interaction ("True"/"False").
+DIRECTIONALITY = 'cellphonedb:directionality'
+CLASSIFICATION = 'cellphonedb:classification'
+IS_PPI = 'cellphonedb:is_ppi'
 SYNTHETIC_METABOLITE_SYSTEM_RE = re.compile('^(.+?)_by[A-Za-z0-9].*')
 CHEBI_RE = re.compile(r'^CHEBI:\d+$')
 # A metabolite system ("Glutamate_byGLS_and_SLC1A1") has the ChEBI term of its
@@ -264,6 +271,9 @@ interactions_schema = RelationBuilder(
         CV(term=Namespace.NAME, value=f('interactors'))
     ),
     annotations=AnnotationsBuilder(
+        CV(term=DIRECTIONALITY, value=f('directionality')),
+        CV(term=CLASSIFICATION, value=f('classification')),
+        CV(term=IS_PPI, value=f('is_ppi')),
         CV(
             term=slots.publications,
             value=f(
