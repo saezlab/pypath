@@ -2,10 +2,11 @@
 
 Yields one dict per master reaction row from the Rhea web API.
 
-Role assignment uses the equation structure: the ``ChEBI identifier`` column
-lists ChEBI IDs in left-to-right equation order (reactants first, products
-after the separator), so counting `` + ``-separated terms on each side of the
-equation separator gives an exact reactant/product boundary in the ChEBI list.
+Participants follow the equation. The ``ChEBI identifier`` column lists each
+compound once, in order of its first appearance in the equation, so a compound
+on both sides (the cargo of every transport) appears in it once. Each equation
+term is matched to its compound by that order, which restores the second
+occurrence with its own role, membrane side and coefficient.
 """
 
 from __future__ import annotations
@@ -25,29 +26,32 @@ _LIST_DELIMITER = '||'
 _EQ_SEPARATORS = (' <=> ', ' => ', ' <= ', ' = ')
 
 _GO_ID_RE = re.compile(r'GO:\d+')
+# UniProt's accession format: O, P and Q accessions have their own shape.
 _UNIPROT_RE = re.compile(
-    r'\b[A-NR-Z][0-9][A-Z0-9]{3}[0-9](?:-\d+)?\b'
-    r'|\b[A-NR-Z][0-9][A-Z0-9]{3}[0-9][A-Z0-9]{4}[0-9](?:-\d+)?\b'
+    r'\b(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})'
+    r'(?:-\d+)?\b'
 )
 _RHEA_ID_RE = re.compile(r'(?:RHEA:)?(\d+)')
 
 _TRANSPORT_COMPARTMENT_RE = re.compile(r'\((in|out)\)$')
 _COEFFICIENT_RE = re.compile(r'^\d+ ')
+# A variable coefficient, e.g. ``n ATP`` or ``(n+1) H(+)``: no number to keep.
+_VARIABLE_COEFFICIENT_RE = re.compile(r'^\(?[0-9+-]*n[0-9n+-]*\)? ')
 _EXCLUDED_TERMS = frozenset({'H(+)', 'H2O'})
 
 
-def _count_equation_sides(equation: str) -> tuple[int, int]:
+def _equation_terms(equation: str) -> list[tuple[str, str]]:
     """
-    Count reactants and products by parsing the equation string.
+    The terms of an equation in order, each with its side.
 
     Args:
         equation: Reaction equation string, e.g.
-            ``ATP + H2O = ADP + phosphate``.
+            ``sulfate(out) + ATP + H2O = sulfate(in) + ADP + phosphate + H(+)``.
 
     Returns:
-        A ``(n_reactants, n_products)`` tuple.  Compounds within each side
-        are separated by `` + `` and sides are split on the equation
-        separator.  Returns ``(0, 0)`` if no recognised separator is found.
+        ``(role, term)`` pairs, ``role`` being ``'reactant'`` left of the
+        separator and ``'product'`` right of it. Empty when no recognised
+        separator is found.
     """
 
     for sep in _EQ_SEPARATORS:
@@ -56,9 +60,13 @@ def _count_equation_sides(equation: str) -> tuple[int, int]:
 
             left, right = equation.split(sep, 1)
 
-            return len(left.split(' + ')), len(right.split(' + '))
+            return [
+                (role, term.strip())
+                for role, side in (('reactant', left), ('product', right))
+                for term in side.split(' + ')
+            ]
 
-    return 0, 0
+    return []
 
 
 def _split_semicolons(raw: str) -> list[str]:
@@ -168,90 +176,71 @@ def _is_transport(equation: str) -> bool:
     return bool(left_names & right_names)
 
 
-def _compartments_from_equation(equation: str, n_participants: int) -> list[str]:
-    """
-    Extract the membrane-side label for each participant in equation order.
-
-    Args:
-        equation: Reaction equation string with ``(in)``/``(out)`` annotations.
-        n_participants: Expected number of participants (``len(chebi_ids)``).
-            Used to pad or truncate the result to the correct length.
-
-    Returns:
-        List of compartment strings in equation order (reactants first, then
-        products).  Entries are empty strings where no annotation is found.
-    """
-
-    for sep in _EQ_SEPARATORS:
-        if sep in equation:
-            left, right = equation.split(sep, 1)
-            terms = (
-                [t.strip() for t in left.split(' + ')] +
-                [t.strip() for t in right.split(' + ')]
-            )
-            break
-    else:
-        return [''] * n_participants
-
-    compartments = []
-
-    for term in terms:
-        m = _TRANSPORT_COMPARTMENT_RE.search(term)
-        compartments.append(m.group(1) if m else '')
-
-    if len(compartments) < n_participants:
-        compartments += [''] * (n_participants - len(compartments))
-
-    return compartments[:n_participants]
-
-
 def _participant_fields(
+    equation: str,
     chebi_ids: list[str],
     chebi_names: list[str],
-    n_reactants: int,
-    compartments: list[str] | None = None,
 ) -> dict[str, str]:
     """
-    Build ``||``-delimited participant record fields.
+    Build ``||``-delimited participant record fields, one entry per equation
+    term.
 
     Args:
-        chebi_ids: Ordered list of ChEBI identifiers (reactants first,
-            then products), as returned by the API.
+        equation: Reaction equation string.
+        chebi_ids: ChEBI identifiers, each compound once, in order of first
+            appearance in the equation.
         chebi_names: Display names in the same order as ``chebi_ids``.
-            May be shorter; missing names are filled with empty strings.
-        n_reactants: Number of leading entries in ``chebi_ids`` that are
-            reactants; the remainder are treated as products.
-        compartments: Compartment label per participant in the same order
-            as ``chebi_ids``.  ``None`` or a short list is padded with
-            empty strings.
 
     Returns:
         Dict with keys ``participant_chebi``, ``participant_display_name``,
-        ``participant_role``, and ``participant_compartment``, each a
-        ``||``-joined string aligned by position.
+        ``participant_role``, ``participant_compartment`` (``in``/``out`` for
+        a transport, else empty) and ``participant_stoichiometry`` (the
+        coefficient, ``1`` when the equation writes none, empty when it is
+        variable), each a ``||``-joined string aligned by position.
     """
 
-    n_products = max(len(chebi_ids) - n_reactants, 0)
-    roles = ['reactant'] * n_reactants + ['product'] * n_products
-
     names = chebi_names + [''] * max(len(chebi_ids) - len(chebi_names), 0)
+    terms = _equation_terms(equation)
+    compounds = list(dict.fromkeys(_strip_term(term) for _, term in terms))
+    participants = []
 
-    if compartments is None:
-        compartments = [''] * len(chebi_ids)
-    elif len(compartments) < len(chebi_ids):
-        compartments = compartments + [''] * (len(chebi_ids) - len(compartments))
+    if terms and len(compounds) == len(chebi_ids):
+        index = {compound: i for i, compound in enumerate(compounds)}
+        for role, term in terms:
+            i = index[_strip_term(term)]
+            side = _TRANSPORT_COMPARTMENT_RE.search(term)
+            coefficient = _COEFFICIENT_RE.match(term.strip())
+            participants.append((
+                chebi_ids[i],
+                names[i],
+                role,
+                side.group(1) if side else '',
+                coefficient.group(0).strip() if coefficient
+                else '' if _VARIABLE_COEFFICIENT_RE.match(term.strip()) else '1',
+            ))
+    else:
+        # The compound list does not match the equation (e.g. a term the
+        # column leaves out): keep the compounds once, with roles by count.
+        n_reactants = sum(role == 'reactant' for role, _ in terms)
+        for i, chebi in enumerate(chebi_ids):
+            role = 'reactant' if i < n_reactants else 'product'
+            participants.append((chebi, names[i], role, '', ''))
 
+    fields = (
+        'participant_chebi',
+        'participant_display_name',
+        'participant_role',
+        'participant_compartment',
+        'participant_stoichiometry',
+    )
     return {
-        'participant_chebi': _LIST_DELIMITER.join(chebi_ids),
-        'participant_display_name': _LIST_DELIMITER.join(names[:len(chebi_ids)]),
-        'participant_role': _LIST_DELIMITER.join(roles),
-        'participant_compartment': _LIST_DELIMITER.join(compartments[:len(chebi_ids)]),
+        field: _LIST_DELIMITER.join(values)
+        for field, values in zip(fields, zip(*participants) if participants else [()] * 5)
     }
 
 
 def _raw(
     opener: Any,
-    data_type: str = 'reactions',
     uniprot_opener: Any | None = None,
     **_kwargs: Any,
 ) -> Generator[dict, None, None]:
@@ -261,16 +250,14 @@ def _raw(
     Args:
         opener: File-like object for the downloaded TSV, as supplied by the
             ``Dataset`` machinery.
-        data_type: Controls which reactions are yielded.  One of
-            ``'reactions'`` (all), ``'metabolic_reactions'`` (non-transport
-            only), or ``'transport_reactions'`` (transport only).
         **_kwargs: Ignored; present for framework compatibility.
 
     Yields:
         One dict per master reaction with keys: ``rhea_id``, ``equation``,
         ``ec``, ``pubmed``, ``go``, ``ecocyc``, ``metacyc``, ``kegg``,
-        ``reactome``, ``participant_chebi``, ``participant_display_name``,
-        ``participant_role``, and ``participant_compartment``.
+        ``reactome``, ``is_transport``, ``participant_chebi``,
+        ``participant_display_name``, ``participant_role``,
+        ``participant_compartment`` and ``participant_stoichiometry``.
 
     Note:
         Expected TSV columns (set by the configured API URL):
@@ -293,11 +280,6 @@ def _raw(
 
         is_transport = _is_transport(equation)
 
-        if data_type == 'metabolic_reactions' and is_transport:
-            continue
-        if data_type == 'transport_reactions' and not is_transport:
-            continue
-
         chebi_ids = _split_semicolons(row.get('ChEBI identifier') or '')
         chebi_names = _split_semicolons(row.get('ChEBI name') or '')
 
@@ -314,13 +296,6 @@ def _raw(
         kegg = (row.get('Cross-reference (KEGG)') or '').strip()
         reactome = (row.get('Cross-reference (Reactome)') or '').strip()
 
-        n_reactants, _ = _count_equation_sides(equation)
-
-        compartments = (
-            _compartments_from_equation(equation, len(chebi_ids))
-            if is_transport else None
-        )
-
         yield {
             'rhea_id': rhea_id,
             'equation': equation,
@@ -332,5 +307,6 @@ def _raw(
             'metacyc': metacyc,
             'kegg': kegg,
             'reactome': reactome,
-            **_participant_fields(chebi_ids, chebi_names, n_reactants, compartments),
+            'is_transport': is_transport,
+            **_participant_fields(equation, chebi_ids, chebi_names),
         }

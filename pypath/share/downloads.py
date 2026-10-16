@@ -119,6 +119,30 @@ def get_download_manager() -> DownloadManager:
 dm = _DownloadManagerProxy()
 
 
+_HTML_EXTENSIONS = frozenset({'html', 'htm', 'xhtml'})
+
+
+def _is_error_page(path: Path, ext: Optional[str]) -> bool:
+    """An HTML document where the caller expects some other format.
+
+    Compressed and binary files never start with ``<``, and XML declares
+    itself with ``<?xml``, so only a page saved in place of the data matches.
+    """
+
+    suffix = (ext or path.suffix.lstrip('.')).lower()
+    if suffix in _HTML_EXTENSIONS or not path.is_file():
+        return False
+    with path.open('rb') as handle:
+        head = handle.read(512).lstrip().lower()
+    return head.startswith((b'<!doctype html', b'<html'))
+
+
+def _set_aside(path: Path) -> Path:
+    kept = path.with_name(f'{path.name}.error.html')
+    path.replace(kept)
+    return kept
+
+
 def download_and_open(
         url: str,
         filename: str,
@@ -175,6 +199,21 @@ def download_and_open(
         file_path.unlink()
     dm = get_download_manager()
     dm.download(url, dest=str(file_path), **download_kwargs)
+    if _is_error_page(file_path, ext):
+        # A server error saved under the data file's name would parse as an
+        # empty table. Keep it for inspection and fetch once more.
+        _set_aside(file_path)
+        dm.download(
+            url,
+            dest=str(file_path),
+            **{**download_kwargs, 'force_download': True},
+        )
+        if _is_error_page(file_path, ext):
+            kept = _set_aside(file_path)
+            raise RuntimeError(
+                f'{url} returned an HTML page instead of {filename}; '
+                f'kept as {kept}'
+            )
 
     # Use Opener to handle extraction/opening
     # Return the opener itself so it stays alive and keeps files open

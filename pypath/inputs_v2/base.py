@@ -227,12 +227,16 @@ class Dataset:
         *,
         kind: DatasetKind | None = None,
         raw_table: Callable[..., int] | None = None,
+        allow_empty: bool = False,
     ) -> None:
         self.download = download
         self.mapper = mapper
         self._raw_parser = raw_parser
         self._raw_table = raw_table
         self.kind = kind
+        # A build fails on a dataset that yields no rows unless the source can
+        # legitimately have none (e.g. an organism without such records).
+        self.allow_empty = allow_empty
 
     @property
     def has_table(self) -> bool:

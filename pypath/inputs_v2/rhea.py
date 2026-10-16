@@ -1,7 +1,12 @@
 """Rhea master reactions as molecular activities with explicit input, output and enzyme edges.
 
-Transport sides (in/out) and reported conversion direction attach to membership
-evidence as ordinary attributes, without gene-effect direction qualifiers.
+Each reaction is typed in SBO: transport where its equation moves a compound
+across a membrane unchanged, else biochemical. Every equation term is one
+participant, so a transport's cargo appears on both sides; its membrane side
+(in/out), coefficient and reported conversion direction attach to membership
+evidence as ordinary attributes, without gene-effect direction qualifiers. The
+sides are relative to a membrane Rhea does not name, so they are not GO
+compartments and do not enter the reaction's identity.
 Reaction identifiers, equations, EC topics, publications and cross-references
 are preserved.
 """
@@ -16,7 +21,10 @@ from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
+from omnipath_core.reactions import BIOCHEMICAL_REACTION, TRANSPORT
 from omnipath_core.source_attributes import TRANSPORT_SIDE
+
+from pypath.inputs_v2._reactions import reaction_type_cv
 
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
@@ -72,6 +80,7 @@ _RHEA_ID_RE = re.compile(r'(?:RHEA:)?(\d+)')
 _PARTICIPANT_FIELDS = (
     'participant_role', 'participant_chebi',
     'participant_display_name', 'participant_compartment',
+    'participant_stoichiometry',
 )
 
 
@@ -191,90 +200,8 @@ reactions_schema = EntityBuilder(
                 + str(v).removeprefix('KEGG.REACTION:').removeprefix('KEGG:'),
             ),
         ),
-    ),
-    associations=_reaction_associations(),
-    membership=MembershipBuilder(
-        MembersFromList(
-            entity_type=model.ChemicalEntity,
-            predicate=_participant_field('participant_role', _role_map.get),
-            identifiers=IdentifiersBuilder(
-                CV(
-                    term=Namespace.CHEBI,
-                    value=_participant_field('participant_chebi', _participant_chebi),
-                ),
-                CV(
-                    term=Namespace.NAME,
-                    value=_participant_field('participant_display_name'),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                conversion_direction_cv(),
-                CV(
-                    term=TRANSPORT_SIDE,
-                    value=_participant_field('participant_compartment'),
-                ),
-            ),
-            entity_annotations=AnnotationsBuilder(),
-        ),
-        MembersFromList(
-            entity_type=model.Protein,
-            identifiers=IdentifiersBuilder(
-                CV(term=Namespace.UNIPROT, value=f('uniprot'))
-            ),
-            annotations=AnnotationsBuilder(conversion_direction_cv()),
-            predicate=slots.enabled_by,
-        ),
-    ),
-)
-
-
-# ── transport_reactions ───────────────────────────────────────────────────────
-
-transport_reactions_schema = EntityBuilder(
-    entity_type=model.MolecularActivity,
-    identifiers=IdentifiersBuilder(
-        CV(term=Namespace.RHEA, value=f('rhea_id')),
-        CV(term=Namespace.NAME, value=f('equation')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(
-            term=slots.has_topic,
-            value=lambda row, source=f('ec'): [
-                'EC:' + str(v).removeprefix('EC:') for v in source.extract(row)
-            ],
-        ),
-        CV(
-            term=slots.publications,
-            value=f(
-                'pubmed',
-                transform=lambda v: 'PMID:' + str(v).removeprefix('PMID:')
-                if str(v).removeprefix('PMID:').isdigit()
-                and int(str(v).removeprefix('PMID:')) > 0
-                else None,
-            ),
-        ),
-        CV(
-            term=slots.has_topic,
-            value=f(
-                'ecocyc',
-                transform=lambda v: 'EcoCyc:' + str(v).removeprefix('EcoCyc:'),
-            ),
-        ),
-        CV(
-            term=slots.has_topic,
-            value=f(
-                'metacyc',
-                transform=lambda v: 'MetaCyc:'
-                + str(v).removeprefix('MetaCyc:'),
-            ),
-        ),
-        CV(
-            term=slots.has_topic,
-            value=f(
-                'kegg',
-                transform=lambda v: 'KEGG.REACTION:'
-                + str(v).removeprefix('KEGG.REACTION:').removeprefix('KEGG:'),
-            ),
+        reaction_type_cv(
+            lambda row: TRANSPORT if row.get('is_transport') else BIOCHEMICAL_REACTION
         ),
     ),
     associations=_reaction_associations(),
@@ -297,6 +224,10 @@ transport_reactions_schema = EntityBuilder(
                 CV(
                     term=TRANSPORT_SIDE,
                     value=_participant_field('participant_compartment'),
+                ),
+                CV(
+                    term=slots.stoichiometry,
+                    value=_participant_field('participant_stoichiometry'),
                 ),
             ),
             entity_annotations=AnnotationsBuilder(),
@@ -340,28 +271,6 @@ resource = Resource(
         mapper=reactions_schema,
         raw_parser=lambda opener, force_refresh=False, **kwargs: _raw(
             opener,
-            uniprot_opener=catalysis_download.open(force_refresh=force_refresh),
-            force_refresh=force_refresh,
-            **kwargs,
-        ),
-    ),
-    metabolic_reactions=Dataset(
-        download=reactions_download,
-        mapper=reactions_schema,
-        raw_parser=lambda opener, force_refresh=False, **kwargs: _raw(
-            opener,
-            data_type='metabolic_reactions',
-            uniprot_opener=catalysis_download.open(force_refresh=force_refresh),
-            force_refresh=force_refresh,
-            **kwargs,
-        ),
-    ),
-    transport_reactions=Dataset(
-        download=reactions_download,
-        mapper=transport_reactions_schema,
-        raw_parser=lambda opener, force_refresh=False, **kwargs: _raw(
-            opener,
-            data_type='transport_reactions',
             uniprot_opener=catalysis_download.open(force_refresh=force_refresh),
             force_refresh=force_refresh,
             **kwargs,

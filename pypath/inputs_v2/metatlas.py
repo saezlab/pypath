@@ -1,7 +1,12 @@
 """Human-GEM chemicals and model reactions.
 
-Input/output evidence retains model orientation, stoichiometry, compartments and
-reported conversion direction. Numeric flux bounds are source-defined quantities.
+Each reaction is typed in SBO from its subsystem: "Transport reactions" are
+transport, "Exchange/demand reactions" exchange, demand or sink, the rest
+biochemical; the subsystem itself is kept beside the type, and a transport's
+TCDB classes as topics. Input/output evidence retains model orientation,
+stoichiometry, the GO compartment (as a Biolink anatomical context, with its
+name) and reported conversion direction; the reaction states the compartments
+it spans, which keeps its compartment variants apart. Numeric flux bounds are source-defined quantities.
 Gene rules are associations, not independent catalysis claims for every listed gene.
 """
 
@@ -27,9 +32,18 @@ from biolink_model.datamodel.model import (
 from omnipath_core.measurements import Measurement
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
+from omnipath_core.reactions import COMPARTMENT
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
+from pypath.inputs_v2._reactions import (
+    model_reaction_compartments,
+    model_reaction_type,
+    reaction_compartments_cv,
+    reaction_type_cv,
+    source_reaction_type_cv,
+    stoichiometry_compartment_go,
+)
 from pypath.inputs_v2._source_context import compartment_name, conversion_direction_cv
 from pypath.inputs_v2.parsers.metatlas import _raw, _metabolite_xrefs, _METABOLITE_XREF_URL
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
@@ -102,6 +116,19 @@ def _flux_bound(row, field):
     )
 
 
+_TRANSPORT_SUBSYSTEM = 'Transport reactions'
+_PSEUDOREACTION_SUBSYSTEM = 'Exchange/demand reactions'
+
+
+def _reaction_type(row) -> str:
+    subsystems = {s.strip() for s in str(row.get('subsystem') or '').split(';')}
+    return model_reaction_type(
+        row,
+        transport=_TRANSPORT_SUBSYSTEM in subsystems,
+        pseudoreaction=_PSEUDOREACTION_SUBSYSTEM in subsystems,
+    )
+
+
 config = ResourceConfig(
     id=ResourceCv.HUMAN_GEM,
     name='Metabolic Atlas',
@@ -127,6 +154,7 @@ f = FieldConfig(
         if value
         else None,
         'stoich_val': lambda value: value.split(':')[2] if value else None,
+        'stoich_go': stoichiometry_compartment_go,
         'complex_name': lambda value: 'complex:' + '-'.join(value.split('||'))
         if value
         else '',
@@ -188,6 +216,10 @@ reactions_schema = EntityBuilder(
                 transform=lambda v: 'EC:' + str(v).removeprefix('EC:'),
             ),
         ),
+        CV(term=slots.has_topic, value=f('tcdb', transform=lambda v: 'TC:' + str(v))),
+        reaction_type_cv(_reaction_type),
+        source_reaction_type_cv(f('subsystem')),
+        reaction_compartments_cv(model_reaction_compartments),
     ),
     membership=_ReactionMembership(
         MembersFromList(
@@ -260,9 +292,13 @@ reactions_schema = EntityBuilder(
                     value=f('reactants', delimiter='||', map='stoich_val'),
                 ),
                 CV(
+                    term=COMPARTMENT,
+                    value=f('reactants', delimiter='||', map='stoich_go'),
+                ),
+                CV(
                     term=CELLULAR_LOCATION,
                     value=f('reactants', delimiter='||', map='stoich_comp'),
-                )
+                ),
             ),
             predicate=slots.has_input,
         ),
@@ -336,198 +372,18 @@ reactions_schema = EntityBuilder(
                     value=f('products', delimiter='||', map='stoich_val'),
                 ),
                 CV(
+                    term=COMPARTMENT,
+                    value=f('products', delimiter='||', map='stoich_go'),
+                ),
+                CV(
                     term=CELLULAR_LOCATION,
                     value=f('products', delimiter='||', map='stoich_comp'),
-                )
+                ),
             ),
             predicate=slots.has_output,
         ),
     ),
 )
-transport_reactions_schema = EntityBuilder(
-    entity_type=MolecularActivity,
-    identifiers=IdentifiersBuilder(
-        CV(term=Namespace.HUMAN_GEM_REACTION, value=f('human_gem_reaction_id')),
-        CV(term=Namespace.RHEA, value=f('rhea')),
-        CV(term=Namespace.KEGG_REACTION, value=f('kegg_reaction')),
-        CV(term=Namespace.BIGG_REACTION, value=f('bigg_reaction')),
-        CV(term=Namespace.METANETX_REACTION, value=f('metanetx_reaction')),
-        CV(term=Namespace.NAME, value=f('name')),
-    ),
-    annotations=AnnotationsBuilder(
-        CV(
-            term=slots.has_quantitative_value,
-            value=lambda row: _flux_bound(row, 'lower_bound'),
-        ),
-        CV(
-            term=slots.has_quantitative_value,
-            value=lambda row: _flux_bound(row, 'upper_bound'),
-        ),
-        CV(
-            term=slots.has_topic,
-            value=f(
-                'eccodes',
-                transform=lambda v: 'EC:' + str(v).removeprefix('EC:'),
-            ),
-        ),
-    ),
-    membership=_ReactionMembership(
-        MembersFromList(
-            entity_type=ChemicalEntity,
-            identifiers=IdentifiersBuilder(
-                CV(
-                    term=Namespace.HUMAN_GEM_METABOLITE,
-                    value=f('reactants', delimiter='||', map='stoich_id'),
-                ),
-                CV(
-                    term=Namespace.HMDB,
-                    value=f(
-                        'reactant_hmdb', delimiter='||', preserve_indices=True
-                    ),
-                ),
-                CV(
-                    term=Namespace.CHEBI,
-                    value=f(
-                        'reactant_chebi',
-                        delimiter='||',
-                        extract='chebi',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.PUBCHEM,
-                    value=f(
-                        'reactant_pubchem_compound',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.LIPIDMAPS,
-                    value=f(
-                        'reactant_lipidmaps',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.KEGG,
-                    value=f(
-                        'reactant_kegg_compound',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.BIGG_METABOLITE,
-                    value=f(
-                        'reactant_bigg',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.METANETX,
-                    value=f(
-                        'reactant_metanetx',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                conversion_direction_cv(),
-                CV(
-                    term=slots.stoichiometry,
-                    value=f('reactants', delimiter='||', map='stoich_val'),
-                ),
-                CV(
-                    term=CELLULAR_LOCATION,
-                    value=f('reactants', delimiter='||', map='stoich_comp'),
-                )
-            ),
-            predicate=slots.has_input,
-        ),
-        MembersFromList(
-            entity_type=ChemicalEntity,
-            identifiers=IdentifiersBuilder(
-                CV(
-                    term=Namespace.HUMAN_GEM_METABOLITE,
-                    value=f('products', delimiter='||', map='stoich_id'),
-                ),
-                CV(
-                    term=Namespace.HMDB,
-                    value=f(
-                        'product_hmdb', delimiter='||', preserve_indices=True
-                    ),
-                ),
-                CV(
-                    term=Namespace.CHEBI,
-                    value=f(
-                        'product_chebi',
-                        delimiter='||',
-                        extract='chebi',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.PUBCHEM,
-                    value=f(
-                        'product_pubchem_compound',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.LIPIDMAPS,
-                    value=f(
-                        'product_lipidmaps',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.KEGG,
-                    value=f(
-                        'product_kegg_compound',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.BIGG_METABOLITE,
-                    value=f(
-                        'product_bigg',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-                CV(
-                    term=Namespace.METANETX,
-                    value=f(
-                        'product_metanetx',
-                        delimiter='||',
-                        preserve_indices=True,
-                    ),
-                ),
-            ),
-            annotations=AnnotationsBuilder(
-                conversion_direction_cv(),
-                CV(
-                    term=slots.stoichiometry,
-                    value=f('products', delimiter='||', map='stoich_val'),
-                ),
-                CV(
-                    term=CELLULAR_LOCATION,
-                    value=f('products', delimiter='||', map='stoich_comp'),
-                )
-            ),
-            predicate=slots.has_output,
-        ),
-    ),
-)
-
-
 def enzyme_complexes_schema(row: dict) -> Entity | None:
     """Retain a source model AND group with a deterministic internal ID."""
     genes = [gene for gene in str(row.get('complex_subunits') or '').split('||') if gene]
@@ -580,20 +436,6 @@ resource = Resource(
         mapper=partial(_map_with_structures, reactions_schema),
         raw_parser=lambda opener, **kwargs: _raw(
             opener, data_type='reactions', **kwargs
-        ),
-    ),
-    transport_reactions=Dataset(
-        download=download,
-        mapper=partial(_map_with_structures, transport_reactions_schema),
-        raw_parser=lambda opener, **kwargs: _raw(
-            opener, data_type='transport_reactions', **kwargs
-        ),
-    ),
-    metabolic_reactions=Dataset(
-        download=download,
-        mapper=partial(_map_with_structures, reactions_schema),
-        raw_parser=lambda opener, **kwargs: _raw(
-            opener, data_type='metabolic_reactions', **kwargs
         ),
     ),
     enzyme_complexes=Dataset(

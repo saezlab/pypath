@@ -28,6 +28,7 @@ from biolink_model.datamodel.model import (
     Protein,
     slots,
 )
+from omnipath_core.interaction_profiles import TRANSPORT_QUALIFIERS
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
@@ -316,6 +317,42 @@ def exclusion_reason(row: dict[str, Any]) -> str | None:
 # ``controls-production-of`` are all a bare ``affects``); the source's own
 # type keeps them apart.
 _INTERACTION_TYPE = 'pathwaycommons:interaction_type'
+_MEDIATOR = 'pathwaycommons:mediator'
+
+# "The protein controls a reaction that changes cellular location of the small
+# molecule" covers three statements, which the BioPAX interactions behind a
+# line (``MEDIATOR_IDS``) tell apart. Where one of them is a catalysis of the
+# transport, the protein is its transporter or a subunit of it: a transport,
+# stated as every other transporter-cargo pair is (84% of the lines in
+# release 14, top cargos Ca2+, K+, Na+, Cl-). Otherwise the protein regulates
+# a transport, or moves with the cargo in a complex, and the line stays a
+# change of the cargo's localization.
+_TRANSPORT_OF_CHEMICAL = 'controls-transport-of-chemical'
+_CATALYSIS_MEDIATOR = re.compile(
+    r'reactome:Catalysis|humancyc:Catalysis|pathbank:TransportCatalysis|reconx:control_'
+)
+
+
+def is_catalysed_transport(row: dict[str, Any]) -> bool:
+    return row['interaction_type'] == _TRANSPORT_OF_CHEMICAL and bool(
+        _CATALYSIS_MEDIATOR.search(row.get('mediator_ids') or '')
+    )
+
+
+def _effect(row: dict[str, Any], relation_type: _Type) -> list[Annotation]:
+    if is_catalysed_transport(row):
+        return [
+            *(Annotation(term=term, value=value) for term, value in TRANSPORT_QUALIFIERS),
+            *(
+                Annotation(term=_MEDIATOR, value=mediator)
+                for mediator in dict.fromkeys(
+                    m.strip() for m in row['mediator_ids'].split(';') if m.strip()
+                )
+            ),
+        ]
+    if relation_type.aspect is None:
+        return []
+    return [Annotation(term=slots.object_aspect_qualifier, value=relation_type.aspect)]
 
 
 def map_interaction(row: dict[str, Any]) -> Relation | None:
@@ -328,15 +365,7 @@ def map_interaction(row: dict[str, Any]) -> Relation | None:
         predicate=relation_type.predicate,
         object=_participant(row['participant_b']),
         annotations=[
-            *(
-                [
-                    Annotation(
-                        term=slots.object_aspect_qualifier, value=relation_type.aspect
-                    )
-                ]
-                if relation_type.aspect is not None
-                else []
-            ),
+            *_effect(row, relation_type),
             Annotation(term=_INTERACTION_TYPE, value=row['interaction_type']),
             *_data_sources(row),
             *_publications(row),

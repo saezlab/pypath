@@ -482,6 +482,8 @@ resource = Resource(
         download=_download('zebrafish'),
         mapper=map_metabolite_gene,
         raw_parser=_parser(iter_metabolite_genes, 'zebrafish'),
+        # CellChatDB.zebrafish has no metabolite ligands.
+        allow_empty=True,
     ),
     human_complexes=Dataset(
         download=_download('human'),

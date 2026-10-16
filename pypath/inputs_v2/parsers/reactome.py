@@ -32,7 +32,7 @@ BP = Namespace("http://www.biopax.org/release/biopax-level3.owl#")
 _DATA_CACHE: dict[str, list[dict]] = {}
 
 # Cache version to invalidate older pickled formats
-_CACHE_VERSION = 14  # Includes occurrence molecular forms with fragment regions.
+_CACHE_VERSION = 15  # Includes GO compartments of participants and of each conversion.
 
 # Delimiter used for list-of-participants and list-of-components fields
 _LIST_DELIMITER = "||"
@@ -229,7 +229,7 @@ def _extract_names_from_props(props: dict, bp_ns: Namespace) -> dict[str, str | 
 
 
 _PARTICIPANT_FIELDS = [
-    'source_physical_entity', 'compartment', 'modification',
+    'source_physical_entity', 'compartment', 'compartment_go', 'modification',
     'molecular_form', 'refseq', 'ensembl',
     'role',
     'entity_type',
@@ -670,6 +670,40 @@ def _attach_molecular_context(g, uri, participant, reference_index, xref_cache):
     return participant
 
 
+def _location_go(g, location) -> list[str]:
+    """GO cellular-component ids of a BioPAX CellularLocationVocabulary."""
+    found = []
+    for xref in g.objects(location, BP.xref):
+        for identifier in g.objects(xref, BP.id):
+            match = re.fullmatch(r'(?:GO:)?(\d{7})', str(identifier).strip())
+            if match and f'GO:{match[1]}' not in found:
+                found.append(f'GO:{match[1]}')
+    return found
+
+
+def _compartment_go(g, molecule_uri) -> str:
+    """The GO compartment of a physical entity, or empty when it states none."""
+    for location in g.objects(molecule_uri, BP.cellularLocation):
+        go = _location_go(g, location)
+        if go:
+            return go[0]
+    return ''
+
+
+def _conversion_compartments(g, conversion_uri) -> str:
+    """The GO compartments of a conversion's participants, sorted, ``;``-joined.
+
+    Reaction rows and the control rows pointing at the reaction both carry it:
+    it is part of the reaction's identity, so the two must agree.
+    """
+    found = set()
+    for side in (BP.left, BP.right, BP.template, BP.product):
+        for molecule in g.objects(conversion_uri, side):
+            if go := _compartment_go(g, molecule):
+                found.add(go)
+    return ';'.join(sorted(found))
+
+
 def _extract_participant_data(g, molecule_uri, role, entity_reference_index, xref_cache, stoich_map):
     """Preserve physical-state context independently of the reference identity."""
     result = _extract_participant_core(g, molecule_uri, role, entity_reference_index, xref_cache, stoich_map)
@@ -678,6 +712,7 @@ def _extract_participant_data(g, molecule_uri, role, entity_reference_index, xre
     for location in props.get(BP.cellularLocation, []):
         terms = list(g.objects(location, BP['term']))
         compartments.extend(str(term) for term in terms)
+    compartment_go = _compartment_go(g, molecule_uri)
     features = []
     for feature in props.get(BP.feature, []):
         labels = [str(term) for vocabulary in g.objects(feature, BP.modificationType)
@@ -691,6 +726,7 @@ def _extract_participant_data(g, molecule_uri, role, entity_reference_index, xre
     for participant in result if isinstance(result, list) else [result]:
         participant['source_physical_entity'] = str(molecule_uri)
         participant['compartment'] = '; '.join(compartments)
+        participant['compartment_go'] = compartment_go
         participant['modification'] = '; '.join(features)
         _attach_molecular_context(g, molecule_uri, participant, entity_reference_index, xref_cache)
     return result
@@ -1009,6 +1045,7 @@ def _iterate_reactions(
             'direction': direction,
             'template_direction': str(next(iter(props.get(BP.templateDirection, [])), '')),
             'pathway_term_accession': pathway_term_accession,
+            'compartments_go': _conversion_compartments(g, reaction_uri),
             **participant_data,
         }
         count += 1
@@ -1432,6 +1469,7 @@ def _iterate_controls(
                         'entity_type': 'degradation',
                         'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
                         'pathway_term_accession': pathway_term_accession,
+                        'compartments_go': _conversion_compartments(g, cd_uri),
                     }
                 elif cd_type_str_lower in {'biochemicalreaction', 'transport', 'transportwithbiochemicalreaction', 'complexassembly', 'templatereaction'}:
                     controlled_entity_type = 'reaction'
@@ -1440,6 +1478,7 @@ def _iterate_controls(
                         'display_name': cd_names.get('display_name', ''),
                         'entity_type': controlled_entity_type,
                         'reactome_stable_id': ';'.join(cd_xrefs.get('reactome_stable_id', [])),
+                        'compartments_go': _conversion_compartments(g, cd_uri),
                         'uniprot': '',
                         'chebi': '',
                         'synonyms': '',
@@ -1523,6 +1562,7 @@ def _iterate_controls(
                 'controlled_display_name': controlled_info.get('display_name', ''),
                 'controlled_synonyms': controlled_info.get('synonyms', ''),
                 'controlled_reactome_stable_id': controlled_info.get('reactome_stable_id', ''),
+                'controlled_compartments_go': controlled_info.get('compartments_go', ''),
                 'controlled_uniprot': controlled_info.get('uniprot', ''),
                 'controlled_chebi': controlled_info.get('chebi', ''),
                 'controlled_pubchem_compound': controlled_info.get('pubchem_compound', ''),

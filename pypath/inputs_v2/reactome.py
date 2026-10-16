@@ -1,7 +1,12 @@
 """Reactome BioPAX pathways, activities and explicit regulatory controls.
 
 Parsers preserve source type tokens; native classes and predicates are chosen
-here. Degradation controls target the process rather than an inferred substrate
+here. A reaction is typed in SBO from its BioPAX class, the class itself kept
+beside the type; each participant link carries its GO compartment (as a
+Biolink anatomical context, with its name), and the reaction the set of them,
+which keeps compartment variants of one resolved reaction apart. Control rows
+carry the same set for the reaction they point at, and the reaction's stable
+id, so catalysts pair with their own reaction. Degradation controls target the process rather than an inferred substrate
 quantity change.
 """
 
@@ -10,6 +15,8 @@ from biolink_model.datamodel import model
 from biolink_model.datamodel.model import slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
+from omnipath_core import reactions as _r
+from omnipath_core.reactions import COMPARTMENT
 from omnipath_core.source_attributes import CELLULAR_LOCATION
 from functools import partial
 import json
@@ -36,6 +43,12 @@ from pypath.internals.tabular_builder import (
 from pypath.inputs_v2._source_context import (
     conversion_direction_cv,
     stoichiometric_coefficient,
+)
+from pypath.inputs_v2._reactions import (
+    reaction_compartments_cv,
+    reaction_type_cv,
+    source_reaction_cv,
+    source_reaction_type_cv,
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.reactome import _raw
@@ -336,6 +349,44 @@ def _pathway_ontology_relations(row: dict) -> list[OntologyRelation]:
     return relations
 
 
+def _items(value) -> list[str]:
+    return [
+        item for item in str(value or '').replace('||', ';').split(';')
+        if item and item != _MISSING_VALUE
+    ]
+
+
+def _participant_types(row, role: str) -> set[str]:
+    roles = str(row.get('participant_role') or '').split('||')
+    types = str(row.get('participant_entity_type') or '').split('||')
+    return {kind for r, kind in zip(roles, types) if r == role}
+
+
+def _reaction_types(row) -> list[str]:
+    """SBO terms of a BioPAX conversion class."""
+    kind = row.get('reaction_type')
+    if kind == 'ComplexAssembly':
+        # The class covers assembly and dissociation alike.
+        return [
+            _r.NON_COVALENT_BINDING
+            if 'complex' in _participant_types(row, 'product')
+            else _r.DISSOCIATION
+        ]
+    if kind == 'TemplateReaction':
+        products = _participant_types(row, 'product')
+        return [_r.TRANSLATION if 'protein' in products else _r.TRANSCRIPTION]
+    return {
+        'BiochemicalReaction': [_r.BIOCHEMICAL_REACTION],
+        'Transport': [_r.TRANSPORT],
+        'TransportWithBiochemicalReaction': [_r.TRANSPORT, _r.BIOCHEMICAL_REACTION],
+        'Degradation': [_r.DEGRADATION],
+    }.get(kind, [])
+
+
+def _first_stable_id(field: str):
+    return lambda row: next(iter(_items(row.get(field))), None)
+
+
 reactions_schema = EntityBuilder(
     entity_type=f('entity_type', map=entity_type_map),
     identifiers=IdentifiersBuilder(
@@ -345,6 +396,10 @@ reactions_schema = EntityBuilder(
         CV(term=Namespace.SYNONYM, value=f('synonyms')),
     ),
     annotations=AnnotationsBuilder(
+        reaction_type_cv(_reaction_types),
+        source_reaction_type_cv(lambda row: row.get('reaction_type')),
+        reaction_compartments_cv(lambda row: _items(row.get('compartments_go'))),
+        source_reaction_cv(_first_stable_id('reactome_stable_id')),
         CV(term='biopax:templateDirection', value=lambda row: row.get('template_direction')),
         CV(
             term=slots.publications,
@@ -436,6 +491,7 @@ reactions_schema = EntityBuilder(
                         'participant', '||', referenced=True,
                     ),
                 ),
+                CV(term=COMPARTMENT, value=f('participant_compartment_go', delimiter='||', map='missing')),
                 CV(term=CELLULAR_LOCATION, value=f('participant_compartment', delimiter='||', map='missing')),
                 CV(term='biopax:feature', value=f('participant_modification', delimiter='||', map='missing')),
                 CV(
@@ -545,7 +601,9 @@ controlled_builder = EntityBuilder(
             value=_entity_taxon_id(
                 'controlled_entity_type', 'controlled_ncbi_tax_id'
             ),
-        )
+        ),
+        # The controlled reaction's compartments are part of its identity.
+        reaction_compartments_cv(lambda row: _items(row.get('controlled_compartments_go'))),
     ),
     associations=_combined_associations(
         _pathway_association(
@@ -575,6 +633,8 @@ controls_schema = RelationBuilder(
             value=_by_reference(f('controlled_display_name', map='missing'), 'controlled', referenced=True),
         ),
         CV(term=slots.publications, value=f('pubmed', transform=lambda v: 'PMID:' + str(v).removeprefix('PMID:'))),
+        # Which of the reactions resolved to one entity this control is about.
+        source_reaction_cv(_first_stable_id('controlled_reactome_stable_id')),
     ),
 )
 pathways_schema = EntityBuilder(
