@@ -6,6 +6,11 @@ This module creates Food entities with polyphenol compounds as members,
 where each compound member includes full identifiers (SMILES, CHEBI, etc.)
 and concentration/measurement annotations.
 
+The food is associated with its food group and subgroup and its botanical
+family; each compound with its class, subclass and aglycones, terms of
+Phenol-Explorer's classification (``terms``). A measurement keeps its number
+of samples (``supporting_study_size``), of data points and its method.
+
 Data sources:
 - http://phenol-explorer.eu/
 """
@@ -20,6 +25,15 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 
+from pypath.inputs_v2._class_terms import (
+    Level,
+    class_associations,
+    iter_class_terms,
+    map_class_term,
+    member_class_associations,
+    member_rows,
+    plain,
+)
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.phenol_explorer import MEMBER_DELIMITER, _raw
@@ -27,6 +41,7 @@ from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
+    AssociationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
@@ -81,6 +96,47 @@ f = FieldConfig(
     preserve_indices=True,
     extract={'chebi': '^(?:CHEBI:)?(\\d+)$'},
 )
+def _no_dash(value):
+    """Phenol-Explorer writes "-" for a compound without an aglycone."""
+    return None if str(value or '').strip() == '-' else plain(value)
+
+
+FOOD_LEVELS = [
+    Level('food_group', 'phenol_explorer_food_group'),
+    Level('food_subgroup', 'phenol_explorer_food_subgroup'),
+]
+BOTANICAL_FAMILY = [Level('botanical_family', 'phenol_explorer_botanical_family')]
+COMPOUND_LEVELS = [
+    Level('member_compound_class', 'phenol_explorer_compound_class'),
+    Level('member_compound_subclass', 'phenol_explorer_compound_subclass'),
+]
+# A compound's aglycones ("Quercetin", "(-)-Epicatechin // Gallic acid") group
+# its glycosides; they are terms of their own, not placed under a subclass.
+AGLYCONE = [Level('member_aglycones', 'phenol_explorer_aglycone', _no_dash)]
+AGLYCONE_SEPARATOR = ' // '
+
+
+def _member_field(field):
+    """A per-member field, one value per member."""
+    return lambda row: str(row.get(field) or '').split(MEMBER_DELIMITER)
+
+
+def _terms(opener, max_records=None, **kwargs):
+    rows = list(_raw(
+        opener,
+        download_compounds=download_compounds,
+        download_compounds_structures=download_compounds_structures,
+        download_composition=download_composition,
+        **kwargs,
+    ))
+    yield from iter_class_terms(rows, FOOD_LEVELS)
+    yield from iter_class_terms(rows, BOTANICAL_FAMILY)
+    yield from iter_class_terms(member_rows(rows, [l.field for l in COMPOUND_LEVELS]), COMPOUND_LEVELS)
+    yield from iter_class_terms(
+        member_rows(rows, [AGLYCONE[0].field], split=AGLYCONE_SEPARATOR), AGLYCONE
+    )
+
+
 foods_schema = EntityBuilder(
     entity_type=Food,
     identifiers=IdentifiersBuilder(
@@ -89,6 +145,7 @@ foods_schema = EntityBuilder(
         CV(term=Namespace.SYNONYM, value=f('scientific_name')),
     ),
     annotations=AnnotationsBuilder(),
+    associations=AssociationsBuilder(*class_associations(FOOD_LEVELS + BOTANICAL_FAMILY)),
     membership=MembershipBuilder(
         MembersFromList(
             entity_type=ChemicalEntity,
@@ -111,7 +168,18 @@ foods_schema = EntityBuilder(
                 CV(term=slots.has_chemical_formula, value=f('member_formula')),
                 CV(term='chemrof:mass', value=f('member_molecular_weight')),
             ),
+            entity_associations=AssociationsBuilder(
+                *member_class_associations(COMPOUND_LEVELS, MEMBER_DELIMITER),
+                *member_class_associations(AGLYCONE, MEMBER_DELIMITER, AGLYCONE_SEPARATOR),
+            ),
             annotations=AnnotationsBuilder(
+                # n: samples, N: data points the mean is computed from.
+                CV(term=slots.supporting_study_size, value=_member_field('member_n')),
+                CV(term='phenol_explorer:data_point_count', value=_member_field('member_N')),
+                CV(
+                    term=slots.supporting_study_method_description,
+                    value=_member_field('member_experimental_method'),
+                ),
                 CV(
                     term=slots.publications,
                     value=f(
@@ -219,5 +287,6 @@ resource = Resource(
             **kwargs,
         ),
     ),
+    terms=Dataset(download=download_foods, mapper=map_class_term, raw_parser=_terms),
 )
 __all__ = ['config', 'resource']

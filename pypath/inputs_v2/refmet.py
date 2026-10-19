@@ -9,12 +9,19 @@ from biolink_model.datamodel.model import ChemicalEntity, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
+from pypath.inputs_v2._class_terms import (
+    Level,
+    class_associations,
+    iter_class_terms,
+    map_class_term,
+)
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_csv
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
+    AssociationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
@@ -43,6 +50,13 @@ download = Download(
     ext='.csv',
     default_mode='r',
 )
+# RefMet's classification, by name; a level per namespace, since a name can
+# be a class at two levels ("Fatty Acyls").
+CLASS_LEVELS = [
+    Level('super_class', 'refmet_super_class'),
+    Level('main_class', 'refmet_main_class'),
+    Level('sub_class', 'refmet_sub_class'),
+]
 f = FieldConfig(extract={'chebi': '^(?:CHEBI:)?(\\d+)$'})
 schema = EntityBuilder(
     entity_type=ChemicalEntity,
@@ -60,6 +74,7 @@ schema = EntityBuilder(
         CV(term=slots.has_chemical_formula, value=f('formula')),
         CV(term='chemrof:monoisotopic_mass', value=f('exactmass')),
     ),
+    associations=AssociationsBuilder(*class_associations(CLASS_LEVELS)),
 )
 
 
@@ -73,4 +88,11 @@ def _raw(opener, **kwargs):
 resource = Resource(
     config=config,
     metabolites=Dataset(download=download, mapper=schema, raw_parser=_raw),
+    terms=Dataset(
+        download=download,
+        mapper=map_class_term,
+        raw_parser=lambda opener, max_records=None, **kwargs: iter_class_terms(
+            _raw(opener, **kwargs), CLASS_LEVELS, max_records=max_records
+        ),
+    ),
 )

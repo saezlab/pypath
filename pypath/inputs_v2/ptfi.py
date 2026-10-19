@@ -26,6 +26,14 @@ from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 import requests
 
+from pypath.inputs_v2._class_terms import (
+    Level,
+    iter_class_terms,
+    map_class_term,
+    member_class_associations,
+    member_rows,
+    plain,
+)
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.ptfi import MEMBER_DELIMITER, _raw
@@ -33,6 +41,7 @@ from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
+    AssociationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
@@ -389,6 +398,16 @@ class PTFIDownload:
 
 download_json = PTFIDownload()
 f = FieldConfig(delimiter=MEMBER_DELIMITER, preserve_indices=True)
+
+
+def _categorized(value):
+    """PTFI's category of a compound; "Uncategorized" is none."""
+    return None if str(value or '').strip() == 'Uncategorized' else plain(value)
+
+
+# PTFI's own categories of compounds: lipid classes ("Triacylglycerol (TG)")
+# beside broader chemical classes ("Flavonoids").
+CATEGORY = [Level('member_category', 'ptfi_compound_category', _categorized)]
 f_foodon = FieldConfig(
     transform={
         'foodon': lambda v: str(v).replace('FOODON_', 'FOODON:') if v else None
@@ -404,7 +423,8 @@ foods_schema = EntityBuilder(
         ),
         CV(term=Namespace.NAME, value=f('name')),
     ),
-    annotations=AnnotationsBuilder(),
+    # The number of samples of the specimen the measurements come from.
+    annotations=AnnotationsBuilder(CV(term='ptfi:num_samples', value=f('num_samples'))),
     membership=MembershipBuilder(
         MembersFromList(
             entity_type=ChemicalEntity,
@@ -415,7 +435,11 @@ foods_schema = EntityBuilder(
             entity_annotations=AnnotationsBuilder(
                 CV(term=slots.has_chemical_formula, value=f('member_formula'))
             ),
+            entity_associations=AssociationsBuilder(
+                *member_class_associations(CATEGORY, MEMBER_DELIMITER)
+            ),
             annotations=AnnotationsBuilder(
+                CV(term=slots.supporting_study_size, value=f('member_n_samples')),
                 CV(
                     term='PATO:0000033',
                     value=lambda row: [
@@ -544,6 +568,15 @@ resource = Resource(
         download=download_json,
         mapper=foods_schema,
         raw_parser=_download_and_parse,
+    ),
+    terms=Dataset(
+        download=download_json,
+        mapper=map_class_term,
+        raw_parser=lambda data_dir=None, max_records=None, **kwargs: iter_class_terms(
+            member_rows(_download_and_parse(data_dir, **kwargs), ['member_category']),
+            CATEGORY,
+            max_records=max_records,
+        ),
     ),
 )
 __all__ = ['config', 'resource', 'download_json', 'download_ptfi_data']

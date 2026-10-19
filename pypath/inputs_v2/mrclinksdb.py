@@ -22,12 +22,14 @@ from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
     EntityBuilder,
+    AssociationsBuilder,
     FieldConfig,
     IdentifiersBuilder,
     MembershipBuilder,
     MembersFromList,
     RelationBuilder,
 )
+from pypath.inputs_v2._class_terms import chemont_association, with_chemont
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.mrclinksdb import iter_mrclinksdb_interactions
 
@@ -104,6 +106,7 @@ def _iter_with_taxon(opener, *, taxon_id: str, **kwargs):
         yield row
 
 
+CLASSYFIRE_FIELDS = ('kingdom', 'super_class', 'class')
 metabolite_builder = EntityBuilder(
     entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
@@ -122,6 +125,9 @@ metabolite_builder = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term=slots.has_chemical_formula, value=f('molecular_formula'))
     ),
+    # The interaction files give the metabolite's ClassyFire kingdom, superclass
+    # and class: ChemOnt terms.
+    associations=AssociationsBuilder(chemont_association()),
 )
 single_receptor_builder = EntityBuilder(
     entity_type=Protein,
@@ -267,8 +273,11 @@ resource = Resource(
             ext='txt',
         ),
         mapper=interactions_schema,
-        raw_parser=lambda opener, **kwargs: _iter_with_taxon(
-            opener, taxon_id='9606', **kwargs
+        raw_parser=with_chemont(
+            lambda opener, **kwargs: _iter_with_taxon(
+                opener, taxon_id='9606', **kwargs
+            ),
+            CLASSYFIRE_FIELDS,
         ),
     ),
     mouse_interactions=Dataset(
@@ -279,8 +288,11 @@ resource = Resource(
             ext='txt',
         ),
         mapper=interactions_schema,
-        raw_parser=lambda opener, **kwargs: _iter_with_taxon(
-            opener, taxon_id='10090', **kwargs
+        raw_parser=with_chemont(
+            lambda opener, **kwargs: _iter_with_taxon(
+                opener, taxon_id='10090', **kwargs
+            ),
+            CLASSYFIRE_FIELDS,
         ),
     ),
     human_transporters=Dataset(

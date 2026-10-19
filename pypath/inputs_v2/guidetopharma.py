@@ -14,6 +14,7 @@ import re
 import numpy
 
 from biolink_model.datamodel.model import (
+    ApprovalStatusEnum,
     CausalMechanismQualifierEnum,
     ChemicalEntity,
     DirectionQualifierEnum,
@@ -23,6 +24,7 @@ from biolink_model.datamodel.model import (
     NucleicAcidEntity,
     Polypeptide,
     Protein,
+    ProteinFamily,
     RNAProduct,
     slots,
 )
@@ -32,9 +34,12 @@ from omnipath_core.resource_metadata import Content, KnowledgeOrigin, Topic
 from pypath.inputs_v2._measurements import measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from pypath.internals.silver_schema import Entity, Identifier, Membership
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
+    AssociationBuilder,
+    AssociationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
@@ -659,8 +664,92 @@ interactions_schema = RelationBuilder(
         CV(term=slots.in_taxon, value=f('Target Species', map='species_taxid')),
     ),
 )
+def _yes(value) -> str:
+    """The ligands file marks a property "yes"; an empty cell is no."""
+    return 'true' if str(value or '').strip().lower() == 'yes' else 'false'
+
+
+# A ligand as an entity of its own, with the properties the ligands file gives
+# it: approved for clinical use somewhere, withdrawn from the market,
+# isotopically labelled, radioactive, an antibacterial. The interactions
+# carry the ligand without them.
+ligand_entities_schema = EntityBuilder(
+    entity_type=_guidetopharma_ligand_entity_type,
+    identifiers=ligands_schema.identifiers,
+    annotations=AnnotationsBuilder(
+        CV(term=slots.in_taxon, value=_guidetopharma_ligand_taxon_id),
+        CV(term='guidetopharma:approved', value=lambda row: _yes(row.get('Approved'))),
+        CV(term='guidetopharma:labelled', value=lambda row: _yes(row.get('Labelled'))),
+        CV(term='guidetopharma:radioactive', value=lambda row: _yes(row.get('Radioactive'))),
+        CV(
+            term=slots.drug_regulatory_status_world_wide,
+            value=lambda row: ApprovalStatusEnum.post_approval_withdrawal.text
+            if _yes(row.get('Withdrawn')) == 'true'
+            else None,
+        ),
+    ),
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            predicate=slots.has_chemical_role,
+            object_entity_type=ChemicalEntity,
+            object_identifier_type=Namespace.CHEBI,
+            # ChEBI's role "antibacterial agent".
+            object_identifier=lambda row: 'CHEBI:33282'
+            if _yes(row.get('Antibacterial')) == 'true'
+            else None,
+        ),
+    ),
+)
+
+FAMILY_NAMESPACE = 'guidetopharma_family'
+
+
+def _iter_families(opener, max_records: int | None = None, **_kwargs: object):
+    """The targets of each family of the targets file."""
+    families: dict[str, dict] = {}
+    for row in _iter_guidetopharma_csv(opener):
+        family_id = (row.get('Family id') or '').strip()
+        if not family_id:
+            continue
+        family = families.setdefault(
+            family_id,
+            {'id': family_id, 'name': (row.get('Family name') or '').strip(), 'targets': []},
+        )
+        family['targets'].append(row)
+    for count, family in enumerate(families.values()):
+        if max_records is not None and count >= max_records:
+            return
+        yield family
+
+
+def map_family(family: dict) -> Entity:
+    """A target family with its targets as members."""
+    identifiers = [Identifier(type=FAMILY_NAMESPACE, value=family['id'])]
+    if family['name']:
+        identifiers.append(Identifier(type=Namespace.NAME, value=family['name']))
+    return Entity(
+        type=ProteinFamily,
+        identifiers=identifiers,
+        membership=[
+            Membership(member=member)
+            for row in family['targets']
+            if (member := targets_schema.build(row)) is not None
+        ],
+    )
+
+
 resource = Resource(
     config,
+    ligands=Dataset(
+        download=_ligands_download,
+        mapper=ligand_entities_schema,
+        raw_parser=_iter_guidetopharma_csv,
+    ),
+    families=Dataset(
+        download=_targets_download,
+        mapper=map_family,
+        raw_parser=_iter_families,
+    ),
     interactions=Dataset(
         download=_interactions_download,
         mapper=interactions_schema,

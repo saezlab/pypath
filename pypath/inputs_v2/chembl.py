@@ -15,6 +15,7 @@ import re
 
 from biolink_model.datamodel.model import (
     AnatomicalEntity,
+    ApprovalStatusEnum,
     Cell,
     CellLine,
     ChemicalEntity,
@@ -171,6 +172,26 @@ def _target_component_values(row: dict[str, object], key: str) -> list[str]:
     return _split_chembl_list(row.get(key))
 
 
+def _flag(value):
+    """ChEMBL's flags: 1 yes, 0 no, -1 not determined (left out)."""
+    text = str(value if value is not None else '').strip()
+    return {'1': 'true', '1.0': 'true', '0': 'false', '0.0': 'false'}.get(text)
+
+
+def _number(value):
+    """A number as ChEMBL states it, integral values without decimals."""
+    if value is None or str(value).strip() == '':
+        return None
+    number = float(value)
+    return str(int(number)) if number.is_integer() else str(number)
+
+
+# The molecule's flags as ChEMBL defines them (polymer: a small-molecule
+# polymer; inorganic: metal atoms and fewer than two carbons), which are not
+# ChEBI's classes of the same names.
+MOLECULE_FLAGS = ('therapeutic_flag', 'polymer_flag', 'inorganic_flag', 'natural_product')
+
+
 def _molecule_entity_type(row):
     # Structurally specified molecule records use chemical identity, including
     # peptide drugs. Biological target records retain TARGET_TYPE_MAP.
@@ -189,7 +210,24 @@ molecules_schema = EntityBuilder(
         CV(term=Namespace.NAME, value=f('pref_name')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term='chemrof:mass', value=f('full_mwt'))
+        CV(term='chemrof:mass', value=f('full_mwt')),
+        # Withdrawn in at least one country.
+        CV(
+            term=slots.drug_regulatory_status_world_wide,
+            value=lambda row: ApprovalStatusEnum.post_approval_withdrawal.text
+            if _flag(row.get('withdrawn_flag')) == 'true'
+            else None,
+        ),
+        # 4 approved, 3 to 1 the clinical phase, 0.5 early phase 1, -1 clinical
+        # with the phase unknown. Biolink's max_research_phase is for a
+        # chemical and a disease.
+        CV(term='chembl:max_phase', value=lambda row: _number(row.get('max_phase'))),
+        *(
+            CV(term=f'chembl:{flag}', value=lambda row, flag=flag: _flag(row.get(flag)))
+            for flag in MOLECULE_FLAGS
+        ),
+        # Calculated (Pipeline Pilot), not measured.
+        CV(term='chembl:alogp', value=lambda row: _number(row.get('alogp'))),
     ),
 )
 _legacy_targets_schema = EntityBuilder(

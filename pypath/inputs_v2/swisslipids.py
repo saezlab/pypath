@@ -7,6 +7,8 @@ the schema defined in pypath.internals.silver_schema.
 
 from __future__ import annotations
 
+import re
+
 from biolink_model.datamodel.model import ChemicalEntity, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
@@ -19,7 +21,7 @@ from pypath.internals.cv_terms import (
     ResourceCv,
     UpdateCategoryCV,
 )
-from pypath.internals.silver_schema import EntityRef, OntologyRelation
+from pypath.internals.silver_schema import Annotation, EntityRef, OntologyRelation
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
@@ -77,6 +79,8 @@ lipids_schema = EntityBuilder(
             term='chemrof:monoisotopic_mass',
             value=f('Exact Mass (neutral form)'),
         ),
+        # Category, Class, Species, Molecular, Structural or Isomeric subspecies.
+        CV(term='swisslipids:level', value=f('Level')),
         CV(
             term=slots.publications,
             value=f(
@@ -98,21 +102,54 @@ def _swisslipids_identifier(value: object) -> str | None:
 
 
 def _ontology_relations(row: dict) -> list[OntologyRelation]:
-    parent_id = _swisslipids_identifier(row.get('Parent'))
+    """The lipid below its parent and its class, and its components.
+
+    The class of a species is usually several levels above its parent, and the
+    file states it: it is a ``subclass_of`` of its own. A component is written
+    ``SLM:000000418 (sn2)``, several separated by `` / ``; the position is an
+    attribute of the ``has_part``.
+    """
     lipid_id = _swisslipids_identifier(row.get('Lipid ID'))
-    if not parent_id or parent_id == lipid_id:
-        return []
-    return [
-        OntologyRelation(
-            predicate=slots.subclass_of,
-            object=EntityRef(
-                type=ChemicalEntity,
-                identifier_type=Namespace.SWISSLIPIDS,
-                identifier=parent_id,
-            ),
-            ontology_id='swisslipids',
+    relations = []
+    above = []
+    for field in ('Parent', 'Lipid class*'):
+        above_id = _swisslipids_identifier(row.get(field))
+        if above_id and above_id != lipid_id and above_id not in above:
+            above.append(above_id)
+    for above_id in above:
+        relations.append(
+            OntologyRelation(
+                predicate=slots.subclass_of,
+                object=EntityRef(
+                    type=ChemicalEntity,
+                    identifier_type=Namespace.SWISSLIPIDS,
+                    identifier=above_id,
+                ),
+                ontology_id='swisslipids',
+            )
         )
-    ]
+    for component in str(row.get('Components*') or '').split(' / '):
+        match = _COMPONENT.match(component.strip())
+        if not match or match['id'] == lipid_id:
+            continue
+        relations.append(
+            OntologyRelation(
+                predicate=slots.has_part,
+                object=EntityRef(
+                    type=ChemicalEntity,
+                    identifier_type=Namespace.SWISSLIPIDS,
+                    identifier=match['id'],
+                ),
+                ontology_id='swisslipids',
+                annotations=[Annotation(term='swisslipids:position', value=match['position'])]
+                if match['position']
+                else None,
+            )
+        )
+    return relations
+
+
+_COMPONENT = re.compile(r'^(?P<id>SLM:\d+)(?:\s*\((?P<position>[^)]*)\))?$')
 
 
 download = Download(

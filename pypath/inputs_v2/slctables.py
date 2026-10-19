@@ -28,6 +28,7 @@ from pypath.internals.tabular_builder import (
     IdentifiersBuilder,
 )
 from pypath.internals.cv_terms import LicenseCV, UpdateCategoryCV, ResourceCv
+from pypath.internals.silver_schema import Entity, Identifier, Membership
 
 # =================================== SET-UP ===================================
 
@@ -173,9 +174,53 @@ schema = EntityBuilder(
         CV(term=Namespace.SYNONYM, value=f('Aliases', delimiter=', ')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.in_taxon, value='NCBITaxon:9606')
+        CV(term=slots.in_taxon, value='NCBITaxon:9606'),
+        # The tables write these as prose, with separators that differ from
+        # table to table: kept as written, not split into chemical or
+        # anatomical entities.
+        CV(term='slctables:transport_type', value=lambda row: _text(row, 'Transport type*')),
+        CV(term='slctables:substrates', value=lambda row: _text(row, 'Substrates')),
+        CV(
+            term='slctables:tissue_expression',
+            value=lambda row: _text(row, 'Tissue and cellular expression'),
+        ),
     ),
 )
+
+
+def _text(row: dict, field: str) -> str | None:
+    value = ' '.join(str(row.get(field) or '').split())
+    return value or None
+
+
+FAMILY_NAMESPACE = 'slctables_family'
+
+
+def _iter_families(opener, max_records=None, **kwargs):
+    """Each SLC family (SLC1, SLC2, ...) with the rows of its table."""
+    families: dict[str, list[dict]] = {}
+    for row in parser(opener, **kwargs):
+        families.setdefault(row['SLC_family'], []).append(row)
+    for count, (family, rows) in enumerate(families.items()):
+        if max_records is not None and count >= max_records:
+            return
+        yield {'family': family, 'rows': rows}
+
+
+def map_family(family: dict) -> Entity:
+    """An SLC family with its transporters as members."""
+    return Entity(
+        type=model.ProteinFamily,
+        identifiers=[
+            Identifier(type=FAMILY_NAMESPACE, value=family['family']),
+            Identifier(type=Namespace.NAME, value=family['family']),
+        ],
+        membership=[
+            Membership(member=member)
+            for row in family['rows']
+            if (member := schema.build(row)) is not None
+        ],
+    )
 
 # ================================= RESOURCE ===================================
 
@@ -185,6 +230,11 @@ resource = Resource(
         download=download,
         mapper=schema,
         raw_parser=parser,
+    ),
+    families=Dataset(
+        download=download,
+        mapper=map_family,
+        raw_parser=_iter_families,
     ),
 )
 

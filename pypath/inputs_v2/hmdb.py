@@ -18,6 +18,7 @@ from biolink_model.datamodel.model import ChemicalEntity, OntologyClass, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
+from pypath.inputs_v2._class_terms import chemont_download
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.hmdb import _raw, chemont_name_map, iter_terms
 from pypath.internals.silver_schema import Entity, Identifier
@@ -260,16 +261,6 @@ download = Download(
     ext='.zip',
     default_mode='rb',
 )
-chemont_download = Download(
-    url='http://classyfire.wishartlab.com/system/downloads/1_0/chemont/ChemOnt_2_1.obo.zip',
-    filename='ChemOnt_2_1.obo.zip',
-    subfolder='chemont',
-    large=True,
-    ext='zip',
-    needed=['ChemOnt_2_1.obo'],
-)
-
-
 def _raw_with_ontology_maps(opener, force_refresh: bool = False, **kwargs):
     chemont_map = chemont_name_map(
         chemont_download.open(force_refresh=force_refresh)

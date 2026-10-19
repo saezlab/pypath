@@ -31,6 +31,7 @@ from pypath.internals.tabular_builder import (
 )
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.corum import _raw
+from pypath.internals.silver_schema import Entity, Identifier
 
 
 config = ResourceConfig(
@@ -69,6 +70,36 @@ f = FieldConfig(
     },
 )
 
+FUNCAT_NAMESPACE = 'funcat'
+
+
+def _funcat(row: dict) -> list[tuple[str, str]]:
+    """FunCat IDs with their descriptions, both ';'-separated in the same order."""
+    ids = [v.strip() for v in str(row.get('FunCat ID') or '').split(';')]
+    names = [v.strip() for v in str(row.get('FunCat description') or '').split(';')]
+    if len(names) != len(ids):
+        names = [''] * len(ids)
+    return [(i, n) for i, n in zip(ids, names) if i and i != 'None']
+
+
+def _iter_funcat(opener, max_records=None, **kwargs):
+    seen = set()
+    for row in _raw(opener, **kwargs):
+        for term in _funcat(row):
+            if term[0] not in seen:
+                seen.add(term[0])
+                yield {'id': term[0], 'name': term[1]}
+                if max_records is not None and len(seen) >= max_records:
+                    return
+
+
+def map_funcat(row: dict) -> Entity:
+    identifiers = [Identifier(type=FUNCAT_NAMESPACE, value=row['id'])]
+    if row['name']:
+        identifiers.append(Identifier(type=Namespace.NAME, value=row['name']))
+    return Entity(type=model.OntologyClass, identifiers=identifiers)
+
+
 complexes_schema = EntityBuilder(
     entity_type=model.MacromolecularComplex,
     identifiers=IdentifiersBuilder(
@@ -93,7 +124,15 @@ complexes_schema = EntityBuilder(
             object_entity_type=model.OntologyClass,
             object_identifier_type=Namespace.GO,
             object_identifier=f('GO ID', delimiter=';'),
-        )
+        ),
+        # The complex's MIPS FunCat categories ("10.01.09.05"); the terms
+        # dataset names them from the descriptions beside the IDs.
+        AssociationBuilder(
+            predicate=slots.associated_with,
+            object_entity_type=model.OntologyClass,
+            object_identifier_type=FUNCAT_NAMESPACE,
+            object_identifier=lambda row: [i for i, _ in _funcat(row)],
+        ),
     ),
     membership=MembershipBuilder(
         MembersFromList(
@@ -126,17 +165,23 @@ complexes_schema = EntityBuilder(
     ),
 )
 
+_download = Download(
+    url='https://rescued.omnipathdb.org/CORUM_allComplexes.txt.zip',
+    filename='CORUM_allComplexes.txt.zip',
+    subfolder='corum',
+    large=True,
+    ext='zip',
+)
 resource = Resource(
     config,
     complexes=Dataset(
-        download=Download(
-            url='https://rescued.omnipathdb.org/CORUM_allComplexes.txt.zip',
-            filename='CORUM_allComplexes.txt.zip',
-            subfolder='corum',
-            large=True,
-            ext='zip',
-        ),
+        download=_download,
         mapper=complexes_schema,
         raw_parser=_raw,
+    ),
+    terms=Dataset(
+        download=_download,
+        mapper=map_funcat,
+        raw_parser=_iter_funcat,
     ),
 )

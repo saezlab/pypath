@@ -22,6 +22,14 @@ from biolink_model.datamodel.model import (
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
+from pypath.inputs_v2._class_terms import (
+    Level,
+    chemont_association,
+    class_associations,
+    iter_class_terms,
+    map_class_term,
+    with_chemont,
+)
 from pypath.inputs_v2._measurements import measurement as _measurement
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.foodb import MEMBER_DELIMITER, _raw
@@ -29,6 +37,7 @@ from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
+    AssociationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
@@ -83,6 +92,12 @@ def _unit(unit):
     return re.sub(r'(\d)\s+g\b', r'\1g', unit.strip()) if isinstance(unit, str) else unit
 
 
+FOOD_LEVELS = [
+    Level('food_group', 'foodb_food_group'),
+    Level('food_subgroup', 'foodb_food_subgroup'),
+]
+# The ClassyFire classification of a compound: ChemOnt terms.
+CLASSYFIRE_FIELDS = ('kingdom', 'superklass', 'klass', 'subklass')
 foods_schema = EntityBuilder(
     entity_type=Food,
     identifiers=IdentifiersBuilder(
@@ -102,6 +117,7 @@ foods_schema = EntityBuilder(
         ),
         CV(term=slots.description, value=f('description')),
     ),
+    associations=AssociationsBuilder(*class_associations(FOOD_LEVELS)),
     membership=MembershipBuilder(
         MembersFromList(
             entity_type=ChemicalEntity,
@@ -145,16 +161,25 @@ compounds_schema = EntityBuilder(
     annotations=AnnotationsBuilder(
         CV(term='chemrof:monoisotopic_mass', value=f('moldb_mono_mass'))
     ),
+    associations=AssociationsBuilder(chemont_association()),
 )
 resource = Resource(
     config,
     compounds=Dataset(
         download=download_csv,
         mapper=compounds_schema,
-        raw_parser=lambda opener, **kwargs: _raw(
-            opener, data_type='compounds', **kwargs
+        raw_parser=with_chemont(
+            lambda opener, **kwargs: _raw(opener, data_type='compounds', **kwargs),
+            CLASSYFIRE_FIELDS,
         ),
     ),
     foods=Dataset(download=download_csv, mapper=foods_schema, raw_parser=_raw),
+    terms=Dataset(
+        download=download_csv,
+        mapper=map_class_term,
+        raw_parser=lambda opener, max_records=None, **kwargs: iter_class_terms(
+            _raw(opener, **kwargs), FOOD_LEVELS, max_records=max_records
+        ),
+    ),
 )
 __all__ = ['config', 'resource', 'download_csv']

@@ -12,12 +12,20 @@ from biolink_model.datamodel.model import ChemicalEntity, slots
 from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 
+from pypath.inputs_v2._class_terms import (
+    Level,
+    class_associations,
+    coded,
+    iter_class_terms,
+    map_class_term,
+)
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.lipidmaps import _raw
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
+    AssociationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
@@ -40,6 +48,15 @@ f = FieldConfig(
     extract={'chebi': '^(?:CHEBI:)?(\\d+)$', 'hmdb': '^(HMDB\\d{5,8})$'},
     transform={'hmdb': lambda v: v.upper() if v else None},
 )
+# The LIPID MAPS classification, written "Fatty Acyls [FA]", "Fatty Acids and
+# Conjugates [FA01]", "Straight chain fatty acids [FA0101]": the codes are
+# unique across the levels, so the levels share one namespace.
+CLASS_NAMESPACE = 'lipidmaps_class'
+CLASS_LEVELS = [
+    Level('CATEGORY', CLASS_NAMESPACE, coded),
+    Level('MAIN_CLASS', CLASS_NAMESPACE, coded),
+    Level('SUB_CLASS', CLASS_NAMESPACE, coded),
+]
 lipids_schema = EntityBuilder(
     entity_type=ChemicalEntity,
     identifiers=IdentifiersBuilder(
@@ -63,6 +80,7 @@ lipids_schema = EntityBuilder(
         CV(term=slots.has_chemical_formula, value=f('FORMULA')),
         CV(term='chemrof:monoisotopic_mass', value=f('EXACT_MASS')),
     ),
+    associations=AssociationsBuilder(*class_associations(CLASS_LEVELS)),
 )
 download = Download(
     url='https://lipidmaps.org/files/?file=LMSD&ext=sdf.zip',
@@ -90,6 +108,13 @@ def _id_translation_row(row: dict) -> dict | None:
 resource = Resource(
     config,
     lipids=Dataset(download=download, mapper=lipids_schema, raw_parser=_raw),
+    terms=Dataset(
+        download=download,
+        mapper=map_class_term,
+        raw_parser=lambda opener, max_records=None, **kwargs: iter_class_terms(
+            _raw(opener, **kwargs), CLASS_LEVELS, max_records=max_records
+        ),
+    ),
     id_translation=Dataset(
         download=download,
         mapper=lambda row: row,

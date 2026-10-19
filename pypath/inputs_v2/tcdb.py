@@ -28,6 +28,7 @@ from pypath.inputs_v2.parsers.protein_ids import accession_namespace as _accessi
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers import tcdb as _parsers
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
+from pypath.internals.silver_schema import Entity, Identifier, Membership
 from pypath.internals.tabular_builder import (
     AnnotationsBuilder,
     CV,
@@ -105,6 +106,56 @@ _transport_schema = RelationBuilder(
 )
 
 
+_families_download = Download(
+    url='http://www.tcdb.org/cgi-bin/projectv/public/families.py',
+    filename='tcdb_families.html',
+    subfolder='tcdb',
+    ext='html',
+)
+FAMILY_NAMESPACE = 'tcdb_family'
+
+
+def _iter_families(opener, max_records: int | None = None, force_refresh: bool = False, **_kwargs):
+    """Each family of families.py (a TC prefix such as ``2.A.1`` and its
+    name) with the proteins whose TC numbers are in it."""
+    if not opener or not opener.result:
+        return
+    families_opener = _families_download.open(force_refresh=force_refresh)
+    if not families_opener or not families_opener.result:
+        return
+    names = _parsers._parse_families(families_opener.result)
+    members: dict[str, list[str]] = {}
+    for tcid, uniprots in _parsers._build_tcid_to_uniprots(opener.result).items():
+        prefix = _parsers._family_prefix(tcid)
+        if prefix:
+            members.setdefault(prefix, []).extend(uniprots)
+    for count, (prefix, uniprots) in enumerate(sorted(members.items())):
+        if max_records is not None and count >= max_records:
+            return
+        yield {'id': prefix, 'name': names.get(prefix, ''), 'members': sorted(set(uniprots))}
+
+
+def map_family(row: dict) -> Entity:
+    """A transporter family with its proteins as members."""
+    identifiers = [Identifier(type=FAMILY_NAMESPACE, value=row['id'])]
+    if row['name']:
+        identifiers.append(Identifier(type=Namespace.NAME, value=row['name']))
+    return Entity(
+        type=model.ProteinFamily,
+        identifiers=identifiers,
+        membership=[
+            Membership(
+                member=Entity(
+                    type=model.Protein,
+                    identifiers=[Identifier(type=namespace, value=accession)],
+                )
+            )
+            for accession in row['members']
+            if (namespace := _accession_namespace(accession))
+        ],
+    )
+
+
 resource = Resource(
     config,
     transporters=Dataset(
@@ -119,13 +170,13 @@ resource = Resource(
         mapper=_transporters_schema,
         raw_parser=functools.partial(
             _parsers.transporters,
-            families_download=Download(
-                url='http://www.tcdb.org/cgi-bin/projectv/public/families.py',
-                filename='tcdb_families.html',
-                subfolder='tcdb',
-                ext='html',
-            ),
+            families_download=_families_download,
         ),
+    ),
+    families=Dataset(
+        download=_acc2tc,
+        mapper=map_family,
+        raw_parser=_iter_families,
     ),
     transports=Dataset(
         download=Download(

@@ -18,12 +18,22 @@ from omnipath_core.naming import Namespace
 from omnipath_core.resource_metadata import Content, Topic
 import requests
 
+from pypath.inputs_v2._class_terms import (
+    Level,
+    chemont_association,
+    class_associations,
+    coded,
+    iter_class_terms,
+    map_class_term,
+    with_chemont,
+)
 from pypath.inputs_v2.base import Dataset, Download, Resource, ResourceConfig
 from pypath.inputs_v2.parsers.base import iter_sqlite
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
 from pypath.internals.tabular_builder import (
     CV,
     AnnotationsBuilder,
+    AssociationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
@@ -136,6 +146,31 @@ analyte_schema = EntityBuilder(
     ),
     annotations=AnnotationsBuilder(),
 )
+# A row of metabolite_class is one level of a compound's classification:
+# ClassyFire (super class, class, sub class), whose names are ChemOnt terms, or
+# LIPID MAPS ("Fatty Acyls [FA]"), the codes LIPID MAPS itself uses.
+LIPIDMAPS_CLASS = [Level('lipidmaps_class', 'lipidmaps_class', coded)]
+
+
+def _class_rows(rows):
+    for row in rows:
+        level = str(row.get('class_level_name') or '')
+        if level.startswith('ClassyFire_'):
+            row['classyfire_class'] = row.get('class_name')
+        elif level.startswith('LipidMaps_'):
+            row['lipidmaps_class'] = row.get('class_name')
+        yield row
+
+
+def _class_parser(opener, **kwargs):
+    yield from _class_rows(parser(opener, table='metabolite_class', **kwargs))
+
+
+def _no_status(value):
+    """HMDB's status of a compound; RaMP writes "no_HMDB_status" for none."""
+    return None if not value or value == 'no_HMDB_status' else value
+
+
 metabolite_class_schema = EntityBuilder(
     entity_type=f('source', map='source_to_entity'),
     identifiers=IdentifiersBuilder(
@@ -146,6 +181,10 @@ metabolite_class_schema = EntityBuilder(
         ),
     ),
     annotations=AnnotationsBuilder(),
+    associations=AssociationsBuilder(
+        chemont_association(),
+        *class_associations(LIPIDMAPS_CLASS),
+    ),
 )
 source_schema = EntityBuilder(
     entity_type=f('geneOrCompound', map='type_to_entity'),
@@ -157,7 +196,10 @@ source_schema = EntityBuilder(
         ),
         CV(term=Namespace.NAME, value=f('commonName')),
     ),
-    annotations=AnnotationsBuilder(),
+    # HMDB's status of the compound (detected, quantified, expected, predicted).
+    annotations=AnnotationsBuilder(
+        CV(term='rampdb:priority_hmdb_status', value=lambda row: _no_status(row.get('priorityHMDBStatus'))),
+    ),
 )
 chem_props_schema = EntityBuilder(
     entity_type=ChemicalEntity,
@@ -232,4 +274,17 @@ kwargs = {
     )
     for t in table_names
 }
+kwargs['metabolite_class'] = Dataset(
+    download=download,
+    mapper=metabolite_class_schema,
+    raw_parser=with_chemont(_class_parser, ['classyfire_class']),
+)
+# The LIPID MAPS classes by name; their hierarchy is in LIPID MAPS' own terms.
+kwargs['terms'] = Dataset(
+    download=download,
+    mapper=map_class_term,
+    raw_parser=lambda opener, max_records=None, **kw: iter_class_terms(
+        _class_parser(opener, **kw), LIPIDMAPS_CLASS, max_records=max_records
+    ),
+)
 resource = Resource(config=config, **kwargs)

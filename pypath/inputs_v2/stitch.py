@@ -152,6 +152,12 @@ interactions_schema = RelationBuilder(
     annotations=AnnotationsBuilder(
         CV(term=slots.object_direction_qualifier, value=stitch_direction),
         CV(term=slots.causal_mechanism_qualifier, value=lambda row: 'binding' if row.get('mode') == 'binding' else None),
+        # Whether the chemical is the stereoisomer itself (STITCH "CIDs")
+        # rather than the merged stereoisomers ("CIDm").
+        CV(
+            term='stitch:stereospecific',
+            value=lambda row: {'True': 'true', 'False': 'false'}.get(str(row.get('stereospecific'))),
+        ),
         CV(
             term=slots.has_confidence_score,
             value=f(
