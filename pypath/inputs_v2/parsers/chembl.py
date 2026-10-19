@@ -433,6 +433,8 @@ def _duckdb_cache_compatible(duckdb_path: Path) -> bool:
             con.execute('SELECT variant_id FROM assays LIMIT 0')
             con.execute('SELECT sequence FROM component_sequences LIMIT 0')
             con.execute('SELECT mutation, accession, version, isoform, sequence FROM variant_sequences LIMIT 0')
+            con.execute('SELECT tissue_id FROM assays LIMIT 0')
+            con.execute('SELECT uberon_id FROM tissue_dictionary LIMIT 0')
         return True
     except duckdb.Error:
         return False
