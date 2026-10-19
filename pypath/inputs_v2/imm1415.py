@@ -7,15 +7,19 @@ records using the declarative schema pattern.
 
 import json
 from pypath.inputs_v2.base import ResourceConfig, Download, Resource, Dataset
+from pypath.inputs_v2._source_context import compartment_name
 from pypath.internals.tabular_builder import (
     CV,
+    AssociationBuilder,
+    AssociationsBuilder,
     EntityBuilder,
     FieldConfig,
     IdentifiersBuilder,
 )
 from pypath.internals.cv_terms import LicenseCV, ResourceCv, UpdateCategoryCV
-from biolink_model.datamodel.model import ChemicalEntity
+from biolink_model.datamodel.model import ChemicalEntity, OntologyClass, slots
 from omnipath_core.naming import Namespace
+from omnipath_core.reactions import go_compartment
 from omnipath_core.resource_metadata import Content, Topic
 
 URL = 'http://bigg.ucsd.edu/static/models/iMM1415.json'
@@ -37,6 +41,7 @@ def parser(opener, **kwargs):
     def process_metabolite(metabolite):
         proc = {k: metabolite.get(k, '') for k in ('id', 'name')}
         proc['compartment'] = comps.get(metabolite.get('compartment'), '')
+        proc['compartment_code'] = metabolite.get('compartment') or ''
         proc.update(
             {
                 k: (metabolite.get('annotation') or {}).get(k, [])
@@ -89,6 +94,19 @@ schema = EntityBuilder(
         CV(term=Namespace.NAME, value=f('name')),
     ),
     # No annotations: every metabolite has the SBO term of a simple chemical.
+    # A metabolite of the model is located in its compartment. The model names
+    # its compartments in its own way ("mitochondria", "peroxisome/glyoxysome");
+    # the codes are those of Recon3D and Human-GEM, so they take the same GO terms.
+    associations=AssociationsBuilder(
+        AssociationBuilder(
+            predicate=slots.located_in,
+            object_entity_type=OntologyClass,
+            object_identifier_type=Namespace.GO,
+            object_identifier=lambda row: go_compartment(
+                compartment_name(row.get('compartment_code'))
+            ),
+        ),
+    ),
 )
 resource = Resource(
     config=config,

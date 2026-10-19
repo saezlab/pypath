@@ -117,10 +117,12 @@ def _raw(
             'cas_registry_number': get_from_path(elem, 'cas_registry_number'),
             'description': get_from_path(elem, 'description'),
             'pubmed_ids': get_from_path(elem, 'general_references', 'reference', 'pubmed_id'),
-            'diseases': get_from_path(elem, 'diseases', 'disease', 'name'),
-            'cellular_locations': get_from_path(elem, 'biological_properties', 'cellular_locations', 'cellular'),
-            'tissue_locations': get_from_path(elem, 'biological_properties', 'tissue_locations', 'tissue'),
-            'biospecimen_locations': get_from_path(elem, 'biological_properties', 'biospecimen_locations', 'biospecimen'),
+            # Lists, not joined text: disease names contain semicolons.
+            'diseases': _texts(elem, xmlns, 'diseases', 'disease', 'name'),
+            'disease_omim_ids': _disease_omim_ids(elem, xmlns),
+            'cellular_locations': _texts(elem, xmlns, 'biological_properties', 'cellular_locations', 'cellular'),
+            'tissue_locations': _texts(elem, xmlns, 'biological_properties', 'tissue_locations', 'tissue'),
+            'biospecimen_locations': _texts(elem, xmlns, 'biological_properties', 'biospecimen_locations', 'biospecimen'),
             'chemont_ids': _mapped_ids(taxonomy_association_terms, chemont_name_map),
             'chemont_annotation_ids': _mapped_ids(taxonomy_terms, chemont_name_map),
         }
@@ -132,6 +134,50 @@ def _raw(
             del elem.getparent()[0]
 
     del context
+
+
+def iter_terms(opener, max_records: int | None = None, **kwargs: object):
+    """The locations, biospecimens and diseases HMDB names, each once.
+
+    Rows: ``field`` (``cellular_locations``, ``tissue_locations``,
+    ``biospecimen_locations`` or ``diseases``), ``name`` and, for a disease,
+    the OMIM number HMDB gives with it.
+    """
+    seen = set()
+    for row in _raw(opener, **kwargs):
+        for field in (
+            'cellular_locations',
+            'tissue_locations',
+            'biospecimen_locations',
+            'diseases',
+        ):
+            for name in row[field]:
+                if (field, name) in seen:
+                    continue
+                seen.add((field, name))
+                yield {
+                    'field': field,
+                    'name': name,
+                    'omim': row['disease_omim_ids'].get(name) if field == 'diseases' else None,
+                }
+                if max_records is not None and len(seen) >= max_records:
+                    return
+
+
+def _texts(elem: etree._Element, xmlns: str, *path: str) -> list[str]:
+    found = elem.findall('/'.join(f'{xmlns}{tag}' for tag in path))
+    return _dedupe([_clean_text(e.text) for e in found])
+
+
+def _disease_omim_ids(elem: etree._Element, xmlns: str) -> dict[str, str]:
+    """The OMIM number of each disease that has one, by disease name."""
+    ids = {}
+    for disease in elem.findall(f'{xmlns}diseases/{xmlns}disease'):
+        name = _child_text(disease, xmlns, 'name')
+        omim = _child_text(disease, xmlns, 'omim_id')
+        if name and omim:
+            ids[name] = omim
+    return ids
 
 
 def chemont_name_map(opener) -> dict[str, list[str]]:

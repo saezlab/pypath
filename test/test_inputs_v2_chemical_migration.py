@@ -87,7 +87,7 @@ def project(module, mapper, row):
                 'name': 'metabolite',
                 'chemont_ids': 'CHEMONTID:0000001',
                 'pubmed_ids': '123',
-                'cellular_locations': 'Cytoplasm',
+                'cellular_locations': ['Cytoplasm'],
             },
         ),
         (
@@ -247,17 +247,52 @@ def test_ramp_pathway_id_is_a_distinct_endpoint():
     assert ex.relations[0].predicate == 'participates_in'
 
 
-def test_hmdb_locations_are_not_inferred_graph_links():
+def _objects(ex):
+    return {
+        (r.predicate, str(i['ns']), i['id'])
+        for r in ex.relations
+        for i in ex.entities[r.object_entity_key].identifiers[:1]
+    }
+
+
+def test_hmdb_locations_are_stated_locations_and_diseases_associations():
     ex = project(
         'hmdb',
         'metabolites_schema',
         {
             'accession': 'HMDB0000001',
-            'cellular_locations': 'Cytoplasm',
-            'diseases': 'Cancer',
+            'cellular_locations': ['Cytoplasm', 'Microsomes'],
+            'tissue_locations': ['Liver', 'Neuron', 'All Tissues'],
+            'biospecimen_locations': ['Blood', 'Breath'],
+            'diseases': ['Carnitine transporter defect; primary systemic carnitine deficiency'],
         },
     )
-    assert not ex.relations
+    assert _objects(ex) == {
+        ('located_in', 'go', 'GO:0005737'),
+        ('located_in', 'hmdb_cellular_location', 'Microsomes'),
+        ('located_in', 'uberon', 'UBERON:0002107'),
+        ('located_in', 'cl', 'CL:0000540'),
+        ('located_in', 'hmdb_tissue', 'All Tissues'),
+        ('located_in', 'uberon', 'UBERON:0000178'),
+        ('located_in', 'hmdb_biospecimen', 'Breath'),
+        (
+            'associated_with',
+            'hmdb_disease',
+            'Carnitine transporter defect; primary systemic carnitine deficiency',
+        ),
+    }
+
+
+def test_hmdb_terms_name_only_unmapped_locations_and_keep_omim():
+    from pypath.inputs_v2 import hmdb
+
+    assert hmdb.map_term({'field': 'tissue_locations', 'name': 'Liver'}) is None
+    disease = hmdb.map_term({'field': 'diseases', 'name': 'Obesity', 'omim': '601665'})
+    assert [(str(i.type), i.value) for i in disease.identifiers] == [
+        ('hmdb_disease', 'Obesity'),
+        ('omim', '601665'),
+        ('name', 'Obesity'),
+    ]
 
 
 def test_bindingdb_multichain_target_is_not_chain_one():
@@ -585,3 +620,17 @@ def test_chembl_sample_does_not_materialize_full_prepared_cache(monkeypatch):
     rows = list(chembl._iter_chembl_prepared('activities', None, sqlite_path='source.db', max_records=10))
     assert rows == [{'standard_value': 0.5, 'standard_units': 'nM'}]
     assert calls[0].endswith('LIMIT 10')
+
+
+def test_imm1415_metabolite_is_located_in_its_compartment():
+    ex = project(
+        'imm1415',
+        'schema',
+        {
+            'name': 'D-Glucose',
+            'compartment': 'peroxisome/glyoxysome',
+            'compartment_code': 'x',
+            'bigg.metabolite': ['glc__D'],
+        },
+    )
+    assert _objects(ex) == {('located_in', 'go', 'GO:0005777')}
