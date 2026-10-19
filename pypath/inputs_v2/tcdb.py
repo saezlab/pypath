@@ -128,7 +128,7 @@ def _iter_families(opener, max_records: int | None = None, force_refresh: bool =
     for tcid, uniprots in _parsers._build_tcid_to_uniprots(opener.result).items():
         prefix = _parsers._family_prefix(tcid)
         if prefix:
-            members.setdefault(prefix, []).extend(uniprots)
+            members.setdefault(prefix, []).extend(u.strip() for u in uniprots if u.strip())
     for count, (prefix, uniprots) in enumerate(sorted(members.items())):
         if max_records is not None and count >= max_records:
             return

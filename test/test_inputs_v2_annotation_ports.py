@@ -499,3 +499,17 @@ def test_bindingdb_patent_and_curation_source():
         ('bindingdb:patent_number', 'US1234567'),
         ('supporting_data_source', 'US Patent'),
     }
+
+
+def test_tcdb_families_skip_rows_without_an_accession(monkeypatch):
+    import io
+    from types import SimpleNamespace
+
+    from pypath.inputs_v2 import tcdb
+
+    families = SimpleNamespace(result=io.StringIO('2.A.1\tThe Major Facilitator Superfamily (MFS)\n'))
+    monkeypatch.setattr(tcdb, '_families_download', SimpleNamespace(open=lambda **kw: families))
+    acc2tc = SimpleNamespace(result=io.StringIO('P11166\t2.A.1.1.28\n\t2.A.1.1.5\n'))
+    assert list(tcdb._iter_families(acc2tc)) == [
+        {'id': '2.A.1', 'name': 'The Major Facilitator Superfamily (MFS)', 'members': ['P11166']}
+    ]
