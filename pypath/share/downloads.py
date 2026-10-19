@@ -129,7 +129,8 @@ def _is_error_page(path: Path, ext: Optional[str]) -> bool:
     itself with ``<?xml``, so only a page saved in place of the data matches.
     """
 
-    suffix = (ext or path.suffix.lstrip('.')).lower()
+    # An extension given as '.html' or 'html' alike.
+    suffix = (ext or path.suffix).lstrip('.').lower()
     if suffix in _HTML_EXTENSIONS or not path.is_file():
         return False
     with path.open('rb') as handle:
