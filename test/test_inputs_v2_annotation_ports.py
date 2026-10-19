@@ -317,11 +317,8 @@ def test_guidetopharma_ligand_properties_and_antibacterial_role():
             'Antibacterial': 'yes',
         },
     )
-    assert annotations(ex) >= {
-        ('guidetopharma:approved', 'true'),
-        ('guidetopharma:labelled', 'false'),
-        ('guidetopharma:radioactive', 'false'),
-    }
+    assert ('guidetopharma:approved', 'true') in annotations(ex)
+    assert not any(term in {'guidetopharma:labelled', 'guidetopharma:radioactive'} for term, _ in annotations(ex))
     assert not any(term == 'drug_regulatory_status_world_wide' for term, _ in annotations(ex))
     assert {s[1:] for s in statements(ex)} == {('has_chemical_role', 'chebi', 'CHEBI:33282')}
 
@@ -513,3 +510,33 @@ def test_tcdb_families_skip_rows_without_an_accession(monkeypatch):
     assert list(tcdb._iter_families(acc2tc)) == [
         {'id': '2.A.1', 'name': 'The Major Facilitator Superfamily (MFS)', 'members': ['P11166']}
     ]
+
+
+def test_guidetopharma_ligand_type_at_its_target():
+    from pypath.inputs_v2 import guidetopharma
+
+    cv = next(
+        cv for cv in guidetopharma.interactions_schema.annotations.cvs
+        if str(getattr(cv.term_source, 'value', '')) == 'guidetopharma:type'
+    )
+    assert cv.value_source.extract({'Type': 'Allosteric modulator'}) == ['Allosteric modulator']
+    assert cv.value_source.extract({'Type': 'None'}) in ([], [None])
+
+
+def test_guidetopharma_ligand_records_only_unlabelled_ligands_of_interactions(monkeypatch):
+    """A labelled ligand has its parent's structure, so it would resolve to the
+    parent and take over its label and properties."""
+    import io
+    from types import SimpleNamespace
+
+    from pypath.inputs_v2 import guidetopharma
+
+    def opener(text):
+        return SimpleNamespace(result=io.StringIO('"# GtoPdb Version"\n' + text))
+
+    interactions = opener('"Ligand ID","Target Ligand ID"\n"1",""\n"2",""\n')
+    monkeypatch.setattr(
+        guidetopharma, '_interactions_download', SimpleNamespace(open=lambda **kw: interactions)
+    )
+    ligands = opener('"Ligand ID","Name","Labelled"\n"1","rolipram",""\n"2","[3H]rolipram","yes"\n"3","other",""\n')
+    assert [r['Ligand ID'] for r in guidetopharma._iter_ligand_records(ligands)] == ['1']

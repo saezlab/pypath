@@ -640,6 +640,15 @@ interactions_schema = RelationBuilder(
                 str(row.get('Action') or '').strip()
             ),
         ),
+        # What the ligand is at this target (Agonist, Antagonist, Allosteric
+        # modulator, Channel blocker, ...), as the interactions file writes it;
+        # the action above says what it does.
+        CV(
+            term='guidetopharma:type',
+            value=lambda row: None
+            if str(row.get('Type') or '').strip() in {'', 'None'}
+            else str(row['Type']).strip(),
+        ),
         CV(
             term=lambda row: _AFFINITY_SLOT.get(
                 str(row.get('Affinity Units') or '').strip(),
@@ -670,17 +679,20 @@ def _yes(value) -> str:
 
 
 # A ligand as an entity of its own, with the properties the ligands file gives
-# it: approved for clinical use somewhere, withdrawn from the market,
-# isotopically labelled, radioactive, an antibacterial. The interactions
-# carry the ligand without them.
+# it: approved for clinical use somewhere, withdrawn from the market, an
+# antibacterial. The interactions carry the ligand without them.
+#
+# Only ligands the interactions name, so no ligand enters through this dataset
+# alone, and no labelled ligand: the file gives a labelled ligand the structure
+# of its parent ([3H]rolipram has rolipram's InChIKey), so it resolves to the
+# parent compound, whose label and properties it would take over. For the same
+# reason the labelled and radioactive flags are not served.
 ligand_entities_schema = EntityBuilder(
     entity_type=_guidetopharma_ligand_entity_type,
     identifiers=ligands_schema.identifiers,
     annotations=AnnotationsBuilder(
         CV(term=slots.in_taxon, value=_guidetopharma_ligand_taxon_id),
         CV(term='guidetopharma:approved', value=lambda row: _yes(row.get('Approved'))),
-        CV(term='guidetopharma:labelled', value=lambda row: _yes(row.get('Labelled'))),
-        CV(term='guidetopharma:radioactive', value=lambda row: _yes(row.get('Radioactive'))),
         CV(
             term=slots.drug_regulatory_status_world_wide,
             value=lambda row: ApprovalStatusEnum.post_approval_withdrawal.text
@@ -700,6 +712,19 @@ ligand_entities_schema = EntityBuilder(
         ),
     ),
 )
+
+def _iter_ligand_records(opener, force_refresh: bool = False, **_kwargs: object):
+    """The unlabelled ligands of the ligands file that an interaction names."""
+    named = set()
+    for row in _iter_guidetopharma_csv(_interactions_download.open(force_refresh=force_refresh)):
+        for field in ('Ligand ID', 'Target Ligand ID'):
+            value = (row.get(field) or '').strip()
+            if value:
+                named.add(value)
+    for row in _iter_guidetopharma_csv(opener):
+        if (row.get('Ligand ID') or '').strip() in named and _yes(row.get('Labelled')) == 'false':
+            yield row
+
 
 FAMILY_NAMESPACE = 'guidetopharma_family'
 
@@ -743,7 +768,7 @@ resource = Resource(
     ligands=Dataset(
         download=_ligands_download,
         mapper=ligand_entities_schema,
-        raw_parser=_iter_guidetopharma_csv,
+        raw_parser=_iter_ligand_records,
     ),
     families=Dataset(
         download=_targets_download,
