@@ -51,9 +51,10 @@ Inputs are modeled individually; do not add a migration adapter.
    Structured measurements, roles, categories and flags need an appropriate native
    slot or a reviewed published external ontology attribute CURIE. If neither fits,
    first consider a Biolink quantitative attribute with units and source-field
-   context (see README); otherwise preserve them in parsed evidence payloads and document that they are not exposed
-   as serving annotations. Do not turn them into labeled description strings or mint
-   an OmniPath term merely because an upstream label looks convenient.
+   context (see README); otherwise keep them as `<resource>:<field>` attributes
+   (see *Attributes*). The build keeps no parsed payloads: a field the parser reads
+   and no mapper emits is lost. Do not turn them into labeled description strings or
+   mint an OmniPath term merely because an upstream label looks convenient.
 7. Ontology loaders (`ontology_term_to_entity`) emit only current terms: an
    obsolete term produces no entity and no hierarchy edges. Earlier CV-based
    inputs emitted obsolete terms with an `is_obsolete` flag; that is intentionally
@@ -125,7 +126,10 @@ One statement per source statement.
 `EC:3.4.21.4`, `IPR000001`), so the term is the same entity as the ontology's own. A term
 the source gives only by name is not looked up in an ontology. A source-owned vocabulary
 gets the namespace `<resource>_<field>` (one per field), the source's own value as the
-identifier (label, code, number or path) and `Namespace.NAME` for the label. Levels of
+identifier (label, code, number or path) and `Namespace.NAME` for the label. Two
+exact exceptions: a name from the vocabulary the source uses that matches one current
+term (ClassyFire names are ChemOnt labels), and a reviewed crosswalk in code, one entry
+per source value (`GO_COMPARTMENTS`). Levels of
 one hierarchy share a namespace only where the ids are unique across levels
 (`almen2009_class`, `gpcrdb_family`); otherwise there is one per level
 (`kinasedotcom_group`, `_family`, `_subfamily`). A term is never identified by
@@ -146,7 +150,8 @@ statement.
 **Predicates.** `located_in` for the subcellular location or membrane of a molecule;
 `expressed_in` for a marker or detection in a cell type or tissue; `associated_with` for
 a class, role, list, gene set or disease. `associated_with` asserts nothing causal.
-Domain and range are checked in the pinned model.
+A chemical's tissue, biospecimen or cell location is `located_in`; `expressed_in` is
+for genes and gene products. Domain and range are checked in the pinned model.
 
 **Families.** A source organised as families with member lists (HGNC groups, kinase.com,
 GPCRdb, the phosphatome tree, DNA-binding domain families, integrins) is emitted as
@@ -160,6 +165,11 @@ Numbers the source states as measurements are a `Measurement` with the scale in 
 comment. Yes/no flags are `'true'`/`'false'`. A confidence class is
 `has_confidence_level`; a probability is `has_confidence_score`. A context that is an
 ontology accession is an attribute value; a context that is a text label is kept as text.
+A Biolink slot, qualifier or enum value is used only when its definition matches the
+source; it never claims more. A withdrawal is `drug_regulatory_status_world_wide` =
+`post_approval_withdrawal`, but ChEMBL's max phase stays `chembl:max_phase`:
+`max_research_phase` belongs to a chemical–disease statement, and the world-wide status
+values are FDA stages.
 
 **Species and provenance.** `in_taxon` is on the molecule, stated by the file where it
 states one and a module constant where the resource covers one species (human), with a
@@ -169,7 +179,7 @@ to `supporting_data_source` under the source's own labels.
 **Not ported.** OmniPath's own derived classifications (`intercell_annot`) and consensus
 fields; rows the source marks as not members (TFcensus class x, Lambert "No", kinase
 pseudogenes); collections the licence excludes (MSigDB BioCarta, KEGG legacy); and any
-term-to-ontology matching by label.
+automatic term-to-ontology matching by label.
 
 ## Verification before considering an input rewritten
 
