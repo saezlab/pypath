@@ -26,7 +26,7 @@ CHEMBL_ACTIVITIES_PARQUET_CHUNK_SIZE = int(
 )
 CHEMBL_DUCKDB_MEMORY = os.environ.get('OMNIPATH_CHEMBL_DUCKDB_MEMORY', '1500MB')
 
-CHEMBL_PARQUET_CACHE_VERSION = 8
+CHEMBL_PARQUET_CACHE_VERSION = 9
 CHEMBL_ACTIVITY_MIN_PCHEMBL = 5.0
 
 
@@ -50,8 +50,12 @@ DUCKDB_TABLES: dict[str, str] = {
         SELECT
             assay_id, tid, doc_id, chembl_id, description, assay_type, variant_id,
             assay_tax_id, confidence_score, assay_category,
-            assay_subcellular_fraction, assay_tissue, assay_cell_type
+            assay_subcellular_fraction, assay_tissue, assay_cell_type, tissue_id
         FROM s.assays
+    """,
+    'tissue_dictionary': """
+        SELECT tissue_id, uberon_id
+        FROM s.tissue_dictionary
     """,
     'variant_sequences': """
         SELECT variant_id, mutation, accession, version, isoform, sequence
@@ -325,6 +329,7 @@ PARQUET_QUERIES: dict[str, str] = {
             a.assay_category,
             a.assay_subcellular_fraction,
             a.assay_tissue,
+            tdict.uberon_id AS assay_tissue_uberon,
             a.assay_cell_type,
             td.chembl_id AS target_chembl_id,
             td.target_type,
@@ -350,6 +355,7 @@ PARQUET_QUERIES: dict[str, str] = {
         LEFT JOIN molecule_dictionary md ON act.molregno = md.molregno
         LEFT JOIN compound_structures cs ON act.molregno = cs.molregno
         LEFT JOIN assays a ON act.assay_id = a.assay_id
+        LEFT JOIN tissue_dictionary tdict ON a.tissue_id = tdict.tissue_id
         LEFT JOIN variant_sequences vs ON a.variant_id = vs.variant_id
         LEFT JOIN target_dictionary td ON a.tid = td.tid
         LEFT JOIN target_components_agg tca ON a.tid = tca.tid
@@ -823,6 +829,7 @@ SQLITE_QUERIES: dict[str, str] = {
             a.assay_category,
             a.assay_subcellular_fraction,
             a.assay_tissue,
+            tdict.uberon_id AS assay_tissue_uberon,
             a.assay_cell_type,
             td.chembl_id AS target_chembl_id,
             td.target_type,
@@ -848,6 +855,7 @@ SQLITE_QUERIES: dict[str, str] = {
         LEFT JOIN molecule_dictionary md ON act.molregno = md.molregno
         LEFT JOIN compound_structures cs ON act.molregno = cs.molregno
         LEFT JOIN assays a ON act.assay_id = a.assay_id
+        LEFT JOIN tissue_dictionary tdict ON a.tissue_id = tdict.tissue_id
         LEFT JOIN variant_sequences vs ON a.variant_id = vs.variant_id
         LEFT JOIN target_dictionary td ON a.tid = td.tid
         LEFT JOIN target_components_agg tca ON a.tid = tca.tid

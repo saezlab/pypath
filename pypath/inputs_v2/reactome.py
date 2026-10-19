@@ -623,6 +623,9 @@ controls_schema = RelationBuilder(
     ),
     annotations=AnnotationsBuilder(
         CV(term=slots.object_direction_qualifier, value=_control_effect),
+        # BioPAX's control type as written; the direction keeps only its sign
+        # (ACTIVATION-ALLOSTERIC, INHIBITION-COMPETITIVE, ...).
+        CV(term='biopax:controlType', value=f('control_type')),
         # A protein or chemical controller is one named form of its reference entity.
         CV(
             term='original_subject',

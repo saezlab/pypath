@@ -400,3 +400,102 @@ def test_corum_funcat_categories():
         ('funcat', '42.10.03'),
         ('name', 'organization of chromosome structure'),
     ]
+
+
+def _relation_annotations(ex):
+    return {(a['term'], a['value']) for r in ex.relations for a in (r.annotations or [])}
+
+
+def test_chembl_assay_and_mechanism_context():
+    row = {
+        'molecule_chembl_id': 'CHEMBL1',
+        'target_chembl_id': 'CHEMBL2',
+        'target_type': 'SINGLE PROTEIN',
+        'target_component_uniprot_accessions': 'P00533',
+        'assay_category': 'Selectivity assay',
+        'assay_subcellular_fraction': 'Microsome',
+        'assay_tissue': 'Liver',
+        'assay_tissue_uberon': 'UBERON:0002107',
+        'assay_cell_type': 'HepG2',
+        'action_parent_type': 'INHIBITOR',
+        'direct_interaction': 1,
+        'molecular_mechanism': 1,
+        'disease_efficacy': 0,
+    }
+    found = _relation_annotations(project('chembl', 'activities_schema', row))
+    assert found >= {
+        ('anatomical_context_qualifier', 'UBERON:0002107'),
+        ('chembl:assay_category', 'Selectivity assay'),
+        ('chembl:assay_subcellular_fraction', 'Microsome'),
+        ('chembl:assay_cell_type', 'HepG2'),
+        ('chembl:action_parent_type', 'INHIBITOR'),
+        ('chembl:direct_interaction', 'true'),
+        ('chembl:molecular_mechanism', 'true'),
+        ('chembl:disease_efficacy', 'false'),
+    }
+    assert not any(term == 'chembl:assay_tissue' for term, _ in found)
+    unmapped = _relation_annotations(
+        project('chembl', 'activities_schema', {**row, 'assay_tissue_uberon': None})
+    )
+    assert ('chembl:assay_tissue', 'Liver') in unmapped
+    assert not any(term == 'anatomical_context_qualifier' for term, _ in unmapped)
+
+
+def test_intact_expansion_parameters_and_annotations():
+    from pypath.inputs_v2 import intact
+
+    assert intact._mitab_items('kd:3.3x10^-6(molar)|-') == ['kd:3.3x10^-6(molar)']
+    assert intact._mitab_items('-') == []
+
+
+def test_connectomedb_bindingdb_reactome_macdb_context():
+    from pypath.inputs_v2 import connectomedb, macdb, reactome
+
+    def cv_value(schema, term, row):
+        cv = next(
+            cv for cv in schema.annotations.cvs
+            if str(getattr(cv.term_source, 'value', '')) == term
+        )
+        return cv.value_source.extract(row)
+
+    assert cv_value(connectomedb.interactions_schema, 'connectomedb:evidence', {'Evidence': 'Inferred'}) == ['Inferred']
+    assert cv_value(reactome.controls_schema, 'biopax:controlType', {'control_type': 'INHIBITION-COMPETITIVE'}) == ['INHIBITION-COMPETITIVE']
+    ex = project(
+        'macdb',
+        'association_schema',
+        {
+            'pubchem_CID': '33032',
+            'trait_id': '1',
+            'study_Cohort_id': 'METAC_915',
+            'study_Case_name': 'colorectal cancer (CRC) patients',
+            'study_Platform': 'LC-MS',
+            'study_Cancer_subtype': 'nan',
+            'study_Case_sex': 'F&M',
+        },
+    )
+    found = _relation_annotations(ex)
+    assert found >= {
+        ('supporting_study_cohort', 'colorectal cancer (CRC) patients'),
+        ('supporting_study_method_description', 'LC-MS'),
+        ('macdb:cohort_id', 'METAC_915'),
+        ('macdb:case_sex', 'F&M'),
+    }
+    assert not any(term == 'macdb:cancer_subtype' for term, _ in found)
+
+
+def test_bindingdb_patent_and_curation_source():
+    ex = project(
+        'bindingdb',
+        'interactions_schema',
+        {
+            'BindingDB MonomerID': '1',
+            'UniProt (SwissProt) Primary ID of Target Chain 1': 'P00533',
+            'Ki (nM)': '10',
+            'Patent Number': 'US1234567',
+            'Curation/DataSource': 'US Patent',
+        },
+    )
+    assert _relation_annotations(ex) >= {
+        ('bindingdb:patent_number', 'US1234567'),
+        ('supporting_data_source', 'US Patent'),
+    }

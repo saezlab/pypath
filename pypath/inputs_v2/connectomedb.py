@@ -156,7 +156,9 @@ interactions_schema = RelationBuilder(
         CV(term=Namespace.NAME, value=f('LR Pair')),
     ),
     annotations=AnnotationsBuilder(
-        CV(term=slots.in_taxon, value=f('Species', map='species_taxon'))
+        CV(term=slots.in_taxon, value=f('Species', map='species_taxon')),
+        # "Direct" or "Inferred", as the file writes it.
+        CV(term='connectomedb:evidence', value=f('Evidence')),
     ),
 )
 resource = Resource(

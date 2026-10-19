@@ -110,6 +110,11 @@ f = FieldConfig(
 )
 
 
+
+def _mitab_items(value) -> list[str]:
+    """The '|'-separated items of a MITAB cell; '-' is none."""
+    return [item for item in str(value or '').split('|') if item and item != '-']
+
 def _normalize_identifier_prefix(prefix: str, value: str) -> str | None:
     prefix = prefix.lower()
     value = value.strip().strip('"')
@@ -396,6 +401,21 @@ interactions_schema = RelationBuilder(
         CV(
             term=slots.supporting_data_source,
             value=f('Source database(s)', extract='mi'),
+        ),
+        # How the interaction was read from a complex (spoke, matrix), as the
+        # MI accession; the parameters ("kd:3.3x10^-6(molar)") and the
+        # curators' annotations ("curation depth:imex curation") as written.
+        CV(
+            term='psi_mi:expansion_method',
+            value=f('Expansion method(s)', extract='mi'),
+        ),
+        CV(
+            term='psi_mi:interaction_parameter',
+            value=lambda row: _mitab_items(row.get('Interaction parameter(s)')),
+        ),
+        CV(
+            term='psi_mi:interaction_annotation',
+            value=lambda row: _mitab_items(row.get('Interaction annotation(s)')),
         ),
         CV(
             term=slots.publications,

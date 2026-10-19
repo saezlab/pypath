@@ -311,7 +311,7 @@ def test_imm1415_missing_optional_annotations_and_compound_namespace():
             )
         )
     )
-    assert rows == [{'id': 'x', 'name': 'X', 'compartment': ''}]
+    assert rows == [{'id': 'x', 'name': 'X', 'compartment': '', 'compartment_code': ''}]
     entity = mod.schema({'chebi': ['CHEBI:123'], 'kegg.drug': ['D00001']})
     assert (Namespace.KEGG_DRUG, 'D00001') in entity.identifiers
     assert (Namespace.KEGG, 'D00001') not in entity.identifiers

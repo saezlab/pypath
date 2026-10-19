@@ -536,6 +536,25 @@ activities_schema = RelationBuilder(
             ),
         ),
         CV(term=slots.chembl_confidence_score, value=f('confidence_score')),
+        # The assay's context. A tissue ChEMBL's tissue dictionary gives an
+        # UBERON term for is that term; otherwise its name stays text. The
+        # cell type is mostly a cell line's name, kept as written.
+        CV(term='chembl:assay_category', value=f('assay_category')),
+        CV(term='chembl:assay_subcellular_fraction', value=f('assay_subcellular_fraction')),
+        CV(term=slots.anatomical_context_qualifier, value=lambda row: row.get('assay_tissue_uberon') or None),
+        CV(
+            term='chembl:assay_tissue',
+            value=lambda row: None if row.get('assay_tissue_uberon') else row.get('assay_tissue'),
+        ),
+        CV(term='chembl:assay_cell_type', value=f('assay_cell_type')),
+        # The mechanism's details: the action's parent type (INHIBITOR,
+        # ACTIVATOR, ...) and whether the interaction is direct, the
+        # mechanism molecular and the efficacy in the disease.
+        CV(term='chembl:action_parent_type', value=f('action_parent_type')),
+        *(
+            CV(term=f'chembl:{flag}', value=lambda row, flag=flag: _flag(row.get(flag)))
+            for flag in ('direct_interaction', 'molecular_mechanism', 'disease_efficacy')
+        ),
     ),
     identifiers=IdentifiersBuilder(
         CV(term=Namespace.CHEMBL_ACTIVITY, value=f('activity_id')),

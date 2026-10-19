@@ -252,6 +252,10 @@ interactions_schema = RelationBuilder(
                 transform=lambda v: 'doi:' + str(v).removeprefix('doi:'),
             ),
         ),
+        # The patent the measurement is from, and where BindingDB took it
+        # ("ChEMBL", "US Patent", its own curation), as written.
+        CV(term='bindingdb:patent_number', value=f('Patent Number')),
+        CV(term=slots.supporting_data_source, value=f('Curation/DataSource')),
         CV(
             term='BAO:0000192',
             value=f(

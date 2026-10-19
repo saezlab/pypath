@@ -27,6 +27,7 @@ from pypath.inputs_v2._reactions import (
     model_reaction_compartments,
     reaction_compartments_cv,
     reaction_type_cv,
+    source_reaction_type_cv,
     stoichiometry_compartment_go,
 )
 from pypath.inputs_v2._source_context import compartment_name, conversion_direction_cv
@@ -165,6 +166,9 @@ reactions_schema = EntityBuilder(
             ),
         ),
         reaction_type_cv(f('sbo')),
+        # The model's subsystem ("Glycolysis/gluconeogenesis"), as Human-GEM
+        # keeps its own.
+        source_reaction_type_cv(f('subsystem')),
         reaction_compartments_cv(model_reaction_compartments),
     ),
     membership=_ReactionMembership(

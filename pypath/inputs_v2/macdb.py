@@ -118,6 +118,12 @@ _MEASUREMENT_RE = re.compile(
 )
 
 
+def _study(row, field):
+    """A field of the association's study; MACdb writes "nan" for none."""
+    value = ' '.join(str(row.get(f'study_{field}') or '').split())
+    return None if value.lower() in {'', 'nan', 'none'} else value
+
+
 def _measurement(row, field):
     raw = row.get(field)
     match = _MEASUREMENT_RE.fullmatch(str(raw)) if raw is not None else None
@@ -160,6 +166,30 @@ association_schema = RelationBuilder(
     annotations=AnnotationsBuilder(
         CV(term=slots.description, value=f('study_Conclusion')),
         CV(term=slots.description, value=f('study_Condition')),
+        # The study: its case group, platform and cohort; the rest as MACdb
+        # writes it. Sex ("F", "M", "F&M") is given for cases and controls
+        # apart, so it is not one sex qualifier of the statement; tissues are
+        # names ("Plasma", "Lung tissue"), not ontology terms.
+        CV(term=slots.supporting_study_cohort, value=lambda row: _study(row, 'Case_name')),
+        CV(
+            term=slots.supporting_study_method_description,
+            value=lambda row: _study(row, 'Platform'),
+        ),
+        *(
+            CV(term=f'macdb:{field.lower()}', value=lambda row, field=field: _study(row, field))
+            for field in (
+                'Cohort_id',
+                'Type',
+                'Cancer_type',
+                'Cancer_subtype',
+                'Tissue',
+                'Case_age_group',
+                'Case_sex',
+                'Control_name',
+                'Control_age_group',
+                'Control_sex',
+            )
+        ),
         CV(
             term=slots.p_value,
             value=lambda row: _measurement(row, 'case_control_p-value'),
