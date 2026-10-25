@@ -47,6 +47,9 @@ class ResourceCv(CvEnum):
     NICHENET = ("OM:1164", "NicheNet", "https://zenodo.org/records/7074291")
     CELLINKER = ("OM:1165", "Cellinker", "https://www.cellknowledge.com.cn/cellinker/")
     BRENDA = ("OM:1166", "BRENDA", "https://www.brenda-enzymes.org/index.php")
+    # Accessions as assigned on pypath master, where these modules were added.
+    PMIDB = ("OM:1169", "PMI-DB", "http://easybioai.com/PMIDB/")
+    METACHATDB = ("OM:1182", "MetaChatDB", "https://github.com/SonghaoLuo/MetaChat")
 
     # Metabolite and lipid databases (OM:1170-1179 range)
     HMDB = ("OM:1170", "Human Metabolome Database", "https://hmdb.ca/")
