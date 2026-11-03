@@ -8,13 +8,13 @@ RUN apt-get update \
 WORKDIR /src
 COPY pyproject.toml uv.lock ./
 COPY packages ./packages
-COPY deploy/build-constraints.txt ./deploy/build-constraints.txt
+COPY scripts/build-constraints.txt ./scripts/build-constraints.txt
 RUN uv export --frozen --package omnipath-api --extra build --no-dev --no-emit-workspace --no-emit-package omnipath-resources --no-hashes -o /worker-requirements.txt \
-    && uv build --package omnipath-core --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
-    && uv build --package omnipath-resolver --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
-    && uv build --package omnipath-build --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
-    && uv build --package omnipath-api --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
-    && uv build packages/resources --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels
+    && uv build --package omnipath-core --wheel --build-constraints scripts/build-constraints.txt --out-dir /wheels \
+    && uv build --package omnipath-resolver --wheel --build-constraints scripts/build-constraints.txt --out-dir /wheels \
+    && uv build --package omnipath-build --wheel --build-constraints scripts/build-constraints.txt --out-dir /wheels \
+    && uv build --package omnipath-api --wheel --build-constraints scripts/build-constraints.txt --out-dir /wheels \
+    && uv build packages/resources --wheel --build-constraints scripts/build-constraints.txt --out-dir /wheels
 
 FROM python:3.12-slim-bookworm AS runtime
 COPY --from=uv /uv /usr/local/bin/uv
@@ -33,7 +33,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=wheels /wheels /wheels
 COPY --from=wheels /worker-requirements.txt /requirements.txt
-COPY --from=wheels /src/deploy/build-constraints.txt /build-constraints.txt
+COPY --from=wheels /src/scripts/build-constraints.txt /build-constraints.txt
 RUN uv pip install --system --no-cache --no-deps --build-constraints /build-constraints.txt -r /requirements.txt /wheels/*.whl \
     && rm -rf /wheels /requirements.txt /build-constraints.txt
 CMD ["python", "-m", "omnipath_api.jobs.worker", "--data-root", "/data"]

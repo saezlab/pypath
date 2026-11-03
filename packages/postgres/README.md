@@ -29,7 +29,7 @@ For PostgreSQL inspection copies, pass `retain_published_provenance=True` to `lo
 
 DuckDB prepares relational tables once in an on-disk database and writes CSV chunks. Python forwards their bytes through PostgreSQL COPY without converting biological rows into Python objects. Source artifacts are read but never rewritten. Main keys, foreign keys and deferred indexes are restored and validated before the base checkpoint is advertised. Artifact schemas, sizes, row counts and SHA256 checksums and COPY counts remain build checks.
 
-Main's downstream implementations provide search and ontology tables, chemical structure groups, classifications, interactions and resource facts, labels, bitmap filters, overlap summaries, resource metadata, MetSigDB, network presets and COSMOS. Biolink readers adapt predicates, scopes and quantities; the original main table and index contracts remain the reference. The [column map](../../docs/postgres-parquet-column-map.md) and [parity checklist](../../docs/postgres-main-parity-checklist.md) document unavailable original resolver/occurrence facts and deliberate adaptations. Published identities are explicitly marked `published`; they are never falsely marked as originally matched. MetSigDB uses the previously agreed published-chemical policy.
+Main's downstream implementations provide search and ontology tables, chemical structure groups, classifications, interactions and resource facts, labels, bitmap filters, overlap summaries, resource metadata, MetSigDB, network presets and COSMOS. Biolink readers adapt predicates, scopes and quantities; the original main table and index contracts remain the reference. The [column map](docs/postgres-parquet-column-map.md) and [parity checklist](docs/postgres-main-parity-checklist.md) document unavailable original resolver/occurrence facts and deliberate adaptations. Published identities are explicitly marked `published`; they are never falsely marked as originally matched. MetSigDB uses the previously agreed published-chemical policy.
 
 Main's legacy `ontology_terms` base table stays empty on fresh builds, as in the current main projector. The existing `entity_ontology_term` derivation builds serving terms from ontology edges, relational identifiers and annotations. Published ontology statements use the actual `ontology` kind and known input-provider ontology families; resolving a chemical to InChIKey does not change its source ontology.
 
@@ -51,14 +51,36 @@ The Python API accepts `base_only=True` and `products=('cosmos',)`. `finish_rele
 
 DuckDB defaults to one thread and 1 GB memory. Use `--duckdb-threads`, `--memory-limit` and `--temp-directory` to choose working limits and staging storage. Temporary CSVs and DuckDB files are removed after loading or failure. Returned timings separate artifact checks, projection, CSV staging, COPY, constraints and durable phases.
 
-Use PostgreSQL 18 with main's [PostgreSQL image](../../deploy/postgres/Dockerfile) or an equivalent image providing `roaringbitmap` and `pg_trgm`. The development parity tests compare actual catalog definitions and duplicate-sensitive scientific fixtures with the frozen main source. They are bounded development checks; loading has no mandatory exhaustive verification, rebuild-and-rollback run or automatic safety phase.
+Use PostgreSQL 18 with main's [PostgreSQL image](deploy/Dockerfile) or an equivalent image providing `roaringbitmap` and `pg_trgm`. The development parity tests compare actual catalog definitions and duplicate-sensitive scientific fixtures with the frozen main source. They are bounded development checks; loading has no mandatory exhaustive verification, rebuild-and-rollback run or automatic safety phase.
 
-The earlier resource-record loader (`omnipath_postgres.compatibility.record_layout`) has been removed together with its tests; schemas built by it are not readable by this package. See [the alignment plan](../../docs/postgres-main-parity-plan.md) for the migration boundary.
+The earlier resource-record loader (`omnipath_postgres.compatibility.record_layout`) has been removed together with its tests; schemas built by it are not readable by this package. See [the alignment plan](docs/postgres-main-parity-plan.md) for the migration boundary.
 
 The canonical loader is `omnipath_postgres.loader`; shared schema and derivations
 live in `omnipath_postgres.relational`. MetSigDB, network presets and COSMOS are
 owned by [subsets](../subsets/README.md). The dependency runs from PostgreSQL to
 subsets to core, and both commands use the same product runner.
+
+## From the repository root
+
+```sh
+make load-postgres RELEASE_MANIFEST=release.json DATA_ROOT=/path/to/data \
+  POSTGRES_SCHEMA=release_2026_09
+# Optional: import only the base first, then finish without repeating COPY.
+make load-postgres RELEASE_MANIFEST=release.json DATA_ROOT=data \
+  POSTGRES_SCHEMA=release_2026_09 POSTGRES_ARGS=--base-only
+make finish-postgres POSTGRES_SCHEMA=release_2026_09
+make build-subsets POSTGRES_SCHEMA=release_2026_09 SUBSET_PRODUCTS=cosmos
+```
+
+Set `OMNIPATH_DATABASE_URL` for the intended database. Working storage can be
+selected with `POSTGRES_ARGS="--temp-directory /path/to/spool --memory-limit 4GB"`.
+`make build-subsets` resumes unfinished products; `make rebuild-subsets` explicitly
+rebuilds the selected products, committing each complete product.
+
+For a local database, copy `deploy/postgres-dev.env.example` to a private
+`deploy/postgres.env`, set a password, then run `make postgres-up`. The default bind
+is loopback. Large server examples are separate and must be sized to that host;
+see [build tuning](docs/build-tuning.md) and [promotion](deploy/PROMOTE.md).
 
 ## Measuring HTTPS input
 
@@ -71,7 +93,7 @@ is separately recorded in `phase_seconds`. Hash and corruption checks are unchan
 For a bounded single-resource release, use:
 
 ```sh
-uv run --frozen --package omnipath-postgres python scripts/measure_parquet_input.py \
+uv run --frozen --package omnipath-postgres python packages/postgres/scripts/measure_parquet_input.py \
   single-resource-release.json --data-root https://data.example.org --max-bytes 67108864
 ```
 

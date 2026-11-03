@@ -14,7 +14,7 @@ Parquet scan or join occurs during resolution; a missing or damaged store fails
 the build rather than silently falling back.
 
 Rules and outcomes are described in
-[entity resolution](../../../../docs/core/resolution.md). Building the
+[entity resolution](../../docs/resolution.md). Building the
 library is described in [the identity layer guide](../../../build/REFERENCE.md).
 
 Runtime matching stays in `omnipath_resolver`: it imports neither parsers nor

@@ -1,0 +1,7 @@
+# The build context is the repository root; this image needs packages/web only.
+*
+!packages/web/
+packages/web/node_modules
+packages/web/.svelte-kit
+packages/web/build
+**/.env*

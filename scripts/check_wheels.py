@@ -49,7 +49,7 @@ def check(directory, packages, *, offline=False):
             *source_args,
             "--sdist",
             "--build-constraints",
-            "deploy/build-constraints.txt",
+            "scripts/build-constraints.txt",
             "--out-dir",
             str(wheels),
         )
@@ -61,7 +61,7 @@ def check(directory, packages, *, offline=False):
             str(archive),
             "--wheel",
             "--build-constraints",
-            "deploy/build-constraints.txt",
+            "scripts/build-constraints.txt",
             "--out-dir",
             str(wheels),
         )
@@ -134,7 +134,7 @@ def check(directory, packages, *, offline=False):
             str(python),
             "--no-deps",
             "--build-constraints",
-            str(ROOT / "deploy/build-constraints.txt"),
+            str(ROOT / "scripts/build-constraints.txt"),
             "-r",
             str(requirements),
             *install,

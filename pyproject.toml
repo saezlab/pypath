@@ -33,12 +33,16 @@ dev = [
 [tool.ruff]
 target-version = "py311"
 line-length = 100
-extend-exclude = ["packages/resources", "packages/utils", "packages/postgres/tests/oracle_legacy", "data", "logs", "pypath_log", "pypath-data", "packages/*/build/**", "**/target/**", "**/oracle_cv_terms/**"]
+extend-exclude = ["packages/resources", "packages/utils", "packages/*/docs", "packages/postgres/tests/oracle_legacy", "data", "logs", "pypath_log", "pypath-data", "packages/*/build/**", "**/target/**", "**/oracle_cv_terms/**"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F"]
 
 [tool.pytest.ini_options]
+# The disposable PostgreSQL fixture (packages/postgres/tests/disposable_postgres.py) and the
+# package scripts whose tests import them.
+pythonpath = ["packages/postgres/tests", "packages/build/scripts", "packages/api/scripts"]
+addopts = ["-p", "disposable_postgres"]
 markers = ["integration: requires an explicitly configured local dataset or external service"]
 testpaths = [
     "packages/core/tests",

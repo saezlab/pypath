@@ -61,10 +61,10 @@ data_cellcell/
 *.dylib
 *.pyd
 main-reference/
-# Private deployment settings (the example remains tracked)
-/deploy/*.env
+# Private deployment settings (the examples remain tracked)
+packages/*/deploy/*.env
 
-# Locally preserved exploratory artifacts; provenance is in docs/history
+# Locally preserved exploratory artifacts; provenance is in packages/build/docs/history
 /local-artifacts/
 
 # Local run logs

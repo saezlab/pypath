@@ -220,7 +220,7 @@ def test_bounded_measurement_cli_reports_projection_and_validation(published, ca
     import sys
 
     root, release, _ = published
-    script = Path(__file__).resolve().parents[3] / "scripts/measure_parquet_input.py"
+    script = Path(__file__).resolve().parents[1] / "scripts/measure_parquet_input.py"
     spec = importlib.util.spec_from_file_location("measure_input", script)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

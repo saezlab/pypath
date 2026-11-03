@@ -9,7 +9,7 @@ running API server:
 
 ```bash
 PYTHONPATH=packages/api/src:packages/core/src:packages/build/src:packages/resolver/src \
-  .venv/bin/python scripts/validate_molecular_outputs.py \
+  .venv/bin/python packages/api/scripts/validate_molecular_outputs.py \
   --data-root /path/to/data --resources signor intact \
   --output /tmp/molecular-validation.json
 ```
@@ -65,10 +65,26 @@ The explorer UI lives in `../web`.
 uv run --frozen omnipath-api --host 127.0.0.1 --port 8085 --data-root data
 
 # Run full stack (API + web explorer)
-./scripts/run_all.sh
+./packages/web/scripts/run_all.sh
 ```
 
 Open interactive API docs from the web app (**API Docs** in the sidebar) or directly at `http://127.0.0.1:8085/api/docs`.
+
+From the repository root, `make dev DATA_ROOT=/absolute/path/to/existing/data` starts the
+API (http://127.0.0.1:8085) and the explorer (http://127.0.0.1:5173). For containers, set an
+external artifact directory in a private environment file:
+
+```sh
+cp packages/api/deploy/serving.env.example packages/api/deploy/serving.env
+# Edit DATA_DIR and the public URLs in packages/api/deploy/serving.env.
+make serving-build COMPOSE_ENV=packages/api/deploy/serving.env
+make serving-up COMPOSE_ENV=packages/api/deploy/serving.env
+make serving-status COMPOSE_ENV=packages/api/deploy/serving.env
+```
+
+These commands start only the read-only API, web app and file service. Existing
+Parquets, references and caches can remain outside the checkout. See
+[deployment](deploy/README.md) for HTTPS routing, parallel cutover and rollback.
 
 ## Serving tables
 

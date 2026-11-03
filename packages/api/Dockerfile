@@ -5,10 +5,10 @@ COPY --from=uv /uv /usr/local/bin/uv
 WORKDIR /src
 COPY pyproject.toml uv.lock ./
 COPY packages ./packages
-COPY deploy/build-constraints.txt ./deploy/build-constraints.txt
+COPY scripts/build-constraints.txt ./scripts/build-constraints.txt
 RUN uv export --frozen --package omnipath-api --no-dev --no-emit-workspace --no-hashes -o /api-requirements.txt \
-    && uv build --package omnipath-core --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels \
-    && uv build --package omnipath-api --wheel --build-constraints deploy/build-constraints.txt --out-dir /wheels
+    && uv build --package omnipath-core --wheel --build-constraints scripts/build-constraints.txt --out-dir /wheels \
+    && uv build --package omnipath-api --wheel --build-constraints scripts/build-constraints.txt --out-dir /wheels
 
 FROM python:3.12-slim-bookworm AS api
 COPY --from=uv /uv /usr/local/bin/uv
@@ -19,7 +19,7 @@ ENV PYTHONUNBUFFERED=1 OMNIPATH_READ_ONLY=true
 WORKDIR /app
 COPY --from=wheels /wheels /wheels
 COPY --from=wheels /api-requirements.txt /requirements.txt
-COPY --from=wheels /src/deploy/build-constraints.txt /build-constraints.txt
+COPY --from=wheels /src/scripts/build-constraints.txt /build-constraints.txt
 RUN uv pip install --system --no-cache --no-deps --build-constraints /build-constraints.txt -r /requirements.txt /wheels/*.whl \
     && rm -rf /wheels /requirements.txt /build-constraints.txt
 EXPOSE 8085

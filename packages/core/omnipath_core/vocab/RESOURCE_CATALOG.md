@@ -20,7 +20,7 @@ The page's Entities filter is not a tag: it lists the entity types each build re
 in `resolution_stats.json` (`by_entity_type`), so it describes the data of that build.
 
 `resource_metadata.yaml` is generated from the configs by
-`scripts/generate_resource_metadata.py` and must not be edited by hand.
+`packages/core/scripts/generate_resource_metadata.py` and must not be edited by hand.
 `make check-generated` fails while it is stale. The API reads it, so it needs no pypath.
 Both files use JSON syntax (a YAML subset).
 

@@ -6,7 +6,7 @@ store (the ``by_id`` rows), the small identity decisions (exceptions, extra enti
 products) and the hub ``rec`` store (``records`` plus ``by_record`` rows); entity records are
 assembled on first use and cached per identity fingerprint in SQLite. Every point lookup reads
 LMDB only (``<hub index>/kv`` and ``<identity dir>/kv``, see ``identity_kv``); the Parquet files
-are build artifacts and are not opened. See ``docs/identity-layer-spec.md`` sections 3 and 4.
+are build artifacts and are not opened. See ``packages/build/docs/identity-layer-spec.md`` sections 3 and 4.
 """
 
 from __future__ import annotations

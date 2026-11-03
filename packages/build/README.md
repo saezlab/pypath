@@ -152,6 +152,46 @@ retries memory failures, learns from completed runs and displays console progres
 See the [orchestration guide](ORCHESTRATION.md) for `--all`, configuration, Linux
 enforcement, retry behavior and durable logs.
 
+## From the repository root
+
+For a small offline example, use `make sample`; it processes at most 20 fixture
+records under `data/migration-smoke/` and downloads no source datasets.
+A real build uses an existing identity library:
+
+```sh
+OMNIPATH_LIBRARY_DIR=/path/to/reference/identity/<fingerprint> \
+  make build SOURCE=signor VERSION=1.0.0 MAX_RECORDS=20 DATA_ROOT=data
+```
+
+The limit applies per dataset; a source parser may still download its full input.
+Versions are immutable. Prepare hubs and the identity library only when needed:
+
+```sh
+make hubs HUB_ARGS="--max-records 0"   # every hub, uncapped
+make reference                         # hub indexes, kv stores, identity library
+```
+
+`make reference` indexes every hub in `HUBS_DIR` (default `$(DATA_ROOT)/reference/hubs`)
+into `HUB_INDEX_ROOT` (`.../hub-index`), reusing an index while its hub export is
+unchanged, then writes the identity library to `IDENTITY_DIR/<fingerprint>`
+(`.../identity`). `IDENTITY_HUBS` restricts the hubs; `HUB_INDEX_ARGS`, `HUB_KV_ARGS`
+and `IDENTITY_ARGS` pass memory and thread limits through. See the
+[identity layer guide](REFERENCE.md) and
+[entity resolution](../resolver/docs/resolution.md).
+
+A named snapshot lists exact resource versions:
+
+```json
+{"schema_version": 1, "version": "2026.09", "resources": {"signor": "1.0.0"}}
+```
+
+Publish it from existing local artifacts with
+`make publish-release RELEASE_MANIFEST=release.json DATA_ROOT=data`.
+Publication validates availability and adds a cached taxonomy reference when
+provisioned. It runs no source build and needs no separate index step: the
+serving tables are part of each resource version. API Latest continues selecting
+each resource's newest version.
+
 ## Running a build
 
 ```bash

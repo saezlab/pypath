@@ -25,7 +25,7 @@ pnpm run preview --port 5173
 Or start API + web together from the repo root:
 
 ```sh
-./scripts/run_all.sh 8085 5173
+./packages/web/scripts/run_all.sh 8085 5173
 ```
 
 ## Code organization

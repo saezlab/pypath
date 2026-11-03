@@ -122,7 +122,7 @@ After changing any `ResourceConfig`, regenerate the copy the API reads, from the
 superproject root:
 
 ```bash
-uv run python scripts/generate_resource_metadata.py
+uv run python packages/core/scripts/generate_resource_metadata.py
 ```
 
 `make check-generated` fails while that copy is stale.

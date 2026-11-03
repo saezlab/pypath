@@ -1,0 +1,27 @@
+# The build context is the repository root; this image needs the Python workspace only.
+*
+!pyproject.toml
+!uv.lock
+!scripts/build-constraints.txt
+!packages/
+packages/web/
+packages/query/r/
+packages/*/deploy/
+packages/*/docs/
+packages/*/scripts/
+packages/*/tests/
+packages/*/test/
+packages/*/build/
+**/.venv
+**/node_modules
+**/__pycache__
+**/*.egg-info
+**/target
+**/.pytest_cache
+**/.ruff_cache
+**/*.log
+**/*.parquet
+**/.env*
+packages/*/pypath_log
+packages/*/omnipath_resources_log
+packages/*/logs

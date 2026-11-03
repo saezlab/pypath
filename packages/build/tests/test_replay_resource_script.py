@@ -13,7 +13,7 @@ import pyarrow.parquet as pq
 import pytest
 
 from omnipath_core.schema import PAYLOAD_SCHEMA
-from scripts import replay_resource as replay
+import replay_resource as replay
 
 
 def write_payloads(path, records):

@@ -1,6 +1,6 @@
 .PHONY: help setup setup-python setup-web test test-resources test-utils test-postgres test-subsets test-api check check-web build sample hubs reference publish-release api web dev load-postgres finish-postgres build-subsets serving-build serving-up serving-status serving-logs serving-stop worker-up docs
 
-export PKG_INFRA_CONFIG ?= $(CURDIR)/deploy/pkg_infra_quiet.yaml
+export PKG_INFRA_CONFIG ?= $(CURDIR)/packages/resources/pkg_infra_quiet.yaml
 SOURCE ?= signor
 VERSION ?= 0.1.0
 MAX_RECORDS ?= 20
@@ -25,7 +25,7 @@ PYTEST_ARGS ?=
 SUBSET_PRODUCTS ?= exclusion_metabolites metsigdb network_views cosmos
 API_PORT ?= 8085
 WEB_PORT ?= 5173
-COMPOSE_FILES ?= -f deploy/compose.serving.yaml
+COMPOSE_FILES ?= -f packages/api/deploy/compose.serving.yaml
 COMPOSE_ENV ?=
 COMPOSE = docker compose $(if $(COMPOSE_ENV),--env-file "$(COMPOSE_ENV)") $(COMPOSE_FILES)
 
@@ -33,7 +33,7 @@ help:
 	@echo 'setup | sample | build | hubs | reference | publish-release'
 	@echo 'dev | api | web | serving-build | serving-up | serving-status | serving-logs | serving-stop'
 	@echo 'load-postgres | finish-postgres | build-subsets | test | check | check-web | docs'
-	@echo 'See README.md for variables and deploy/README.md for container deployment.'
+	@echo 'See README.md for variables and packages/api/deploy/README.md for container deployment.'
 
 setup: setup-python setup-web
 setup-python:
@@ -75,8 +75,8 @@ test-subsets:
 test-api:
 	uv run --frozen pytest packages/api/tests -q -n $(PYTEST_WORKERS) $(PYTEST_ARGS)
 check:
-	uv run --frozen ruff check packages scripts conftest.py
-	uv run --frozen ruff format --check packages scripts conftest.py
+	uv run --frozen ruff check packages scripts
+	uv run --frozen ruff format --check packages scripts
 check-web:
 	pnpm --dir packages/web check
 	pnpm --dir packages/web test
@@ -86,7 +86,7 @@ check-web:
 build:
 	uv run --frozen --package omnipath-build omnipath-build build "$(SOURCE)" --version "$(VERSION)" --max-records $(MAX_RECORDS) --output-dir "$(DATA_ROOT)"
 sample:
-	uv run --frozen --package omnipath-build python scripts/migration_smoke.py --output-dir "$(DATA_ROOT)/migration-smoke" --version "$(VERSION)" --max-records $(MAX_RECORDS)
+	uv run --frozen --package omnipath-build python packages/build/scripts/migration_smoke.py --output-dir "$(DATA_ROOT)/migration-smoke" --version "$(VERSION)" --max-records $(MAX_RECORDS)
 hubs:
 	uv run --frozen --package omnipath-build omnipath-build export-hubs --output-dir "$(HUBS_DIR)" $(HUB_ARGS)
 # Hub indexes are reused while their hub export is unchanged; build-identity also writes its kv store.
@@ -108,7 +108,7 @@ api:
 web:
 	API_SERVICE_URL=http://127.0.0.1:$(API_PORT) pnpm --dir packages/web dev --host 127.0.0.1 --port $(WEB_PORT)
 dev:
-	OMNIPATH_DATA_ROOT="$(DATA_ROOT)" ./scripts/run_all.sh $(API_PORT) $(WEB_PORT)
+	OMNIPATH_DATA_ROOT="$(DATA_ROOT)" ./packages/web/scripts/run_all.sh $(API_PORT) $(WEB_PORT)
 
 load-postgres:
 	@test -n "$(RELEASE_MANIFEST)" || (echo 'Set RELEASE_MANIFEST to a pinned JSON file or HTTPS URL'; exit 2)
@@ -144,24 +144,25 @@ setup-postgres:
 test-native:
 	cargo test --locked --manifest-path packages/resolver/rust/reference/Cargo.toml
 check-generated:
-	uv run --frozen python scripts/generate_openapi.py --check
-	uv run --frozen python scripts/sync_biolink.py --check
-	uv run --frozen python scripts/generate_resource_metadata.py --check
+	uv run --frozen python packages/api/scripts/generate_openapi.py --check
+	uv run --frozen python packages/web/scripts/sync_biolink.py --check
+	uv run --frozen python packages/core/scripts/generate_resource_metadata.py --check
 	uv run --frozen python packages/query/scripts/generate_contract.py --check
 generate:
-	uv run --frozen python scripts/generate_openapi.py
-	uv run --frozen python scripts/sync_biolink.py
-	uv run --frozen python scripts/generate_resource_metadata.py
+	uv run --frozen python packages/api/scripts/generate_openapi.py
+	uv run --frozen python packages/web/scripts/sync_biolink.py
+	uv run --frozen python packages/core/scripts/generate_resource_metadata.py
 	uv run --frozen python packages/query/scripts/generate_contract.py
 	pnpm --dir packages/web generate:types
 test-wheels:
 	uv run --frozen python scripts/check_wheels.py
-POSTGRES_ENV ?= deploy/postgres.env
+POSTGRES_ENV ?= packages/postgres/deploy/postgres.env
 postgres-up:
-	docker compose --env-file "$(POSTGRES_ENV)" -f deploy/docker-compose.postgres18.yml up -d --build --wait
+	docker compose --env-file "$(POSTGRES_ENV)" -f packages/postgres/deploy/docker-compose.postgres18.yml up -d --build --wait
 rebuild-subsets:
 	uv run --frozen --package omnipath-subsets omnipath-subsets build --schema "$(POSTGRES_SCHEMA)" --products $(SUBSET_PRODUCTS) --checkpoint-products
-# Core documentation viewer (Markdown sources in docs/core/).
+# Documentation viewer (docs/index.html); it reads pages from docs/ and the packages.
 DOCS_PORT ?= 8090
 docs:
-	uv run --frozen python -m http.server $(DOCS_PORT) --bind 127.0.0.1 --directory docs/core
+	@echo 'Open http://127.0.0.1:$(DOCS_PORT)/docs/'
+	uv run --frozen python -m http.server $(DOCS_PORT) --bind 127.0.0.1 --directory .

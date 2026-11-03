@@ -1,0 +1,20 @@
+# Templated systemd user unit for an omnipath-build Postgres (per build instance).
+# Each instance: ~/instances/<name>/omnipath-build/ (clone) with packages/postgres/deploy/docker-compose.postgres18.yml
+# and a .env at the checkout root (POSTGRES_PASSWORD, optionally COMPOSE_PROJECT_NAME).
+# The compose project is "omnipath-build" or the .env's
+# COMPOSE_PROJECT_NAME (e.g. dev5 -> "omnipath-build-dev5"), so it manages the
+# existing per-instance build container + volume. Enable (linger must be on):
+#   systemctl --user enable omnipath-build@<name>.service
+[Unit]
+Description=omnipath-build Postgres (instance %i)
+After=network-online.target docker.service
+Wants=network-online.target
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=%h/instances/%i/omnipath-build
+ExecStart=/bin/bash -lc "docker compose --env-file .env -f packages/postgres/deploy/docker-compose.postgres18.yml up -d --wait"
+ExecStop=/bin/bash -lc "docker compose --env-file .env -f packages/postgres/deploy/docker-compose.postgres18.yml stop"
+TimeoutStartSec=1800
+[Install]
+WantedBy=default.target

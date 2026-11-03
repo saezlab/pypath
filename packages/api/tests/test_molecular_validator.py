@@ -12,7 +12,7 @@ import pyarrow.parquet as pq
 import pytest
 
 from omnipath_core.keys import entity_key
-from scripts.validate_molecular_outputs import Validator, validate_outputs
+from validate_molecular_outputs import Validator, validate_outputs
 from omnipath_core.fixtures import nested_rows, rewrite_resource, write_resource
 
 
@@ -166,7 +166,7 @@ def test_validator_paired_forms_gene_navigation_export_and_unavailable_cases(out
     assert not failures(report), json.dumps(failures(report), indent=2)
     resource = report["resources"][0]
     assert report["status"] == "passed"
-    from scripts import validate_molecular_outputs as validator_module
+    import validate_molecular_outputs as validator_module
 
     assert (
         report["validator_sha256"]
